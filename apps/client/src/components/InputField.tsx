@@ -18,7 +18,7 @@ const InputField = ({ field, ...props }) => {
   return (
     <ThemeContainer chamfer="16" borderColor={borderColor}>
       <input
-        className={`${props.className} text-secondary timing focus:bg-primary w-full rounded-none ${field.state.value.length === 0 ? 'bg-zinc-300 dark:bg-zinc-700' : 'bg-primary'} pb-2 pl-4 pt-3 text-xl outline-none clip-4`}
+        className={`${props.className} text-secondary timing focus:bg-primary w-full rounded-none ${field.state.value?.length === 0 ? 'bg-zinc-300 dark:bg-zinc-700' : 'bg-primary'} pb-2 pl-4 pt-3 text-xl outline-none clip-4`}
         type={props.type || 'text'}
         name={field.name}
         id={field.name}
@@ -28,7 +28,7 @@ const InputField = ({ field, ...props }) => {
           setFocus(true);
         }}
         onBlur={() => {
-          if (field.state.value.length === 0) {
+          if (field.state.value?.length === 0) {
             setBorderColor('transparent');
           }
           setFocus(false);
@@ -40,7 +40,7 @@ const InputField = ({ field, ...props }) => {
       />
       <label
         htmlFor={field.name}
-        className={` ${field.state.meta.errors.length > 0 ? 'text-error' : ''} ${field.state.value.length > 0 || focus ? 'bg-primary text-accent -translate-y-6' : ''} ${field.state.value.length === 0 && !focus ? 'text-gray-400' : ''} timing absolute left-5 top-3.5 z-20 transform cursor-text transition-all`}
+        className={` ${field.state.meta.errors.length > 0 ? 'text-error' : ''} ${field.state.value?.length > 0 || focus ? 'bg-primary text-accent -translate-y-6' : ''} ${field.state.value?.length === 0 && !focus ? 'text-gray-400' : ''} timing absolute left-5 top-3.5 z-20 transform cursor-text transition-all`}
       >
         {props.label}
       </label>
