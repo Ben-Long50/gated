@@ -5,10 +5,9 @@ const createCharacter = async (formData, apiUrl, authToken) => {
     const response = await fetch(`${apiUrl}/characters`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
         Authorization: `Bearer ${authToken}`,
       },
-      body: JSON.stringify(formData),
+      body: formData,
     });
     const data = await handleResponse(response);
     return data;
