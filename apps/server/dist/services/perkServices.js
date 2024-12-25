@@ -11,7 +11,7 @@ import prisma from '../config/database.js';
 const perkServices = {
     getPerks: () => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const perks = yield prisma.perk.findMany();
+            const perks = yield prisma.perk.findMany({ orderBy: { name: 'asc' } });
             return perks;
         }
         catch (error) {
