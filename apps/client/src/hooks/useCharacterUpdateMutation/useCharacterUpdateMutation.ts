@@ -10,16 +10,15 @@ const useUpdateCharacterMutation = (characterId, apiUrl, authToken) => {
       return updateCharacter(formData, characterId, apiUrl, authToken);
     },
     onSuccess: () => {
+      navigate(`/characters`);
       queryClient.invalidateQueries({
         queryKey: ['character'],
         exact: false,
       });
-      queryClient.invalidateQueries({
+      return queryClient.invalidateQueries({
         queryKey: ['characters'],
         exact: false,
       });
-      navigate(`/characters`);
-      console.log('Character successfully created');
     },
     onError: () => {
       console.error('Error creating character');
