@@ -1,15 +1,15 @@
-import { useContext, useState } from 'react';
-import { AuthContext } from '../contexts/AuthContext';
+import { useContext } from 'react';
 import ThemeContainer from './ThemeContainer';
 import { ThemeContext } from '../contexts/ThemeContext';
 import KeywordCard from './KeywordCard';
 import useKeywords from '../hooks/useKeywords';
 import InputField from './InputField';
 import { useForm } from '@tanstack/react-form';
+import { LayoutContext } from '../contexts/LayoutContext';
 
 const Keywords = () => {
-  const { apiUrl, authToken } = useContext(AuthContext);
   const { accentPrimary } = useContext(ThemeContext);
+  const { layoutSize } = useContext(LayoutContext);
 
   const keywords = useKeywords();
 
@@ -34,12 +34,12 @@ const Keywords = () => {
     <div className="flex w-full max-w-5xl flex-col items-center gap-3">
       <h1 className="text-center lg:mb-5">Keywords</h1>
       <ThemeContainer
-        chamfer="32"
+        chamfer={`${layoutSize === 'small' || layoutSize === 'xsmall' ? '24' : '32'}`}
         className="w-full"
         borderColor={accentPrimary}
       >
         <div
-          className={`bg-primary flex w-full flex-col gap-4 px-3 py-4 clip-8 sm:gap-6 sm:p-6 lg:gap-8 lg:p-8`}
+          className={`bg-primary flex w-full flex-col gap-4 px-3 py-4 ${layoutSize === 'small' || layoutSize === 'xsmall' ? 'clip-6' : 'clip-8'} sm:gap-6 sm:p-6 lg:gap-8 lg:p-8`}
         >
           <form>
             <searchForm.Field name="query">
