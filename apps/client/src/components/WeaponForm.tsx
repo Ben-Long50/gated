@@ -1,5 +1,5 @@
 import { useForm } from '@tanstack/react-form';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import { ThemeContext } from '../contexts/ThemeContext';
 import ThemeContainer from './ThemeContainer';
@@ -12,16 +12,16 @@ import Icon from '@mdi/react';
 import { mdiCloseBox, mdiImagePlus } from '@mdi/js';
 import useCreateWeaponMutation from '../hooks/useCreateWeaponMutation/useCreateWeaponMutation';
 import Loading from './Loading';
+import InputFieldBasic from './InputFieldBasic';
 
 const WeaponForm = () => {
   const { apiUrl, authToken } = useContext(AuthContext);
   const { accentPrimary } = useContext(ThemeContext);
 
-  const [checkedKeywords, setCheckedKeywords] = useState([]);
+  const keywords = useKeywords();
+
   const [imagePreview, setImagePreview] = useState('');
   const createWeapon = useCreateWeaponMutation(apiUrl, authToken);
-
-  const keywords = useKeywords();
 
   const weaponForm = useForm({
     defaultValues: {
@@ -38,11 +38,11 @@ const WeaponForm = () => {
         weight: '',
       },
       price: '',
-      keywords: [],
+      keywords: [] as { id: number; value?: number }[],
     },
     onSubmit: async ({ value }) => {
       const filteredStats = Object.fromEntries(
-        Object.entries(value.stats).filter(([stat, val]) => val),
+        Object.entries(value.stats).filter(([_, val]) => val),
       );
       value.stats = filteredStats;
       console.log(value);
@@ -56,31 +56,31 @@ const WeaponForm = () => {
           formData.append(key, JSON.stringify(value));
         }
       });
-      await createWeapon.mutate(formData);
-      weaponForm.reset({
-        name: '',
-        picture: '',
-        description: '',
-        stats: {
-          damage: '',
-          salvo: '',
-          flurry: '',
-          range: '',
-          magCapacity: '',
-          magCount: '',
-          weight: '',
-        },
-        price: '',
-        keywords: [],
-      });
-      setCheckedKeywords([]);
-      setImagePreview('');
+      // await createWeapon.mutate(formData);
+      // weaponForm.reset({
+      //   name: '',
+      //   picture: '',
+      //   description: '',
+      //   stats: {
+      //     damage: '',
+      //     salvo: '',
+      //     flurry: '',
+      //     range: '',
+      //     magCapacity: '',
+      //     magCount: '',
+      //     weight: '',
+      //   },
+      //   price: '',
+      //   keywords: [],
+      // });
+      // setCheckedKeywords([]);
+      // setImagePreview('');
     },
   });
 
-  useEffect(() => {
-    weaponForm.setFieldValue('keywords', checkedKeywords);
-  }, [checkedKeywords, weaponForm]);
+  // useEffect(() => {
+  //   weaponForm.setFieldValue('keywords', checkedKeywords);
+  // }, [checkedKeywords, weaponForm]);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0]; // Get the selected file
@@ -278,29 +278,60 @@ const WeaponForm = () => {
           </div>
         </div>
         <h2>Keywords</h2>
-        <div className="flex flex-col gap-4 md:grid md:grid-cols-2">
-          {keywords.filteredKeywords.weapon.map((keyword) => {
-            return (
-              <div key={keyword.name} className="flex items-center gap-4">
-                <KeywordCard className="w-full" keyword={keyword} />
-                <input
-                  className="size-6 shrink-0"
-                  type="checkbox"
-                  checked={checkedKeywords.includes(keyword.id)}
-                  onChange={() => {
-                    if (!checkedKeywords.includes(keyword.id)) {
-                      setCheckedKeywords([...checkedKeywords, keyword.id]);
-                    } else {
-                      setCheckedKeywords((prevKeywords) =>
-                        prevKeywords.filter((id) => id !== keyword.id),
-                      );
-                    }
-                  }}
-                />
-              </div>
-            );
-          })}
-        </div>
+        <weaponForm.Field name="keywords">
+          {(field) => (
+            <div className="flex flex-col gap-4 md:grid md:grid-cols-2">
+              {keywords.filteredKeywords.weapon.map((keyword) => {
+                const inKeywords = field.state.value.some(
+                  (item) => item.id === keyword.id,
+                );
+                return (
+                  <div key={keyword.id} className="flex items-center gap-4">
+                    <KeywordCard className="w-full" keyword={keyword} />
+                    {inKeywords && (
+                      <InputFieldBasic
+                        className="max-w-32"
+                        type="number"
+                        label="Value"
+                        onChange={(value: number) => {
+                          const updatedValue = field.state.value.some(
+                            (item) => item.id === keyword.id,
+                          )
+                            ? field.state.value.map((item) =>
+                                item.id === keyword.id
+                                  ? { ...item, value }
+                                  : item,
+                              )
+                            : [...field.state.value, { id: keyword.id, value }];
+                          field.handleChange(updatedValue);
+                        }}
+                      />
+                    )}
+                    <input
+                      className="size-6 shrink-0"
+                      type="checkbox"
+                      checked={inKeywords}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          field.handleChange([
+                            ...field.state.value,
+                            { id: keyword.id },
+                          ]);
+                        } else {
+                          field.handleChange(
+                            field.state.value.filter(
+                              (item) => item.id !== keyword.id,
+                            ),
+                          );
+                        }
+                      }}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </weaponForm.Field>
         <BtnRect type="submit" className="group w-full">
           {createWeapon.isPending ? (
             <Loading
