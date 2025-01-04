@@ -6,6 +6,12 @@ const router = express.Router();
 
 router.get('/perks', authentication.authenticateUser, perkController.getPerks);
 
+router.get(
+  '/perks/:perkId',
+  authentication.authenticateUser,
+  perkController.getPerkById,
+);
+
 router.post(
   '/perks',
   authentication.authenticateUser,

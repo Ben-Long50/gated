@@ -7,7 +7,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import userServices from '../services/userServices.js';
 import perkServices from '../services/perkServices.js';
 const perkController = {
     getPerks: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -19,13 +18,10 @@ const perkController = {
             res.status(500).json({ error: error.message });
         }
     }),
-    getUser: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    getPerkById: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const user = yield userServices.getUserById(req.params.id);
-            if (!user) {
-                return res.status(404).json({ error: 'User not found' });
-            }
-            res.status(200).json(user);
+            const perk = yield perkServices.getPerkById(req.params.perkId);
+            res.status(200).json(perk);
         }
         catch (error) {
             res.status(500).json({ error: error.message });
