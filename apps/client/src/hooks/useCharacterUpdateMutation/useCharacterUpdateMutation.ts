@@ -2,7 +2,11 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import updateCharacter from './updateCharacter';
 
-const useUpdateCharacterMutation = (apiUrl: string, characterId?: string) => {
+const useUpdateCharacterMutation = (
+  apiUrl: string,
+  characterId: string,
+  setFormMessage: (message: string) => void,
+) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   return useMutation({
@@ -20,8 +24,8 @@ const useUpdateCharacterMutation = (apiUrl: string, characterId?: string) => {
         exact: false,
       });
     },
-    onError: () => {
-      console.error('Error creating character');
+    onError: (error) => {
+      setFormMessage(error.message);
     },
     throwOnError: false,
   });
