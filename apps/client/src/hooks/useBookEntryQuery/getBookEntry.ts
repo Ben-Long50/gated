@@ -2,7 +2,7 @@ import handleResponse from '../handleResponse';
 
 const getBookEntry = async (apiUrl: string, bookEntryTitle: string) => {
   try {
-    const response = await fetch(`${apiUrl}/book/${bookEntryTitle}`, {
+    const response = await fetch(`${apiUrl}/book/entries/${bookEntryTitle}`, {
       method: 'GET',
       credentials: 'include',
     });
