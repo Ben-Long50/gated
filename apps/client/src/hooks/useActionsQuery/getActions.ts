@@ -6,6 +6,7 @@ const getActions = async (apiUrl: string) => {
       method: 'GET',
       credentials: 'include',
     });
+
     const data = await handleResponse(response);
 
     return data;
