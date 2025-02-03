@@ -3,14 +3,15 @@ import handleResponse from '../handleResponse';
 const editCart = async (
   apiUrl: string,
   formData: {
-    characterId: string;
+    characterId: number;
+    cartId: number;
     category: string;
-    itemId: string;
+    itemId: number;
   },
 ) => {
   try {
     const response = await fetch(
-      `${apiUrl}/characters/${formData.characterId}/cart`,
+      `${apiUrl}/characters/${formData.characterId}/cart/${formData.cartId}`,
       {
         method: 'PATCH',
         credentials: 'include',

@@ -3,13 +3,14 @@ import clearCart from './clearCart';
 
 const useClearCartMutation = (
   apiUrl: string,
-  characterId: string,
+  characterId: number,
+  cartId: number,
   setDeleteMode: (mode: boolean) => void,
 ) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => {
-      return clearCart(apiUrl, characterId);
+      return clearCart(apiUrl, characterId, cartId);
     },
     onSuccess: () => {
       setDeleteMode(false);
