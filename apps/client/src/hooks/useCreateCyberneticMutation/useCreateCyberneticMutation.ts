@@ -10,8 +10,8 @@ const useCreateCyberneticMutation = (
     mutationFn: (formData: FormData) => {
       return createCybernetic(formData, apiUrl);
     },
-    onSuccess: () => {
-      setFormMessage('Cybernetic successfully created');
+    onSuccess: (data) => {
+      setFormMessage(data.message);
       queryClient.invalidateQueries({
         queryKey: ['weapons'],
         exact: false,
