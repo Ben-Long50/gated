@@ -1,0 +1,462 @@
+import {
+  Children,
+  cloneElement,
+  isValidElement,
+  ReactNode,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import { AuthContext } from '../contexts/AuthContext';
+import { LayoutContext } from '../contexts/LayoutContext';
+import { ThemeContext } from '../contexts/ThemeContext';
+import ThemeContainer from './ThemeContainer';
+import { Link } from 'react-router-dom';
+import ItemRarity from './ItemRarity';
+import CardPrice from './CardPrice';
+import Icon from '@mdi/react';
+import { mdiChevronDown, mdiTriangleDown } from '@mdi/js';
+import { WeaponWithKeywords } from 'src/types/weapon';
+import { ArmorWithKeywords } from 'src/types/armor';
+import { CyberneticWithKeywords } from 'src/types/cybernetic';
+import { Modification, VehicleWithWeapons } from 'src/types/vehicle';
+import { Keyword } from 'src/types/keyword';
+import Tag from './Tag';
+import SubweaponCard from './SubweaponCard';
+import { Action } from 'src/types/action';
+import SubactionCard from './SubactionCard';
+import SubarmorCard from './SubarmorCard';
+import SubmodificationCard from './SubmodificationCard';
+import BodyIcon from './icons/BodyIcon';
+import BtnRect from './buttons/BtnRect';
+import { motion } from 'motion/react';
+import { Item } from 'src/types/item';
+import StopwatchIcon from './icons/StopwatchIcon';
+import { subcategoryMap } from '../types/maps';
+import ModifierTag from './ModifierTag';
+import { Modifier } from 'src/types/modifier';
+import ItemPicture from './ItemPicture';
+import ArrowHeader2 from './ArrowHeader2';
+import Divider from './Divider';
+import ArrowHeader3 from './ArrowHeader3';
+
+const ItemCardMobile = ({
+  item,
+  category,
+  mode,
+  controls,
+  children,
+}: {
+  item:
+    | WeaponWithKeywords
+    | ArmorWithKeywords
+    | CyberneticWithKeywords
+    | VehicleWithWeapons
+    | Item;
+  category: string;
+  mode: string;
+  controls?: ReactNode;
+  children: ReactNode;
+}) => {
+  const { accentPrimary, rarityColorMap } = useContext(ThemeContext);
+  const { user } = useContext(AuthContext);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [imageHeight, setImageHeight] = useState(0);
+  const [detailHeight, setDetailHeight] = useState(1000);
+  const [integrationHeight, setIntegrationHeight] = useState(1000);
+  const [toolTip, setToolTip] = useState(0);
+
+  useEffect(() => {
+    if (toolTip) {
+      document.addEventListener('click', () => setToolTip(0));
+    } else {
+      document.removeEventListener('click', () => setToolTip(0));
+    }
+
+    return () => {
+      document.removeEventListener('click', () => setToolTip(0));
+    };
+  }, [toolTip]);
+
+  const cardRef = useRef(null);
+  const imageRef = useRef(null);
+  const detailRef = useRef(null);
+  const integrationRef = useRef(null);
+
+  useEffect(() => {
+    const updateDimensions = () => {
+      if (imageRef.current) {
+        setImageHeight(Math.floor(imageRef.current.offsetHeight));
+      }
+    };
+
+    const observer = new ResizeObserver(updateDimensions);
+
+    if (imageRef.current) {
+      observer.observe(imageRef.current);
+    }
+
+    return () => {
+      if (imageRef.current) {
+        observer.unobserve(imageRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (detailRef.current) {
+      const rect = detailRef.current.offsetHeight;
+      setDetailHeight(rect);
+    }
+    if (integrationRef.current) {
+      const rect = integrationRef.current.offsetHeight;
+      setIntegrationHeight(rect);
+    }
+  }, [detailRef.current, integrationRef.current]);
+
+  return (
+    <motion.div
+      ref={cardRef}
+      initial={{ scaleY: 0, transformOrigin: 'top' }}
+      animate={{ scaleY: 1 }}
+      transition={{
+        duration: 0.25,
+        ease: [0, 0.75, 0.5, 1],
+      }}
+      className="w-full"
+    >
+      <ThemeContainer
+        chamfer="medium"
+        className="w-full"
+        borderColor={accentPrimary}
+      >
+        <div
+          className="timing relative flex cursor-pointer flex-col p-4"
+          onClick={async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (!toolTip) {
+              setDetailsOpen(!detailsOpen);
+            } else {
+              setToolTip(0);
+            }
+          }}
+        >
+          <div className="flex h-full flex-col gap-4">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-4">
+                  <ArrowHeader3 title={item.name} />
+                  {category === 'weapons' && item.vehicleId && (
+                    <h4 className="text-error italic">(Currently equipped)</h4>
+                  )}
+                </div>
+                {item.cyberneticType && (
+                  <p className="text-tertiary italic">
+                    (
+                    {item.cyberneticType[0].toUpperCase() +
+                      item.cyberneticType.slice(1)}
+                    )
+                  </p>
+                )}
+              </div>
+              <div className="flex flex-wrap items-start justify-end gap-x-4 gap-y-1">
+                {mode === 'codex' && (
+                  <div className="flex items-center justify-end gap-4">
+                    <CardPrice
+                      price={item?.price}
+                      category={category}
+                      itemId={item?.id}
+                    />
+                  </div>
+                )}
+                {((mode === 'codex' && user?.role === 'ADMIN') ||
+                  (mode === 'codex' && user?.role === 'SUPERADMIN')) && (
+                  <Link to={`/glam/codex/${category}/${item.id}/update`}>
+                    <button className="text-accent hover:underline">
+                      Edit
+                    </button>
+                  </Link>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <ItemRarity rarity={item?.rarity} grade={item?.grade} />
+              {item.body && (
+                <div className="flex flex-wrap items-center justify-end gap-2">
+                  <BodyIcon className="size-8" />
+                  {item.body.map((body, index) => {
+                    return (
+                      <p key={body}>
+                        {body}
+                        <span>{index < item.body.length - 1 && ','}</span>
+                      </p>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+            {item?.keywords && item.keywords.length > 0 && (
+              <div className="col-span-2 flex w-full flex-wrap items-center gap-1 justify-self-start">
+                {item.keywords.map(
+                  (
+                    item: { keyword: Keyword; value?: number },
+                    index: number,
+                  ) => {
+                    return (
+                      <Tag
+                        id={item.keyword.id + index}
+                        key={item.keyword.id}
+                        label={
+                          item.value
+                            ? item.keyword.name + ' ' + item.value
+                            : item.keyword.name
+                        }
+                        description={item.keyword.description}
+                        toolTip={toolTip}
+                        setToolTip={setToolTip}
+                      />
+                    );
+                  },
+                )}
+              </div>
+            )}
+            {item?.category && (
+              <div className="flex items-center gap-4">
+                <h4>{subcategoryMap[item.subcategory]}</h4>
+                <p className="text-tertiary italic">
+                  ({item.category[0].toUpperCase() + item.category.slice(1)})
+                </p>
+                <Icon
+                  className="text-secondary shrink-0"
+                  path={mdiTriangleDown}
+                  size={0.35}
+                  rotate={-90}
+                />
+                <p>{item.itemType}</p>
+              </div>
+            )}
+            <motion.div
+              className={`flex w-full items-start`}
+              style={{
+                height: item.picture && imageHeight,
+                gap: item.picture && !detailsOpen ? 16 : 0,
+              }}
+            >
+              {item.picture && (
+                <div className="mx-auto w-full" ref={imageRef}>
+                  <ItemPicture
+                    className={`${detailsOpen ? 'max-w-full' : 'max-w-[300px]'} timing mx-auto w-full`}
+                    item={item}
+                  />
+                </div>
+              )}
+            </motion.div>
+          </div>
+          <div className="overflow-hidden">
+            <motion.div
+              ref={detailRef}
+              className="flex flex-col gap-4 pt-6"
+              initial={{ marginTop: -detailHeight - 4 }}
+              animate={{
+                marginTop: detailsOpen ? 0 : -detailHeight - 4,
+              }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="flex w-full flex-col items-center gap-4">
+                <div
+                  className={`${cardRef.current?.offsetWidth < 500 ? 'gap-2 px-2' : 'gap-4 px-4'} grid h-full w-full grow grid-cols-[auto_auto_1fr_auto] place-items-center gap-y-2 border-x-2 border-gray-400 border-opacity-50`}
+                >
+                  {Children.map(children, (child) => {
+                    if (isValidElement(child)) {
+                      return cloneElement(child, {
+                        cardWidth: cardRef.current?.offsetWidth,
+                      });
+                    }
+                    return child;
+                  })}
+                </div>
+                {item.modifiers && item.modifiers?.length > 0 && (
+                  <div className="flex w-full items-center gap-2">
+                    {item.modifiers?.map(
+                      (modifier: Modifier, index: number) => (
+                        <ModifierTag key={index} modifier={modifier} />
+                      ),
+                    )}
+                  </div>
+                )}
+              </div>
+              {item.modifiers && item.modifiers[0]?.duration && (
+                <div className="flex items-center gap-4">
+                  <StopwatchIcon className="size-7" />
+                  <p>{item.modifiers[0].duration?.value}</p>
+                  <p>
+                    {item.modifiers[0].duration?.unit[0].toUpperCase() +
+                      item.modifiers[0].duration?.unit.slice(1)}
+                  </p>
+                </div>
+              )}
+              {mode !== 'equipment' && (
+                <p className="text-secondary">{item.description}</p>
+              )}
+            </motion.div>
+          </div>
+
+          <div className={`overflow-hidden`}>
+            <motion.div
+              ref={integrationRef}
+              className="flex flex-col gap-5 p-0.5"
+              initial={{ marginTop: -integrationHeight - 36 }}
+              animate={{
+                marginTop: detailsOpen
+                  ? integrationRef.current?.children.length > 0
+                    ? 16
+                    : 0
+                  : -integrationHeight - 36,
+              }}
+              transition={{ duration: 0.2 }}
+            >
+              {mode === 'equipment' && controls}
+              {item.weapons && item.weapons?.length > 0 && (
+                <ThemeContainer
+                  className="mt-2"
+                  chamfer="small"
+                  borderColor={accentPrimary}
+                >
+                  <p className="text-accent absolute -top-3 left-5 z-20 text-base">
+                    Integrated weapons
+                  </p>
+                  <div className="flex flex-col gap-4 p-4">
+                    {item.weapons?.map(
+                      (weapon: WeaponWithKeywords, index: number) => {
+                        return (
+                          <div
+                            key={weapon?.id}
+                            className="flex h-full grow flex-col items-start justify-between gap-4"
+                          >
+                            <SubweaponCard
+                              vehicleId={item.id}
+                              weapon={weapon}
+                              toolTip={toolTip}
+                              setToolTip={setToolTip}
+                              cardWidth={cardRef.current?.offsetWidth}
+                            />
+                            {index < item.weapons?.length - 1 && (
+                              <Divider key={weapon.id} />
+                            )}
+                          </div>
+                        );
+                      },
+                    )}
+                  </div>
+                </ThemeContainer>
+              )}
+              {item.armor && item.armor?.length > 0 && (
+                <ThemeContainer
+                  className="mt-2"
+                  chamfer="small"
+                  borderColor={accentPrimary}
+                >
+                  <p className="text-accent absolute -top-3 left-5 z-20 text-base">
+                    Integrated armor
+                  </p>
+                  <div className="flex flex-col gap-4 p-4">
+                    {item.armor.map(
+                      (armor: ArmorWithKeywords, index: number) => {
+                        return (
+                          <>
+                            <SubarmorCard
+                              key={armor.id}
+                              armor={armor}
+                              toolTip={toolTip}
+                              setToolTip={setToolTip}
+                              cardWidth={cardRef.current?.offsetWidth}
+                            />
+                            {index < item.armor.length - 1 && (
+                              <Divider key={armor.id} />
+                            )}
+                          </>
+                        );
+                      },
+                    )}
+                  </div>
+                </ThemeContainer>
+              )}
+              {item.actions && item.actions?.length > 0 && (
+                <ThemeContainer
+                  className="mt-2"
+                  chamfer="small"
+                  borderColor={accentPrimary}
+                >
+                  <p className="text-accent absolute -top-3 left-5 z-20 text-base">
+                    Unique actions
+                  </p>
+                  <div className="flex flex-col gap-4 p-4">
+                    {item.actions?.map((action: Action, index: number) => {
+                      return (
+                        <>
+                          <SubactionCard
+                            key={action.id}
+                            action={action}
+                            cardWidth={cardRef.current?.offsetWidth}
+                          />
+                          {index < item.actions.length - 1 && (
+                            <Divider key={action.id} />
+                          )}
+                        </>
+                      );
+                    })}
+                  </div>
+                </ThemeContainer>
+              )}
+              {item.modifications?.length > 0 && (
+                <ThemeContainer chamfer="small" borderColor={accentPrimary}>
+                  <p className="text-accent absolute -top-3 left-5 z-20 text-base">
+                    Modifications
+                  </p>
+                  <div className="flex flex-col gap-4 p-4">
+                    {item.modifications?.map(
+                      (modification: Modification, index: number) => {
+                        return (
+                          <>
+                            <SubmodificationCard
+                              key={modification.id}
+                              modification={modification}
+                            />
+                            {index < item.modifications.length - 1 && (
+                              <hr className="w-full border-yellow-300 border-opacity-50" />
+                            )}
+                          </>
+                        );
+                      },
+                    )}
+                  </div>
+                </ThemeContainer>
+              )}
+              {mode === 'inventory' && (
+                <Link className="w-1/3 self-end" to={`${item.id}/modify`}>
+                  <BtnRect
+                    ariaLabel="Navigate to modify weapon form"
+                    type="button"
+                  >
+                    Modify
+                  </BtnRect>
+                </Link>
+              )}
+            </motion.div>
+          </div>
+          <span className="absolute bottom-5 right-1 transition duration-300">
+            <Icon
+              path={mdiChevronDown}
+              size={1.1}
+              className={`${detailsOpen && '-rotate-180'} timing text-secondary`}
+            ></Icon>
+          </span>
+        </div>
+      </ThemeContainer>
+    </motion.div>
+  );
+};
+
+export default ItemCardMobile;
