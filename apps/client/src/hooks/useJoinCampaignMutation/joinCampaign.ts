@@ -6,7 +6,6 @@ const joinCampaign = async (apiUrl: string, campaignId: string) => {
       method: 'PATCH',
       credentials: 'include',
     });
-    console.log(response);
 
     const data = await handleResponse(response);
     return data;
