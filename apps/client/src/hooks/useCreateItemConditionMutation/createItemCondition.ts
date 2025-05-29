@@ -3,6 +3,7 @@ import handleResponse from '../handleResponse';
 const createItemCondition = async (
   apiUrl: string,
   itemId: number,
+  category: string,
   formData: object,
 ) => {
   try {
