@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import reloadAmmo from './reloadAmmo';
 import { useRef } from 'react';
-import { Character } from 'src/types/character';
+import { Item } from 'src/types/item';
 
 const useReloadAmmoMutation = (
   apiUrl: string,
@@ -26,43 +26,29 @@ const useReloadAmmoMutation = (
     },
 
     onMutate: () => {
-      queryClient.cancelQueries({ queryKey: ['character', characterId] });
+      queryClient.cancelQueries({ queryKey: ['item', itemId] });
 
-      const prevCharacterData: Character | undefined = queryClient.getQueryData(
-        ['character', characterId],
-      );
+      const prevItemData: Item | undefined = queryClient.getQueryData([
+        'item',
+        itemId,
+      ]);
 
-      queryClient.setQueryData(
-        ['character', characterId],
-        (prev: Character) => ({
-          ...prev,
-          characterInventory: {
-            ...prev.characterInventory,
-            items: prev.characterInventory.items.map((item) =>
-              item.id === itemId
-                ? {
-                    ...item,
-                    stats: {
-                      ...item.stats,
-                      currentAmmoCount: item.stats.magCapacity,
-                      currentMagCount: item.stats.currentMagCount
-                        ? item.stats.currentMagCount - 1
-                        : undefined,
-                    },
-                  }
-                : item,
-            ),
-          },
-        }),
-      );
+      queryClient.setQueryData(['item', itemId], (prev: Item) => ({
+        ...prev,
+        stats: {
+          ...prevItemData?.stats,
+          currentAmmoCount: prevItemData?.stats.magCapacity,
+          currentMagCount: prevItemData?.stats.currentMagCount
+            ? prevItemData?.stats.currentMagCount - 1
+            : undefined,
+        },
+      }));
 
-      return { prevCharacterData };
+      return { prevItemData };
     },
-
     onSuccess: () => {
       return queryClient.invalidateQueries({
-        queryKey: ['character', characterId],
-        exact: false,
+        queryKey: ['item', itemId],
       });
     },
     throwOnError: false,
