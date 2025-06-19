@@ -1,0 +1,20 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import setCampaignDate from './setCampaignDate';
+import { Month } from 'src/types/campaign';
+
+const useSetCampaignDateMutation = (apiUrl: string, campaignId: number) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (formData: { month: Month; day: number }) => {
+      return setCampaignDate(apiUrl, campaignId, formData);
+    },
+    onSuccess: () => {
+      return queryClient.invalidateQueries({
+        queryKey: ['campaign', campaignId],
+      });
+    },
+    throwOnError: false,
+  });
+};
+
+export default useSetCampaignDateMutation;

@@ -11,6 +11,7 @@ import { AuthContext } from 'src/contexts/AuthContext';
 import Loading from './Loading';
 import useModalStore from 'src/stores/modalStore';
 import BtnIcon from './buttons/BtnIcon';
+import { Month } from 'src/types/campaign';
 
 const Calendar = () => {
   const { apiUrl } = useContext(AuthContext);
@@ -47,7 +48,7 @@ const Calendar = () => {
     Number(campaignId),
   );
 
-  const [month, setMonth] = useState(campaign.date.month);
+  const [month, setMonth] = useState<Month | undefined>(campaign?.date.month);
 
   if (campaignLoading) return <Loading />;
 
@@ -69,9 +70,9 @@ const Calendar = () => {
                 active={true}
                 path={mdiChevronLeft}
                 onClick={() =>
-                  setMonth((prev: string) => {
+                  setMonth((prev) => {
                     const index = months.findIndex((month) => month === prev);
-                    return months[index - 1];
+                    return months[index - 1] as Month;
                   })
                 }
               />
@@ -81,9 +82,9 @@ const Calendar = () => {
                 active={true}
                 path={mdiChevronRight}
                 onClick={() =>
-                  setMonth((prev: string) => {
+                  setMonth((prev) => {
                     const index = months.findIndex((month) => month === prev);
-                    return months[index + 1];
+                    return months[index + 1] as Month;
                   })
                 }
               />
@@ -91,7 +92,7 @@ const Calendar = () => {
           </div>
         </div>
         <div className="grid grid-cols-[repeat(auto-fit,_minmax(36px,_1fr))] gap-1.5">
-          {campaign?.calendar[month].schedule.map(
+          {campaign?.calendar[month as Month].schedule.map(
             (eventArray, index: number) => {
               return (
                 <button

@@ -8,6 +8,8 @@ interface Campaign {
   createdAt: Date;
   ownerId: number;
   owner: User;
+  date: { month: Month; day: number };
+  calendar: Calendar;
   name: string;
   location: string;
   picture: Picture;
@@ -39,4 +41,43 @@ interface Notes {
   characterId: number;
   character?: Partial<Character>;
   content: { html: string; nodes: string };
+}
+
+interface Calendar {
+  arctus: CalendarMonth;
+  pluvia: CalendarMonth;
+  kavir: CalendarMonth;
+  husk: CalendarMonth;
+  nagai: CalendarMonth;
+  zenzi: CalendarMonth;
+  haqMilah: CalendarMonth;
+  termina: CalendarMonth;
+}
+
+interface CalendarMonth {
+  schedule: (Event[] | undefined)[];
+  weather: { description: 'cold' | 'wet' | 'dry' | 'hot'; level: number };
+}
+
+interface Event {
+  id: number;
+  campaign: Campaign;
+  campaignId: number;
+  character: Character;
+  characterId: number;
+  month: Month;
+  day: number;
+  name: string;
+  description: string;
+}
+
+enum Month {
+  arctus = 'arctus',
+  pluvia = 'pluvia',
+  kavir = 'kavir',
+  husk = 'husk',
+  nagai = 'nagai',
+  zenzi = 'zenzi',
+  haqMilah = 'haqMilah',
+  termina = 'termina',
 }
