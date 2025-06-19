@@ -13,6 +13,8 @@ import RollModal from 'src/components/modals/RollModal';
 import CharacterRoutes from './CharacterRoutes';
 import DescriptionModal from 'src/components/modals/DescriptionModal';
 import Notes from 'src/components/Notes';
+import CalendarModal from 'src/components/modals/CalendarModal';
+import EventForm from 'src/components/EventForm';
 
 const CampaignTabRoutes = () => {
   return (
@@ -24,6 +26,8 @@ const CampaignTabRoutes = () => {
             path="conditions/:conditionId"
             element={<DescriptionModal />}
           />
+          <Route path="calendar/:month/:day" element={<CalendarModal />} />
+          <Route path="calendar/:month/:day/newEvent" element={<EventForm />} />
         </Route>
         <Route
           path="update"

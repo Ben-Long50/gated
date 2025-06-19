@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, Outlet, useNavigate, useParams } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import Loading from './Loading';
 import useCampaignQuery from '../hooks/useCampaignQuery/useCampaignQuery';
@@ -25,6 +25,7 @@ import CoverPicture from './CoverPicture';
 import { capitalCase } from 'change-case';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import useCharacterQueries from 'src/hooks/useCharactersQuery/useCharacterQueries';
+import Calendar from './Calendar';
 
 const Campaign = () => {
   const { apiUrl, user } = useContext(AuthContext);
@@ -137,7 +138,10 @@ const Campaign = () => {
             ))}
           </div>
         )}
+
         <div className={`mt-14 flex w-full flex-col gap-4 sm:mt-28`}>
+          <Calendar />
+          <Divider className="col-span-2" />
           <ThemeContainer borderColor={accentPrimary} chamfer="medium">
             <div className="flex flex-col gap-4 p-4 sm:p-8">
               <div className="grid grid-cols-2 gap-4">
