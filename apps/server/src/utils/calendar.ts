@@ -1,3 +1,5 @@
+import { Calendar } from '../types/calendar';
+
 const calendar = {
   arctus: {
     schedule: Array.from({ length: 103 }),
@@ -31,6 +33,6 @@ const calendar = {
     schedule: Array.from({ length: 102 }),
     weather: { description: 'dry', level: 2 },
   },
-};
+} as Calendar;
 
 export default calendar;

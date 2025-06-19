@@ -66,13 +66,17 @@ const campaignServices = {
                 throw new Error('Failed to find campaign');
             }
             const eventCalendar = structuredClone(calendar);
-            if ((campaign === null || campaign === void 0 ? void 0 : campaign.events.length) > 0) {
-                campaign === null || campaign === void 0 ? void 0 : campaign.events.forEach((event) => {
-                    if (Array.isArray(eventCalendar[event.month].schedule[event.day])) {
-                        eventCalendar[event.month].schedule[event.day - 1].push(event);
+            if (eventCalendar && (campaign === null || campaign === void 0 ? void 0 : campaign.events.length) > 0) {
+                campaign.events.forEach((event) => {
+                    const monthEntry = eventCalendar[event.month];
+                    if (!monthEntry)
+                        return;
+                    const dayIndex = event.day - 1;
+                    if (Array.isArray(monthEntry.schedule[dayIndex])) {
+                        monthEntry.schedule[dayIndex].push(event);
                     }
                     else {
-                        eventCalendar[event.month].schedule[event.day] = [event];
+                        monthEntry.schedule[dayIndex] = [event];
                     }
                 });
             }
@@ -115,6 +119,7 @@ const campaignServices = {
                 create: {
                     name: formData.name,
                     date: { month: 'arctus', day: 1 },
+                    time: { hour: 0, minute: 0, second: 0 },
                     location: formData.location,
                     picture: formData.picture,
                     ownerId,

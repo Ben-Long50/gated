@@ -1,6 +1,7 @@
 import { $Enums, User } from '@prisma/client';
 import prisma from '../config/database.js';
 import calendar from '../utils/calendar.js';
+import { Calendar } from '../types/calendar.js';
 
 const campaignServices = {
   getCampaigns: async (userId: number) => {
@@ -61,12 +62,18 @@ const campaignServices = {
 
       const eventCalendar = structuredClone(calendar);
 
-      if (campaign?.events.length > 0) {
-        campaign?.events.forEach((event) => {
-          if (Array.isArray(eventCalendar[event.month].schedule[event.day])) {
-            eventCalendar[event.month].schedule[event.day - 1].push(event);
+      if (eventCalendar && campaign?.events.length > 0) {
+        campaign.events.forEach((event) => {
+          const monthEntry = eventCalendar[event.month];
+
+          if (!monthEntry) return;
+
+          const dayIndex = event.day - 1;
+
+          if (Array.isArray(monthEntry.schedule[dayIndex])) {
+            monthEntry.schedule[dayIndex].push(event);
           } else {
-            eventCalendar[event.month].schedule[event.day] = [event];
+            monthEntry.schedule[dayIndex] = [event];
           }
         });
       }
