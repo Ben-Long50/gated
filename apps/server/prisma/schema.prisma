@@ -34,6 +34,7 @@ model Campaign {
   id             Int           @id @default(autoincrement())
   createdAt      DateTime      @default(now())
   date           Json?
+  time           Json?
   owner          User          @relation("owner", fields: [ownerId], references: [id])
   ownerId        Int
   pendingPlayers User[]        @relation("pending")

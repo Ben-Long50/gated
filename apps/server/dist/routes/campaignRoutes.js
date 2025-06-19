@@ -13,6 +13,7 @@ router.post('/factions/:factionId/affiliations/create', authentication.authentic
 router.post('/campaigns', authentication.authenticate, campaignController.createCampaign);
 router.post('/campaigns/:campaignId/events', authentication.authenticate, campaignController.createOrUpdateEvent);
 router.patch('/campaigns/:campaignId/date', authentication.authenticate, campaignController.setCampaignDate);
+router.patch('/campaigns/:campaignId/time', authentication.authenticate, campaignController.setCampaignTime);
 router.put('/campaigns/:campaignId/factions/:factionId', authentication.authenticate, factionController.updateFaction);
 router.delete('/campaigns/:campaignId', authentication.authenticate, campaignController.deleteCampaign);
 export default router;

@@ -130,6 +130,7 @@ const campaignServices = {
         },
         create: {
           name: formData.name,
+          date: { month: 'arctus', day: 1 },
           location: formData.location,
           picture: formData.picture,
           ownerId,
@@ -241,6 +242,29 @@ const campaignServices = {
         where: { id: campaignId },
         data: {
           date: formData,
+        },
+      });
+
+      return campaign;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to fetch notes');
+    }
+  },
+
+  setCampaignTime: async (
+    campaignId: number,
+    formData: {
+      hour: number;
+      minute: number;
+      second: number;
+    },
+  ) => {
+    try {
+      const campaign = await prisma.campaign.update({
+        where: { id: campaignId },
+        data: {
+          time: formData,
         },
       });
 

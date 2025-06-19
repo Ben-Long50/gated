@@ -60,6 +60,12 @@ router.patch(
   campaignController.setCampaignDate,
 );
 
+router.patch(
+  '/campaigns/:campaignId/time',
+  authentication.authenticate,
+  campaignController.setCampaignTime,
+);
+
 router.put(
   '/campaigns/:campaignId/factions/:factionId',
   authentication.authenticate,

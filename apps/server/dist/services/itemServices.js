@@ -351,7 +351,6 @@ const itemServices = {
                 itemIds,
                 actionIds,
                 keywordIds, id: 0, characterInventoryId: inventoryId, baseItemId: baseItemId !== null && baseItemId !== void 0 ? baseItemId : itemDetails.id, userId });
-            console.log(itemDetails, itemData);
             if (itemDetails) {
                 for (let i = 0; i < quantity; i++) {
                     promises.push(itemServices.createOrUpdateItem(itemData));
