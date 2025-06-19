@@ -15,6 +15,7 @@ import DescriptionModal from 'src/components/modals/DescriptionModal';
 import Notes from 'src/components/Notes';
 import CalendarModal from 'src/components/modals/CalendarModal';
 import EventForm from 'src/components/EventForm';
+import TimeModal from 'src/components/modals/TimeModal';
 
 const CampaignTabRoutes = () => {
   return (
@@ -26,6 +27,7 @@ const CampaignTabRoutes = () => {
             path="conditions/:conditionId"
             element={<DescriptionModal />}
           />
+          <Route path="calendar/time" element={<TimeModal />} />
           <Route path="calendar/:month/:day" element={<CalendarModal />} />
           <Route path="calendar/:month/:day/newEvent" element={<EventForm />} />
         </Route>

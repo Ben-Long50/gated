@@ -2,7 +2,7 @@ import { capitalCase } from 'change-case';
 import ArrowHeader2 from './ArrowHeader2';
 import ThemeContainer from './ThemeContainer';
 import Icon from '@mdi/react';
-import { mdiChevronLeft, mdiChevronRight, mdiCircle } from '@mdi/js';
+import { mdiChevronLeft, mdiChevronRight, mdiCircle, mdiPlay } from '@mdi/js';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import { useContext, useState } from 'react';
@@ -12,6 +12,8 @@ import Loading from './Loading';
 import useModalStore from 'src/stores/modalStore';
 import BtnIcon from './buttons/BtnIcon';
 import { Month } from 'src/types/campaign';
+import Divider from './Divider';
+import { format } from 'date-fns';
 
 const Calendar = () => {
   const { apiUrl } = useContext(AuthContext);
@@ -43,12 +45,23 @@ const Calendar = () => {
     navigate(`calendar/${month}/${day}`);
   };
 
+  const openTimeModal = () => {
+    setBackgroundPath(location.pathname);
+    navigate(`calendar/time`);
+  };
+
   const { data: campaign, isLoading: campaignLoading } = useCampaignQuery(
     apiUrl,
     Number(campaignId),
   );
 
   const [month, setMonth] = useState<Month | undefined>(campaign?.date.month);
+
+  const time = new Date();
+  time.setHours(campaign?.time.hour);
+  time.setMinutes(campaign?.time.minute);
+  time.setSeconds(campaign?.time.second);
+  time.setMilliseconds(0);
 
   if (campaignLoading) return <Loading />;
 
@@ -59,37 +72,43 @@ const Calendar = () => {
       chamfer="medium"
     >
       <div className="flex w-full flex-col gap-4 p-4 sm:p-8">
-        <div className="flex items-start justify-between">
-          <ArrowHeader2
-            className="whitespace-nowrap"
-            title={capitalCase(month || '')}
-          />
-          <div className="flex w-full justify-end gap-4">
-            {month !== 'arctus' && (
-              <BtnIcon
-                active={true}
-                path={mdiChevronLeft}
-                onClick={() =>
-                  setMonth((prev) => {
-                    const index = months.findIndex((month) => month === prev);
-                    return months[index - 1] as Month;
-                  })
-                }
-              />
-            )}
-            {month !== 'termina' && (
-              <BtnIcon
-                active={true}
-                path={mdiChevronRight}
-                onClick={() =>
-                  setMonth((prev) => {
-                    const index = months.findIndex((month) => month === prev);
-                    return months[index + 1] as Month;
-                  })
-                }
-              />
-            )}
+        <div className="flex items-center justify-between gap-8">
+          <div className="flex items-center gap-4">
+            <ArrowHeader2 title={capitalCase(campaign?.date.month)} />
+            <Icon className="text-primary" path={mdiCircle} size={0.3} />
+            <h2>{campaign?.date.day}</h2>
           </div>
+          <div className="flex items-center gap-4">
+            <button onClick={() => openTimeModal()}>
+              <h2>{format(time, 'HH:mm:ss')}</h2>
+            </button>
+            {parts.includes('time') && <Outlet context={campaign?.time} />}
+            <BtnIcon path={mdiPlay} active={true} onClick={() => {}} />
+          </div>
+        </div>
+        <Divider />
+        <div className="flex w-full justify-between gap-4">
+          <BtnIcon
+            active={month !== 'arctus'}
+            path={mdiChevronLeft}
+            onClick={() =>
+              setMonth((prev) => {
+                const index = months.findIndex((month) => month === prev);
+                return months[index - 1] as Month;
+              })
+            }
+          />
+          <h2>{capitalCase(month || '')}</h2>
+          <BtnIcon
+            active={month !== 'termina'}
+            path={mdiChevronRight}
+            onClick={() =>
+              setMonth((prev) => {
+                const index = months.findIndex((month) => month === prev);
+                return months[index + 1] as Month;
+              })
+            }
+          />
         </div>
         <div className="grid grid-cols-[repeat(auto-fit,_minmax(36px,_1fr))] gap-1.5">
           {campaign?.calendar[month as Month].schedule.map(

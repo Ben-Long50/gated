@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import createEvent from './createEvent';
+import { socket } from 'src/socket';
 
 const useCreateEventMutation = (apiUrl: string, campaignId: number) => {
   const queryClient = useQueryClient();
@@ -18,9 +19,7 @@ const useCreateEventMutation = (apiUrl: string, campaignId: number) => {
       return createEvent(apiUrl, campaignId, formData);
     },
     onSuccess: () => {
-      // queryClient.invalidateQueries({
-      //   queryKey: ['event', eventId],
-      // });
+      socket.emit('campaign', campaignId);
       navigate(-1);
       return queryClient.invalidateQueries({
         queryKey: ['campaign', campaignId],

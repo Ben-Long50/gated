@@ -15,6 +15,12 @@ export const CampaignSocketProvider = () => {
       console.log(`Connected to campaign`);
     });
 
+    socket.on('campaign', (campaignId) => {
+      queryClient.invalidateQueries({
+        queryKey: ['campaign', campaignId],
+      });
+    });
+
     socket.on('character', (characterId) => {
       queryClient.invalidateQueries({
         queryKey: ['character', characterId],

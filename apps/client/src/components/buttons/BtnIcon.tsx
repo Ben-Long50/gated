@@ -6,6 +6,8 @@ const BtnIcon = ({
   path,
   active,
   onClick,
+  onMouseDown,
+  onMouseUp,
   className,
   loading,
   children,
@@ -13,6 +15,8 @@ const BtnIcon = ({
   path: string;
   active: boolean;
   onClick: () => void;
+  onMouseDown?: () => void;
+  onMouseUp?: () => void;
   className?: string;
   loading?: boolean;
   children?: ReactNode;
@@ -27,9 +31,23 @@ const BtnIcon = ({
           onClick();
         }
       }}
+      onMouseDown={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (active && onMouseDown) {
+          onMouseDown();
+        }
+      }}
+      onMouseUp={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (active && onMouseUp) {
+          onMouseUp();
+        }
+      }}
     >
       {!loading ? (
-        <Icon path={path} className="size-6 text-inherit" />
+        <Icon path={path} className="mx-auto size-6 text-inherit" />
       ) : (
         <Loading size={1} />
       )}
