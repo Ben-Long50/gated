@@ -48,6 +48,12 @@ router.post(
   campaignController.createCampaign,
 );
 
+router.post(
+  '/campaigns/:campaignId/events',
+  authentication.authenticate,
+  campaignController.createOrUpdateEvent,
+);
+
 router.put(
   '/campaigns/:campaignId/factions/:factionId',
   authentication.authenticate,

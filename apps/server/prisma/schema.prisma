@@ -33,6 +33,7 @@ model User {
 model Campaign {
   id             Int           @id @default(autoincrement())
   createdAt      DateTime      @default(now())
+  date           Json?
   owner          User          @relation("owner", fields: [ownerId], references: [id])
   ownerId        Int
   pendingPlayers User[]        @relation("pending")
@@ -45,6 +46,30 @@ model Campaign {
   sessions       Session[]
   characters     Character[]
   affiliations   Affiliation[]
+  events         Event[]
+}
+
+enum Month {
+  arctus
+  pluvia
+  kavir
+  husk
+  nagai
+  zenzi
+  haqMilah
+  termina
+}
+
+model Event {
+  id          Int       @id @default(autoincrement())
+  campaign    Campaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId  Int
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  characterId Int
+  month       Month
+  day         Int
+  name        String
+  description String
 }
 
 model Faction {
@@ -178,6 +203,7 @@ model Character {
   characterInventory CharacterInventory?
   Note               Note[]
   affiliations       Affiliation[]
+  events             Event[]
 
   @@index([userId])
 }

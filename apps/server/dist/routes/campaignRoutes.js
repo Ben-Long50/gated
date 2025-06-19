@@ -11,6 +11,7 @@ router.get('/campaigns/:campaignId/characters/:characterId/notes', authenticatio
 router.get('/factions/:factionId', authentication.authenticate, factionController.getFactionById);
 router.post('/factions/:factionId/affiliations/create', authentication.authenticate, affiliationController.createFactionAffiliation);
 router.post('/campaigns', authentication.authenticate, campaignController.createCampaign);
+router.post('/campaigns/:campaignId/events', authentication.authenticate, campaignController.createOrUpdateEvent);
 router.put('/campaigns/:campaignId/factions/:factionId', authentication.authenticate, factionController.updateFaction);
 router.delete('/campaigns/:campaignId', authentication.authenticate, campaignController.deleteCampaign);
 export default router;

@@ -99,6 +99,18 @@ const campaignController = {
     }
   },
 
+  createOrUpdateEvent: async (req: Request, res: Response) => {
+    try {
+      const event = await campaignServices.createOrUpdateEvent(
+        Number(req.params.campaignId),
+        req.body,
+      );
+      res.status(200).json(event);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
   joinCampaign: async (req: Request, res: Response) => {
     try {
       if (!req.user) {

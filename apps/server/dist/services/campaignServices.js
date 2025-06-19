@@ -1,4 +1,16 @@
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 import prisma from '../config/database.js';
+import calendar from '../utils/calendar.js';
 const campaignServices = {
     getCampaigns: async (userId) => {
         try {
@@ -41,11 +53,31 @@ const campaignServices = {
                             picture: true,
                         },
                     },
+                    events: {
+                        include: {
+                            character: { select: { firstName: true, picture: true } },
+                        },
+                    },
                     affiliations: { select: { id: true } },
                     owner: true,
                 },
             });
-            return campaign;
+            if (!campaign) {
+                throw new Error('Failed to find campaign');
+            }
+            const eventCalendar = structuredClone(calendar);
+            if ((campaign === null || campaign === void 0 ? void 0 : campaign.events.length) > 0) {
+                campaign === null || campaign === void 0 ? void 0 : campaign.events.forEach((event) => {
+                    if (Array.isArray(eventCalendar[event.month].schedule[event.day])) {
+                        eventCalendar[event.month].schedule[event.day - 1].push(event);
+                    }
+                    else {
+                        eventCalendar[event.month].schedule[event.day] = [event];
+                    }
+                });
+            }
+            const modifiedCampaign = Object.assign(Object.assign({}, campaign), { calendar: eventCalendar });
+            return modifiedCampaign;
         }
         catch (error) {
             console.error(error);
@@ -132,6 +164,21 @@ const campaignServices = {
                 orderBy: { session: { sessionNumber: 'asc' } },
             });
             return notes;
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to fetch notes');
+        }
+    },
+    createOrUpdateEvent: async (campaignId, formData) => {
+        const { id, characterId } = formData, data = __rest(formData, ["id", "characterId"]);
+        try {
+            const event = await prisma.event.upsert({
+                where: { id: id || 0, characterId },
+                update: Object.assign({}, data),
+                create: Object.assign(Object.assign({}, data), { campaign: { connect: { id: campaignId } }, character: { connect: { id: characterId } } }),
+            });
+            return event;
         }
         catch (error) {
             console.error(error);

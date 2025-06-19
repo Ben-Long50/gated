@@ -1,5 +1,6 @@
 import { $Enums, User } from '@prisma/client';
 import prisma from '../config/database.js';
+import calendar from '../utils/calendar.js';
 
 const campaignServices = {
   getCampaigns: async (userId: number) => {
@@ -44,11 +45,35 @@ const campaignServices = {
               picture: true,
             },
           },
+          events: {
+            include: {
+              character: { select: { firstName: true, picture: true } },
+            },
+          },
           affiliations: { select: { id: true } },
           owner: true,
         },
       });
-      return campaign;
+
+      if (!campaign) {
+        throw new Error('Failed to find campaign');
+      }
+
+      const eventCalendar = structuredClone(calendar);
+
+      if (campaign?.events.length > 0) {
+        campaign?.events.forEach((event) => {
+          if (Array.isArray(eventCalendar[event.month].schedule[event.day])) {
+            eventCalendar[event.month].schedule[event.day - 1].push(event);
+          } else {
+            eventCalendar[event.month].schedule[event.day] = [event];
+          }
+        });
+      }
+
+      const modifiedCampaign = { ...campaign, calendar: eventCalendar };
+
+      return modifiedCampaign;
     } catch (error) {
       console.error(error);
       throw new Error('Failed to fetch campaign');
@@ -167,6 +192,37 @@ const campaignServices = {
       });
 
       return notes;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to fetch notes');
+    }
+  },
+
+  createOrUpdateEvent: async (
+    campaignId: number,
+    formData: {
+      id: number;
+      name: string;
+      characterId: number;
+      month: $Enums.Month;
+      day: number;
+      description: string;
+    },
+  ) => {
+    const { id, characterId, ...data } = formData;
+
+    try {
+      const event = await prisma.event.upsert({
+        where: { id: id || 0, characterId },
+        update: { ...data },
+        create: {
+          ...data,
+          campaign: { connect: { id: campaignId } },
+          character: { connect: { id: characterId } },
+        },
+      });
+
+      return event;
     } catch (error) {
       console.error(error);
       throw new Error('Failed to fetch notes');
