@@ -54,6 +54,12 @@ router.post(
   campaignController.createOrUpdateEvent,
 );
 
+router.patch(
+  '/campaigns/:campaignId/date',
+  authentication.authenticate,
+  campaignController.setCampaignDate,
+);
+
 router.put(
   '/campaigns/:campaignId/factions/:factionId',
   authentication.authenticate,

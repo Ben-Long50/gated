@@ -185,6 +185,21 @@ const campaignServices = {
             throw new Error('Failed to fetch notes');
         }
     },
+    setCampaignDate: async (campaignId, formData) => {
+        try {
+            const campaign = await prisma.campaign.update({
+                where: { id: campaignId },
+                data: {
+                    date: formData,
+                },
+            });
+            return campaign;
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to fetch notes');
+        }
+    },
     joinCampaign: async (campaignId, userId) => {
         try {
             const campaign = await prisma.campaign.findUnique({

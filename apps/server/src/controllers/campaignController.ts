@@ -111,6 +111,18 @@ const campaignController = {
     }
   },
 
+  setCampaignDate: async (req: Request, res: Response) => {
+    try {
+      const campaign = await campaignServices.setCampaignDate(
+        Number(req.params.campaignId),
+        req.body,
+      );
+      res.status(200).json(campaign);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
   joinCampaign: async (req: Request, res: Response) => {
     try {
       if (!req.user) {

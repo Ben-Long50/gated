@@ -229,6 +229,28 @@ const campaignServices = {
     }
   },
 
+  setCampaignDate: async (
+    campaignId: number,
+    formData: {
+      month: $Enums.Month;
+      day: number;
+    },
+  ) => {
+    try {
+      const campaign = await prisma.campaign.update({
+        where: { id: campaignId },
+        data: {
+          date: formData,
+        },
+      });
+
+      return campaign;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to fetch notes');
+    }
+  },
+
   joinCampaign: async (campaignId: string, userId: number) => {
     try {
       const campaign = await prisma.campaign.findUnique({

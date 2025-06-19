@@ -452,8 +452,6 @@ const itemServices = {
         userId,
       };
 
-      console.log(itemDetails, itemData);
-
       if (itemDetails) {
         for (let i = 0; i < quantity; i++) {
           promises.push(itemServices.createOrUpdateItem(itemData));
