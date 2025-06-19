@@ -131,6 +131,7 @@ const campaignServices = {
         create: {
           name: formData.name,
           date: { month: 'arctus', day: 1 },
+          time: { hour: 0, minute: 0, second: 0 },
           location: formData.location,
           picture: formData.picture,
           ownerId,
