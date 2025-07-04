@@ -69,6 +69,7 @@ model Event {
   characterId Int
   month       Month
   day         Int
+  time        Json?
   name        String
   description String
 }
