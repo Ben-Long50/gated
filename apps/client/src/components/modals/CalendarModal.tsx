@@ -65,7 +65,11 @@ const CalendarModal = () => {
                     heading={
                       <div className="mr-4 flex w-full items-center justify-between gap-4">
                         <h4>{event.name}</h4>
-                        {event.time ? (
+                        {event.time &&
+                        event.time.hour +
+                          event.time.minute +
+                          event.time.second >
+                          0 ? (
                           <p>{format(time, 'HH : mm : ss')}</p>
                         ) : (
                           <p>All Day</p>
