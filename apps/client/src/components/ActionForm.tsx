@@ -53,7 +53,7 @@ const ActionForm = () => {
     actionForm.reset();
   };
 
-  const attributeTree = useAttributeTree();
+  const { emptyAttributeTree } = useAttributeTree();
 
   const actionForm = useForm({
     defaultValues: {
@@ -177,7 +177,7 @@ const ActionForm = () => {
                       >
                         {(field) => (
                           <InputSelectField
-                            options={Object.keys(attributeTree.tree)}
+                            options={Object.keys(emptyAttributeTree)}
                             label="Attribute"
                             field={field}
                           />
@@ -194,7 +194,7 @@ const ActionForm = () => {
                                   options={
                                     attribute
                                       ? Object.keys(
-                                          attributeTree.tree[attribute].skills,
+                                          emptyAttributeTree[attribute].skills,
                                         )
                                       : []
                                   }

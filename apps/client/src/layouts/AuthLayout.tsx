@@ -18,7 +18,6 @@ const AuthLayout = () => {
         backgroundAttachment: 'fixed',
       }}
     >
-      <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#141417] to-transparent" />
       <LogoTitle className="absolute bottom-4 left-4 sm:bottom-8 sm:left-8" />
       <motion.div
         className="z-20 flex h-full w-full max-w-[500px] flex-col items-center justify-center gap-6 overflow-visible border-opacity-50 bg-fixed sm:col-span-1"
