@@ -16,6 +16,7 @@ import Notes from 'src/components/Notes';
 import CalendarModal from 'src/components/modals/CalendarModal';
 import EventForm from 'src/components/EventForm';
 import TimeModal from 'src/components/modals/TimeModal';
+import MapBuilder from 'src/components/maps/MapBuilder';
 
 const CampaignTabRoutes = () => {
   return (
@@ -53,6 +54,8 @@ const CampaignTabRoutes = () => {
           {CharacterRoutes()}
         </Route>
         {SessionRoutes()}
+        <Route path="maps" element={<CampaignAffiliations />} />
+        <Route path="maps/create" element={<MapBuilder />} />
         <Route path="affiliations" element={<CampaignAffiliations />} />
         <Route path="rollSimulator" element={<RollSimulator />}>
           <Route path="rollResults" element={<RollModal />} />

@@ -14,6 +14,7 @@ import SessionIcon from '../icons/SessionIcon';
 import AffiliationIcon from '../icons/AffiliationIcon';
 import NoteIcon from '../icons/NoteIcon';
 import useCampaignCharactersQuery from 'src/hooks/useCampaignCharactersQuery/useCampaignCharactersQuery';
+import MapIcon from '../icons/MapIcon';
 
 const CampaignLinks = () => {
   const { apiUrl, user } = useContext(AuthContext);
@@ -111,6 +112,21 @@ const CampaignLinks = () => {
             <SubLinkSidebar
               title="Non-player Characters"
               path={`campaigns/${campaignId}/characters?list=nonPlayerCharacters`}
+            />
+          </LinkListSidebar>
+          <LinkListSidebar
+            icon={
+              <MapIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+            }
+            title="Campaign Map"
+          >
+            <SubLinkSidebar
+              title="Maps"
+              path={`campaigns/${campaignId}/maps`}
+            />
+            <SubLinkSidebar
+              title="Create a New Map"
+              path={`campaigns/${campaignId}/maps/create`}
             />
           </LinkListSidebar>
           <LinkListSidebar
