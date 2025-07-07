@@ -99,6 +99,29 @@ const campaignController = {
     }
   },
 
+  getCampaignMaps: async (req: Request, res: Response) => {
+    try {
+      const maps = await campaignServices.getCampaignMaps(
+        Number(req.params.campaignId),
+      );
+      res.status(200).json(maps);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  getCampaignMap: async (req: Request, res: Response) => {
+    try {
+      const map = await campaignServices.getCampaignMap(
+        Number(req.params.campaignId),
+        Number(req.params.mapId),
+      );
+      res.status(200).json(map);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
   createOrUpdateEvent: async (req: Request, res: Response) => {
     try {
       const event = await campaignServices.createOrUpdateEvent(
@@ -130,6 +153,23 @@ const campaignController = {
         req.body,
       );
       res.status(200).json(campaign);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  createOrUpdateCampaignMap: async (req: Request, res: Response) => {
+    try {
+      if (!req.user) {
+        throw new Error('You must be logged in to create or update a map');
+      }
+
+      const map = await campaignServices.createOrUpdateCampaignMap(
+        Number(req.params.campaignId),
+        req.user?.id,
+        req.body,
+      );
+      res.status(200).json(map);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }

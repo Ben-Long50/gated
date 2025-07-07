@@ -25,6 +25,18 @@ router.get(
 );
 
 router.get(
+  '/campaigns/:campaignId/maps',
+  authentication.authenticate,
+  campaignController.getCampaignMaps,
+);
+
+router.get(
+  '/campaigns/:campaignId/maps/:mapId',
+  authentication.authenticate,
+  campaignController.getCampaignMap,
+);
+
+router.get(
   '/campaigns/:campaignId/characters/:characterId/notes',
   authentication.authenticate,
   campaignController.getCharacterNotes,
@@ -52,6 +64,12 @@ router.post(
   '/campaigns/:campaignId/events',
   authentication.authenticate,
   campaignController.createOrUpdateEvent,
+);
+
+router.post(
+  '/campaigns/:campaignId/maps',
+  authentication.authenticate,
+  campaignController.createOrUpdateCampaignMap,
 );
 
 router.patch(

@@ -28,6 +28,7 @@ model User {
   playerCampaigns       Campaign[]     @relation("player")
   receivedNotifications Notification[] @relation("received")
   sentNotifications     Notification[] @relation("sent")
+  maps                  Map[]
 }
 
 model Campaign {
@@ -48,6 +49,7 @@ model Campaign {
   characters     Character[]
   affiliations   Affiliation[]
   events         Event[]
+  maps           Map[]
 }
 
 enum Month {
@@ -72,6 +74,26 @@ model Event {
   time        Json?
   name        String
   description String
+}
+
+model Map {
+  id          Int      @id @default(autoincrement())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      Int
+  campaign    Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId  Int
+  draft       Boolean
+  name        String
+  description String?
+  type        MapType
+  width       Int
+  baseColor   String
+  layout      Json
+}
+
+enum MapType {
+  location
+  component
 }
 
 model Faction {
@@ -171,27 +193,28 @@ model Gang {
 }
 
 model Character {
-  id                 Int                           @id @default(autoincrement())
-  createdAt          DateTime                      @default(now())
-  userId             Int
-  level              Int                           @default(1)
-  profits            Int                           @default(10)
-  stats              Json                          @default("{}")
-  picture            Json?
-  height             Int
-  weight             Int
-  age                Int
-  sex                String
-  backstory          Json?
-  firstTaste         Json?
-  badMedicine        Json?
-  attributes         Json
-  firstName          String
-  lastName           String?
-  playerCharacter    Boolean                       @default(false)
-  npcTypes           NpcTypes[]
-  preferences        Json?
-  user               User                          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id              Int        @id @default(autoincrement())
+  createdAt       DateTime   @default(now())
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          Int
+  level           Int        @default(1)
+  profits         Int        @default(10)
+  stats           Json       @default("{}")
+  picture         Json?
+  height          Int
+  weight          Int
+  age             Int
+  sex             String
+  backstory       Json?
+  firstTaste      Json?
+  badMedicine     Json?
+  attributes      Json
+  firstName       String
+  lastName        String?
+  playerCharacter Boolean    @default(false)
+  npcTypes        NpcTypes[]
+  preferences     Json?
+
   active             Boolean                       @default(false)
   perks              Perk[]                        @relation("CharacterToPerk")
   campaign           Campaign?                     @relation(fields: [campaignId], references: [id])

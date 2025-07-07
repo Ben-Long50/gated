@@ -1,7 +1,7 @@
 import { $Enums, User } from '@prisma/client';
 import prisma from '../config/database.js';
 import calendar from '../utils/calendar.js';
-import { Calendar } from '../types/calendar.js';
+import { JsonObject } from '@prisma/client/runtime/library.js';
 
 const campaignServices = {
   getCampaigns: async (userId: number) => {
@@ -207,6 +207,47 @@ const campaignServices = {
     }
   },
 
+  getCampaignMaps: async (campaignId: number) => {
+    try {
+      const notes = await prisma.map.findMany({
+        where: { campaignId },
+        include: {
+          user: {
+            select: {
+              username: true,
+            },
+          },
+        },
+        orderBy: { name: 'asc' },
+      });
+
+      return notes;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to fetch campaign maps');
+    }
+  },
+
+  getCampaignMap: async (campaignId: number, mapId: number) => {
+    try {
+      const map = await prisma.map.findUnique({
+        where: { id: mapId, campaignId },
+        include: {
+          user: {
+            select: {
+              username: true,
+            },
+          },
+        },
+      });
+
+      return map;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to fetch campaign maps');
+    }
+  },
+
   createOrUpdateEvent: async (
     campaignId: number,
     formData: {
@@ -228,6 +269,42 @@ const campaignServices = {
           ...data,
           campaign: { connect: { id: campaignId } },
           character: { connect: { id: characterId } },
+        },
+      });
+
+      return event;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to fetch notes');
+    }
+  },
+
+  createOrUpdateCampaignMap: async (
+    campaignId: number,
+    userId: number,
+    formData: {
+      id?: number;
+      type: $Enums.MapType;
+      draft: boolean;
+      name: string;
+      description: string;
+      width: number;
+      baseColor: string;
+      layout: JsonObject;
+    },
+  ) => {
+    const { id, ...data } = formData;
+
+    console.log(data);
+
+    try {
+      const event = await prisma.map.upsert({
+        where: { id: id || 0 },
+        update: { ...data },
+        create: {
+          ...data,
+          user: { connect: { id: userId } },
+          campaign: { connect: { id: campaignId } },
         },
       });
 

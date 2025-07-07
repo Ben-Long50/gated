@@ -176,6 +176,45 @@ const campaignServices = {
             throw new Error('Failed to fetch notes');
         }
     },
+    getCampaignMaps: async (campaignId) => {
+        try {
+            const notes = await prisma.map.findMany({
+                where: { campaignId },
+                include: {
+                    user: {
+                        select: {
+                            username: true,
+                        },
+                    },
+                },
+                orderBy: { name: 'asc' },
+            });
+            return notes;
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to fetch campaign maps');
+        }
+    },
+    getCampaignMap: async (campaignId, mapId) => {
+        try {
+            const map = await prisma.map.findUnique({
+                where: { id: mapId, campaignId },
+                include: {
+                    user: {
+                        select: {
+                            username: true,
+                        },
+                    },
+                },
+            });
+            return map;
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to fetch campaign maps');
+        }
+    },
     createOrUpdateEvent: async (campaignId, formData) => {
         const { id, characterId } = formData, data = __rest(formData, ["id", "characterId"]);
         try {
@@ -183,6 +222,22 @@ const campaignServices = {
                 where: { id: id || 0, characterId },
                 update: Object.assign({}, data),
                 create: Object.assign(Object.assign({}, data), { campaign: { connect: { id: campaignId } }, character: { connect: { id: characterId } } }),
+            });
+            return event;
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to fetch notes');
+        }
+    },
+    createOrUpdateCampaignMap: async (campaignId, userId, formData) => {
+        const { id } = formData, data = __rest(formData, ["id"]);
+        console.log(data);
+        try {
+            const event = await prisma.map.upsert({
+                where: { id: id || 0 },
+                update: Object.assign({}, data),
+                create: Object.assign(Object.assign({}, data), { user: { connect: { id: userId } }, campaign: { connect: { id: campaignId } } }),
             });
             return event;
         }
