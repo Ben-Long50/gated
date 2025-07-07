@@ -2,64 +2,123 @@ import { useContext, useRef, useState } from 'react';
 import ThemeContainer from '../ThemeContainer';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import InputField from '../InputField';
-import { useForm, useStore } from '@tanstack/react-form';
-import ArrowHeader3 from '../ArrowHeader3';
-import GridLayout from 'react-grid-layout';
+import { useForm } from '@tanstack/react-form';
 import '/src/styles/mapStyles.css';
-import BtnRect from '../buttons/BtnRect';
 import Icon from '@mdi/react';
-import { mdiFloppy } from '@mdi/js';
+import {
+  mdiCheckCircleOutline,
+  mdiCloseCircleOutline,
+  mdiFloppy,
+} from '@mdi/js';
+import { Outlet, useNavigate, useParams } from 'react-router-dom';
+import useCreateMapMutation from 'src/hooks/useCreateMapMutation/useCreateMapMutation';
+import { AuthContext } from 'src/contexts/AuthContext';
+import ReactGridLayout from 'react-grid-layout';
+import useCampaignMapQuery from 'src/hooks/useCampaignMapQuery/useCampaignMapQuery';
+import Loading from '../Loading';
+import BtnAuth from '../buttons/BtnAuth';
 
 const MapBuilder = () => {
   const { accentPrimary } = useContext(ThemeContext);
-
+  const { apiUrl } = useContext(AuthContext);
+  const { campaignId, mapId } = useParams();
+  const navigate = useNavigate();
   const [tileType, setTileType] = useState('');
   const [zoom, setZoom] = useState(1);
   const [transformOrigin, setTransformOrigin] = useState('center center');
+  const [mapDraft, setMapDraft] = useState(() =>
+    localStorage.getItem('mapDraft')
+      ? JSON.parse(localStorage.getItem('mapDraft'))
+      : null,
+  );
 
   const mapRef = useRef(null);
+  const colorRef = useRef(null);
 
-  const mapDraft = localStorage.getItem('mapDraft')
-    ? JSON.parse(localStorage.getItem('mapDraft'))
-    : null;
+  const { data: map, isLoading } = useCampaignMapQuery(
+    apiUrl,
+    Number(campaignId),
+    Number(mapId),
+  );
 
-  console.log(mapDraft);
+  const createMap = useCreateMapMutation(
+    apiUrl,
+    Number(campaignId),
+    Number(mapId),
+  );
 
   const mapForm = useForm({
     defaultValues: {
-      name: mapDraft ? mapDraft.name : '',
-      width: mapDraft ? mapDraft.width : 25,
-      baseColor: mapDraft ? mapDraft.baseColor : '#000000',
-      layout: mapDraft
-        ? mapDraft.layout
-        : [
-            {
-              i: '0',
-              x: 0,
-              y: 0,
-              w: 1,
-              h: 1,
-            },
-          ],
+      id: Number(mapId) || null,
+      type: map?.type || '',
+      draft: map?.draft || true,
+      name: map?.name || '',
+      description: map?.description || '',
+      width: map?.width || 25,
+      baseColor: map?.baseColor || '#000000',
+      layout: map?.layout || [
+        {
+          i: '0',
+          x: 0,
+          y: 0,
+          w: 1,
+          h: 1,
+        },
+      ],
     },
     onSubmit: ({ value }) => {
-      console.log(JSON.stringify(value));
-
-      localStorage.setItem('mapDraft', JSON.stringify(value));
-      console.log('saved');
+      createMap.mutate(value);
+      localStorage.removeItem('mapDraft');
     },
   });
 
-  const width = useStore(mapForm.store, (state) => state.values.width);
+  const autoSave = (layout) => {
+    localStorage.setItem('mapDraft', JSON.stringify(layout));
+    setMapDraft(layout);
+  };
+
+  if (isLoading) return <Loading />;
 
   return (
     <div className="flex h-full w-full max-w-7xl flex-col items-center gap-8">
-      <h1 className="w-full text-center">Map Builder</h1>
+      <div className="grid w-full grid-cols-3">
+        <BtnAuth
+          className="flex items-center gap-4"
+          onClick={() => {
+            if (mapDraft) {
+              mapForm.setFieldValue('name', mapDraft.name);
+              mapForm.setFieldValue('type', mapDraft.type);
+              mapForm.setFieldValue('draft', mapDraft.draft);
+              mapForm.setFieldValue('description', mapDraft.description);
+              mapForm.setFieldValue('width', mapDraft.width);
+              mapForm.setFieldValue('baseColor', mapDraft.baseColor);
+              mapForm.setFieldValue('layout', mapDraft.layout);
+            }
+          }}
+        >
+          <p>Load Autosave</p>
+          {mapDraft ? (
+            <Icon path={mdiCheckCircleOutline} className="size-6" />
+          ) : (
+            <Icon path={mdiCloseCircleOutline} className="size-6" />
+          )}
+        </BtnAuth>
+        <h1 className="w-full text-center">{map?.name || 'Create Map'}</h1>
+        <BtnAuth
+          onClick={() => {
+            localStorage.removeItem('mapDraft');
+            setMapDraft(null);
+            mapForm.reset();
+          }}
+        >
+          Clear Autosave
+        </BtnAuth>
+      </div>
       <div
         ref={mapRef}
         className="flex flex-col items-center gap-8 overflow-hidden rounded border-2 border-gray-400 border-opacity-50 bg-gray-400 bg-opacity-40 p-4"
+        // style={{ transform: ' rotateX(45deg) rotateZ(45deg)' }}
         onWheel={(e) => {
-          e.preventDefault();
           e.stopPropagation();
           const rect = mapRef.current?.getBoundingClientRect();
           const offsetX = e.clientX - rect.left;
@@ -80,8 +139,6 @@ const MapBuilder = () => {
             y = mapRef.current?.offsetWidth;
           }
 
-          console.log(x, y);
-
           setZoom((prev) => {
             if (zoom >= 1) {
               if (e.deltaY < 0) {
@@ -97,15 +154,17 @@ const MapBuilder = () => {
       >
         <div
           style={{
-            transform: `scale(${zoom})`,
+            // transform: `scale(${zoom})`,
             transformOrigin: transformOrigin,
           }}
         >
-          <mapForm.Subscribe selector={(state) => state.values.baseColor}>
-            {(color) => (
+          <mapForm.Subscribe
+            selector={(state) => [state.values.baseColor, state.values.width]}
+          >
+            {([color, width]) => (
               <mapForm.Field name="layout">
                 {(field) => (
-                  <GridLayout
+                  <ReactGridLayout
                     className="layout overflow-hidden rounded bg-zinc-700 bg-opacity-50 shadow-lg shadow-black"
                     style={{ width: width * 48 }}
                     layout={field.state.value}
@@ -124,9 +183,9 @@ const MapBuilder = () => {
                       };
 
                       field.handleChange((prev) => {
-                        console.log(prev);
                         return [...prev, newItem];
                       });
+                      autoSave(mapForm.store.state.values);
                     }}
                     onResizeStop={(_, __, newItem) => {
                       field.handleChange((prev) =>
@@ -134,18 +193,18 @@ const MapBuilder = () => {
                           item.i === newItem.i ? { ...item, ...newItem } : item,
                         ),
                       );
+                      autoSave(mapForm.store.state.values);
                     }}
                     onDragStop={(_, __, newItem) => {
-                      console.log(newItem);
-
                       field.handleChange((prev) =>
                         prev.map((item) =>
                           item.i === newItem.i ? { ...item, ...newItem } : item,
                         ),
                       );
+                      autoSave(mapForm.store.state.values);
                     }}
                   >
-                    {field.state.value.map((item, index) => (
+                    {field.state.value?.map((item, index) => (
                       <div
                         className={`${item.classNames}`}
                         style={
@@ -159,7 +218,7 @@ const MapBuilder = () => {
                         }
                       />
                     ))}
-                  </GridLayout>
+                  </ReactGridLayout>
                 )}
               </mapForm.Field>
             )}
@@ -180,9 +239,6 @@ const MapBuilder = () => {
           }}
         >
           <div className="flex gap-4">
-            <mapForm.Field name="name">
-              {(field) => <InputField field={field} label="Location Name" />}
-            </mapForm.Field>
             <mapForm.Field name="width">
               {(field) => (
                 <InputField field={field} type="number" label="Map Width" />
@@ -190,16 +246,31 @@ const MapBuilder = () => {
             </mapForm.Field>
             <mapForm.Field name="baseColor">
               {(field) => (
-                <input
-                  type="color"
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
+                <div className="ml-auto flex items-center gap-4">
+                  <h4 className="text-tertiary">Base Color</h4>
+                  <label
+                    className="shadow-color size-10 shrink-0 cursor-pointer rounded-full shadow-md"
+                    style={{ backgroundColor: field.state.value }}
+                    htmlFor="baseColor"
+                    onClick={() => colorRef.current?.focus()}
+                  >
+                    <input
+                      ref={colorRef}
+                      className="size-0"
+                      id="baseColor"
+                      name="baseColor"
+                      type="color"
+                      onChange={(e) => field.handleChange(e.target.value)}
+                    />
+                  </label>
+                </div>
               )}
             </mapForm.Field>
             <button
-              className="bg-tertiary group my-auto ml-auto flex rounded p-1.5 shadow-md shadow-black"
+              className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
               aria-label="save"
-              type="submit"
+              type="button"
+              onClick={() => navigate('save')}
             >
               <Icon
                 path={mdiFloppy}
@@ -227,6 +298,7 @@ const MapBuilder = () => {
               onDragStart={() => setTileType(`stair-right three-four`)}
             />
           </div>
+          <Outlet context={{ form: mapForm }} />
         </form>
       </ThemeContainer>
     </div>

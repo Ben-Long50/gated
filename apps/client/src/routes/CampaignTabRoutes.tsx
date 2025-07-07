@@ -17,6 +17,8 @@ import CalendarModal from 'src/components/modals/CalendarModal';
 import EventForm from 'src/components/EventForm';
 import TimeModal from 'src/components/modals/TimeModal';
 import MapBuilder from 'src/components/maps/MapBuilder';
+import MapSaveModal from 'src/components/modals/MapSaveModal';
+import MapList from 'src/components/maps/MapList';
 
 const CampaignTabRoutes = () => {
   return (
@@ -54,8 +56,15 @@ const CampaignTabRoutes = () => {
           {CharacterRoutes()}
         </Route>
         {SessionRoutes()}
-        <Route path="maps" element={<CampaignAffiliations />} />
-        <Route path="maps/create" element={<MapBuilder />} />
+        <Route path="locations" element={<MapList />} />
+        <Route path="components" element={<MapList />} />
+        <Route path="drafts" element={<MapList />} />
+        <Route path="maps/create" element={<MapBuilder key="create" />}>
+          <Route path="save" element={<MapSaveModal />} />
+        </Route>
+        <Route path="maps/:mapId/update" element={<MapBuilder key="update" />}>
+          <Route path="save" element={<MapSaveModal />} />
+        </Route>
         <Route path="affiliations" element={<CampaignAffiliations />} />
         <Route path="rollSimulator" element={<RollSimulator />}>
           <Route path="rollResults" element={<RollModal />} />

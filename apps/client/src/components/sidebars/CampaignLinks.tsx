@@ -118,11 +118,19 @@ const CampaignLinks = () => {
             icon={
               <MapIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
             }
-            title="Campaign Map"
+            title="Campaign Maps"
           >
             <SubLinkSidebar
-              title="Maps"
-              path={`campaigns/${campaignId}/maps`}
+              title="Locations"
+              path={`campaigns/${campaignId}/locations`}
+            />
+            <SubLinkSidebar
+              title="Components"
+              path={`campaigns/${campaignId}/components`}
+            />
+            <SubLinkSidebar
+              title="Drafts"
+              path={`campaigns/${campaignId}/drafts`}
             />
             <SubLinkSidebar
               title="Create a New Map"
