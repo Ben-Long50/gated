@@ -101,6 +101,7 @@ const campaignController = {
 
   getCampaignMaps: async (req: Request, res: Response) => {
     try {
+
       const maps = await campaignServices.getCampaignMaps(
         Number(req.params.campaignId),
       );
@@ -205,6 +206,26 @@ const campaignController = {
         req.user.id,
       );
       res.status(200).json({ message: 'Successfully deleted campaign' });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  deleteCampaignMap: async (req: Request, res: Response) => {
+    try {
+      if (!req.user) {
+        res
+          .status(401)
+          .json({ error: 'You must be signed in to use this function' });
+        return;
+      }
+
+      await campaignServices.deleteCampaignMap(
+        Number(req.params.campaignId),
+        Number(req.params.mapId)
+        req.user.id,
+      );
+      res.status(200).json({ message: 'Successfully deleted map' });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }

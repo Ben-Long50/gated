@@ -96,4 +96,10 @@ router.delete(
   campaignController.deleteCampaign,
 );
 
+router.delete(
+  '/campaigns/:campaignId/maps/:mapId',
+  authentication.authenticate,
+  campaignController.deleteCampaignMap,
+);
+
 export default router;

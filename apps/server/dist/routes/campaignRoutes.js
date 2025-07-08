@@ -19,4 +19,5 @@ router.patch('/campaigns/:campaignId/date', authentication.authenticate, campaig
 router.patch('/campaigns/:campaignId/time', authentication.authenticate, campaignController.setCampaignTime);
 router.put('/campaigns/:campaignId/factions/:factionId', authentication.authenticate, factionController.updateFaction);
 router.delete('/campaigns/:campaignId', authentication.authenticate, campaignController.deleteCampaign);
+router.delete('/campaigns/:campaignId/maps/:mapId', authentication.authenticate, campaignController.deleteCampaignMap);
 export default router;

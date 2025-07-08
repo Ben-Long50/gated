@@ -212,7 +212,7 @@ const campaignServices = {
         }
         catch (error) {
             console.error(error);
-            throw new Error('Failed to fetch campaign maps');
+            throw new Error('Failed to fetch map');
         }
     },
     createOrUpdateEvent: async (campaignId, formData) => {
@@ -227,12 +227,11 @@ const campaignServices = {
         }
         catch (error) {
             console.error(error);
-            throw new Error('Failed to fetch notes');
+            throw new Error('Failed to create or update event');
         }
     },
     createOrUpdateCampaignMap: async (campaignId, userId, formData) => {
         const { id } = formData, data = __rest(formData, ["id"]);
-        console.log(data);
         try {
             const event = await prisma.map.upsert({
                 where: { id: id || 0 },
@@ -243,7 +242,7 @@ const campaignServices = {
         }
         catch (error) {
             console.error(error);
-            throw new Error('Failed to fetch notes');
+            throw new Error('Failed to create or update map');
         }
     },
     setCampaignDate: async (campaignId, formData) => {
@@ -273,7 +272,7 @@ const campaignServices = {
         }
         catch (error) {
             console.error(error);
-            throw new Error('Failed to fetch notes');
+            throw new Error('Failed to set campaign time');
         }
     },
     joinCampaign: async (campaignId, userId) => {
@@ -320,6 +319,29 @@ const campaignServices = {
             await prisma.campaign.delete({
                 where: {
                     id: Number(campaignId),
+                },
+            });
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error(error.message || 'Failed to delete campaign');
+        }
+    },
+    deleteCampaignMap: async (campaignId, mapId, userId) => {
+        try {
+            const map = await prisma.map.findUnique({
+                where: { id: mapId, campaignId },
+                select: { userId: true, campaign: { select: { ownerId: true } } },
+            });
+            if (!map) {
+                throw new Error('Failed to find map');
+            }
+            if (map.userId !== userId && map.campaign.ownerId !== userId) {
+                throw new Error('Only the owner of the map or campaign GM can delete it');
+            }
+            await prisma.map.delete({
+                where: {
+                    id: mapId,
                 },
             });
         }

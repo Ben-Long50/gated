@@ -420,6 +420,38 @@ const campaignServices = {
       throw new Error(error.message || 'Failed to delete campaign');
     }
   },
+
+  deleteCampaignMap: async (
+    campaignId: number,
+    mapId: number,
+    userId: number,
+  ) => {
+    try {
+      const map = await prisma.map.findUnique({
+        where: { id: mapId, campaignId },
+        select: { userId: true, campaign: { select: { ownerId: true } } },
+      });
+
+      if (!map) {
+        throw new Error('Failed to find map');
+      }
+
+      if (map.userId !== userId && map.campaign.ownerId !== userId) {
+        throw new Error(
+          'Only the owner of the map or campaign GM can delete it',
+        );
+      }
+
+      await prisma.map.delete({
+        where: {
+          id: mapId,
+        },
+      });
+    } catch (error: any) {
+      console.error(error);
+      throw new Error(error.message || 'Failed to delete campaign');
+    }
+  },
 };
 
 export default campaignServices;
