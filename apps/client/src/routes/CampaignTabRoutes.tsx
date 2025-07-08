@@ -19,6 +19,7 @@ import TimeModal from 'src/components/modals/TimeModal';
 import MapBuilder from 'src/components/maps/MapBuilder';
 import MapSaveModal from 'src/components/modals/MapSaveModal';
 import MapList from 'src/components/maps/MapList';
+import DeleteModal from 'src/components/modals/DeleteModal';
 
 const CampaignTabRoutes = () => {
   return (
@@ -56,15 +57,24 @@ const CampaignTabRoutes = () => {
           {CharacterRoutes()}
         </Route>
         {SessionRoutes()}
-        <Route path="locations" element={<MapList />} />
-        <Route path="components" element={<MapList />} />
-        <Route path="drafts" element={<MapList />} />
-        <Route path="maps/create" element={<MapBuilder key="create" />}>
-          <Route path="save" element={<MapSaveModal />} />
+        <Route path="maps">
+          <Route path="locations" element={<MapList />}>
+            <Route path=":mapId/delete" element={<DeleteModal />} />
+          </Route>
+          <Route path="components" element={<MapList />}>
+            <Route path=":mapId/delete" element={<DeleteModal />} />
+          </Route>
+          <Route path="drafts" element={<MapList />}>
+            <Route path=":mapId/delete" element={<DeleteModal />} />
+          </Route>
+          <Route path="create" element={<MapBuilder key="create" />}>
+            <Route path="save" element={<MapSaveModal />} />
+          </Route>
+          <Route path=":mapId/update" element={<MapBuilder key="update" />}>
+            <Route path="save" element={<MapSaveModal />} />
+          </Route>
         </Route>
-        <Route path="maps/:mapId/update" element={<MapBuilder key="update" />}>
-          <Route path="save" element={<MapSaveModal />} />
-        </Route>
+
         <Route path="affiliations" element={<CampaignAffiliations />} />
         <Route path="rollSimulator" element={<RollSimulator />}>
           <Route path="rollResults" element={<RollModal />} />

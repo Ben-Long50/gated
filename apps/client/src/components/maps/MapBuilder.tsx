@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import ThemeContainer from '../ThemeContainer';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import InputField from '../InputField';
@@ -42,6 +42,12 @@ const MapBuilder = () => {
     Number(mapId),
   );
 
+  useEffect(() => {
+    if (map) {
+      setTileCounter(Number(map.layout[map.layout.length - 1].i + 1));
+    }
+  }, [map]);
+
   const createMap = useCreateMapMutation(
     apiUrl,
     Number(campaignId),
@@ -55,12 +61,12 @@ const MapBuilder = () => {
     defaultValues: {
       id: Number(mapId) || null,
       type: map?.type || '',
-      draft: map?.draft || true,
+      draft: map?.draft ?? true,
       name: map?.name || '',
       description: map?.description || '',
       width: map?.width || defaultWidth,
       height: map?.height || defaultHeight,
-      baseColor: map?.baseColor || '#121212',
+      baseColor: map?.baseColor || 'black',
       layout: map?.layout || [
         {
           static: true,
@@ -74,9 +80,8 @@ const MapBuilder = () => {
     },
     onSubmit: ({ value }) => {
       console.log(value);
-
-      // createMap.mutate(value);
-      // localStorage.removeItem('mapDraft');
+      createMap.mutate(value);
+      localStorage.removeItem('mapDraft');
     },
   });
 
@@ -112,7 +117,9 @@ const MapBuilder = () => {
             <Icon path={mdiCloseCircleOutline} className="size-6" />
           )}
         </BtnAuth>
-        <h1 className="w-full text-center">{map?.name || 'Create Map'}</h1>
+        <h1 className="w-full text-center">
+          {map ? `Edit ${map?.name}` : 'Create Map'}
+        </h1>
         <BtnAuth
           onClick={() => {
             localStorage.removeItem('mapDraft');
@@ -125,42 +132,41 @@ const MapBuilder = () => {
       </div>
       <div
         ref={mapRef}
-        className="relative flex flex-col items-center gap-8 overflow-hidden rounded border border-opacity-50"
+        className="relative overflow-hidden rounded border-2"
         style={{ borderColor: accentPrimary }}
-        // style={{ transform: ' rotateX(45deg) rotateZ(45deg)' }}
-        onWheel={(e) => {
-          e.stopPropagation();
-          const rect = mapRef.current?.getBoundingClientRect();
-          const offsetX = e.clientX - rect.left;
-          const offsetY = e.clientY - rect.top;
+        // onWheel={(e) => {
+        //   e.stopPropagation();
+        //   const rect = mapRef.current?.getBoundingClientRect();
+        //   const offsetX = e.clientX - rect.left;
+        //   const offsetY = e.clientY - rect.top;
 
-          let x = offsetX;
-          let y = offsetY;
+        //   let x = offsetX;
+        //   let y = offsetY;
 
-          if (offsetX < 0) {
-            x = 0;
-          } else if (offsetX > mapRef.current?.offsetWidth) {
-            x = mapRef.current?.offsetWidth;
-          }
+        //   if (offsetX < 0) {
+        //     x = 0;
+        //   } else if (offsetX > mapRef.current?.offsetWidth) {
+        //     x = mapRef.current?.offsetWidth;
+        //   }
 
-          if (offsetY < 0) {
-            y = 0;
-          } else if (offsetY > mapRef.current?.offsetWidth) {
-            y = mapRef.current?.offsetWidth;
-          }
+        //   if (offsetY < 0) {
+        //     y = 0;
+        //   } else if (offsetY > mapRef.current?.offsetWidth) {
+        //     y = mapRef.current?.offsetWidth;
+        //   }
 
-          setZoom((prev) => {
-            if (zoom >= 1) {
-              if (e.deltaY < 0) {
-                return prev + 0.25;
-              } else if (e.deltaY > 0 && zoom > 1) {
-                return prev - 0.25;
-              }
-            }
-            return prev;
-          });
-          setTransformOrigin(`${x}px ${y}px`);
-        }}
+        //   setZoom((prev) => {
+        //     if (zoom >= 1) {
+        //       if (e.deltaY < 0) {
+        //         return prev + 0.25;
+        //       } else if (e.deltaY > 0 && zoom > 1) {
+        //         return prev - 0.25;
+        //       }
+        //     }
+        //     return prev;
+        //   });
+        //   setTransformOrigin(`${x}px ${y}px`);
+        // }}
       >
         <mapForm.Subscribe
           selector={(state) => [
@@ -174,7 +180,7 @@ const MapBuilder = () => {
               <div className="absolute inset-0 grid grid-cols-[repeat(auto-fit,_48px)]">
                 {Array.from({ length: width * height }).map(() => (
                   <div
-                    className="size-12 border opacity-20"
+                    className="size-12 border bg-transparent opacity-15"
                     style={{ borderColor: accentPrimary }}
                   />
                 ))}
@@ -188,7 +194,7 @@ const MapBuilder = () => {
                 <mapForm.Field name="layout">
                   {(field) => (
                     <ReactGridLayout
-                      className="layout overflow-hidden bg-zinc-700 bg-opacity-50 shadow-lg shadow-black"
+                      className="layout overflow-hidden shadow-lg shadow-black"
                       style={{ width: width * 48, height: height * 48 }}
                       layout={field.state.value}
                       cols={width}
@@ -233,22 +239,27 @@ const MapBuilder = () => {
                         autoSave(mapForm.store.state.values);
                       }}
                     >
-                      <div
-                        className="-z-10"
-                        style={{ backgroundColor: color }}
-                        key="base"
-                      />
-                      {field.state.value?.map((item) => (
-                        <div
-                          className={`${item.classNames}`}
-                          key={item.i}
-                          onDoubleClick={() =>
-                            field.handleChange((prev) =>
-                              prev.filter((prevItem) => prevItem.i !== item.i),
-                            )
-                          }
-                        />
-                      ))}
+                      {field.state.value?.map((item) =>
+                        item.i === 'base' ? (
+                          <div
+                            key={item.i}
+                            className={`${item.classNames} -z-10`}
+                            style={{ backgroundColor: color }}
+                          />
+                        ) : (
+                          <div
+                            key={item.i}
+                            className={`${item.classNames}`}
+                            onDoubleClick={() =>
+                              field.handleChange((prev) =>
+                                prev.filter(
+                                  (prevItem) => prevItem.i !== item.i,
+                                ),
+                              )
+                            }
+                          />
+                        ),
+                      )}
                     </ReactGridLayout>
                   )}
                 </mapForm.Field>
@@ -258,7 +269,7 @@ const MapBuilder = () => {
         </mapForm.Subscribe>
       </div>
       <ThemeContainer
-        className="!sticky bottom-[24px] mt-auto w-full"
+        className="!sticky bottom-[33px] mt-auto w-full"
         borderColor={accentPrimary}
         chamfer="medium"
       >

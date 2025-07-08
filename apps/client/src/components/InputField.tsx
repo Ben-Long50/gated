@@ -23,13 +23,13 @@ const InputField = ({
   const handleBorder = () => {
     if (
       (field.state.value?.length === 0 || field.state.value === null) &&
-      field.state.meta.errors.length === 0 &&
+      field.state.meta.errors?.length === 0 &&
       !focus
     ) {
       setBorderColor('transparent');
-    } else if (focus && field.state.meta.errors.length === 0) {
+    } else if (focus && field.state.meta.errors?.length === 0) {
       setBorderColor(accentPrimary);
-    } else if (field.state.meta.errors.length > 0) {
+    } else if (field.state.meta.errors?.length > 0) {
       setBorderColor(errorPrimary);
     } else if (field.state.value || field.state.value === 0) {
       setBorderColor(accentPrimary);

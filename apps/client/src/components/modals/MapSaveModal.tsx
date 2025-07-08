@@ -39,7 +39,7 @@ const MapSaveModal = () => {
                 id="draft"
                 name="draft"
                 type="checkbox"
-                checked={!!field.state.value}
+                checked={field.state.value}
                 onChange={() => {
                   field.handleChange((prev: boolean) => !prev);
                 }}
