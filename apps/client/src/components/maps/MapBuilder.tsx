@@ -24,6 +24,7 @@ const MapBuilder = () => {
   const { campaignId, mapId } = useParams();
   const navigate = useNavigate();
   const [tileType, setTileType] = useState('');
+  const [tileCounter, setTileCounter] = useState(0);
   const [zoom, setZoom] = useState(1);
   const [transformOrigin, setTransformOrigin] = useState('center center');
   const [mapDraft, setMapDraft] = useState(() =>
@@ -47,6 +48,9 @@ const MapBuilder = () => {
     Number(mapId),
   );
 
+  const defaultWidth = map?.width ?? 24;
+  const defaultHeight = map?.height ?? 14;
+
   const mapForm = useForm({
     defaultValues: {
       id: Number(mapId) || null,
@@ -54,21 +58,25 @@ const MapBuilder = () => {
       draft: map?.draft || true,
       name: map?.name || '',
       description: map?.description || '',
-      width: map?.width || 25,
-      baseColor: map?.baseColor || '#000000',
+      width: map?.width || defaultWidth,
+      height: map?.height || defaultHeight,
+      baseColor: map?.baseColor || '#121212',
       layout: map?.layout || [
         {
-          i: '0',
+          static: true,
+          i: 'base',
           x: 0,
           y: 0,
-          w: 1,
-          h: 1,
+          w: defaultWidth,
+          h: defaultHeight,
         },
       ],
     },
     onSubmit: ({ value }) => {
-      createMap.mutate(value);
-      localStorage.removeItem('mapDraft');
+      console.log(value);
+
+      // createMap.mutate(value);
+      // localStorage.removeItem('mapDraft');
     },
   });
 
@@ -91,6 +99,7 @@ const MapBuilder = () => {
               mapForm.setFieldValue('draft', mapDraft.draft);
               mapForm.setFieldValue('description', mapDraft.description);
               mapForm.setFieldValue('width', mapDraft.width);
+              mapForm.setFieldValue('height', mapDraft.height);
               mapForm.setFieldValue('baseColor', mapDraft.baseColor);
               mapForm.setFieldValue('layout', mapDraft.layout);
             }
@@ -116,7 +125,8 @@ const MapBuilder = () => {
       </div>
       <div
         ref={mapRef}
-        className="flex flex-col items-center gap-8 overflow-hidden rounded border-2 border-gray-400 border-opacity-50 bg-gray-400 bg-opacity-40 p-4"
+        className="relative flex flex-col items-center gap-8 overflow-hidden rounded border border-opacity-50"
+        style={{ borderColor: accentPrimary }}
         // style={{ transform: ' rotateX(45deg) rotateZ(45deg)' }}
         onWheel={(e) => {
           e.stopPropagation();
@@ -152,78 +162,100 @@ const MapBuilder = () => {
           setTransformOrigin(`${x}px ${y}px`);
         }}
       >
-        <div
-          style={{
-            // transform: `scale(${zoom})`,
-            transformOrigin: transformOrigin,
-          }}
+        <mapForm.Subscribe
+          selector={(state) => [
+            state.values.baseColor,
+            state.values.width,
+            state.values.height,
+          ]}
         >
-          <mapForm.Subscribe
-            selector={(state) => [state.values.baseColor, state.values.width]}
-          >
-            {([color, width]) => (
-              <mapForm.Field name="layout">
-                {(field) => (
-                  <ReactGridLayout
-                    className="layout overflow-hidden rounded bg-zinc-700 bg-opacity-50 shadow-lg shadow-black"
-                    style={{ width: width * 48 }}
-                    layout={field.state.value}
-                    cols={width}
-                    rowHeight={48}
-                    width={width * 48}
-                    margin={[0, 0]}
-                    resizeHandles={['se', 'nw']}
-                    allowOverlap={true}
-                    isDroppable={true}
-                    onDrop={(layout, layoutItem, _event) => {
-                      const newItem = {
-                        ...layoutItem,
-                        i: layout.length.toString(),
-                        classNames: `tile ${tileType}`,
-                      };
+          {([color, width, height]) => (
+            <>
+              <div className="absolute inset-0 grid grid-cols-[repeat(auto-fit,_48px)]">
+                {Array.from({ length: width * height }).map(() => (
+                  <div
+                    className="size-12 border opacity-20"
+                    style={{ borderColor: accentPrimary }}
+                  />
+                ))}
+              </div>
+              <div
+                style={{
+                  // transform: `scale(${zoom})`,
+                  transformOrigin: transformOrigin,
+                }}
+              >
+                <mapForm.Field name="layout">
+                  {(field) => (
+                    <ReactGridLayout
+                      className="layout overflow-hidden bg-zinc-700 bg-opacity-50 shadow-lg shadow-black"
+                      style={{ width: width * 48, height: height * 48 }}
+                      layout={field.state.value}
+                      cols={width}
+                      rowHeight={48}
+                      width={width * 48}
+                      margin={[0, 0]}
+                      resizeHandles={['se', 'nw']}
+                      allowOverlap={true}
+                      isDroppable={true}
+                      isBounded={true}
+                      onDrop={(_, layoutItem, _event) => {
+                        const newItem = {
+                          ...layoutItem,
+                          i: tileCounter.toString(),
+                          classNames: `tile ${tileType}`,
+                        };
 
-                      field.handleChange((prev) => {
-                        return [...prev, newItem];
-                      });
-                      autoSave(mapForm.store.state.values);
-                    }}
-                    onResizeStop={(_, __, newItem) => {
-                      field.handleChange((prev) =>
-                        prev.map((item) =>
-                          item.i === newItem.i ? { ...item, ...newItem } : item,
-                        ),
-                      );
-                      autoSave(mapForm.store.state.values);
-                    }}
-                    onDragStop={(_, __, newItem) => {
-                      field.handleChange((prev) =>
-                        prev.map((item) =>
-                          item.i === newItem.i ? { ...item, ...newItem } : item,
-                        ),
-                      );
-                      autoSave(mapForm.store.state.values);
-                    }}
-                  >
-                    {field.state.value?.map((item, index) => (
+                        field.handleChange((prev) => {
+                          return [...prev, newItem];
+                        });
+                        setTileCounter((prev) => prev + 1);
+                        autoSave(mapForm.store.state.values);
+                      }}
+                      onResizeStop={(_, __, newItem) => {
+                        field.handleChange((prev) =>
+                          prev.map((item) =>
+                            item.i === newItem.i
+                              ? { ...item, ...newItem }
+                              : item,
+                          ),
+                        );
+                        autoSave(mapForm.store.state.values);
+                      }}
+                      onDragStop={(_, __, newItem) => {
+                        field.handleChange((prev) =>
+                          prev.map((item) =>
+                            item.i === newItem.i
+                              ? { ...item, ...newItem }
+                              : item,
+                          ),
+                        );
+                        autoSave(mapForm.store.state.values);
+                      }}
+                    >
                       <div
-                        className={`${item.classNames}`}
-                        style={
-                          index === 0 ? { backgroundColor: color } : undefined
-                        }
-                        key={item.i}
-                        onDoubleClick={() =>
-                          field.handleChange((prev) =>
-                            prev.filter((prevItem) => prevItem.i !== item.i),
-                          )
-                        }
+                        className="-z-10"
+                        style={{ backgroundColor: color }}
+                        key="base"
                       />
-                    ))}
-                  </ReactGridLayout>
-                )}
-              </mapForm.Field>
-            )}
-          </mapForm.Subscribe>
-        </div>
+                      {field.state.value?.map((item) => (
+                        <div
+                          className={`${item.classNames}`}
+                          key={item.i}
+                          onDoubleClick={() =>
+                            field.handleChange((prev) =>
+                              prev.filter((prevItem) => prevItem.i !== item.i),
+                            )
+                          }
+                        />
+                      ))}
+                    </ReactGridLayout>
+                  )}
+                </mapForm.Field>
+              </div>
+            </>
+          )}
+        </mapForm.Subscribe>
       </div>
       <ThemeContainer
         className="!sticky bottom-[24px] mt-auto w-full"
@@ -239,9 +271,40 @@ const MapBuilder = () => {
           }}
         >
           <div className="flex gap-4">
-            <mapForm.Field name="width">
+            <mapForm.Field
+              name="width"
+              listeners={{
+                onChange: ({ value }) => {
+                  const layout = mapForm.getFieldValue('layout');
+                  mapForm.setFieldValue(
+                    'layout',
+                    layout.map((item) =>
+                      item.i === 'base' ? { ...item, w: value } : item,
+                    ),
+                  );
+                },
+              }}
+            >
               {(field) => (
                 <InputField field={field} type="number" label="Map Width" />
+              )}
+            </mapForm.Field>
+            <mapForm.Field
+              name="height"
+              listeners={{
+                onChange: ({ value }) => {
+                  const layout = mapForm.getFieldValue('layout');
+                  mapForm.setFieldValue(
+                    'layout',
+                    layout.map((item) =>
+                      item.i === 'base' ? { ...item, h: value } : item,
+                    ),
+                  );
+                },
+              }}
+            >
+              {(field) => (
+                <InputField field={field} type="number" label="Map Height" />
               )}
             </mapForm.Field>
             <mapForm.Field name="baseColor">
@@ -268,7 +331,7 @@ const MapBuilder = () => {
             </mapForm.Field>
             <button
               className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
-              aria-label="save"
+              aria-label="Open save modal"
               type="button"
               onClick={() => navigate('save')}
             >
@@ -278,7 +341,6 @@ const MapBuilder = () => {
               />
             </button>
           </div>
-          {/* <ArrowHeader3 title="Tile Type" /> */}
           <div className="bg-tertiary col-span-3 grid w-full grid-cols-[repeat(auto-fit,_minmax(40px,_80px))] gap-1.5 p-1">
             {Array.from({ length: 10 }).map((_, index) => (
               <div
