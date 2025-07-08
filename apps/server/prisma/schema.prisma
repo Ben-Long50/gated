@@ -87,6 +87,7 @@ model Map {
   description String?
   type        MapType
   width       Int
+  height      Int
   baseColor   String
   layout      Json
 }

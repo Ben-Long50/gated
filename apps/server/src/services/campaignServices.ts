@@ -244,7 +244,7 @@ const campaignServices = {
       return map;
     } catch (error) {
       console.error(error);
-      throw new Error('Failed to fetch campaign maps');
+      throw new Error('Failed to fetch map');
     }
   },
 
@@ -275,7 +275,7 @@ const campaignServices = {
       return event;
     } catch (error) {
       console.error(error);
-      throw new Error('Failed to fetch notes');
+      throw new Error('Failed to create or update event');
     }
   },
 
@@ -289,13 +289,12 @@ const campaignServices = {
       name: string;
       description: string;
       width: number;
+      height: number;
       baseColor: string;
       layout: JsonObject;
     },
   ) => {
     const { id, ...data } = formData;
-
-    console.log(data);
 
     try {
       const event = await prisma.map.upsert({
@@ -311,7 +310,7 @@ const campaignServices = {
       return event;
     } catch (error) {
       console.error(error);
-      throw new Error('Failed to fetch notes');
+      throw new Error('Failed to create or update map');
     }
   },
 
@@ -356,7 +355,7 @@ const campaignServices = {
       return campaign;
     } catch (error) {
       console.error(error);
-      throw new Error('Failed to fetch notes');
+      throw new Error('Failed to set campaign time');
     }
   },
 
