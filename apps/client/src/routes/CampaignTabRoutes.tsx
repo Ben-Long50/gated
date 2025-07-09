@@ -20,6 +20,7 @@ import MapBuilder from 'src/components/maps/MapBuilder';
 import MapSaveModal from 'src/components/modals/MapSaveModal';
 import MapList from 'src/components/maps/MapList';
 import DeleteModal from 'src/components/modals/DeleteModal';
+import TileListModal from 'src/components/maps/TileListModal';
 
 const CampaignTabRoutes = () => {
   return (
@@ -69,9 +70,11 @@ const CampaignTabRoutes = () => {
           </Route>
           <Route path="create" element={<MapBuilder key="create" />}>
             <Route path="save" element={<MapSaveModal />} />
+            <Route path="tileList" element={<TileListModal />} />
           </Route>
           <Route path=":mapId/update" element={<MapBuilder key="update" />}>
             <Route path="save" element={<MapSaveModal />} />
+            <Route path="tileList" element={<TileListModal />} />
           </Route>
         </Route>
 

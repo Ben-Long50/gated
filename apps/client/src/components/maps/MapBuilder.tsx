@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import ThemeContainer from '../ThemeContainer';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import InputField from '../InputField';
@@ -6,9 +6,11 @@ import { useForm } from '@tanstack/react-form';
 import '/src/styles/mapStyles.css';
 import Icon from '@mdi/react';
 import {
-  mdiCheckCircleOutline,
-  mdiCloseCircleOutline,
+  mdiContentSaveCheckOutline,
+  mdiContentSaveMinusOutline,
+  mdiContentSaveOffOutline,
   mdiFloppy,
+  mdiGrid,
 } from '@mdi/js';
 import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import useCreateMapMutation from 'src/hooks/useCreateMapMutation/useCreateMapMutation';
@@ -16,17 +18,26 @@ import { AuthContext } from 'src/contexts/AuthContext';
 import ReactGridLayout from 'react-grid-layout';
 import useCampaignMapQuery from 'src/hooks/useCampaignMapQuery/useCampaignMapQuery';
 import Loading from '../Loading';
-import BtnAuth from '../buttons/BtnAuth';
+import Tile from './Tile';
+import InputSelectField from '../InputSelectField';
+import { LayoutContext } from 'src/contexts/LayoutContext';
+
+const tiles = import.meta.glob('/src/assets/tiles/*/*/*.png', { eager: true });
 
 const MapBuilder = () => {
   const { accentPrimary } = useContext(ThemeContext);
+  const { mobile } = useContext(LayoutContext);
   const { apiUrl } = useContext(AuthContext);
   const { campaignId, mapId } = useParams();
   const navigate = useNavigate();
-  const [tileType, setTileType] = useState('');
   const [tileCounter, setTileCounter] = useState(0);
-  const [zoom, setZoom] = useState(1);
-  const [transformOrigin, setTransformOrigin] = useState('center center');
+  const [resizeMode, setResizeMode] = useState<'extending' | 'repeating'>(
+    'repeating',
+  );
+
+  // const [zoom, setZoom] = useState(1);
+  // const [transformOrigin, setTransformOrigin] = useState('center center');
+
   const [mapDraft, setMapDraft] = useState(() =>
     localStorage.getItem('mapDraft')
       ? JSON.parse(localStorage.getItem('mapDraft'))
@@ -56,6 +67,18 @@ const MapBuilder = () => {
 
   const defaultWidth = map?.width ?? 24;
   const defaultHeight = map?.height ?? 14;
+
+  const tileForm = useForm({
+    defaultValues: {
+      category: '',
+      type: '',
+    },
+    onSubmit: ({ value }) => {
+      console.log(value);
+      createMap.mutate(value);
+      localStorage.removeItem('mapDraft');
+    },
+  });
 
   const mapForm = useForm({
     defaultValues: {
@@ -90,13 +113,25 @@ const MapBuilder = () => {
     setMapDraft(layout);
   };
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    scrollRef.current?.scrollBy({
+      left: e.deltaY * 4,
+      behavior: 'auto',
+    });
+  };
+
   if (isLoading) return <Loading />;
 
   return (
-    <div className="flex h-full w-full max-w-7xl flex-col items-center gap-8">
-      <div className="grid w-full grid-cols-3">
-        <BtnAuth
-          className="flex items-center gap-4"
+    <div className="flex h-full w-full max-w-8xl flex-col items-center gap-8">
+      <div className="flex w-full items-center justify-between">
+        <button
+          className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
+          aria-label="Load autosaved map"
+          type="button"
           onClick={() => {
             if (mapDraft) {
               mapForm.setFieldValue('name', mapDraft.name);
@@ -110,178 +145,202 @@ const MapBuilder = () => {
             }
           }}
         >
-          <p>Load Autosave</p>
           {mapDraft ? (
-            <Icon path={mdiCheckCircleOutline} className="size-6" />
+            <Icon
+              path={mdiContentSaveCheckOutline}
+              className="text-tertiary group-hover:text-accent timing size-8"
+            />
           ) : (
-            <Icon path={mdiCloseCircleOutline} className="size-6" />
+            <Icon
+              path={mdiContentSaveOffOutline}
+              className="text-tertiary group-hover:text-accent timing size-8"
+            />
           )}
-        </BtnAuth>
+        </button>
         <h1 className="w-full text-center">
           {map ? `Edit ${map?.name}` : 'Create Map'}
         </h1>
-        <BtnAuth
+        <button
+          className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
+          aria-label="Clear autosaved map"
+          type="button"
           onClick={() => {
             localStorage.removeItem('mapDraft');
             setMapDraft(null);
             mapForm.reset();
           }}
         >
-          Clear Autosave
-        </BtnAuth>
+          <Icon
+            path={mdiContentSaveMinusOutline}
+            className="text-tertiary group-hover:text-accent timing size-8"
+          />
+        </button>
       </div>
-      <div
-        ref={mapRef}
-        className="relative overflow-hidden rounded border-2"
-        style={{ borderColor: accentPrimary }}
-        // onWheel={(e) => {
-        //   e.stopPropagation();
-        //   const rect = mapRef.current?.getBoundingClientRect();
-        //   const offsetX = e.clientX - rect.left;
-        //   const offsetY = e.clientY - rect.top;
-
-        //   let x = offsetX;
-        //   let y = offsetY;
-
-        //   if (offsetX < 0) {
-        //     x = 0;
-        //   } else if (offsetX > mapRef.current?.offsetWidth) {
-        //     x = mapRef.current?.offsetWidth;
-        //   }
-
-        //   if (offsetY < 0) {
-        //     y = 0;
-        //   } else if (offsetY > mapRef.current?.offsetWidth) {
-        //     y = mapRef.current?.offsetWidth;
-        //   }
-
-        //   setZoom((prev) => {
-        //     if (zoom >= 1) {
-        //       if (e.deltaY < 0) {
-        //         return prev + 0.25;
-        //       } else if (e.deltaY > 0 && zoom > 1) {
-        //         return prev - 0.25;
-        //       }
-        //     }
-        //     return prev;
-        //   });
-        //   setTransformOrigin(`${x}px ${y}px`);
-        // }}
+      <mapForm.Subscribe
+        selector={(state) => [
+          state.values.baseColor,
+          state.values.width,
+          state.values.height,
+        ]}
       >
-        <mapForm.Subscribe
-          selector={(state) => [
-            state.values.baseColor,
-            state.values.width,
-            state.values.height,
-          ]}
-        >
-          {([color, width, height]) => (
-            <>
-              <div className="absolute inset-0 grid grid-cols-[repeat(auto-fit,_48px)]">
-                {Array.from({ length: width * height }).map(() => (
-                  <div
-                    className="size-12 border bg-transparent opacity-15"
-                    style={{ borderColor: accentPrimary }}
-                  />
-                ))}
-              </div>
-              <div
-                style={{
-                  // transform: `scale(${zoom})`,
-                  transformOrigin: transformOrigin,
-                }}
-              >
-                <mapForm.Field name="layout">
-                  {(field) => (
-                    <ReactGridLayout
-                      className="layout overflow-hidden shadow-lg shadow-black"
-                      style={{ width: width * 48, height: height * 48 }}
-                      layout={field.state.value}
-                      cols={width}
-                      rowHeight={48}
-                      width={width * 48}
-                      margin={[0, 0]}
-                      resizeHandles={['se', 'nw']}
-                      allowOverlap={true}
-                      isDroppable={true}
-                      isBounded={true}
-                      onDrop={(_, layoutItem, _event) => {
-                        const newItem = {
-                          ...layoutItem,
-                          i: tileCounter.toString(),
-                          classNames: `tile ${tileType}`,
-                        };
+        {([color, width, height]) => (
+          <div
+            ref={mapRef}
+            className="scrollbar-primary relative max-w-full overflow-x-auto overflow-y-auto rounded border-2"
+            style={{
+              borderColor: accentPrimary,
+            }}
+            // onWheel={(e) => {
+            //   e.stopPropagation();
+            //   const rect = mapRef.current?.getBoundingClientRect();
+            //   const offsetX = e.clientX - rect.left;
+            //   const offsetY = e.clientY - rect.top;
 
-                        field.handleChange((prev) => {
-                          return [...prev, newItem];
-                        });
-                        setTileCounter((prev) => prev + 1);
-                        autoSave(mapForm.store.state.values);
-                      }}
-                      onResizeStop={(_, __, newItem) => {
-                        field.handleChange((prev) =>
-                          prev.map((item) =>
-                            item.i === newItem.i
-                              ? { ...item, ...newItem }
-                              : item,
-                          ),
-                        );
-                        autoSave(mapForm.store.state.values);
-                      }}
-                      onDragStop={(_, __, newItem) => {
-                        field.handleChange((prev) =>
-                          prev.map((item) =>
-                            item.i === newItem.i
-                              ? { ...item, ...newItem }
-                              : item,
-                          ),
-                        );
-                        autoSave(mapForm.store.state.values);
-                      }}
-                    >
-                      {field.state.value?.map((item) =>
-                        item.i === 'base' ? (
-                          <div
-                            key={item.i}
-                            className={`${item.classNames} -z-10`}
-                            style={{ backgroundColor: color }}
-                          />
-                        ) : (
-                          <div
-                            key={item.i}
-                            className={`${item.classNames}`}
-                            onDoubleClick={() =>
-                              field.handleChange((prev) =>
-                                prev.filter(
-                                  (prevItem) => prevItem.i !== item.i,
-                                ),
-                              )
-                            }
-                          />
+            //   let x = offsetX;
+            //   let y = offsetY;
+
+            //   if (offsetX < 0) {
+            //     x = 0;
+            //   } else if (offsetX > mapRef.current?.offsetWidth) {
+            //     x = mapRef.current?.offsetWidth;
+            //   }
+
+            //   if (offsetY < 0) {
+            //     y = 0;
+            //   } else if (offsetY > mapRef.current?.offsetWidth) {
+            //     y = mapRef.current?.offsetWidth;
+            //   }
+
+            //   setZoom((prev) => {
+            //     if (zoom >= 1) {
+            //       if (e.deltaY < 0) {
+            //         return prev + 0.25;
+            //       } else if (e.deltaY > 0 && zoom > 1) {
+            //         return prev - 0.25;
+            //       }
+            //     }
+            //     return prev;
+            //   });
+            //   setTransformOrigin(`${x}px ${y}px`);
+            // }}
+          >
+            <div
+              className="absolute inset-0 grid"
+              style={{
+                gridTemplateColumns: `repeat(${width}, 48px)`,
+                gridTemplateRows: `repeat(${height}, 48px)`,
+              }}
+            >
+              {Array.from({ length: width * height }).map(() => (
+                <div
+                  className="size-12 border bg-transparent opacity-15"
+                  style={{ borderColor: accentPrimary }}
+                />
+              ))}
+            </div>
+            <div
+              style={
+                {
+                  // transform: `scale(${zoom})`,
+                  // transformOrigin: transformOrigin,
+                }
+              }
+            >
+              <mapForm.Field name="layout">
+                {(field) => (
+                  <ReactGridLayout
+                    className="layout overflow-hidden shadow-lg shadow-black"
+                    style={{ width: width * 48, height: height * 48 }}
+                    layout={field.state.value}
+                    cols={width}
+                    rowHeight={48}
+                    width={width * 48}
+                    margin={[0, 0]}
+                    resizeHandles={['se', 'nw']}
+                    allowOverlap={true}
+                    isDroppable={true}
+                    isBounded={true}
+                    onDrop={(_, layoutItem, _event) => {
+                      const path = _event.dataTransfer.getData('tileUrl');
+
+                      const newItem = {
+                        ...layoutItem,
+                        i: tileCounter.toString(),
+                        tileUrl: path,
+                        resizeMode: resizeMode,
+                      };
+
+                      field.handleChange((prev) => {
+                        return [...prev, newItem];
+                      });
+                      setTileCounter((prev) => prev + 1);
+                      autoSave(mapForm.store.state.values);
+                    }}
+                    onResizeStop={(_, __, newItem) => {
+                      field.handleChange((prev) =>
+                        prev.map((item) =>
+                          item.i === newItem.i ? { ...item, ...newItem } : item,
                         ),
-                      )}
-                    </ReactGridLayout>
-                  )}
-                </mapForm.Field>
-              </div>
-            </>
-          )}
-        </mapForm.Subscribe>
-      </div>
+                      );
+                      autoSave(mapForm.store.state.values);
+                    }}
+                    onDragStop={(_, __, newItem) => {
+                      field.handleChange((prev) =>
+                        prev.map((item) =>
+                          item.i === newItem.i ? { ...item, ...newItem } : item,
+                        ),
+                      );
+                      autoSave(mapForm.store.state.values);
+                    }}
+                  >
+                    {field.state.value?.map((item) =>
+                      item.i === 'base' ? (
+                        <Tile
+                          key={item.i}
+                          className={`${item.classNames} -z-10`}
+                          style={{ backgroundColor: color }}
+                          tileWidth={width}
+                          tileHeight={height}
+                          tileSize={48}
+                        />
+                      ) : (
+                        <Tile
+                          key={item.i}
+                          className={`${item.classNames}`}
+                          tileWidth={item.w}
+                          tileHeight={item.h}
+                          tileSize={48}
+                          tileUrl={item.tileUrl}
+                          resizeMode={item.resizeMode}
+                          onDoubleClick={() =>
+                            field.handleChange((prev) =>
+                              prev.filter((prevItem) => prevItem.i !== item.i),
+                            )
+                          }
+                        />
+                      ),
+                    )}
+                  </ReactGridLayout>
+                )}
+              </mapForm.Field>
+            </div>
+          </div>
+        )}
+      </mapForm.Subscribe>
       <ThemeContainer
         className="!sticky bottom-[33px] mt-auto w-full"
         borderColor={accentPrimary}
         chamfer="medium"
       >
         <form
-          className="flex flex-col gap-4 p-6"
+          className="flex flex-col gap-6 p-6"
           onSubmit={(e) => {
             e.stopPropagation();
             e.preventDefault();
             mapForm.handleSubmit();
           }}
         >
-          <div className="flex gap-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <mapForm.Field
               name="width"
               listeners={{
@@ -318,60 +377,97 @@ const MapBuilder = () => {
                 <InputField field={field} type="number" label="Map Height" />
               )}
             </mapForm.Field>
-            <mapForm.Field name="baseColor">
-              {(field) => (
-                <div className="ml-auto flex items-center gap-4">
-                  <h4 className="text-tertiary">Base Color</h4>
-                  <label
-                    className="shadow-color size-10 shrink-0 cursor-pointer rounded-full shadow-md"
-                    style={{ backgroundColor: field.state.value }}
-                    htmlFor="baseColor"
-                    onClick={() => colorRef.current?.focus()}
+            <InputSelectField
+              label="Resize Mode"
+              initialValue={resizeMode}
+              options={['extending', 'repeating']}
+              onChange={(option: 'extending' | 'repeating') =>
+                setResizeMode(option)
+              }
+            />
+            <div className="flex items-center gap-4">
+              <mapForm.Field name="baseColor">
+                {(field) => (
+                  <div className="flex items-center gap-4">
+                    {!mobile && <h4 className="text-tertiary">Base Color</h4>}
+                    <label
+                      className="shadow-color size-10 shrink-0 cursor-pointer rounded-full shadow-md"
+                      style={{ backgroundColor: field.state.value }}
+                      htmlFor="baseColor"
+                      onClick={() => colorRef.current?.focus()}
+                    >
+                      <input
+                        ref={colorRef}
+                        className="size-0"
+                        id="baseColor"
+                        name="baseColor"
+                        type="color"
+                        onChange={(e) => field.handleChange(e.target.value)}
+                      />
+                    </label>
+                  </div>
+                )}
+              </mapForm.Field>
+              <button
+                className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
+                aria-label="Open save modal"
+                type="button"
+                onClick={() => navigate('save')}
+              >
+                <Icon
+                  path={mdiFloppy}
+                  className="text-tertiary group-hover:text-accent timing size-8"
+                />
+              </button>
+              <button
+                className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
+                aria-label="Open save modal"
+                type="button"
+                onClick={() => navigate('tileList')}
+              >
+                <Icon
+                  path={mdiGrid}
+                  className="text-tertiary group-hover:text-accent timing size-8"
+                />
+              </button>
+            </div>
+          </div>
+          <tileForm.Subscribe
+            selector={(state) => [state.values.category, state.values.type]}
+          >
+            {([category, type]) => {
+              const tilePaths = Object.entries(tiles)
+                .filter(([path]) => path.includes(`/tiles/${category}/${type}`))
+                .map(([, mod]: any) => mod.default);
+
+              return (
+                tilePaths.length > 0 && (
+                  <div
+                    ref={scrollRef}
+                    className="bg-tertiary scrollbar-primary col-span-3 flex w-full gap-2 overflow-x-auto rounded p-2"
+                    onWheel={handleWheel}
                   >
-                    <input
-                      ref={colorRef}
-                      className="size-0"
-                      id="baseColor"
-                      name="baseColor"
-                      type="color"
-                      onChange={(e) => field.handleChange(e.target.value)}
-                    />
-                  </label>
-                </div>
-              )}
-            </mapForm.Field>
-            <button
-              className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
-              aria-label="Open save modal"
-              type="button"
-              onClick={() => navigate('save')}
-            >
-              <Icon
-                path={mdiFloppy}
-                className="text-tertiary group-hover:text-accent timing size-8"
-              />
-            </button>
-          </div>
-          <div className="bg-tertiary col-span-3 grid w-full grid-cols-[repeat(auto-fit,_minmax(40px,_80px))] gap-1.5 p-1">
-            {Array.from({ length: 10 }).map((_, index) => (
-              <div
-                className={`tile-${index + 1} sprite aspect-square size-full hover:ring-1 hover:ring-inset hover:ring-white`}
-                draggable={true}
-                onDragStart={() => setTileType(`tile-${index + 1} one-one`)}
-              />
-            ))}
-            <div
-              className={`stair-left sprite aspect-square size-full hover:ring-1 hover:ring-inset hover:ring-white`}
-              draggable={true}
-              onDragStart={() => setTileType(`stair-left three-four`)}
-            />
-            <div
-              className={`stair-right sprite aspect-square size-full hover:ring-1 hover:ring-inset hover:ring-white`}
-              draggable={true}
-              onDragStart={() => setTileType(`stair-right three-four`)}
-            />
-          </div>
-          <Outlet context={{ form: mapForm }} />
+                    {tilePaths.map((path) => (
+                      <div
+                        className={`sprite aspect-square size-24 rounded hover:border-2 hover:border-gray-200`}
+                        style={{ backgroundImage: `url(${path})` }}
+                        draggable={true}
+                        onDragStart={(e) =>
+                          e.dataTransfer.setData('tileUrl', path)
+                        }
+                      />
+                    ))}
+                  </div>
+                )
+              );
+            }}
+          </tileForm.Subscribe>
+          <Outlet
+            context={{
+              form: mapForm,
+              tileForm,
+            }}
+          />
         </form>
       </ThemeContainer>
     </div>

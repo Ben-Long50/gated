@@ -38,7 +38,7 @@ const Navbar = ({
   return mobile ? (
     <nav
       ref={navbarRef}
-      className={`bg-primary timing shadow-color fixed top-0 z-30 col-span-2 flex w-full flex-col items-center justify-start shadow-md`}
+      className={`bg-primary timing shadow-color fixed top-0 z-30 col-span-2 flex w-dvw flex-col items-center justify-start shadow-md`}
     >
       <div className="my-2 flex w-full items-center justify-between px-2">
         <button

@@ -1,4 +1,10 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import ThemeContainer from './ThemeContainer';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { FieldApi } from '@tanstack/react-form';
@@ -21,10 +27,12 @@ const InputSelectField = ({
   label,
   className,
   options,
+  initialValue,
 }: {
-  field: FieldApi;
+  field?: FieldApi;
   label: string;
   options: any[];
+  initialValue?: string;
   onChange?: (value: onChangeArg) => void;
   className?: string;
 }) => {
@@ -32,22 +40,39 @@ const InputSelectField = ({
   const [focus, setFocus] = useState(false);
   const { accentPrimary, errorPrimary } = useContext(ThemeContext);
   const [query, setQuery] = useState('');
+  const [value, setValue] = useState(field ? field.state.value : initialValue);
 
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const selectRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const selectRef = useRef<HTMLDivElement>(null);
+
+  const handleValue = (newValue: string) => {
+    if (inputRef.current) {
+      inputRef.current.value = newValue;
+      setValue(newValue);
+      if (field) {
+        field.handleChange(newValue);
+      }
+      if (onChange) {
+        onChange(newValue);
+      }
+      setFocus(false);
+      if (inputRef.current) {
+        inputRef.current.blur();
+      }
+    }
+  };
+
+  const name = field ? field.name : label.toLowerCase();
+  const errors = field ? field.state.meta.errors : [];
 
   const handleBorder = () => {
-    if (
-      !inputRef.current?.value &&
-      field?.state.meta.errors?.length === 0 &&
-      !focus
-    ) {
+    if (!value && errors?.length === 0 && !focus) {
       setBorderColor('transparent');
-    } else if (focus && field?.state.meta.errors?.length === 0) {
+    } else if (focus && errors?.length === 0) {
       setBorderColor(accentPrimary);
-    } else if (field?.state.meta.errors?.length > 0) {
+    } else if (errors?.length > 0) {
       setBorderColor(errorPrimary);
-    } else if (field.state.value) {
+    } else if (value) {
       setBorderColor(accentPrimary);
     }
   };
@@ -66,7 +91,7 @@ const InputSelectField = ({
 
   useEffect(() => {
     handleBorder();
-  }, [focus, field.state]);
+  }, [focus, field?.state]);
 
   const optionName = (option: any) => {
     if (!option) return '';
@@ -100,10 +125,10 @@ const InputSelectField = ({
       >
         <input
           ref={inputRef}
-          className={`${field.state.value ? 'bg-primary' : 'bg-zinc-300 dark:bg-zinc-700'} text-secondary timing focus:bg-primary relative w-full rounded-none pb-2 pl-4 pr-2 pt-3 outline-none clip-4`}
-          name={field.name}
-          id={field.name}
-          value={optionName(field.state.value)}
+          className={`${value ? 'bg-primary' : 'bg-zinc-300 dark:bg-zinc-700'} text-secondary timing focus:bg-primary relative w-full rounded-none pb-2 pl-4 pr-2 pt-3 outline-none clip-4`}
+          name={name}
+          id={name}
+          value={field ? optionName(field.state.value) : optionName(value)}
           onFocus={() => {
             setFocus(true);
           }}
@@ -113,8 +138,8 @@ const InputSelectField = ({
           readOnly
         />
         <label
-          htmlFor={field?.name}
-          className={` ${field.state.meta.errors?.length > 0 ? 'text-error' : ''} ${field.state.value || focus ? 'bg-primary text-accent -translate-y-6' : 'text-gray-400'} timing absolute left-5 top-3.5 z-20 transform cursor-text transition-all`}
+          htmlFor={name}
+          className={` ${errors?.length > 0 ? 'text-error' : ''} ${value || focus ? 'bg-primary text-accent -translate-y-6' : 'text-gray-400'} timing absolute left-5 top-3.5 z-20 transform cursor-text transition-all`}
         >
           {label}
         </label>
@@ -132,20 +157,10 @@ const InputSelectField = ({
               path={mdiSync}
               active={true}
               onClick={() => {
-                if (field) {
-                  field?.handleChange('');
-                }
-                if (onChange) {
-                  onChange('');
-                }
-                setFocus(false);
-                if (inputRef.current) {
-                  inputRef.current.blur();
-                }
+                handleValue('');
               }}
             />
           </div>
-
           <Divider />
           <div className="scrollbar-secondary flex w-full flex-col overflow-y-auto">
             {filteredOptions.map((option) => (
@@ -157,16 +172,7 @@ const InputSelectField = ({
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  if (field) {
-                    field?.handleChange(option);
-                  }
-                  if (onChange) {
-                    onChange(option);
-                  }
-                  setFocus(false);
-                  if (inputRef.current) {
-                    inputRef.current.blur();
-                  }
+                  handleValue(option);
                 }}
               >
                 <p>{optionName(option)}</p>
@@ -188,8 +194,8 @@ const InputSelectField = ({
         </button>
       </ThemeContainer>
 
-      {field.state.meta.errors &&
-        field.state.meta.errors.map((error: string) => (
+      {errors &&
+        errors?.map((error: string) => (
           <p
             key={error}
             className="timing text-error mt-1 text-base italic leading-5"
