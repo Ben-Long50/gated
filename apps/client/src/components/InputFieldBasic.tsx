@@ -10,16 +10,16 @@ const InputFieldBasic = ({
   value,
   label,
 }: {
-  className: string;
+  className?: string;
   type: string;
-  name: string;
-  onChange: (value: number | string) => void;
-  value: string;
+  name?: string;
+  onChange?: (value: number | string) => void;
+  value?: string | number;
   label: string;
 }) => {
   const [borderColor, setBorderColor] = useState('transparent');
   const [focus, setFocus] = useState(false);
-  const [inputValue, setInputValue] = useState(value || '');
+  const [inputValue, setInputValue] = useState<number | string>(value || '');
   const [errors, setErrors] = useState('');
   const { accentPrimary, errorPrimary } = useContext(ThemeContext);
 

@@ -38,7 +38,7 @@ const MainLayout = () => {
       </Sidebar>
       <div
         id="portal-root"
-        className={`${!mobile && 'ml-[68px]'} timing relative z-10 col-span-2 col-start-1 row-start-1 flex w-dvw flex-col items-center px-2 py-4 max-xl:col-start-1 sm:p-8`}
+        className={`${!mobile && 'ml-[68px]'} timing relative z-10 col-span-2 col-start-1 row-start-1 flex flex-col items-center px-2 py-4 max-xl:col-start-1 sm:p-8`}
         style={{ marginTop: navbarHeight }}
       >
         {mobile && (

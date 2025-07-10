@@ -11,9 +11,7 @@ const Tile = ({
   children,
   tileWidth,
   tileHeight,
-  tileSize,
   tileUrl,
-  resizeMode,
 }: {
   ref?: Ref<HTMLDivElement>;
   style: CSSProperties;
@@ -25,19 +23,8 @@ const Tile = ({
   children?: ReactNode;
   tileWidth: number;
   tileHeight: number;
-  tileSize: number;
-  tileUrl: string;
-  resizeMode: 'extending' | 'repeating';
+  tileUrl?: string;
 }) => {
-  const backgroundSize = (() => {
-    if (resizeMode === 'extending') {
-      return `${tileSize * tileWidth}px ${tileSize * tileHeight}px`;
-    } else if (resizeMode === 'repeating') {
-      return `${tileSize}px`;
-    }
-    return undefined;
-  })();
-
   return (
     <div
       ref={ref}
@@ -45,7 +32,7 @@ const Tile = ({
       style={{
         backgroundPosition: '0 0',
         imageRendering: 'pixelated',
-        backgroundSize: backgroundSize,
+        backgroundSize: `${48 * tileWidth}px ${48 * tileHeight}px`,
         backgroundImage: `url(${tileUrl})`,
         ...style,
       }}

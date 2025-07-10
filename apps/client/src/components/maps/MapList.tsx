@@ -5,7 +5,7 @@ import Loading from '../Loading';
 import ReactGridLayout from 'react-grid-layout';
 import ItemCardSmall from '../ItemCardSmall';
 import Icon from '@mdi/react';
-import { mdiTagEdit, mdiTrashCanOutline } from '@mdi/js';
+import { mdiEye, mdiTagEdit, mdiTrashCanOutline } from '@mdi/js';
 import useMaps from 'src/hooks/useMaps';
 import BtnRect from '../buttons/BtnRect';
 import Divider from '../Divider';
@@ -87,6 +87,18 @@ const MapList = () => {
                           className="bg-tertiary group rounded p-1.5 shadow-md shadow-black"
                           onClick={(e) => {
                             e.stopPropagation();
+                            navigate(`../${map.id}`);
+                          }}
+                        >
+                          <Icon
+                            className="text-secondary group-hover:text-accent timing size-6"
+                            path={mdiEye}
+                          />
+                        </button>
+                        <button
+                          className="bg-tertiary group rounded p-1.5 shadow-md shadow-black"
+                          onClick={(e) => {
+                            e.stopPropagation();
                             navigate(`../${map.id}/update`);
                           }}
                         >
@@ -112,46 +124,20 @@ const MapList = () => {
                   }
                 >
                   <Divider />
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="flex flex-col gap-4">
-                      <div className="bg-tertiary flex items-center justify-between gap-4 rounded p-3 shadow-md shadow-black">
-                        <h4>Map Author</h4>
-                        <p>{map.user.username}</p>
-                      </div>
-                      <div className="bg-tertiary flex items-center justify-between gap-4 rounded p-3 shadow-md shadow-black">
-                        <h4>Size</h4>
-                        <p>
-                          {map.height} (height) x {map.width} (width)
-                        </p>
-                      </div>
-                      <p className="border-x-2 border-gray-400 border-opacity-50 px-4">
-                        {map.description}
+                  <div className="flex flex-col gap-4">
+                    <div className="bg-tertiary flex items-center justify-between gap-4 rounded p-3 shadow-md shadow-black">
+                      <h4>Map Author</h4>
+                      <p>{map.user.username}</p>
+                    </div>
+                    <div className="bg-tertiary flex items-center justify-between gap-4 rounded p-3 shadow-md shadow-black">
+                      <h4>Tile Size</h4>
+                      <p>
+                        {map.width} x {map.height}
                       </p>
                     </div>
-                    <ReactGridLayout
-                      className="layout overflow-hidden rounded"
-                      style={{
-                        width: widthModifier * 0.5 - 24,
-                      }}
-                      layout={mapLayout}
-                      cols={map.width}
-                      rowHeight={(widthModifier * 0.5 - 24) / map.width}
-                      width={widthModifier * 0.5 - 24}
-                      margin={[0, 0]}
-                      allowOverlap={true}
-                    >
-                      {mapLayout.map((item, index: number) => (
-                        <div
-                          className={`${item.classNames}`}
-                          style={
-                            index === 0
-                              ? { backgroundColor: map.baseColor }
-                              : undefined
-                          }
-                          key={item.i}
-                        />
-                      ))}
-                    </ReactGridLayout>
+                    <p className="border-x-2 border-gray-400 border-opacity-50 px-4">
+                      {map.description}
+                    </p>
                   </div>
                 </ItemCardSmall>
                 {map.id === Number(mapId) && (

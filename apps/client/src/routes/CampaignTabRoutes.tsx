@@ -21,6 +21,7 @@ import MapSaveModal from 'src/components/modals/MapSaveModal';
 import MapList from 'src/components/maps/MapList';
 import DeleteModal from 'src/components/modals/DeleteModal';
 import TileListModal from 'src/components/maps/TileListModal';
+import Map from 'src/components/maps/Map';
 
 const CampaignTabRoutes = () => {
   return (
@@ -59,6 +60,7 @@ const CampaignTabRoutes = () => {
         </Route>
         {SessionRoutes()}
         <Route path="maps">
+          <Route path=":mapId" element={<Map />} />
           <Route path="locations" element={<MapList />}>
             <Route path=":mapId/delete" element={<DeleteModal />} />
           </Route>
