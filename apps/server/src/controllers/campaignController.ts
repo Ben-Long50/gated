@@ -101,7 +101,6 @@ const campaignController = {
 
   getCampaignMaps: async (req: Request, res: Response) => {
     try {
-
       const maps = await campaignServices.getCampaignMaps(
         Number(req.params.campaignId),
       );
@@ -159,22 +158,29 @@ const campaignController = {
     }
   },
 
-  createOrUpdateCampaignMap: async (req: Request, res: Response) => {
-    try {
-      if (!req.user) {
-        throw new Error('You must be logged in to create or update a map');
-      }
+  createOrUpdateCampaignMap: [
+    upload.single('picture'),
+    uploadToCloudinary,
+    async (req: Request, res: Response) => {
+      try {
+        if (!req.user) {
+          throw new Error('You must be logged in to create or update a map');
+        }
 
-      const map = await campaignServices.createOrUpdateCampaignMap(
-        Number(req.params.campaignId),
-        req.user?.id,
-        req.body,
-      );
-      res.status(200).json(map);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
-  },
+        const parsedBody = parseRequestBody(req.body);
+
+        const map = await campaignServices.createOrUpdateCampaignMap(
+          Number(req.params.campaignId),
+          req.user?.id,
+          parsedBody,
+        );
+
+        res.status(200).json(map);
+      } catch (error: any) {
+        res.status(500).json({ error: error.message });
+      }
+    },
+  ],
 
   joinCampaign: async (req: Request, res: Response) => {
     try {
@@ -222,7 +228,7 @@ const campaignController = {
 
       await campaignServices.deleteCampaignMap(
         Number(req.params.campaignId),
-        Number(req.params.mapId)
+        Number(req.params.mapId),
         req.user.id,
       );
       res.status(200).json({ message: 'Successfully deleted map' });

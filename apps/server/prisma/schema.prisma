@@ -82,6 +82,7 @@ model Map {
   userId      Int
   campaign    Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   campaignId  Int
+  picture     Json?
   draft       Boolean
   name        String
   description String?

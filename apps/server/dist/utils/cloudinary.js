@@ -11,19 +11,31 @@ cloudinary.config({
 export const uploadToCloudinary = async (req, res, next) => {
     if (req.file) {
         try {
-            const result = await cloudinary.uploader.upload(req.file.path, {
-                folder: '/gated',
+            const uploadOptions = {
                 quality: 'auto:eco',
-            });
+                folder: '/gated',
+            };
+            if (req.body.publicId) {
+                await deleteFromCloudinary(JSON.parse(req.body.publicId));
+            }
+            const result = await cloudinary.uploader.upload(req.file.path, uploadOptions);
             fs.unlink(req.file.path, (error) => {
                 if (error)
                     console.error('Error deleting temp file:', error);
             });
-            req.body.picture = JSON.stringify({
-                imageUrl: result.secure_url,
-                publicId: result.public_id,
-                position: JSON.parse(req.body.position),
-            });
+            if (req.body.position) {
+                req.body.picture = JSON.stringify({
+                    imageUrl: result.secure_url,
+                    publicId: result.public_id,
+                    position: JSON.parse(req.body.position),
+                });
+            }
+            else {
+                req.body.picture = JSON.stringify({
+                    imageUrl: result.secure_url,
+                    publicId: result.public_id,
+                });
+            }
         }
         catch (error) {
             console.error(error);
@@ -35,11 +47,19 @@ export const uploadToCloudinary = async (req, res, next) => {
     }
     if (!req.file && req.body.picture) {
         const pictureInfo = JSON.parse(req.body.picture);
-        req.body.picture = JSON.stringify({
-            imageUrl: pictureInfo.imageUrl,
-            publicId: pictureInfo.publicId,
-            position: JSON.parse(req.body.position),
-        });
+        if (req.body.position) {
+            req.body.picture = JSON.stringify({
+                imageUrl: pictureInfo.imageUrl,
+                publicId: pictureInfo.publicId,
+                position: JSON.parse(req.body.position),
+            });
+        }
+        else {
+            req.body.picture = JSON.stringify({
+                imageUrl: pictureInfo.imageUrl,
+                publicId: pictureInfo.publicId,
+            });
+        }
     }
     next();
 };

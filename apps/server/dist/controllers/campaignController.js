@@ -118,19 +118,24 @@ const campaignController = {
             res.status(500).json({ error: error.message });
         }
     },
-    createOrUpdateCampaignMap: async (req, res) => {
-        var _a;
-        try {
-            if (!req.user) {
-                throw new Error('You must be logged in to create or update a map');
+    createOrUpdateCampaignMap: [
+        upload.single('picture'),
+        uploadToCloudinary,
+        async (req, res) => {
+            var _a;
+            try {
+                if (!req.user) {
+                    throw new Error('You must be logged in to create or update a map');
+                }
+                const parsedBody = parseRequestBody(req.body);
+                const map = await campaignServices.createOrUpdateCampaignMap(Number(req.params.campaignId), (_a = req.user) === null || _a === void 0 ? void 0 : _a.id, parsedBody);
+                res.status(200).json(map);
             }
-            const map = await campaignServices.createOrUpdateCampaignMap(Number(req.params.campaignId), (_a = req.user) === null || _a === void 0 ? void 0 : _a.id, req.body);
-            res.status(200).json(map);
-        }
-        catch (error) {
-            res.status(500).json({ error: error.message });
-        }
-    },
+            catch (error) {
+                res.status(500).json({ error: error.message });
+            }
+        },
+    ],
     joinCampaign: async (req, res) => {
         try {
             if (!req.user) {

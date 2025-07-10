@@ -23,7 +23,7 @@ const parseRequestBody = (requestBody) => {
         }
     })
         .filter(([_, value]) => value !== null && value !== undefined));
-    const { position } = parsedBody, data = __rest(parsedBody, ["position"]);
+    const { position, publicId } = parsedBody, data = __rest(parsedBody, ["position", "publicId"]);
     return data;
 };
 export default parseRequestBody;
