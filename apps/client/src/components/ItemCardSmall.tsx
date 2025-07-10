@@ -22,7 +22,7 @@ const ItemCardSmall = ({
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [detailHeight, setDetailHeight] = useState(1000);
 
-  const detailRef = useRef(null);
+  const detailRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (detailRef.current) {

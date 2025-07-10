@@ -1,4 +1,10 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import ThemeContainer from '../ThemeContainer';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import InputField from '../InputField';
@@ -11,8 +17,8 @@ import {
   mdiContentSaveOutline,
   mdiDrag,
   mdiGrid,
-  mdiLayersEdit,
-  mdiLayersOff,
+  mdiLayers,
+  mdiLayersRemove,
   mdiTrashCanOutline,
 } from '@mdi/js';
 import { Outlet, useNavigate, useParams } from 'react-router-dom';
@@ -25,10 +31,12 @@ import { LayoutContext } from 'src/contexts/LayoutContext';
 import Divider from '../Divider';
 import ArrowHeader3 from '../ArrowHeader3';
 import BtnIcon from '../buttons/BtnIcon';
+import { capitalCase } from 'change-case';
+import html2canvas from 'html2canvas';
 
 const MapBuilder = () => {
   const { accentPrimary } = useContext(ThemeContext);
-  const { mobile } = useContext(LayoutContext);
+  const { mobile, layoutSize } = useContext(LayoutContext);
   const { apiUrl } = useContext(AuthContext);
   const { campaignId, mapId } = useParams();
   const navigate = useNavigate();
@@ -38,6 +46,7 @@ const MapBuilder = () => {
   const [path, setPath] = useState(['/assets', 'tiles']);
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
   const [layerMode, setLayerMode] = useState(false);
+  const [layerWidth, setLayerWidth] = useState(0);
   const [dragging, setDragging] = useState<{ i: string; index: number } | null>(
     null,
   );
@@ -52,6 +61,7 @@ const MapBuilder = () => {
   );
 
   const mapRef = useRef(null);
+  const layerRef = useRef<HTMLDivElement>(null);
   const colorRef = useRef(null);
 
   const { data: map, isLoading } = useCampaignMapQuery(
@@ -96,7 +106,7 @@ const MapBuilder = () => {
 
   const mapForm = useForm({
     defaultValues: {
-      id: Number(mapId) || null,
+      id: Number(mapId) || 0,
       type: map?.type || '',
       draft: map?.draft ?? true,
       name: map?.name || '',
@@ -114,10 +124,38 @@ const MapBuilder = () => {
           h: defaultHeight,
         },
       ],
+      picture: null as null | File,
+      publicId: map?.picture.publicId || '',
     },
-    onSubmit: ({ value }) => {
-      console.log(value);
-      createMap.mutate(value);
+    onSubmit: async ({ value }) => {
+      if (mapRef.current) {
+        const canvas = await html2canvas(mapRef.current);
+
+        const blob = await new Promise<Blob | null>((resolve) => {
+          canvas.toBlob((blob) => resolve(blob), 'image/png');
+        });
+
+        if (!blob) return;
+
+        const fileName = value.name.split(' ').join('_').toLowerCase();
+
+        const file = new File([blob], `${fileName}.png`, {
+          type: 'image/png',
+        });
+        value.picture = file;
+      }
+
+      const formData = new FormData();
+
+      Object.entries(value).forEach(([key, value]) => {
+        if (key === 'picture' && value instanceof File) {
+          formData.append(key, value);
+        } else {
+          formData.append(key, JSON.stringify(value));
+        }
+      });
+
+      createMap.mutate(formData);
       localStorage.removeItem('mapDraft');
     },
   });
@@ -166,58 +204,20 @@ const MapBuilder = () => {
   if (isLoading) return <Loading />;
 
   return (
-    <div className="grid h-full w-full grid-cols-[1fr_auto]">
-      <div className="mx-auto flex h-full w-full max-w-8xl flex-col items-center gap-8">
-        <div className="flex w-full items-center justify-between">
-          <button
-            className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
-            aria-label="Load autosaved map"
-            type="button"
-            onClick={() => {
-              if (mapDraft) {
-                mapForm.setFieldValue('name', mapDraft.name);
-                mapForm.setFieldValue('type', mapDraft.type);
-                mapForm.setFieldValue('draft', mapDraft.draft);
-                mapForm.setFieldValue('description', mapDraft.description);
-                mapForm.setFieldValue('width', mapDraft.width);
-                mapForm.setFieldValue('height', mapDraft.height);
-                mapForm.setFieldValue('baseColor', mapDraft.baseColor);
-                mapForm.setFieldValue('layout', mapDraft.layout);
-                handleCounter(mapDraft.layout);
-              }
-            }}
-          >
-            {mapDraft ? (
-              <Icon
-                path={mdiContentSaveCheckOutline}
-                className="text-tertiary group-hover:text-accent timing size-8"
-              />
-            ) : (
-              <Icon
-                path={mdiContentSaveOffOutline}
-                className="text-tertiary group-hover:text-accent timing size-8"
-              />
-            )}
-          </button>
-          <h1 className="w-full text-center">
-            {map ? `Edit ${map?.name}` : 'Create Map'}
-          </h1>
-          <button
-            className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
-            aria-label="Clear autosaved map"
-            type="button"
-            onClick={() => {
-              localStorage.removeItem('mapDraft');
-              setMapDraft(null);
-              mapForm.reset();
-            }}
-          >
-            <Icon
-              path={mdiContentSaveMinusOutline}
-              className="text-tertiary group-hover:text-accent timing size-8"
-            />
-          </button>
-        </div>
+    <>
+      <div
+        className={`timing mx-auto flex h-full w-full max-w-8xl flex-col items-center gap-8`}
+        style={{
+          transform:
+            layoutSize === 'xlarge'
+              ? `translateX(-${layerWidth}px)`
+              : undefined,
+        }}
+      >
+        <h1 className="w-full text-center">
+          {map ? `Edit ${map?.name}` : 'Create Map'}
+        </h1>
+
         <mapForm.Subscribe
           selector={(state) => [
             state.values.baseColor,
@@ -228,9 +228,10 @@ const MapBuilder = () => {
           {([color, width, height]) => (
             <div
               ref={mapRef}
-              className="scrollbar-primary relative max-w-full overflow-x-auto overflow-y-auto rounded border-2"
+              className="scrollbar-primary timing relative overflow-x-auto overflow-y-auto rounded border-2"
               style={{
                 borderColor: accentPrimary,
+                maxWidth: layerMode ? '75dvw' : '85dvw',
               }}
             >
               <div
@@ -440,6 +441,54 @@ const MapBuilder = () => {
                 </mapForm.Field>
                 <button
                   className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
+                  aria-label="Load autosaved map"
+                  type="button"
+                  onClick={() => {
+                    if (mapDraft) {
+                      mapForm.setFieldValue('name', mapDraft.name);
+                      mapForm.setFieldValue('type', mapDraft.type);
+                      mapForm.setFieldValue('draft', mapDraft.draft);
+                      mapForm.setFieldValue(
+                        'description',
+                        mapDraft.description,
+                      );
+                      mapForm.setFieldValue('width', mapDraft.width);
+                      mapForm.setFieldValue('height', mapDraft.height);
+                      mapForm.setFieldValue('baseColor', mapDraft.baseColor);
+                      mapForm.setFieldValue('layout', mapDraft.layout);
+                      handleCounter(mapDraft.layout);
+                    }
+                  }}
+                >
+                  {mapDraft ? (
+                    <Icon
+                      path={mdiContentSaveCheckOutline}
+                      className="text-tertiary group-hover:text-accent timing size-8"
+                    />
+                  ) : (
+                    <Icon
+                      path={mdiContentSaveOffOutline}
+                      className="text-tertiary group-hover:text-accent timing size-8"
+                    />
+                  )}
+                </button>
+                <button
+                  className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
+                  aria-label="Clear autosaved map"
+                  type="button"
+                  onClick={() => {
+                    localStorage.removeItem('mapDraft');
+                    setMapDraft(null);
+                    mapForm.reset();
+                  }}
+                >
+                  <Icon
+                    path={mdiContentSaveMinusOutline}
+                    className="text-tertiary group-hover:text-accent timing size-8"
+                  />
+                </button>
+                <button
+                  className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
                   aria-label="Open save modal"
                   type="button"
                   onClick={() => navigate('save')}
@@ -494,6 +543,7 @@ const MapBuilder = () => {
             <Outlet
               context={{
                 form: mapForm,
+                isPending: createMap.isPending,
                 folders,
                 currentFolder,
                 setCurrentFolder,
@@ -504,104 +554,114 @@ const MapBuilder = () => {
           </form>
         </ThemeContainer>
       </div>
-      <div className="items-starts flex max-h-[1000px] justify-start gap-4">
-        <button
-          className={`${layerMode ? 'invisible opacity-0' : 'visible opacity-100'} timing bg-tertiary group mb-auto flex rounded p-1.5 shadow-md shadow-black`}
-          aria-label="Open save modal"
-          type="button"
-          onClick={() => setLayerMode(true)}
-        >
-          <Icon
-            path={mdiLayersEdit}
-            className="text-tertiary group-hover:text-accent timing size-8"
-          />
-        </button>
-        <div
-          className={`${layerMode ? 'visible w-80 px-4 opacity-100' : 'invisible w-0 opacity-0'} timing bg-primary flex flex-col rounded py-4 shadow-lg shadow-black`}
-        >
-          <div className="flex items-center justify-between">
-            <ArrowHeader3 className="whitespace-nowrap" title="Map Layers" />
-            <button
-              className={`bg-tertiary group flex rounded p-1.5 shadow-md shadow-black`}
-              aria-label="Open save modal"
-              type="button"
-              onClick={() => setLayerMode(false)}
-            >
-              <Icon
-                path={mdiLayersOff}
-                className="text-tertiary group-hover:text-accent timing size-8"
-              />
-            </button>
-          </div>
-          <Divider />
-          <mapForm.Subscribe selector={(state) => state.values.layout}>
-            {(layout) => (
-              <div className="scrollbar-primary-2 flex flex-col gap-2 overflow-y-auto pb-2">
-                {layout
-                  .slice()
-                  .reverse()
-                  .map((item, index) => {
-                    let layerName = 'base';
-
-                    if (item.tileUrl) {
-                      const parts = item.tileUrl.split('/');
-                      const fileName = parts[parts.length - 1];
-                      const fileParts = fileName.split('.');
-
-                      layerName = fileParts[0];
-                    }
-
-                    return (
-                      <div
-                        className="w-full"
-                        onDragEnd={() => {
-                          setDragging(null);
-                          setDragover(null);
-                        }}
-                        onDragStart={() => setDragging({ i: item.i, index })}
-                        onDragOver={(e) => {
-                          e.preventDefault();
-                          setDragover({ i: item.i, index });
-                        }}
-                        onDrop={() => handleLayerReorder(layout)}
-                      >
-                        {dragging &&
-                          dragover &&
-                          dragging?.index > dragover?.index &&
-                          dragover?.i === item.i && (
-                            <hr className={'border-accent border-2'} />
-                          )}
-                        <div
-                          className={`timing text-secondary hover:bg-secondary timing hover:!text-accent flex cursor-grab select-none items-center gap-4 rounded p-2 hover:shadow-md hover:shadow-black`}
-                          onMouseEnter={() => setHoveredKey(item.i)}
-                          onMouseLeave={() => setHoveredKey(null)}
-                          draggable={true}
-                        >
-                          <Icon path={mdiDrag} className="size-7" />
-                          <h4 className="grow whitespace-nowrap !text-inherit">
-                            {layerName}
-                          </h4>
-                          <BtnIcon
-                            path={mdiTrashCanOutline}
-                            active={true}
-                            onClick={() => handleTileDelete(layout, item)}
-                          />
-                        </div>
-                        {dragging &&
-                          dragover &&
-                          dragging?.index < dragover?.index &&
-                          dragover?.i === item.i && (
-                            <hr className={'border-accent border-2'} />
-                          )}
-                      </div>
-                    );
-                  })}
-              </div>
-            )}
-          </mapForm.Subscribe>
+      <button
+        className={`${layerMode ? 'invisible translate-x-full opacity-0' : 'visible translate-x-0 opacity-100'} timing bg-tertiary group fixed right-8 top-[90px] mb-auto flex rounded p-1.5 shadow-md shadow-black`}
+        aria-label="Open save modal"
+        type="button"
+        onClick={() => {
+          setLayerMode(true);
+          if (layerRef.current) {
+            setLayerWidth(layerRef.current?.offsetWidth / 2);
+          }
+        }}
+      >
+        <Icon
+          path={mdiLayers}
+          className="text-tertiary group-hover:text-accent timing size-8"
+        />
+      </button>
+      <div
+        ref={layerRef}
+        className={`${layerMode ? 'visible translate-x-0 px-4 opacity-100' : 'invisible translate-x-full opacity-0'} timing bg-primary fixed bottom-8 right-8 top-[90px] flex w-80 flex-col rounded py-4 shadow-lg shadow-black`}
+      >
+        <div className="flex items-center justify-between">
+          <ArrowHeader3 className="whitespace-nowrap" title="Map Layers" />
+          <button
+            className={`bg-tertiary group flex rounded p-1.5 shadow-md shadow-black`}
+            aria-label="Open save modal"
+            type="button"
+            onClick={() => {
+              setLayerMode(false);
+              if (layerRef.current) {
+                setLayerWidth(0);
+              }
+            }}
+          >
+            <Icon
+              path={mdiLayersRemove}
+              className="text-tertiary group-hover:text-accent timing size-8"
+            />
+          </button>
         </div>
+        <Divider />
+        <mapForm.Subscribe selector={(state) => state.values.layout}>
+          {(layout) => (
+            <div className="scrollbar-primary-2 flex flex-col overflow-y-auto pb-2">
+              {layout
+                .slice()
+                .reverse()
+                .map((item, index) => {
+                  let layerName = 'base';
+
+                  if (item.tileUrl) {
+                    const parts = item.tileUrl.split('/');
+                    const fileName = parts[parts.length - 1];
+                    const fileParts = fileName.split('.');
+
+                    layerName = fileParts[0];
+                  }
+
+                  return (
+                    <div
+                      className="w-full"
+                      onDragEnd={() => {
+                        setDragging(null);
+                        setDragover(null);
+                      }}
+                      onDragStart={() => setDragging({ i: item.i, index })}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        setDragover({ i: item.i, index });
+                      }}
+                      onDrop={() => handleLayerReorder(layout)}
+                    >
+                      {dragging &&
+                        dragover &&
+                        dragging?.index > dragover?.index &&
+                        dragover?.i === item.i && (
+                          <hr className={'border-accent border-2'} />
+                        )}
+                      <div
+                        className={`timing text-secondary hover:bg-secondary timing hover:!text-accent flex cursor-grab select-none items-center gap-4 rounded p-2 hover:shadow-md hover:shadow-black`}
+                        onMouseEnter={() => setHoveredKey(item.i)}
+                        onMouseLeave={() => setHoveredKey(null)}
+                        draggable={true}
+                      >
+                        <Icon path={mdiDrag} className="size-7" />
+                        <h4 className="grow whitespace-nowrap !text-inherit">
+                          {capitalCase(layerName)}
+                        </h4>
+                        <h4 className="!text-inherit">{index + 1}</h4>
+                        <BtnIcon
+                          path={mdiTrashCanOutline}
+                          active={true}
+                          onClick={() => handleTileDelete(layout, item)}
+                        />
+                      </div>
+                      {dragging &&
+                        dragover &&
+                        dragging?.index < dragover?.index &&
+                        dragover?.i === item.i && (
+                          <hr className={'border-accent border-2'} />
+                        )}
+                    </div>
+                  );
+                })}
+            </div>
+          )}
+        </mapForm.Subscribe>
       </div>
-    </div>
+    </>
   );
 };
 export default MapBuilder;

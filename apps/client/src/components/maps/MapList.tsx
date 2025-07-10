@@ -2,13 +2,13 @@ import { capitalCase } from 'change-case';
 import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import Loading from '../Loading';
-import ReactGridLayout from 'react-grid-layout';
 import ItemCardSmall from '../ItemCardSmall';
 import Icon from '@mdi/react';
 import { mdiEye, mdiTagEdit, mdiTrashCanOutline } from '@mdi/js';
 import useMaps from 'src/hooks/useMaps';
 import BtnRect from '../buttons/BtnRect';
 import Divider from '../Divider';
+import CloudinaryImage from '../CloudinaryImage';
 
 const MapList = () => {
   const { mapId } = useParams();
@@ -65,13 +65,6 @@ const MapList = () => {
       ) : (
         <div className="flex w-full flex-col gap-4">
           {maps[mode]?.map((map) => {
-            const mapLayout = map.layout.map((item) => ({
-              ...item,
-              isDraggable: false,
-              isResizable: false,
-              resizeHandles: [],
-            }));
-
             return (
               <Fragment key={map.id}>
                 <ItemCardSmall
@@ -81,7 +74,6 @@ const MapList = () => {
                         <h3>{map.name}</h3>
                         {map.draft && <p className="text-tertiary">(draft)</p>}
                       </div>
-
                       <div className="flex items-center gap-4">
                         <button
                           className="bg-tertiary group rounded p-1.5 shadow-md shadow-black"
@@ -124,20 +116,28 @@ const MapList = () => {
                   }
                 >
                   <Divider />
-                  <div className="flex flex-col gap-4">
-                    <div className="bg-tertiary flex items-center justify-between gap-4 rounded p-3 shadow-md shadow-black">
-                      <h4>Map Author</h4>
-                      <p>{map.user.username}</p>
-                    </div>
-                    <div className="bg-tertiary flex items-center justify-between gap-4 rounded p-3 shadow-md shadow-black">
-                      <h4>Tile Size</h4>
-                      <p>
-                        {map.width} x {map.height}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="flex flex-col gap-4">
+                      <div className="bg-tertiary flex items-center justify-between gap-4 rounded p-3 shadow-md shadow-black">
+                        <h4>Map Author</h4>
+                        <p>{map.user.username}</p>
+                      </div>
+                      <div className="bg-tertiary flex items-center justify-between gap-4 rounded p-3 shadow-md shadow-black">
+                        <h4>Tile Size</h4>
+                        <p>
+                          {map.width} x {map.height}
+                        </p>
+                      </div>
+                      <p className="border-x-2 border-gray-400 border-opacity-50 px-4">
+                        {map.description}
                       </p>
                     </div>
-                    <p className="border-x-2 border-gray-400 border-opacity-50 px-4">
-                      {map.description}
-                    </p>
+                    <div className="flex h-80 w-full items-center justify-center">
+                      <CloudinaryImage
+                        className="border-accent overflow-hidden rounded border"
+                        publicId={map.picture.publicId}
+                      />
+                    </div>
                   </div>
                 </ItemCardSmall>
                 {map.id === Number(mapId) && (

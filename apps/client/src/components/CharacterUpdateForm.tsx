@@ -111,6 +111,7 @@ const CharacterUpdateForm = () => {
         insanities: character?.stats.insanities ?? '',
       },
       picture: character?.picture ?? '',
+      publicId: character?.picture.publicId || '',
       position: character?.picture?.position ?? { x: 50, y: 50 },
       height: character?.height ?? '',
       weight: character?.weight ?? '',

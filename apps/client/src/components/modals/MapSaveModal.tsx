@@ -4,9 +4,10 @@ import InputField from '../InputField';
 import InputSelectField from '../InputSelectField';
 import TextAreaField from '../TextAreaField';
 import BtnRect from '../buttons/BtnRect';
+import Loading from '../Loading';
 
 const MapSaveModal = () => {
-  const { form } = useOutletContext() || {};
+  const { form, isPending } = useOutletContext() || {};
 
   return (
     <Modal>
@@ -48,11 +49,19 @@ const MapSaveModal = () => {
           )}
         </form.Field>
         <BtnRect
+          className="group"
           type="submit"
           ariaLabel="save"
           onClick={() => form.handleSubmit()}
         >
-          Save Map
+          {isPending ? (
+            <Loading
+              className="group-hover:text-accent dark:text-gray-900"
+              size={1.15}
+            />
+          ) : (
+            'Save Map'
+          )}
         </BtnRect>
       </div>
     </Modal>

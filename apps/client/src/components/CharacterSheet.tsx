@@ -42,8 +42,6 @@ const CharacterSheet = () => {
 
   const cardRef = useRef(null);
 
-  console.log(navbarHeight);
-
   const {
     filteredCharacter: character,
     isLoading,

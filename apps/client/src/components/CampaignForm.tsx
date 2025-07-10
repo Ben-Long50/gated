@@ -69,6 +69,7 @@ const CampaignForm = ({ title, mode }: { title: string; mode?: string }) => {
       name: campaign?.name || '',
       location: campaign?.location || '',
       picture: campaign?.picture || '',
+      publicId: campaign?.picture.publicId || '',
       position: campaign?.picture?.position || { x: 50, y: 50 },
       factions:
         campaign?.factions ||

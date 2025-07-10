@@ -110,6 +110,7 @@ const ItemForm = () => {
       rarity: item?.rarity || '',
       grade: item?.grade || 1,
       picture: item?.picture || '',
+      publicId: item?.picture.publicId || '',
       position: item?.picture?.position || { x: 50, y: 50 },
       description: item?.description || '',
       price: item?.price || '',

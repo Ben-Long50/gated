@@ -70,6 +70,7 @@ const SessionForm = ({ title, mode }: { title: string; mode?: string }) => {
       name: session?.name || '',
       location: session?.location || '',
       picture: session?.picture || '',
+      publicId: session?.picture.publicId || '',
       position: session?.picture?.position || { x: 50, y: 50 },
       playerCharacters:
         sessionPlayerCharacters.length > 0

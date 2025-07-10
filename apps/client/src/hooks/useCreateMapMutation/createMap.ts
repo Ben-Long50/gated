@@ -2,17 +2,14 @@ import handleResponse from '../handleResponse';
 
 const createMap = async (
   campaignId: number,
-  formData: object,
+  formData: FormData,
   apiUrl: string,
 ) => {
   try {
     const response = await fetch(`${apiUrl}/campaigns/${campaignId}/maps`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
       credentials: 'include',
-      body: JSON.stringify(formData),
+      body: formData,
     });
     const data = await handleResponse(response);
     return data;

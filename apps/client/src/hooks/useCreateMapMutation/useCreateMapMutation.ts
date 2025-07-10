@@ -10,7 +10,7 @@ const useCreateMapMutation = (
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   return useMutation({
-    mutationFn: (formData: object) => {
+    mutationFn: (formData: FormData) => {
       return createMap(campaignId, formData, apiUrl);
     },
     onSuccess: () => {
@@ -20,7 +20,6 @@ const useCreateMapMutation = (
       });
       return queryClient.invalidateQueries({
         queryKey: ['maps', campaignId],
-        exact: false,
       });
     },
     throwOnError: false,

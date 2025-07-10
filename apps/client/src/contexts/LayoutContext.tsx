@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useEffect, useState } from 'react';
 
 interface LayoutSize {
-  layoutSize: 'large' | 'medium' | 'small' | 'xsmall';
+  layoutSize: 'xlarge' | 'large' | 'medium' | 'small' | 'xsmall';
   mobile: boolean;
 }
 
@@ -10,8 +10,15 @@ const defaultLayoutSize: LayoutSize = { layoutSize: 'large', mobile: false };
 export const LayoutContext = createContext<LayoutSize>(defaultLayoutSize);
 
 const LayoutProvider = ({ children }: { children: ReactNode }) => {
-  const getLayoutSize = (): 'large' | 'medium' | 'small' | 'xsmall' => {
-    if (window.innerWidth >= 1024) {
+  const getLayoutSize = ():
+    | 'xlarge'
+    | 'large'
+    | 'medium'
+    | 'small'
+    | 'xsmall' => {
+    if (window.innerWidth > 1500) {
+      return 'xlarge';
+    } else if (window.innerWidth >= 1024 && window.innerWidth < 1500) {
       return 'large';
     } else if (window.innerWidth > 500 && window.innerWidth < 640) {
       return 'small';

@@ -61,6 +61,7 @@ const FactionForm = ({ title, mode }: { title: string; mode?: string }) => {
       id: factionId || 0,
       name: faction?.name || '',
       picture: faction?.picture || '',
+      publicId: faction?.picture.publicId || '',
       position: faction?.picture?.position || { x: 50, y: 50 },
       background:
         faction?.background || ({} as { html: string; nodes: string }),

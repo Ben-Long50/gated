@@ -68,6 +68,7 @@ const Map = () => {
         }}
       >
         <ReactGridLayout
+          useCSSTransforms={false}
           className="layout overflow-hidden rounded"
           style={{ width: map.width * 48, height: map.height * 48 }}
           layout={mapLayout}
