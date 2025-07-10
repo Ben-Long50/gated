@@ -14,6 +14,7 @@ import {
   mdiGrid,
   mdiLayersEdit,
   mdiLayersOff,
+  mdiTrashCanOutline,
 } from '@mdi/js';
 import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import useCreateMapMutation from 'src/hooks/useCreateMapMutation/useCreateMapMutation';
@@ -25,8 +26,7 @@ import Tile from './Tile';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import Divider from '../Divider';
 import ArrowHeader3 from '../ArrowHeader3';
-
-const tiles = import.meta.glob('/src/assets/tiles/*/*/*.png', { eager: true });
+import BtnIcon from '../buttons/BtnIcon';
 
 const MapBuilder = () => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -36,7 +36,7 @@ const MapBuilder = () => {
   const navigate = useNavigate();
   const [tileCounter, setTileCounter] = useState(0);
   const [folders, setFolders] = useState({});
-  const [currentFolder, setCurrentFolder] = useState('');
+  const [currentFolder, setCurrentFolder] = useState({});
   const [path, setPath] = useState(['/assets', 'tiles']);
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
   const [layerMode, setLayerMode] = useState(false);
@@ -64,7 +64,7 @@ const MapBuilder = () => {
 
   useEffect(() => {
     if (map) {
-      setTileCounter(Number(map.layout[map.layout.length - 1].i + 1));
+      setTileCounter(Number(map.layout[map.layout.length - 1].i) + 1);
     }
   }, [map]);
 
@@ -87,18 +87,6 @@ const MapBuilder = () => {
 
   const defaultWidth = map?.width ?? 24;
   const defaultHeight = map?.height ?? 14;
-
-  const tileForm = useForm({
-    defaultValues: {
-      category: '',
-      type: '',
-    },
-    onSubmit: ({ value }) => {
-      console.log(value);
-      createMap.mutate(value);
-      localStorage.removeItem('mapDraft');
-    },
-  });
 
   const mapForm = useForm({
     defaultValues: {
@@ -156,6 +144,17 @@ const MapBuilder = () => {
       left: e.deltaY * 4,
       behavior: 'auto',
     });
+  };
+
+  const handleTileDelete = (layout, item) => {
+    if (item.i === 'base') return;
+    const layoutCopy = [...layout];
+
+    console.log(item);
+
+    const newLayout = layoutCopy.filter((tile) => tile.i !== item.i);
+
+    mapForm.setFieldValue('layout', newLayout);
   };
 
   if (isLoading) return <Loading />;
@@ -244,6 +243,7 @@ const MapBuilder = () => {
               <mapForm.Field name="layout">
                 {(field) => (
                   <ReactGridLayout
+                    useCSSTransforms={false}
                     className="layout overflow-hidden shadow-lg shadow-black"
                     style={{ width: width * 48, height: height * 48 }}
                     layout={field.state.value}
@@ -255,6 +255,8 @@ const MapBuilder = () => {
                     allowOverlap={true}
                     isDroppable={true}
                     isBounded={true}
+                    onDragStart={(_, __, newItem) => {}}
+                    onDrag={(_, __, item) => {}}
                     onDrop={(_, layoutItem, _event) => {
                       const path = _event.dataTransfer.getData('tileUrl');
 
@@ -270,8 +272,6 @@ const MapBuilder = () => {
                         dimensions.tileHeight = Number(dims[1].charAt(0));
                       }
 
-                      console.log(dimensions);
-
                       const newItem = {
                         ...layoutItem,
                         i: tileCounter.toString(),
@@ -279,28 +279,10 @@ const MapBuilder = () => {
                         ...dimensions,
                       };
 
-                      console.log(newItem);
-
                       field.handleChange((prev) => {
                         return [...prev, newItem];
                       });
-                      setTileCounter((prev) => prev + 1);
-                      autoSave(mapForm.store.state.values);
-                    }}
-                    onResizeStop={(_, __, newItem) => {
-                      field.handleChange((prev) =>
-                        prev.map((item) =>
-                          item.i === newItem.i
-                            ? {
-                                ...item,
-                                w: newItem.w,
-                                h: newItem.h,
-                                x: newItem.x,
-                                y: newItem.y,
-                              }
-                            : item,
-                        ),
-                      );
+                      setTileCounter((prev) => Number(prev) + 1);
                       autoSave(mapForm.store.state.values);
                     }}
                     onDragStop={(_, __, newItem) => {
@@ -319,21 +301,41 @@ const MapBuilder = () => {
                       );
                       autoSave(mapForm.store.state.values);
                     }}
+                    onResizeStop={(_, __, newItem) => {
+                      field.handleChange((prev) =>
+                        prev.map((item) =>
+                          item.i === newItem.i
+                            ? {
+                                ...item,
+                                w: newItem.w,
+                                h: newItem.h,
+                                x: newItem.x,
+                                y: newItem.y,
+                              }
+                            : item,
+                        ),
+                      );
+                      autoSave(mapForm.store.state.values);
+                    }}
                   >
-                    {field.state.value?.map((item, index) =>
+                    {field.state.value?.map((item) =>
                       item.i === 'base' ? (
-                        <Tile
+                        <div
                           key={item.i}
-                          className={`${item.classNames} -z-20`}
-                          style={{ backgroundColor: color }}
-                          tileWidth={item.w}
-                          tileHeight={item.h}
+                          className={item.className}
+                          style={{
+                            backgroundColor: color,
+                          }}
                         />
                       ) : (
-                        <Tile
+                        <div
                           key={item.i}
-                          className={`${item.classNames}`}
+                          className={item.className}
                           style={{
+                            backgroundPosition: '0 0',
+                            imageRendering: 'pixelated',
+                            backgroundSize: `${48 * item.tileWidth}px ${48 * item.tileHeight}px`,
+                            backgroundImage: `url(${item.tileUrl})`,
                             boxShadow:
                               hoveredKey === item.i
                                 ? `inset 0 0 0 4px ${accentPrimary}`
@@ -342,13 +344,8 @@ const MapBuilder = () => {
                                   : undefined,
                             zIndex: hoveredKey === item.i ? '20' : '0',
                           }}
-                          tileWidth={item.tileWidth}
-                          tileHeight={item.tileHeight}
-                          tileUrl={item.tileUrl}
                           onDoubleClick={() =>
-                            field.handleChange((prev) =>
-                              prev.filter((prevItem) => prevItem.i !== item.i),
-                            )
+                            handleTileDelete(field.state.value, item)
                           }
                         />
                       ),
@@ -456,42 +453,34 @@ const MapBuilder = () => {
                 </button>
               </div>
             </div>
-            <tileForm.Subscribe
-              selector={(state) => [state.values.category, state.values.type]}
-            >
-              {([category, type]) => {
-                const tilePaths = Object.entries(tiles)
-                  .filter(([path]) =>
-                    path.includes(`/tiles/${category}/${type}`),
-                  )
-                  .map(([, mod]: any) => mod.default);
 
-                return (
-                  tilePaths.length > 0 && (
+            {currentFolder.files && currentFolder.files.length > 0 && (
+              <div
+                ref={scrollRef}
+                className="bg-tertiary scrollbar-primary col-span-3 flex w-full gap-2 overflow-x-auto rounded p-2"
+                onWheel={handleWheel}
+              >
+                {currentFolder.files.map((file) => {
+                  const tilePath = `${path.join('/')}/${file}`;
+
+                  return (
                     <div
-                      ref={scrollRef}
-                      className="bg-tertiary scrollbar-primary col-span-3 flex w-full gap-2 overflow-x-auto rounded p-2"
-                      onWheel={handleWheel}
-                    >
-                      {tilePaths.map((path) => (
-                        <div
-                          className={`sprite aspect-square size-24 rounded hover:border-2 hover:border-gray-200`}
-                          style={{ backgroundImage: `url(${path})` }}
-                          draggable={true}
-                          onDragStart={(e) =>
-                            e.dataTransfer.setData('tileUrl', path)
-                          }
-                        />
-                      ))}
-                    </div>
-                  )
-                );
-              }}
-            </tileForm.Subscribe>
+                      className={`sprite aspect-square size-24 rounded hover:border-2 hover:border-gray-200`}
+                      style={{
+                        backgroundImage: `url(${tilePath})`,
+                      }}
+                      draggable={true}
+                      onDragStart={(e) =>
+                        e.dataTransfer.setData('tileUrl', tilePath)
+                      }
+                    />
+                  );
+                })}
+              </div>
+            )}
             <Outlet
               context={{
                 form: mapForm,
-                tileForm,
                 folders,
                 currentFolder,
                 setCurrentFolder,
@@ -570,7 +559,7 @@ const MapBuilder = () => {
                             <hr className={'border-accent border-2'} />
                           )}
                         <div
-                          className={`timing text-secondary hover:bg-tertiary timing hover:!text-accent flex cursor-grab select-none gap-4 rounded p-2 hover:shadow-md hover:shadow-black`}
+                          className={`timing text-secondary hover:bg-secondary timing hover:!text-accent flex cursor-grab select-none items-center gap-4 rounded p-2 hover:shadow-md hover:shadow-black`}
                           onMouseEnter={() => setHoveredKey(item.i)}
                           onMouseLeave={() => setHoveredKey(null)}
                           draggable={true}
@@ -579,6 +568,11 @@ const MapBuilder = () => {
                           <h4 className="grow whitespace-nowrap !text-inherit">
                             {layerName}
                           </h4>
+                          <BtnIcon
+                            path={mdiTrashCanOutline}
+                            active={true}
+                            onClick={() => handleTileDelete(layout, item)}
+                          />
                         </div>
                         {dragging &&
                           dragover &&
