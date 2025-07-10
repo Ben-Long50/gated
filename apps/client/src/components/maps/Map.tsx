@@ -8,6 +8,7 @@ import { mdiGrid } from '@mdi/js';
 import Icon from '@mdi/react';
 import RangeIcon from '../icons/RangeIcon';
 import InputFieldBasic from '../InputFieldBasic';
+import ThemeContainer from '../ThemeContainer';
 
 const Map = () => {
   const { accentPrimary, errorPrimary } = useContext(ThemeContext);
@@ -58,7 +59,7 @@ const Map = () => {
   if (isLoading) return <Loading />;
 
   return (
-    <div className="flex w-full max-w-8xl flex-col items-center gap-4 sm:gap-8">
+    <div className="flex h-full w-full max-w-8xl flex-col items-center gap-4 sm:gap-8">
       <h1>{map.name}</h1>
       <div
         className="scrollbar-primary relative max-w-full overflow-x-auto overflow-y-auto rounded border-2"
@@ -147,33 +148,39 @@ const Map = () => {
           })}
         </div>
       </div>
-      <div className="flex items-center justify-start gap-4">
-        <button
-          className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
-          aria-label="Open save modal"
-          type="button"
-          onClick={() => setGridDisplay((prev) => !prev)}
-        >
-          <Icon
-            path={mdiGrid}
-            className="text-tertiary group-hover:text-accent timing size-8"
+      <ThemeContainer
+        className="!sticky bottom-[33px] mt-auto"
+        borderColor={accentPrimary}
+        chamfer="small"
+      >
+        <div className="flex items-center justify-start gap-4 p-4">
+          <button
+            className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
+            aria-label="Open save modal"
+            type="button"
+            onClick={() => setGridDisplay((prev) => !prev)}
+          >
+            <Icon
+              path={mdiGrid}
+              className="text-tertiary group-hover:text-accent timing size-8"
+            />
+          </button>
+          <button
+            className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
+            aria-label="Open save modal"
+            type="button"
+            onClick={() => setRangeMode((prev) => !prev)}
+          >
+            <RangeIcon className="text-tertiary group-hover:text-accent timing size-8" />
+          </button>
+          <InputFieldBasic
+            type="number"
+            label="Range"
+            value={range}
+            onChange={(range) => setRange(Number(range))}
           />
-        </button>
-        <button
-          className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
-          aria-label="Open save modal"
-          type="button"
-          onClick={() => setRangeMode((prev) => !prev)}
-        >
-          <RangeIcon className="text-tertiary group-hover:text-accent timing size-8" />
-        </button>
-        <InputFieldBasic
-          type="number"
-          label="Range"
-          value={range}
-          onChange={(range) => setRange(Number(range))}
-        />
-      </div>
+        </div>
+      </ThemeContainer>
     </div>
   );
 };

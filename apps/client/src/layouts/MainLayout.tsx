@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from 'react';
+import { useContext, useRef } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { ThemeContext } from '../contexts/ThemeContext';

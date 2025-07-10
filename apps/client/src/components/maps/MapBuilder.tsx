@@ -3,7 +3,6 @@ import ThemeContainer from '../ThemeContainer';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import InputField from '../InputField';
 import { useForm } from '@tanstack/react-form';
-import '/src/styles/mapStyles.css';
 import Icon from '@mdi/react';
 import {
   mdiContentSaveCheckOutline,
@@ -61,9 +60,17 @@ const MapBuilder = () => {
     Number(mapId),
   );
 
+  const handleCounter = (layout) => {
+    const lastCount =
+      layout[layout.length - 1].i === 'base'
+        ? 0
+        : Number(layout[layout.length - 1].i) + 1;
+    setTileCounter(lastCount);
+  };
+
   useEffect(() => {
     if (map) {
-      setTileCounter(Number(map.layout[map.layout.length - 1].i) + 1);
+      handleCounter(map.layout);
     }
   }, [map]);
 
@@ -176,6 +183,7 @@ const MapBuilder = () => {
                 mapForm.setFieldValue('height', mapDraft.height);
                 mapForm.setFieldValue('baseColor', mapDraft.baseColor);
                 mapForm.setFieldValue('layout', mapDraft.layout);
+                handleCounter(mapDraft.layout);
               }
             }}
           >
@@ -281,7 +289,9 @@ const MapBuilder = () => {
                       field.handleChange((prev) => {
                         return [...prev, newItem];
                       });
-                      setTileCounter((prev) => Number(prev) + 1);
+                      console.log(tileCounter);
+
+                      setTileCounter((prev) => prev + 1);
                       autoSave(mapForm.store.state.values);
                     }}
                     onDragStop={(_, __, newItem) => {
@@ -341,7 +351,7 @@ const MapBuilder = () => {
                                 : dragover?.i === item.i
                                   ? `inset 0 0 0 4px white`
                                   : undefined,
-                            zIndex: hoveredKey === item.i ? '20' : '0',
+                            zIndex: hoveredKey === item.i ? '10' : '0',
                           }}
                           onDoubleClick={() =>
                             handleTileDelete(field.state.value, item)
@@ -356,7 +366,7 @@ const MapBuilder = () => {
           )}
         </mapForm.Subscribe>
         <ThemeContainer
-          className="!sticky bottom-[33px] mt-auto w-full"
+          className="!sticky bottom-[33px] z-10 mt-auto w-full"
           borderColor={accentPrimary}
           chamfer="medium"
         >
@@ -452,21 +462,25 @@ const MapBuilder = () => {
                 </button>
               </div>
             </div>
-
             {currentFolder.files && currentFolder.files.length > 0 && (
               <div
                 ref={scrollRef}
-                className="bg-tertiary scrollbar-primary col-span-3 flex w-full gap-2 overflow-x-auto rounded p-2"
+                className="scrollbar-primary-2 col-span-3 flex w-full gap-2 overflow-x-auto rounded p-2"
                 onWheel={handleWheel}
+                style={{ overscrollBehavior: 'contain' }}
               >
                 {currentFolder.files.map((file) => {
                   const tilePath = `${path.join('/')}/${file}`;
 
                   return (
                     <div
-                      className={`sprite aspect-square size-24 rounded hover:border-2 hover:border-gray-200`}
+                      className={`sprite aspect-square size-24 rounded border-2 border-gray-600 hover:border-gray-200`}
                       style={{
                         backgroundImage: `url(${tilePath})`,
+                        backgroundSize: 'contain',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition: 'center',
+                        imageRendering: 'pixelated',
                       }}
                       draggable={true}
                       onDragStart={(e) =>
@@ -522,7 +536,7 @@ const MapBuilder = () => {
           <Divider />
           <mapForm.Subscribe selector={(state) => state.values.layout}>
             {(layout) => (
-              <div className="scrollbar-primary-2 flex flex-col gap-2 overflow-y-auto">
+              <div className="scrollbar-primary-2 flex flex-col gap-2 overflow-y-auto pb-2">
                 {layout
                   .slice()
                   .reverse()

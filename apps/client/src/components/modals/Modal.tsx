@@ -1,5 +1,5 @@
 import RootPortal from '../../layouts/RootPortal';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import BtnIcon from '../buttons/BtnIcon';
 import { mdiClose } from '@mdi/js';
 import { useNavigate } from 'react-router-dom';
@@ -14,6 +14,15 @@ const Modal = ({
 }) => {
   const navigate = useNavigate();
   const backgroundPath = useModalStore((state) => state.backgroundPath);
+
+  useEffect(() => {
+    document.documentElement.classList.add('no-scroll');
+
+    return () => {
+      document.documentElement.classList.remove('no-scroll');
+    };
+  }, []);
+
   return (
     <RootPortal>
       <div

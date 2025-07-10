@@ -47,8 +47,8 @@ const TileListModal = () => {
             className="text-tertiary group-hover:text-accent timing size-8"
           />
         </button>
-        {path.slice(1).map((part) => (
-          <ArrowHeader3 title={capitalCase(part)} />
+        {path.slice(1).map((part: string, index: number) => (
+          <ArrowHeader3 key={index} title={capitalCase(part)} />
         ))}
       </div>
       <Divider className="!my-0" />
