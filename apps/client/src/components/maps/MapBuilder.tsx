@@ -22,7 +22,6 @@ import { AuthContext } from 'src/contexts/AuthContext';
 import ReactGridLayout from 'react-grid-layout';
 import useCampaignMapQuery from 'src/hooks/useCampaignMapQuery/useCampaignMapQuery';
 import Loading from '../Loading';
-import Tile from './Tile';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import Divider from '../Divider';
 import ArrowHeader3 from '../ArrowHeader3';
@@ -322,7 +321,7 @@ const MapBuilder = () => {
                       item.i === 'base' ? (
                         <div
                           key={item.i}
-                          className={item.className}
+                          className={`${item.className} -z-10`}
                           style={{
                             backgroundColor: color,
                           }}

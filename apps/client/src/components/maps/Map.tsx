@@ -76,21 +76,28 @@ const Map = () => {
           margin={[0, 0]}
           allowOverlap={true}
         >
-          {mapLayout.map((item) => (
-            <Tile
-              key={item.i}
-              className={`${item.classNames} ${item.i === 'base' && '-z-10'}`}
-              style={
-                item.i === 'base'
-                  ? { backgroundColor: map.baseColor }
-                  : undefined
-              }
-              tileUrl={item.tileUrl}
-              tileWidth={item.tileWidth}
-              tileHeight={item.tileHeight}
-              tileSize={48}
-            />
-          ))}
+          {mapLayout.map((item) =>
+            item.i === 'base' ? (
+              <div
+                key={item.i}
+                className={`${item.className} -z-10`}
+                style={{
+                  backgroundColor: map.baseColor,
+                }}
+              />
+            ) : (
+              <div
+                key={item.i}
+                className={item.className}
+                style={{
+                  backgroundPosition: '0 0',
+                  imageRendering: 'pixelated',
+                  backgroundSize: `${48 * item.tileWidth}px ${48 * item.tileHeight}px`,
+                  backgroundImage: `url(${item.tileUrl})`,
+                }}
+              />
+            ),
+          )}
         </ReactGridLayout>
         <div
           className="absolute inset-0 grid"
@@ -110,6 +117,7 @@ const Map = () => {
 
             return (
               <div
+                key={index}
                 className={`${gridDisplay && 'border-accent border'} relative size-12 opacity-50`}
                 style={{
                   borderColor: accentPrimary,
