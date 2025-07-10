@@ -35,7 +35,9 @@ const MapBuilder = () => {
   const { campaignId, mapId } = useParams();
   const navigate = useNavigate();
   const [tileCounter, setTileCounter] = useState(0);
-
+  const [folders, setFolders] = useState({});
+  const [currentFolder, setCurrentFolder] = useState('');
+  const [path, setPath] = useState(['/assets', 'tiles']);
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
   const [layerMode, setLayerMode] = useState(false);
   const [dragging, setDragging] = useState<{ i: string; index: number } | null>(
@@ -65,6 +67,17 @@ const MapBuilder = () => {
       setTileCounter(Number(map.layout[map.layout.length - 1].i + 1));
     }
   }, [map]);
+
+  useEffect(() => {
+    const fetchFolders = async () => {
+      const response = await fetch('/assets/tiles.json');
+      const data = await response.json();
+      setFolders(data);
+      setCurrentFolder(data);
+    };
+
+    fetchFolders();
+  }, []);
 
   const createMap = useCreateMapMutation(
     apiUrl,
@@ -479,6 +492,11 @@ const MapBuilder = () => {
               context={{
                 form: mapForm,
                 tileForm,
+                folders,
+                currentFolder,
+                setCurrentFolder,
+                path,
+                setPath,
               }}
             />
           </form>
