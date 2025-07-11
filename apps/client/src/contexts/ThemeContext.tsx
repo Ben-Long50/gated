@@ -37,7 +37,7 @@ const ThemeProvider = ({ children }: { children: ReactNode }) => {
     if (storedAccent) {
       return storedAccent;
     } else {
-      return 'rgb(253 224 71)';
+      return '#fde047';
     }
   });
 

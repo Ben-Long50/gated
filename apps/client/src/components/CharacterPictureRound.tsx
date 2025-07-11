@@ -13,10 +13,11 @@ const CharacterPictureRound = ({
   const { accentPrimary } = useContext(ThemeContext);
 
   return (
-    <div className="shadow-color z-10 aspect-square size-12 shrink-0 overflow-hidden rounded-full shadow-md">
+    <div
+      className={`${className} shadow-color z-10 aspect-square size-12 shrink-0 overflow-hidden rounded-full shadow-md`}
+    >
       {character.picture?.imageUrl ? (
         <CloudinaryImage
-          className={`${className}`}
           publicId={character?.picture?.publicId}
           position={character?.picture?.position}
         />

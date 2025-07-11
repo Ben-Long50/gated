@@ -2,16 +2,27 @@ import { useContext, useLayoutEffect, useRef, useState } from 'react';
 import ReactGridLayout from 'react-grid-layout';
 import useMap from 'src/hooks/useMap';
 import Loading from '../Loading';
-import Tile from './Tile';
 import { ThemeContext } from 'src/contexts/ThemeContext';
-import { mdiGrid } from '@mdi/js';
+import { mdiGrid, mdiClose } from '@mdi/js';
 import Icon from '@mdi/react';
 import RangeIcon from '../icons/RangeIcon';
 import InputFieldBasic from '../InputFieldBasic';
 import ThemeContainer from '../ThemeContainer';
+import { AuthContext } from 'src/contexts/AuthContext';
+import { useParams } from 'react-router-dom';
+import useUpdateCharacterLocationMutation from 'src/hooks/useUpdateCharacterLocationMutation/useUpdateCharacterLocationMutation';
+import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
+import useCharacterQueries from 'src/hooks/useCharactersQuery/useCharacterQueries';
+import InputSelectField from '../InputSelectField';
+import { useForm } from '@tanstack/react-form';
+import { Character } from 'src/types/character';
+import BtnRect from '../buttons/BtnRect';
+import CharacterPictureRound from '../CharacterPictureRound';
 
 const Map = () => {
+  const { apiUrl } = useContext(AuthContext);
   const { accentPrimary, errorPrimary } = useContext(ThemeContext);
+  const { campaignId, mapId } = useParams();
   const [gridDisplay, setGridDisplay] = useState(false);
   const [rangeMode, setRangeMode] = useState(false);
   const [range, setRange] = useState(1);
@@ -20,6 +31,24 @@ const Map = () => {
   const containerRef = useRef(null);
 
   const { map, isLoading } = useMap();
+
+  const updateCharacterLocation = useUpdateCharacterLocationMutation(
+    apiUrl,
+    Number(mapId),
+  );
+
+  const { data: campaign, isLoading: campaignLoading } = useCampaignQuery(
+    apiUrl,
+    Number(campaignId),
+  );
+
+  const {
+    playerCharacters,
+    nonPlayerCharacters,
+    isLoading: charactersLoading,
+  } = useCharacterQueries(
+    campaign?.characters.map((character) => character.id) || [],
+  );
 
   useLayoutEffect(() => {
     if (containerRef.current) {
@@ -56,7 +85,23 @@ const Map = () => {
     return distance <= range;
   };
 
-  if (isLoading) return <Loading />;
+  const locationForm = useForm({
+    defaultValues: {
+      character: null as null | Character,
+      index: null as null | number,
+    },
+    onSubmit: ({ value }) => {
+      if (value.character && value.index) {
+        updateCharacterLocation.mutate({
+          characterId: value.character.id,
+          index: value.index,
+        });
+        locationForm.reset();
+      }
+    },
+  });
+
+  if (isLoading || charactersLoading) return <Loading />;
 
   return (
     <div className="flex h-full w-full max-w-8xl flex-col items-center gap-4 sm:gap-8">
@@ -101,53 +146,74 @@ const Map = () => {
             ),
           )}
         </ReactGridLayout>
-        <div
-          className="absolute inset-0 grid"
-          style={{
-            gridTemplateColumns: `repeat(${map.width}, 48px)`,
-            gridTemplateRows: `repeat(${map.height}, 48px)`,
-          }}
-        >
-          {Array.from({ length: map.width * map.height }).map((_, index) => {
-            const mapCoordinates = getCoordinates(index);
+        <locationForm.Field name="index">
+          {(field) => (
+            <div
+              className="absolute inset-0 grid"
+              style={{
+                gridTemplateColumns: `repeat(${map.width}, 48px)`,
+                gridTemplateRows: `repeat(${map.height}, 48px)`,
+              }}
+            >
+              {Array.from({ length: map.width * map.height }).map(
+                (_, index) => {
+                  const locations =
+                    map.locations.filter(
+                      (location) => location.index === index,
+                    ) || [];
 
-            const currentCoordinates = getCoordinates(hoveredIndex);
+                  const mapCoordinates = getCoordinates(index);
 
-            const inRange = rangeMode
-              ? isInRange(currentCoordinates, mapCoordinates, range)
-              : null;
+                  const currentCoordinates = getCoordinates(hoveredIndex);
 
-            return (
-              <div
-                key={index}
-                className={`${gridDisplay && 'border-accent border'} relative size-12 opacity-50`}
-                style={{
-                  borderColor: accentPrimary,
-                  transition: 'background ease .2s',
-                  background: inRange
-                    ? `radial-gradient(circle, transparent, 50%, ${errorPrimary})`
-                    : hoveredIndex === index
-                      ? `radial-gradient(circle, transparent, 65%, ${accentPrimary})`
-                      : 'transparent',
-                }}
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-              >
-                {hoveredIndex === index && (
-                  <p
-                    className="bg-tertiary absolute right-1/2 top-0 whitespace-nowrap rounded p-1 py-0.5 text-sm"
-                    style={{
-                      transform:
-                        'translateY(-100%) translateY(-4px) translateX(50%)',
-                    }}
-                  >
-                    [{mapCoordinates.x}, {mapCoordinates.y}]
-                  </p>
-                )}
-              </div>
-            );
-          })}
-        </div>
+                  const inRange = rangeMode
+                    ? isInRange(currentCoordinates, mapCoordinates, range)
+                    : null;
+
+                  return (
+                    <div
+                      key={index}
+                      className={`${gridDisplay && 'border'} relative flex size-12 items-center justify-center`}
+                      style={{
+                        borderColor: `${accentPrimary}80`,
+                        background: inRange
+                          ? `radial-gradient(circle, transparent, 50%, ${errorPrimary})`
+                          : hoveredIndex === index
+                            ? `radial-gradient(circle, transparent, 65%, ${accentPrimary})`
+                            : 'transparent',
+                      }}
+                      onMouseEnter={() => setHoveredIndex(index)}
+                      onMouseLeave={() => setHoveredIndex(null)}
+                      onClick={() => field.handleChange(index)}
+                    >
+                      {field.state.value === index && (
+                        <Icon path={mdiClose} className="text-error size-10" />
+                      )}
+                      {locations.length > 0 &&
+                        locations.map((location) => (
+                          <CharacterPictureRound
+                            className="hover:border-accent timing cursor-grab border-2 border-white"
+                            character={location.character}
+                          />
+                        ))}
+                      {hoveredIndex === index && (
+                        <p
+                          className="bg-tertiary absolute right-1/2 top-0 whitespace-nowrap rounded p-1 py-0.5 text-sm"
+                          style={{
+                            transform:
+                              'translateY(-100%) translateY(-4px) translateX(50%)',
+                          }}
+                        >
+                          [{mapCoordinates.x}, {mapCoordinates.y}]
+                        </p>
+                      )}
+                    </div>
+                  );
+                },
+              )}
+            </div>
+          )}
+        </locationForm.Field>
       </div>
       <ThemeContainer
         className="!sticky bottom-[33px] mt-auto"
@@ -155,6 +221,31 @@ const Map = () => {
         chamfer="small"
       >
         <div className="flex items-center justify-start gap-4 p-4">
+          <locationForm.Subscribe
+            selector={(state) => [state.values.character, state.values.index]}
+          >
+            {([character, index]) =>
+              character !== null &&
+              index !== null && (
+                <BtnRect
+                  type="button"
+                  ariaLabel="Move character"
+                  onClick={() => locationForm.handleSubmit()}
+                >
+                  Move Character
+                </BtnRect>
+              )
+            }
+          </locationForm.Subscribe>
+          <locationForm.Field name="character">
+            {(field) => (
+              <InputSelectField
+                label="Character Select"
+                field={field}
+                options={[...playerCharacters, ...nonPlayerCharacters]}
+              />
+            )}
+          </locationForm.Field>
           <button
             className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
             aria-label="Open save modal"
