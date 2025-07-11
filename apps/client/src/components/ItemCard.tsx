@@ -1,4 +1,11 @@
-import { Fragment, useContext, useEffect, useRef, useState } from 'react';
+import {
+  CSSProperties,
+  Fragment,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { ThemeContext } from '../contexts/ThemeContext';
 import ThemeContainer from './ThemeContainer';
 import ItemRarity from './ItemRarity';
@@ -35,12 +42,16 @@ import useRadialMenuStore from 'src/stores/radialMenuStore';
 
 const ItemCard = ({
   item,
+  className,
+  style,
   mode,
   cardType,
   toggleFormLink,
   ownerId,
 }: {
   item: Item;
+  className?: string;
+  style?: CSSProperties;
   mode?: string;
   cardType?: 'small' | 'large';
   toggleFormLink?: (item: Item) => void;
@@ -109,7 +120,7 @@ const ItemCard = ({
   const uniqueActions = item.itemLinkReference?.actions || [];
 
   return (
-    <div ref={ref}>
+    <div className={`${className}`} ref={ref} style={style}>
       {inView && (
         <ThemeContainer
           chamfer="medium"

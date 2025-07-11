@@ -15,10 +15,12 @@ const CharacterStatBars = ({
   stats,
   cardWidth,
   characterId,
+  size,
 }: {
   stats: CharacterStats;
   cardWidth: number;
   characterId: number;
+  size: 'large' | 'small';
 }) => {
   const { apiUrl } = useContext(AuthContext);
   const { statColorMap } = useContext(ThemeContext);
@@ -64,8 +66,11 @@ const CharacterStatBars = ({
           cardWidth={cardWidth}
           mutation={handleCurrentHealth}
           mode="adjustable"
+          size={size}
         >
-          <HealthIcon className="text-secondary size-8" />
+          <HealthIcon
+            className={`${size === 'small' ? 'size-7' : 'size-8'} text-secondary`}
+          />
         </StatBar>
       )}
       {stats.currentSanity !== undefined && (
@@ -77,8 +82,11 @@ const CharacterStatBars = ({
           cardWidth={cardWidth}
           mutation={handleCurrentSanity}
           mode="adjustable"
+          size={size}
         >
-          <SanityIcon className="text-secondary size-8" />
+          <SanityIcon
+            className={`${size === 'small' ? 'size-7' : 'size-8'} text-secondary`}
+          />
         </StatBar>
       )}
       {stats.maxCyber !== undefined && (

@@ -26,8 +26,8 @@ const CharacterPictureRound = ({
           className="flex h-full w-full items-center justify-center"
           style={{ backgroundColor: accentPrimary }}
         >
-          <h2 className="size-10 pl-0.5 pt-1 text-center !text-zinc-950">
-            {character.firstName ? character.firstName[0] : character.name[0]}
+          <h2 className="size-10 select-none pl-0.5 pt-1 text-center !text-zinc-950">
+            {character.firstName[0]}
           </h2>
         </div>
       )}

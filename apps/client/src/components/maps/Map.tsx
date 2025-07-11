@@ -1,9 +1,15 @@
-import { useContext, useLayoutEffect, useRef, useState } from 'react';
+import {
+  useContext,
+  useLayoutEffect,
+  useReducer,
+  useRef,
+  useState,
+} from 'react';
 import ReactGridLayout from 'react-grid-layout';
 import useMap from 'src/hooks/useMap';
 import Loading from '../Loading';
 import { ThemeContext } from 'src/contexts/ThemeContext';
-import { mdiGrid, mdiClose } from '@mdi/js';
+import { mdiGrid } from '@mdi/js';
 import Icon from '@mdi/react';
 import RangeIcon from '../icons/RangeIcon';
 import InputFieldBasic from '../InputFieldBasic';
@@ -17,18 +23,20 @@ import InputSelectField from '../InputSelectField';
 import { useForm } from '@tanstack/react-form';
 import { Character } from 'src/types/character';
 import BtnRect from '../buttons/BtnRect';
+import MapGrid from './MapGrid';
+import useMapStore from 'src/stores/mapStore';
+import ItemCard from '../ItemCard';
 import CharacterPictureRound from '../CharacterPictureRound';
+import StatBars from '../StatBars';
+import CharacterStatBars from '../CharacterStatBars';
+import useCampaignCharacters from 'src/hooks/useCampaignCharacters';
+import CharacterCardSmall from '../CharacterCardSmall';
 
 const Map = () => {
   const { apiUrl } = useContext(AuthContext);
-  const { accentPrimary, errorPrimary } = useContext(ThemeContext);
+  const { accentPrimary } = useContext(ThemeContext);
   const { campaignId, mapId } = useParams();
   const [gridDisplay, setGridDisplay] = useState(false);
-  const [rangeMode, setRangeMode] = useState(false);
-  const [range, setRange] = useState(1);
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [widthModifier, setWidthModifier] = useState(500);
-  const containerRef = useRef(null);
 
   const { map, isLoading } = useMap();
 
@@ -42,21 +50,6 @@ const Map = () => {
     Number(campaignId),
   );
 
-  const {
-    playerCharacters,
-    nonPlayerCharacters,
-    isLoading: charactersLoading,
-  } = useCharacterQueries(
-    campaign?.characters.map((character) => character.id) || [],
-  );
-
-  useLayoutEffect(() => {
-    if (containerRef.current) {
-      const { width } = containerRef.current.getBoundingClientRect();
-      setWidthModifier(width);
-    }
-  }, [containerRef.current]);
-
   const mapLayout = map?.layout.map((item) => ({
     ...item,
     isDraggable: false,
@@ -64,26 +57,9 @@ const Map = () => {
     resizeHandles: [],
   }));
 
-  const getCoordinates = (index: number) => {
-    return {
-      x:
-        map.width -
-          (map.width - Math.ceil((index + 1 + map.width) % map.width)) ||
-        map.width,
-      y: Math.ceil(index / map.width),
-    };
-  };
-
-  const isInRange = (
-    currentCoordinates: { x: number; y: number },
-    mapCoordinates: { x: number; y: number },
-    range: number,
-  ) => {
-    const dx = mapCoordinates.x - currentCoordinates.x;
-    const dy = mapCoordinates.y - currentCoordinates.y;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-    return distance <= range;
-  };
+  const setRangeType = useMapStore((state) => state.setRangeType);
+  const range = useMapStore((state) => state.range);
+  const item = useMapStore((state) => state.item);
 
   const locationForm = useForm({
     defaultValues: {
@@ -101,7 +77,9 @@ const Map = () => {
     },
   });
 
-  if (isLoading || charactersLoading) return <Loading />;
+  if (isLoading || campaignLoading) return <Loading />;
+
+  if (!map) return <h1>No Map Found</h1>;
 
   return (
     <div className="flex h-full w-full max-w-8xl flex-col items-center gap-4 sm:gap-8">
@@ -123,11 +101,11 @@ const Map = () => {
           margin={[0, 0]}
           allowOverlap={true}
         >
-          {mapLayout.map((item) =>
+          {mapLayout?.map((item) =>
             item.i === 'base' ? (
               <div
                 key={item.i}
-                className={`${item.className} -z-10`}
+                className="-z-10"
                 style={{
                   backgroundColor: map.baseColor,
                 }}
@@ -135,7 +113,6 @@ const Map = () => {
             ) : (
               <div
                 key={item.i}
-                className={item.className}
                 style={{
                   backgroundPosition: '0 0',
                   imageRendering: 'pixelated',
@@ -148,79 +125,26 @@ const Map = () => {
         </ReactGridLayout>
         <locationForm.Field name="index">
           {(field) => (
-            <div
-              className="absolute inset-0 grid"
-              style={{
-                gridTemplateColumns: `repeat(${map.width}, 48px)`,
-                gridTemplateRows: `repeat(${map.height}, 48px)`,
-              }}
-            >
-              {Array.from({ length: map.width * map.height }).map(
-                (_, index) => {
-                  const locations =
-                    map.locations.filter(
-                      (location) => location.index === index,
-                    ) || [];
-
-                  const mapCoordinates = getCoordinates(index);
-
-                  const currentCoordinates = getCoordinates(hoveredIndex);
-
-                  const inRange = rangeMode
-                    ? isInRange(currentCoordinates, mapCoordinates, range)
-                    : null;
-
-                  return (
-                    <div
-                      key={index}
-                      className={`${gridDisplay && 'border'} relative flex size-12 items-center justify-center`}
-                      style={{
-                        borderColor: `${accentPrimary}80`,
-                        background: inRange
-                          ? `radial-gradient(circle, transparent, 50%, ${errorPrimary})`
-                          : hoveredIndex === index
-                            ? `radial-gradient(circle, transparent, 65%, ${accentPrimary})`
-                            : 'transparent',
-                      }}
-                      onMouseEnter={() => setHoveredIndex(index)}
-                      onMouseLeave={() => setHoveredIndex(null)}
-                      onClick={() => field.handleChange(index)}
-                    >
-                      {field.state.value === index && (
-                        <Icon path={mdiClose} className="text-error size-10" />
-                      )}
-                      {locations.length > 0 &&
-                        locations.map((location) => (
-                          <CharacterPictureRound
-                            className="hover:border-accent timing cursor-grab border-2 border-white"
-                            character={location.character}
-                          />
-                        ))}
-                      {hoveredIndex === index && (
-                        <p
-                          className="bg-tertiary absolute right-1/2 top-0 whitespace-nowrap rounded p-1 py-0.5 text-sm"
-                          style={{
-                            transform:
-                              'translateY(-100%) translateY(-4px) translateX(50%)',
-                          }}
-                        >
-                          [{mapCoordinates.x}, {mapCoordinates.y}]
-                        </p>
-                      )}
-                    </div>
-                  );
-                },
-              )}
-            </div>
+            <MapGrid map={map} field={field} gridDisplay={gridDisplay} />
           )}
         </locationForm.Field>
+      </div>
+      <div className={`timing fixed left-24 top-[90px] flex flex-col gap-2`}>
+        {map?.locations.map((location) => (
+          <CharacterCardSmall characterId={location.characterId} />
+        ))}
+      </div>
+      <div
+        className={`${item ? 'visible translate-x-0 px-4 opacity-100' : 'invisible translate-x-full opacity-0'} timing fixed right-8 top-[90px] w-96`}
+      >
+        {item && <ItemCard className="w-full" cardType="small" item={item} />}
       </div>
       <ThemeContainer
         className="!sticky bottom-[33px] mt-auto"
         borderColor={accentPrimary}
         chamfer="small"
       >
-        <div className="flex items-center justify-start gap-4 p-4">
+        <div className="flex min-w-[500px] items-center justify-start gap-4 p-4">
           <locationForm.Subscribe
             selector={(state) => [state.values.character, state.values.index]}
           >
@@ -237,15 +161,6 @@ const Map = () => {
               )
             }
           </locationForm.Subscribe>
-          <locationForm.Field name="character">
-            {(field) => (
-              <InputSelectField
-                label="Character Select"
-                field={field}
-                options={[...playerCharacters, ...nonPlayerCharacters]}
-              />
-            )}
-          </locationForm.Field>
           <button
             className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
             aria-label="Open save modal"
@@ -257,20 +172,23 @@ const Map = () => {
               className="text-tertiary group-hover:text-accent timing size-8"
             />
           </button>
-          <button
-            className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
-            aria-label="Open save modal"
-            type="button"
-            onClick={() => setRangeMode((prev) => !prev)}
-          >
-            <RangeIcon className="text-tertiary group-hover:text-accent timing size-8" />
-          </button>
-          <InputFieldBasic
-            type="number"
-            label="Range"
-            value={range}
-            onChange={(range) => setRange(Number(range))}
+          {/* <locationForm.Field name="character">
+            {(field) => (
+              <InputSelectField
+                label="Character Select"
+                field={field}
+                options={[...playerCharacters, ...nonPlayerCharacters]}
+                reverse={true}
+              />
+            )}
+          </locationForm.Field> */}
+          <InputSelectField
+            label="Action Type"
+            options={['movement', 'attack']}
+            onChange={(value) => setRangeType(value)}
+            reverse={true}
           />
+          <h3>{range}</h3>
         </div>
       </ThemeContainer>
     </div>

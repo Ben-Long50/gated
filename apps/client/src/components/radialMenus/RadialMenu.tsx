@@ -103,7 +103,7 @@ const RadialMenu = ({
 
   return (
     <div
-      className="absolute z-20"
+      className={`${menuId === elementId && menuOpen ? 'visible' : 'invisible'} absolute z-20`}
       style={{ top: `${coordinates.y}px`, left: `${coordinates.x}px` }}
     >
       {hoveredIndex !== null && (

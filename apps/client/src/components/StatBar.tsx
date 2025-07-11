@@ -11,6 +11,7 @@ const StatBar = ({
   children,
   mutation,
   cardWidth,
+  size,
 }: {
   title?: string;
   total?: number;
@@ -21,6 +22,7 @@ const StatBar = ({
   children: ReactNode;
   mutation?: (value: number) => void;
   cardWidth: number;
+  size?: 'large' | 'small';
 }) => {
   const { theme } = useContext(ThemeContext);
   const small = cardWidth < 500;
@@ -58,7 +60,7 @@ const StatBar = ({
           }).map((_, index) => (
             <div
               key={index}
-              className={`${index === 0 && 'rounded-l-sm border-l-[1px]'} ${index === arrayLength - 1 && 'rounded-r-sm border-r-[1px]'} ${total && index >= total && 'ring-[3px] ring-inset ring-red-600'} h-4 w-full min-w-[1px] max-w-8 grow border-b-[1px] border-l-[0.5px] border-r-[0.5px] border-t-[1px] border-zinc-700 dark:border-black`}
+              className={`${index === 0 && 'rounded-l-sm border-l-[1px]'} ${index === arrayLength - 1 && 'rounded-r-sm border-r-[1px]'} ${total && index >= total && 'ring-[3px] ring-inset ring-red-600'} ${size === 'small' ? 'h-3.5' : 'h-4'} w-full min-w-[1px] max-w-8 grow border-b-[1px] border-l-[0.5px] border-r-[0.5px] border-t-[1px] border-zinc-700 dark:border-black`}
               style={{
                 backgroundImage:
                   index < current
@@ -86,7 +88,7 @@ const StatBar = ({
               }}
             >
               <p
-                className={`${total && current > total ? 'text-error' : '!text-inherit'}`}
+                className={`${total && current > total ? 'text-error' : '!text-inherit'} ${size === 'small' && '!text-base'} `}
               >
                 {current}
               </p>
@@ -101,7 +103,9 @@ const StatBar = ({
                     if (mutation) mutation(1);
                   }}
                 >
-                  <p className="!text-inherit">
+                  <p
+                    className={`${size === 'small' && '!text-base'} !text-inherit`}
+                  >
                     {reserve !== undefined ? reserve : total}
                   </p>
                 </div>

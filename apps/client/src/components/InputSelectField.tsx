@@ -28,6 +28,7 @@ const InputSelectField = ({
   className,
   options,
   initialValue,
+  reverse,
 }: {
   field?: FieldApi;
   label: string;
@@ -35,6 +36,7 @@ const InputSelectField = ({
   initialValue?: string;
   onChange?: (value: onChangeArg) => void;
   className?: string;
+  reverse?: boolean;
 }) => {
   const [borderColor, setBorderColor] = useState('transparent');
   const [focus, setFocus] = useState(false);
@@ -144,7 +146,7 @@ const InputSelectField = ({
           {label}
         </label>
         <div
-          className={`${focus ? 'max-h-96 py-3' : 'max-h-0'} bg-secondary timing absolute left-0 top-full flex w-full translate-y-2 flex-col items-start overflow-hidden rounded-md px-3 shadow-lg shadow-zinc-950`}
+          className={`${focus ? 'max-h-96 py-3' : 'max-h-0'} ${!reverse ? 'top-full translate-y-2' : 'bottom-full -translate-y-5'} bg-secondary timing absolute left-0 flex w-full flex-col items-start overflow-hidden rounded-md px-3 shadow-lg shadow-zinc-950`}
         >
           <div className="flex w-full items-center gap-4">
             <InputFieldBasic

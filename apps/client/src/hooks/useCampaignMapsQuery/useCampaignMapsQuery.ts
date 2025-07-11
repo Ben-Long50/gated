@@ -1,8 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import getCampaignMaps from './getCampaignMaps';
+import { Map } from 'src/types/map';
 
 const useCampaignMapsQuery = (apiUrl: string, campaignId: number) => {
-  return useQuery({
+  return useQuery<Map[]>({
     queryKey: ['maps', campaignId],
     queryFn: () => getCampaignMaps(apiUrl, campaignId),
     throwOnError: false,
