@@ -77,10 +77,10 @@ model Event {
 }
 
 model Map {
-  id          Int      @id @default(autoincrement())
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          Int        @id @default(autoincrement())
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int
-  campaign    Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaign    Campaign   @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   campaignId  Int
   picture     Json?
   draft       Boolean
@@ -91,11 +91,21 @@ model Map {
   height      Int
   baseColor   String
   layout      Json
+  locations   Location[]
 }
 
 enum MapType {
   location
   component
+}
+
+model Location {
+  id          Int        @id @default(autoincrement())
+  index       Int
+  map         Map        @relation(fields: [mapId], references: [id], onDelete: Cascade)
+  mapId       Int
+  character   Character? @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  characterId Int?       @unique
 }
 
 model Faction {
@@ -195,28 +205,29 @@ model Gang {
 }
 
 model Character {
-  id              Int        @id @default(autoincrement())
-  createdAt       DateTime   @default(now())
-  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId          Int
-  level           Int        @default(1)
-  profits         Int        @default(10)
-  stats           Json       @default("{}")
-  picture         Json?
-  height          Int
-  weight          Int
-  age             Int
-  sex             String
-  backstory       Json?
-  firstTaste      Json?
-  badMedicine     Json?
-  attributes      Json
-  firstName       String
-  lastName        String?
-  playerCharacter Boolean    @default(false)
-  npcTypes        NpcTypes[]
-  preferences     Json?
-
+  id                 Int                           @id @default(autoincrement())
+  createdAt          DateTime                      @default(now())
+  user               User                          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId             Int
+  level              Int                           @default(1)
+  profits            Int                           @default(10)
+  stats              Json                          @default("{}")
+  picture            Json?
+  height             Int
+  weight             Int
+  age                Int
+  sex                String
+  backstory          Json?
+  firstTaste         Json?
+  badMedicine        Json?
+  attributes         Json
+  firstName          String
+  lastName           String?
+  playerCharacter    Boolean                       @default(false)
+  npcTypes           NpcTypes[]
+  preferences        Json?
+  location           Location?
+  locationId         Int?
   active             Boolean                       @default(false)
   perks              Perk[]                        @relation("CharacterToPerk")
   campaign           Campaign?                     @relation(fields: [campaignId], references: [id])

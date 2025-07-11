@@ -238,6 +238,7 @@ const campaignServices = {
               username: true,
             },
           },
+          locations: { include: { character: true } },
         },
       });
 

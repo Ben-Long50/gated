@@ -448,6 +448,36 @@ const characterServices = {
     }
   },
 
+  updateCharacterLocation: async (
+    characterId: number,
+    formData: { mapId: number; index: number },
+  ) => {
+    try {
+      await prisma.character.update({
+        where: {
+          id: Number(characterId),
+        },
+        data: {
+          location: {
+            upsert: {
+              create: {
+                map: { connect: { id: formData.mapId } },
+                index: formData.index,
+              },
+              update: {
+                map: { connect: { id: formData.mapId } },
+                index: formData.index,
+              },
+            },
+          },
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to update character location');
+    }
+  },
+
   deleteCharacter: async (userId: number, characterId: string) => {
     try {
       await prisma.character.delete({

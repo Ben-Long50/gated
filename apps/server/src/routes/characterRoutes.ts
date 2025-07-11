@@ -96,6 +96,12 @@ router.post(
   characterController.createCharacterConditions,
 );
 
+router.post(
+  '/characters/:characterId/location',
+  authentication.authenticate,
+  characterController.updateCharacterLocation,
+);
+
 router.put(
   '/characters/:characterId',
   authentication.authenticate,

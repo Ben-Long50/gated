@@ -381,6 +381,33 @@ const characterServices = {
             throw new Error('Failed to create character conditions');
         }
     },
+    updateCharacterLocation: async (characterId, formData) => {
+        try {
+            await prisma.character.update({
+                where: {
+                    id: Number(characterId),
+                },
+                data: {
+                    location: {
+                        upsert: {
+                            create: {
+                                map: { connect: { id: formData.mapId } },
+                                index: formData.index,
+                            },
+                            update: {
+                                map: { connect: { id: formData.mapId } },
+                                index: formData.index,
+                            },
+                        },
+                    },
+                },
+            });
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to update character location');
+        }
+    },
     deleteCharacter: async (userId, characterId) => {
         try {
             await prisma.character.delete({
