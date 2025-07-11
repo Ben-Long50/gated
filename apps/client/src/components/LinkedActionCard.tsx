@@ -17,9 +17,11 @@ import useRadialMenuStore from 'src/stores/radialMenuStore';
 const LinkedActionCard = ({
   action,
   cardWidth,
+  className,
 }: {
   action: Action;
   cardWidth: number;
+  className?: string;
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
 
@@ -52,7 +54,11 @@ const LinkedActionCard = ({
   const description2 = description[1];
 
   return (
-    <ThemeContainer borderColor={accentPrimary} chamfer="medium">
+    <ThemeContainer
+      className={`${className}`}
+      borderColor={accentPrimary}
+      chamfer="medium"
+    >
       <div
         ref={containerRef}
         className={`${action.characterInventoryId ? (action.active ? 'opacity-100' : 'opacity-30') : ''} flex cursor-pointer flex-col items-start justify-start gap-4 p-4`}
@@ -61,11 +67,13 @@ const LinkedActionCard = ({
           handleMenu(e);
         }}
       >
-        <ActionRadialMenu
-          action={action}
-          itemId={action.itemLink.itemId}
-          containerRef={containerRef}
-        />
+        {action.itemLink && (
+          <ActionRadialMenu
+            action={action}
+            itemId={action.itemLink.itemId}
+            containerRef={containerRef}
+          />
+        )}
         <div className={`flex w-full items-center justify-start gap-4`}>
           <ArrowHeader3 title={action?.name} />
           <p className="text-tertiary">({capitalCase(action.actionType)})</p>
@@ -125,7 +133,7 @@ const LinkedActionCard = ({
                 borderColor="transparent"
                 chamfer="small"
               >
-                <div className="bg-tertiary flex w-full items-center justify-between p-3 px-4 clip-4">
+                <div className="bg-tertiary flex w-full items-center justify-between p-4 clip-4">
                   <h4>{capitalCase(stat)}</h4>
                   <p
                     className={`${index !== 0 && 'ml-1'} ${value > 0 || typeof value === 'string' ? 'text-accent' : 'text-error'} mr-1 inline-block font-semibold`}
@@ -139,7 +147,7 @@ const LinkedActionCard = ({
             action.keywordModifiers.map((keyword, index) => (
               <ItemCardSmall
                 key={index}
-                className={`${index !== action.keywordModifiers.length - 1 && 'mr-1'} bg-tertiary p-3 px-4`}
+                className={`${index !== action.keywordModifiers.length - 1 && 'mr-1'} bg-tertiary`}
                 heading={<h4>{keyword.keyword.name}</h4>}
               >
                 <p>{keyword.keyword.description}</p>

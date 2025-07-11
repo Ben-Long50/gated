@@ -111,8 +111,6 @@ const CalendarModal = () => {
                 path={mdiCircleOutline}
                 onClick={() => {
                   if (month && day) {
-                    console.log(month, day);
-
                     setCampaignDate.mutate({ month, day: Number(day) });
                   }
                 }}

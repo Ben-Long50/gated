@@ -188,8 +188,6 @@ const MapBuilder = () => {
     if (item.i === 'base') return;
     const layoutCopy = [...layout];
 
-    console.log(item);
-
     const newLayout = layoutCopy.filter((tile) => tile.i !== item.i);
 
     mapForm.setFieldValue('layout', newLayout);
@@ -284,7 +282,6 @@ const MapBuilder = () => {
                       field.handleChange((prev) => {
                         return [...prev, newItem];
                       });
-                      console.log(tileCounter);
 
                       setTileCounter((prev) => prev + 1);
                       autoSave(mapForm.store.state.values);

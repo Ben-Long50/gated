@@ -8,8 +8,6 @@ const useUpdateCharacterLocationMutation = (apiUrl: string, mapId: number) => {
       return updateCharacterLocation(apiUrl, mapId, formData);
     },
     onSuccess: (data) => {
-      console.log(data);
-
       queryClient.invalidateQueries({
         queryKey: ['map', mapId],
       });

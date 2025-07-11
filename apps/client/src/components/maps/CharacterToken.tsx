@@ -3,28 +3,25 @@ import useCharacter from 'src/hooks/useCharacter';
 import Loading from '../Loading';
 import useMapStore from 'src/stores/mapStore';
 import { ThemeContext } from 'src/contexts/ThemeContext';
-import { useContext, useRef } from 'react';
-import useUpdateCharacterLocationMutation from 'src/hooks/useUpdateCharacterLocationMutation/useUpdateCharacterLocationMutation';
-import { AuthContext } from 'src/contexts/AuthContext';
-import { useParams } from 'react-router-dom';
+import { RefObject, useContext, useRef } from 'react';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
 import CharacterRadialMenu from '../radialMenus/characterRadialMenu/CharacterRadialMenu';
 
 const CharacterToken = ({
   characterId,
-  dragoverIndex,
   setDragoverIndex,
 }: {
   characterId: number;
-  dragoverIndex: number | null;
+  dragImageRef: RefObject;
   setDragoverIndex: (index: number | null) => void;
 }) => {
   const { accentPrimary, statColorMap } = useContext(ThemeContext);
   const { filteredCharacter: character, isLoading } = useCharacter(characterId);
 
-  const rangeType = useMapStore((state) => state.rangeType);
+  const action = useMapStore((state) => state.action);
   const setRange = useMapStore((state) => state.setRange);
   const setItem = useMapStore((state) => state.setItem);
+  const setCharacterId = useMapStore((state) => state.setCharacterId);
 
   const menuOpen = useRadialMenuStore((state) => state.menuOpen);
   const setMenuOpen = useRadialMenuStore((state) => state.setMenuOpen);
@@ -34,7 +31,7 @@ const CharacterToken = ({
   const containerRef = useRef(null);
 
   const handleRange = () => {
-    if (rangeType === 'attack') {
+    if (action?.actionSubtypes.includes('attack')) {
       if (character?.equipment && character?.equipment.weapons.length > 0) {
         const weaponsByRange = character.equipment.weapons.sort(
           (a, b) => a.stats.range - b.stats.range,
@@ -44,7 +41,7 @@ const CharacterToken = ({
       } else {
         setRange(0, accentPrimary);
       }
-    } else if (rangeType === 'movement') {
+    } else if (action?.actionSubtypes.includes('movement')) {
       setRange(character?.stats.speed, statColorMap.SPD);
     }
   };
@@ -70,22 +67,26 @@ const CharacterToken = ({
       ref={containerRef}
       className="group inset-0 z-10 size-12 cursor-grab"
       draggable={true}
-      onDragStart={(e) =>
-        e.dataTransfer.setData('characterId', characterId.toString())
-      }
+      onDragStart={(e) => {
+        e.dataTransfer.setData('characterId', characterId.toString());
+      }}
       onDragEnd={() => {
         setDragoverIndex(null);
       }}
-      onMouseEnter={handleRange}
+      onMouseEnter={() => {
+        if (action) {
+          handleRange();
+        }
+        setCharacterId(characterId);
+      }}
       onMouseLeave={() => {
         if (!menuOpen) {
           setRange(0, accentPrimary);
           setItem(null);
+          setCharacterId(null);
         }
       }}
       onClick={(e) => {
-        console.log('click');
-
         e.stopPropagation();
         handleMenu(e);
       }}

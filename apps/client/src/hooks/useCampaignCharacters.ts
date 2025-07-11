@@ -27,7 +27,6 @@ const useCampaignCharacters = (characterIds: number[]) => {
   const resetList = () => {
     setQuery('');
   };
-  console.log(playerCharacters);
 
   return {
     playerCharacters,

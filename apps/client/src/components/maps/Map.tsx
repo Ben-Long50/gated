@@ -31,6 +31,8 @@ import StatBars from '../StatBars';
 import CharacterStatBars from '../CharacterStatBars';
 import useCampaignCharacters from 'src/hooks/useCampaignCharacters';
 import CharacterCardSmall from '../CharacterCardSmall';
+import useActions from 'src/hooks/useActions';
+import LinkedActionCard from '../LinkedActionCard';
 
 const Map = () => {
   const { apiUrl } = useContext(AuthContext);
@@ -39,6 +41,8 @@ const Map = () => {
   const [gridDisplay, setGridDisplay] = useState(false);
 
   const { map, isLoading } = useMap();
+
+  const { filteredActions: actions } = useActions();
 
   const updateCharacterLocation = useUpdateCharacterLocationMutation(
     apiUrl,
@@ -57,7 +61,8 @@ const Map = () => {
     resizeHandles: [],
   }));
 
-  const setRangeType = useMapStore((state) => state.setRangeType);
+  const action = useMapStore((state) => state.action);
+  const setAction = useMapStore((state) => state.setAction);
   const range = useMapStore((state) => state.range);
   const item = useMapStore((state) => state.item);
 
@@ -123,11 +128,8 @@ const Map = () => {
             ),
           )}
         </ReactGridLayout>
-        <locationForm.Field name="index">
-          {(field) => (
-            <MapGrid map={map} field={field} gridDisplay={gridDisplay} />
-          )}
-        </locationForm.Field>
+
+        <MapGrid map={map} form={locationForm} gridDisplay={gridDisplay} />
       </div>
       <div className={`timing fixed left-24 top-[90px] flex flex-col gap-2`}>
         {map?.locations.map((location) => (
@@ -139,6 +141,13 @@ const Map = () => {
       >
         {item && <ItemCard className="w-full" cardType="small" item={item} />}
       </div>
+      {action && (
+        <LinkedActionCard
+          cardWidth={501}
+          className="w-full max-w-5xl"
+          action={action}
+        />
+      )}
       <ThemeContainer
         className="!sticky bottom-[33px] mt-auto"
         borderColor={accentPrimary}
@@ -183,12 +192,13 @@ const Map = () => {
             )}
           </locationForm.Field> */}
           <InputSelectField
-            label="Action Type"
-            options={['movement', 'attack']}
-            onChange={(value) => setRangeType(value)}
+            label="Action"
+            options={actions}
+            onChange={(action) => {
+              setAction(action);
+            }}
             reverse={true}
           />
-          <h3>{range}</h3>
         </div>
       </ThemeContainer>
     </div>

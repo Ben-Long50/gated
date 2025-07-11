@@ -35,8 +35,6 @@ const EventForm = () => {
       time: { hour: 0, minute: 0, second: 0 },
     },
     onSubmit: ({ value }) => {
-      console.log(value);
-
       createEvent.mutate(value);
     },
   });
