@@ -206,7 +206,7 @@ const campaignServices = {
                             username: true,
                         },
                     },
-                    locations: { include: { character: true } },
+                    locations: true,
                 },
             });
             return map;
