@@ -91,6 +91,19 @@ const campaignController = {
             res.status(500).json({ error: error.message });
         }
     },
+    getBatchLocations: async (req, res) => {
+        try {
+            if (!req.user) {
+                throw new Error('Could not find authenticated user');
+            }
+            const locationIds = req.query.ids.split(',').map(Number);
+            const locations = await campaignServices.getBatchLocations(locationIds);
+            res.status(200).json(locations);
+        }
+        catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
     createOrUpdateEvent: async (req, res) => {
         try {
             const event = await campaignServices.createOrUpdateEvent(Number(req.params.campaignId), req.body);

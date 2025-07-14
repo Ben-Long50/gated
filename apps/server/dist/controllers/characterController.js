@@ -159,10 +159,11 @@ const characterController = {
             if (!req.user) {
                 throw new Error('Could not find authenticated user');
             }
-            await characterServices.updateCharacterLocation(Number(req.params.characterId), req.body);
-            res
-                .status(200)
-                .json({ message: 'Successfully updapted character location' });
+            const location = await characterServices.createOrUpdateLocation(Number(req.params.characterId), Number(req.params.locationId), req.body);
+            res.status(200).json({
+                message: 'Successfully updapted character location',
+                location,
+            });
         }
         catch (error) {
             res.status(500).json({ error: error.message });

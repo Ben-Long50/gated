@@ -97,7 +97,7 @@ router.post(
 );
 
 router.post(
-  '/characters/:characterId/location',
+  '/characters/:characterId/locations/:locationId',
   authentication.authenticate,
   characterController.updateCharacterLocation,
 );

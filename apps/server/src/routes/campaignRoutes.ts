@@ -31,6 +31,12 @@ router.get(
 );
 
 router.get(
+  '/locations/:locationId',
+  authentication.authenticate,
+  campaignController.getBatchLocations,
+);
+
+router.get(
   '/campaigns/:campaignId/maps/:mapId',
   authentication.authenticate,
   campaignController.getCampaignMap,

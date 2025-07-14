@@ -8,6 +8,7 @@ router.patch('/campaigns/:campaignId/players', authentication.authenticate, camp
 router.get('/campaigns', authentication.authenticate, campaignController.getCampaigns);
 router.get('/campaigns/:campaignId', authentication.authenticate, campaignController.getCampaignById);
 router.get('/campaigns/:campaignId/maps', authentication.authenticate, campaignController.getCampaignMaps);
+router.get('/locations/:locationId', authentication.authenticate, campaignController.getBatchLocations);
 router.get('/campaigns/:campaignId/maps/:mapId', authentication.authenticate, campaignController.getCampaignMap);
 router.get('/campaigns/:campaignId/characters/:characterId/notes', authentication.authenticate, campaignController.getCharacterNotes);
 router.get('/factions/:factionId', authentication.authenticate, factionController.getFactionById);

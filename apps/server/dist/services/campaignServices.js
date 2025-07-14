@@ -206,7 +206,11 @@ const campaignServices = {
                             username: true,
                         },
                     },
-                    locations: true,
+                    locations: {
+                        select: {
+                            id: true,
+                        },
+                    },
                 },
             });
             return map;
@@ -214,6 +218,28 @@ const campaignServices = {
         catch (error) {
             console.error(error);
             throw new Error('Failed to fetch map');
+        }
+    },
+    getBatchLocations: async (locationIds) => {
+        try {
+            const location = await prisma.location.findMany({
+                where: { id: { in: locationIds } },
+                include: {
+                    character: {
+                        select: {
+                            firstName: true,
+                            lastName: true,
+                            id: true,
+                            userId: true,
+                        },
+                    },
+                },
+            });
+            return location;
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to fetch locations');
         }
     },
     createOrUpdateEvent: async (campaignId, formData) => {
