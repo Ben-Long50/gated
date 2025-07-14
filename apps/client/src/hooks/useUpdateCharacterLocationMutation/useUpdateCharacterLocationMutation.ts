@@ -1,18 +1,54 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import updateCharacterLocation from './updateCharacterLocation';
+import { Location } from 'src/types/map';
 
 const useUpdateCharacterLocationMutation = (apiUrl: string, mapId: number) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (formData: { characterId: number; index: number }) => {
+    mutationFn: (formData: {
+      characterId: number;
+      locationId: number;
+      index: number;
+    }) => {
       return updateCharacterLocation(apiUrl, mapId, formData);
     },
+
+    onMutate: (data) => {
+      queryClient.cancelQueries({ queryKey: ['location', data.locationId] });
+
+      const prevItemData: Location | undefined = queryClient.getQueryData([
+        'location',
+        data.locationId,
+      ]);
+
+      console.log(prevItemData);
+      console.log(data, mapId);
+
+      if (mapId !== prevItemData?.mapId) {
+        queryClient.removeQueries({ queryKey: ['location', data.locationId] });
+      } else {
+        queryClient.setQueryData(
+          ['location', data.locationId],
+          (prev: Location) => ({
+            ...prev,
+            index: data.index,
+            characterId: data.characterId,
+            mapId: mapId,
+          }),
+        );
+      }
+
+      return { prevItemData };
+    },
+
     onSuccess: (data) => {
-      queryClient.invalidateQueries({
-        queryKey: ['map', mapId],
-      });
+      if (data.location.mapId !== mapId) {
+        queryClient.invalidateQueries({
+          queryKey: ['map', data.location.mapId],
+        });
+      }
       return queryClient.invalidateQueries({
-        queryKey: ['character', data.characterId],
+        queryKey: ['location', data.location.id],
       });
     },
     throwOnError: false,

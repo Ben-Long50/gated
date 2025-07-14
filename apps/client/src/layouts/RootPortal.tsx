@@ -14,7 +14,7 @@ const RootPortal = ({ children }: { children?: ReactNode }) => {
       className={`backdrop-fade fixed inset-0 top-14 z-30 flex items-center justify-center bg-zinc-300 bg-opacity-80 backdrop-blur-md dark:bg-black dark:bg-opacity-75 sm:p-4 md:p-8`}
       onClick={() => {
         if (!backgroundPath) {
-          navigate('..', { replace: true });
+          navigate(-1);
         } else {
           navigate(backgroundPath, { replace: true });
           navigate(-1);

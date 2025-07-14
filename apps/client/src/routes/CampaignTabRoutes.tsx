@@ -7,7 +7,7 @@ import Faction from 'src/components/Faction';
 import FactionForm from 'src/components/FactionForm';
 import RollSimulator from 'src/components/RollSimulator';
 import SessionRoutes from './SessionRoutes';
-import { CampaignSocketProvider } from 'src/contexts/CampaignSocketContext';
+import { CampaignProvider } from 'src/contexts/CampaignContext';
 import CampaignAffiliations from 'src/components/CampaignAffiliations';
 import RollModal from 'src/components/modals/RollModal';
 import CharacterRoutes from './CharacterRoutes';
@@ -22,12 +22,14 @@ import MapList from 'src/components/maps/MapList';
 import DeleteModal from 'src/components/modals/DeleteModal';
 import TileListModal from 'src/components/maps/TileListModal';
 import Map from 'src/components/maps/Map';
+import InitiativeModal from 'src/components/modals/InitiativeModal';
+import CharacterMenuRoutes from './CharacterMenuRoutes';
 
 const CampaignTabRoutes = () => {
   return (
     <Route path="campaigns">
       <Route path="" element={<Campaigns />} />
-      <Route path=":campaignId" element={<CampaignSocketProvider />}>
+      <Route path=":campaignId" element={<CampaignProvider />}>
         <Route path="" element={<Campaign />}>
           <Route
             path="conditions/:conditionId"
@@ -60,7 +62,10 @@ const CampaignTabRoutes = () => {
         </Route>
         {SessionRoutes()}
         <Route path="maps">
-          <Route path=":mapId" element={<Map />} />
+          <Route path=":mapId" element={<Map />}>
+            <Route path="characters">{CharacterMenuRoutes()}</Route>
+            <Route path="initiative" element={<InitiativeModal />} />
+          </Route>
           <Route path="locations" element={<MapList />}>
             <Route path=":mapId/delete" element={<DeleteModal />} />
           </Route>

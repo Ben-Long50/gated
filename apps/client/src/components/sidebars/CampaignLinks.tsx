@@ -145,8 +145,9 @@ const CampaignLinks = () => {
           >
             {playerCharacters.map((character) => (
               <SubLinkSidebar
+                key={character?.id}
                 title={`${character?.firstName}'s Notes`}
-                path={`campaigns/${campaignId}/characters/${character.id}/notes`}
+                path={`campaigns/${campaignId}/characters/${character?.id}/notes`}
               />
             ))}
           </LinkListSidebar>

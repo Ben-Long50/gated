@@ -3,11 +3,12 @@ import handleResponse from '../handleResponse';
 const updateCharacterLocation = async (
   apiUrl: string,
   mapId: number,
-  formData: { characterId: number; index: number },
+
+  formData: { characterId: number; locationId: number; index: number },
 ) => {
   try {
     const response = await fetch(
-      `${apiUrl}/characters/${formData.characterId}/location`,
+      `${apiUrl}/characters/${formData.characterId}/locations/${formData.locationId}`,
       {
         method: 'POST',
         credentials: 'include',

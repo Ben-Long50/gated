@@ -1,15 +1,17 @@
 import { mdiTriangleDown } from '@mdi/js';
 import Icon from '@mdi/react';
-import { useContext } from 'react';
+import { CSSProperties, useContext } from 'react';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 
 const ArrowHeader4 = ({
   title,
   className,
+  style,
   reverse,
 }: {
   title: string;
   className?: string;
+  style: CSSProperties;
   reverse?: boolean;
 }) => {
   const { mobile } = useContext(LayoutContext);
@@ -20,11 +22,14 @@ const ArrowHeader4 = ({
     >
       <Icon
         className={`${mobile ? 'mt-[7px]' : 'mt-[9px]'} text-primary shrink-0`}
+        style={{ ...style }}
         path={mdiTriangleDown}
         size={0.375}
         rotate={reverse ? 90 : -90}
       />
-      <h4 className="truncate">{title}</h4>
+      <h4 className="truncate text-inherit" style={{ ...style }}>
+        {title}
+      </h4>
     </div>
   );
 };

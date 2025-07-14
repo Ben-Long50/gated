@@ -10,13 +10,43 @@ import ArmorIcon from './icons/ArmorIcon';
 import useMapStore from 'src/stores/mapStore';
 import { motion } from 'motion/react';
 import ConditionTag from './ConditionTag';
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useContext, useLayoutEffect, useRef, useState } from 'react';
+import { ThemeContext } from 'src/contexts/ThemeContext';
+import CharacterRadialMenu from './radialMenus/characterRadialMenu/CharacterRadialMenu';
+import useRadialMenuStore from 'src/stores/radialMenuStore';
 
-const CharacterCardSmall = ({ characterId }: { characterId: number }) => {
+const CharacterCardSmall = ({
+  characterId,
+  active,
+}: {
+  characterId: number;
+  active: boolean;
+}) => {
+  const { accentPrimary } = useContext(ThemeContext);
   const { filteredCharacter: character, isLoading } = useCharacter(characterId);
   const [detailHeight, setDetailHeight] = useState(1000);
 
   const detailRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef(null);
+
+  const menuOpen = useRadialMenuStore((state) => state.menuOpen);
+  const setMenuOpen = useRadialMenuStore((state) => state.setMenuOpen);
+  const setMenu = useRadialMenuStore((state) => state.setMenu);
+  const setCoordinates = useRadialMenuStore((state) => state.setCoordinates);
+
+  const handleMenu = (e: MouseEvent) => {
+    if (!containerRef.current) return;
+    setMenu('character', 'large', characterId);
+
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    if (!menuOpen) {
+      setCoordinates(x, y);
+    }
+    setMenuOpen(!menuOpen);
+  };
 
   useLayoutEffect(() => {
     if (detailRef.current) {
@@ -29,10 +59,20 @@ const CharacterCardSmall = ({ characterId }: { characterId: number }) => {
   if (isLoading) return <Loading size={1.25} />;
 
   return (
-    <div className="bg-primary flex max-w-96 grow flex-col gap-1 truncate rounded p-2 px-3 shadow-md shadow-black">
-      <ArrowHeader4 title={`${character?.firstName} ${character?.lastName}`} />
-
-      <div className="relative flex w-full items-center gap-4">
+    <div
+      ref={containerRef}
+      className={`bg-primary relative flex max-w-96 grow cursor-pointer flex-col rounded p-2 px-3 shadow-md shadow-black`}
+      onClick={(e) => {
+        e.stopPropagation();
+        handleMenu(e);
+      }}
+    >
+      <CharacterRadialMenu character={character} containerRef={containerRef} />
+      <ArrowHeader4
+        style={{ color: active ? `${accentPrimary}` : undefined }}
+        title={`${character?.firstName} ${character?.lastName}`}
+      />
+      <div className="relative mt-2 flex w-full items-center gap-4">
         <CharacterPictureRound character={character} />
         {character?.conditions && character?.conditions.length > 0 && (
           <div className="absolute left-0 top-0 z-10 size-3 rounded-full bg-red-600 shadow-md shadow-black"></div>
@@ -54,18 +94,20 @@ const CharacterCardSmall = ({ characterId }: { characterId: number }) => {
       <div className={`timing overflow-hidden px-4`}>
         <motion.div
           ref={detailRef}
-          className="flex w-full flex-col items-center justify-around gap-2"
-          initial={{ marginTop: -detailHeight - 4 }}
+          className="flex w-full flex-col items-center justify-around gap-2 pt-2"
+          initial={{ marginTop: -detailHeight - 8 }}
           animate={{
-            marginTop: id === characterId ? 0 : -detailHeight - 4,
+            marginTop: id === characterId ? 0 : -detailHeight - 8,
           }}
           transition={{ duration: 0.2 }}
         >
-          <div className="flex w-full justify-start gap-1">
-            {character?.conditions.map((condition) => (
-              <ConditionTag condition={condition} />
-            ))}
-          </div>
+          {character?.conditions && character.conditions.length > 0 && (
+            <div className="flex w-full justify-start gap-1">
+              {character?.conditions.map((condition) => (
+                <ConditionTag key={condition.id} condition={condition} />
+              ))}
+            </div>
+          )}
           <div className="flex w-full items-center justify-around gap-2">
             <div className="flex flex-col items-center justify-between gap-2">
               <div className="flex items-center justify-center gap-2">

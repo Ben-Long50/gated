@@ -88,6 +88,9 @@ const ItemMenu = ({
     case 'inventory':
       listLayoutClasses = 'grid grid-cols-3 sm:grid-cols-6';
       break;
+    case 'map':
+      listLayoutClasses = 'flex gap-2';
+      break;
     default:
       listLayoutClasses = '';
       break;
@@ -96,7 +99,7 @@ const ItemMenu = ({
   return (
     <div ref={listRef} className="flex w-full flex-col gap-4">
       <div className="grid grid-flow-col gap-2 sm:gap-4">
-        {parts.includes('equipment') && (
+        {parts.includes('maps') && (
           <>
             <BtnAuth
               active={tab === 'weapon' ? true : false}

@@ -1,12 +1,20 @@
-import { createContext, useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { createContext, useContext, useEffect } from 'react';
+import { Outlet, useParams } from 'react-router-dom';
 import { socket } from '../socket';
 import { useQueryClient } from '@tanstack/react-query';
+import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
+import { AuthContext } from './AuthContext';
 
-const CampaignSocketContext = createContext({ socket });
+export const CampaignContext = createContext({ socket, gameMaster: undefined });
 
-export const CampaignSocketProvider = () => {
+export const CampaignProvider = () => {
+  const { apiUrl, user } = useContext(AuthContext);
+  const { campaignId } = useParams();
   const queryClient = useQueryClient();
+
+  const { data: campaign } = useCampaignQuery(apiUrl, Number(campaignId));
+
+  const gameMaster = user?.id === campaign?.ownerId;
 
   useEffect(() => {
     socket.connect();
@@ -50,8 +58,8 @@ export const CampaignSocketProvider = () => {
   }, []);
 
   return (
-    <CampaignSocketContext.Provider value={{ socket }}>
+    <CampaignContext.Provider value={{ socket, gameMaster }}>
       <Outlet context={{ socket }} />
-    </CampaignSocketContext.Provider>
+    </CampaignContext.Provider>
   );
 };

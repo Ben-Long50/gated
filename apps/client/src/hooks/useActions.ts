@@ -3,12 +3,12 @@ import { AuthContext } from '../contexts/AuthContext';
 import useActionsQuery from './useActionsQuery/useActionsQuery';
 import { Action } from '../types/action';
 
-const useActions = () => {
+const useActions = (uniqueActions?: Action[]) => {
   const { apiUrl } = useContext(AuthContext);
 
   const { data: actions, isLoading, isPending } = useActionsQuery(apiUrl);
 
-  const list = actions;
+  const list = uniqueActions ? [...uniqueActions, ...actions] : actions;
 
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('');
@@ -38,6 +38,35 @@ const useActions = () => {
             action.name.toLowerCase().includes(query.toLowerCase()),
           ) ?? []);
 
+  const generalActions =
+    category.length > 0
+      ? subCategory.length > 0
+        ? list?.filter(
+            (action: Action) =>
+              action.actionType === category &&
+              !action.actionSubtypes.includes('unique') &&
+              action.actionSubtypes.includes(subCategory) &&
+              action.name.toLowerCase().includes(query.toLowerCase()),
+          )
+        : list?.filter(
+            (action: Action) =>
+              action.actionType === category &&
+              !action.actionSubtypes.includes('unique') &&
+              action.name.toLowerCase().includes(query.toLowerCase()),
+          )
+      : subCategory.length > 0
+        ? list?.filter(
+            (action: Action) =>
+              !action.actionSubtypes.includes('unique') &&
+              action.actionSubtypes.includes(subCategory) &&
+              action.name.toLowerCase().includes(query.toLowerCase()),
+          )
+        : (list?.filter(
+            (action: Action) =>
+              !action.actionSubtypes.includes('unique') &&
+              action.name.toLowerCase().includes(query.toLowerCase()),
+          ) ?? []);
+
   const filterByQuery = (query: string) => {
     setQuery(query);
   };
@@ -56,6 +85,7 @@ const useActions = () => {
 
   return {
     filteredActions,
+    generalActions,
     filterByQuery,
     filterByCategory,
     filterBySubCategory,

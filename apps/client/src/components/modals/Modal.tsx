@@ -35,7 +35,7 @@ const Modal = ({
           active={true}
           onClick={() => {
             if (!backgroundPath) {
-              navigate('..', { replace: true });
+              navigate(-1);
             } else {
               navigate(backgroundPath, { replace: true });
               navigate(-1);

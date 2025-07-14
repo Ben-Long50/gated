@@ -165,10 +165,10 @@ const InputSelectField = ({
           </div>
           <Divider />
           <div className="scrollbar-secondary flex w-full flex-col overflow-y-auto">
-            {filteredOptions.map((option) => (
+            {filteredOptions.map((option, index) => (
               <button
                 className="hover:bg-tertiary text-secondary w-full rounded-md p-2 text-left text-lg"
-                key={optionName(option)}
+                key={index}
                 value={optionName(option)}
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={(e) => {
