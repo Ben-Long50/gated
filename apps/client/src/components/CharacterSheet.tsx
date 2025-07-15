@@ -11,12 +11,11 @@ import EvasionIcon from './icons/EvasionIcon';
 import ArmorIcon from './icons/ArmorIcon';
 import WardIcon from './icons/WardIcon';
 import SpeedIcon from './icons/SpeedIcon';
-import { Link, Outlet, useOutletContext, useParams } from 'react-router-dom';
+import { Link, Outlet, useParams } from 'react-router-dom';
 import BtnRect from './buttons/BtnRect';
 import InjuryIcon from './icons/InjuryIcon';
 import InsanityIcon from './icons/InsanityIcon';
 import Loading from './Loading';
-import ArrowHeader2 from './ArrowHeader2';
 import ArrowHeader1 from './ArrowHeader1';
 import ArrowHeader3 from './ArrowHeader3';
 import Divider from './Divider';
@@ -27,7 +26,6 @@ import CharacterStatBars from './CharacterStatBars';
 import { capitalCase } from 'change-case';
 import ConditionTag from './ConditionTag';
 import ExpandingList from './ExpandingList';
-import useNavigationStore from 'src/stores/navbarStore';
 import NavTabs from './NavTabs';
 
 const CharacterSheet = () => {
@@ -35,8 +33,6 @@ const CharacterSheet = () => {
   const { conditionId, characterId } = useParams();
   const { user } = useContext(AuthContext);
   const { mobile } = useContext(LayoutContext);
-
-  const navbarHeight = useNavigationStore((state) => state.navbarHeight);
 
   const [infoVisibility, setInfoVisibility] = useState(mobile ? false : true);
 

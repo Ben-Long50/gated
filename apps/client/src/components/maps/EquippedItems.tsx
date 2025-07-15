@@ -1,22 +1,32 @@
 import useCharacter from 'src/hooks/useCharacter';
 import Loading from '../Loading';
 import { useContext, useRef } from 'react';
-import ItemMenu from '../ItemMenu';
 import CloudinaryImage from '../CloudinaryImage';
 import { Item } from 'src/types/item';
-import useMapStore from 'src/stores/mapStore';
 import { ThemeContext } from 'src/contexts/ThemeContext';
+import useCombatStore from 'src/stores/combatStore';
+import Icon from '@mdi/react';
+import { mdiCheckCircle } from '@mdi/js';
+import { FormApi } from '@tanstack/react-form';
 
-const EquippedItems = ({ characterId }: { characterId: number }) => {
-  const { rarityColorMap } = useContext(ThemeContext);
+const EquippedItems = ({
+  form,
+  characterId,
+}: {
+  form: FormApi;
+  characterId: number;
+}) => {
+  const { rarityColorMap, statColorMap } = useContext(ThemeContext);
   const { filteredCharacter: character, isLoading } = useCharacter(characterId);
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<number>(null);
 
-  const item = useMapStore((store) => store.item);
-  const setItem = useMapStore((store) => store.setItem);
-
-  const timeoutRef = useRef<number | null>(null);
+  const item = useCombatStore((state) => state.item);
+  const activeCharacter = useCombatStore((state) => state.activeCharacter);
+  const userCharacter = useCombatStore((state) => state.userCharacter);
+  const setItem = useCombatStore((state) => state.setItem);
+  const setRange = useCombatStore((state) => state.setRange);
 
   const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
     e.stopPropagation();
@@ -36,42 +46,73 @@ const EquippedItems = ({ characterId }: { characterId: number }) => {
 
   return (
     character?.equipment && (
-      <div
-        ref={scrollRef}
-        className="scrollbar-primary-2 col-span-3 flex w-full gap-2 overflow-x-auto"
-        onWheel={handleWheel}
-        style={{ overscrollBehavior: 'contain' }}
-      >
-        {equipmentList.map((equipment, index) => (
-          <button
-            key={index}
-            className="relative size-28 overflow-hidden rounded border-2"
-            style={{
-              borderColor:
-                equipment.id === item?.id
-                  ? rarityColorMap[equipment.rarity]
-                  : `${rarityColorMap[equipment.rarity]}80`,
-            }}
-            onMouseEnter={() => {
-              if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current);
-              }
-              setItem(equipment);
-            }}
-            onMouseLeave={() => {
-              timeoutRef.current = setTimeout(() => setItem(null), 500);
-            }}
+      <form.Field name="item">
+        {(field) => (
+          <div
+            ref={scrollRef}
+            className="scrollbar-primary-2 col-span-3 flex w-full gap-2 overflow-x-auto"
+            onWheel={handleWheel}
+            style={{ overscrollBehavior: 'contain' }}
           >
-            <div
-              className="absolute inset-0 z-10 opacity-50"
-              style={{
-                backgroundImage: `radial-gradient(circle, transparent 65%, ${rarityColorMap[equipment.rarity]} 100%)`,
-              }}
-            />
-            <CloudinaryImage publicId={equipment.picture.publicId} />
-          </button>
-        ))}
-      </div>
+            {equipmentList.map((equipment, index) => (
+              <button
+                key={index}
+                className={`relative size-20 shrink-0 overflow-hidden rounded border-2 sm:size-28`}
+                style={{
+                  borderColor:
+                    equipment.id === item.item?.id
+                      ? rarityColorMap[equipment.rarity]
+                      : `${rarityColorMap[equipment.rarity]}80`,
+                }}
+                onClick={() => {
+                  if (activeCharacter === userCharacter) {
+                    field.state.value && field.state.value.id === equipment.id
+                      ? field.handleChange(null)
+                      : field.handleChange(equipment);
+                  }
+
+                  setItem(equipment, false);
+                }}
+                onMouseEnter={() => {
+                  if (timeoutRef.current) {
+                    clearTimeout(timeoutRef.current);
+                  }
+                  setItem(equipment, false);
+                  setRange(equipment.stats.range || null, statColorMap.DMG);
+                }}
+                onMouseLeave={() => {
+                  if (field.state.value) {
+                    timeoutRef.current = setTimeout(() => {
+                      setItem(field.state.value, false);
+                      setRange(null, null);
+                    }, 200);
+                  } else {
+                    setItem(null, false);
+                    setRange(null, null);
+                  }
+                }}
+              >
+                {field.state.value?.id === equipment.id && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                    <Icon
+                      className="text-tertiary"
+                      path={mdiCheckCircle}
+                      size={3}
+                    />
+                  </div>
+                )}
+                <div
+                  className="absolute inset-0 z-10 opacity-50"
+                  style={{
+                    backgroundImage: `radial-gradient(circle, transparent 65%, ${rarityColorMap[equipment.rarity]} 100%)`,
+                  }}
+                />
+                <CloudinaryImage publicId={equipment.picture.publicId} />
+              </button>
+            ))}
+          </div>
+        )}
+      </form.Field>
     )
   );
 };

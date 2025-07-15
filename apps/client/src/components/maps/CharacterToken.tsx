@@ -4,18 +4,19 @@ import Loading from '../Loading';
 import useMapStore from 'src/stores/mapStore';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import { useContext } from 'react';
-import { Character } from 'src/types/character';
 import Die from './Die';
+import useCombatStore from 'src/stores/combatStore';
+import { FormApi } from '@tanstack/react-form';
 
 const CharacterToken = ({
-  activeCharacter,
+  form,
   characterId,
   locationId,
   setDragoverIndex,
   diceArray,
   rolling,
 }: {
-  activeCharacter: Partial<Character>;
+  form: FormApi;
   characterId: number;
   locationId: number;
   setDragoverIndex: (index: number | null) => void;
@@ -25,10 +26,14 @@ const CharacterToken = ({
   const { accentPrimary, statColorMap } = useContext(ThemeContext);
   const { filteredCharacter: character, isLoading } = useCharacter(characterId);
 
-  const action = useMapStore((state) => state.action);
-  const setRange = useMapStore((state) => state.setRange);
-  const setItem = useMapStore((state) => state.setItem);
+  const action = useCombatStore((state) => state.action);
+  const setRange = useCombatStore((state) => state.setRange);
+  const item = useCombatStore((state) => state.item);
+  const setItem = useCombatStore((state) => state.setItem);
   const setCharacterId = useMapStore((state) => state.setCharacterId);
+  const userCharacter = useCombatStore((state) => state.userCharacter);
+
+  const activeCharacter = useCombatStore((state) => state.activeCharacter);
 
   const handleRange = () => {
     if (action?.actionSubtypes.includes('attack')) {
@@ -49,40 +54,50 @@ const CharacterToken = ({
   if (isLoading) return <Loading size={1.25} />;
 
   return (
-    <div
-      className="group relative inset-0 z-10 size-12 cursor-grab"
-      draggable={true}
-      onDragStart={(e) => {
-        e.dataTransfer.setData('characterId', characterId.toString());
-        e.dataTransfer.setData('locationId', locationId.toString());
-      }}
-      onDragEnd={() => {
-        setDragoverIndex(null);
-      }}
-      onMouseEnter={() => {
-        if (action) {
-          handleRange();
-        }
-        setCharacterId(characterId);
-      }}
-      onMouseLeave={() => {
-        setRange(0, accentPrimary);
-        setItem(null);
-        setCharacterId(null);
-      }}
-    >
-      <CharacterPictureRound
-        className="group-hover:border-accent timing size-12 border-2 border-white"
-        character={character}
-      />
-      {activeCharacter?.id === character?.id && (
-        <div className="absolute right-1/2 top-0 flex shrink-0 -translate-y-full translate-x-1/2 justify-center gap-2 pb-2">
-          {diceArray?.map((number: number, index) => (
-            <Die key={index} size={44} number={number} rolling={rolling} />
-          ))}
+    <form.Field name="target">
+      {(field) => (
+        <div
+          className="group relative inset-0 z-10 size-12 cursor-grab"
+          draggable={true}
+          onDragStart={(e) => {
+            e.dataTransfer.setData('characterId', characterId.toString());
+            e.dataTransfer.setData('locationId', locationId.toString());
+          }}
+          onDragEnd={() => {
+            setDragoverIndex(null);
+          }}
+          onMouseEnter={() => {
+            if (action && activeCharacter !== userCharacter) {
+              handleRange();
+            }
+            setCharacterId(characterId);
+          }}
+          onMouseLeave={() => {
+            setCharacterId(null);
+          }}
+          onClick={() => {
+            if (
+              activeCharacter === userCharacter &&
+              userCharacter !== characterId
+            ) {
+              field.handleChange(character);
+            }
+          }}
+        >
+          <CharacterPictureRound
+            className={`${activeCharacter === character?.id && 'activeToken'} group-hover:border-accent timing size-12 border-2 border-white`}
+            character={character}
+          />
+          {activeCharacter === character?.id && (
+            <div className="absolute right-1/2 top-0 flex shrink-0 -translate-y-full translate-x-1/2 justify-center gap-2 pb-2">
+              {diceArray?.map((number: number, index) => (
+                <Die key={index} size={44} number={number} rolling={rolling} />
+              ))}
+            </div>
+          )}
         </div>
       )}
-    </div>
+    </form.Field>
   );
 };
 

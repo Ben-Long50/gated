@@ -11,7 +11,7 @@ const ArrowHeader4 = ({
 }: {
   title: string;
   className?: string;
-  style: CSSProperties;
+  style?: CSSProperties;
   reverse?: boolean;
 }) => {
   const { mobile } = useContext(LayoutContext);

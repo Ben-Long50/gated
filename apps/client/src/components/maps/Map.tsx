@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import ReactGridLayout from 'react-grid-layout';
 import useMap from 'src/hooks/useMap';
 import Loading from '../Loading';
@@ -6,49 +6,57 @@ import { ThemeContext } from 'src/contexts/ThemeContext';
 import { mdiGrid } from '@mdi/js';
 import Icon from '@mdi/react';
 import { AuthContext } from 'src/contexts/AuthContext';
-import { Character } from 'src/types/character';
 import MapGrid from './MapGrid';
-import useMapStore from 'src/stores/mapStore';
 import ItemCard from '../ItemCard';
 import CharacterCardSmall from '../CharacterCardSmall';
-import LinkedActionCard from '../LinkedActionCard';
 import CharacterIcon from '../icons/CharacterIcon';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import CharacterOptions from './CharacterOptions';
 import useRoll from 'src/hooks/useRoll';
 import useCombat from 'src/hooks/useCombat';
 import { Outlet } from 'react-router-dom';
+import useCombatStore from 'src/stores/combatStore';
+import ActionSidebar from './ActionSidebar';
+import { useForm } from '@tanstack/react-form';
+import { Action } from 'src/types/action';
+import { Item } from 'src/types/item';
+import { Character } from 'src/types/character';
+import useCharacter from 'src/hooks/useCharacter';
+import { LayoutContext } from 'src/contexts/LayoutContext';
+import ActionIcon from '../icons/ActionIcon';
 
 const Map = () => {
   const { user } = useContext(AuthContext);
+  const { mobile } = useContext(LayoutContext);
   const { accentPrimary } = useContext(ThemeContext);
   const { gameMaster } = useContext(CampaignContext);
   const [gridDisplay, setGridDisplay] = useState(false);
-  const [character, setCharacter] = useState<Partial<Character> | null>(null);
   const [characterList, setCharacterList] = useState(true);
+  const [actionSidebar, setActionSidebar] = useState(true);
 
   const { map, locations, isLoading } = useMap();
 
-  const characterIds = useMemo(() => {
-    return locations
-      ?.map((location) => location?.characterId)
-      .filter((characterId) => characterId != null);
-  }, [locations]);
+  const userCharacter = useCombatStore((state) => state.userCharacter);
+  const activeCharacter = useCombatStore((state) => state.activeCharacter);
+  const setUserCharacter = useCombatStore((state) => state.setUserCharacter);
+  const turnOrder = useCombatStore((state) => state.turnOrder);
 
-  const { turnOrder, setTurnOrder } = useCombat(characterIds);
+  const { diceArray, setDiceArray, rolling, calculateSuccesses, successes } =
+    useRoll();
 
-  const { diceArray, rolling, calculateSuccesses } = useRoll();
+  const { advanceTurn } = useCombat();
+
+  const { filteredCharacter: character } = useCharacter(activeCharacter);
 
   useEffect(() => {
     if (!gameMaster) {
-      const characters = locations?.map((location) => location?.character);
-      setCharacter(
-        characters?.find((character) => character?.userId === user?.id),
-      );
-    } else {
-      setCharacter(null);
+      const character = locations
+        ?.map((location) => location?.character)
+        .find((character) => character?.userId === user?.id);
+
+      setUserCharacter(character?.id);
     }
-  }, [map, gameMaster]);
+  }, [locations, gameMaster]);
 
   const mapLayout = map?.layout.map((item) => ({
     ...item,
@@ -57,9 +65,37 @@ const Map = () => {
     resizeHandles: [],
   }));
 
-  const action = useMapStore((state) => state.action);
+  const item = useCombatStore((state) => state.item);
 
-  const item = useMapStore((state) => state.item);
+  //   const roll = async (rolls: { attribute: string; skill: string }[]) => {
+  //   await calculateSuccesses(character?.attributes, rolls, []);
+  // };
+
+  const actionForm = useForm({
+    defaultValues: {
+      activeCharacter: character || null,
+      action: null as Action | null,
+      item: null as Item | null,
+      target: null as Character | null,
+    },
+    onSubmit: async ({ value }) => {
+      // roll(value.action?.roll);
+      value.activeCharacter = character;
+      console.log(value);
+
+      await calculateSuccesses(
+        value.activeCharacter?.attributes,
+        value.action.roll,
+        [],
+      );
+
+      setTimeout(() => {
+        setDiceArray([]);
+      }, 10000);
+
+      actionForm.reset();
+    },
+  });
 
   if (isLoading) return <Loading />;
 
@@ -80,7 +116,7 @@ const Map = () => {
               className={`${gridDisplay ? 'text-accent' : 'text-tertiary'} group-hover:text-accent timing size-8`}
             />
           </button>
-          <h1>{map.name}</h1>
+          <h1 className="text-center">{map.name}</h1>
         </div>
         <div
           className="scrollbar-primary relative max-w-full overflow-x-auto overflow-y-hidden rounded border-2"
@@ -122,15 +158,17 @@ const Map = () => {
             )}
           </ReactGridLayout>
           <MapGrid
+            form={actionForm}
             map={map}
             locations={locations}
-            activeCharacter={character}
             gridDisplay={gridDisplay}
             diceArray={diceArray}
             rolling={rolling}
           />
         </div>
-        <div className={`fixed left-24 top-[90px] flex items-start gap-2`}>
+        <div
+          className={`${mobile ? `${characterList ? 'left-2 right-2 gap-0' : 'left-0 gap-2'} top-[72px]` : 'left-24 top-[90px] gap-4'} fixed flex items-start`}
+        >
           <div
             className={`${characterList ? 'visible w-full opacity-100' : 'invisible w-0 opacity-0'} timing flex flex-col gap-2`}
           >
@@ -138,7 +176,7 @@ const Map = () => {
               <CharacterCardSmall
                 key={characterId}
                 characterId={characterId}
-                active={character?.id === characterId}
+                active={userCharacter === characterId}
               />
             ))}
           </div>
@@ -152,28 +190,38 @@ const Map = () => {
           </button>
         </div>
         <div
-          className={`${item ? 'visible translate-x-0 px-4 opacity-100' : 'invisible translate-x-full opacity-0'} timing fixed right-8 top-[90px] w-96`}
+          className={`${actionSidebar ? 'overflow-y-auto' : 'overflow-y-hidden'} ${mobile ? `${actionSidebar ? 'left-2 right-2 gap-0' : 'right-2 gap-4'} bottom-4 top-[72px]` : 'bottom-8 right-8 top-[90px] gap-4'} scrollbar-primary-2 fixed flex justify-end`}
         >
-          {item && <ItemCard className="w-full" cardType="small" item={item} />}
+          <button
+            className={`timing bg-tertiary group mb-auto flex rounded p-1.5 shadow-md shadow-black`}
+            aria-label="Open character list"
+            type="button"
+            onClick={() => setActionSidebar((prev) => !prev)}
+          >
+            <ActionIcon className="text-tertiary group-hover:text-accent timing size-8" />
+          </button>
+          <div
+            className={`${actionSidebar ? `${mobile ? 'w-full' : 'w-[425px]'} visible px-0.5 opacity-100` : 'invisible w-0 opacity-0'} timing flex flex-col gap-4 sm:gap-8`}
+          >
+            {activeCharacter === userCharacter && (
+              <ActionSidebar
+                form={actionForm}
+                diceArray={diceArray}
+                rolling={rolling}
+                calculateSuccesses={calculateSuccesses}
+                successes={successes}
+              />
+            )}
+            {item?.item && (
+              <ItemCard className="w-full" cardType="small" item={item?.item} />
+            )}
+          </div>
         </div>
-        {action && (
-          <LinkedActionCard
-            cardWidth={501}
-            className="w-full max-w-5xl"
-            action={action}
-          />
-        )}
-        <CharacterOptions
-          locations={locations}
-          characterId={character?.id}
-          setCharacter={setCharacter}
-          calculateSuccesses={calculateSuccesses}
-        />
+        <CharacterOptions form={actionForm} advanceTurn={advanceTurn} />
       </div>
       <Outlet
         context={{
-          turnOrder,
-          setTurnOrder,
+          advanceTurn,
         }}
       />
     </>

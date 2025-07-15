@@ -65,7 +65,7 @@ const Die = ({
 
   return (
     <div
-      className={`relative shrink-0 shadow-md shadow-black`}
+      className={`${!rolling && 'rollComplete'} relative shrink-0 shadow-md shadow-black`}
       style={{
         width: size,
         height: size,

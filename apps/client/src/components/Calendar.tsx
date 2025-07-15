@@ -115,6 +115,7 @@ const Calendar = () => {
             (eventArray, index: number) => {
               return (
                 <button
+                  key={index}
                   className="hover:bg-tertiary relative grid aspect-square grid-rows-2 rounded border-2 border-gray-400 border-opacity-50"
                   style={{
                     borderColor:
@@ -146,8 +147,9 @@ const Calendar = () => {
                       </div>
                     ) : (
                       <div className="row-start-2 flex items-center justify-center gap-0.5">
-                        {eventArray.map(() => (
+                        {eventArray.map((_, index) => (
                           <Icon
+                            key={index}
                             path={mdiCircle}
                             size={0.3}
                             className="text-accent"

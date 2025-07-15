@@ -35,7 +35,7 @@ const useRoll = () => {
 
         if (count >= maxRolls) {
           setRolling(false);
-          resolve(dieArray); // ✅ return final dice result
+          resolve(dieArray);
           return;
         }
 

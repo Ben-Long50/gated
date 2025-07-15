@@ -1,17 +1,26 @@
 import { Fragment } from 'react/jsx-runtime';
-import CharacterRoll from '../maps/CharacterRoll';
 import Modal from './Modal';
 import Divider from '../Divider';
 import BtnRect from '../buttons/BtnRect';
-import { useRef } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useRef, useState } from 'react';
+import { useNavigate, useOutletContext } from 'react-router-dom';
+import Loading from '../Loading';
+import useCombatStore from 'src/stores/combatStore';
+import CharacterInitiativeRoll from '../maps/CharacterInitiativeRoll';
 
 const InitiativeModal = () => {
+  const [rollingInitiative, setRollingInitiative] = useState(false);
+  const [rollCounter, setRollCounter] = useState(0);
+  const navigate = useNavigate();
   const rollRefs = useRef([]);
 
-  const { turnOrder, setTurnOrder } = useOutletContext() || {};
+  const { advanceTurn } = useOutletContext() || {};
 
-  const initiativeRoll = async () => {
+  const turnOrder = useCombatStore((state) => state.turnOrder);
+  const setTurnOrder = useCombatStore((state) => state.setTurnOrder);
+
+  const rollInitiative = async () => {
+    setRollingInitiative(true);
     const rollAll = async (characterIds?: []) => {
       const rolls = rollRefs.current
         .map((ref) => {
@@ -85,6 +94,8 @@ const InitiativeModal = () => {
     }
 
     setTurnOrder(resultsOrder.map((result) => result.characterId));
+    setRollingInitiative(false);
+    setRollCounter((prev) => prev + 1);
   };
 
   return (
@@ -93,7 +104,7 @@ const InitiativeModal = () => {
       <div className="flex w-full flex-col gap-2">
         {turnOrder?.map((characterId, index) => (
           <Fragment key={characterId}>
-            <CharacterRoll
+            <CharacterInitiativeRoll
               ref={(ref) => {
                 rollRefs.current[index] = ref;
               }}
@@ -103,16 +114,42 @@ const InitiativeModal = () => {
           </Fragment>
         ))}
       </div>
-      <BtnRect
-        className="w-full"
-        ariaLabel="Roll initiative"
-        type="button"
-        onClick={() => {
-          initiativeRoll();
-        }}
-      >
-        Roll Initiative
-      </BtnRect>
+      <div className="flex w-full items-center gap-8">
+        <BtnRect
+          className="group w-full"
+          ariaLabel="Roll initiative"
+          type="button"
+          onClick={() => {
+            if (!rollingInitiative) {
+              rollInitiative();
+            }
+          }}
+        >
+          {rollingInitiative ? (
+            <Loading
+              className="group-hover:text-accent text-zinc-950"
+              size={1.15}
+            />
+          ) : !rollingInitiative && rollCounter > 0 ? (
+            'Reroll Initiative'
+          ) : (
+            'Roll Initiative'
+          )}
+        </BtnRect>
+        {rollCounter > 0 && (
+          <BtnRect
+            className={`${rollingInitiative && 'pointer-events-none opacity-50'} w-full`}
+            ariaLabel="Start combat"
+            type="button"
+            onClick={() => {
+              advanceTurn();
+              navigate(-1);
+            }}
+          >
+            Start Combat
+          </BtnRect>
+        )}
+      </div>
     </Modal>
   );
 };

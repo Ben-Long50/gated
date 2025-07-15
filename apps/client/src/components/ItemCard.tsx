@@ -39,6 +39,7 @@ import { useInView } from 'react-intersection-observer';
 import KeywordTag from './KeywordTag';
 import ConditionTag from './ConditionTag';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
+import { CampaignContext } from 'src/contexts/CampaignContext';
 
 const ItemCard = ({
   item,
@@ -57,6 +58,7 @@ const ItemCard = ({
   toggleFormLink?: (item: Item) => void;
   ownerId?: number;
 }) => {
+  const { gameMaster } = useContext(CampaignContext);
   const { conditionId, traitId } = useParams();
   const { user } = useContext(AuthContext);
   const { accentPrimary } = useContext(ThemeContext);
@@ -278,9 +280,11 @@ const ItemCard = ({
                 )}
               </div>
             </div>
-            {(mode === 'equipment' || mode === 'deployments') && (
+            {(parts.includes('equipment') ||
+              parts.includes('deployments') ||
+              parts.includes('maps')) && (
               <div className="z-10">
-                {ownerId === user?.id &&
+                {(gameMaster || ownerId === user?.id) &&
                   (item.itemTypes.includes('weapon') ? (
                     <WeaponControls weaponId={item.id} stats={itemStats} />
                   ) : item.itemTypes.includes('armor') ? (

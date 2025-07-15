@@ -1,15 +1,8 @@
 import { RefObject } from 'react';
 
-const RangeIcon = ({
-  className,
-  ref,
-}: {
-  className?: string;
-  ref: RefObject;
-}) => {
+const RangeIcon = ({ className }: { className?: string }) => {
   return (
     <svg
-      ref={ref}
       className={`${className ? className : 'text-secondary'} timing`}
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 48 48"
