@@ -239,6 +239,8 @@ const characterServices = {
         stats: {
           currentHealth: formData.stats?.currentHealth,
           currentSanity: formData.stats?.currentSanity,
+          currentActions: 3,
+          currentReactions: 1,
           injuries: 0,
           insanities: 0,
         },

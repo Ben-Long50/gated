@@ -216,6 +216,8 @@ const characterServices = {
             const data = Object.assign(Object.assign({}, formData), { userId, stats: {
                     currentHealth: (_a = formData.stats) === null || _a === void 0 ? void 0 : _a.currentHealth,
                     currentSanity: (_b = formData.stats) === null || _b === void 0 ? void 0 : _b.currentSanity,
+                    currentActions: 3,
+                    currentReactions: 1,
                     injuries: 0,
                     insanities: 0,
                 }, perks: {
