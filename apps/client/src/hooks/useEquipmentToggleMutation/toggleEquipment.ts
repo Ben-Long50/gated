@@ -1,14 +1,12 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const toggleEquipment = async (
-  apiUrl: string,
-  formData: {
-    characterId: number;
-    inventoryId: number;
-    category: string;
-    itemId: number;
-  },
-) => {
+const toggleEquipment = async (formData: {
+  characterId: number;
+  inventoryId: number;
+  category: string;
+  itemId: number;
+}) => {
   try {
     const response = await fetch(
       `${apiUrl}/characters/${formData.characterId}/inventory/${formData.inventoryId}/equipment/${formData.itemId}`,

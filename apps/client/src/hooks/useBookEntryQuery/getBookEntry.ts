@@ -1,6 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const getBookEntry = async (apiUrl: string, bookEntryTitle: string) => {
+const getBookEntry = async (bookEntryTitle: string) => {
   try {
     const response = await fetch(`${apiUrl}/book/entries/${bookEntryTitle}`, {
       method: 'GET',

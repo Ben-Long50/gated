@@ -4,13 +4,9 @@ import { AuthContext } from 'src/contexts/AuthContext';
 import { useParams } from 'react-router-dom';
 
 const useMaps = () => {
-  const { apiUrl } = useContext(AuthContext);
   const { campaignId } = useParams();
 
-  const { data: maps, isLoading } = useCampaignMapsQuery(
-    apiUrl,
-    Number(campaignId),
-  );
+  const { data: maps, isLoading } = useCampaignMapsQuery(Number(campaignId));
 
   return {
     locations: maps?.filter((map) => map.type === 'location') || [],

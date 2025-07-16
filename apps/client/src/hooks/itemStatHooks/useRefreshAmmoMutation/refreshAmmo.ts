@@ -1,6 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../../handleResponse';
 
-const refreshAmmo = async (apiUrl: string, itemId: number) => {
+const refreshAmmo = async (itemId: number) => {
   try {
     const response = await fetch(
       `${apiUrl}/items/${itemId}/stats/refreshAmmo`,

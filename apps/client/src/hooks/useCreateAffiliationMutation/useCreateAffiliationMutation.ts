@@ -4,7 +4,6 @@ import createGangAffiliation from './createGangAffiliation';
 import createFactionAffiliation from './createFactionAffiliation';
 
 const useCreateAffiliationMutation = (
-  apiUrl: string,
   setFormMessage: (message: string) => void,
   factionId?: number,
   gangId?: number,
@@ -15,11 +14,11 @@ const useCreateAffiliationMutation = (
   return useMutation({
     mutationFn: (formData: FormData) => {
       if (factionId) {
-        return createFactionAffiliation(formData, factionId, apiUrl);
+        return createFactionAffiliation(formData, factionId);
       } else if (gangId) {
-        return createGangAffiliation(formData, gangId, apiUrl);
+        return createGangAffiliation(formData, gangId);
       } else if (characterId) {
-        return createCharacterAffiliation(formData, characterId, apiUrl);
+        return createCharacterAffiliation(formData, characterId);
       } else throw new Error('No primary affiliation entity provided');
     },
     onSuccess: () => {

@@ -7,15 +7,9 @@ import { Notification } from 'src/types/notification';
 import useMarkNotificationsReadMutation from 'src/hooks/useMarkNotificationsReadMutation/useMarkNotificationsReadMutation';
 
 const Notifications = () => {
-  const { apiUrl } = useContext(AuthContext);
+  const { data: notifications, isLoading, isPending } = useNotificationQuery();
 
-  const {
-    data: notifications,
-    isLoading,
-    isPending,
-  } = useNotificationQuery(apiUrl);
-
-  const markNotificationsRead = useMarkNotificationsReadMutation(apiUrl);
+  const markNotificationsRead = useMarkNotificationsReadMutation();
 
   useEffect(() => {
     markNotificationsRead.mutate();

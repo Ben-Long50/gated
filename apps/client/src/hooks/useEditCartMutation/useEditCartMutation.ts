@@ -3,11 +3,7 @@ import editCart from './editCart';
 import { useRef } from 'react';
 import { Character } from 'src/types/character';
 
-const useEditCartMutation = (
-  apiUrl: string,
-  characterId: number,
-  cartId: number,
-) => {
+const useEditCartMutation = (characterId: number, cartId: number) => {
   const queryClient = useQueryClient();
   const updateBuffer = useRef(0);
   const timeoutRef = useRef(0);
@@ -26,7 +22,7 @@ const useEditCartMutation = (
 
           updateBuffer.current = 0;
 
-          await editCart(apiUrl, characterId, cartId, {
+          await editCart(characterId, cartId, {
             itemId: formData.itemId,
             value: finalValue,
           });

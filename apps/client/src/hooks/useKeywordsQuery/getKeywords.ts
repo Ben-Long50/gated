@@ -1,6 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const getKeywords = async (apiUrl: string) => {
+const getKeywords = async () => {
   try {
     const response = await fetch(`${apiUrl}/keywords`, {
       method: 'GET',

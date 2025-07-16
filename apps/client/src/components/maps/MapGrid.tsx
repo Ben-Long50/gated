@@ -27,7 +27,6 @@ const MapGrid = ({
   diceArray: number[];
   rolling: boolean;
 }) => {
-  const { apiUrl } = useContext(AuthContext);
   const { accentPrimary, statColorMap } = useContext(ThemeContext);
   const { mapId } = useParams();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -62,7 +61,6 @@ const MapGrid = ({
   );
 
   const updateCharacterLocation = useUpdateCharacterLocationMutation(
-    apiUrl,
     Number(mapId),
   );
 

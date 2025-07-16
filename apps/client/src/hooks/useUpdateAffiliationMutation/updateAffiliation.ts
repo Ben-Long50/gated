@@ -1,10 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const updateAffiliation = async (
-  value: number,
-  affiliationId: number,
-  apiUrl: string,
-) => {
+const updateAffiliation = async (value: number, affiliationId: number) => {
   try {
     const response = await fetch(`${apiUrl}/affiliations/${affiliationId}`, {
       method: 'PUT',

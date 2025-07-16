@@ -10,7 +10,6 @@ import { useOutletContext, useParams } from 'react-router-dom';
 import useCharacter from 'src/hooks/useCharacter';
 
 const InventoryModal = () => {
-  const { apiUrl } = useContext(AuthContext);
   const { rarityColorMap } = useContext(ThemeContext);
   const { characterId } = useParams();
 
@@ -18,7 +17,7 @@ const InventoryModal = () => {
 
   const { filteredCharacter: character } = useCharacter(Number(characterId));
 
-  const toggleEquipment = useToggleEquipmentMutation(apiUrl);
+  const toggleEquipment = useToggleEquipmentMutation();
 
   return (
     <Modal>

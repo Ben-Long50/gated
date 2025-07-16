@@ -1,6 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const getItems = async (apiUrl: string, category: string) => {
+const getItems = async (category: string) => {
   try {
     const response = await fetch(`${apiUrl}/items/${category}`, {
       method: 'GET',

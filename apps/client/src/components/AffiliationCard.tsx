@@ -11,14 +11,11 @@ import useAffiliationValueMutation from 'src/hooks/useAffiliationValueMutation/u
 import { AuthContext } from 'src/contexts/AuthContext';
 
 const AffiliationCard = ({ affiliation }: { affiliation: Affiliation }) => {
-  const { apiUrl, user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const { accentPrimary } = useContext(ThemeContext);
   const { mobile } = useContext(LayoutContext);
 
-  const editAffiliationValue = useAffiliationValueMutation(
-    apiUrl,
-    affiliation.id,
-  );
+  const editAffiliationValue = useAffiliationValueMutation(affiliation.id);
 
   const entities = [...affiliation.factions, ...affiliation.characters];
 

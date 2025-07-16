@@ -17,9 +17,7 @@ const useItems = ({
   excludedKeywords?: string[];
   subcategory?: string;
 }) => {
-  const { apiUrl } = useContext(AuthContext);
-
-  const { data: items, isLoading, isPending } = useItemsQuery(apiUrl, category);
+  const { data: items, isLoading, isPending } = useItemsQuery(category);
 
   const list = itemList || items;
 

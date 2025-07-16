@@ -1,6 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const setActiveCharacter = async (apiUrl: string, characterId: number) => {
+const setActiveCharacter = async (characterId: number) => {
   try {
     const response = await fetch(`${apiUrl}/characters/active`, {
       method: 'PATCH',

@@ -12,9 +12,8 @@ import Divider from './Divider';
 import ArrowHeader2 from './ArrowHeader2';
 
 const ErrorReport = () => {
-  const { apiUrl } = useContext(AuthContext);
   const navigate = useNavigate();
-  const createErrorReport = useCreateErrorReportMutation(apiUrl);
+  const createErrorReport = useCreateErrorReportMutation();
 
   const errorReportForm = useForm({
     defaultValues: {

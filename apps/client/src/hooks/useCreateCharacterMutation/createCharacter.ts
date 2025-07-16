@@ -1,6 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const createCharacter = async (formData: FormData, apiUrl: string) => {
+const createCharacter = async (formData: FormData) => {
   try {
     const response = await fetch(`${apiUrl}/characters`, {
       method: 'POST',

@@ -20,7 +20,6 @@ import PictureField from './formFields/PictureField';
 import useCampaignCharactersQuery from 'src/hooks/useCampaignCharactersQuery/useCampaignCharactersQuery';
 
 const SessionForm = ({ title, mode }: { title: string; mode?: string }) => {
-  const { apiUrl } = useContext(AuthContext);
   const { campaignId, sessionId } = useParams();
   const [formMessage, setFormMessage] = useState('');
   const [deleteMode, setDeleteMode] = useState(false);
@@ -29,7 +28,7 @@ const SessionForm = ({ title, mode }: { title: string; mode?: string }) => {
     data: campaign,
     isLoading: campaignLoading,
     isPending: campaignPending,
-  } = useCampaignQuery(apiUrl, Number(campaignId));
+  } = useCampaignQuery(Number(campaignId));
 
   const {
     playerCharacters,
@@ -40,7 +39,6 @@ const SessionForm = ({ title, mode }: { title: string; mode?: string }) => {
   );
 
   const createSession = useCreateSessionMutation(
-    apiUrl,
     Number(campaignId),
     setFormMessage,
     Number(sessionId),
@@ -50,7 +48,7 @@ const SessionForm = ({ title, mode }: { title: string; mode?: string }) => {
     data: session,
     isLoading: sessionLoading,
     isPaused: sessionPending,
-  } = useSessionQuery(apiUrl, Number(campaignId), Number(sessionId));
+  } = useSessionQuery(Number(campaignId), Number(sessionId));
 
   const isLoading = campaignLoading || sessionLoading || charactersLoading;
   const isPending = campaignPending || sessionPending;
@@ -70,7 +68,7 @@ const SessionForm = ({ title, mode }: { title: string; mode?: string }) => {
       name: session?.name || '',
       location: session?.location || '',
       picture: session?.picture || '',
-      publicId: session?.picture.publicId || '',
+      publicId: session?.picture?.publicId || '',
       position: session?.picture?.position || { x: 50, y: 50 },
       playerCharacters:
         sessionPlayerCharacters.length > 0
@@ -147,11 +145,11 @@ const SessionForm = ({ title, mode }: { title: string; mode?: string }) => {
           }}
         >
           {(field) => (
-            <InputField className="grow" label="Session name" field={field} />
+            <InputField className="grow" label="Session Name" field={field} />
           )}
         </sessionForm.Field>
         <sessionForm.Field name="location">
-          {(field) => <InputField label="Session location" field={field} />}
+          {(field) => <InputField label="Session Location" field={field} />}
         </sessionForm.Field>
         <PictureField
           form={sessionForm}
@@ -226,7 +224,7 @@ const SessionForm = ({ title, mode }: { title: string; mode?: string }) => {
                       );
                     }}
                   >
-                    Add Player character
+                    Add Player Character
                   </button>
                 </div>
               );
@@ -275,7 +273,7 @@ const SessionForm = ({ title, mode }: { title: string; mode?: string }) => {
                       );
                     }}
                   >
-                    Add Non-player character
+                    Add Non-player Character
                   </button>
                 </div>
               );

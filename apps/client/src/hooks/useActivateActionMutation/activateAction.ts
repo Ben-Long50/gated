@@ -1,10 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const activateAction = async (
-  apiUrl: string,
-  actionId: number,
-  value: boolean,
-) => {
+const activateAction = async (actionId: number, value: boolean) => {
   try {
     const response = await fetch(`${apiUrl}/actions/${actionId}/toggle`, {
       method: 'PATCH',

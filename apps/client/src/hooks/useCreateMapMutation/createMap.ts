@@ -1,10 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const createMap = async (
-  campaignId: number,
-  formData: FormData,
-  apiUrl: string,
-) => {
+const createMap = async (campaignId: number, formData: FormData) => {
   try {
     const response = await fetch(`${apiUrl}/campaigns/${campaignId}/maps`, {
       method: 'POST',

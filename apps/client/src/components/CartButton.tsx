@@ -12,10 +12,7 @@ const CartButton = ({
   character: Character;
   itemId: number;
 }) => {
-  const { apiUrl } = useContext(AuthContext);
-
   const editCart = useEditCartMutation(
-    apiUrl,
     character?.id,
     character?.characterCart?.id,
   );

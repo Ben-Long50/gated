@@ -9,10 +9,10 @@ import { mdiChevronLeft, mdiChevronRight } from '@mdi/js';
 import BtnIcon from './buttons/BtnIcon';
 
 const PatchNotes = () => {
-  const { apiUrl, user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const [index, setIndex] = useState(0);
 
-  const { data: patchNotes, isLoading, isPending } = usePatchNotesQuery(apiUrl);
+  const { data: patchNotes, isLoading, isPending } = usePatchNotesQuery();
 
   if (isLoading || isPending) {
     return <Loading />;

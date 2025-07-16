@@ -1,7 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
 const editCart = async (
-  apiUrl: string,
   characterId: number,
   cartId: number,
   formData: {

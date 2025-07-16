@@ -1,10 +1,10 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
 const updateFaction = async (
   formData: FormData,
   campaignId: number,
   factionId: number,
-  apiUrl: string,
 ) => {
   try {
     const response = await fetch(

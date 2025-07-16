@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import deleteBookEntry from './deleteBookEntry';
 
 const useDeleteBookEntryMutation = (
-  apiUrl: string,
   bookEntryId: string,
   setFormMessage: (message: string) => void,
 ) => {
@@ -11,7 +10,7 @@ const useDeleteBookEntryMutation = (
   const navigate = useNavigate();
   return useMutation({
     mutationFn: () => {
-      return deleteBookEntry(apiUrl, bookEntryId);
+      return deleteBookEntry(bookEntryId);
     },
     onSuccess: () => {
       navigate('/glam/codex');

@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import updateCharacter from './updateCharacter';
 
 const useUpdateCharacterMutation = (
-  apiUrl: string,
   characterId: number,
   setFormMessage: (message: string) => void,
 ) => {
@@ -11,7 +10,7 @@ const useUpdateCharacterMutation = (
   const navigate = useNavigate();
   return useMutation({
     mutationFn: (formData: FormData) => {
-      return updateCharacter(formData, apiUrl, characterId);
+      return updateCharacter(formData, characterId);
     },
     onSuccess: () => {
       navigate(-1);

@@ -2,16 +2,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import createMap from './createMap';
 import { useNavigate } from 'react-router-dom';
 
-const useCreateMapMutation = (
-  apiUrl: string,
-  campaignId: number,
-  mapId?: number,
-) => {
+const useCreateMapMutation = (campaignId: number, mapId?: number) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   return useMutation({
     mutationFn: (formData: FormData) => {
-      return createMap(campaignId, formData, apiUrl);
+      return createMap(campaignId, formData);
     },
     onSuccess: () => {
       navigate(-1);

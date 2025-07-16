@@ -1,7 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
 const createEvent = async (
-  apiUrl: string,
   campaignId: number,
   formData: {
     id?: number;

@@ -4,9 +4,7 @@ import { AuthContext } from '../contexts/AuthContext';
 import { Keyword } from '../types/keyword';
 
 const useKeywords = (initialCategory?: string) => {
-  const { apiUrl } = useContext(AuthContext);
-
-  const { data: keywords, isLoading, isPending } = useKeywordsQuery(apiUrl);
+  const { data: keywords, isLoading, isPending } = useKeywordsQuery();
 
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState(initialCategory || '');

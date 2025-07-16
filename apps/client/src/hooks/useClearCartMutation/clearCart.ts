@@ -1,10 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const clearCart = async (
-  apiUrl: string,
-  characterId: number,
-  cartId: number,
-) => {
+const clearCart = async (characterId: number, cartId: number) => {
   try {
     const response = await fetch(
       `${apiUrl}/characters/${characterId}/cart/${cartId}`,

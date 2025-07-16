@@ -1,9 +1,9 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
 const createCharacterAffiliation = async (
   formData: FormData,
   characterId: number,
-  apiUrl: string,
 ) => {
   try {
     const response = await fetch(

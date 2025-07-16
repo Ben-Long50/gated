@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { useContext, useEffect, useState } from 'react';
 import InputField from './InputField';
 import BtnRect from './buttons/BtnRect';
-import { AuthContext } from '../contexts/AuthContext';
 import Icon from '@mdi/react';
 import { mdiFacebook, mdiGoogle } from '@mdi/js';
 import ThemeContainer from './ThemeContainer';
@@ -12,14 +11,14 @@ import { useForm } from '@tanstack/react-form';
 import useSigninMutation from '../hooks/useSigninMutation/useSigninMutation';
 import Loading from './Loading';
 import ArrowHeader1 from './ArrowHeader1';
+import apiUrl from 'src/utils/configureUrl';
 
 const SigninForm = () => {
   const [errors, setErrors] = useState([]);
 
-  const { apiUrl } = useContext(AuthContext);
   const { accentPrimary } = useContext(ThemeContext);
 
-  const signinMutation = useSigninMutation(apiUrl, setErrors);
+  const signinMutation = useSigninMutation(setErrors);
 
   const signinForm = useForm({
     defaultValues: {

@@ -1,10 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const getSession = async (
-  apiUrl: string,
-  campaignId: number,
-  sessionId: number,
-) => {
+const getSession = async (campaignId: number, sessionId: number) => {
   try {
     const response = await fetch(
       `${apiUrl}/campaigns/${campaignId}/sessions/${sessionId}`,

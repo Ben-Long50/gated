@@ -2,14 +2,11 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import updateCharacter from './setActiveCharacter';
 import { socket } from 'src/socket';
 
-const useSetActiveCharacterMutation = (
-  apiUrl: string,
-  activeCharacterId: number,
-) => {
+const useSetActiveCharacterMutation = (activeCharacterId: number) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (characterId: number) => {
-      return updateCharacter(apiUrl, characterId);
+      return updateCharacter(characterId);
     },
     onSuccess: (_, characterId) => {
       socket.emit('character', characterId);

@@ -4,7 +4,7 @@ import { useRef } from 'react';
 import { socket } from '../../socket';
 import editProfits from './editProfits';
 
-const useProfitsMutation = (apiUrl: string, characterId: number) => {
+const useProfitsMutation = (characterId: number) => {
   const queryClient = useQueryClient();
   const updateBuffer = useRef(0);
   const timeoutRef = useRef(0);
@@ -22,7 +22,7 @@ const useProfitsMutation = (apiUrl: string, characterId: number) => {
           const finalValue = updateBuffer.current;
 
           updateBuffer.current = 0;
-          await editProfits(apiUrl, characterId, finalValue);
+          await editProfits(characterId, finalValue);
           resolve(finalValue);
         }, 1000);
       });
@@ -45,8 +45,11 @@ const useProfitsMutation = (apiUrl: string, characterId: number) => {
       return { prevCharacterData };
     },
 
-    onSuccess: () => {
-      socket.emit('character', characterId);
+    onSuccess: (_, __, context) => {
+      socket.emit('character', {
+        characterId,
+        campaignId: context.prevCharacterData?.campaignId,
+      });
       return queryClient.invalidateQueries({
         queryKey: ['character', characterId],
       });

@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import deleteCondition from './deleteCondition';
 
 const useDeleteConditionMutation = (
-  apiUrl: string,
   conditionId: string,
   setFormMessage: (message: string) => void,
 ) => {
@@ -11,7 +10,7 @@ const useDeleteConditionMutation = (
   const navigate = useNavigate();
   return useMutation({
     mutationFn: () => {
-      return deleteCondition(apiUrl, conditionId);
+      return deleteCondition(conditionId);
     },
     onSuccess: () => {
       navigate('/glam/codex/conditions');

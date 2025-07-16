@@ -1,6 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const createErrorReport = async (formData: object, apiUrl: string) => {
+const createErrorReport = async (formData: object) => {
   try {
     const response = await fetch(`${apiUrl}/errors`, {
       method: 'POST',

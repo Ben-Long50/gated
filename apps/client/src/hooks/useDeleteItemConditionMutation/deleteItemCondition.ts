@@ -1,10 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const deleteItemCondition = async (
-  apiUrl: string,
-  conditionId: number,
-  itemId: number,
-) => {
+const deleteItemCondition = async (conditionId: number, itemId: number) => {
   try {
     const response = await fetch(
       `${apiUrl}/items/${itemId}/conditions/${conditionId}`,

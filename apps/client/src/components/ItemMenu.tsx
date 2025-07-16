@@ -99,53 +99,54 @@ const ItemMenu = ({
   return (
     <div ref={listRef} className="flex w-full flex-col gap-4">
       <div className="grid grid-flow-col gap-2 sm:gap-4">
-        {parts.includes('maps') && (
-          <>
-            <BtnAuth
-              active={tab === 'weapon' ? true : false}
-              onClick={() => setTab('weapon')}
-            >
-              {mobile ? <WeaponIcon className="size-8" /> : 'Weapons'}
-            </BtnAuth>
-            <BtnAuth
-              active={tab === 'armors' ? true : false}
-              onClick={() => setTab('armors')}
-            >
-              {mobile ? <ArmorIcon className="size-8" /> : 'Armor'}
-            </BtnAuth>
-            <BtnAuth
-              active={tab === 'augmentations' ? true : false}
-              onClick={() => setTab('augmentations')}
-            >
-              {mobile ? <CyberIcon className="size-8" /> : 'Augmentations'}
-            </BtnAuth>
-            <BtnAuth
-              active={tab === 'reusables' ? true : false}
-              onClick={() => setTab('reusables')}
-            >
-              {mobile ? <InventoryIcon className="size-8" /> : 'Reusables'}
-            </BtnAuth>
-            <BtnAuth
-              active={tab === 'consumables' ? true : false}
-              onClick={() => setTab('consumables')}
-            >
-              {mobile ? <PotionIcon className="size-8" /> : 'Consumables'}
-            </BtnAuth>
-          </>
-        )}
+        {parts.includes('maps') ||
+          (parts.includes('equipment') && (
+            <>
+              <BtnAuth
+                active={tab === 'weapon' ? true : false}
+                onClick={() => setTab('weapon')}
+              >
+                <WeaponIcon className="size-8" />
+              </BtnAuth>
+              <BtnAuth
+                active={tab === 'armors' ? true : false}
+                onClick={() => setTab('armors')}
+              >
+                <ArmorIcon className="size-8" />
+              </BtnAuth>
+              <BtnAuth
+                active={tab === 'augmentations' ? true : false}
+                onClick={() => setTab('augmentations')}
+              >
+                <CyberIcon className="size-8" />
+              </BtnAuth>
+              <BtnAuth
+                active={tab === 'reusables' ? true : false}
+                onClick={() => setTab('reusables')}
+              >
+                <InventoryIcon className="size-8" />
+              </BtnAuth>
+              <BtnAuth
+                active={tab === 'consumables' ? true : false}
+                onClick={() => setTab('consumables')}
+              >
+                <PotionIcon className="size-8" />
+              </BtnAuth>
+            </>
+          ))}
         {parts.includes('deployments') && (
           <>
             <BtnAuth
               active={tab === 'vehicle' ? true : false}
               onClick={() => setTab('vehicle')}
             >
-              {mobile ? <VehicleIcon className="size-8" /> : 'Vehicles'}
+              <VehicleIcon className="size-8" />
             </BtnAuth>
             <BtnAuth
               active={tab === 'drone' ? true : false}
               onClick={() => setTab('drone')}
             >
-              {mobile ? <DroneIcon className="size-8" /> : 'Drones'}
+              <DroneIcon className="size-8" />
             </BtnAuth>
           </>
         )}

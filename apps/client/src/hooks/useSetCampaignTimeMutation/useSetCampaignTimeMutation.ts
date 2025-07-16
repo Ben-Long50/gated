@@ -3,7 +3,7 @@ import { socket } from 'src/socket';
 import setCampaignTime from './setCampaignTime';
 import { useNavigate } from 'react-router-dom';
 
-const useSetCampaignTimeMutation = (apiUrl: string, campaignId: number) => {
+const useSetCampaignTimeMutation = (campaignId: number) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
@@ -13,7 +13,7 @@ const useSetCampaignTimeMutation = (apiUrl: string, campaignId: number) => {
       minute: number;
       second: number;
     }) => {
-      return setCampaignTime(apiUrl, campaignId, formData);
+      return setCampaignTime(campaignId, formData);
     },
     onSuccess: () => {
       socket.emit('campaign', campaignId);

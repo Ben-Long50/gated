@@ -11,7 +11,6 @@ import useUpdateCharacterMutation from '../hooks/useCharacterUpdateMutation/useC
 import ArrowHeader2 from './ArrowHeader2';
 
 const ResumeForm = () => {
-  const { apiUrl } = useContext(AuthContext);
   const [formMessage, setFormMessage] = useState('');
   const { characterId } = useParams();
 
@@ -22,7 +21,6 @@ const ResumeForm = () => {
   } = useCharacterQuery(Number(characterId));
 
   const updateCharacter = useUpdateCharacterMutation(
-    apiUrl,
     Number(characterId),
     setFormMessage,
   );

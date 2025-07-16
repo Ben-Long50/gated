@@ -1,6 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const createCampaign = async (formData: FormData, apiUrl: string) => {
+const createCampaign = async (formData: FormData) => {
   try {
     const response = await fetch(`${apiUrl}/campaigns`, {
       method: 'POST',

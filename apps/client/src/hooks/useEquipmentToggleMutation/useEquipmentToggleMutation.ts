@@ -3,7 +3,7 @@ import toggleEquipment from './toggleEquipment';
 import { Item } from 'src/types/item';
 import { socket } from 'src/socket';
 
-const useToggleEquipmentMutation = (apiUrl: string) => {
+const useToggleEquipmentMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -13,7 +13,7 @@ const useToggleEquipmentMutation = (apiUrl: string) => {
       category: string;
       itemId: number;
     }) => {
-      return toggleEquipment(apiUrl, formData);
+      return toggleEquipment(formData);
     },
 
     onMutate: async (mutationInfo) => {

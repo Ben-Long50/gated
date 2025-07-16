@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import getKeywordById from './getConditionById';
 
-const useConditionQuery = (apiUrl: string, conditonId?: string) => {
+const useConditionQuery = (conditonId?: string) => {
   return useQuery({
     queryKey: ['condition', conditonId],
-    queryFn: async () => await getKeywordById(apiUrl, conditonId),
+    queryFn: async () => await getKeywordById(conditonId),
     throwOnError: false,
   });
 };

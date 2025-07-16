@@ -4,9 +4,7 @@ import useConditionsQuery from './useConditionsQuery/useActionsQuery';
 import { Condition } from 'src/types/condition';
 
 const useConditions = (conditionList?: Condition[]) => {
-  const { apiUrl } = useContext(AuthContext);
-
-  const { data: conditions, isLoading, isPending } = useConditionsQuery(apiUrl);
+  const { data: conditions, isLoading, isPending } = useConditionsQuery();
 
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('');

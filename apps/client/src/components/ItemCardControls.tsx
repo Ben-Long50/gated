@@ -35,24 +35,11 @@ export const WeaponControls = ({
   stats: WeaponStats;
   weaponId: number;
 }) => {
-  const { apiUrl } = useContext(AuthContext);
   const { characterId } = useParams();
 
-  const editCurrentAmmo = useEditAmmoMutation(
-    apiUrl,
-    weaponId,
-    Number(characterId),
-  );
-  const reloadAmmo = useReloadAmmoMutation(
-    apiUrl,
-    weaponId,
-    Number(characterId),
-  );
-  const refreshAmmo = useRefreshAmmoMutation(
-    apiUrl,
-    weaponId,
-    Number(characterId),
-  );
+  const editCurrentAmmo = useEditAmmoMutation(weaponId, Number(characterId));
+  const reloadAmmo = useReloadAmmoMutation(weaponId, Number(characterId));
+  const refreshAmmo = useRefreshAmmoMutation(weaponId, Number(characterId));
 
   return (
     <div className="col-span-2 grid grid-cols-1 items-center justify-start gap-2 sm:grid-cols-2 sm:gap-4">
@@ -114,11 +101,10 @@ export const ArmorControls = ({
   armorId: number;
   stats: ArmorStats;
 }) => {
-  const { apiUrl } = useContext(AuthContext);
   const { characterId } = useParams();
 
-  const editPower = useEditPowerMutation(apiUrl, armorId, Number(characterId));
-  const editBlock = useEditBlockMutation(apiUrl, armorId, Number(characterId));
+  const editPower = useEditPowerMutation(armorId, Number(characterId));
+  const editBlock = useEditBlockMutation(armorId, Number(characterId));
 
   return (
     <div className="col-span-2 grid grid-cols-1 items-center justify-start gap-4 sm:grid-cols-2">
@@ -169,14 +155,9 @@ export const CyberneticControls = ({
   cyberneticId: number;
   stats: CyberneticStats;
 }) => {
-  const { apiUrl } = useContext(AuthContext);
   const { characterId } = useParams();
 
-  const editPower = useEditPowerMutation(
-    apiUrl,
-    cyberneticId,
-    Number(characterId),
-  );
+  const editPower = useEditPowerMutation(cyberneticId, Number(characterId));
 
   return (
     <div className="col-span-2 grid grid-cols-1 items-center justify-start gap-4 sm:grid-cols-2">
@@ -212,18 +193,13 @@ export const VehicleControls = ({
   stats: VehicleStats;
   vehicleId: number;
 }) => {
-  const { apiUrl } = useContext(AuthContext);
   const { characterId } = useParams();
 
-  const editHull = useEditHullMutation(apiUrl, vehicleId, Number(characterId));
+  const editHull = useEditHullMutation(vehicleId, Number(characterId));
 
-  const editCargo = useEditCargoMutation(
-    apiUrl,
-    vehicleId,
-    Number(characterId),
-  );
+  const editCargo = useEditCargoMutation(vehicleId, Number(characterId));
 
-  const editPass = useEditPassMutation(apiUrl, vehicleId, Number(characterId));
+  const editPass = useEditPassMutation(vehicleId, Number(characterId));
 
   return (
     <div className="col-span-2 grid grid-cols-1 items-center justify-start gap-2 sm:grid-cols-2 sm:gap-4">
@@ -286,11 +262,10 @@ export const DroneControls = ({
   stats: DroneStats;
   droneId: number;
 }) => {
-  const { apiUrl } = useContext(AuthContext);
   const { characterId } = useParams();
 
-  const editHull = useEditHullMutation(apiUrl, droneId, Number(characterId));
-  const editPower = useEditPowerMutation(apiUrl, droneId, Number(characterId));
+  const editHull = useEditHullMutation(droneId, Number(characterId));
+  const editPower = useEditPowerMutation(droneId, Number(characterId));
 
   return (
     <div className="col-span-2 grid grid-cols-1 items-center justify-start gap-4 sm:grid-cols-2">
@@ -341,10 +316,9 @@ export const ItemControls = ({
   itemId: number;
   stats: Stats;
 }) => {
-  const { apiUrl } = useContext(AuthContext);
   const { characterId } = useParams();
 
-  const editPower = useEditPowerMutation(apiUrl, itemId, Number(characterId));
+  const editPower = useEditPowerMutation(itemId, Number(characterId));
 
   return (
     <div className="col-span-2 grid grid-cols-1 items-center justify-start gap-4 sm:grid-cols-2">

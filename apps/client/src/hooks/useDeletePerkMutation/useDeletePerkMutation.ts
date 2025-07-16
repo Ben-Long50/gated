@@ -3,7 +3,6 @@ import deletePerk from './deletePerk';
 import { useNavigate } from 'react-router-dom';
 
 const useDeletePerkMutation = (
-  apiUrl: string,
   perkId: number,
   setFormMessage: (message: string) => void,
 ) => {
@@ -11,7 +10,7 @@ const useDeletePerkMutation = (
   const navigate = useNavigate();
   return useMutation({
     mutationFn: () => {
-      return deletePerk(apiUrl, perkId);
+      return deletePerk(perkId);
     },
     onSuccess: () => {
       navigate('/glam/codex/perks');

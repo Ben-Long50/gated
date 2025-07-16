@@ -32,7 +32,6 @@ import ExpandingList from './ExpandingList';
 import KeywordCard from './KeywordCard';
 
 const ItemUpgradeForm = () => {
-  const { apiUrl } = useContext(AuthContext);
   const [formMessage, setFormMessage] = useState('');
   const [deleteMode, setDeleteMode] = useState(false);
   const { characterId, itemId, category } = useParams();
@@ -49,14 +48,12 @@ const ItemUpgradeForm = () => {
   const { data: item, isLoading: itemLoading } = useItemQuery(Number(itemId));
 
   const deleteItem = useDeleteItemMutation(
-    apiUrl,
     category,
     setFormMessage,
     Number(itemId),
   );
 
   const modifyItem = useModifyItemMutation(
-    apiUrl,
     Number(characterId),
     Number(itemId),
     category,

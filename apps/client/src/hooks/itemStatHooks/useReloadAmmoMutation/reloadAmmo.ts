@@ -1,6 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../../handleResponse';
 
-const reloadAmmo = async (apiUrl: string, itemId: number) => {
+const reloadAmmo = async (itemId: number) => {
   try {
     const response = await fetch(
       `${apiUrl}/items/${itemId}/stats/currentMagCount`,

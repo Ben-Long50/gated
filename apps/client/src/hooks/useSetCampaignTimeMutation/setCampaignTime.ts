@@ -1,7 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
 const setCampaignTime = async (
-  apiUrl: string,
   campaignId: number,
   formData: { hour: number; minute: number; second: number },
 ) => {

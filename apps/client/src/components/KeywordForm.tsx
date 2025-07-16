@@ -18,7 +18,6 @@ import { capitalCase } from 'change-case';
 import useModalStore from 'src/stores/modalStore';
 
 const KeywordForm = () => {
-  const { apiUrl } = useContext(AuthContext);
   const [formMessage, setFormMessage] = useState('');
   const [deleteMode, setDeleteMode] = useState(false);
   const { keywordId } = useParams();
@@ -43,12 +42,10 @@ const KeywordForm = () => {
     .filter((keyword: Keyword) => keyword.id === Number(keywordId))[0];
 
   const createKeyword = useCreateKeywordMutation(
-    apiUrl,
     Number(keywordId),
     setFormMessage,
   );
   const deleteKeyword = useDeleteKeywordMutation(
-    apiUrl,
     Number(keywordId),
     setFormMessage,
   );

@@ -9,7 +9,6 @@ import { AuthContext } from 'src/contexts/AuthContext';
 import Loading from '../Loading';
 
 const DeleteModal = () => {
-  const { apiUrl } = useContext(AuthContext);
   const navigate = useNavigate();
   const { campaignId, mapId } = useParams();
 
@@ -18,7 +17,6 @@ const DeleteModal = () => {
   const { name } = useOutletContext() || {};
 
   const deleteMap = useDeleteMapMutation(
-    apiUrl,
     Number(campaignId),
     Number(mapId),
     setFormMessage,

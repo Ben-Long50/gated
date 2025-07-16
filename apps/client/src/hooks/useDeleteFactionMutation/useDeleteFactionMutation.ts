@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import deleteFaction from './deleteFaction';
 
 const useDeleteFactionMutation = (
-  apiUrl: string,
   campaignId: number,
   factionId: number,
   setFormMessage: (message: string) => void,
@@ -12,7 +11,7 @@ const useDeleteFactionMutation = (
   const navigate = useNavigate();
   return useMutation({
     mutationFn: () => {
-      return deleteFaction(apiUrl, campaignId, factionId);
+      return deleteFaction(campaignId, factionId);
     },
     onSuccess: () => {
       navigate(`/glam/campaigns/${campaignId}`);

@@ -4,11 +4,7 @@ import { useRef } from 'react';
 import { Item } from 'src/types/item';
 import { socket } from 'src/socket';
 
-const useEditAmmoMutation = (
-  apiUrl: string,
-  itemId: number,
-  characterId: number,
-) => {
+const useEditAmmoMutation = (itemId: number) => {
   const queryClient = useQueryClient();
   const updateBuffer = useRef(0);
   const timeoutRef = useRef(0);
@@ -25,7 +21,7 @@ const useEditAmmoMutation = (
           const finalValue = updateBuffer.current;
 
           updateBuffer.current = 0;
-          await editAmmo(apiUrl, itemId, finalValue);
+          await editAmmo(itemId, finalValue);
           resolve(finalValue);
         }, 1000);
       });
@@ -51,8 +47,12 @@ const useEditAmmoMutation = (
 
       return { prevItemData };
     },
-    onSuccess: () => {
-      socket.emit('item', itemId);
+    onSuccess: (_, __, context) => {
+      socket.emit('item', {
+        itemId,
+        campaignId:
+          context.prevItemData?.characterInventory?.character.campaignId,
+      });
       return queryClient.invalidateQueries({
         queryKey: ['item', itemId],
       });

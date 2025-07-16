@@ -1,7 +1,8 @@
 import { User } from 'src/types/user';
 import handleResponse from '../handleResponse';
+import apiUrl from 'src/utils/configureUrl';
 
-const updateAccount = async (apiUrl: string, formData: User) => {
+const updateAccount = async (formData: Partial<User>) => {
   try {
     const response = await fetch(`${apiUrl}/users`, {
       method: 'PUT',

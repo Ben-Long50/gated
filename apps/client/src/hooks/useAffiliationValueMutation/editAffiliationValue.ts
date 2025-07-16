@@ -1,10 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const editAffiliationValue = async (
-  apiUrl: string,
-  affiliationId: number,
-  value: number,
-) => {
+const editAffiliationValue = async (affiliationId: number, value: number) => {
   try {
     const response = await fetch(
       `${apiUrl}/affiliations/${affiliationId}/value`,

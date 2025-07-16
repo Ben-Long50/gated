@@ -24,7 +24,6 @@ const ConditionRadialMenu = ({
   condition: ConditionReference;
   containerRef: ReactNode;
 }) => {
-  const { apiUrl } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const setBackgroundPath = useModalStore((state) => state.setBackgroundPath);
@@ -37,25 +36,21 @@ const ConditionRadialMenu = ({
   };
 
   const editItemConditionStacks = useItemConditionStacksMutation(
-    apiUrl,
     condition?.id,
     condition?.itemId,
   );
 
   const editCharacterConditionStacks = useCharacterConditionStacksMutation(
-    apiUrl,
     condition?.id,
     condition?.characterId,
   );
 
   const deleteCharacterCondition = useDeleteCharacterConditionMutation(
-    apiUrl,
     condition?.id,
     condition?.characterId,
   );
 
   const deleteItemCondition = useDeleteItemConditionMutation(
-    apiUrl,
     condition?.id,
     condition?.itemId,
   );

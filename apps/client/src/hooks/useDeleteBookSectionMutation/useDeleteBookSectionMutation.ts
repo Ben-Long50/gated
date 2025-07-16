@@ -2,13 +2,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import deleteBookSection from './deleteBookSection';
 
 const useDeleteBookSectionMutation = (
-  apiUrl: string,
   setFormMessage: (message: string) => void,
 ) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (bookSectionId: string) => {
-      return deleteBookSection(apiUrl, bookSectionId);
+      return deleteBookSection(bookSectionId);
     },
     onSuccess: (response) => {
       setFormMessage(response.message);

@@ -29,7 +29,6 @@ import { camelCase } from 'change-case';
 const CodexSearch = () => {
   const { accentPrimary } = useContext(ThemeContext);
   const { mobile } = useContext(LayoutContext);
-  const { apiUrl } = useContext(AuthContext);
 
   const [nameQuery, setNameQuery] = useState<string | null>(null);
   const [descriptionQuery, setDescriptionQuery] = useState<string | null>(null);
@@ -41,7 +40,7 @@ const CodexSearch = () => {
   const nameTimerRef = useRef<number | null>(null);
   const descriptionTimerRef = useRef<number | null>(null);
 
-  const { data: items, isLoading, isPending } = useAllItemsQuery(apiUrl);
+  const { data: items, isLoading, isPending } = useAllItemsQuery();
 
   const { filteredKeywords: keywords } = useKeywords();
 

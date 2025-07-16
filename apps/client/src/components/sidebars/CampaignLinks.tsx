@@ -8,27 +8,31 @@ import DieIcon from '../icons/DieIcon';
 import { useParams } from 'react-router-dom';
 import CharacterIcon from '../icons/CharacterIcon';
 import useCampaignQuery from '../../hooks/useCampaignQuery/useCampaignQuery';
-import Loading from '../Loading';
 import { Session } from 'src/types/campaign';
 import SessionIcon from '../icons/SessionIcon';
 import AffiliationIcon from '../icons/AffiliationIcon';
 import NoteIcon from '../icons/NoteIcon';
 import useCampaignCharactersQuery from 'src/hooks/useCampaignCharactersQuery/useCampaignCharactersQuery';
 import MapIcon from '../icons/MapIcon';
+import useNavigationStore from 'src/stores/navbarStore';
+import { LayoutContext } from 'src/contexts/LayoutContext';
+import useToggleCampaignMutation from 'src/hooks/campaign hooks/useToggleCampaignMutation/useToggleCampaignMutation';
+import CrownIcon from '../icons/CrownIcon';
+import Loading from '../Loading';
 
 const CampaignLinks = () => {
-  const { apiUrl, user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
+  const { layoutSize } = useContext(LayoutContext);
   const { campaignId } = useParams();
 
-  const { data: campaign, isLoading: campaignLoading } = useCampaignQuery(
-    apiUrl,
-    Number(campaignId),
-  );
+  const { data: campaign } = useCampaignQuery(Number(campaignId));
+  const toggleCampaign = useToggleCampaignMutation(Number(campaignId));
 
-  const { playerCharacters, isLoading: charactersLoading } =
-    useCampaignCharactersQuery(
-      campaign?.characters.map((character) => character.id) || [],
-    );
+  const setSidebar = useNavigationStore((state) => state.setSidebar);
+
+  const { playerCharacters } = useCampaignCharactersQuery(
+    campaign?.characters.map((character) => character.id) || [],
+  );
 
   return (
     <>
@@ -64,21 +68,6 @@ const CampaignLinks = () => {
         </>
       ) : (
         <>
-          <LinkSidebar
-            title={campaign?.name}
-            icon={
-              campaignLoading ? (
-                <Loading size={2} className="text-secondary size-12 p-1" />
-              ) : (
-                <img
-                  className="bg-secondary z-10 size-12 shrink-0 rounded-full object-cover p-1"
-                  src={campaign?.picture.imageUrl}
-                  alt={campaign?.name + ' ' + "'s cover picture"}
-                />
-              )
-            }
-            path={`/glam/campaigns/${campaign?.id}`}
-          />
           <LinkListSidebar
             icon={
               <SessionIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
@@ -165,6 +154,36 @@ const CampaignLinks = () => {
             }
             path={`campaigns/${campaignId}/rollSimulator`}
           />
+          {campaign?.ownerId === user.id && (
+            <LinkListSidebar
+              icon={
+                <CrownIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+              }
+              title="GM Options"
+            >
+              <div className="text-secondary group flex gap-4">
+                <button
+                  className="w-full pl-4 text-left text-inherit"
+                  onClick={() => {
+                    toggleCampaign.mutate();
+                    if (layoutSize !== 'large' && layoutSize !== 'xlarge') {
+                      setSidebar(false);
+                    }
+                  }}
+                >
+                  {toggleCampaign.isPending ? (
+                    <Loading size={1.25} className="mr-auto" />
+                  ) : (
+                    <div className="timing group-hover:text-accent whitespace-nowrap text-xl tracking-wide text-inherit">
+                      {campaign?.active
+                        ? 'Deactivate Campaign'
+                        : 'Activate Campaign'}
+                    </div>
+                  )}
+                </button>
+              </div>
+            </LinkListSidebar>
+          )}
         </>
       )}
     </>

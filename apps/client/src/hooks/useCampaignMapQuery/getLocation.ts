@@ -1,11 +1,12 @@
 import { create, keyResolver, windowScheduler } from '@yornaath/batshit';
 import handleResponse from '../handleResponse';
 import { Location } from 'src/types/map';
+import apiUrl from 'src/utils/configureUrl';
 
 const getLocation = create({
   fetcher: async (locationIds: number[]) => {
     const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/locations/batch?ids=${locationIds.join(',')}`,
+      `${apiUrl}/locations/batch?ids=${locationIds.join(',')}`,
       {
         method: 'GET',
         credentials: 'include',

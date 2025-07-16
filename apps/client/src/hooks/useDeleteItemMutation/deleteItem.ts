@@ -1,6 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const deleteItem = async (apiUrl: string, category: string, itemId: number) => {
+const deleteItem = async (category: string, itemId: number) => {
   try {
     if (!itemId) throw new Error('Cannot delete with an undefined itemId');
 

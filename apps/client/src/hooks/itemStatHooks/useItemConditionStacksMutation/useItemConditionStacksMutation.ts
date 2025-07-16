@@ -5,7 +5,6 @@ import { Item } from 'src/types/item';
 import { socket } from 'src/socket';
 
 const useItemConditionStacksMutation = (
-  apiUrl: string,
   conditionId: number,
   itemId: number,
 ) => {
@@ -26,12 +25,7 @@ const useItemConditionStacksMutation = (
           const finalValue = updateBuffer.current;
 
           updateBuffer.current = 0;
-          await editItemConditionStacks(
-            apiUrl,
-            conditionId,
-            itemId,
-            finalValue,
-          );
+          await editItemConditionStacks(conditionId, itemId, finalValue);
           resolve(finalValue);
         }, 1000);
       });
@@ -60,8 +54,12 @@ const useItemConditionStacksMutation = (
       return { prevItemData };
     },
 
-    onSuccess: () => {
-      socket.emit('item', itemId);
+    onSuccess: (_, __, context) => {
+      socket.emit('item', {
+        itemId,
+        campaignId:
+          context.prevItemData?.characterInventory?.character.campaignId,
+      });
       return queryClient.invalidateQueries({
         queryKey: ['item', itemId],
       });

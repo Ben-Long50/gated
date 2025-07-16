@@ -1,11 +1,8 @@
 import Icon from '@mdi/react';
 import { mdiGoogle, mdiFacebook } from '@mdi/js';
-import { useContext } from 'react';
-import { AuthContext } from '../contexts/AuthContext';
+import apiUrl from 'src/utils/configureUrl';
 
 const AuthOptions = () => {
-  const { apiUrl } = useContext(AuthContext);
-
   const facebookSignin = () => {
     window.location.href = `${apiUrl}/auth/facebook`;
   };

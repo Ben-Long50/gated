@@ -3,7 +3,6 @@ import modifyItem from './modifyItem';
 import { useNavigate } from 'react-router-dom';
 
 const useModifyItemMutation = (
-  apiUrl: string,
   characterId: number,
   itemId: number,
   category: string,
@@ -13,7 +12,7 @@ const useModifyItemMutation = (
 
   return useMutation({
     mutationFn: (formData: FormData) => {
-      return modifyItem(formData, characterId, itemId, category, apiUrl);
+      return modifyItem(formData, characterId, itemId, category);
     },
     onSuccess: () => {
       navigate(-1);

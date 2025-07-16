@@ -3,7 +3,6 @@ import deleteAction from './deleteAffiliation';
 import { useNavigate } from 'react-router-dom';
 
 const useDeleteAffiliationMutation = (
-  apiUrl: string,
   affiliationId: number,
   setFormMessage: (message: string) => void,
   factionId?: number,
@@ -13,7 +12,7 @@ const useDeleteAffiliationMutation = (
   const navigate = useNavigate();
   return useMutation({
     mutationFn: () => {
-      return deleteAction(apiUrl, affiliationId);
+      return deleteAction(affiliationId);
     },
     onSuccess: () => {
       navigate(-1);

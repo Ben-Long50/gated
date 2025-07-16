@@ -1,6 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const deleteAction = async (apiUrl: string, actionId: string) => {
+const deleteAction = async (actionId: string) => {
   try {
     const response = await fetch(`${apiUrl}/actions/${actionId}`, {
       method: 'DELETE',

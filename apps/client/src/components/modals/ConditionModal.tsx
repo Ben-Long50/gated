@@ -13,7 +13,6 @@ import useItemQuery from 'src/hooks/useItemQuery/useItemQuery';
 import useModalStore from 'src/stores/modalStore';
 
 const ConditionModal = () => {
-  const { apiUrl } = useContext(AuthContext);
   const { characterId, itemId } = useParams();
   const navigate = useNavigate();
 
@@ -24,12 +23,10 @@ const ConditionModal = () => {
   const { data: item } = useItemQuery(Number(itemId));
 
   const createCharacterCondition = useCreateCharacterConditionMutation(
-    apiUrl,
     Number(character?.id),
   );
 
   const createItemCondition = useCreateItemConditionMutation(
-    apiUrl,
     Number(item?.id),
     Number(characterId),
   );

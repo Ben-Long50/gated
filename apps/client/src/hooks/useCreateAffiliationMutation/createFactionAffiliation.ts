@@ -1,9 +1,9 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
 const createFactionAffiliation = async (
   formData: FormData,
   factionId: number,
-  apiUrl: string,
 ) => {
   try {
     const response = await fetch(

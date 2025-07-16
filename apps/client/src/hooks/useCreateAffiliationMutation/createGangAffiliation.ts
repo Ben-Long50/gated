@@ -1,10 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const createGangAffiliation = async (
-  formData: FormData,
-  gangId: number,
-  apiUrl: string,
-) => {
+const createGangAffiliation = async (formData: FormData, gangId: number) => {
   try {
     const response = await fetch(
       `${apiUrl}/gangs/${gangId}/affiliations/create`,

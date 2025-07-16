@@ -4,9 +4,7 @@ import useActionsQuery from './useActionsQuery/useActionsQuery';
 import { Action } from '../types/action';
 
 const useActions = (uniqueActions?: Action[]) => {
-  const { apiUrl } = useContext(AuthContext);
-
-  const { data: actions, isLoading, isPending } = useActionsQuery(apiUrl);
+  const { data: actions, isLoading, isPending } = useActionsQuery();
 
   const list = uniqueActions ? [...uniqueActions, ...actions] : actions;
 

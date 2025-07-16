@@ -1,6 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const deleteNotification = async (apiUrl: string, notificationId: number) => {
+const deleteNotification = async (notificationId: number) => {
   try {
     const response = await fetch(`${apiUrl}/notifications/${notificationId}`, {
       method: 'DELETE',

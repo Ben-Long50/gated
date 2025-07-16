@@ -1,6 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const deleteAffiliation = async (apiUrl: string, affiliationId: number) => {
+const deleteAffiliation = async (affiliationId: number) => {
   try {
     const response = await fetch(`${apiUrl}/affiliations/${affiliationId}`, {
       method: 'DELETE',

@@ -13,10 +13,9 @@ import ArrowHeader1 from './ArrowHeader1';
 const SignupForm = () => {
   const [errors, setErrors] = useState([]);
 
-  const { apiUrl } = useContext(AuthContext);
   const { accentPrimary } = useContext(ThemeContext);
 
-  const signupMutation = useSignupMutation(apiUrl, setErrors);
+  const signupMutation = useSignupMutation(setErrors);
 
   const signupForm = useForm({
     defaultValues: {

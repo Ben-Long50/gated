@@ -4,11 +4,7 @@ import { useRef } from 'react';
 import { Item } from 'src/types/item';
 import { socket } from 'src/socket';
 
-const useReloadAmmoMutation = (
-  apiUrl: string,
-  itemId: number,
-  characterId: number,
-) => {
+const useReloadAmmoMutation = (apiUrl: string, itemId: number) => {
   const queryClient = useQueryClient();
   const timeoutRef = useRef(0);
 
@@ -20,7 +16,7 @@ const useReloadAmmoMutation = (
 
       return new Promise((resolve) => {
         timeoutRef.current = setTimeout(async () => {
-          await reloadAmmo(apiUrl, itemId);
+          await reloadAmmo(itemId);
           resolve(itemId);
         }, 1000);
       });
@@ -47,8 +43,12 @@ const useReloadAmmoMutation = (
 
       return { prevItemData };
     },
-    onSuccess: () => {
-      socket.emit('item', itemId);
+    onSuccess: (_, __, context) => {
+      socket.emit('item', {
+        itemId,
+        campaignId:
+          context.prevItemData?.characterInventory?.character.campaignId,
+      });
       return queryClient.invalidateQueries({
         queryKey: ['item', itemId],
       });

@@ -5,9 +5,7 @@ import { Perk, PerkTree } from '../types/perk';
 import { AttributeTree } from '../types/attributeTree';
 
 const usePerks = (attributeTree?: AttributeTree) => {
-  const { apiUrl } = useContext(AuthContext);
-
-  const { data: perks, isLoading, isPending } = usePerksQuery(apiUrl);
+  const { data: perks, isLoading, isPending } = usePerksQuery();
 
   const [query, setQuery] = useState('');
   const [attributeQuery, setAttributeQuery] = useState('');

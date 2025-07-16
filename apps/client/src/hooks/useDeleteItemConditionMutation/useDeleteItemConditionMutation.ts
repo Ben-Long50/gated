@@ -4,14 +4,13 @@ import { Item } from 'src/types/item';
 import { socket } from 'src/socket';
 
 const useDeleteItemConditionMutation = (
-  apiUrl: string,
   conditionId: number,
   itemId: number,
 ) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => {
-      return deleteItemCondition(apiUrl, conditionId, itemId);
+      return deleteItemCondition(conditionId, itemId);
     },
 
     onMutate: () => {

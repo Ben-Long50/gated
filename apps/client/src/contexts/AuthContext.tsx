@@ -3,16 +3,21 @@ import useAccountQuery from '../hooks/useAccountQuery/useAccountQuery';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Loading from '../components/Loading';
 
-export const AuthContext = createContext({ apiUrl: '', user: undefined });
+export const AuthContext = createContext({
+  user: {
+    id: null,
+    liveCampaignId: null,
+    username: null,
+    firstName: null,
+    lastName: null,
+    profilePicture: null,
+    role: null,
+  },
+});
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const isMobile = window.location.href.includes('192.168.4.148');
-
-  const apiUrl = isMobile
-    ? import.meta.env.VITE_LOCAL_BACKEND_URL
-    : import.meta.env.VITE_API_URL;
 
   const {
     data: user,
@@ -20,7 +25,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     isSuccess,
     isLoading,
     isPending,
-  } = useAccountQuery(apiUrl);
+  } = useAccountQuery();
 
   useEffect(() => {
     if (
@@ -40,7 +45,6 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   return (
     <AuthContext.Provider
       value={{
-        apiUrl,
         user,
       }}
     >

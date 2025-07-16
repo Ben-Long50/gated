@@ -24,6 +24,7 @@ interface Item {
   itemLinkReference?: LinkReference;
   baseItemId: number | null;
   baseItem: Item | null;
+  characterInventory?: { character: { campaignId: number } };
 }
 
 interface LinkReference {

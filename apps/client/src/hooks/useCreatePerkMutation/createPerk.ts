@@ -1,6 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const createPerk = async (formData: object, perkId: number, apiUrl: string) => {
+const createPerk = async (formData: object, perkId: number) => {
   try {
     const response = await fetch(`${apiUrl}/perks`, {
       method: 'POST',

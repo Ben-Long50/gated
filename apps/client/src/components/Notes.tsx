@@ -12,7 +12,7 @@ import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import CharacterPictureRound from './CharacterPictureRound';
 
 const Notes = () => {
-  const { apiUrl, user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const { campaignId, characterId } = useParams();
   const [editModeId, setEditModeId] = useState<number | null>(null);
 
@@ -21,7 +21,6 @@ const Notes = () => {
   );
 
   const { data: campaign, isLoading: campaignLoading } = useCampaignQuery(
-    apiUrl,
     Number(campaignId),
   );
 
@@ -29,7 +28,7 @@ const Notes = () => {
     data: notes,
     isLoading: notesLoading,
     isError: notesError,
-  } = useNotesQuery(apiUrl, Number(campaignId), Number(characterId));
+  } = useNotesQuery(Number(campaignId), Number(characterId));
 
   const isLoading = notesLoading || characterLoading || campaignLoading;
   const isError = notesError;

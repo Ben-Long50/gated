@@ -1,8 +1,8 @@
 import { Month } from 'src/types/campaign';
 import handleResponse from '../handleResponse';
+import apiUrl from 'src/utils/configureUrl';
 
 const setCampaignDate = async (
-  apiUrl: string,
   campaignId: number,
   formData: { month: Month; day: number },
 ) => {

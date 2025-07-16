@@ -15,9 +15,9 @@ import LinkListSidebar from './LinkListSidebar';
 import SubLinkSidebar from './SubLinkSidebar';
 
 const AccountLinks = () => {
-  const { apiUrl, user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
-  const signout = useSignoutMutation(apiUrl);
+  const signout = useSignoutMutation();
 
   return (
     <>

@@ -3,7 +3,6 @@ import deleteMap from './deleteMap';
 import { useNavigate } from 'react-router-dom';
 
 const useDeleteMapMutation = (
-  apiUrl: string,
   campaignId: number,
   mapId: number,
   setFormMessage: (message: string) => void,
@@ -13,7 +12,7 @@ const useDeleteMapMutation = (
 
   return useMutation({
     mutationFn: () => {
-      return deleteMap(apiUrl, campaignId, mapId);
+      return deleteMap(campaignId, mapId);
     },
     onSuccess: () => {
       navigate(-1);

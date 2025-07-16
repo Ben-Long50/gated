@@ -2,7 +2,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import clearCart from './clearCart';
 
 const useClearCartMutation = (
-  apiUrl: string,
   characterId: number,
   cartId: number,
   setDeleteMode: (mode: boolean) => void,
@@ -10,7 +9,7 @@ const useClearCartMutation = (
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => {
-      return clearCart(apiUrl, characterId, cartId);
+      return clearCart(characterId, cartId);
     },
     onSuccess: () => {
       setDeleteMode(false);

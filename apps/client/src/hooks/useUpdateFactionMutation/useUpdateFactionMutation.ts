@@ -2,7 +2,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import updateFaction from './updateFaction';
 
 const useUpdateFactionMutation = (
-  apiUrl: string,
   campaignId: number,
   factionId: number,
   setFormMessage: (message: string) => void,
@@ -10,7 +9,7 @@ const useUpdateFactionMutation = (
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (formData: FormData) => {
-      return updateFaction(formData, campaignId, factionId, apiUrl);
+      return updateFaction(formData, campaignId, factionId);
     },
     onSuccess: () => {
       setFormMessage('Faction successfully updated');

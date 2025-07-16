@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import createEvent from './createEvent';
 import { socket } from 'src/socket';
 
-const useCreateEventMutation = (apiUrl: string, campaignId: number) => {
+const useCreateEventMutation = (campaignId: number) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
@@ -16,7 +16,7 @@ const useCreateEventMutation = (apiUrl: string, campaignId: number) => {
       month: string;
       day: number;
     }) => {
-      return createEvent(apiUrl, campaignId, formData);
+      return createEvent(campaignId, formData);
     },
     onSuccess: () => {
       socket.emit('campaign', campaignId);

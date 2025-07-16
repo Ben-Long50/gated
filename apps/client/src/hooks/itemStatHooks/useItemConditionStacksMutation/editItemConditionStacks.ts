@@ -1,7 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../../handleResponse';
 
 const editItemConditionStacks = async (
-  apiUrl: string,
   conditionId: number,
   itemId: number,
   value: number,

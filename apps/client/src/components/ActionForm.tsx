@@ -24,7 +24,6 @@ import { capitalCase } from 'change-case';
 import { Keyword } from 'src/types/keyword';
 
 const ActionForm = () => {
-  const { apiUrl } = useContext(AuthContext);
   const [formMessage, setFormMessage] = useState('');
   const [deleteMode, setDeleteMode] = useState(false);
   const { actionId } = useParams();
@@ -38,8 +37,8 @@ const ActionForm = () => {
     (action: Action) => action.id === Number(actionId),
   )[0];
 
-  const createAction = useCreateActionMutation(apiUrl, setFormMessage);
-  const deleteAction = useDeleteActionMutation(apiUrl, setFormMessage);
+  const createAction = useCreateActionMutation(setFormMessage);
+  const deleteAction = useDeleteActionMutation(setFormMessage);
 
   const handleDelete = () => {
     if (deleteMode && actionId) {

@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import getErrorReports from './getErrorReports';
 
-const useErrorReportsQuery = (apiUrl: string) => {
+const useErrorReportsQuery = () => {
   return useQuery({
     queryKey: ['errorReports'],
-    queryFn: async () => await getErrorReports(apiUrl),
+    queryFn: async () => await getErrorReports(),
     throwOnError: true,
   });
 };

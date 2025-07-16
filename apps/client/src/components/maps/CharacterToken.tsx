@@ -7,6 +7,7 @@ import { useContext } from 'react';
 import Die from './Die';
 import useCombatStore from 'src/stores/combatStore';
 import { FormApi } from '@tanstack/react-form';
+import RangeIcon from '../icons/RangeIcon';
 
 const CharacterToken = ({
   form,
@@ -93,6 +94,18 @@ const CharacterToken = ({
               {diceArray?.map((number: number, index) => (
                 <Die key={index} size={44} number={number} rolling={rolling} />
               ))}
+            </div>
+          )}
+          {field.state.value?.id === characterId && (
+            <div className="absolute inset-0 scale-125">
+              <RangeIcon
+                className="size-full"
+                style={{
+                  fill: `${statColorMap.DMG}`,
+                  stroke: 'black',
+                  strokeWidth: 3,
+                }}
+              />
             </div>
           )}
         </div>

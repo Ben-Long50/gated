@@ -1,7 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
 const updateCharacterLocation = async (
-  apiUrl: string,
   mapId: number,
 
   formData: { characterId: number; locationId: number; index: number },

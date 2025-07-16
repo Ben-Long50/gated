@@ -1,16 +1,15 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import updateFaction from './updateAccount';
 import { User } from 'src/types/user';
+import updateAccount from './updateAccount';
 
 const useUpdateAccountMutation = (
-  apiUrl: string,
   setFormMessage: (message: string) => void,
   setErrors: (errors: string[]) => void,
 ) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (formData: Partial<User>) => {
-      return updateFaction(apiUrl, formData);
+      return updateAccount(formData);
     },
     onSuccess: () => {
       setFormMessage('Account successfully updated');

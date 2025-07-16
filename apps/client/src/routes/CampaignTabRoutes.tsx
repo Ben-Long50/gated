@@ -7,7 +7,6 @@ import Faction from 'src/components/Faction';
 import FactionForm from 'src/components/FactionForm';
 import RollSimulator from 'src/components/RollSimulator';
 import SessionRoutes from './SessionRoutes';
-import { CampaignProvider } from 'src/contexts/CampaignContext';
 import CampaignAffiliations from 'src/components/CampaignAffiliations';
 import RollModal from 'src/components/modals/RollModal';
 import CharacterRoutes from './CharacterRoutes';
@@ -29,7 +28,7 @@ const CampaignTabRoutes = () => {
   return (
     <Route path="campaigns">
       <Route path="" element={<Campaigns />} />
-      <Route path=":campaignId" element={<CampaignProvider />}>
+      <Route path=":campaignId">
         <Route path="" element={<Campaign />}>
           <Route
             path="conditions/:conditionId"

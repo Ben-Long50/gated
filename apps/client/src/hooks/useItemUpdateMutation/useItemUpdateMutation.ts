@@ -2,17 +2,13 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import updateItem from './updateItem';
 import { useNavigate } from 'react-router-dom';
 
-const useItemUpdateMutation = (
-  apiUrl: string,
-  itemId: number,
-  characterId: number,
-) => {
+const useItemUpdateMutation = (itemId: number, characterId: number) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   return useMutation({
     mutationFn: (formData: FormData) => {
-      return updateItem(apiUrl, itemId, formData);
+      return updateItem(itemId, formData);
     },
     onSuccess: () => {
       navigate(-1);

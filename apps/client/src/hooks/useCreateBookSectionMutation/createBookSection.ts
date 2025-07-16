@@ -1,6 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const createBookSection = async (formData: object, apiUrl: string) => {
+const createBookSection = async (formData: object) => {
   try {
     const response = await fetch(`${apiUrl}/book/sections`, {
       method: 'POST',

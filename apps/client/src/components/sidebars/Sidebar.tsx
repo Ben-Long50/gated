@@ -8,10 +8,13 @@ import CharacterPictureRound from '../CharacterPictureRound';
 import useCharacters from 'src/hooks/useCharacters';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import useNavigationStore from 'src/stores/navbarStore';
+import { CampaignContext } from 'src/contexts/CampaignContext';
+import Loading from '../Loading';
 
 const Sidebar = ({ children }: { children: ReactNode }) => {
   const { mobile } = useContext(LayoutContext);
   const { accentPrimary } = useContext(ThemeContext);
+  const { activeCampaigns } = useContext(CampaignContext);
 
   const sidebarRef = useRef<null | HTMLElement>(null);
 
@@ -82,6 +85,23 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
             path={`/glam/characters/${activeCharacter?.id}/cart`}
           />
         )}
+        {activeCampaigns.length > 0 &&
+          activeCampaigns.map((campaign, index) => (
+            <LinkSidebar
+              key={index}
+              title={campaign?.name}
+              icon={
+                <div className="liveCampaign z-10 size-12 shrink-0 rounded-full">
+                  <img
+                    className="bg-secondary size-full shrink-0 rounded-full object-cover"
+                    src={campaign?.picture.imageUrl}
+                    alt={campaign?.name + ' ' + "'s cover picture"}
+                  />
+                </div>
+              }
+              path={`/glam/campaigns/${campaign?.id}`}
+            />
+          ))}
         {children}
       </div>
     </nav>

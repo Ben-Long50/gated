@@ -16,12 +16,10 @@ import { Character } from 'src/types/character';
 import ArrowHeader3 from './ArrowHeader3';
 
 const CampaignAffiliations = () => {
-  const { apiUrl } = useContext(AuthContext);
   const { accentPrimary } = useContext(ThemeContext);
   const { campaignId } = useParams();
 
   const { data: campaign, isLoading: campaignLoading } = useCampaignQuery(
-    apiUrl,
     Number(campaignId),
   );
 

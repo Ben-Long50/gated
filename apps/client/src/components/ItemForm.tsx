@@ -30,7 +30,6 @@ import useCreateItemCopyMutation from 'src/hooks/useCreateItemCopyMutation/useCr
 import { capitalCase } from 'change-case';
 
 const ItemForm = () => {
-  const { apiUrl } = useContext(AuthContext);
   const [formMessage, setFormMessage] = useState('');
   const [deleteMode, setDeleteMode] = useState(false);
   const { itemId, category } = useParams();
@@ -65,21 +64,18 @@ const ItemForm = () => {
   });
 
   const createItem = useCreateItemMutation(
-    apiUrl,
     category,
     setFormMessage,
     Number(itemId),
   );
 
   const createItemCopy = useCreateItemCopyMutation(
-    apiUrl,
     category,
     Number(itemId),
     setFormMessage,
   );
 
   const deleteItem = useDeleteItemMutation(
-    apiUrl,
     category,
     setFormMessage,
     Number(itemId),

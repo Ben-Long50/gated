@@ -1,9 +1,10 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const deleteCampaign = async (apiUrl: string, campaignId: number) => {
+const toggleCampaign = async (campaignId: number) => {
   try {
     const response = await fetch(`${apiUrl}/campaigns/${campaignId}`, {
-      method: 'DELETE',
+      method: 'PATCH',
       credentials: 'include',
     });
     const data = await handleResponse(response);
@@ -16,4 +17,4 @@ const deleteCampaign = async (apiUrl: string, campaignId: number) => {
   }
 };
 
-export default deleteCampaign;
+export default toggleCampaign;

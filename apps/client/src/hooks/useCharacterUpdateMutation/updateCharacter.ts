@@ -1,10 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const updateCharacter = async (
-  formData: FormData,
-  apiUrl: string,
-  characterId: number,
-) => {
+const updateCharacter = async (formData: FormData, characterId: number) => {
   try {
     const response = await fetch(`${apiUrl}/characters/${characterId}`, {
       method: 'PUT',

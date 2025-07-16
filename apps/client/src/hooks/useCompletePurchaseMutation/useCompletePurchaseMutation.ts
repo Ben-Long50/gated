@@ -2,14 +2,13 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import completePurchase from './completePurchase';
 
 const useCompletePurchaseMutation = (
-  apiUrl: string,
   characterId: number,
   inventoryId: number,
 ) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => {
-      return completePurchase(apiUrl, characterId, inventoryId);
+      return completePurchase(characterId, inventoryId);
     },
     onSuccess: () => {
       return queryClient.invalidateQueries({

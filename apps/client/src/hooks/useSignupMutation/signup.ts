@@ -1,6 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const signup = async (formData: object, apiUrl: string) => {
+const signup = async (formData: object) => {
   try {
     const response = await fetch(`${apiUrl}/auth/signup`, {
       method: 'POST',

@@ -1,6 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const createAction = async (formData: object, apiUrl: string) => {
+const createAction = async (formData: object) => {
   try {
     const response = await fetch(`${apiUrl}/actions`, {
       method: 'POST',

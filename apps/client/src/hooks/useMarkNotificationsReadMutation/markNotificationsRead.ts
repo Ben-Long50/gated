@@ -1,6 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const markNotificationsRead = async (apiUrl: string) => {
+const markNotificationsRead = async () => {
   try {
     const response = await fetch(`${apiUrl}/notifications/read`, {
       method: 'PUT',

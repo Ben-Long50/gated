@@ -2,14 +2,13 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import createCondition from './createCondition';
 
 const useCreateConditionMutation = (
-  apiUrl: string,
   conditionId: string,
   setFormMessage: (message: string) => void,
 ) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (formData: object) => {
-      return createCondition(formData, conditionId, apiUrl);
+      return createCondition(formData, conditionId);
     },
     onSuccess: (data) => {
       setFormMessage(data.message);

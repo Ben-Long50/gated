@@ -1,10 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const editCurrentSanity = async (
-  apiUrl: string,
-  characterId: number,
-  value: number,
-) => {
+const editCurrentSanity = async (characterId: number, value: number) => {
   try {
     const response = await fetch(
       `${apiUrl}/characters/${characterId}/stats/currentSanity`,

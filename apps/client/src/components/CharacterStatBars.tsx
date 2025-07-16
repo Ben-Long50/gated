@@ -22,20 +22,13 @@ const CharacterStatBars = ({
   characterId: number;
   size: 'large' | 'small';
 }) => {
-  const { apiUrl } = useContext(AuthContext);
   const { statColorMap } = useContext(ThemeContext);
 
   const { data: character } = useCharacterQuery(Number(characterId));
 
-  const editCurrentHealth = useCurrentHealthMutation(
-    apiUrl,
-    Number(characterId),
-  );
+  const editCurrentHealth = useCurrentHealthMutation(Number(characterId));
 
-  const editCurrentSanity = useCurrentSanityMutation(
-    apiUrl,
-    Number(characterId),
-  );
+  const editCurrentSanity = useCurrentSanityMutation(Number(characterId));
 
   const handleCurrentHealth = (value: number) => {
     if (

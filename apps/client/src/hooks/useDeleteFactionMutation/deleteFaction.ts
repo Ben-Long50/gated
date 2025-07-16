@@ -1,10 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const deleteFaction = async (
-  apiUrl: string,
-  campaignId: number,
-  factionId: number,
-) => {
+const deleteFaction = async (campaignId: number, factionId: number) => {
   try {
     const response = await fetch(
       `${apiUrl}/campaigns/${campaignId}/factions/${factionId}`,

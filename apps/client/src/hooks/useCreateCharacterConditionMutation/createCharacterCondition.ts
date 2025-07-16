@@ -1,7 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
 const createCharacterCondition = async (
-  apiUrl: string,
   characterId: number,
   formData: object,
 ) => {

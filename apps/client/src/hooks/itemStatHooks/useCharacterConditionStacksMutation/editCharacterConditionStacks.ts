@@ -1,7 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../../handleResponse';
 
 const editCharacterConditionStacks = async (
-  apiUrl: string,
   conditionId: number,
   characterId: number,
   value: number,

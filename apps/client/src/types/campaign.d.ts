@@ -6,6 +6,7 @@ import { User } from './user';
 interface Campaign {
   id: number;
   createdAt: Date;
+  active: boolean;
   ownerId: number;
   owner: User;
   date: { month: Month; day: number };

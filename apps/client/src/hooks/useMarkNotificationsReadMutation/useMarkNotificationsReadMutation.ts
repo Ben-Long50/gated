@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import updateFaction from './markNotificationsRead';
 
-const useMarkNotificationsReadMutation = (apiUrl: string) => {
+const useMarkNotificationsReadMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => {
-      return updateFaction(apiUrl);
+      return updateFaction();
     },
     onSuccess: () => {
       return queryClient.invalidateQueries({

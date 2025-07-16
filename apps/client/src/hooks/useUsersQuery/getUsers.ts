@@ -1,6 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const getUsers = async (apiUrl: string, nameQuery: string) => {
+const getUsers = async (nameQuery: string) => {
   try {
     const response = await fetch(`${apiUrl}/users/?nameQuery=${nameQuery}`, {
       method: 'GET',

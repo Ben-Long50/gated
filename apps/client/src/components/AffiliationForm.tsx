@@ -23,7 +23,6 @@ import ArrowHeader4 from './ArrowHeader4';
 import CharacterPictureRound from './CharacterPictureRound';
 
 const AffiliationForm = () => {
-  const { apiUrl } = useContext(AuthContext);
   const { mobile } = useContext(LayoutContext);
   const { factionId, gangId, characterId, affiliationId } = useParams();
   const [formMessage, setFormMessage] = useState('');
@@ -39,13 +38,13 @@ const AffiliationForm = () => {
     data: campaign,
     isLoading: campaignLoading,
     isPending: campaignPending,
-  } = useCampaignQuery(apiUrl, character?.campaignId);
+  } = useCampaignQuery(Number(character?.campaignId));
 
   const {
     data: faction,
     isLoading: factionLoading,
     isPending: factionPending,
-  } = useFactionQuery(apiUrl, Number(factionId));
+  } = useFactionQuery(Number(factionId));
 
   const {
     data: affiliation,
@@ -60,7 +59,6 @@ const AffiliationForm = () => {
     characterPending || campaignPending || factionPending || affiliationPending;
 
   const createAffiliation = useCreateAffiliationMutation(
-    apiUrl,
     setFormMessage,
     Number(factionId),
     Number(gangId),
@@ -68,7 +66,6 @@ const AffiliationForm = () => {
   );
 
   const updateAffiliation = useUpdateAffiliationMutation(
-    apiUrl,
     Number(affiliationId),
     setFormMessage,
     Number(factionId),
@@ -76,7 +73,6 @@ const AffiliationForm = () => {
   );
 
   const deleteAffiliation = useDeleteAffiliationMutation(
-    apiUrl,
     Number(affiliationId),
     setFormMessage,
     Number(factionId),

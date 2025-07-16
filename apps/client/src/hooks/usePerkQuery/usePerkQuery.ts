@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import getPerkById from './getPerkById';
 
-const usePerkQuery = (apiUrl: string, perkId: string) => {
+const usePerkQuery = (perkId: string) => {
   return useQuery({
     queryKey: ['perk', perkId],
-    queryFn: async () => await getPerkById(apiUrl, perkId),
+    queryFn: async () => await getPerkById(perkId),
   });
 };
 

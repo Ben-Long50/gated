@@ -1,7 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
 const createNotes = async (
-  apiUrl: string,
   campaignId: number,
   sessionId: number,
   characterId: number,

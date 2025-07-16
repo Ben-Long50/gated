@@ -31,18 +31,17 @@ import PictureField from './formFields/PictureField';
 import AttributeField from './formFields/AttributeField';
 
 const CharacterForm = () => {
-  const { apiUrl } = useContext(AuthContext);
   const { layoutSize } = useContext(LayoutContext);
 
   const [formMessage, setFormMessage] = useState('');
 
   const cardRef = useRef(null);
 
-  const { data: campaigns } = useCampaignsQuery(apiUrl);
+  const { data: campaigns } = useCampaignsQuery();
 
   const { emptyAttributeTree } = useAttributeTree();
 
-  const createCharacter = useCreateCharacterMutation(apiUrl, setFormMessage);
+  const createCharacter = useCreateCharacterMutation(setFormMessage);
 
   const characterForm = useForm({
     defaultValues: {

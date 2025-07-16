@@ -1,6 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const deletePerk = async (apiUrl: string, perkId: number) => {
+const deletePerk = async (perkId: number) => {
   try {
     const response = await fetch(`${apiUrl}/perks/${perkId}`, {
       method: 'DELETE',

@@ -11,7 +11,7 @@ const useDeleteKeywordMutation = (
   const navigate = useNavigate();
   return useMutation({
     mutationFn: () => {
-      return deleteKeyword(apiUrl, keywordId);
+      return deleteKeyword(keywordId);
     },
     onSuccess: () => {
       navigate('/glam/codex/keywords');

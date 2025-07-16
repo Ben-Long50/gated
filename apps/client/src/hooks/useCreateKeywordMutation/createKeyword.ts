@@ -1,10 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const createKeyword = async (
-  formData: object,
-  keywordId: string,
-  apiUrl: string,
-) => {
+const createKeyword = async (formData: object, keywordId: string) => {
   try {
     const response = await fetch(`${apiUrl}/keywords`, {
       method: 'POST',

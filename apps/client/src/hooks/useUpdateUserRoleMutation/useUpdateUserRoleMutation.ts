@@ -3,13 +3,12 @@ import { User } from 'src/types/user';
 import updateUserRole from './updateUserRole';
 
 const useUpdateUserRoleMutation = (
-  apiUrl: string,
   setFormMessage: (message: string) => void,
 ) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (formData: Partial<User>) => {
-      return updateUserRole(apiUrl, formData);
+      return updateUserRole(formData);
     },
     onSuccess: () => {
       setFormMessage('Role successfully updated');

@@ -1,10 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const getCampaignMap = async (
-  apiUrl: string,
-  campaignId: number,
-  mapId: number,
-) => {
+const getCampaignMap = async (campaignId: number, mapId: number) => {
   try {
     const response = await fetch(
       `${apiUrl}/campaigns/${campaignId}/maps/${mapId}`,

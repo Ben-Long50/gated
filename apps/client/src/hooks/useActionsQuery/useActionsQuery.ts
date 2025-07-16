@@ -2,10 +2,10 @@ import { useQuery } from '@tanstack/react-query';
 import getActions from './getActions';
 import { Action } from 'src/types/action';
 
-const useActionsQuery = (apiUrl: string) => {
+const useActionsQuery = () => {
   return useQuery<Action[]>({
     queryKey: ['actions'],
-    queryFn: async () => await getActions(apiUrl),
+    queryFn: async () => await getActions(),
   });
 };
 

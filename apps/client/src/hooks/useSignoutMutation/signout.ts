@@ -1,6 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const signout = async (apiUrl: string) => {
+const signout = async () => {
   try {
     const response = await fetch(`${apiUrl}/auth/signout`, {
       method: 'POST',

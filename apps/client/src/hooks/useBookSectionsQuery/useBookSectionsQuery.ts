@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import getBookSections from './getBookSections';
 
-const useBookSectionsQuery = (apiUrl: string) => {
+const useBookSectionsQuery = () => {
   return useQuery({
     queryKey: ['book'],
-    queryFn: async () => await getBookSections(apiUrl),
+    queryFn: async () => await getBookSections(),
   });
 };
 

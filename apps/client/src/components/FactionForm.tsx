@@ -19,7 +19,6 @@ import useDeleteFactionMutation from '../hooks/useDeleteFactionMutation/useDelet
 import PictureField from './formFields/PictureField';
 
 const FactionForm = ({ title, mode }: { title: string; mode?: string }) => {
-  const { apiUrl } = useContext(AuthContext);
   const { accentPrimary } = useContext(ThemeContext);
   const { campaignId, factionId } = useParams();
   const [formMessage, setFormMessage] = useState('');
@@ -27,7 +26,6 @@ const FactionForm = ({ title, mode }: { title: string; mode?: string }) => {
   const [imagePreview, setImagePreview] = useState('');
 
   const updateFaction = useUpdateFactionMutation(
-    apiUrl,
     Number(campaignId),
     Number(factionId),
     setFormMessage,
@@ -37,10 +35,9 @@ const FactionForm = ({ title, mode }: { title: string; mode?: string }) => {
     data: faction,
     isLoading,
     isPending,
-  } = useFactionQuery(apiUrl, Number(factionId));
+  } = useFactionQuery(Number(factionId));
 
   const deleteFaction = useDeleteFactionMutation(
-    apiUrl,
     Number(campaignId),
     Number(factionId),
     setFormMessage,

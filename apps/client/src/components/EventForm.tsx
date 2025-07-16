@@ -15,14 +15,13 @@ import useCharacters from 'src/hooks/useCharacters';
 import TimeField from './formFields/TimeField';
 
 const EventForm = () => {
-  const { apiUrl } = useContext(AuthContext);
   const { campaignId, month, day } = useParams();
   const [timeType, setTimeType] = useState<'allDay' | 'setTime'>('allDay');
   const navigate = useNavigate();
 
   const { activeCharacter } = useCharacters();
 
-  const createEvent = useCreateEventMutation(apiUrl, Number(campaignId));
+  const createEvent = useCreateEventMutation(Number(campaignId));
 
   const eventForm = useForm({
     defaultValues: {

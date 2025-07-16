@@ -1,15 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import refreshAmmo from './refreshAmmo';
 import { useRef } from 'react';
-import { Character } from 'src/types/character';
 import { Item } from 'src/types/item';
 import { socket } from 'src/socket';
 
-const useRefreshAmmoMutation = (
-  apiUrl: string,
-  itemId: number,
-  characterId: number,
-) => {
+const useRefreshAmmoMutation = (itemId: number) => {
   const queryClient = useQueryClient();
   const timeoutRef = useRef(0);
 
@@ -21,7 +16,7 @@ const useRefreshAmmoMutation = (
 
       return new Promise((resolve) => {
         timeoutRef.current = setTimeout(async () => {
-          await refreshAmmo(apiUrl, itemId);
+          await refreshAmmo(itemId);
           resolve(itemId);
         }, 1000);
       });
@@ -48,8 +43,12 @@ const useRefreshAmmoMutation = (
 
       return { prevItemData };
     },
-    onSuccess: () => {
-      socket.emit('item', itemId);
+    onSuccess: (_, __, context) => {
+      socket.emit('item', {
+        itemId,
+        campaignId:
+          context.prevItemData?.characterInventory?.character.campaignId,
+      });
       return queryClient.invalidateQueries({
         queryKey: ['item', itemId],
       });

@@ -33,7 +33,6 @@ import CyberIcon from './icons/CyberIcon';
 import EquipIcon from './icons/EquipIcon';
 
 const CharacterUpdateForm = () => {
-  const { apiUrl } = useContext(AuthContext);
   const { statColorMap } = useContext(ThemeContext);
   const { layoutSize, mobile } = useContext(LayoutContext);
   const { characterId } = useParams();
@@ -46,7 +45,7 @@ const CharacterUpdateForm = () => {
     data: campaigns,
     isLoading: campaignsLoading,
     isPending: campaignsPending,
-  } = useCampaignsQuery(apiUrl);
+  } = useCampaignsQuery();
 
   const {
     filteredCharacter: character,
@@ -60,11 +59,10 @@ const CharacterUpdateForm = () => {
   const perks = usePerks(character?.attributes);
 
   const updateCharacter = useUpdateCharacterMutation(
-    apiUrl,
     Number(characterId),
     setFormMessage,
   );
-  const deleteCharacter = useDeleteCharacterMutation(apiUrl, characterId);
+  const deleteCharacter = useDeleteCharacterMutation(characterId);
 
   const handleDelete = () => {
     if (deleteMode) {

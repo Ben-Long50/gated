@@ -6,13 +6,11 @@ import useLocationQueries from './useCampaignMapQuery/useLocationQueries';
 import useCombatStore from 'src/stores/combatStore';
 
 const useMap = () => {
-  const { apiUrl } = useContext(AuthContext);
   const { campaignId, mapId } = useParams();
 
   const setTurnOrder = useCombatStore((state) => state.setTurnOrder);
 
   const { data: map, isLoading: mapLoading } = useCampaignMapQuery(
-    apiUrl,
     Number(campaignId),
     Number(mapId),
   );

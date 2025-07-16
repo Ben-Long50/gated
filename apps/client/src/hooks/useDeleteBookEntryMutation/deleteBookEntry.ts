@@ -1,6 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const deleteBookEntry = async (apiUrl: string, bookEntryId: string) => {
+const deleteBookEntry = async (bookEntryId: string) => {
   try {
     const response = await fetch(`${apiUrl}/book/entries/${bookEntryId}`, {
       method: 'DELETE',

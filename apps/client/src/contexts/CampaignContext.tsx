@@ -1,33 +1,89 @@
-import { createContext, useContext, useEffect } from 'react';
-import { Outlet, useParams } from 'react-router-dom';
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react';
 import { socket } from '../socket';
 import { useQueryClient } from '@tanstack/react-query';
-import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import { AuthContext } from './AuthContext';
+import useCampaignQueries from 'src/hooks/useCampaignsQuery/useCampaignQueries';
+import Loading from 'src/components/Loading';
 
-export const CampaignContext = createContext({ socket, gameMaster: undefined });
+export const CampaignContext = createContext({
+  socket,
+  campaigns: [],
+  activeCampaigns: [],
+});
 
-export const CampaignProvider = () => {
-  const { apiUrl, user } = useContext(AuthContext);
-  const { campaignId } = useParams();
+export const CampaignProvider = ({ children }: { children: ReactNode }) => {
+  const { user } = useContext(AuthContext);
   const queryClient = useQueryClient();
 
-  const { data: campaign } = useCampaignQuery(apiUrl, Number(campaignId));
+  const userCampaignIds = [
+    ...user?.ownerCampaigns,
+    ...user?.playerCampaigns,
+  ].map((campaign) => campaign.id);
 
-  const gameMaster = user?.id === campaign?.ownerId;
+  const { campaigns, isLoading } = useCampaignQueries(userCampaignIds);
+
+  const activeCampaigns = useMemo(
+    () => campaigns?.filter((campaign) => campaign?.active),
+    [campaigns],
+  );
+
+  const activeCampaignRef = useRef<number[]>([]);
 
   useEffect(() => {
-    socket.connect();
-
-    socket.on('connect', () => {
-      console.log(`Connected to campaign`);
-    });
+    if (!socket.connected) {
+      socket.connect();
+    }
 
     socket.on('campaign', (campaignId) => {
       queryClient.invalidateQueries({
         queryKey: ['campaign', campaignId],
       });
     });
+
+    return () => {
+      socket.off('campaign');
+      socket.disconnect();
+      socket.off();
+    };
+  }, []);
+
+  useEffect(() => {
+    const activeIds = activeCampaigns.map((campaign) => campaign.id) || [];
+
+    activeCampaignRef.current.forEach((campaignId) => {
+      if (!activeIds.includes(campaignId)) {
+        socket.emit('endCampaign', campaignId);
+        console.log(`Ended campaign ${campaignId}`);
+      }
+    });
+
+    activeIds?.forEach((campaignId) => {
+      const campaign = campaigns.find(
+        (campaign) => campaign?.id === campaignId,
+      );
+      const gameMaster = campaign?.ownerId === user.id;
+
+      if (!activeCampaignRef.current.includes(campaignId)) {
+        if (gameMaster) {
+          socket.emit('startCampaign', campaignId);
+          console.log(`Started campaign ${campaign?.name}`);
+        } else {
+          socket.emit('joinCampaign', campaignId);
+          console.log(`Joined campaign ${campaignId}`);
+        }
+      }
+    });
+
+    activeCampaignRef.current = activeIds;
+
+    if (activeCampaignRef.current.length === 0) return;
 
     socket.on('character', (characterId) => {
       queryClient.invalidateQueries({
@@ -52,14 +108,17 @@ export const CampaignProvider = () => {
     });
 
     return () => {
-      socket.disconnect();
-      socket.off();
+      socket.off('character');
+      socket.off('item');
+      socket.off('affiliation');
     };
-  }, []);
+  }, [activeCampaigns]);
+
+  if (isLoading) return <Loading />;
 
   return (
-    <CampaignContext.Provider value={{ socket, gameMaster }}>
-      <Outlet context={{ socket }} />
+    <CampaignContext.Provider value={{ socket, campaigns, activeCampaigns }}>
+      {children}
     </CampaignContext.Provider>
   );
 };

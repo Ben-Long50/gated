@@ -1,46 +1,57 @@
 import { useContext } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
-import Loading from './Loading';
 import CampaignCard from './CampaignCard';
 import { Campaign } from 'src/types/campaign';
-import useCampaignsQuery from '../hooks/useCampaignsQuery/useCampaignsQuery';
 import BtnRect from './buttons/BtnRect';
 import { Link, useSearchParams } from 'react-router-dom';
 import { User } from 'src/types/user';
 import { capitalCase } from 'change-case';
+import useCampaignQueries from 'src/hooks/useCampaignsQuery/useCampaignQueries';
+import Loading from './Loading';
 
 const Campaigns = () => {
-  const { apiUrl, user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const [searchParams] = useSearchParams();
 
   const campaignType = searchParams.get('campaignType') || 'all';
 
-  const { data: campaigns, isLoading, isPending } = useCampaignsQuery(apiUrl);
+  const userCampaignIds = [
+    ...user?.ownerCampaigns,
+    ...user?.playerCampaigns,
+    ...user?.pendingCampaigns,
+  ].map((campaign) => campaign.id);
+
+  const { campaigns, isLoading } = useCampaignQueries(userCampaignIds);
 
   let campaignList;
 
   switch (campaignType) {
     case 'owner':
-      campaignList = campaigns?.filter(
-        (campaign: Campaign) => campaign.ownerId === user?.id,
-      );
+      campaignList =
+        campaigns?.filter(
+          (campaign: Campaign) => campaign.ownerId === user?.id,
+        ) || [];
       break;
     case 'player':
-      campaignList = campaigns?.filter((campaign: Campaign) =>
-        campaign.players.some((player: User) => player.id === user?.id),
-      );
+      campaignList =
+        campaigns?.filter((campaign: Campaign) =>
+          campaign.players.some((player: User) => player.id === user?.id),
+        ) || [];
       break;
     case 'pending':
-      campaignList = campaigns?.filter((campaign: Campaign) =>
-        campaign.pendingPlayers.some((player: User) => player.id === user?.id),
-      );
+      campaignList =
+        campaigns?.filter((campaign: Campaign) =>
+          campaign.pendingPlayers.some(
+            (player: User) => player.id === user?.id,
+          ),
+        ) || [];
       break;
     default:
       campaignList = campaigns || [];
       break;
   }
 
-  if (isLoading || isPending) return <Loading />;
+  if (isLoading) return <Loading />;
 
   if (!campaigns || campaignList.length === 0) {
     return (
@@ -64,7 +75,7 @@ const Campaigns = () => {
     <div className="flex w-full max-w-6xl flex-col items-center gap-6 sm:gap-8">
       <h1>{capitalCase(campaignType) + ' Campaigns'}</h1>
       <div className="flex w-full flex-col gap-8">
-        {campaignList.map((campaign: Campaign) => (
+        {campaignList?.map((campaign: Campaign) => (
           <CampaignCard key={campaign.id} campaign={campaign} />
         ))}
       </div>

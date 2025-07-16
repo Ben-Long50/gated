@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import deleteNotification from './deleteNotification';
 
-const useDeleteNotificationMutation = (apiUrl: string) => {
+const useDeleteNotificationMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (notificationId: number) => {
-      return deleteNotification(apiUrl, notificationId);
+      return deleteNotification(notificationId);
     },
     onSuccess: () => {
       return queryClient.invalidateQueries({

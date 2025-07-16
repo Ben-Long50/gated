@@ -2,12 +2,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import signout from './signout';
 
-const useSignoutMutation = (apiUrl: string) => {
+const useSignoutMutation = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async () => {
-      return await signout(apiUrl);
+      return await signout();
     },
     onSuccess: () => {
       queryClient.clear();

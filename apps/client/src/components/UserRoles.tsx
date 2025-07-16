@@ -23,10 +23,10 @@ const UserRoleForm = ({
   setQuery: (value: string) => void;
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
-  const { apiUrl } = useContext(AuthContext);
+
   const [formMessage, setFormMessage] = useState('');
 
-  const updateUserRole = useUpdateUserRoleMutation(apiUrl, setFormMessage);
+  const updateUserRole = useUpdateUserRoleMutation(setFormMessage);
 
   const roleForm = useForm({
     defaultValues: {
@@ -81,11 +81,10 @@ const UserRoleForm = ({
 
 const UserRoles = () => {
   const { accentPrimary } = useContext(ThemeContext);
-  const { apiUrl } = useContext(AuthContext);
 
   const [query, setQuery] = useState('');
 
-  const { data: users, isLoading, isPending } = useUsersQuery(apiUrl, query);
+  const { data: users, isLoading, isPending } = useUsersQuery(query);
 
   return (
     <div className="flex w-full max-w-5xl flex-col items-center gap-6 sm:gap-8">

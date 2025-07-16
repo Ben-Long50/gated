@@ -1,11 +1,12 @@
 import { create, keyResolver, windowScheduler } from '@yornaath/batshit';
 import handleResponse from '../handleResponse';
 import { Character } from 'src/types/character';
+import apiUrl from 'src/utils/configureUrl';
 
 const getCharacter = create({
   fetcher: async (characterIds: number[]) => {
     const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/characters/batch?ids=${characterIds.join(',')}`,
+      `${apiUrl}/characters/batch?ids=${characterIds.join(',')}`,
       {
         method: 'GET',
         credentials: 'include',

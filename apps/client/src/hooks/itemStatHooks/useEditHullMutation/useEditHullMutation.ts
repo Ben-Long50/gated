@@ -27,7 +27,7 @@ const useEditHullMutation = (
           const finalValue = updateBuffer.current;
 
           updateBuffer.current = 0;
-          await editHull(apiUrl, itemId, finalValue);
+          await editHull(itemId, finalValue);
           resolve(finalValue);
         }, 1000);
       });
@@ -53,8 +53,12 @@ const useEditHullMutation = (
 
       return { prevItemData };
     },
-    onSuccess: () => {
-      socket.emit('item', itemId);
+    onSuccess: (_, __, context) => {
+      socket.emit('item', {
+        itemId,
+        campaignId:
+          context.prevItemData?.characterInventory?.character.campaignId,
+      });
       return queryClient.invalidateQueries({
         queryKey: ['item', itemId],
       });

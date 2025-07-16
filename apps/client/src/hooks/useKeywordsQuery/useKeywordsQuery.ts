@@ -2,10 +2,10 @@ import { useQuery } from '@tanstack/react-query';
 import getKeywords from './getKeywords';
 import { Keyword } from 'src/types/keyword';
 
-const useKeywordsQuery = (apiUrl: string) => {
+const useKeywordsQuery = () => {
   return useQuery<Keyword[]>({
     queryKey: ['keywords'],
-    queryFn: async () => await getKeywords(apiUrl),
+    queryFn: async () => await getKeywords(),
   });
 };
 

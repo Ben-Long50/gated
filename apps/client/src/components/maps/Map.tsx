@@ -14,7 +14,7 @@ import { CampaignContext } from 'src/contexts/CampaignContext';
 import CharacterOptions from './CharacterOptions';
 import useRoll from 'src/hooks/useRoll';
 import useCombat from 'src/hooks/useCombat';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import useCombatStore from 'src/stores/combatStore';
 import ActionSidebar from './ActionSidebar';
 import { useForm } from '@tanstack/react-form';
@@ -24,12 +24,15 @@ import { Character } from 'src/types/character';
 import useCharacter from 'src/hooks/useCharacter';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import ActionIcon from '../icons/ActionIcon';
+import BtnRect from '../buttons/BtnRect';
+import ThemeContainer from '../ThemeContainer';
 
 const Map = () => {
   const { user } = useContext(AuthContext);
   const { mobile } = useContext(LayoutContext);
   const { accentPrimary } = useContext(ThemeContext);
   const { gameMaster } = useContext(CampaignContext);
+  const navigate = useNavigate();
   const [gridDisplay, setGridDisplay] = useState(false);
   const [characterList, setCharacterList] = useState(true);
   const [actionSidebar, setActionSidebar] = useState(true);
@@ -67,10 +70,6 @@ const Map = () => {
 
   const item = useCombatStore((state) => state.item);
 
-  //   const roll = async (rolls: { attribute: string; skill: string }[]) => {
-  //   await calculateSuccesses(character?.attributes, rolls, []);
-  // };
-
   const actionForm = useForm({
     defaultValues: {
       activeCharacter: character || null,
@@ -81,7 +80,6 @@ const Map = () => {
     onSubmit: async ({ value }) => {
       // roll(value.action?.roll);
       value.activeCharacter = character;
-      console.log(value);
 
       await calculateSuccesses(
         value.activeCharacter?.attributes,
@@ -217,7 +215,26 @@ const Map = () => {
             )}
           </div>
         </div>
-        <CharacterOptions form={actionForm} advanceTurn={advanceTurn} />
+        <ThemeContainer
+          className="!sticky bottom-[33px] mt-auto w-full max-w-5xl"
+          borderColor={accentPrimary}
+          chamfer="small"
+        >
+          <div className="flex w-full flex-col gap-4 p-4">
+            {userCharacter && (
+              <CharacterOptions form={actionForm} advanceTurn={advanceTurn} />
+            )}
+            {gameMaster && !activeCharacter && (
+              <BtnRect
+                ariaLabel="Open initiative modal"
+                type="button"
+                onClick={() => navigate('initiative')}
+              >
+                Start Combat
+              </BtnRect>
+            )}
+          </div>
+        </ThemeContainer>
       </div>
       <Outlet
         context={{

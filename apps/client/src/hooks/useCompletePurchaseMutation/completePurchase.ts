@@ -1,10 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const completePurchase = async (
-  apiUrl: string,
-  characterId: number,
-  inventoryId: number,
-) => {
+const completePurchase = async (characterId: number, inventoryId: number) => {
   try {
     const response = await fetch(
       `${apiUrl}/characters/${characterId}/inventory/${inventoryId}`,

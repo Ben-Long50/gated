@@ -1,12 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRef } from 'react';
-import { Item } from 'src/types/item';
 import editCharacterConditionStacks from './editCharacterConditionStacks';
 import { socket } from 'src/socket';
 import { Character } from 'src/types/character';
 
 const useCharacterConditionStacksMutation = (
-  apiUrl: string,
   conditionId: number,
   characterId: number,
 ) => {
@@ -28,7 +26,6 @@ const useCharacterConditionStacksMutation = (
 
           updateBuffer.current = 0;
           await editCharacterConditionStacks(
-            apiUrl,
             conditionId,
             characterId,
             finalValue,
@@ -63,8 +60,11 @@ const useCharacterConditionStacksMutation = (
       return { prevCharacterData };
     },
 
-    onSuccess: () => {
-      socket.emit('character', characterId);
+    onSuccess: (_, __, context) => {
+      socket.emit('character', {
+        characterId,
+        campaignId: context.prevCharacterData?.campaignId,
+      });
       return queryClient.invalidateQueries({
         queryKey: ['character', characterId],
       });

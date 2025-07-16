@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import updateCharacterLocation from './updateCharacterLocation';
 import { Location } from 'src/types/map';
 
-const useUpdateCharacterLocationMutation = (apiUrl: string, mapId: number) => {
+const useUpdateCharacterLocationMutation = (mapId: number) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (formData: {
@@ -10,7 +10,7 @@ const useUpdateCharacterLocationMutation = (apiUrl: string, mapId: number) => {
       locationId: number;
       index: number;
     }) => {
-      return updateCharacterLocation(apiUrl, mapId, formData);
+      return updateCharacterLocation(mapId, formData);
     },
 
     onMutate: (data) => {
@@ -20,9 +20,6 @@ const useUpdateCharacterLocationMutation = (apiUrl: string, mapId: number) => {
         'location',
         data.locationId,
       ]);
-
-      console.log(prevItemData);
-      console.log(data, mapId);
 
       if (mapId !== prevItemData?.mapId) {
         queryClient.removeQueries({ queryKey: ['location', data.locationId] });

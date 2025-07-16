@@ -20,7 +20,6 @@ import { capitalCase } from 'change-case';
 import AttributeField from './formFields/AttributeField';
 
 const PerkForm = () => {
-  const { apiUrl } = useContext(AuthContext);
   const [formMessage, setFormMessage] = useState('');
   const [deleteMode, setDeleteMode] = useState(false);
   const { perkId } = useParams();
@@ -34,16 +33,8 @@ const PerkForm = () => {
     (perk: Perk) => perk.id === Number(perkId),
   )[0];
 
-  const createPerk = useCreatePerkMutation(
-    apiUrl,
-    Number(perkId),
-    setFormMessage,
-  );
-  const deletePerk = useDeletePerkMutation(
-    apiUrl,
-    Number(perkId),
-    setFormMessage,
-  );
+  const createPerk = useCreatePerkMutation(Number(perkId), setFormMessage);
+  const deletePerk = useDeletePerkMutation(Number(perkId), setFormMessage);
 
   const handleDelete = () => {
     if (deleteMode) {

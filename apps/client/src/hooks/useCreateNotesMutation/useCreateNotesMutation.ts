@@ -2,7 +2,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import createNotes from './createNotes';
 
 const useCreateNotesMutation = (
-  apiUrl: string,
   campaignId: number,
   sessionId: number,
   characterId: number,
@@ -11,7 +10,7 @@ const useCreateNotesMutation = (
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (content: { html: string; nodes: object }) => {
-      return createNotes(apiUrl, campaignId, sessionId, characterId, content);
+      return createNotes(campaignId, sessionId, characterId, content);
     },
     onSuccess: (data) => {
       setFormMessage(data.message);

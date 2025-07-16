@@ -17,7 +17,7 @@ const SubLinkSidebar = ({ title, path }: { title: string; path: string }) => {
       <button
         className="w-full pl-4 text-left text-inherit"
         onClick={() => {
-          if (layoutSize !== 'large') {
+          if (layoutSize !== 'large' && layoutSize !== 'xlarge') {
             setSidebar(false);
           }
         }}

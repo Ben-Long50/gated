@@ -9,7 +9,7 @@ import useCampaignCharactersQuery from 'src/hooks/useCampaignCharactersQuery/use
 import useCharacters from 'src/hooks/useCharacters';
 
 const CampaignCharacterList = () => {
-  const { apiUrl, user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const { campaignId } = useParams();
   const [searchParams] = useSearchParams();
 
@@ -25,7 +25,6 @@ const CampaignCharacterList = () => {
   }, [searchParams]);
 
   const { data: campaign, isLoading: campaignLoading } = useCampaignQuery(
-    apiUrl,
     Number(campaignId),
   );
 

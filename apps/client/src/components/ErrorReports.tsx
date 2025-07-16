@@ -9,15 +9,10 @@ import ThemeContainer from './ThemeContainer';
 import useDeleteErrorReportMutation from '../hooks/useDeleteErrorReportMutation/useDeleteErrorReportMutation';
 
 const ErrorReports = () => {
-  const { apiUrl } = useContext(AuthContext);
   const { accentPrimary } = useContext(ThemeContext);
-  const {
-    data: errorReports,
-    isLoading,
-    isPending,
-  } = useErrorReportsQuery(apiUrl);
+  const { data: errorReports, isLoading, isPending } = useErrorReportsQuery();
 
-  const deleteErrorReport = useDeleteErrorReportMutation(apiUrl);
+  const deleteErrorReport = useDeleteErrorReportMutation();
 
   if (isLoading || isPending) return <Loading />;
 

@@ -10,7 +10,6 @@ import { useForm } from '@tanstack/react-form';
 import TimeField from '../formFields/TimeField';
 
 const TimeModal = () => {
-  const { apiUrl } = useContext(AuthContext);
   const { campaignId } = useParams();
 
   const currentTime = useOutletContext() || {};
@@ -28,10 +27,7 @@ const TimeModal = () => {
     },
   });
 
-  const setCampaignTime = useSetCampaignTimeMutation(
-    apiUrl,
-    Number(campaignId),
-  );
+  const setCampaignTime = useSetCampaignTimeMutation(Number(campaignId));
 
   return (
     <Modal>

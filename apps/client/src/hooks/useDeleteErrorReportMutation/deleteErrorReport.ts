@@ -1,6 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const deleteErrorReport = async (apiUrl: string, errorReportId: number) => {
+const deleteErrorReport = async (errorReportId: number) => {
   try {
     const response = await fetch(`${apiUrl}/errors/${errorReportId}`, {
       method: 'DELETE',

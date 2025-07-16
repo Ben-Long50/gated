@@ -19,7 +19,6 @@ import { mdiSync } from '@mdi/js';
 import { Campaign } from 'src/types/campaign';
 
 const CharacterList = () => {
-  const { apiUrl } = useContext(AuthContext);
   const { accentPrimary } = useContext(ThemeContext);
 
   const {
@@ -30,12 +29,9 @@ const CharacterList = () => {
     isLoading,
   } = useCharacters();
 
-  const { data: campaigns } = useCampaignsQuery(apiUrl);
+  const { data: campaigns } = useCampaignsQuery();
 
-  const setActiveCharacter = useSetActiveCharacterMutation(
-    apiUrl,
-    activeCharacter?.id,
-  );
+  const setActiveCharacter = useSetActiveCharacterMutation(activeCharacter?.id);
 
   const activeForm = useForm({
     defaultValues: {

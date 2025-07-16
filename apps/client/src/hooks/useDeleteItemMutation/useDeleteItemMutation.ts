@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import deleteItem from './deleteItem';
 
 const useDeleteItemMutation = (
-  apiUrl: string,
   category: string,
   setFormMessage: (message: string) => void,
   itemId: number,
@@ -12,7 +11,7 @@ const useDeleteItemMutation = (
   const navigate = useNavigate();
   return useMutation({
     mutationFn: () => {
-      return deleteItem(apiUrl, category, itemId);
+      return deleteItem(category, itemId);
     },
     onSuccess: () => {
       navigate(-2);

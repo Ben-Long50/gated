@@ -5,14 +5,14 @@ import useBookEntryQuery from '../hooks/useBookEntryQuery/useBookEntryQuery';
 import { Link, useParams } from 'react-router-dom';
 
 const BookEntry = () => {
-  const { apiUrl, user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const { bookEntryId } = useParams();
 
   const {
     data: bookEntry,
     isLoading,
     isPending,
-  } = useBookEntryQuery(apiUrl, bookEntryId);
+  } = useBookEntryQuery(bookEntryId);
 
   if (isLoading || isPending) {
     return <Loading />;

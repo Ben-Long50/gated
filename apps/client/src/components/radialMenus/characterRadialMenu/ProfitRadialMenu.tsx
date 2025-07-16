@@ -14,8 +14,7 @@ const ProfitRadialMenu = ({
   character: Character;
   containerRef: ReactNode;
 }) => {
-  const { apiUrl } = useContext(AuthContext);
-  const editProfits = useProfitsMutation(apiUrl, character.id);
+  const editProfits = useProfitsMutation(character.id);
 
   const setMenu = useRadialMenuStore((state) => state.setMenu);
 

@@ -26,16 +26,16 @@ import { capitalCase } from 'change-case';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import useCharacterQueries from 'src/hooks/useCharactersQuery/useCharacterQueries';
 import Calendar from './Calendar';
+import useToggleCampaignMutation from 'src/hooks/campaign hooks/useToggleCampaignMutation/useToggleCampaignMutation';
 
 const Campaign = () => {
-  const { apiUrl, user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const { mobile } = useContext(LayoutContext);
   const { campaignId } = useParams();
   const { accentPrimary } = useContext(ThemeContext);
   const [tab, setTab] = useState('sessions');
 
   const { data: campaign, isLoading: campaignLoading } = useCampaignQuery(
-    apiUrl,
     Number(campaignId),
   );
 
@@ -47,7 +47,7 @@ const Campaign = () => {
     campaign?.characters.map((character) => character.id) || [],
   );
 
-  const joinCampaign = useJoinCampaignMutation(apiUrl, Number(campaignId));
+  const joinCampaign = useJoinCampaignMutation(Number(campaignId));
 
   const pendingIds = campaign?.pendingPlayers.map((player: User) => player.id);
 

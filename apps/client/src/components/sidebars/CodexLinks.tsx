@@ -23,9 +23,9 @@ import PotionIcon from '../icons/PotionIcon';
 import { capitalCase } from 'change-case';
 
 const CodexLinks = () => {
-  const { apiUrl, user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
-  const { data: bookSections } = useBookSectionsQuery(apiUrl);
+  const { data: bookSections } = useBookSectionsQuery();
 
   return (
     <>

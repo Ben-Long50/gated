@@ -1,10 +1,11 @@
 import { create, keyResolver, windowScheduler } from '@yornaath/batshit';
 import handleResponse from '../handleResponse';
+import apiUrl from 'src/utils/configureUrl';
 
 const getAffiliation = create({
   fetcher: async (affiliationIds: number[]) => {
     const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/affiliations/batch?ids=${affiliationIds.join(',')}`,
+      `${apiUrl}/affiliations/batch?ids=${affiliationIds.join(',')}`,
       {
         method: 'GET',
         credentials: 'include',

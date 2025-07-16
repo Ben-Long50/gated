@@ -4,16 +4,12 @@ import { Action } from 'src/types/action';
 import { Item } from 'src/types/item';
 import activateAction from './activateAction';
 
-const useActivateActionMutation = (
-  apiUrl: string,
-  itemId: number,
-  actionId: number,
-) => {
+const useActivateActionMutation = (itemId: number, actionId: number) => {
   const queryClient = useQueryClient();
 
   const editProfitsMutation = useMutation({
     mutationFn: async (value: boolean) => {
-      await activateAction(apiUrl, actionId, value);
+      await activateAction(actionId, value);
     },
     onMutate: (value) => {
       queryClient.cancelQueries({ queryKey: ['item', itemId] });
@@ -37,8 +33,12 @@ const useActivateActionMutation = (
       return { prevItemData };
     },
 
-    onSuccess: () => {
-      socket.emit('item', itemId);
+    onSuccess: (_, __, context) => {
+      socket.emit('item', {
+        itemId,
+        campaignId:
+          context.prevItemData?.characterInventory?.character.campaignId,
+      });
       return queryClient.invalidateQueries({
         queryKey: ['item', itemId],
       });

@@ -1,6 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const createPatchNote = async (formData: object, apiUrl: string) => {
+const createPatchNote = async (formData: object) => {
   try {
     const response = await fetch(`${apiUrl}/patchNotes`, {
       method: 'POST',

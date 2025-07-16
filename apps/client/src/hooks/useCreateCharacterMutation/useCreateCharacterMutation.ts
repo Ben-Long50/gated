@@ -1,16 +1,13 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import createCharacter from './createCharacter';
-import { useNavigate } from 'react-router-dom';
 
 const useCreateCharacterMutation = (
-  apiUrl: string,
   setFormMessage: (message: string) => void,
 ) => {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
   return useMutation({
     mutationFn: (formData: FormData) => {
-      return createCharacter(formData, apiUrl);
+      return createCharacter(formData);
     },
     onSuccess: () => {
       setFormMessage('Successfully created character');
@@ -18,7 +15,6 @@ const useCreateCharacterMutation = (
         queryKey: ['characters'],
         exact: false,
       });
-      // navigate('/glam/characters');
     },
     onError: (error) => {
       setFormMessage(error.message);

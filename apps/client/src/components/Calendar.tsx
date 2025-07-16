@@ -16,7 +16,6 @@ import Divider from './Divider';
 import { format } from 'date-fns';
 
 const Calendar = () => {
-  const { apiUrl } = useContext(AuthContext);
   const { campaignId, day } = useParams();
   const { accentPrimary } = useContext(ThemeContext);
   const navigate = useNavigate();
@@ -51,7 +50,6 @@ const Calendar = () => {
   };
 
   const { data: campaign, isLoading: campaignLoading } = useCampaignQuery(
-    apiUrl,
     Number(campaignId),
   );
 

@@ -26,7 +26,9 @@ const CampaignCard = ({ campaign }: { campaign: Campaign }) => {
           <div className="flex w-full flex-col items-center justify-between gap-4 sm:flex-row">
             <div className="flex items-center gap-4">
               <ArrowHeader2 className="text-left" title={campaign.name} />
-              {campaign.pendingPlayers.length > 0 && <p>(Pending)</p>}
+              {campaign.pendingPlayers.length > 0 && (
+                <p className="text-tertiary">(Pending)</p>
+              )}
             </div>
             <div className="flex items-center gap-4">
               <LocationIcon className="text-accent size-6 shrink-0 sm:size-8" />

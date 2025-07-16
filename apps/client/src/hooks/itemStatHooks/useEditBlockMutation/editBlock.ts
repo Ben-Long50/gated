@@ -1,6 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../../handleResponse';
 
-const editBlock = async (apiUrl: string, itemId: number, value: number) => {
+const editBlock = async (itemId: number, value: number) => {
   try {
     const response = await fetch(
       `${apiUrl}/items/${itemId}/stats/currentBlock`,

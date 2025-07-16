@@ -2,13 +2,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import createBookSection from './createBookSection';
 
 const useCreateBookSectionMutation = (
-  apiUrl: string,
   setFormMessage: (message: string) => void,
 ) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (formData: object) => {
-      return createBookSection(formData, apiUrl);
+      return createBookSection(formData);
     },
     onSuccess: () => {
       setFormMessage('Book section successfully created');

@@ -14,14 +14,14 @@ import useAffiliationQueries from 'src/hooks/useAffiliationQueries/useAffiliatio
 import Campaign from './Campaign';
 
 const Faction = () => {
-  const { apiUrl, user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const { factionId } = useParams();
 
   const {
     data: faction,
     isLoading: factionLoading,
     isPending,
-  } = useFactionQuery(apiUrl, Number(factionId));
+  } = useFactionQuery(Number(factionId));
 
   const { data: affiliations, isLoading: affiliationsLoading } =
     useAffiliationQueries(

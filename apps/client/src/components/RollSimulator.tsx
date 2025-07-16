@@ -27,7 +27,7 @@ import { capitalCase } from 'change-case';
 import useModalStore from 'src/stores/modalStore';
 
 const RollSimulator = () => {
-  const { apiUrl, user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const { mobile } = useContext(LayoutContext);
   const { accentPrimary } = useContext(ThemeContext);
   const navigate = useNavigate();
@@ -36,7 +36,6 @@ const RollSimulator = () => {
   const { campaignId } = useParams();
 
   const { data: campaign, isLoading: campaignLoading } = useCampaignQuery(
-    apiUrl,
     Number(campaignId),
   );
 

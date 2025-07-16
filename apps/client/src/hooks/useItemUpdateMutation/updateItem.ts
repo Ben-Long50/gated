@@ -1,10 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const updateItem = async (
-  apiUrl: string,
-  itemId: number,
-  formData: FormData,
-) => {
+const updateItem = async (itemId: number, formData: FormData) => {
   try {
     const response = await fetch(`${apiUrl}/items/${itemId}/update`, {
       method: 'PUT',

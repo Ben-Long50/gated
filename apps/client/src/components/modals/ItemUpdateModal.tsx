@@ -23,7 +23,6 @@ import KeywordCard from '../KeywordCard';
 import { KeywordReference } from 'src/types/keyword';
 
 const ItemUpdateModal = () => {
-  const { apiUrl } = useContext(AuthContext);
   const { characterId } = useParams();
 
   const backgroundPath = useModalStore((state) => state.backgroundPath);
@@ -34,7 +33,6 @@ const ItemUpdateModal = () => {
   const { data: baseItem, isLoading } = useItemQuery(Number(item?.baseItemId));
 
   const updateItem = useItemUpdateMutation(
-    apiUrl,
     Number(item?.id),
     Number(characterId),
   );

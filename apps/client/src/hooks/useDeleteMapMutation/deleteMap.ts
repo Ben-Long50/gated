@@ -1,6 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const deleteMap = async (apiUrl: string, campaignId: number, mapId: number) => {
+const deleteMap = async (campaignId: number, mapId: number) => {
   try {
     const response = await fetch(
       `${apiUrl}/campaigns/${campaignId}/maps/${mapId}`,

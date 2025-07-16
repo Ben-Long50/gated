@@ -2,15 +2,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import deleteAction from './deleteAction';
 import { useNavigate } from 'react-router-dom';
 
-const useDeleteActionMutation = (
-  apiUrl: string,
-  setFormMessage: (message: string) => void,
-) => {
+const useDeleteActionMutation = (setFormMessage: (message: string) => void) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   return useMutation({
     mutationFn: (actionId: string) => {
-      return deleteAction(apiUrl, actionId);
+      return deleteAction(actionId);
     },
     onSuccess: () => {
       navigate('/glam/codex/actions');

@@ -1,8 +1,9 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
 const getCharacters = async () => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/characters`, {
+    const response = await fetch(`${apiUrl}/characters`, {
       method: 'GET',
       credentials: 'include',
     });

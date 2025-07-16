@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import deleteBookSection from './deleteErrorReport';
 
-const useDeleteErrorReportMutation = (apiUrl: string) => {
+const useDeleteErrorReportMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (errorReportId: number) => {
-      return deleteBookSection(apiUrl, errorReportId);
+      return deleteBookSection(errorReportId);
     },
     onSuccess: () => {
       return queryClient.invalidateQueries({

@@ -20,10 +20,9 @@ const CartCard = ({
   characterId: number;
   cartId: number;
 }) => {
-  const { apiUrl } = useContext(AuthContext);
   const { rarityColorMap } = useContext(ThemeContext);
 
-  const editCart = useEditCartMutation(apiUrl, Number(characterId), cartId);
+  const editCart = useEditCartMutation(Number(characterId), cartId);
 
   const shopName = item?.characterInventory
     ? item?.characterInventory.character.firstName +

@@ -17,7 +17,7 @@ import BtnIcon from './buttons/BtnIcon';
 import NoteIcon from './icons/NoteIcon';
 
 const Session = () => {
-  const { apiUrl, user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const { mobile } = useContext(LayoutContext);
   const { campaignId, sessionId } = useParams();
 
@@ -26,13 +26,13 @@ const Session = () => {
     isLoading: sessionLoading,
     isPending: sessionPending,
     isError,
-  } = useSessionQuery(apiUrl, Number(campaignId), Number(sessionId));
+  } = useSessionQuery(Number(campaignId), Number(sessionId));
 
   const {
     data: campaign,
     isLoading: campaignLoading,
     isPending: campaignPending,
-  } = useCampaignQuery(apiUrl, Number(campaignId));
+  } = useCampaignQuery(Number(campaignId));
 
   const isLoading = sessionLoading || campaignLoading;
   const isPending = sessionPending || campaignPending;

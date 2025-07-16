@@ -17,7 +17,6 @@ import InputSelectField from './InputSelectField';
 import { capitalCase } from 'change-case';
 
 const ConditionForm = () => {
-  const { apiUrl } = useContext(AuthContext);
   const [formMessage, setFormMessage] = useState('');
   const [deleteMode, setDeleteMode] = useState(false);
   const { conditionId } = useParams();
@@ -32,12 +31,10 @@ const ConditionForm = () => {
   )[0];
 
   const createCondition = useCreateConditionMutation(
-    apiUrl,
     conditionId,
     setFormMessage,
   );
   const deleteCondition = useDeleteConditionMutation(
-    apiUrl,
     conditionId,
     setFormMessage,
   );

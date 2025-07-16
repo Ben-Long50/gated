@@ -1,7 +1,8 @@
 import { User } from 'src/types/user';
 import handleResponse from '../handleResponse';
+import apiUrl from 'src/utils/configureUrl';
 
-const updateUserRole = async (apiUrl: string, formData: Partial<User>) => {
+const updateUserRole = async (formData: Partial<User>) => {
   try {
     const response = await fetch(`${apiUrl}/users/${formData.id}/role`, {
       method: 'PATCH',

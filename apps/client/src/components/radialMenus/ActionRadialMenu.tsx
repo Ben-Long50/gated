@@ -18,9 +18,7 @@ const ActionRadialMenu = ({
   itemId: number;
   containerRef: ReactNode;
 }) => {
-  const { apiUrl } = useContext(AuthContext);
-
-  const activateAction = useActivateActionMutation(apiUrl, itemId, action.id);
+  const activateAction = useActivateActionMutation(itemId, action.id);
 
   const setMenuOpen = useRadialMenuStore((state) => state.setMenuOpen);
 

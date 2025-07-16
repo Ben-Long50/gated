@@ -15,17 +15,15 @@ import useBookSectionsQuery from '../hooks/useBookSectionsQuery/useBookSectionsQ
 import { capitalCase } from 'change-case';
 
 const BookEntryForm = () => {
-  const { apiUrl } = useContext(AuthContext);
   const [formMessage, setFormMessage] = useState('');
   const { bookEntryId } = useParams();
   const [deleteMode, setDeleteMode] = useState(false);
 
-  const { data: bookSections } = useBookSectionsQuery(apiUrl);
-  const { data: bookEntry } = useBookEntryQuery(apiUrl, bookEntryId);
+  const { data: bookSections } = useBookSectionsQuery();
+  const { data: bookEntry } = useBookEntryQuery(bookEntryId);
 
-  const createBookEntry = useCreateBookEntryMutation(apiUrl, setFormMessage);
+  const createBookEntry = useCreateBookEntryMutation(setFormMessage);
   const deleteBookEntry = useDeleteBookEntryMutation(
-    apiUrl,
     bookEntry?.id,
     setFormMessage,
   );

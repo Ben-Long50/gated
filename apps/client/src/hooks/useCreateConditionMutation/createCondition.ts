@@ -1,10 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const createCondition = async (
-  formData: object,
-  conditionId: string,
-  apiUrl: string,
-) => {
+const createCondition = async (formData: object, conditionId: string) => {
   try {
     const response = await fetch(`${apiUrl}/conditions`, {
       method: 'POST',

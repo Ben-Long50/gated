@@ -21,13 +21,11 @@ const NotesForm = ({
   title: string;
   sessionId: number;
 }) => {
-  const { apiUrl } = useContext(AuthContext);
   const { campaignId, characterId } = useParams();
   const [formMessage, setFormMessage] = useState('');
   const [deleteMode, setDeleteMode] = useState(false);
 
   const createNotes = useCreateNotesMutation(
-    apiUrl,
     Number(campaignId),
     sessionId,
     Number(characterId),

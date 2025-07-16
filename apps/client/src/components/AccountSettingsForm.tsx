@@ -11,17 +11,12 @@ import useAccountQuery from '../hooks/useAccountQuery/useAccountQuery';
 import useUpdateAccountMutation from '../hooks/useUpdateAccountMutation/useUpdateAccountMutation';
 
 const AccountSettingsForm = () => {
-  const { apiUrl } = useContext(AuthContext);
   const [formMessage, setFormMessage] = useState('');
   const [errors, setErrors] = useState<string[]>([]);
 
-  const { data: account, isLoading, isPending } = useAccountQuery(apiUrl);
+  const { data: account, isLoading, isPending } = useAccountQuery();
 
-  const updateAccount = useUpdateAccountMutation(
-    apiUrl,
-    setFormMessage,
-    setErrors,
-  );
+  const updateAccount = useUpdateAccountMutation(setFormMessage, setErrors);
 
   const handleReset = async () => {
     accountForm.reset();

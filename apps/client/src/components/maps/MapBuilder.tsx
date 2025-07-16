@@ -31,7 +31,7 @@ import html2canvas from 'html2canvas';
 const MapBuilder = () => {
   const { accentPrimary } = useContext(ThemeContext);
   const { mobile, layoutSize } = useContext(LayoutContext);
-  const { apiUrl } = useContext(AuthContext);
+
   const { campaignId, mapId } = useParams();
   const navigate = useNavigate();
   const [tileCounter, setTileCounter] = useState(0);
@@ -59,7 +59,6 @@ const MapBuilder = () => {
   const colorRef = useRef(null);
 
   const { data: map, isLoading } = useCampaignMapQuery(
-    apiUrl,
     Number(campaignId),
     Number(mapId),
   );
@@ -89,11 +88,7 @@ const MapBuilder = () => {
     fetchFolders();
   }, []);
 
-  const createMap = useCreateMapMutation(
-    apiUrl,
-    Number(campaignId),
-    Number(mapId),
-  );
+  const createMap = useCreateMapMutation(Number(campaignId), Number(mapId));
 
   const defaultWidth = map?.width ?? 24;
   const defaultHeight = map?.height ?? 14;

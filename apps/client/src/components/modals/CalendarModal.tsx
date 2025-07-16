@@ -17,21 +17,16 @@ import useSetCampaignDateMutation from 'src/hooks/useSetCampaignDateMutation/use
 import { format } from 'date-fns';
 
 const CalendarModal = () => {
-  const { apiUrl } = useContext(AuthContext);
   const { campaignId, month, day } = useParams();
   const navigate = useNavigate();
 
   const { eventArray } = useOutletContext() || {};
 
   const { data: campaign, isLoading: campaignLoading } = useCampaignQuery(
-    apiUrl,
     Number(campaignId),
   );
 
-  const setCampaignDate = useSetCampaignDateMutation(
-    apiUrl,
-    Number(campaignId),
-  );
+  const setCampaignDate = useSetCampaignDateMutation(Number(campaignId));
 
   if (campaignLoading) return <Loading />;
 

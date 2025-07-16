@@ -1,10 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const createSession = async (
-  formData: FormData,
-  campaignId: number,
-  apiUrl: string,
-) => {
+const createSession = async (formData: FormData, campaignId: number) => {
   try {
     const response = await fetch(`${apiUrl}/campaigns/${campaignId}/sessions`, {
       method: 'POST',

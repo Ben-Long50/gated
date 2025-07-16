@@ -1,6 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const getAccount = async (apiUrl: string) => {
+const getAccount = async () => {
   try {
     const response = await fetch(`${apiUrl}/users/authenticated`, {
       method: 'GET',

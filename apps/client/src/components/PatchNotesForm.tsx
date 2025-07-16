@@ -12,7 +12,6 @@ import useDeletePatchNoteMutation from '../hooks/useDeletePatchNoteMutation/useD
 import { useQueryClient } from '@tanstack/react-query';
 
 const PatchNoteForm = () => {
-  const { apiUrl } = useContext(AuthContext);
   const [formMessage, setFormMessage] = useState('');
   const { patchNoteId } = useParams();
   const [deleteMode, setDeleteMode] = useState(false);
@@ -27,9 +26,8 @@ const PatchNoteForm = () => {
     return null;
   })();
 
-  const createPatchNote = useCreatePatchNoteMutation(apiUrl, setFormMessage);
+  const createPatchNote = useCreatePatchNoteMutation(setFormMessage);
   const deletePatchNote = useDeletePatchNoteMutation(
-    apiUrl,
     patchNote?.id,
     setFormMessage,
   );

@@ -1,3 +1,4 @@
+import { Campaign } from './campaign';
 import { User } from './user';
 
 interface Notification {
@@ -9,6 +10,7 @@ interface Notification {
   senderId: number;
   read: boolean;
   readAt: Date;
+  campaign: Partial<Campaign> | null;
 }
 
 enum NotificationType {

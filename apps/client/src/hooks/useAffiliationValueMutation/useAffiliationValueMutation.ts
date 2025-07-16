@@ -4,7 +4,7 @@ import { socket } from 'src/socket';
 import editAffiliationValue from './editAffiliationValue';
 import { Affiliation } from 'src/types/faction';
 
-const useAffiliationValueMutation = (apiUrl: string, affiliationId: number) => {
+const useAffiliationValueMutation = (affiliationId: number) => {
   const queryClient = useQueryClient();
   const updateBuffer = useRef(0);
   const timeoutRef = useRef(0);
@@ -22,7 +22,7 @@ const useAffiliationValueMutation = (apiUrl: string, affiliationId: number) => {
           const finalValue = updateBuffer.current;
 
           updateBuffer.current = 0;
-          await editAffiliationValue(apiUrl, affiliationId, finalValue);
+          await editAffiliationValue(affiliationId, finalValue);
           resolve(finalValue);
         }, 1000);
       });

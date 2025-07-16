@@ -1,15 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRef } from 'react';
-import { Character } from 'src/types/character';
 import editCargo from './editCargo';
 import { Item } from 'src/types/item';
 import { socket } from 'src/socket';
 
-const useEditCargoMutation = (
-  apiUrl: string,
-  itemId: number,
-  characterId: number,
-) => {
+const useEditCargoMutation = (itemId: number) => {
   const queryClient = useQueryClient();
   const updateBuffer = useRef(0);
   const timeoutRef = useRef(0);
@@ -27,7 +22,7 @@ const useEditCargoMutation = (
           const finalValue = updateBuffer.current;
 
           updateBuffer.current = 0;
-          await editCargo(apiUrl, itemId, finalValue);
+          await editCargo(itemId, finalValue);
           resolve(finalValue);
         }, 1000);
       });
@@ -53,8 +48,12 @@ const useEditCargoMutation = (
 
       return { prevItemData };
     },
-    onSuccess: () => {
-      socket.emit('item', itemId);
+    onSuccess: (_, __, context) => {
+      socket.emit('item', {
+        itemId,
+        campaignId:
+          context.prevItemData?.characterInventory?.character.campaignId,
+      });
       return queryClient.invalidateQueries({
         queryKey: ['item', itemId],
       });

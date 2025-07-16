@@ -2,10 +2,10 @@ import { useQuery } from '@tanstack/react-query';
 import getCampaigns from './getCampaigns';
 import { Campaign } from 'src/types/campaign';
 
-const useCampaignsQuery = (apiUrl: string) => {
+const useCampaignsQuery = () => {
   return useQuery<Campaign[]>({
     queryKey: ['campaigns'],
-    queryFn: () => getCampaigns(apiUrl),
+    queryFn: () => getCampaigns(),
     throwOnError: false,
   });
 };

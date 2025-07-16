@@ -13,7 +13,6 @@ import ArrowHeader3 from './ArrowHeader3';
 import useCharacter from 'src/hooks/useCharacter';
 
 const Cart = ({ character }: { character?: Character }) => {
-  const { apiUrl } = useContext(AuthContext);
   const { accentPrimary } = useContext(ThemeContext);
   const { characterId } = useParams();
   const [deleteMode, setDeleteMode] = useState(false);
@@ -23,14 +22,12 @@ const Cart = ({ character }: { character?: Character }) => {
   const characterObj = character || filteredCharacter;
 
   const clearCart = useClearCartMutation(
-    apiUrl,
     characterObj?.id,
     characterObj?.characterCart?.id,
     setDeleteMode,
   );
 
   const completePurchase = useCompletePurchaseMutation(
-    apiUrl,
     characterObj?.id,
     characterObj?.characterInventory?.id,
   );

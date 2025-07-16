@@ -3,12 +3,12 @@ import getConditions from './getActions';
 import { Condition } from 'src/types/condition';
 import { useEffect } from 'react';
 
-const useConditionsQuery = (apiUrl: string) => {
+const useConditionsQuery = () => {
   const queryClient = useQueryClient();
 
   const conditions = useQuery<Condition[]>({
     queryKey: ['conditions'],
-    queryFn: async () => await getConditions(apiUrl),
+    queryFn: async () => await getConditions(),
   });
 
   useEffect(() => {

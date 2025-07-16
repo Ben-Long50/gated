@@ -2,7 +2,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import createItem from './createItem';
 
 const useCreateItemMutation = (
-  apiUrl: string,
   category: string,
   setFormMessage: (message: string) => void,
   itemId?: number,
@@ -10,7 +9,7 @@ const useCreateItemMutation = (
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (formData: FormData) => {
-      return createItem(apiUrl, category, formData);
+      return createItem(category, formData);
     },
     onSuccess: (data) => {
       setFormMessage(data.message);

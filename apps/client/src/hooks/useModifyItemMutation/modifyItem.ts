@@ -1,3 +1,4 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
 const modifyItem = async (
@@ -5,7 +6,6 @@ const modifyItem = async (
   characterId: number,
   itemId: number,
   category: string,
-  apiUrl: string,
 ) => {
   try {
     const response = await fetch(

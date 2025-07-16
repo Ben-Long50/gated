@@ -1,7 +1,7 @@
 import { useQueries } from '@tanstack/react-query';
 import getItems from '../useItemsQuery/getItems';
 
-const useAllItemsQuery = (apiUrl: string) => {
+const useAllItemsQuery = () => {
   const categories = [
     'weapons',
     'armors',
@@ -16,7 +16,7 @@ const useAllItemsQuery = (apiUrl: string) => {
   return useQueries({
     queries: categories.map((category) => ({
       queryKey: [category],
-      queryFn: () => getItems(apiUrl, category),
+      queryFn: () => getItems(category),
     })),
     combine: (results) => ({
       data: results.flatMap((result) => result.data),

@@ -2,14 +2,13 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import createCampaign from './createCampaign';
 
 const useCreateCampaignMutation = (
-  apiUrl: string,
   setFormMessage: (message: string) => void,
   campaignId?: number,
 ) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (formData: FormData) => {
-      return createCampaign(formData, apiUrl);
+      return createCampaign(formData);
     },
     onSuccess: () => {
       setFormMessage('Campaign successfully created');

@@ -22,34 +22,28 @@ import AccountPicture from './AccountPicture';
 import InputSelectField from './InputSelectField';
 
 const CampaignForm = ({ title, mode }: { title: string; mode?: string }) => {
-  const { apiUrl } = useContext(AuthContext);
   const { campaignId } = useParams();
   const [formMessage, setFormMessage] = useState('');
   const [deleteMode, setDeleteMode] = useState(false);
   const [nameQuery, setNameQuery] = useState('');
 
   const createCampaign = useCreateCampaignMutation(
-    apiUrl,
     setFormMessage,
     Number(campaignId),
   );
 
   const deleteCampaign = useDeleteCampaignMutation(
-    apiUrl,
     Number(campaignId),
     setFormMessage,
   );
 
-  const { data: campaign, isLoading } = useCampaignQuery(
-    apiUrl,
-    Number(campaignId),
-  );
+  const { data: campaign, isLoading } = useCampaignQuery(Number(campaignId));
 
   const {
     data: users,
     isLoading: usersLoading,
     isPending: usersPending,
-  } = useUsersQuery(apiUrl, nameQuery);
+  } = useUsersQuery(nameQuery);
 
   const handleReset = async () => {
     campaignForm.reset();

@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import getAccount from './getAccount';
+import { User } from 'src/types/user';
 
-const useAccountQuery = (apiUrl: string) => {
-  return useQuery({
+const useAccountQuery = () => {
+  return useQuery<User>({
     queryKey: ['account'],
-    queryFn: async () => await getAccount(apiUrl),
+    queryFn: async () => await getAccount(),
     throwOnError: false,
   });
 };

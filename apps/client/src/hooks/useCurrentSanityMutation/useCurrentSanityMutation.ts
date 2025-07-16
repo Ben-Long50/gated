@@ -4,7 +4,7 @@ import { useRef } from 'react';
 import { Character } from 'src/types/character';
 import { socket } from 'src/socket';
 
-const useCurrentSanityMutation = (apiUrl: string, characterId: number) => {
+const useCurrentSanityMutation = (characterId: number) => {
   const queryClient = useQueryClient();
   const updateBuffer = useRef(0);
   const timeoutRef = useRef(0);
@@ -22,7 +22,7 @@ const useCurrentSanityMutation = (apiUrl: string, characterId: number) => {
           const finalValue = updateBuffer.current;
 
           updateBuffer.current = 0;
-          await editCurrentSanity(apiUrl, characterId, finalValue);
+          await editCurrentSanity(characterId, finalValue);
           resolve(finalValue);
         }, 1000);
       });
@@ -49,8 +49,11 @@ const useCurrentSanityMutation = (apiUrl: string, characterId: number) => {
       return { prevCharacterData };
     },
 
-    onSuccess: () => {
-      socket.emit('character', characterId);
+    onSuccess: (_, __, context) => {
+      socket.emit('character', {
+        characterId,
+        campaignId: context.prevCharacterData?.campaignId,
+      });
       return queryClient.invalidateQueries({
         queryKey: ['character', characterId],
       });

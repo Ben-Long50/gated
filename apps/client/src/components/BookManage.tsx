@@ -14,27 +14,16 @@ import { capitalCase } from 'change-case';
 import Divider from './Divider';
 
 const BookManage = () => {
-  const { apiUrl } = useContext(AuthContext);
   const { accentPrimary } = useContext(ThemeContext);
   const [formMessage, setFormMessage] = useState('');
   const [deleteMode, setDeleteMode] = useState(false);
   const [section, setSection] = useState({});
 
-  const {
-    data: bookSections,
-    isLoading,
-    isPending,
-  } = useBookSectionsQuery(apiUrl);
+  const { data: bookSections, isLoading, isPending } = useBookSectionsQuery();
 
-  const createBookSection = useCreateBookSectionMutation(
-    apiUrl,
-    setFormMessage,
-  );
+  const createBookSection = useCreateBookSectionMutation(setFormMessage);
 
-  const deleteBookSection = useDeleteBookSectionMutation(
-    apiUrl,
-    setFormMessage,
-  );
+  const deleteBookSection = useDeleteBookSectionMutation(setFormMessage);
 
   const handleDelete = () => {
     if (deleteMode) {

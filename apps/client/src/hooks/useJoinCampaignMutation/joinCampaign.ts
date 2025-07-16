@@ -1,6 +1,7 @@
+import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const joinCampaign = async (apiUrl: string, campaignId: number) => {
+const joinCampaign = async (campaignId: number) => {
   try {
     const response = await fetch(`${apiUrl}/campaigns/${campaignId}/players`, {
       method: 'PATCH',

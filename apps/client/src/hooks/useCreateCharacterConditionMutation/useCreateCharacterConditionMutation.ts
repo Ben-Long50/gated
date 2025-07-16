@@ -3,14 +3,11 @@ import createCharacterCondition from './createCharacterCondition';
 import { socket } from 'src/socket';
 import { Character } from 'src/types/character';
 
-const useCreateCharacterConditionMutation = (
-  apiUrl: string,
-  characterId: number,
-) => {
+const useCreateCharacterConditionMutation = (characterId: number) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (formData: { conditionId: number; stacks?: number }[]) => {
-      return createCharacterCondition(apiUrl, characterId, formData);
+      return createCharacterCondition(characterId, formData);
     },
 
     onMutate: (formData) => {
@@ -42,8 +39,11 @@ const useCreateCharacterConditionMutation = (
       return { prevCharacterData };
     },
 
-    onSuccess: () => {
-      socket.emit('character', characterId);
+    onSuccess: (_, __, context) => {
+      socket.emit('character', {
+        characterId,
+        campaignId: context.prevCharacterData?.campaignId,
+      });
       return queryClient.invalidateQueries({
         queryKey: ['character', characterId],
       });
