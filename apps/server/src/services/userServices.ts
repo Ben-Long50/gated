@@ -67,6 +67,9 @@ const userServices = {
               receivedNotifications: { where: { read: false } },
             },
           },
+          ownerCampaigns: { select: { id: true } },
+          playerCampaigns: { select: { id: true } },
+          pendingCampaigns: { select: { id: true } },
         },
       });
       return user;

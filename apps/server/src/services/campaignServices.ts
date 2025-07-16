@@ -29,6 +29,69 @@ const campaignServices = {
     }
   },
 
+  getBatchCampaigns: async (campaignIds: number[]) => {
+    try {
+      const campaigns = await prisma.campaign.findMany({
+        where: { id: { in: campaignIds } },
+        include: {
+          sessions: true,
+          players: { orderBy: { firstName: 'desc' } },
+          pendingPlayers: { orderBy: { firstName: 'desc' } },
+          factions: { select: { id: true, name: true } },
+          characters: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              picture: true,
+            },
+          },
+          events: {
+            include: {
+              character: { select: { firstName: true, picture: true } },
+            },
+          },
+          affiliations: { select: { id: true } },
+          owner: true,
+        },
+      });
+
+      if (campaigns.length === 0) {
+        throw new Error('You are not a part of any campaigns');
+      }
+
+      const eventCalendar = structuredClone(calendar);
+
+      campaigns.forEach((campaign) => {
+        if (eventCalendar && campaign?.events.length > 0) {
+          campaign.events.forEach((event) => {
+            const monthEntry = eventCalendar[event.month];
+
+            if (!monthEntry) return;
+
+            const dayIndex = event.day - 1;
+
+            if (Array.isArray(monthEntry.schedule[dayIndex])) {
+              monthEntry.schedule[dayIndex].push(event);
+            } else {
+              monthEntry.schedule[dayIndex] = [event];
+            }
+          });
+        }
+      });
+
+      const modifiedCampaigns = campaigns.map((campaign) => ({
+        ...campaign,
+        calendar: eventCalendar,
+      }));
+
+      return modifiedCampaigns;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to fetch characters');
+    }
+  },
+
   getCampaignById: async (campaignId: string) => {
     try {
       const campaign = await prisma.campaign.findUnique({
@@ -84,6 +147,38 @@ const campaignServices = {
     } catch (error) {
       console.error(error);
       throw new Error('Failed to fetch campaign');
+    }
+  },
+
+  toggleCampaign: async (campaignId: number) => {
+    try {
+      const campaign = await prisma.campaign.findUnique({
+        where: { id: Number(campaignId) },
+        select: {
+          id: true,
+          active: true,
+          ownerId: true,
+          players: { select: { id: true } },
+        },
+      });
+
+      if (!campaign) {
+        throw new Error('Failed to find campaign');
+      }
+
+      const updatedCampaign = await prisma.campaign.update({
+        where: { id: campaignId },
+        data: { active: !campaign.active },
+      });
+
+      return {
+        id: campaign.id,
+        active: updatedCampaign.active,
+        players: campaign.players,
+      };
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to toggle campaign active');
     }
   },
 

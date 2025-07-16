@@ -19,6 +19,12 @@ router.get(
 );
 
 router.get(
+  '/campaigns/batch',
+  authentication.authenticate,
+  campaignController.getBatchCampaigns,
+);
+
+router.get(
   '/campaigns/:campaignId',
   authentication.authenticate,
   campaignController.getCampaignById,
@@ -76,6 +82,12 @@ router.post(
   '/campaigns/:campaignId/maps',
   authentication.authenticate,
   campaignController.createOrUpdateCampaignMap,
+);
+
+router.patch(
+  '/campaigns/:campaignId/active',
+  authentication.authenticate,
+  campaignController.toggleCampaign,
 );
 
 router.patch(

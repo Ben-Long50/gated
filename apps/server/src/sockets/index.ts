@@ -4,18 +4,31 @@ export function setupSocketIO(io: Server) {
   io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
 
-    socket.on('campaign', (campaignId) => {
-      console.log('campaign', campaignId);
+    socket.on('startCampaign', (campaignId) => {
+      socket.join(campaignId);
+      console.log(`Started campaign ${campaignId}`);
 
       io.emit('campaign', campaignId);
-      console.log('Broadcasted character to all clients');
+      console.log('Broadcasted campaign startup to all players');
     });
 
-    socket.on('character', (characterId) => {
-      console.log('character', characterId);
+    socket.on('joinCampaign', (campaignId) => {
+      socket.join(campaignId);
+      console.log(`Joined campaign ${campaignId}`);
+    });
 
-      io.emit('character', characterId);
-      console.log('Broadcasted character to all clients');
+    socket.on('endCampaign', (campaignId) => {
+      socket.leave(campaignId);
+      console.log(`Ended campaign ${campaignId}`);
+
+      io.emit('campaign', campaignId);
+    });
+
+    socket.on('character', ({ characterId, campaignId }) => {
+      io.to(campaignId).emit('character', characterId);
+      console.log(
+        `Broadcasted character ${characterId} to campaign ${campaignId}`,
+      );
     });
 
     socket.on('item', (itemId) => {

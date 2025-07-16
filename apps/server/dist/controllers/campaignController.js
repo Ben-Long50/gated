@@ -20,10 +20,41 @@ const campaignController = {
             res.status(500).json({ error: error.message });
         }
     },
+    getBatchCampaigns: async (req, res) => {
+        try {
+            if (!req.user) {
+                throw new Error('Could not find authenticated user');
+            }
+            const campaignIds = req.query.ids.split(',').map(Number);
+            const campaigns = await campaignServices.getBatchCampaigns(campaignIds);
+            res.status(200).json(campaigns);
+        }
+        catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
     getCampaignById: async (req, res) => {
         try {
             const campaign = await campaignServices.getCampaignById(req.params.campaignId);
             res.status(200).json(campaign);
+        }
+        catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
+    toggleCampaign: async (req, res) => {
+        try {
+            if (!req.user) {
+                res
+                    .status(401)
+                    .json({ error: 'You must be signed in to use this function' });
+                return;
+            }
+            const campaignStatus = await campaignServices.toggleCampaign(Number(req.params.campaignId));
+            if (campaignStatus.players.length > 0 && campaignStatus.active) {
+                await notificationServices.createCampaignNotification('liveCampaignInvite', campaignStatus.players.map((player) => player.id), req.user.id, campaignStatus.id);
+            }
+            res.status(200).json(campaignStatus);
         }
         catch (error) {
             res.status(500).json({ error: error.message });
@@ -51,7 +82,7 @@ const campaignController = {
                     await sessionServices.createOrUpdateSession(sessionInfo, campaignInfo.campaign.id);
                 }
                 if (campaignInfo.newPending.length > 0) {
-                    await notificationServices.createNotification('campaignInvite', campaignInfo.newPending.map((player) => player.id), req.user.id);
+                    await notificationServices.createCampaignNotification('campaignInvite', campaignInfo.newPending.map((player) => player.id), req.user.id, campaignInfo.campaign.id);
                 }
                 res
                     .status(200)

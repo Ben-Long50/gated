@@ -6,6 +6,7 @@ import affiliationController from '../controllers/affiliationController.js';
 const router = express.Router();
 router.patch('/campaigns/:campaignId/players', authentication.authenticate, campaignController.joinCampaign);
 router.get('/campaigns', authentication.authenticate, campaignController.getCampaigns);
+router.get('/campaigns/batch', authentication.authenticate, campaignController.getBatchCampaigns);
 router.get('/campaigns/:campaignId', authentication.authenticate, campaignController.getCampaignById);
 router.get('/campaigns/:campaignId/maps', authentication.authenticate, campaignController.getCampaignMaps);
 router.get('/locations/:locationId', authentication.authenticate, campaignController.getBatchLocations);
@@ -16,6 +17,7 @@ router.post('/factions/:factionId/affiliations/create', authentication.authentic
 router.post('/campaigns', authentication.authenticate, campaignController.createCampaign);
 router.post('/campaigns/:campaignId/events', authentication.authenticate, campaignController.createOrUpdateEvent);
 router.post('/campaigns/:campaignId/maps', authentication.authenticate, campaignController.createOrUpdateCampaignMap);
+router.patch('/campaigns/:campaignId/active', authentication.authenticate, campaignController.toggleCampaign);
 router.patch('/campaigns/:campaignId/date', authentication.authenticate, campaignController.setCampaignDate);
 router.patch('/campaigns/:campaignId/time', authentication.authenticate, campaignController.setCampaignTime);
 router.put('/campaigns/:campaignId/factions/:factionId', authentication.authenticate, factionController.updateFaction);

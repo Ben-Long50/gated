@@ -68,45 +68,6 @@ const characterServices = {
     }
   },
 
-  getActiveCharacter: async (userId: number) => {
-    try {
-      const activeCharacter = await prisma.character.findFirst({
-        where: {
-          userId,
-          active: true,
-        },
-        include: {
-          campaign: {
-            select: {
-              name: true,
-              characters: true,
-              gangs: true,
-              factions: true,
-              ownerId: true,
-            },
-          },
-          conditions: {
-            include: { condition: true },
-            orderBy: { condition: { name: 'asc' } },
-          },
-          affiliations: { select: { id: true } },
-          perks: true,
-          characterCart: {
-            include: includeCharacterCart,
-          },
-          characterInventory: {
-            include: includeCharacterInventory,
-          },
-        },
-      });
-
-      return activeCharacter;
-    } catch (error) {
-      console.error(error);
-      throw new Error('Failed to find active character');
-    }
-  },
-
   getCharacterById: async (characterId: string) => {
     try {
       const character = await prisma.character.findUnique({

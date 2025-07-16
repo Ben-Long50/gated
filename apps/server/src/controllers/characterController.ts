@@ -34,20 +34,6 @@ const characterController = {
     }
   },
 
-  getActiveCharacter: async (req: Request, res: Response) => {
-    try {
-      if (!req.user) {
-        throw new Error('Could not find authenticated user');
-      }
-      const activeCharacter = await characterServices.getActiveCharacter(
-        req.user.id,
-      );
-      res.status(200).json(activeCharacter);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
-  },
-
   getCharacterById: async (req: Request, res: Response) => {
     try {
       const character = await characterServices.getCharacterById(

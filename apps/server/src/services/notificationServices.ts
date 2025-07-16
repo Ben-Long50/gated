@@ -10,8 +10,9 @@ const notificationServices = {
           sender: {
             select: { profilePicture: true, username: true },
           },
+          campaign: { select: { id: true, name: true } },
         },
-        orderBy: { createdAt: 'asc' },
+        orderBy: { createdAt: 'desc' },
       });
 
       return notifications;
@@ -21,10 +22,11 @@ const notificationServices = {
     }
   },
 
-  createNotification: async (
+  createCampaignNotification: async (
     type: $Enums.NotificationType,
     recipients: number[],
     sender: number,
+    campaignId: number,
   ) => {
     try {
       await prisma.notification.createMany({
@@ -32,6 +34,7 @@ const notificationServices = {
           type,
           recipientId: recipient,
           senderId: sender,
+          campaignId,
         })),
       });
     } catch (error) {

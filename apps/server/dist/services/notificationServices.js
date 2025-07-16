@@ -8,8 +8,9 @@ const notificationServices = {
                     sender: {
                         select: { profilePicture: true, username: true },
                     },
+                    campaign: { select: { id: true, name: true } },
                 },
-                orderBy: { createdAt: 'asc' },
+                orderBy: { createdAt: 'desc' },
             });
             return notifications;
         }
@@ -18,13 +19,14 @@ const notificationServices = {
             throw new Error('Failed to fetch notifications');
         }
     },
-    createNotification: async (type, recipients, sender) => {
+    createCampaignNotification: async (type, recipients, sender, campaignId) => {
         try {
             await prisma.notification.createMany({
                 data: recipients.map((recipient) => ({
                     type,
                     recipientId: recipient,
                     senderId: sender,
+                    campaignId,
                 })),
             });
         }

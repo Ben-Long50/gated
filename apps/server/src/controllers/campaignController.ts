@@ -25,12 +25,55 @@ const campaignController = {
     }
   },
 
+  getBatchCampaigns: async (req: Request, res: Response) => {
+    try {
+      if (!req.user) {
+        throw new Error('Could not find authenticated user');
+      }
+      const campaignIds = (req.query.ids as string).split(',').map(Number);
+
+      const campaigns = await campaignServices.getBatchCampaigns(campaignIds);
+
+      res.status(200).json(campaigns);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
   getCampaignById: async (req: Request, res: Response) => {
     try {
       const campaign = await campaignServices.getCampaignById(
         req.params.campaignId,
       );
       res.status(200).json(campaign);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  toggleCampaign: async (req: Request, res: Response) => {
+    try {
+      if (!req.user) {
+        res
+          .status(401)
+          .json({ error: 'You must be signed in to use this function' });
+        return;
+      }
+
+      const campaignStatus = await campaignServices.toggleCampaign(
+        Number(req.params.campaignId),
+      );
+
+      if (campaignStatus.players.length > 0 && campaignStatus.active) {
+        await notificationServices.createCampaignNotification(
+          'liveCampaignInvite',
+          campaignStatus.players.map((player) => player.id),
+          req.user.id,
+          campaignStatus.id,
+        );
+      }
+
+      res.status(200).json(campaignStatus);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
@@ -70,10 +113,11 @@ const campaignController = {
         }
 
         if (campaignInfo.newPending.length > 0) {
-          await notificationServices.createNotification(
+          await notificationServices.createCampaignNotification(
             'campaignInvite',
             campaignInfo.newPending.map((player: User) => player.id),
             req.user.id,
+            campaignInfo.campaign.id,
           );
         }
 

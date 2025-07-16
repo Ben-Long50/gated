@@ -131,6 +131,9 @@ const itemServices = {
                         include: { condition: true },
                         orderBy: { condition: { name: 'asc' } },
                     },
+                    characterInventory: {
+                        include: { character: { select: { campaignId: true } } },
+                    },
                 },
             });
             return items;

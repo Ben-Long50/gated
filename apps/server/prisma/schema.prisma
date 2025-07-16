@@ -32,14 +32,15 @@ model User {
 }
 
 model Campaign {
-  id             Int           @id @default(autoincrement())
-  createdAt      DateTime      @default(now())
+  id             Int            @id @default(autoincrement())
+  createdAt      DateTime       @default(now())
+  active         Boolean        @default(false)
   date           Json?
   time           Json?
-  owner          User          @relation("owner", fields: [ownerId], references: [id])
+  owner          User           @relation("owner", fields: [ownerId], references: [id])
   ownerId        Int
-  pendingPlayers User[]        @relation("pending")
-  players        User[]        @relation("player")
+  pendingPlayers User[]         @relation("pending")
+  players        User[]         @relation("player")
   factions       Faction[]
   name           String
   location       String
@@ -50,6 +51,9 @@ model Campaign {
   affiliations   Affiliation[]
   events         Event[]
   maps           Map[]
+  combats        Combat[]
+  history        History[]
+  notifications  Notification[]
 }
 
 enum Month {
@@ -64,16 +68,18 @@ enum Month {
 }
 
 model Event {
-  id          Int       @id @default(autoincrement())
-  campaign    Campaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  id          Int        @id @default(autoincrement())
+  campaign    Campaign   @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   campaignId  Int
-  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
-  characterId Int
+  character   Character? @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  characterId Int?
+  combat      Combat?    @relation(fields: [combatId], references: [id], onDelete: Cascade)
+  combatId    Int?       @unique
   month       Month
   day         Int
   time        Json?
   name        String
-  description String
+  description String?
 }
 
 model Map {
@@ -92,6 +98,7 @@ model Map {
   baseColor   String
   layout      Json
   locations   Location[]
+  combats     Combat[]
 }
 
 enum MapType {
@@ -106,6 +113,38 @@ model Location {
   mapId       Int
   character   Character? @relation(fields: [characterId], references: [id], onDelete: Cascade)
   characterId Int?       @unique
+  item        Item?      @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  itemId      Int?       @unique
+}
+
+model Combat {
+  id         Int         @id @default(autoincrement())
+  createdAt  DateTime    @default(now())
+  active     Boolean     @default(true)
+  campaign   Campaign    @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId Int
+  map        Map         @relation(fields: [mapId], references: [id])
+  mapId      Int
+  event      Event?
+  characters Character[]
+  history    History[]
+}
+
+model History {
+  id          Int        @id @default(autoincrement())
+  createdAt   DateTime   @default(now())
+  campaign    Campaign   @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId  Int
+  combat      Combat?    @relation(fields: [combatId], references: [id])
+  combatId    Int?
+  character   Character  @relation("activeCharacter", fields: [characterId], references: [id])
+  characterId Int
+  target      Character? @relation("targetCharacter", fields: [targetId], references: [id])
+  targetId    Int?
+  action      Action     @relation(fields: [actionId], references: [id])
+  actionId    Int
+  item        Item?      @relation(fields: [itemId], references: [id])
+  itemId      Int?
 }
 
 model Faction {
@@ -175,10 +214,13 @@ model Notification {
   senderId    Int
   read        Boolean          @default(false)
   readAt      DateTime?
+  campaign    Campaign?        @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId  Int?
 }
 
 enum NotificationType {
   campaignInvite
+  liveCampaignInvite
   sessionInvite
 }
 
@@ -242,6 +284,10 @@ model Character {
   Note               Note[]
   affiliations       Affiliation[]
   events             Event[]
+  activeHistory      History[]                     @relation("activeCharacter")
+  targetHistory      History[]                     @relation("targetCharacter")
+  combats            Combat[]
+  combatPosition     Int?
 
   @@index([userId])
 }
@@ -354,6 +400,7 @@ model Action {
   derivedActions       Action[]            @relation("BaseRelation")
   itemLink             ItemLinkReference?  @relation(fields: [itemLinkId], references: [id], onDelete: Cascade)
   itemLinkId           Int?
+  history              History[]
 }
 
 model Item {
@@ -384,6 +431,9 @@ model Item {
   itemLinkId           Int?
   cartRelation         CartItemRelation[]
   derivedItems         Item[]                   @relation("BaseRelation")
+  location             Location?
+  locationId           Int?
+  history              History[]
 
   @@index([itemTypes])
   @@index([characterInventoryId])
