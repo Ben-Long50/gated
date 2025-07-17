@@ -2,6 +2,7 @@ import { createContext, ReactNode, useEffect } from 'react';
 import useAccountQuery from '../hooks/useAccountQuery/useAccountQuery';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Loading from '../components/Loading';
+import useUserQuery from 'src/hooks/useUserQuery/useUserQuery';
 
 export const AuthContext = createContext({
   user: {
@@ -20,17 +21,21 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { pathname } = useLocation();
 
   const {
-    data: user,
+    data: authentication,
     isError,
     isSuccess,
-    isLoading,
-    isPending,
+    isLoading: authenticationLoading,
   } = useAccountQuery();
+
+  const { data: user, isLoading: userLoading } = useUserQuery(
+    authentication?.userId,
+  );
 
   useEffect(() => {
     if (
       (isSuccess && pathname === '/signin') ||
-      (isSuccess && pathname === '/signup')
+      (isSuccess && pathname === '/signup') ||
+      (isSuccess && pathname === '/')
     ) {
       navigate('/glam/codex/');
     } else if (isError) {
@@ -38,7 +43,9 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [isSuccess, isError]);
 
-  if (isLoading || isPending) {
+  const isLoading = authenticationLoading || userLoading;
+
+  if (isLoading) {
     return <Loading />;
   }
 

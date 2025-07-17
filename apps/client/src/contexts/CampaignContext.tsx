@@ -11,6 +11,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { AuthContext } from './AuthContext';
 import useCampaignQueries from 'src/hooks/useCampaignsQuery/useCampaignQueries';
 import Loading from 'src/components/Loading';
+import { useNavigate } from 'react-router-dom';
 
 export const CampaignContext = createContext({
   socket,
@@ -21,10 +22,12 @@ export const CampaignContext = createContext({
 export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useContext(AuthContext);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const userCampaignIds = [
     ...user?.ownerCampaigns,
     ...user?.playerCampaigns,
+    ...user?.pendingCampaigns,
   ].map((campaign) => campaign.id);
 
   const { campaigns, isLoading } = useCampaignQueries(userCampaignIds);
@@ -37,15 +40,38 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   const activeCampaignRef = useRef<number[]>([]);
 
   useEffect(() => {
+    const onConnect = () => {
+      console.log('Socket connected');
+
+      socket.on('campaign', (campaignId) => {
+        queryClient.invalidateQueries({
+          queryKey: ['campaign', campaignId],
+        });
+      });
+
+      socket.on('globalCampaign', ({ campaignId, playerIds }) => {
+        if (
+          playerIds.some((id: number) => id === user.id) ||
+          userCampaignIds.some((id) => id === campaignId)
+        ) {
+          console.log(
+            `Refetching campaign ${campaignId} for player ${user.id}`,
+          );
+
+          queryClient.invalidateQueries({
+            queryKey: ['user', user.id],
+          });
+        } else {
+          console.log('No refetch necessary');
+        }
+      });
+    };
+
     if (!socket.connected) {
       socket.connect();
     }
 
-    socket.on('campaign', (campaignId) => {
-      queryClient.invalidateQueries({
-        queryKey: ['campaign', campaignId],
-      });
-    });
+    socket.on('connect', onConnect);
 
     return () => {
       socket.off('campaign');
@@ -84,6 +110,13 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     activeCampaignRef.current = activeIds;
 
     if (activeCampaignRef.current.length === 0) return;
+
+    socket.on('endCampaign', (campaignId) => {
+      queryClient.invalidateQueries({
+        queryKey: ['campaign', campaignId],
+      });
+      navigate('/glam/campaigns');
+    });
 
     socket.on('character', (characterId) => {
       queryClient.invalidateQueries({

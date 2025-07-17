@@ -10,7 +10,7 @@ const useCampaignQueries = (campaignIds: number[]) => {
     })),
     combine: (results) => {
       return {
-        campaigns: results.map((result) => result.data),
+        campaigns: results.map((result) => result.data).filter((data) => data),
         isLoading: results.some((result) => result.isLoading),
       };
     },

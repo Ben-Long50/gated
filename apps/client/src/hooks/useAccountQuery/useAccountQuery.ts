@@ -1,9 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import getAccount from './getAccount';
-import { User } from 'src/types/user';
 
 const useAccountQuery = () => {
-  return useQuery<User>({
+  return useQuery<{ userId: number }>({
     queryKey: ['account'],
     queryFn: async () => await getAccount(),
     throwOnError: false,

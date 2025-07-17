@@ -35,13 +35,13 @@ const Campaigns = () => {
     case 'player':
       campaignList =
         campaigns?.filter((campaign: Campaign) =>
-          campaign.players.some((player: User) => player.id === user?.id),
+          campaign.players?.some((player: User) => player.id === user?.id),
         ) || [];
       break;
     case 'pending':
       campaignList =
         campaigns?.filter((campaign: Campaign) =>
-          campaign.pendingPlayers.some(
+          campaign.pendingPlayers?.some(
             (player: User) => player.id === user?.id,
           ),
         ) || [];

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import deleteItemCondition from './deleteCharacterCondition';
-import { Item } from 'src/types/item';
 import { socket } from 'src/socket';
+import { Character } from 'src/types/character';
 
 const useDeleteCharacterConditionMutation = (
   conditionId: number,
@@ -16,23 +16,28 @@ const useDeleteCharacterConditionMutation = (
     onMutate: () => {
       queryClient.cancelQueries({ queryKey: ['character', characterId] });
 
-      const prevCharacterData: Item | undefined = queryClient.getQueryData([
-        'character',
-        characterId,
-      ]);
+      const prevCharacterData: Character | undefined = queryClient.getQueryData(
+        ['character', characterId],
+      );
 
-      queryClient.setQueryData(['character', characterId], (prev: Item) => ({
-        ...prev,
-        conditions: prevCharacterData?.conditions.filter(
-          (condition) => condition.id !== conditionId,
-        ),
-      }));
+      queryClient.setQueryData(
+        ['character', characterId],
+        (prev: Character) => ({
+          ...prev,
+          conditions: prevCharacterData?.conditions.filter(
+            (condition) => condition.id !== conditionId,
+          ),
+        }),
+      );
 
       return { prevCharacterData };
     },
 
-    onSuccess: () => {
-      socket.emit('character', characterId);
+    onSuccess: (_, __, context) => {
+      socket.emit('character', {
+        characterId,
+        campaignId: context.prevCharacterData?.campaignId,
+      });
       return queryClient.invalidateQueries({
         queryKey: ['character', characterId],
       });

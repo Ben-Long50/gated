@@ -34,8 +34,12 @@ const useToggleEquipmentMutation = () => {
       return { prevItemData };
     },
 
-    onSuccess: (_, mutationInfo) => {
-      socket.emit('item', mutationInfo.itemId);
+    onSuccess: (_, mutationInfo, context) => {
+      socket.emit('item', {
+        itemId: mutationInfo.itemId,
+        campaignId:
+          context.prevItemData?.characterInventory?.character.campaignId,
+      });
       return queryClient.invalidateQueries({
         queryKey: ['item', mutationInfo.itemId],
       });

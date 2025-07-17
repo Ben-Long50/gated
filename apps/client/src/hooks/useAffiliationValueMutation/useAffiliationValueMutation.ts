@@ -44,9 +44,13 @@ const useAffiliationValueMutation = (affiliationId: number) => {
 
       return { prevAffiliationData };
     },
+    onSuccess: (_, __, context) => {
+      console.log(context);
 
-    onSuccess: () => {
-      socket.emit('affiliation', affiliationId);
+      socket.emit('affiliation', {
+        affiliationId,
+        campaignId: context.prevAffiliationData?.campaignId,
+      });
       return queryClient.invalidateQueries({
         queryKey: ['affiliation', affiliationId],
       });

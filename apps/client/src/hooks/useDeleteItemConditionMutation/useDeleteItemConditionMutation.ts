@@ -31,8 +31,12 @@ const useDeleteItemConditionMutation = (
       return { prevItemData };
     },
 
-    onSuccess: () => {
-      socket.emit('item', itemId);
+    onSuccess: (_, __, context) => {
+      socket.emit('item', {
+        itemId,
+        campaignId:
+          context.prevItemData?.characterInventory?.character.campaignId,
+      });
       return queryClient.invalidateQueries({
         queryKey: ['item', itemId],
       });

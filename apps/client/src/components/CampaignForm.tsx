@@ -1,6 +1,5 @@
 import { useForm, useStore } from '@tanstack/react-form';
-import { useContext, useState } from 'react';
-import { AuthContext } from '../contexts/AuthContext';
+import { useState } from 'react';
 import BtnRect from './buttons/BtnRect';
 import InputField from './InputField';
 import Loading from './Loading';
