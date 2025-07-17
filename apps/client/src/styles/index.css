@@ -225,6 +225,19 @@
   }
 }
 
+@keyframes tokenEnter {
+  0% {
+    transform: scale(1.375);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.tokenEnter {
+  animation: tokenEnter 0.3s ease-out forwards;
+}
+
 .liveCampaign {
   animation: liveCampaign 1.5s ease-out infinite;
 }

@@ -13,6 +13,9 @@ export const AuthContext = createContext({
     lastName: null,
     profilePicture: null,
     role: null,
+    ownerCampaigns: [] as { id: number }[],
+    pendingCampaigns: [] as { id: number }[],
+    playerCampaigns: [] as { id: number }[],
   },
 });
 

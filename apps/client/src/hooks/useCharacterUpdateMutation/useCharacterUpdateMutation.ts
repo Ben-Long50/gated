@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import updateCharacter from './updateCharacter';
+import { socket } from 'src/socket';
 
 const useUpdateCharacterMutation = (
   characterId: number,
@@ -12,8 +13,9 @@ const useUpdateCharacterMutation = (
     mutationFn: (formData: FormData) => {
       return updateCharacter(formData, characterId);
     },
-    onSuccess: () => {
+    onSuccess: (campaignId) => {
       navigate(-1);
+      socket.emit('character', { characterId, campaignId });
       return queryClient.invalidateQueries({
         queryKey: ['character', characterId],
       });

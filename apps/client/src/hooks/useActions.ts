@@ -1,5 +1,4 @@
-import { useContext, useState } from 'react';
-import { AuthContext } from '../contexts/AuthContext';
+import { useState } from 'react';
 import useActionsQuery from './useActionsQuery/useActionsQuery';
 import { Action } from '../types/action';
 

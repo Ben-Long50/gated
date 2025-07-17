@@ -10,7 +10,6 @@ import MapGrid from './MapGrid';
 import ItemCard from '../ItemCard';
 import CharacterCardSmall from '../CharacterCardSmall';
 import CharacterIcon from '../icons/CharacterIcon';
-import { CampaignContext } from 'src/contexts/CampaignContext';
 import CharacterOptions from './CharacterOptions';
 import useRoll from 'src/hooks/useRoll';
 import useCombat from 'src/hooks/useCombat';
@@ -26,6 +25,7 @@ import { LayoutContext } from 'src/contexts/LayoutContext';
 import ActionIcon from '../icons/ActionIcon';
 import BtnRect from '../buttons/BtnRect';
 import ThemeContainer from '../ThemeContainer';
+import { CampaignContext } from 'src/contexts/CampaignContext';
 
 const Map = () => {
   const { user } = useContext(AuthContext);

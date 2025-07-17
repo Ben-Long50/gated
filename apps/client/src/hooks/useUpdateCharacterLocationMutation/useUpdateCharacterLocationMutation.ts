@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import updateCharacterLocation from './updateCharacterLocation';
 import { Location } from 'src/types/map';
+import { socket } from 'src/socket';
 
 const useUpdateCharacterLocationMutation = (mapId: number) => {
   const queryClient = useQueryClient();
@@ -16,12 +17,12 @@ const useUpdateCharacterLocationMutation = (mapId: number) => {
     onMutate: (data) => {
       queryClient.cancelQueries({ queryKey: ['location', data.locationId] });
 
-      const prevItemData: Location | undefined = queryClient.getQueryData([
+      const prevLocationData: Location | undefined = queryClient.getQueryData([
         'location',
         data.locationId,
       ]);
 
-      if (mapId !== prevItemData?.mapId) {
+      if (mapId !== prevLocationData?.mapId) {
         queryClient.removeQueries({ queryKey: ['location', data.locationId] });
       } else {
         queryClient.setQueryData(
@@ -35,10 +36,14 @@ const useUpdateCharacterLocationMutation = (mapId: number) => {
         );
       }
 
-      return { prevItemData };
+      return { prevLocationData };
     },
 
-    onSuccess: (data) => {
+    onSuccess: (data, __, context) => {
+      socket.emit('location', {
+        locationId: data.location.id,
+        campaignId: context.prevLocationData?.character.campaignId,
+      });
       if (data.location.mapId !== mapId) {
         queryClient.invalidateQueries({
           queryKey: ['map', data.location.mapId],

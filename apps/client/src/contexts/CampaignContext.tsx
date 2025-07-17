@@ -11,7 +11,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { AuthContext } from './AuthContext';
 import useCampaignQueries from 'src/hooks/useCampaignsQuery/useCampaignQueries';
 import Loading from 'src/components/Loading';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 export const CampaignContext = createContext({
   socket,
@@ -21,8 +21,13 @@ export const CampaignContext = createContext({
 
 export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useContext(AuthContext);
+  const { campaignId } = useParams();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+
+  const gameMaster = user.ownerCampaigns
+    .map((campaign) => campaign.id)
+    .some((id) => id === Number(campaignId));
 
   const userCampaignIds = [
     ...user?.ownerCampaigns,
@@ -60,6 +65,9 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
 
           queryClient.invalidateQueries({
             queryKey: ['user', user.id],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ['campaign', campaignId],
           });
         } else {
           console.log('No refetch necessary');
@@ -124,6 +132,12 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       });
     });
 
+    socket.on('location', (locationId) => {
+      queryClient.invalidateQueries({
+        queryKey: ['location', locationId],
+      });
+    });
+
     socket.on('item', (itemId) => {
       queryClient.invalidateQueries({
         queryKey: ['item', itemId],
@@ -150,7 +164,9 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   if (isLoading) return <Loading />;
 
   return (
-    <CampaignContext.Provider value={{ socket, campaigns, activeCampaigns }}>
+    <CampaignContext.Provider
+      value={{ socket, gameMaster, campaigns, activeCampaigns }}
+    >
       {children}
     </CampaignContext.Provider>
   );

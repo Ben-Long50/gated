@@ -9,7 +9,6 @@ import { ThemeContext } from 'src/contexts/ThemeContext';
 import { FormApi } from '@tanstack/react-form';
 import BtnRect from '../buttons/BtnRect';
 import CharacterPictureRound from '../CharacterPictureRound';
-import ArrowHeader3 from '../ArrowHeader3';
 import ActionStatBars from '../ActionStatBars';
 import ArrowHeader4 from '../ArrowHeader4';
 import RangeIcon from '../icons/RangeIcon';

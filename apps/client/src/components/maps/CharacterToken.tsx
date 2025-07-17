@@ -29,7 +29,6 @@ const CharacterToken = ({
 
   const action = useCombatStore((state) => state.action);
   const setRange = useCombatStore((state) => state.setRange);
-  const item = useCombatStore((state) => state.item);
   const setItem = useCombatStore((state) => state.setItem);
   const setCharacterId = useMapStore((state) => state.setCharacterId);
   const userCharacter = useCombatStore((state) => state.userCharacter);
@@ -43,7 +42,7 @@ const CharacterToken = ({
           (a, b) => b.stats.range - a.stats.range,
         );
         setRange(Math.ceil(weaponsByRange[0].stats.range), statColorMap.DMG);
-        setItem(weaponsByRange[0]);
+        setItem(weaponsByRange[0], false);
       } else {
         setRange(0, accentPrimary);
       }
@@ -58,7 +57,7 @@ const CharacterToken = ({
     <form.Field name="target">
       {(field) => (
         <div
-          className="group relative inset-0 z-10 size-12 cursor-grab"
+          className="tokenEnter group relative inset-0 z-10 size-12 cursor-grab"
           draggable={true}
           onDragStart={(e) => {
             e.dataTransfer.setData('characterId', characterId.toString());

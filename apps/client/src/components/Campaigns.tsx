@@ -6,22 +6,14 @@ import BtnRect from './buttons/BtnRect';
 import { Link, useSearchParams } from 'react-router-dom';
 import { User } from 'src/types/user';
 import { capitalCase } from 'change-case';
-import useCampaignQueries from 'src/hooks/useCampaignsQuery/useCampaignQueries';
-import Loading from './Loading';
+import { CampaignContext } from 'src/contexts/CampaignContext';
 
 const Campaigns = () => {
   const { user } = useContext(AuthContext);
+  const { campaigns } = useContext(CampaignContext);
   const [searchParams] = useSearchParams();
 
   const campaignType = searchParams.get('campaignType') || 'all';
-
-  const userCampaignIds = [
-    ...user?.ownerCampaigns,
-    ...user?.playerCampaigns,
-    ...user?.pendingCampaigns,
-  ].map((campaign) => campaign.id);
-
-  const { campaigns, isLoading } = useCampaignQueries(userCampaignIds);
 
   let campaignList;
 
@@ -50,8 +42,6 @@ const Campaigns = () => {
       campaignList = campaigns || [];
       break;
   }
-
-  if (isLoading) return <Loading />;
 
   if (!campaigns || campaignList.length === 0) {
     return (
