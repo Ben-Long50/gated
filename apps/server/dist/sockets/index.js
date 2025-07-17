@@ -48,6 +48,14 @@ export function setupSocketIO(io) {
             io.to(campaignId).emit('affiliation', affiliationId);
             console.log(`Broadcasted affiliation ${affiliationId} to campaign ${campaignId}`);
         });
+        socket.on('combatRoll', ({ campaignId, characterId, rollResult, modifiers }) => {
+            io.to(campaignId).emit('combatRoll', {
+                characterId,
+                rollResult,
+                modifiers,
+            });
+            console.log(`Broadcasted combat roll to campaign ${campaignId}`);
+        });
         socket.on('disconnect', (reason) => {
             console.log('User disconnected:', socket.id, 'Reason:', reason);
         });

@@ -52,7 +52,7 @@ model Campaign {
   events         Event[]
   maps           Map[]
   combats        Combat[]
-  history        History[]
+  histories      History[]
   notifications  Notification[]
 }
 
