@@ -17,9 +17,11 @@ import useRadialMenuStore from 'src/stores/radialMenuStore';
 
 const CharacterCardSmall = ({
   characterId,
+  className,
   active,
 }: {
   characterId: number;
+  className: string;
   active: boolean;
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -61,7 +63,7 @@ const CharacterCardSmall = ({
   return (
     <div
       ref={containerRef}
-      className={`bg-primary relative flex max-w-96 grow cursor-pointer flex-col rounded p-2 px-3 shadow-md shadow-black`}
+      className={`${className} bg-primary relative flex grow cursor-pointer flex-col rounded p-2 px-3 shadow-md shadow-black`}
       onClick={(e) => {
         e.stopPropagation();
         handleMenu(e);

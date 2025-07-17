@@ -26,6 +26,8 @@ import ActionIcon from '../icons/ActionIcon';
 import BtnRect from '../buttons/BtnRect';
 import ThemeContainer from '../ThemeContainer';
 import { CampaignContext } from 'src/contexts/CampaignContext';
+import { useQueryClient } from '@tanstack/react-query';
+import useItemQuery from 'src/hooks/useItemQuery/useItemQuery';
 
 const Map = () => {
   const { user } = useContext(AuthContext);
@@ -34,9 +36,10 @@ const Map = () => {
   const { gameMaster } = useContext(CampaignContext);
   const navigate = useNavigate();
   const [gridDisplay, setGridDisplay] = useState(false);
-  const [characterList, setCharacterList] = useState(true);
-  const [actionSidebar, setActionSidebar] = useState(true);
+  const [characterList, setCharacterList] = useState(mobile ? false : true);
+  const [actionSidebar, setActionSidebar] = useState(mobile ? false : true);
 
+  const queryClient = useQueryClient();
   const { map, locations, isLoading } = useMap();
 
   const userCharacter = useCombatStore((state) => state.userCharacter);
@@ -70,6 +73,8 @@ const Map = () => {
 
   const item = useCombatStore((state) => state.item);
 
+  const { data: currentItem } = useItemQuery(item.item?.id);
+
   const actionForm = useForm({
     defaultValues: {
       activeCharacter: character || null,
@@ -101,23 +106,25 @@ const Map = () => {
 
   return (
     <>
-      <div className="flex h-full w-full max-w-8xl flex-col items-center gap-4 sm:gap-8">
-        <div className="flex w-full max-w-4xl items-center justify-center gap-8">
-          <button
-            className="bg-tertiary group my-auto flex justify-self-start rounded p-1.5 shadow-md shadow-black"
-            aria-label="Open save modal"
-            type="button"
-            onClick={() => setGridDisplay((prev) => !prev)}
-          >
-            <Icon
-              path={mdiGrid}
-              className={`${gridDisplay ? 'text-accent' : 'text-tertiary'} group-hover:text-accent timing size-8`}
-            />
-          </button>
-          <h1 className="text-center">{map.name}</h1>
-        </div>
+      <div className="flex h-dvh w-full max-w-8xl flex-col items-center gap-4 sm:gap-8">
+        {!mobile && (
+          <div className="flex w-full max-w-4xl items-center justify-center gap-8">
+            <button
+              className="bg-tertiary group my-auto flex justify-self-start rounded p-1.5 shadow-md shadow-black"
+              aria-label="Open save modal"
+              type="button"
+              onClick={() => setGridDisplay((prev) => !prev)}
+            >
+              <Icon
+                path={mdiGrid}
+                className={`${gridDisplay ? 'text-accent' : 'text-tertiary'} group-hover:text-accent timing size-8`}
+              />
+            </button>
+            <h1 className="text-center">{map.name}</h1>
+          </div>
+        )}
         <div
-          className="scrollbar-primary relative max-w-full overflow-x-auto overflow-y-hidden rounded border-2"
+          className="scrollbar-primary relative max-h-full max-w-full overflow-x-auto overflow-y-auto rounded border-2"
           style={{
             borderColor: accentPrimary,
           }}
@@ -165,33 +172,42 @@ const Map = () => {
           />
         </div>
         <div
-          className={`${mobile ? `${characterList ? 'left-2 right-2 gap-0' : 'left-0 gap-2'} top-[72px]` : 'left-24 top-[90px] gap-4'} fixed flex items-start`}
+          className={
+            mobile
+              ? `${!characterList && 'pointer-events-none'} fixed left-3 right-3 top-[68px] flex flex-col items-start justify-start gap-2`
+              : `${!characterList && 'pointer-events-none'} fixed left-24 top-[90px] flex flex-col items-start justify-start gap-4`
+          }
         >
-          <div
-            className={`${characterList ? 'visible w-full opacity-100' : 'invisible w-0 opacity-0'} timing flex flex-col gap-2`}
-          >
-            {turnOrder?.map((characterId) => (
-              <CharacterCardSmall
-                key={characterId}
-                characterId={characterId}
-                active={userCharacter === characterId}
-              />
-            ))}
-          </div>
           <button
-            className={`timing bg-tertiary group flex rounded p-1.5 shadow-md shadow-black`}
+            className={`timing bg-tertiary group pointer-events-auto flex rounded p-1.5 shadow-md shadow-black`}
             aria-label="Open character list"
             type="button"
             onClick={() => setCharacterList((prev) => !prev)}
           >
             <CharacterIcon className="text-tertiary group-hover:text-accent timing size-8" />
           </button>
+          <div
+            className={`${characterList ? 'visible translate-x-0 opacity-100' : 'invisible -translate-x-full opacity-0'} timing flex w-full flex-col gap-2`}
+          >
+            {turnOrder?.map((characterId) => (
+              <CharacterCardSmall
+                className={mobile ? 'max-w-full' : 'max-w-96'}
+                key={characterId}
+                characterId={characterId}
+                active={userCharacter === characterId}
+              />
+            ))}
+          </div>
         </div>
         <div
-          className={`${actionSidebar ? 'overflow-y-auto' : 'overflow-y-hidden'} ${mobile ? `${actionSidebar ? 'left-2 right-2 gap-0' : 'right-2 gap-4'} bottom-4 top-[72px]` : 'bottom-8 right-8 top-[90px] gap-4'} scrollbar-primary-2 fixed flex justify-end`}
+          className={
+            mobile
+              ? `${!actionSidebar && 'pointer-events-none'} fixed bottom-3 left-3 right-3 top-[68px] flex flex-col items-end justify-start gap-2`
+              : `${!actionSidebar && 'pointer-events-none'} fixed bottom-8 right-8 top-[90px] flex flex-col items-end justify-start gap-4`
+          }
         >
           <button
-            className={`timing bg-tertiary group mb-auto flex rounded p-1.5 shadow-md shadow-black`}
+            className={`timing bg-tertiary group pointer-events-auto ml-auto flex rounded p-1.5 shadow-md shadow-black`}
             aria-label="Open character list"
             type="button"
             onClick={() => setActionSidebar((prev) => !prev)}
@@ -199,24 +215,28 @@ const Map = () => {
             <ActionIcon className="text-tertiary group-hover:text-accent timing size-8" />
           </button>
           <div
-            className={`${actionSidebar ? `${mobile ? 'w-full' : 'w-[425px]'} visible px-0.5 opacity-100` : 'invisible w-0 opacity-0'} timing flex flex-col gap-4 sm:gap-8`}
+            className={`${actionSidebar ? `visible translate-x-0 overflow-y-auto px-0.5 opacity-100` : 'invisible translate-x-full opacity-0'} ${mobile ? 'w-full' : 'w-[400px]'} scrollbar-primary-2 timing flex h-full flex-col gap-2 overflow-x-hidden sm:gap-8`}
           >
-            {activeCharacter === userCharacter && (
-              <ActionSidebar
-                form={actionForm}
-                diceArray={diceArray}
-                rolling={rolling}
-                calculateSuccesses={calculateSuccesses}
-                successes={successes}
-              />
-            )}
+            {/* {activeCharacter === userCharacter && ( */}
+            <ActionSidebar
+              form={actionForm}
+              diceArray={diceArray}
+              rolling={rolling}
+              calculateSuccesses={calculateSuccesses}
+              successes={successes}
+            />
+            {/* )} */}
             {item?.item && (
-              <ItemCard className="w-full" cardType="small" item={item?.item} />
+              <ItemCard
+                className="w-full"
+                cardType="small"
+                item={currentItem}
+              />
             )}
           </div>
         </div>
         <ThemeContainer
-          className="!sticky bottom-[33px] mt-auto w-full max-w-5xl"
+          className={`${!mobile && '!sticky bottom-2 mt-auto'} w-full max-w-5xl sm:bottom-[33px]`}
           borderColor={accentPrimary}
           chamfer="small"
         >

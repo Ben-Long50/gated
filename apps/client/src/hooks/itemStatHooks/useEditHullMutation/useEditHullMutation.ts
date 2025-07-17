@@ -5,11 +5,7 @@ import editHull from './editHull';
 import { Item } from 'src/types/item';
 import { socket } from 'src/socket';
 
-const useEditHullMutation = (
-  apiUrl: string,
-  itemId: number,
-  characterId: number,
-) => {
+const useEditHullMutation = (itemId: number) => {
   const queryClient = useQueryClient();
   const updateBuffer = useRef(0);
   const timeoutRef = useRef(0);

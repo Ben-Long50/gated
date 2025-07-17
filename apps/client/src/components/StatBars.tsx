@@ -24,6 +24,7 @@ import DroneIcon from './icons/DroneIcon';
 import WyrmShellIcon from './icons/WyrmShellIcon';
 import InsanityIcon from './icons/InsanityIcon';
 import WyrmMoldSlotsIcon from './icons/WyrmMoldSlotsIcon';
+import { useLocation } from 'react-router-dom';
 
 const StatBars = ({
   stats,
@@ -35,6 +36,13 @@ const StatBars = ({
   cardWidth: number;
 }) => {
   const { statColorMap } = useContext(ThemeContext);
+  const location = useLocation();
+  const parts = location.pathname.split('/');
+
+  const updating =
+    parts.includes('equipment') ||
+    parts.includes('deployments') ||
+    parts.includes('maps');
 
   return (
     <>
@@ -79,7 +87,7 @@ const StatBars = ({
           <RangeIcon className="text-secondary size-8" />
         </StatBar>
       )}
-      {mode === 'equipment' || mode === 'deployments'
+      {updating
         ? stats.currentAmmoCount !== undefined &&
           stats.magCapacity !== undefined && (
             <StatBar
@@ -256,7 +264,7 @@ const StatBars = ({
           <WardIcon className="text-secondary size-8" />
         </StatBar>
       )}
-      {mode === 'equipment' || mode === 'deployments'
+      {updating
         ? stats.block !== undefined &&
           stats.currentBlock !== undefined && (
             <StatBar

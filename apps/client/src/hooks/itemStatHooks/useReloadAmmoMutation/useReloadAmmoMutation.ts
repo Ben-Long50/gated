@@ -4,7 +4,7 @@ import { useRef } from 'react';
 import { Item } from 'src/types/item';
 import { socket } from 'src/socket';
 
-const useReloadAmmoMutation = (apiUrl: string, itemId: number) => {
+const useReloadAmmoMutation = (itemId: number) => {
   const queryClient = useQueryClient();
   const timeoutRef = useRef(0);
 

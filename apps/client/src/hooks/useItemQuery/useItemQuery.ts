@@ -6,7 +6,7 @@ const useItemQuery = (itemId: number) => {
   return useQuery<Item>({
     queryKey: ['item', itemId],
     queryFn: async () => await getItemById.fetch(itemId),
-    enabled: typeof itemId === 'number' && !isNaN(itemId),
+    enabled: !!itemId,
   });
 };
 

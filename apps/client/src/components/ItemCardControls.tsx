@@ -1,7 +1,4 @@
-import { WeaponStats } from 'src/types/weapon';
 import BtnControl from './buttons/BtnControl';
-import { useContext } from 'react';
-import { AuthContext } from 'src/contexts/AuthContext';
 import { useParams } from 'react-router-dom';
 import useEditAmmoMutation from 'src/hooks/itemStatHooks/useEditAmmoMutation/useEditAmmoMutation';
 import useReloadAmmoMutation from 'src/hooks/itemStatHooks/useReloadAmmoMutation/useReloadAmmoMutation';
@@ -15,31 +12,25 @@ import DamageIcon from './icons/DamageIcon';
 import MagCapacityIcon from './icons/MagCapacityIcon';
 import SalvoIcon from './icons/SalvoIcon';
 import SpareAmmoIcon from './icons/SpareAmmoIcon';
-import { ArmorStats } from 'src/types/armor';
 import BlockIcon from './icons/BlockIcon';
 import HullIcon from './icons/HullIcon';
 import LightningIcon from './icons/LightningIcon';
 import PowerIcon from './icons/PowerIcon';
-import { CyberneticStats } from 'src/types/cybernetic';
-import { VehicleStats } from 'src/types/vehicle';
 import CargoIcon from './icons/CargoIcon';
 import InventoryIcon from './icons/InventoryIcon';
 import PassIcon from './icons/PassIcon';
-import { DroneStats } from 'src/types/drone';
 import { Stats } from 'src/types/item';
 
 export const WeaponControls = ({
   stats,
   weaponId,
 }: {
-  stats: WeaponStats;
+  stats: Stats;
   weaponId: number;
 }) => {
-  const { characterId } = useParams();
-
-  const editCurrentAmmo = useEditAmmoMutation(weaponId, Number(characterId));
-  const reloadAmmo = useReloadAmmoMutation(weaponId, Number(characterId));
-  const refreshAmmo = useRefreshAmmoMutation(weaponId, Number(characterId));
+  const editCurrentAmmo = useEditAmmoMutation(weaponId);
+  const reloadAmmo = useReloadAmmoMutation(weaponId);
+  const refreshAmmo = useRefreshAmmoMutation(weaponId);
 
   return (
     <div className="col-span-2 grid grid-cols-1 items-center justify-start gap-2 sm:grid-cols-2 sm:gap-4">
@@ -99,12 +90,10 @@ export const ArmorControls = ({
   stats,
 }: {
   armorId: number;
-  stats: ArmorStats;
+  stats: Stats;
 }) => {
-  const { characterId } = useParams();
-
-  const editPower = useEditPowerMutation(armorId, Number(characterId));
-  const editBlock = useEditBlockMutation(armorId, Number(characterId));
+  const editPower = useEditPowerMutation(armorId);
+  const editBlock = useEditBlockMutation(armorId);
 
   return (
     <div className="col-span-2 grid grid-cols-1 items-center justify-start gap-4 sm:grid-cols-2">
@@ -153,11 +142,9 @@ export const CyberneticControls = ({
   stats,
 }: {
   cyberneticId: number;
-  stats: CyberneticStats;
+  stats: Stats;
 }) => {
-  const { characterId } = useParams();
-
-  const editPower = useEditPowerMutation(cyberneticId, Number(characterId));
+  const editPower = useEditPowerMutation(cyberneticId);
 
   return (
     <div className="col-span-2 grid grid-cols-1 items-center justify-start gap-4 sm:grid-cols-2">
@@ -190,16 +177,14 @@ export const VehicleControls = ({
   stats,
   vehicleId,
 }: {
-  stats: VehicleStats;
+  stats: Stats;
   vehicleId: number;
 }) => {
-  const { characterId } = useParams();
+  const editHull = useEditHullMutation(vehicleId);
 
-  const editHull = useEditHullMutation(vehicleId, Number(characterId));
+  const editCargo = useEditCargoMutation(vehicleId);
 
-  const editCargo = useEditCargoMutation(vehicleId, Number(characterId));
-
-  const editPass = useEditPassMutation(vehicleId, Number(characterId));
+  const editPass = useEditPassMutation(vehicleId);
 
   return (
     <div className="col-span-2 grid grid-cols-1 items-center justify-start gap-2 sm:grid-cols-2 sm:gap-4">
@@ -259,13 +244,11 @@ export const DroneControls = ({
   stats,
   droneId,
 }: {
-  stats: DroneStats;
+  stats: Stats;
   droneId: number;
 }) => {
-  const { characterId } = useParams();
-
-  const editHull = useEditHullMutation(droneId, Number(characterId));
-  const editPower = useEditPowerMutation(droneId, Number(characterId));
+  const editHull = useEditHullMutation(droneId);
+  const editPower = useEditPowerMutation(droneId);
 
   return (
     <div className="col-span-2 grid grid-cols-1 items-center justify-start gap-4 sm:grid-cols-2">
@@ -316,9 +299,7 @@ export const ItemControls = ({
   itemId: number;
   stats: Stats;
 }) => {
-  const { characterId } = useParams();
-
-  const editPower = useEditPowerMutation(itemId, Number(characterId));
+  const editPower = useEditPowerMutation(itemId);
 
   return (
     <div className="col-span-2 grid grid-cols-1 items-center justify-start gap-4 sm:grid-cols-2">
