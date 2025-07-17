@@ -358,7 +358,7 @@ const characterServices = {
         data,
       });
 
-      return updatedCharacter;
+      return updatedCharacter.campaignId;
     } catch (error) {
       console.error(error);
       throw new Error('Failed to update character');

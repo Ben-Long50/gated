@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from 'express';
 import prisma from '../config/database.js';
 
 const campaignAuthentication = {
+  //Only allows access to the campaign data if the user is a part of the campaign in any way
+
   filterCampaigns: async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
       res.status(401).json({ error: 'No user found' });

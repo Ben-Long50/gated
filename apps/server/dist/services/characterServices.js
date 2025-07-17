@@ -301,7 +301,7 @@ const characterServices = {
                 //@ts-ignore
                 data,
             });
-            return updatedCharacter;
+            return updatedCharacter.campaignId;
         }
         catch (error) {
             console.error(error);

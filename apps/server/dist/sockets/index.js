@@ -32,6 +32,10 @@ export function setupSocketIO(io) {
             io.emit('globalCampaign', { campaignId, playerIds });
             console.log(`Broadcasted campaign ${campaignId} to all players`);
         });
+        socket.on('location', ({ locationId, campaignId }) => {
+            io.to(campaignId).emit('location', locationId);
+            console.log(`Broadcasted location ${locationId} to campaign ${campaignId}`);
+        });
         socket.on('character', ({ characterId, campaignId }) => {
             io.to(campaignId).emit('character', characterId);
             console.log(`Broadcasted character ${characterId} to campaign ${campaignId}`);

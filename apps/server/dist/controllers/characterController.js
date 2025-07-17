@@ -117,8 +117,8 @@ const characterController = {
                     throw new Error('Could not find authenticated user');
                 }
                 const parsedBody = parseRequestBody(req.body);
-                const character = await characterServices.updateCharacter(parsedBody, req.user.id, Number(req.params.characterId));
-                res.status(200).json(character);
+                const campaignId = await characterServices.updateCharacter(parsedBody, req.user.id, Number(req.params.characterId));
+                res.status(200).json(campaignId);
             }
             catch (error) {
                 console.error(error);

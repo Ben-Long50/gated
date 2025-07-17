@@ -314,6 +314,7 @@ const campaignServices = {
                             lastName: true,
                             id: true,
                             userId: true,
+                            campaignId: true,
                         },
                     },
                 },

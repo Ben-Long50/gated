@@ -148,12 +148,12 @@ const characterController = {
 
         const parsedBody = parseRequestBody(req.body);
 
-        const character = await characterServices.updateCharacter(
+        const campaignId = await characterServices.updateCharacter(
           parsedBody,
           req.user.id,
           Number(req.params.characterId),
         );
-        res.status(200).json(character);
+        res.status(200).json(campaignId);
       } catch (error) {
         console.error(error);
         if (error instanceof Error) {
