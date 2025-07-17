@@ -3,13 +3,11 @@ import bcrypt from 'bcryptjs';
 import userServices from '../services/userServices.js';
 const userController = {
     getAuthenticatedUser: async (req, res) => {
-        var _a;
         if (!req.user) {
             res.status(401).json({ error: 'User could not be authenticated' });
             return;
         }
-        const user = await userServices.getUserById((_a = req.user) === null || _a === void 0 ? void 0 : _a.id);
-        res.status(200).json(user);
+        res.status(200).json({ userId: req.user.id });
     },
     getUsers: async (req, res) => {
         try {
@@ -28,20 +26,14 @@ const userController = {
             res.status(500).json({ error: error.message });
         }
     },
-    getUser: async (req, res) => {
+    getUserById: async (req, res) => {
         try {
-            const user = await userServices.getUserById(Number(req.params.id));
+            const user = await userServices.getUserById(Number(req.params.userId));
             if (!user) {
                 res.status(404).json({ error: 'User not found' });
                 return;
             }
-            res.status(200).json({
-                id: user.id,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                role: user.role,
-                profilePicture: user.profilePicture,
-            });
+            res.status(200).json(user);
         }
         catch (error) {
             res.status(500).json({ error: error.message });

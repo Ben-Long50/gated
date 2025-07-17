@@ -1,4 +1,5 @@
 import { Server } from 'socket.io';
+import prisma from '../config/database.js';
 
 export function setupSocketIO(io: Server) {
   io.on('connection', (socket) => {
@@ -21,7 +22,28 @@ export function setupSocketIO(io: Server) {
       socket.leave(campaignId);
       console.log(`Ended campaign ${campaignId}`);
 
-      io.emit('campaign', campaignId);
+      io.to(campaignId).emit('endCampaign', campaignId);
+      console.log('Broadcasted campaign end to all players');
+    });
+
+    socket.on('globalCampaign', async (campaignId) => {
+      const campaign = await prisma.campaign.findUnique({
+        where: { id: campaignId },
+        include: {
+          players: { select: { id: true } },
+          pendingPlayers: { select: { id: true } },
+        },
+      });
+
+      const players = campaign?.players.map((player) => player.id) || [];
+
+      const pendingPlayers =
+        campaign?.pendingPlayers.map((player) => player.id) || [];
+
+      const playerIds = [campaign?.ownerId, ...players, ...pendingPlayers];
+
+      io.emit('globalCampaign', { campaignId, playerIds });
+      console.log(`Broadcasted campaign ${campaignId} to all players`);
     });
 
     socket.on('character', ({ characterId, campaignId }) => {
@@ -31,18 +53,16 @@ export function setupSocketIO(io: Server) {
       );
     });
 
-    socket.on('item', (itemId) => {
-      console.log('item', itemId);
-
-      io.emit('item', itemId);
-      console.log('Broadcasted item to all clients');
+    socket.on('item', ({ itemId, campaignId }) => {
+      io.to(campaignId).emit('item', itemId);
+      console.log(`Broadcasted item ${itemId} to campaign ${campaignId}`);
     });
 
-    socket.on('affiliation', (affiliationId) => {
-      console.log('affiliation', affiliationId);
-
-      io.emit('affiliation', affiliationId);
-      console.log('Broadcasted affiliation to all clients');
+    socket.on('affiliation', ({ affiliationId, campaignId }) => {
+      io.to(campaignId).emit('affiliation', affiliationId);
+      console.log(
+        `Broadcasted affiliation ${affiliationId} to campaign ${campaignId}`,
+      );
     });
 
     socket.on('disconnect', (reason) => {

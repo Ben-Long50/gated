@@ -12,6 +12,12 @@ router.get(
 
 router.get('/users', authentication.authenticate, userController.getUsers);
 
+router.get(
+  '/users/:userId',
+  authentication.authenticate,
+  userController.getUserById,
+);
+
 router.post('/users', authentication.authenticate, userController.createUser);
 
 router.put('/users', authentication.authenticate, userController.updateUser);
@@ -22,7 +28,5 @@ router.patch(
   authentication.authenticateSuperadmin,
   userController.updateUserRole,
 );
-
-router.get('/users/:userId', userController.getUser);
 
 export default router;

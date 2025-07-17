@@ -10,8 +10,7 @@ const userController = {
       return;
     }
 
-    const user = await userServices.getUserById(req.user?.id);
-    res.status(200).json(user);
+    res.status(200).json({ userId: req.user.id });
   },
 
   getUsers: async (req: Request, res: Response) => {
@@ -32,21 +31,15 @@ const userController = {
     }
   },
 
-  getUser: async (req: Request, res: Response) => {
+  getUserById: async (req: Request, res: Response) => {
     try {
-      const user = await userServices.getUserById(Number(req.params.id));
+      const user = await userServices.getUserById(Number(req.params.userId));
       if (!user) {
         res.status(404).json({ error: 'User not found' });
         return;
       }
 
-      res.status(200).json({
-        id: user.id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        role: user.role,
-        profilePicture: user.profilePicture,
-      });
+      res.status(200).json(user);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }

@@ -3,6 +3,7 @@ import authentication from '../middleware/authentication.js';
 import campaignController from '../controllers/campaignController.js';
 import factionController from '../controllers/factionController.js';
 import affiliationController from '../controllers/affiliationController.js';
+import campaignAuthentication from '../middleware/campaignAuthentication.js';
 
 const router = express.Router();
 
@@ -21,12 +22,14 @@ router.get(
 router.get(
   '/campaigns/batch',
   authentication.authenticate,
+  campaignAuthentication.filterCampaigns,
   campaignController.getBatchCampaigns,
 );
 
 router.get(
   '/campaigns/:campaignId',
   authentication.authenticate,
+  campaignAuthentication.filterCampaigns,
   campaignController.getCampaignById,
 );
 

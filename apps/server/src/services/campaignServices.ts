@@ -37,7 +37,7 @@ const campaignServices = {
           sessions: true,
           players: { orderBy: { firstName: 'desc' } },
           pendingPlayers: { orderBy: { firstName: 'desc' } },
-          factions: { select: { id: true, name: true } },
+          factions: { select: { id: true, name: true, factionType: true } },
           characters: {
             select: {
               id: true,
@@ -100,7 +100,7 @@ const campaignServices = {
           sessions: true,
           players: { orderBy: { firstName: 'desc' } },
           pendingPlayers: { orderBy: { firstName: 'desc' } },
-          factions: { select: { id: true, name: true } },
+          factions: { select: { id: true, name: true, factionType: true } },
           characters: {
             select: {
               id: true,

@@ -25,8 +25,7 @@ const campaignController = {
             if (!req.user) {
                 throw new Error('Could not find authenticated user');
             }
-            const campaignIds = req.query.ids.split(',').map(Number);
-            const campaigns = await campaignServices.getBatchCampaigns(campaignIds);
+            const campaigns = await campaignServices.getBatchCampaigns(req.body.campaignIds);
             res.status(200).json(campaigns);
         }
         catch (error) {
