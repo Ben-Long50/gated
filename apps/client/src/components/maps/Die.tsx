@@ -9,12 +9,13 @@ const Die = ({
   number,
   rolling,
   size,
+  modifiers,
 }: {
   number: number;
   rolling: boolean;
   size: number;
+  modifiers: string[];
 }) => {
-  const modifiers = [] as string[];
   const lucky = modifiers.includes('lucky') && !modifiers.includes('unlucky');
   const unlucky = modifiers.includes('unlucky') && !modifiers.includes('lucky');
 

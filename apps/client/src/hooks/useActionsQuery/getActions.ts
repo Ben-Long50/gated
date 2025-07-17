@@ -3,8 +3,6 @@ import handleResponse from '../handleResponse';
 
 const getActions = async () => {
   try {
-    console.log('action');
-
     const response = await fetch(`${apiUrl}/actions`, {
       method: 'GET',
       credentials: 'include',

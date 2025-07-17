@@ -20,18 +20,19 @@ const CharacterInitiativeRoll = ({
   const { filteredCharacter: character, isLoading } = useCharacter(characterId);
 
   const { emptyAttributeTree } = useAttributeTree();
-  const { diceArray, rolling, calculateSuccesses, successes } = useRoll();
+  const { diceArray, rolling, calculateRoll, calculateSuccesses, successes } =
+    useRoll();
 
   const violenceRolls = Object.keys(emptyAttributeTree.violence.skills).map(
     (skill) => ({ attribute: 'violence', skill }),
   );
 
   const roll = async () => {
-    const successes = await calculateSuccesses(
-      character?.attributes,
-      violenceRolls,
-      [],
-    );
+    const rollResults =
+      calculateRoll(character?.attributes, violenceRolls, []) || [];
+
+    const successes = await calculateSuccesses(rollResults, []);
+
     return {
       characterId,
       name: character?.firstName,

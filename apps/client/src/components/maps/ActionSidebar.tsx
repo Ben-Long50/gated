@@ -13,6 +13,8 @@ import ActionStatBars from '../ActionStatBars';
 import ArrowHeader4 from '../ArrowHeader4';
 import RangeIcon from '../icons/RangeIcon';
 import WeaponIcon from '../icons/WeaponIcon';
+import InputFieldCheckbox from '../InputFieldCheckbox';
+import { capitalCase } from 'change-case';
 
 const ActionSidebar = ({
   form,
@@ -130,6 +132,44 @@ const ActionSidebar = ({
             )
           }
         </form.Subscribe>
+        <div className="relative flex w-full flex-col gap-2">
+          <form.Field name="modifiers">
+            {(field) => {
+              const modifiers = [
+                'push',
+                'booming',
+                'dooming',
+                'lucky',
+                'unlucky',
+              ];
+              return (
+                <>
+                  {modifiers.map((modifier) => (
+                    <InputFieldCheckbox
+                      key={modifier}
+                      field={field}
+                      label={capitalCase(modifier)}
+                      value={modifier}
+                      checked={field.state.value.includes(modifier)}
+                      onChange={(value: string) => {
+                        if (field.state.value.includes(value)) {
+                          form.setFieldValue('modifiers', (prev) =>
+                            prev.filter((modifier) => modifier !== value),
+                          );
+                        } else {
+                          form.setFieldValue('modifiers', (prev) => [
+                            ...prev,
+                            value,
+                          ]);
+                        }
+                      }}
+                    />
+                  ))}
+                </>
+              );
+            }}
+          </form.Field>
+        </div>
         {diceArray.length > 0 && (
           <CharacterRoll
             form={form}

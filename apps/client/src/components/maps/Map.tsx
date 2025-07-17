@@ -13,7 +13,7 @@ import CharacterIcon from '../icons/CharacterIcon';
 import CharacterOptions from './CharacterOptions';
 import useRoll from 'src/hooks/useRoll';
 import useCombat from 'src/hooks/useCombat';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import useCombatStore from 'src/stores/combatStore';
 import ActionSidebar from './ActionSidebar';
 import { useForm } from '@tanstack/react-form';
@@ -26,29 +26,34 @@ import ActionIcon from '../icons/ActionIcon';
 import BtnRect from '../buttons/BtnRect';
 import ThemeContainer from '../ThemeContainer';
 import { CampaignContext } from 'src/contexts/CampaignContext';
-import { useQueryClient } from '@tanstack/react-query';
 import useItemQuery from 'src/hooks/useItemQuery/useItemQuery';
+import { socket } from 'src/socket';
 
 const Map = () => {
   const { user } = useContext(AuthContext);
   const { mobile } = useContext(LayoutContext);
   const { accentPrimary } = useContext(ThemeContext);
-  const { gameMaster } = useContext(CampaignContext);
+  const { campaignId } = useParams();
+  const {
+    gameMaster,
+    diceArray,
+    setDiceArray,
+    rolling,
+    calculateRoll,
+    calculateSuccesses,
+    successes,
+  } = useContext(CampaignContext);
   const navigate = useNavigate();
   const [gridDisplay, setGridDisplay] = useState(false);
   const [characterList, setCharacterList] = useState(mobile ? false : true);
   const [actionSidebar, setActionSidebar] = useState(mobile ? false : true);
 
-  const queryClient = useQueryClient();
   const { map, locations, isLoading } = useMap();
 
   const userCharacter = useCombatStore((state) => state.userCharacter);
   const activeCharacter = useCombatStore((state) => state.activeCharacter);
   const setUserCharacter = useCombatStore((state) => state.setUserCharacter);
   const turnOrder = useCombatStore((state) => state.turnOrder);
-
-  const { diceArray, setDiceArray, rolling, calculateSuccesses, successes } =
-    useRoll();
 
   const { advanceTurn } = useCombat();
 
@@ -81,22 +86,25 @@ const Map = () => {
       action: null as Action | null,
       item: null as Item | null,
       target: null as Character | null,
+      modifiers: [] as string[],
     },
     onSubmit: async ({ value }) => {
-      // roll(value.action?.roll);
       value.activeCharacter = character;
 
-      await calculateSuccesses(
+      const rollResult = calculateRoll(
         value.activeCharacter?.attributes,
         value.action.roll,
-        [],
+        value.modifiers,
       );
 
-      setTimeout(() => {
-        setDiceArray([]);
-      }, 10000);
+      socket.emit('combatRoll', {
+        campaignId: Number(campaignId),
+        characterId: activeCharacter,
+        rollResult,
+        modifiers: value.modifiers,
+      });
 
-      actionForm.reset();
+      // actionForm.reset();
     },
   });
 
@@ -124,7 +132,7 @@ const Map = () => {
           </div>
         )}
         <div
-          className="scrollbar-primary relative max-h-full max-w-full overflow-x-auto overflow-y-auto rounded border-2"
+          className="scrollbar-primary pointer-events-auto relative max-h-full max-w-full overflow-x-auto overflow-y-auto rounded border-2"
           style={{
             borderColor: accentPrimary,
           }}
@@ -210,22 +218,25 @@ const Map = () => {
             className={`timing bg-tertiary group pointer-events-auto ml-auto flex rounded p-1.5 shadow-md shadow-black`}
             aria-label="Open character list"
             type="button"
-            onClick={() => setActionSidebar((prev) => !prev)}
+            onClick={() => {
+              if (activeCharacter === userCharacter)
+                setActionSidebar((prev) => !prev);
+            }}
           >
             <ActionIcon className="text-tertiary group-hover:text-accent timing size-8" />
           </button>
           <div
             className={`${actionSidebar ? `visible translate-x-0 overflow-y-auto px-0.5 opacity-100` : 'invisible translate-x-full opacity-0'} ${mobile ? 'w-full' : 'w-[400px]'} scrollbar-primary-2 timing flex h-full flex-col gap-2 overflow-x-hidden sm:gap-8`}
           >
-            {/* {activeCharacter === userCharacter && ( */}
-            <ActionSidebar
-              form={actionForm}
-              diceArray={diceArray}
-              rolling={rolling}
-              calculateSuccesses={calculateSuccesses}
-              successes={successes}
-            />
-            {/* )} */}
+            {activeCharacter === userCharacter && (
+              <ActionSidebar
+                form={actionForm}
+                diceArray={diceArray}
+                rolling={rolling}
+                calculateSuccesses={calculateSuccesses}
+                successes={successes}
+              />
+            )}
             {item?.item && (
               <ItemCard
                 className="w-full"

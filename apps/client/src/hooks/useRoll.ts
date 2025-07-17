@@ -12,7 +12,14 @@ const useRoll = () => {
 
   const timeoutRef = useRef<number | null>(null);
 
-  const rollDice = (diceCount: number): Promise<number[]> => {
+  const rollResult = (diceCount: number) => {
+    return Array.from(
+      { length: diceCount },
+      () => Math.floor(Math.random() * 6) + 1,
+    );
+  };
+
+  const animateRoll = (result: number[]): Promise<number[]> => {
     return new Promise((resolve) => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
@@ -26,16 +33,19 @@ const useRoll = () => {
 
       const rollOnce = () => {
         const dieArray = Array.from(
-          { length: diceCount },
+          { length: result.length },
           () => Math.floor(Math.random() * 6) + 1,
         );
 
-        setDiceArray(dieArray);
-        count++;
+        if (count < maxRolls) {
+          setDiceArray(dieArray);
+          count++;
+        }
 
         if (count >= maxRolls) {
           setRolling(false);
-          resolve(dieArray);
+          setDiceArray(result);
+          resolve(result);
           return;
         }
 
@@ -47,7 +57,7 @@ const useRoll = () => {
     });
   };
 
-  const calculateSuccesses = async (
+  const calculateRoll = (
     attributes: AttributeTree,
     rolls: { attribute: string; skill: string }[],
     modifiers: string[],
@@ -78,21 +88,25 @@ const useRoll = () => {
       bestRoll.diceCount += 2;
     }
 
-    const result = await rollDice(bestRoll.diceCount);
+    return rollResult(bestRoll.diceCount);
+  };
+
+  const calculateSuccesses = async (result: number[], modifiers: string[]) => {
+    const animatedResult = await animateRoll(result);
 
     let successes = 0;
-    successes += result.filter((number) => number >= 5).length;
+    successes += animatedResult.filter((number) => number >= 5).length;
     if (modifiers.includes('booming')) {
-      successes += result.filter((number) => number === 6).length;
+      successes += animatedResult.filter((number) => number === 6).length;
     }
     if (modifiers.includes('dooming')) {
-      successes -= result.filter((number) => number === 1).length;
+      successes -= animatedResult.filter((number) => number === 1).length;
     }
     if (modifiers.includes('lucky') && !modifiers.includes('unlucky')) {
-      successes += result.filter((number) => number === 4).length;
+      successes += animatedResult.filter((number) => number === 4).length;
     }
     if (modifiers.includes('unlucky') && !modifiers.includes('lucky')) {
-      successes -= result.filter((number) => number === 5).length;
+      successes -= animatedResult.filter((number) => number === 5).length;
     }
 
     setSuccesses(successes);
@@ -103,6 +117,7 @@ const useRoll = () => {
     diceArray,
     setDiceArray,
     rolling,
+    calculateRoll,
     calculateSuccesses,
     successes,
   };

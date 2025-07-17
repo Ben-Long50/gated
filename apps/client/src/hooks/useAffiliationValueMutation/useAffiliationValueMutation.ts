@@ -45,8 +45,6 @@ const useAffiliationValueMutation = (affiliationId: number) => {
       return { prevAffiliationData };
     },
     onSuccess: (_, __, context) => {
-      console.log(context);
-
       socket.emit('affiliation', {
         affiliationId,
         campaignId: context.prevAffiliationData?.campaignId,

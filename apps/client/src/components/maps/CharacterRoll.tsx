@@ -6,12 +6,15 @@ import Loading from '../Loading';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import Divider from '../Divider';
 import { AttributeTree } from 'src/types/attributeTree';
+import { FormApi } from '@tanstack/react-form';
 
 const CharacterRoll = ({
+  form,
   diceArray,
   rolling,
   successes,
 }: {
+  form: FormApi;
   characterId: number;
   diceArray: number[];
   rolling: boolean;
@@ -27,11 +30,21 @@ const CharacterRoll = ({
   return (
     <div className="flex flex-col justify-between gap-4">
       <Divider />
-      <div className="flex w-full flex-wrap items-center justify-start gap-2">
-        {diceArray?.map((number: number, index) => (
-          <Die key={index} size={60} number={number} rolling={rolling} />
-        ))}
-      </div>
+      <form.Subscribe selector={(state) => state.values.modifiers}>
+        {(modifiers: string[]) => (
+          <div className="flex flex-wrap justify-start gap-2">
+            {diceArray?.map((number: number, index: number) => (
+              <Die
+                key={index}
+                size={68}
+                number={number}
+                rolling={rolling}
+                modifiers={modifiers}
+              />
+            ))}
+          </div>
+        )}
+      </form.Subscribe>
       <Divider />
       <div className="grid grid-cols-[1fr_auto] gap-y-4">
         <ArrowHeader3 title="Successes" />

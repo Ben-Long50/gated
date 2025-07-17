@@ -24,7 +24,7 @@ const InputFieldCheckbox = ({
         {label}
       </label>
       <input
-        className={`text-secondary timing focus:bg-primary size-8 rounded-none ${field.state.value?.length === 0 || !field.state.value ? 'bg-zinc-300 dark:bg-zinc-700' : 'bg-primary'} outline-none`}
+        className={`text-secondary timing focus:bg-primary size-7 rounded-none ${field.state.value?.length === 0 || !field.state.value ? 'bg-zinc-300 dark:bg-zinc-700' : 'bg-primary'} outline-none`}
         type="checkbox"
         name={field.name}
         id={field.name}

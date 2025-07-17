@@ -12,6 +12,8 @@ import { AuthContext } from './AuthContext';
 import useCampaignQueries from 'src/hooks/useCampaignsQuery/useCampaignQueries';
 import Loading from 'src/components/Loading';
 import { useNavigate, useParams } from 'react-router-dom';
+import useRoll from 'src/hooks/useRoll';
+import useCombatStore from 'src/stores/combatStore';
 
 export const CampaignContext = createContext({
   socket,
@@ -43,6 +45,21 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const activeCampaignRef = useRef<number[]>([]);
+
+  const timeoutRef = useRef<number | null>(null);
+
+  const {
+    diceArray,
+    setDiceArray,
+    rolling,
+    calculateRoll,
+    calculateSuccesses,
+    successes,
+  } = useRoll();
+
+  const setActiveCharacter = useCombatStore(
+    (state) => state.setActiveCharacter,
+  );
 
   useEffect(() => {
     const onConnect = () => {
@@ -150,6 +167,19 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       });
     });
 
+    socket.on('combatRoll', async ({ characterId, rollResult, modifiers }) => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      setActiveCharacter(characterId);
+
+      await calculateSuccesses(rollResult, modifiers);
+
+      timeoutRef.current = setTimeout(() => {
+        setDiceArray([]);
+      }, 7000);
+    });
+
     socket.on('disconnect', (reason) => {
       console.log('Disconnected:', reason);
     });
@@ -165,7 +195,18 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <CampaignContext.Provider
-      value={{ socket, gameMaster, campaigns, activeCampaigns }}
+      value={{
+        socket,
+        gameMaster,
+        campaigns,
+        activeCampaigns,
+        diceArray,
+        setDiceArray,
+        rolling,
+        calculateRoll,
+        calculateSuccesses,
+        successes,
+      }}
     >
       {children}
     </CampaignContext.Provider>
