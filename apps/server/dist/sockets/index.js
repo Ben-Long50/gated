@@ -48,11 +48,12 @@ export function setupSocketIO(io) {
             io.to(campaignId).emit('affiliation', affiliationId);
             console.log(`Broadcasted affiliation ${affiliationId} to campaign ${campaignId}`);
         });
-        socket.on('combatRoll', ({ campaignId, characterId, rollResult, modifiers }) => {
+        socket.on('combatRoll', ({ campaignId, characterId, targetId, damage, rollResult }) => {
             io.to(campaignId).emit('combatRoll', {
                 characterId,
+                targetId,
+                damage,
                 rollResult,
-                modifiers,
             });
             console.log(`Broadcasted combat roll to campaign ${campaignId}`);
         });

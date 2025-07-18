@@ -293,6 +293,7 @@ const campaignServices = {
                         select: {
                             id: true,
                         },
+                        orderBy: { character: { firstName: 'asc' } },
                     },
                 },
             });

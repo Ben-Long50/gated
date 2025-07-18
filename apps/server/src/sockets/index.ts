@@ -74,11 +74,12 @@ export function setupSocketIO(io: Server) {
 
     socket.on(
       'combatRoll',
-      ({ campaignId, characterId, rollResult, modifiers }) => {
+      ({ campaignId, characterId, targetId, damage, rollResult }) => {
         io.to(campaignId).emit('combatRoll', {
           characterId,
+          targetId,
+          damage,
           rollResult,
-          modifiers,
         });
         console.log(`Broadcasted combat roll to campaign ${campaignId}`);
       },
