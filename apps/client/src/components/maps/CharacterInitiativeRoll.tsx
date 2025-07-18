@@ -80,7 +80,13 @@ const CharacterInitiativeRoll = ({
 
       <div className="flex w-full flex-wrap items-center justify-start gap-2">
         {diceArray?.map((number: number, index) => (
-          <Die key={index} size={64} number={number} rolling={rolling} />
+          <Die
+            key={index}
+            size={64}
+            number={number}
+            rolling={rolling}
+            modifiers={[]}
+          />
         ))}
       </div>
       {!mobile && (

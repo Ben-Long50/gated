@@ -26,7 +26,7 @@ const CharacterStatBars = ({
 
   const { data: character } = useCharacterQuery(Number(characterId));
 
-  const editCurrentHealth = useCurrentHealthMutation(Number(characterId));
+  const editCurrentHealth = useCurrentHealthMutation();
 
   const editCurrentSanity = useCurrentSanityMutation(Number(characterId));
 
@@ -36,7 +36,7 @@ const CharacterStatBars = ({
       (value > 0 && character?.stats.currentHealth === stats.maxHealth)
     )
       return;
-    editCurrentHealth.mutate(value);
+    editCurrentHealth.mutate({ characterId: Number(characterId), value });
   };
 
   const handleCurrentSanity = (value: number) => {

@@ -11,7 +11,6 @@ import ItemCard from '../ItemCard';
 import CharacterCardSmall from '../CharacterCardSmall';
 import CharacterIcon from '../icons/CharacterIcon';
 import CharacterOptions from './CharacterOptions';
-import useRoll from 'src/hooks/useRoll';
 import useCombat from 'src/hooks/useCombat';
 import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import useCombatStore from 'src/stores/combatStore';
@@ -37,7 +36,6 @@ const Map = () => {
   const {
     gameMaster,
     diceArray,
-    setDiceArray,
     rolling,
     calculateRoll,
     calculateSuccesses,
@@ -53,9 +51,11 @@ const Map = () => {
   const userCharacter = useCombatStore((state) => state.userCharacter);
   const activeCharacter = useCombatStore((state) => state.activeCharacter);
   const setUserCharacter = useCombatStore((state) => state.setUserCharacter);
-  const turnOrder = useCombatStore((state) => state.turnOrder);
+  const turnOrder =
+    useCombatStore((state) => state.turnOrder) ||
+    locations?.map((location) => location?.characterId);
 
-  const { advanceTurn } = useCombat();
+  const { advanceTurn, calculateDamage } = useCombat();
 
   const { filteredCharacter: character } = useCharacter(activeCharacter);
 
@@ -88,23 +88,29 @@ const Map = () => {
       target: null as Character | null,
       modifiers: [] as string[],
     },
+
     onSubmit: async ({ value }) => {
       value.activeCharacter = character;
 
       const rollResult = calculateRoll(
         value.activeCharacter?.attributes,
-        value.action.roll,
+        value.action?.roll,
         value.modifiers,
+      );
+
+      const damage = calculateDamage(
+        value.item,
+        value.action,
+        rollResult.successes,
       );
 
       socket.emit('combatRoll', {
         campaignId: Number(campaignId),
         characterId: activeCharacter,
+        targetId: value.target?.id,
+        damage,
         rollResult,
-        modifiers: value.modifiers,
       });
-
-      // actionForm.reset();
     },
   });
 
@@ -270,6 +276,7 @@ const Map = () => {
       <Outlet
         context={{
           advanceTurn,
+          characterIds: locations?.map((location) => location.characterId),
         }}
       />
     </>

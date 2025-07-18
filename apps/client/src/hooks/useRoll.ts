@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import useCombatStore from 'src/stores/combatStore';
 import {
   AttributeName,
   AttributeTree,
@@ -11,6 +12,7 @@ const useRoll = () => {
   const [successes, setSuccesses] = useState(<number | null>null);
 
   const timeoutRef = useRef<number | null>(null);
+  const setDamage = useCombatStore((state) => state.setDamage);
 
   const rollResult = (diceCount: number) => {
     return Array.from(
@@ -88,29 +90,38 @@ const useRoll = () => {
       bestRoll.diceCount += 2;
     }
 
-    return rollResult(bestRoll.diceCount);
-  };
-
-  const calculateSuccesses = async (result: number[], modifiers: string[]) => {
-    const animatedResult = await animateRoll(result);
+    const result = rollResult(bestRoll.diceCount);
 
     let successes = 0;
-    successes += animatedResult.filter((number) => number >= 5).length;
+    successes += result.filter((number) => number >= 5).length;
     if (modifiers.includes('booming')) {
-      successes += animatedResult.filter((number) => number === 6).length;
+      successes += result.filter((number) => number === 6).length;
     }
     if (modifiers.includes('dooming')) {
-      successes -= animatedResult.filter((number) => number === 1).length;
+      successes -= result.filter((number) => number === 1).length;
     }
     if (modifiers.includes('lucky') && !modifiers.includes('unlucky')) {
-      successes += animatedResult.filter((number) => number === 4).length;
+      successes += result.filter((number) => number === 4).length;
     }
     if (modifiers.includes('unlucky') && !modifiers.includes('lucky')) {
-      successes -= animatedResult.filter((number) => number === 5).length;
+      successes -= result.filter((number) => number === 5).length;
     }
 
-    setSuccesses(successes);
-    return successes;
+    return { result, successes };
+  };
+
+  const calculateSuccesses = async (
+    roll: {
+      result: number[];
+      successes: number;
+    },
+    damage: number,
+  ) => {
+    await animateRoll(roll.result);
+
+    setDamage(damage);
+    setSuccesses(roll.successes);
+    return roll.successes;
   };
 
   return {

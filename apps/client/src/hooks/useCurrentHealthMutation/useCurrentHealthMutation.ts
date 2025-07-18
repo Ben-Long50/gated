@@ -4,44 +4,44 @@ import { Character } from 'src/types/character';
 import { useRef } from 'react';
 import { socket } from '../../socket';
 
-const useCurrentHealthMutation = (characterId: number) => {
+const useCurrentHealthMutation = () => {
   const queryClient = useQueryClient();
   const updateBuffer = useRef(0);
   const timeoutRef = useRef(0);
 
   const editCurrentHealthMutation = useMutation({
-    mutationFn: async (value: number) => {
+    mutationFn: async (data: { characterId: number; value: number }) => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
 
-      updateBuffer.current += value;
+      updateBuffer.current += data.value;
 
       return new Promise((resolve) => {
         timeoutRef.current = setTimeout(async () => {
           const finalValue = updateBuffer.current;
 
           updateBuffer.current = 0;
-          await editCurrentHealth(characterId, finalValue);
+          await editCurrentHealth(data.characterId, finalValue);
           resolve(finalValue);
         }, 1000);
       });
     },
 
-    onMutate: (value) => {
-      queryClient.cancelQueries({ queryKey: ['character', characterId] });
+    onMutate: (data) => {
+      queryClient.cancelQueries({ queryKey: ['character', data.characterId] });
 
       const prevCharacterData: Character | undefined = queryClient.getQueryData(
-        ['character', characterId],
+        ['character', data.characterId],
       );
 
       queryClient.setQueryData(
-        ['character', characterId],
+        ['character', data.characterId],
         (prev: Character) => ({
           ...prev,
           stats: {
             ...prev.stats,
-            currentHealth: prev.stats.currentHealth + value,
+            currentHealth: prev.stats.currentHealth + data.value,
           },
         }),
       );
@@ -49,13 +49,13 @@ const useCurrentHealthMutation = (characterId: number) => {
       return { prevCharacterData };
     },
 
-    onSuccess: (_, __, context) => {
+    onSuccess: (_, data, context) => {
       socket.emit('character', {
-        characterId,
+        characterId: data.characterId,
         campaignId: context.prevCharacterData?.campaignId,
       });
       return queryClient.invalidateQueries({
-        queryKey: ['character', characterId],
+        queryKey: ['character', data.characterId],
       });
     },
     throwOnError: false,

@@ -14,19 +14,19 @@ const InitiativeModal = () => {
   const navigate = useNavigate();
   const rollRefs = useRef([]);
 
-  const { advanceTurn } = useOutletContext() || {};
+  const { advanceTurn, characterIds } = useOutletContext() || {};
 
   const turnOrder = useCombatStore((state) => state.turnOrder);
   const setTurnOrder = useCombatStore((state) => state.setTurnOrder);
 
   const rollInitiative = async () => {
     setRollingInitiative(true);
-    const rollAll = async (characterIds?: []) => {
+    const rollAll = async (ids?: []) => {
       const rolls = rollRefs.current
         .map((ref) => {
-          if (ref?.roll && !characterIds) {
+          if (ref?.roll && !ids) {
             return ref.roll();
-          } else if (characterIds?.includes(ref.characterId)) {
+          } else if (ids?.includes(ref.characterId)) {
             return ref.roll();
           }
         })
@@ -102,7 +102,7 @@ const InitiativeModal = () => {
     <Modal>
       <h1>Initiative Rolls</h1>
       <div className="flex w-full flex-col gap-2">
-        {turnOrder?.map((characterId, index) => (
+        {characterIds?.map((characterId, index) => (
           <Fragment key={characterId}>
             <CharacterInitiativeRoll
               ref={(ref) => {
@@ -110,7 +110,7 @@ const InitiativeModal = () => {
               }}
               characterId={characterId}
             />
-            {index < turnOrder.length - 1 && <Divider />}
+            {index < characterIds.length - 1 && <Divider />}
           </Fragment>
         ))}
       </div>

@@ -15,15 +15,11 @@ const CharacterToken = ({
   characterId,
   locationId,
   setDragoverIndex,
-  // diceArray,
-  // rolling,
 }: {
   form: FormApi;
   characterId: number;
   locationId: number;
   setDragoverIndex: (index: number | null) => void;
-  // diceArray: number[];
-  // rolling: boolean;
 }) => {
   const { accentPrimary, statColorMap } = useContext(ThemeContext);
   const { diceArray, rolling } = useContext(CampaignContext);
@@ -36,6 +32,8 @@ const CharacterToken = ({
   const userCharacter = useCombatStore((state) => state.userCharacter);
 
   const activeCharacter = useCombatStore((state) => state.activeCharacter);
+  const target = useCombatStore((state) => state.target);
+  const damage = useCombatStore((state) => state.damage);
 
   const handleRange = () => {
     if (action?.actionSubtypes.includes('attack')) {
@@ -106,6 +104,11 @@ const CharacterToken = ({
                 </div>
               )}
             </form.Subscribe>
+          )}
+          {target === character?.id && damage !== null && (
+            <h2 className="damage text-shadow absolute top-0 w-full -translate-y-full pb-2 text-center font-zen text-shadow-black">
+              {damage ? damage : 'Miss'}
+            </h2>
           )}
           {field.state.value?.id === characterId && (
             <div className="absolute inset-0 scale-125">

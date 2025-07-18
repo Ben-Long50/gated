@@ -14,6 +14,7 @@ import Loading from 'src/components/Loading';
 import { useNavigate, useParams } from 'react-router-dom';
 import useRoll from 'src/hooks/useRoll';
 import useCombatStore from 'src/stores/combatStore';
+import useCurrentHealthMutation from 'src/hooks/useCurrentHealthMutation/useCurrentHealthMutation';
 
 export const CampaignContext = createContext({
   socket,
@@ -47,6 +48,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   const activeCampaignRef = useRef<number[]>([]);
 
   const timeoutRef = useRef<number | null>(null);
+  const editCurrentHealth = useCurrentHealthMutation();
 
   const {
     diceArray,
@@ -60,6 +62,8 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   const setActiveCharacter = useCombatStore(
     (state) => state.setActiveCharacter,
   );
+  const setTarget = useCombatStore((state) => state.setTarget);
+  const setDamage = useCombatStore((state) => state.setDamage);
 
   useEffect(() => {
     const onConnect = () => {
@@ -167,18 +171,30 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       });
     });
 
-    socket.on('combatRoll', async ({ characterId, rollResult, modifiers }) => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-      setActiveCharacter(characterId);
+    socket.on(
+      'combatRoll',
+      async ({ characterId, targetId, damage, rollResult }) => {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+        setActiveCharacter(characterId);
 
-      await calculateSuccesses(rollResult, modifiers);
+        await calculateSuccesses(rollResult, damage);
 
-      timeoutRef.current = setTimeout(() => {
-        setDiceArray([]);
-      }, 7000);
-    });
+        setTarget(targetId);
+
+        editCurrentHealth.mutate({
+          characterId: targetId,
+          value: damage * -1,
+        });
+
+        timeoutRef.current = setTimeout(() => {
+          setDiceArray([]);
+          setTarget(null);
+          setDamage(null);
+        }, 7000);
+      },
+    );
 
     socket.on('disconnect', (reason) => {
       console.log('Disconnected:', reason);
