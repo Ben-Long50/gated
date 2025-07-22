@@ -308,10 +308,10 @@ const characterServices = {
             throw new Error('Failed to update character');
         }
     },
-    createCharacterConditions: async (userId, characterId, formData) => {
+    createCharacterConditions: async (characterId, formData) => {
         try {
             const character = await prisma.character.findUnique({
-                where: { id: characterId, userId },
+                where: { id: characterId },
                 include: {
                     conditions: { select: { id: true } },
                 },
@@ -332,7 +332,6 @@ const characterServices = {
             }))) || [];
             await prisma.character.update({
                 where: {
-                    userId: userId,
                     id: characterId,
                 },
                 data: {

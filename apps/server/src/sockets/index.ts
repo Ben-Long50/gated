@@ -1,5 +1,8 @@
 import { Server } from 'socket.io';
 import prisma from '../config/database.js';
+import characterStatServices from '../services/characterStatServices.js';
+import characterServices from '../services/characterServices.js';
+import conditionServices from '../services/conditionServices.js';
 
 export function setupSocketIO(io: Server) {
   io.on('connection', (socket) => {
@@ -74,16 +77,53 @@ export function setupSocketIO(io: Server) {
 
     socket.on(
       'combatRoll',
-      ({ campaignId, characterId, targetId, damage, rollResult }) => {
+      async ({ campaignId, characterId, targetInfo, damage, rollResult }) => {
+        const targetCharacter = await characterServices.getCharacterById(
+          targetInfo.id,
+        );
+
+        if (targetCharacter?.stats.currentHealth - damage <= 0) {
+          if (
+            !!targetCharacter?.conditions.some(
+              (condition) => condition.condition.name === 'Wounded',
+            )
+          ) {
+            await characterStatServices.editCharacterStat(targetInfo.id, {
+              injuries: 1,
+              currentHealth: targetInfo.stats.currentHealth * -1,
+            });
+          } else {
+            const wounded =
+              await conditionServices.getConditionByName('Wounded');
+            await characterStatServices.resetCharacterStat(targetInfo.id, {
+              currentHealth: targetInfo.stats.maxHealth,
+            });
+            await characterServices.createCharacterConditions(targetInfo.id, [
+              { conditionId: wounded?.id },
+            ]);
+          }
+        } else {
+          await characterStatServices.editCharacterStat(targetInfo.id, {
+            currentHealth: damage * -1,
+          });
+        }
+
         io.to(campaignId).emit('combatRoll', {
           characterId,
-          targetId,
+          targetId: targetInfo.id,
           damage,
           rollResult,
         });
         console.log(`Broadcasted combat roll to campaign ${campaignId}`);
       },
     );
+
+    socket.on('advanceTurn', ({ campaignId, encounterId }) => {
+      io.to(campaignId).emit('advanceTurn', encounterId);
+      console.log(
+        `Broadcasted combat ${encounterId} to campaign ${campaignId}`,
+      );
+    });
 
     socket.on('disconnect', (reason) => {
       console.log('User disconnected:', socket.id, 'Reason:', reason);

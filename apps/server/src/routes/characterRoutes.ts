@@ -1,7 +1,6 @@
 import express from 'express';
 import authentication from '../middleware/authentication.js';
 import characterController from '../controllers/characterController.js';
-import characterStatController from '../controllers/characterStatController.js';
 import affiliationController from '../controllers/affiliationController.js';
 
 const router = express.Router();
@@ -34,24 +33,6 @@ router.patch(
   '/characters/active',
   authentication.authenticate,
   characterController.setActiveCharacter,
-);
-
-router.patch(
-  '/characters/:characterId/stats/currentHealth',
-  authentication.authenticate,
-  characterStatController.editCurrentHealth,
-);
-
-router.patch(
-  '/characters/:characterId/stats/currentSanity',
-  authentication.authenticate,
-  characterStatController.editCurrentSanity,
-);
-
-router.patch(
-  '/characters/:characterId/profits',
-  authentication.authenticate,
-  characterStatController.editProfits,
 );
 
 router.patch(

@@ -1,11 +1,11 @@
 import prisma from '../config/database.js';
 
 const characterStatServices = {
-  editCurrentHealth: async (characterId: string, value: string) => {
+  editCharacterStat: async (characterId: number, value: object) => {
     try {
       const character = await prisma.character.findUnique({
         where: {
-          id: Number(characterId),
+          id: characterId,
         },
         select: { stats: true },
       });
@@ -15,10 +15,16 @@ const characterStatServices = {
       }
 
       const statsObject = character.stats as Record<string, number>;
+      let adjustedValues = Object.fromEntries(
+        Object.entries(value).map(([stat, value]) => [
+          stat,
+          statsObject[stat] + value,
+        ]),
+      );
 
       const newStats = {
         ...statsObject,
-        currentHealth: statsObject.currentHealth + Number(value),
+        ...adjustedValues,
       };
 
       await prisma.character.update({
@@ -31,10 +37,11 @@ const characterStatServices = {
       });
     } catch (error) {
       console.error(error);
-      throw new Error('Failed to update current health');
+      throw new Error(`Failed to update character stats`);
     }
   },
-  editCurrentSanity: async (characterId: string, value: string) => {
+
+  resetCharacterStat: async (characterId: string, value: object) => {
     try {
       const character = await prisma.character.findUnique({
         where: {
@@ -51,7 +58,7 @@ const characterStatServices = {
 
       const newStats = {
         ...statsObject,
-        currentSanity: statsObject.currentSanity + Number(value),
+        ...value,
       };
 
       await prisma.character.update({
@@ -64,7 +71,7 @@ const characterStatServices = {
       });
     } catch (error) {
       console.error(error);
-      throw new Error('Failed to update current sanity');
+      throw new Error(`Failed to update character stats ${value.toString()}`);
     }
   },
 

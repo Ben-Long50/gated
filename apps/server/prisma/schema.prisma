@@ -51,7 +51,7 @@ model Campaign {
   affiliations   Affiliation[]
   events         Event[]
   maps           Map[]
-  combats        Combat[]
+  encounters     Encounter[]
   histories      History[]
   notifications  Notification[]
 }
@@ -73,8 +73,8 @@ model Event {
   campaignId  Int
   character   Character? @relation(fields: [characterId], references: [id], onDelete: Cascade)
   characterId Int?
-  combat      Combat?    @relation(fields: [combatId], references: [id], onDelete: Cascade)
-  combatId    Int?       @unique
+  encounter   Encounter? @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+  encounterId Int?       @unique
   month       Month
   day         Int
   time        Json?
@@ -83,10 +83,10 @@ model Event {
 }
 
 model Map {
-  id          Int        @id @default(autoincrement())
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          Int         @id @default(autoincrement())
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int
-  campaign    Campaign   @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaign    Campaign    @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   campaignId  Int
   picture     Json?
   draft       Boolean
@@ -98,7 +98,7 @@ model Map {
   baseColor   String
   layout      Json
   locations   Location[]
-  combats     Combat[]
+  encounters  Encounter[]
 }
 
 enum MapType {
@@ -117,17 +117,19 @@ model Location {
   itemId      Int?       @unique
 }
 
-model Combat {
-  id         Int         @id @default(autoincrement())
-  createdAt  DateTime    @default(now())
-  active     Boolean     @default(true)
-  campaign   Campaign    @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  campaignId Int
-  map        Map         @relation(fields: [mapId], references: [id])
-  mapId      Int
-  event      Event?
-  characters Character[]
-  history    History[]
+model Encounter {
+  id           Int         @id @default(autoincrement())
+  createdAt    DateTime    @default(now())
+  active       Boolean     @default(true)
+  campaign     Campaign    @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId   Int
+  map          Map         @relation(fields: [mapId], references: [id])
+  mapId        Int
+  event        Event?
+  turnOrder    Int[]
+  turnPosition Int
+  characters   Character[]
+  history      History[]
 }
 
 model History {
@@ -135,8 +137,8 @@ model History {
   createdAt   DateTime   @default(now())
   campaign    Campaign   @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   campaignId  Int
-  combat      Combat?    @relation(fields: [combatId], references: [id])
-  combatId    Int?
+  encounter   Encounter? @relation(fields: [encounterId], references: [id])
+  encounterId Int?
   character   Character  @relation("activeCharacter", fields: [characterId], references: [id])
   characterId Int
   target      Character? @relation("targetCharacter", fields: [targetId], references: [id])
@@ -286,8 +288,8 @@ model Character {
   events             Event[]
   activeHistory      History[]                     @relation("activeCharacter")
   targetHistory      History[]                     @relation("targetCharacter")
-  combats            Combat[]
-  combatPosition     Int?
+  encounters         Encounter[]
+  encounterPosition  Int?
 
   @@index([userId])
 }
@@ -335,7 +337,7 @@ model KeywordReference {
 
 model Condition {
   id                           Int                           @id @default(autoincrement())
-  name                         String
+  name                         String                        @unique
   conditionType                ConditionType
   description                  String
   keywords                     Keyword[]

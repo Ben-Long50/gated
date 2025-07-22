@@ -366,13 +366,12 @@ const characterServices = {
   },
 
   createCharacterConditions: async (
-    userId: number,
     characterId: number,
     formData: { conditionId: number; stacks?: number | null }[],
   ) => {
     try {
       const character = await prisma.character.findUnique({
-        where: { id: characterId, userId },
+        where: { id: characterId },
         include: {
           conditions: { select: { id: true } },
         },
@@ -398,7 +397,6 @@ const characterServices = {
 
       await prisma.character.update({
         where: {
-          userId: userId,
           id: characterId,
         },
         data: {

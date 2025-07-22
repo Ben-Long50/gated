@@ -170,7 +170,6 @@ const characterController = {
       }
 
       await characterServices.createCharacterConditions(
-        req.user.id,
         Number(req.params.characterId),
         req.body,
       );

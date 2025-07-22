@@ -2,29 +2,29 @@ import { Request, Response } from 'express';
 import characterStatServices from '../services/characterStatServices.js';
 
 const characterStatController = {
-  editCurrentHealth: async (req: Request, res: Response) => {
+  editCharacterStat: async (req: Request, res: Response) => {
     try {
-      await characterStatServices.editCurrentHealth(
-        req.params.characterId,
+      await characterStatServices.editCharacterStat(
+        Number(req.params.characterId),
         req.body.value,
       );
-      res
-        .status(200)
-        .json({ message: `Changed current health by ${req.body.value}` });
+      res.status(200).json({
+        message: `Changed character stats by ${req.body.value.toString()}`,
+      });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
   },
 
-  editCurrentSanity: async (req: Request, res: Response) => {
+  resetCharacterStat: async (req: Request, res: Response) => {
     try {
-      await characterStatServices.editCurrentSanity(
+      await characterStatServices.resetCharacterStat(
         req.params.characterId,
         req.body.value,
       );
-      res
-        .status(200)
-        .json({ message: `Changed current sanity by ${req.body.value}` });
+      res.status(200).json({
+        message: `Changed current stats ${req.body.value}`,
+      });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }

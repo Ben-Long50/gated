@@ -22,6 +22,8 @@ import conditionRouter from './routes/conditionRoutes.js';
 import bookRouter from './routes/bookRoutes.js';
 import patchNoteRouter from './routes/patchNoteRoutes.js';
 import errorRouter from './routes/errorRoutes.js';
+import encounterRouter from './routes/encounterRoutes.js';
+import characterStatRouter from './routes/characterStatRoutes.js';
 import './passport/passport.js';
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
@@ -65,6 +67,8 @@ app.use('/', conditionRouter);
 app.use('/', bookRouter);
 app.use('/', patchNoteRouter);
 app.use('/', errorRouter);
+app.use('/', encounterRouter);
+app.use('/', characterStatRouter);
 // catch 404 and forward to error handler
 app.use((_req, _res, next) => {
     next(createError(404));

@@ -60,6 +60,7 @@ const campaignServices = {
                     },
                     affiliations: { select: { id: true } },
                     owner: true,
+                    encounters: { select: { id: true, mapId: true } },
                 },
             });
             if (campaigns.length === 0) {

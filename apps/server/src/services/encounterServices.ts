@@ -1,10 +1,10 @@
 import { $Enums } from '@prisma/client';
 import prisma from '../config/database.js';
 
-const combatServices = {
-  getCombats: async (campaignId: number) => {
+const encounterServices = {
+  getEncounters: async (campaignId: number) => {
     try {
-      const combats = await prisma.combat.findMany({
+      const encounters = await prisma.encounter.findMany({
         where: {
           campaignId,
         },
@@ -22,17 +22,17 @@ const combatServices = {
         orderBy: { id: 'asc' },
       });
 
-      return combats;
+      return encounters;
     } catch (error) {
       console.error(error);
-      throw new Error('Failed to fetch owner combats');
+      throw new Error('Failed to fetch owner encounters');
     }
   },
 
-  getCombatById: async (combatId: string) => {
+  getEncounterById: async (encounterId: string) => {
     try {
-      const combat = await prisma.combat.findUnique({
-        where: { id: Number(combatId) },
+      const encounter = await prisma.encounter.findUnique({
+        where: { id: Number(encounterId) },
         include: {
           characters: { select: { id: true } },
           history: {
@@ -46,25 +46,62 @@ const combatServices = {
         },
       });
 
-      if (!combat) {
-        throw new Error('Failed to find combat');
+      if (!encounter) {
+        throw new Error('Failed to find encounter');
       }
 
-      return combat;
+      return encounter;
     } catch (error) {
       console.error(error);
-      throw new Error('Failed to fetch combat');
+      throw new Error('Failed to fetch encounter');
     }
   },
 
-  createOrUpdateCombat: async (
+  getBatchEncounters: async (encounterIds: number[]) => {
+    try {
+      const encounters = await prisma.encounter.findMany({
+        where: {
+          id: { in: encounterIds },
+        },
+        include: {
+          characters: true,
+        },
+      });
+
+      return encounters;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to fetch encounters');
+    }
+  },
+
+  advanceTurn: async (encounterId: number, turn: number) => {
+    try {
+      await prisma.encounter.update({
+        where: {
+          id: encounterId,
+        },
+        data: {
+          turnPosition: turn,
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to advance turn');
+    }
+  },
+
+  createOrUpdateEncounter: async (
     campaignId: number,
     mapId: number,
     formData: {
       id?: number;
-      characters: { id: number }[];
+      turnOrder: number[];
+      turnPosition: number;
     },
   ) => {
+    console.log(formData);
+
     const campaign = await prisma.campaign.findUnique({
       where: { id: campaignId },
       select: {
@@ -80,7 +117,7 @@ const combatServices = {
 
     if (!campaign || !map) throw new Error('No campaign or map found');
 
-    const eventData = { name: `Combat at ${map.name}` } as {
+    const eventData = { name: `Encounter at ${map.name}` } as {
       name: string;
       month: $Enums.Month;
       day: number;
@@ -104,54 +141,58 @@ const combatServices = {
     }
 
     try {
-      const combat = await prisma.combat.upsert({
+      const encounter = await prisma.encounter.upsert({
         where: { id: formData?.id || 0 },
         update: {
           campaign: { connect: { id: campaignId } },
           map: { connect: { id: mapId } },
           characters: {
-            set: formData.characters,
+            set: formData.turnOrder.map((id) => ({ id })),
           },
+          turnOrder: formData.turnOrder,
+          turnPosition: formData.turnPosition,
         },
         create: {
           campaign: { connect: { id: campaignId } },
           map: { connect: { id: mapId } },
           characters: {
-            connect: formData.characters,
+            connect: formData.turnOrder.map((id) => ({ id })),
           },
           event: {
             create: { campaign: { connect: { id: campaignId } }, ...eventData },
           },
+          turnOrder: formData.turnOrder,
+          turnPosition: formData.turnPosition,
         },
       });
 
-      return combat;
+      return encounter;
     } catch (error) {
       console.error(error);
-      throw new Error('Failed to create or update combat');
+      throw new Error('Failed to create or update encounter');
     }
   },
 
-  deleteCombat: async (combatId: number) => {
+  deleteEncounter: async (encounterId: number) => {
     try {
-      const combat = await prisma.combat.findUnique({
-        where: { id: combatId },
+      const encounter = await prisma.encounter.findUnique({
+        where: { id: encounterId },
       });
 
-      if (!combat) {
-        throw new Error('Failed to find combat');
+      if (!encounter) {
+        throw new Error('Failed to find encounter');
       }
 
-      await prisma.combat.delete({
+      await prisma.encounter.delete({
         where: {
-          id: Number(combatId),
+          id: Number(encounterId),
         },
       });
     } catch (error: any) {
       console.error(error);
-      throw new Error(error.message || 'Failed to delete combat');
+      throw new Error(error.message || 'Failed to delete encounter');
     }
   },
 };
 
-export default combatServices;
+export default encounterServices;

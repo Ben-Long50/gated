@@ -133,7 +133,7 @@ const characterController = {
             if (!req.user) {
                 throw new Error('Could not find authenticated user');
             }
-            await characterServices.createCharacterConditions(req.user.id, Number(req.params.characterId), req.body);
+            await characterServices.createCharacterConditions(Number(req.params.characterId), req.body);
             res
                 .status(200)
                 .json({ message: 'Successfully created character conditions' });

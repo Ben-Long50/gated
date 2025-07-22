@@ -24,6 +24,18 @@ const conditionServices = {
             throw new Error('Failed to fetch condition');
         }
     },
+    getConditionByName: async (conditionName) => {
+        try {
+            const condition = await prisma.condition.findUnique({
+                where: { name: conditionName },
+            });
+            return condition;
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to fetch condition');
+        }
+    },
     createCondition: async (formData) => {
         try {
             await prisma.condition.upsert({

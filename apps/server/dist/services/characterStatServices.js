@@ -1,10 +1,10 @@
 import prisma from '../config/database.js';
 const characterStatServices = {
-    editCurrentHealth: async (characterId, value) => {
+    editCharacterStat: async (characterId, value) => {
         try {
             const character = await prisma.character.findUnique({
                 where: {
-                    id: Number(characterId),
+                    id: characterId,
                 },
                 select: { stats: true },
             });
@@ -12,7 +12,11 @@ const characterStatServices = {
                 throw new Error('Character not found');
             }
             const statsObject = character.stats;
-            const newStats = Object.assign(Object.assign({}, statsObject), { currentHealth: statsObject.currentHealth + Number(value) });
+            let adjustedValues = Object.fromEntries(Object.entries(value).map(([stat, value]) => [
+                stat,
+                statsObject[stat] + value,
+            ]));
+            const newStats = Object.assign(Object.assign({}, statsObject), adjustedValues);
             await prisma.character.update({
                 where: {
                     id: Number(characterId),
@@ -24,10 +28,10 @@ const characterStatServices = {
         }
         catch (error) {
             console.error(error);
-            throw new Error('Failed to update current health');
+            throw new Error(`Failed to update character stats`);
         }
     },
-    editCurrentSanity: async (characterId, value) => {
+    resetCharacterStat: async (characterId, value) => {
         try {
             const character = await prisma.character.findUnique({
                 where: {
@@ -39,7 +43,7 @@ const characterStatServices = {
                 throw new Error('Character not found');
             }
             const statsObject = character.stats;
-            const newStats = Object.assign(Object.assign({}, statsObject), { currentSanity: statsObject.currentSanity + Number(value) });
+            const newStats = Object.assign(Object.assign({}, statsObject), value);
             await prisma.character.update({
                 where: {
                     id: Number(characterId),
@@ -51,7 +55,7 @@ const characterStatServices = {
         }
         catch (error) {
             console.error(error);
-            throw new Error('Failed to update current sanity');
+            throw new Error(`Failed to update character stats ${value.toString()}`);
         }
     },
     editProfits: async (characterId, value) => {
