@@ -12,6 +12,8 @@ const CharacterPictureRound = ({
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
 
+  const name = character?.firstName || character?.name;
+
   return (
     <div
       className={`${className} shadow-color z-10 aspect-square size-12 shrink-0 overflow-hidden rounded-full shadow-md`}
@@ -27,7 +29,7 @@ const CharacterPictureRound = ({
           style={{ backgroundColor: accentPrimary }}
         >
           <h2 className="size-10 select-none pl-0.5 pt-1 text-center !text-zinc-950">
-            {character.firstName[0]}
+            {name.charAt(0)}
           </h2>
         </div>
       )}

@@ -23,6 +23,7 @@ import TileListModal from 'src/components/maps/TileListModal';
 import Map from 'src/components/maps/Map';
 import InitiativeModal from 'src/components/modals/InitiativeModal';
 import CharacterMenuRoutes from './CharacterMenuRoutes';
+import Encounter from 'src/components/maps/Encounter';
 
 const CampaignTabRoutes = () => {
   return (
@@ -81,6 +82,10 @@ const CampaignTabRoutes = () => {
           <Route path=":mapId/update" element={<MapBuilder key="update" />}>
             <Route path="save" element={<MapSaveModal />} />
             <Route path="tileList" element={<TileListModal />} />
+          </Route>
+          <Route path=":mapId/encounters/:encounterId" element={<Encounter />}>
+            <Route path="characters">{CharacterMenuRoutes()}</Route>
+            <Route path="initiative" element={<InitiativeModal />} />
           </Route>
         </Route>
 

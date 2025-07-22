@@ -14,7 +14,10 @@ import Loading from 'src/components/Loading';
 import { useNavigate, useParams } from 'react-router-dom';
 import useRoll from 'src/hooks/useRoll';
 import useCombatStore from 'src/stores/combatStore';
-import useCurrentHealthMutation from 'src/hooks/useCurrentHealthMutation/useCurrentHealthMutation';
+import useCurrentHealthMutation from 'src/hooks/character stat hooks/useCurrentHealthMutation/useCurrentHealthMutation';
+import useCombatQueries from 'src/hooks/combat hooks/useCombatQueries/useCombatQueries';
+import useCharacterStatMutation from 'src/hooks/character stat hooks/useCharacterStatMutation/useCharacterStatMutation';
+import useCharacterStatHandlers from 'src/hooks/character stat hooks/useCharacterStatMutation/useCharacterStatHandlers';
 
 export const CampaignContext = createContext({
   socket,
@@ -45,10 +48,15 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     [campaigns],
   );
 
+  const { combats } = useCombatQueries(
+    activeCampaigns?.flatMap((campaign) =>
+      campaign?.encounters.map((encounter) => encounter.id),
+    ),
+  );
+
   const activeCampaignRef = useRef<number[]>([]);
 
   const timeoutRef = useRef<number | null>(null);
-  const editCurrentHealth = useCurrentHealthMutation();
 
   const {
     diceArray,
@@ -171,22 +179,27 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       });
     });
 
+    socket.on('advanceTurn', (encounterId) => {
+      queryClient.invalidateQueries({
+        queryKey: ['encounter', encounterId],
+      });
+    });
+
     socket.on(
       'combatRoll',
       async ({ characterId, targetId, damage, rollResult }) => {
         if (timeoutRef.current) {
           clearTimeout(timeoutRef.current);
+          setDamage(null);
         }
+
         setActiveCharacter(characterId);
 
         await calculateSuccesses(rollResult, damage);
 
         setTarget(targetId);
 
-        editCurrentHealth.mutate({
-          characterId: targetId,
-          value: damage * -1,
-        });
+        queryClient.invalidateQueries({ queryKey: ['character', targetId] });
 
         timeoutRef.current = setTimeout(() => {
           setDiceArray([]);

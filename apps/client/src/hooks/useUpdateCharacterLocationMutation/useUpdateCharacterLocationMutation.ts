@@ -6,15 +6,17 @@ import { socket } from 'src/socket';
 const useUpdateCharacterLocationMutation = (mapId: number) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (formData: {
+    mutationFn: (data: {
       characterId: number;
       locationId: number;
       index: number;
     }) => {
-      return updateCharacterLocation(mapId, formData);
+      return updateCharacterLocation(mapId, data);
     },
 
     onMutate: (data) => {
+      console.log(data);
+
       queryClient.cancelQueries({ queryKey: ['location', data.locationId] });
 
       const prevLocationData: Location | undefined = queryClient.getQueryData([
@@ -40,6 +42,8 @@ const useUpdateCharacterLocationMutation = (mapId: number) => {
     },
 
     onSuccess: (data, __, context) => {
+      console.log(context);
+
       socket.emit('location', {
         locationId: data.location.id,
         campaignId: context.prevLocationData?.character.campaignId,

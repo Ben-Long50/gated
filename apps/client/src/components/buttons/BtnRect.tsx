@@ -26,7 +26,7 @@ const BtnRect = ({
     >
       <button
         aria-label={ariaLabel}
-        className={`timing bg-primar w-full rounded-bl rounded-tr px-4 py-2 text-lg text-zinc-950 clip-4`}
+        className={`timing bg-primar w-full whitespace-nowrap rounded-bl rounded-tr px-4 py-2 text-lg text-zinc-950 clip-4`}
         style={{
           backgroundColor: !hover && accentPrimary,
           color: hover && accentPrimary,

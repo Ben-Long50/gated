@@ -5,11 +5,8 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import HealthIcon from './icons/HealthIcon';
 import SanityIcon from './icons/SanityIcon';
 import CyberIcon from './icons/CyberIcon';
-import useCurrentHealthMutation from '../hooks/useCurrentHealthMutation/useCurrentHealthMutation';
-import { AuthContext } from '../contexts/AuthContext';
-import useCurrentSanityMutation from '../hooks/useCurrentSanityMutation/useCurrentSanityMutation';
-import useCharacterQuery from '../hooks/useCharacterQuery/useCharacterQuery';
 import { CharacterStats } from 'src/types/character';
+import useCharacterStatHandlers from 'src/hooks/character stat hooks/useCharacterStatMutation/useCharacterStatHandlers';
 
 const CharacterStatBars = ({
   stats,
@@ -24,29 +21,7 @@ const CharacterStatBars = ({
 }) => {
   const { statColorMap } = useContext(ThemeContext);
 
-  const { data: character } = useCharacterQuery(Number(characterId));
-
-  const editCurrentHealth = useCurrentHealthMutation();
-
-  const editCurrentSanity = useCurrentSanityMutation(Number(characterId));
-
-  const handleCurrentHealth = (value: number) => {
-    if (
-      (value < 0 && character?.stats.currentHealth <= 0) ||
-      (value > 0 && character?.stats.currentHealth === stats.maxHealth)
-    )
-      return;
-    editCurrentHealth.mutate({ characterId: Number(characterId), value });
-  };
-
-  const handleCurrentSanity = (value: number) => {
-    if (
-      (value < 0 && character?.stats.currentSanity <= 0) ||
-      (value > 0 && character?.stats.currentSanity === stats.maxSanity)
-    )
-      return;
-    editCurrentSanity.mutate(value);
-  };
+  const characterStatHandlers = useCharacterStatHandlers(Number(characterId));
 
   return (
     <>
@@ -57,7 +32,7 @@ const CharacterStatBars = ({
           total={stats.maxHealth}
           color={statColorMap['Health']}
           cardWidth={cardWidth}
-          mutation={handleCurrentHealth}
+          mutation={characterStatHandlers.handleCurrentHealth}
           mode="adjustable"
           size={size}
         >
@@ -73,7 +48,7 @@ const CharacterStatBars = ({
           total={stats.maxSanity}
           color={statColorMap['Sanity']}
           cardWidth={cardWidth}
-          mutation={handleCurrentSanity}
+          mutation={characterStatHandlers.handleCurrentSanity}
           mode="adjustable"
           size={size}
         >

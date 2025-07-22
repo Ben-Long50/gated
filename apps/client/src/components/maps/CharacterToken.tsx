@@ -12,12 +12,18 @@ import { CampaignContext } from 'src/contexts/CampaignContext';
 
 const CharacterToken = ({
   form,
+  setCharacterList,
+  encounterPermissions,
   characterId,
+  activeCharacterId,
   locationId,
   setDragoverIndex,
 }: {
   form: FormApi;
+  setCharacterList?: (state: boolean) => void;
+  encounterPermissions: boolean;
   characterId: number;
+  aciveCharacterId: number;
   locationId: number;
   setDragoverIndex: (index: number | null) => void;
 }) => {
@@ -31,7 +37,6 @@ const CharacterToken = ({
   const setCharacterId = useMapStore((state) => state.setCharacterId);
   const userCharacter = useCombatStore((state) => state.userCharacter);
 
-  const activeCharacter = useCombatStore((state) => state.activeCharacter);
   const target = useCombatStore((state) => state.target);
   const damage = useCombatStore((state) => state.damage);
 
@@ -57,7 +62,7 @@ const CharacterToken = ({
     <form.Field name="target">
       {(field) => (
         <div
-          className="tokenEnter group relative inset-0 z-10 size-12 cursor-grab"
+          className="tokenEnter group relative inset-0 size-12 cursor-grab rounded-full"
           draggable={true}
           onDragStart={(e) => {
             e.dataTransfer.setData('characterId', characterId.toString());
@@ -67,28 +72,31 @@ const CharacterToken = ({
             setDragoverIndex(null);
           }}
           onMouseEnter={() => {
-            if (action && activeCharacter !== userCharacter) {
+            if (action && activeCharacterId !== userCharacter) {
               handleRange();
+            }
+            if (setCharacterList) {
+              setCharacterList(true);
             }
             setCharacterId(characterId);
           }}
           onMouseLeave={() => {
+            if (setCharacterList) {
+              setCharacterList(false);
+            }
             setCharacterId(null);
           }}
           onClick={() => {
-            if (
-              activeCharacter === userCharacter &&
-              userCharacter !== characterId
-            ) {
+            if (encounterPermissions) {
               field.handleChange(character);
             }
           }}
         >
           <CharacterPictureRound
-            className={`${activeCharacter === character?.id && 'activeToken'} group-hover:border-accent timing size-12 border-2 border-white`}
+            className={`${activeCharacterId === character?.id && 'activeToken'} group-hover:border-accent timing size-12 border-2 border-white`}
             character={character}
           />
-          {activeCharacter === character?.id && (
+          {activeCharacterId === character?.id && (
             <form.Subscribe selector={(state) => state.values.modifiers}>
               {(modifiers: string[]) => (
                 <div className="absolute right-1/2 top-0 grid shrink-0 -translate-y-full translate-x-1/2 grid-cols-[repeat(3,_44px)] justify-center gap-2 pb-2">

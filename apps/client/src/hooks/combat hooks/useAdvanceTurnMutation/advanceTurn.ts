@@ -1,19 +1,17 @@
 import apiUrl from 'src/utils/configureUrl';
-import handleResponse from '../handleResponse';
+import handleResponse from '../../handleResponse';
 
-const editCurrentSanity = async (characterId: number, value: number) => {
+const advanceTurn = async (encounterId: number, turn: number) => {
   try {
     const response = await fetch(
-      `${apiUrl}/characters/${characterId}/stats/currentSanity`,
+      `${apiUrl}/encounters/${encounterId}/advanceTurn`,
       {
         method: 'PATCH',
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          value,
-        }),
+        body: JSON.stringify({ turn }),
       },
     );
     const data = await handleResponse(response);
@@ -26,4 +24,4 @@ const editCurrentSanity = async (characterId: number, value: number) => {
   }
 };
 
-export default editCurrentSanity;
+export default advanceTurn;

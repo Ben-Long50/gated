@@ -1,47 +1,105 @@
+import { useForm } from '@tanstack/react-form';
 import { camelCase } from 'change-case';
-import { useContext } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
+import { useParams } from 'react-router-dom';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import useCombatStore from 'src/stores/combatStore';
 import { Action } from 'src/types/action';
 import { Item } from 'src/types/item';
+import useCreateCombatMutation from './combat hooks/useCreateCombatMutation/useCreateCombatMutation';
+import useCombatQuery from './combat hooks/useCombatQueries/useCombatQuery';
+import useMap from './useMap';
+import useCharacterQuery from './useCharacterQuery/useCharacterQuery';
+import useAdvanceTurnMutation from './combat hooks/useAdvanceTurnMutation/useAdvanceTurnMutation';
+import { AuthContext } from 'src/contexts/AuthContext';
+import useCharacter from './useCharacter';
+import useResetCharacterStatMutation from './character stat hooks/useResetCharacterStatMutation/useCharacterStatMutation';
+import { useQueryClient } from '@tanstack/react-query';
+import { Character } from 'src/types/character';
 
 const useCombat = () => {
+  const { user } = useContext(AuthContext);
   const { gameMaster } = useContext(CampaignContext);
+  const { campaignId, mapId, encounterId } = useParams();
+  const queryClient = useQueryClient();
 
-  const activeCharacter = useCombatStore((state) => state.activeCharacter);
-  const setActiveCharacter = useCombatStore(
-    (state) => state.setActiveCharacter,
+  const { locations } = useMap();
+
+  const { data: combat, isLoading } = useCombatQuery(Number(encounterId));
+
+  const { filteredCharacter: activeCharacter } = useCharacter(
+    combat?.turnOrder[combat?.turnPosition],
   );
-  const turnOrder = useCombatStore((state) => state.turnOrder);
-  const setTurnOrder = useCombatStore((state) => state.setTurnOrder);
-  const setUserCharacter = useCombatStore((state) => state.setUserCharacter);
 
-  const advanceTurn = () => {
-    if (!activeCharacter) {
-      setActiveCharacter(turnOrder[0]);
-      if (gameMaster) {
-        setUserCharacter(turnOrder[0]);
-      }
-      return;
-    }
-    const currentIndex = turnOrder.findIndex(
-      (characterId) => characterId === activeCharacter,
+  const { data: ownedCharacter } = useCharacterQuery(
+    combat?.characters.find((character) => character.userId === user.id).id,
+  );
+
+  const resetCharacterStat = useResetCharacterStatMutation();
+
+  const encounterPermissions = useMemo(
+    () => gameMaster || activeCharacter?.userId === user.id,
+    [activeCharacter],
+  );
+
+  const createCombat = useCreateCombatMutation(
+    Number(campaignId),
+    Number(mapId),
+  );
+
+  const advanceTurn = useAdvanceTurnMutation(
+    Number(campaignId),
+    Number(encounterId),
+  );
+
+  const combatForm = useForm({
+    defaultValues: {
+      turnOrder:
+        combat?.turnOrder || locations?.map((location) => location.characterId),
+      turnPosition: 0,
+    },
+    onSubmit: ({ value }) => {
+      console.log(value);
+      createCombat.mutate(value);
+    },
+  });
+
+  const handleAdvanceTurn = () => {
+    if (!encounterPermissions) return;
+    const currentIndex = combat.turnOrder.findIndex(
+      (characterId) => characterId === activeCharacter?.id,
     );
-    setActiveCharacter(
-      turnOrder[currentIndex + 1] ? turnOrder[currentIndex + 1] : turnOrder[0],
-    );
-    if (gameMaster) {
-      setUserCharacter(
-        turnOrder[currentIndex + 1]
-          ? turnOrder[currentIndex + 1]
-          : turnOrder[0],
-      );
+
+    if (currentIndex === combat.turnOrder.length - 1) {
+      const nextCharacter = queryClient.getQueryData([
+        'character',
+        combat.turnOrder[0],
+      ]) as Character;
+
+      resetCharacterStat.mutate({
+        characterId: combat.turnOrder[0],
+        value: {
+          currentActions: nextCharacter?.stats.actions || 0,
+          currentReactions: nextCharacter?.stats.reactions || 0,
+        },
+      }),
+        advanceTurn.mutate(0);
+    } else {
+      const nextCharacter = queryClient.getQueryData([
+        'character',
+        combat.turnOrder[currentIndex + 1],
+      ]) as Character;
+
+      resetCharacterStat.mutate({
+        characterId: combat.turnOrder[currentIndex + 1],
+        value: {
+          currentActions: nextCharacter?.stats.actions || 0,
+          currentReactions: nextCharacter?.stats.reactions || 0,
+        },
+      }),
+        advanceTurn.mutate(0);
+      advanceTurn.mutate(currentIndex + 1);
     }
-
-    const newOrder = [...turnOrder];
-    const currentActive = newOrder.shift();
-
-    setTurnOrder([...newOrder, currentActive]);
   };
 
   const calculateDamage = (item: Item, action: Action, successes: number) => {
@@ -72,8 +130,14 @@ const useCombat = () => {
   };
 
   return {
-    advanceTurn,
+    combat,
+    encounterPermissions,
+    ownedCharacter,
+    activeCharacter,
+    handleAdvanceTurn,
     calculateDamage,
+    combatForm,
+    isLoading,
   };
 };
 

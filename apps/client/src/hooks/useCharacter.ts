@@ -5,9 +5,11 @@ import useStats from './useStats';
 import useAttributeTree from './useAttributeTree';
 import useInventory from './useInventory';
 import useCharacterQuery from './useCharacterQuery/useCharacterQuery';
+import { useQueryClient } from '@tanstack/react-query';
 
 const useCharacter = (characterId: number) => {
   const { user } = useContext(AuthContext);
+  const queryClient = useQueryClient();
 
   const {
     data: character,
@@ -36,6 +38,7 @@ const useCharacter = (characterId: number) => {
     const characterOwner =
       character?.userId === user?.id ||
       character?.campaign?.ownerId === user?.id;
+
     const characterStats = { ...character?.stats, ...stats };
 
     return {
@@ -73,15 +76,15 @@ const useCharacter = (characterId: number) => {
           ? character?.picture
           : false,
       backstory:
-        characterOwner || character?.preferences.backstory
+        characterOwner || character?.preferences?.backstory
           ? character?.backstory
           : { html: '<h1>?????</h1>' },
       firstTaste:
-        characterOwner || character?.preferences.backstory
+        characterOwner || character?.preferences?.backstory
           ? character?.firstTaste
           : { html: '<h1>?????</h1>' },
       badMedicine:
-        characterOwner || character?.preferences.backstory
+        characterOwner || character?.preferences?.backstory
           ? character?.badMedicine
           : { html: '<h1>?????</h1>' },
       stats: Object.fromEntries(
@@ -112,6 +115,12 @@ const useCharacter = (characterId: number) => {
   const filteredCharacter = useMemo(
     () => filterByPreferences(character),
     [equipment, inventory, character, stats],
+  );
+
+  useMemo(
+    () =>
+      queryClient.setQueryData(['character', character?.id], filteredCharacter),
+    [filteredCharacter],
   );
 
   return {

@@ -26,7 +26,6 @@ import { capitalCase } from 'change-case';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import useCharacterQueries from 'src/hooks/useCharactersQuery/useCharacterQueries';
 import Calendar from './Calendar';
-import useToggleCampaignMutation from 'src/hooks/campaign hooks/useToggleCampaignMutation/useToggleCampaignMutation';
 
 const Campaign = () => {
   const { user } = useContext(AuthContext);

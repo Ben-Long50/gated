@@ -41,16 +41,20 @@ interface Character {
 }
 
 interface CharacterStats {
-  maxHealth?: number;
-  currentHealth?: number;
-  maxSanity?: number;
-  currentSanity?: number;
+  maxHealth: number;
+  maxSanity: number;
+  currentHealth: number;
+  currentSanity: number;
+  actions: number;
+  reactions: number;
+  currentActions: number;
+  currentReactions: number;
   maxCyber?: number;
   cyber?: number;
   maxEquip?: number;
   weight?: number;
-  injuries?: number;
-  insanities?: number;
+  injuries: number;
+  insanities: number;
 }
 
 interface CharacterPreferences {

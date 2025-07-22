@@ -19,6 +19,7 @@ import { LayoutContext } from 'src/contexts/LayoutContext';
 import useToggleCampaignMutation from 'src/hooks/campaign hooks/useToggleCampaignMutation/useToggleCampaignMutation';
 import CrownIcon from '../icons/CrownIcon';
 import Loading from '../Loading';
+import CombatIcon from '../icons/CombatIcon';
 
 const CampaignLinks = () => {
   const { user } = useContext(AuthContext);
@@ -125,6 +126,20 @@ const CampaignLinks = () => {
               title="Create a New Map"
               path={`campaigns/${campaignId}/maps/create`}
             />
+          </LinkListSidebar>
+          <LinkListSidebar
+            icon={
+              <CombatIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+            }
+            title="Encounters"
+          >
+            {campaign?.encounters.map((encounter) => (
+              <SubLinkSidebar
+                key={encounter?.id}
+                title={`Combat ${encounter.id}`}
+                path={`campaigns/${campaignId}/maps/${encounter?.mapId}/encounters/${encounter?.id}`}
+              />
+            ))}
           </LinkListSidebar>
           <LinkListSidebar
             icon={

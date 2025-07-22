@@ -14,7 +14,7 @@ const InitiativeModal = () => {
   const navigate = useNavigate();
   const rollRefs = useRef([]);
 
-  const { advanceTurn, characterIds } = useOutletContext() || {};
+  const { advanceTurn, characterIds, combatForm } = useOutletContext() || {};
 
   const turnOrder = useCombatStore((state) => state.turnOrder);
   const setTurnOrder = useCombatStore((state) => state.setTurnOrder);
@@ -93,7 +93,10 @@ const InitiativeModal = () => {
       }
     }
 
-    setTurnOrder(resultsOrder.map((result) => result.characterId));
+    combatForm.setFieldValue(
+      'turnOrder',
+      resultsOrder.map((result) => result.characterId),
+    );
     setRollingInitiative(false);
     setRollCounter((prev) => prev + 1);
   };
@@ -101,19 +104,23 @@ const InitiativeModal = () => {
   return (
     <Modal>
       <h1>Initiative Rolls</h1>
-      <div className="flex w-full flex-col gap-2">
-        {characterIds?.map((characterId, index) => (
-          <Fragment key={characterId}>
-            <CharacterInitiativeRoll
-              ref={(ref) => {
-                rollRefs.current[index] = ref;
-              }}
-              characterId={characterId}
-            />
-            {index < characterIds.length - 1 && <Divider />}
-          </Fragment>
-        ))}
-      </div>
+      <combatForm.Subscribe selector={(state) => state.values.turnOrder}>
+        {(turnOrder) => (
+          <div className="flex w-full flex-col gap-2">
+            {turnOrder?.map((characterId, index) => (
+              <Fragment key={characterId}>
+                <CharacterInitiativeRoll
+                  ref={(ref) => {
+                    rollRefs.current[index] = ref;
+                  }}
+                  characterId={characterId}
+                />
+                {index < characterIds.length - 1 && <Divider />}
+              </Fragment>
+            ))}
+          </div>
+        )}
+      </combatForm.Subscribe>
       <div className="flex w-full items-center gap-8">
         <BtnRect
           className="group w-full"
@@ -142,8 +149,9 @@ const InitiativeModal = () => {
             ariaLabel="Start combat"
             type="button"
             onClick={() => {
-              advanceTurn();
-              navigate(-1);
+              combatForm.handleSubmit();
+              // advanceTurn();
+              // navigate(-1);
             }}
           >
             Start Combat

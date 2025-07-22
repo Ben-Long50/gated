@@ -117,6 +117,8 @@ const useRoll = () => {
     },
     damage: number,
   ) => {
+    console.log(roll, damage);
+
     await animateRoll(roll.result);
 
     setDamage(damage);

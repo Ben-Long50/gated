@@ -11,18 +11,25 @@ import RangeIcon from '../icons/RangeIcon';
 import useCombatStore from 'src/stores/combatStore';
 import useRoll from 'src/hooks/useRoll';
 import { FormApi, useStore } from '@tanstack/react-form';
+import useCharacter from 'src/hooks/useCharacter';
 
 const MapGrid = ({
   form,
+  setCharacterList,
+  encounterPermissions,
   map,
   locations,
+  activeCharacterId,
   gridDisplay,
   diceArray,
   rolling,
 }: {
   form: FormApi;
+  setCharacterList?: (state: boolean) => void;
+  encounterPermissions: boolean;
   map: Map;
   locations: Location[];
+  activeCharacterId: number;
   gridDisplay: boolean;
   diceArray: number[];
   rolling: boolean;
@@ -34,9 +41,9 @@ const MapGrid = ({
 
   const gridLength = map.width * map.height;
 
-  const activeCharacter = useCombatStore((state) => state.activeCharacter);
-
   const dragImageRef = useRef(null);
+
+  const { filteredCharacter: character } = useCharacter(activeCharacterId);
 
   const getCoordinates = (index: number) => {
     return {
@@ -50,21 +57,16 @@ const MapGrid = ({
 
   const activeCoordinates = useMemo(
     () =>
-      activeCharacter
+      activeCharacterId
         ? getCoordinates(
             locations.find(
-              (location) => location.characterId === activeCharacter,
+              (location) => location.characterId === activeCharacterId,
             )?.index || 0,
           )
         : null,
-    [activeCharacter, locations],
+    [activeCharacterId, locations],
   );
 
-  const updateCharacterLocation = useUpdateCharacterLocationMutation(
-    Number(mapId),
-  );
-
-  const action = useCombatStore((state) => state.action);
   const tempRange = useCombatStore((state) => state.range);
 
   const isInRange = (
@@ -99,13 +101,9 @@ const MapGrid = ({
         return (
           <form.Subscribe
             key={index}
-            selector={(state) => [
-              state.values.activeCharacter,
-              state.values.item,
-              state.values.action,
-            ]}
+            selector={(state) => [state.values.item, state.values.action]}
           >
-            {([character, item, action]) => {
+            {([item, action]) => {
               const rangeColor = action?.actionSubtypes?.includes('movement')
                 ? statColorMap.SPD
                 : statColorMap.DMG;
@@ -142,15 +140,13 @@ const MapGrid = ({
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => {
                     if (action?.actionSubtypes.includes('movement')) {
-                      const characterId = e.dataTransfer.getData('characterId');
                       const locationId = e.dataTransfer.getData('locationId');
 
+                      form.setFieldValue('locationId', locationId);
+                      form.setFieldValue('index', dragoverIndex);
+
                       if (dragoverIndex && inRange) {
-                        updateCharacterLocation.mutate({
-                          characterId: Number(characterId),
-                          locationId: Number(locationId),
-                          index: dragoverIndex,
-                        });
+                        form.handleSubmit();
                         setHoveredIndex(null);
                       }
                     }
@@ -177,8 +173,11 @@ const MapGrid = ({
                     characterLocations.map((location) => (
                       <CharacterToken
                         form={form}
+                        setCharacterList={setCharacterList}
+                        encounterPermissions={encounterPermissions}
                         key={location.characterId}
                         characterId={location.characterId}
+                        activeCharacterId={activeCharacterId}
                         locationId={location.id}
                         setDragoverIndex={setDragoverIndex}
                         diceArray={diceArray}

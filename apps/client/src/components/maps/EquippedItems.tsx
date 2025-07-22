@@ -11,9 +11,13 @@ import { FormApi } from '@tanstack/react-form';
 
 const EquippedItems = ({
   form,
+  setActionSidebar,
+  encounterPermissions,
   characterId,
 }: {
   form: FormApi;
+  setActionSidebar: (state: boolean) => void;
+  encounterPermissions: boolean;
   characterId: number;
 }) => {
   const { rarityColorMap, statColorMap } = useContext(ThemeContext);
@@ -23,8 +27,6 @@ const EquippedItems = ({
   const timeoutRef = useRef<number>(null);
 
   const item = useCombatStore((state) => state.item);
-  const activeCharacter = useCombatStore((state) => state.activeCharacter);
-  const userCharacter = useCombatStore((state) => state.userCharacter);
   const setItem = useCombatStore((state) => state.setItem);
   const setRange = useCombatStore((state) => state.setRange);
 
@@ -65,7 +67,7 @@ const EquippedItems = ({
                       : `${rarityColorMap[equipment.rarity]}80`,
                 }}
                 onClick={() => {
-                  if (activeCharacter === userCharacter) {
+                  if (encounterPermissions) {
                     field.state.value && field.state.value.id === equipment.id
                       ? field.handleChange(null)
                       : field.handleChange(equipment);
@@ -77,6 +79,7 @@ const EquippedItems = ({
                   if (timeoutRef.current) {
                     clearTimeout(timeoutRef.current);
                   }
+                  setActionSidebar(true);
                   setItem(equipment, false);
                   setRange(equipment.stats.range || null, statColorMap.DMG);
                 }}
@@ -87,6 +90,7 @@ const EquippedItems = ({
                       setRange(null, null);
                     }, 200);
                   } else {
+                    setActionSidebar(false);
                     setItem(null, false);
                     setRange(null, null);
                   }

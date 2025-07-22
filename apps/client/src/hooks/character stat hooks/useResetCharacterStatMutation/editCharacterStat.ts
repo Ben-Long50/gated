@@ -1,10 +1,10 @@
 import apiUrl from 'src/utils/configureUrl';
-import handleResponse from '../handleResponse';
+import handleResponse from '../../handleResponse';
 
-const editCurrentHealth = async (characterId: number, value: number) => {
+const resetCharacterStat = async (characterId: number, value: object) => {
   try {
     const response = await fetch(
-      `${apiUrl}/characters/${characterId}/stats/currentHealth`,
+      `${apiUrl}/characters/${characterId}/stats/reset`,
       {
         method: 'PATCH',
         credentials: 'include',
@@ -17,6 +17,7 @@ const editCurrentHealth = async (characterId: number, value: number) => {
       },
     );
     const data = await handleResponse(response);
+
     return data;
   } catch (error) {
     if (error instanceof Error) {
@@ -26,4 +27,4 @@ const editCurrentHealth = async (characterId: number, value: number) => {
   }
 };
 
-export default editCurrentHealth;
+export default resetCharacterStat;

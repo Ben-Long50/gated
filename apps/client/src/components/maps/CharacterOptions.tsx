@@ -1,33 +1,34 @@
 import useCharacter from 'src/hooks/useCharacter';
 import CharacterPictureRound from '../CharacterPictureRound';
 import ArrowHeader3 from '../ArrowHeader3';
-import { CampaignContext } from 'src/contexts/CampaignContext';
-import { useContext } from 'react';
-import ThemeContainer from '../ThemeContainer';
-import { ThemeContext } from 'src/contexts/ThemeContext';
+import { useContext, useState } from 'react';
 import EquippedItems from './EquippedItems';
 import BtnRect from '../buttons/BtnRect';
-import { useNavigate } from 'react-router-dom';
-import useCombatStore from 'src/stores/combatStore';
 import ActionIcon from '../icons/ActionIcon';
 import ReactionIcon from '../icons/ReactionIcon';
 import { FormApi } from '@tanstack/react-form';
 import CharacterStatBars from '../CharacterStatBars';
 import { LayoutContext } from 'src/contexts/LayoutContext';
+import Icon from '@mdi/react';
+import { mdiChevronDown } from '@mdi/js';
 
 const CharacterOptions = ({
   form,
-  advanceTurn,
+  setActionSidebar,
+  encounterPermissions,
+  handleAdvanceTurn,
+  characterId,
 }: {
   form: FormApi;
-  advanceTurn: () => void;
+  setActionSidebar: (state: boolean) => void;
+  encounterPermissions: boolean;
+  handleAdvanceTurn: () => void;
+  characterId: number;
 }) => {
   const { mobile } = useContext(LayoutContext);
+  const [equipmentList, setEquipmentList] = useState(true);
 
-  const userCharacter = useCombatStore((state) => state.userCharacter);
-  const activeCharacter = useCombatStore((state) => state.activeCharacter);
-
-  const { filteredCharacter: character } = useCharacter(userCharacter);
+  const { filteredCharacter: character } = useCharacter(characterId);
 
   return (
     <>
@@ -73,15 +74,31 @@ const CharacterOptions = ({
           </div>
         </div>
       </div>
-      {character && userCharacter === activeCharacter && (
-        <EquippedItems form={form} characterId={character?.id} />
-      )}
-      {activeCharacter && activeCharacter === userCharacter && (
+      <button
+        className="bg-tertiary group absolute left-0 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 rounded-full p-1 shadow shadow-black"
+        onClick={() => setEquipmentList((prev) => !prev)}
+      >
+        <Icon
+          path={mdiChevronDown}
+          className={`${equipmentList ? 'rotate-0' : 'rotate-180'} timing text-tertiary group-hover:text-accent size-7`}
+        />
+      </button>
+      <div
+        className={`${equipmentList ? 'visible max-h-40 opacity-100' : 'invisible max-h-0 opacity-0'} timing h-full`}
+      >
+        <EquippedItems
+          form={form}
+          setActionSidebar={setActionSidebar}
+          encounterPermissions={encounterPermissions}
+          characterId={character?.id}
+        />
+      </div>
+      {encounterPermissions && (
         <BtnRect
           ariaLabel="Pass turn"
           type="button"
           onClick={() => {
-            advanceTurn();
+            handleAdvanceTurn();
             form.reset();
           }}
         >
