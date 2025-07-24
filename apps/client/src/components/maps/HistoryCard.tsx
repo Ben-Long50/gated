@@ -10,7 +10,7 @@ const HistoryCard = ({ history }: { history: any }) => {
       <div className="flex flex-col gap-1">
         <p className="text-tertiary whitespace-nowrap">{`${capitalCase(history.action.actionType)} - ${history.action.name}`}</p>
         <div className="flex items-center justify-between gap-2">
-          <div className="flex gap-1">
+          <div className="flex flex-wrap gap-1">
             {history.rollResult?.result.map((result, index: number) => (
               <Die
                 key={index}

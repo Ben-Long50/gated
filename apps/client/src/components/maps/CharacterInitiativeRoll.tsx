@@ -1,37 +1,57 @@
 import useCharacter from 'src/hooks/useCharacter';
 import CharacterPictureRound from '../CharacterPictureRound';
 import ArrowHeader3 from '../ArrowHeader3';
-import useRoll from 'src/hooks/useRoll';
 import useAttributeTree from 'src/hooks/useAttributeTree';
 import Die from './Die';
 import DieIcon from '../icons/DieIcon';
 import { Ref, useContext, useImperativeHandle } from 'react';
 import Loading from '../Loading';
 import { LayoutContext } from 'src/contexts/LayoutContext';
+import { Action } from 'src/types/action';
 
 const CharacterInitiativeRoll = ({
   characterId,
   ref,
+  calculateRoll,
+  animateRoll,
+  rollData,
 }: {
   characterId: number;
   ref: Ref;
+  calculateRoll: (
+    attributes: AttributeTree,
+    action: Partial<Action>,
+    modifiers: string[],
+  ) => { result: number[]; successes: number };
+  animateRoll: (
+    characterId: number,
+    roll: {
+      result: number[];
+      successes: number;
+    },
+  ) => Promise<number>;
+  rollData: Map<
+    number,
+    { diceArray: number[]; rolling: boolean; successes: number }
+  >;
 }) => {
   const { mobile } = useContext(LayoutContext);
   const { filteredCharacter: character, isLoading } = useCharacter(characterId);
 
   const { emptyAttributeTree } = useAttributeTree();
-  const { diceArray, rolling, calculateRoll, calculateSuccesses, successes } =
-    useRoll();
 
   const violenceRolls = Object.keys(emptyAttributeTree.violence.skills).map(
     (skill) => ({ attribute: 'violence', skill }),
   );
 
-  const roll = async () => {
-    const rollResults =
-      calculateRoll(character?.attributes, violenceRolls, []) || [];
+  const rollInitiative = async () => {
+    const rollResults = calculateRoll(
+      character?.attributes,
+      { roll: violenceRolls },
+      [],
+    ) || { result: [], successes: 0 };
 
-    const successes = await calculateSuccesses(rollResults, []);
+    const successes = await animateRoll(characterId, rollResults);
 
     return {
       characterId,
@@ -42,9 +62,11 @@ const CharacterInitiativeRoll = ({
   };
 
   useImperativeHandle(ref, () => ({
-    roll,
+    rollInitiative,
     characterId,
   }));
+
+  const roll = rollData.get(characterId);
 
   if (isLoading) return <Loading size={2} />;
 
@@ -57,9 +79,9 @@ const CharacterInitiativeRoll = ({
         />
         {mobile && (
           <div className="ml-auto flex items-center gap-2 self-end justify-self-end">
-            {successes != null && (
+            {roll?.successes != null && (
               <h2 className="flex size-8 items-center justify-center">
-                {successes}
+                {roll?.successes}
               </h2>
             )}
             <button
@@ -67,7 +89,7 @@ const CharacterInitiativeRoll = ({
               aria-label="Roll selected action"
               type="button"
               onClick={() => {
-                roll();
+                rollInitiative();
               }}
             >
               <DieIcon
@@ -79,21 +101,21 @@ const CharacterInitiativeRoll = ({
       </div>
 
       <div className="flex w-full flex-wrap items-center justify-start gap-2">
-        {diceArray?.map((number: number, index) => (
+        {roll?.diceArray.map((number: number, index) => (
           <Die
             key={index}
             size={64}
             number={number}
-            rolling={rolling}
+            rolling={roll?.rolling}
             modifiers={[]}
           />
         ))}
       </div>
       {!mobile && (
         <div className="flex items-center gap-4 justify-self-end">
-          {successes != null && (
+          {roll?.successes != null && (
             <h1 className="flex size-8 items-center justify-center">
-              {successes}
+              {roll?.successes}
             </h1>
           )}
           <button
@@ -101,7 +123,7 @@ const CharacterInitiativeRoll = ({
             aria-label="Roll selected action"
             type="button"
             onClick={() => {
-              roll();
+              rollInitiative();
             }}
           >
             <DieIcon

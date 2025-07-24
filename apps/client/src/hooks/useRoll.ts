@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { Action } from 'src/types/action';
 import {
   AttributeName,
   AttributeTree,
@@ -6,20 +7,17 @@ import {
 } from 'src/types/attributeTree';
 
 const useRoll = () => {
-  const [diceArray, setDiceArray] = useState<number[]>([]);
-  const [rolling, setRolling] = useState(false);
-  const [successes, setSuccesses] = useState(<number | null>null);
-
+  const [rollCounter, setRollCounter] = useState(0);
+  const rollRef = useRef(new Map());
   const timeoutRef = useRef<number | null>(null);
 
-  const rollResult = (diceCount: number) => {
-    return Array.from(
-      { length: diceCount },
-      () => Math.floor(Math.random() * 6) + 1,
-    );
-  };
-
-  const animateRoll = (result: number[]): Promise<number[]> => {
+  const animateRoll = (
+    characterId: number,
+    roll: {
+      result: number[];
+      successes: number;
+    },
+  ): Promise<number> => {
     return new Promise((resolve) => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
@@ -29,23 +27,28 @@ const useRoll = () => {
       let count = 1;
       const maxRolls = 18;
 
-      setRolling(true);
+      rollRef.current.set(characterId, { rolling: true });
 
       const rollOnce = () => {
-        const dieArray = Array.from(
-          { length: result.length },
+        const diceArray = Array.from(
+          { length: roll.result.length },
           () => Math.floor(Math.random() * 6) + 1,
         );
 
         if (count < maxRolls) {
-          setDiceArray(dieArray);
+          rollRef.current.set(characterId, { ...rollRef.current, diceArray });
+          setRollCounter((prev) => prev + 1);
           count++;
         }
 
         if (count >= maxRolls) {
-          setRolling(false);
-          setDiceArray(result);
-          resolve(result);
+          rollRef.current.set(characterId, {
+            rolling: false,
+            diceArray: roll.result,
+            successes: roll.successes,
+          });
+
+          resolve(roll.successes);
           return;
         }
 
@@ -57,28 +60,24 @@ const useRoll = () => {
     });
   };
 
-  const calculateRoll = (
+  const calculateDiceCount = (
     attributes: AttributeTree,
-    rolls: { attribute: string; skill: string }[],
+    action: Partial<Action>,
     modifiers: string[],
   ) => {
-    if (!rolls) {
-      setSuccesses(0);
-      return;
-    }
-
-    const calculatedRolls = rolls.map((roll) => {
-      const attributePoints =
-        attributes[roll.attribute as AttributeName].points;
-      const skillPoints =
-        attributes[roll.attribute as AttributeName].skills[
-          roll.skill as SkillName
-        ].points;
-      return {
-        diceCount: attributePoints + skillPoints,
-        roll,
-      };
-    });
+    const calculatedRolls =
+      action.roll?.map((roll) => {
+        const attributePoints =
+          attributes[roll.attribute as AttributeName].points;
+        const skillPoints =
+          attributes[roll.attribute as AttributeName].skills[
+            roll.skill as SkillName
+          ].points;
+        return {
+          diceCount: attributePoints + skillPoints,
+          roll,
+        };
+      }) || [];
 
     const bestRoll = calculatedRolls.sort(
       (a, b) => b.diceCount - a.diceCount,
@@ -88,7 +87,31 @@ const useRoll = () => {
       bestRoll.diceCount += 2;
     }
 
-    const result = rollResult(bestRoll.diceCount);
+    if (
+      action.name &&
+      (action.name === 'Salvo Fire' || action.name === 'Flurry')
+    ) {
+      bestRoll.diceCount += 2;
+    }
+
+    return bestRoll;
+  };
+
+  const calculateRoll = (
+    attributes: AttributeTree,
+    action: Partial<Action>,
+    modifiers: string[],
+  ) => {
+    if (!action.roll) {
+      return;
+    }
+
+    const bestRoll = calculateDiceCount(attributes, action, modifiers);
+
+    const result = Array.from(
+      { length: bestRoll.diceCount },
+      () => Math.floor(Math.random() * 6) + 1,
+    );
 
     let successes = 0;
     successes += result.filter((number) => number >= 5).length;
@@ -108,23 +131,17 @@ const useRoll = () => {
     return { result, successes };
   };
 
-  const calculateSuccesses = async (roll: {
-    result: number[];
-    successes: number;
-  }) => {
-    await animateRoll(roll.result);
-
-    setSuccesses(roll.successes);
-    return roll.successes;
+  const resetRolls = () => {
+    rollRef.current = new Map();
+    setRollCounter(0);
   };
 
   return {
-    diceArray,
-    setDiceArray,
-    rolling,
+    rollData: rollRef.current,
+    calculateDiceCount,
     calculateRoll,
-    calculateSuccesses,
-    successes,
+    animateRoll,
+    resetRolls,
   };
 };
 

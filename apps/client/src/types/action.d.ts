@@ -19,11 +19,11 @@ interface Action {
 }
 
 interface ActionCosts {
-  actionPoints?: number | null;
-  reactionPoints?: number | null;
-  power?: number | null;
-  health?: number | null;
-  sanity?: number | null;
+  currentActions?: number | null;
+  currentReactions?: number | null;
+  currentPower?: number | null;
+  currentHealth?: number | null;
+  currentSanity?: number | null;
   wyrmShells?: number | null;
   currentAmmoCount?: number | null;
 }
@@ -41,8 +41,8 @@ enum ActionType {
 }
 
 enum ActionCostStat {
-  actionPoints = 'actionPoints',
-  reactionPoints = 'reactionPoints',
+  currentActions = 'currentActions',
+  currentReactions = 'currentReactions',
   health = 'health',
   sanity = 'sanity',
   power = 'power',

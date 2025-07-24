@@ -29,7 +29,7 @@ const CharacterToken = ({
   onClick: () => void;
 }) => {
   const { statColorMap } = useContext(ThemeContext);
-  const { diceArray, rolling } = useContext(CampaignContext);
+  const { rollData } = useContext(CampaignContext);
   const { filteredCharacter: character, isLoading } = useCharacter(characterId);
 
   const target = useCombatStore((state) => state.target);
@@ -50,6 +50,8 @@ const CharacterToken = ({
   //     setRange(character?.stats.speed, statColorMap.SPD);
   //   }
   // };
+
+  const roll = rollData.get(characterId);
 
   if (isLoading) return <Loading size={1.25} />;
 
@@ -86,16 +88,16 @@ const CharacterToken = ({
             className={`${activeCharacterId === character?.id && 'activeToken'} ${reactions.includes(characterId) && 'reactiveToken'} group-hover:border-accent timing size-12 border-2 border-white`}
             character={character}
           />
-          {activeCharacterId === character?.id && (
+          {roll && (
             <form.Subscribe selector={(state) => state.values.modifiers}>
               {(modifiers: string[]) => (
                 <div className="absolute right-1/2 top-0 grid shrink-0 -translate-y-full translate-x-1/2 grid-cols-[repeat(3,_44px)] justify-center gap-2 pb-2">
-                  {diceArray?.map((number: number, index: number) => (
+                  {roll?.diceArray.map((number: number, index: number) => (
                     <Die
                       key={index}
                       size={44}
                       number={number}
-                      rolling={rolling}
+                      rolling={roll.rolling}
                       modifiers={modifiers}
                     />
                   ))}

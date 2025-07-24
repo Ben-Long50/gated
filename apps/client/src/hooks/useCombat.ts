@@ -19,6 +19,7 @@ import { socket } from 'src/socket';
 import useCharacterStatHandlers from './character stat hooks/useCharacterStatMutation/useCharacterStatHandlers';
 import useUpdateCharacterLocationMutation from './useUpdateCharacterLocationMutation/useUpdateCharacterLocationMutation';
 import useCombatStore from 'src/stores/combatStore';
+import calculateCosts from 'src/utils/calculateCosts';
 
 const useCombat = () => {
   const { user } = useContext(AuthContext);
@@ -126,13 +127,7 @@ const useCombat = () => {
       target: null as Character | null,
       modifiers: [] as string[],
     },
-
     onSubmit: async ({ value }) => {
-      if (activeCharacter?.stats.currentActions === 0) {
-        alert('You do not have any more actions this turn');
-        return;
-      }
-
       if (
         value.action?.actionSubtypes.includes('movement') &&
         value.locationId
@@ -143,15 +138,15 @@ const useCombat = () => {
           index: value.index,
         });
 
-        if (value.action?.costs.actionPoints) {
+        if (value.action?.costs.currentActions) {
           characterStatHandlers.handleCurrentActions(
-            value.action?.costs.actionPoints * -1,
+            value.action?.costs.currentActions * -1,
           );
         }
       } else {
         const rollResult = calculateRoll(
           activeCharacter?.attributes,
-          value.action?.roll,
+          value.action,
           value.modifiers,
         );
 
@@ -175,6 +170,17 @@ const useCombat = () => {
         actionForm.reset();
         setItem(null);
       }
+    },
+    validators: {
+      onSubmit: ({ value }) => {
+        const { errors } = calculateCosts(
+          activeCharacter,
+          value.action,
+          value.item,
+        );
+
+        return errors.length > 0 ? errors.join(', ') : undefined;
+      },
     },
   });
 
@@ -207,14 +213,14 @@ const useCombat = () => {
       } else {
         const rollResult = calculateRoll(
           ownedCharacter?.attributes,
-          value.reaction?.roll,
+          value.reaction,
           value.modifiers,
         );
 
         socket.emit('reactionRoll', {
           campaignId: Number(campaignId),
           encounterId: Number(encounterId),
-          activeCharacter: ownedCharacter,
+          reactiveCharacter: ownedCharacter,
           targetCharacter: value.target,
           reaction: value.reaction,
           item: value.item,
@@ -224,9 +230,9 @@ const useCombat = () => {
         reactionForm.reset();
         setItem(null);
       }
-      if (value.reaction?.costs.reactionPoints) {
+      if (value.reaction?.costs.currentReactions) {
         characterStatHandlers.handleCurrentReactions(
-          value.reaction?.costs.reactionPoints * -1,
+          value.reaction?.costs.currentReactions * -1,
         );
       }
     },

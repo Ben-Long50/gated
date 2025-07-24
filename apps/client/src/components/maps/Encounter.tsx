@@ -30,8 +30,13 @@ import PassTurnIcon from '../icons/PassTurnIcon';
 const Encounter = () => {
   const { mobile } = useContext(LayoutContext);
   const { accentPrimary } = useContext(ThemeContext);
-  const { gameMaster, diceArray, rolling, calculateSuccesses, successes } =
-    useContext(CampaignContext);
+  const {
+    gameMaster,
+    calculateDiceCount,
+    rollData,
+    calculateRoll,
+    animateRoll,
+  } = useContext(CampaignContext);
   const location = useLocation();
   const { encounterId } = useParams();
   const parts = location.pathname.split('/');
@@ -45,7 +50,9 @@ const Encounter = () => {
   const { map, locations, isLoading: mapLoading } = useMap();
   const characterOptionsRef = useRef<HTMLDivElement>(null);
 
-  const { data: history } = useEncounterHistoryQuery(Number(encounterId));
+  const { data: history, isPending: historyPending } = useEncounterHistoryQuery(
+    Number(encounterId),
+  );
 
   const {
     combat,
@@ -184,10 +191,14 @@ const Encounter = () => {
             <div
               className={`${!historyList ? 'max-h-12' : 'max-h-0'} timing h-full w-12 p-2`}
             >
-              <HistoryIcon className={`text-secondary h-full shrink-0`} />
+              {historyPending ? (
+                <Loading className="text-accent" size={2} />
+              ) : (
+                <HistoryIcon className={`text-secondary h-full shrink-0`} />
+              )}
             </div>
             <div
-              className={`${historyList ? 'max-h-48' : 'max-h-0'} timing scrollbar-secondary-2 flex h-full w-full flex-col overflow-y-auto overflow-x-hidden pr-2`}
+              className={`${historyList ? 'max-h-48 border-t-2 pt-4' : 'max-h-0'} timing border-accent scrollbar-secondary-2 flex h-full w-full flex-col overflow-y-auto overflow-x-hidden pr-2`}
             >
               {history.length > 0 && (
                 <>
@@ -273,10 +284,8 @@ const Encounter = () => {
                   form={actionForm}
                   actionSidebar={actionSidebar}
                   activeCharacterId={activeCharacter?.id}
-                  diceArray={diceArray}
-                  rolling={rolling}
-                  calculateSuccesses={calculateSuccesses}
-                  successes={successes}
+                  calculateDiceCount={calculateDiceCount}
+                  rollData={rollData}
                 />
               )}
             </>
@@ -327,10 +336,8 @@ const Encounter = () => {
                   reactions={combat?.reactions}
                   actionSidebar={actionSidebar}
                   ownedCharacterId={ownedCharacter?.id}
-                  diceArray={diceArray}
-                  rolling={rolling}
-                  calculateSuccesses={calculateSuccesses}
-                  successes={successes}
+                  calculateDiceCount={calculateDiceCount}
+                  rollData={rollData}
                 />
               )}
             </>
@@ -369,6 +376,9 @@ const Encounter = () => {
       {(parts.includes('characters') || parts.includes('initiative')) && (
         <Outlet
           context={{
+            rollData,
+            calculateRoll,
+            animateRoll,
             handleAdvanceTurn,
             characterIds: locations?.map((location) => location.characterId),
             combatForm,

@@ -59,11 +59,11 @@ const ActionForm = () => {
       id: action?.id || 0,
       name: action?.name || '',
       costs: {
-        actionPoints: action?.costs?.actionPoints || '',
-        reactionPoints: action?.costs?.reactionPoints || '',
-        power: action?.costs?.power || '',
-        health: action?.costs?.health || '',
-        sanity: action?.costs?.sanity || '',
+        currentActions: action?.costs?.currentActions || '',
+        currentReactions: action?.costs?.currentReactions || '',
+        currentPower: action?.costs?.currentPower || '',
+        currentHealth: action?.costs?.currentHealth || '',
+        currentSanity: action?.costs?.currentSanity || '',
         wyrmShells: action?.costs?.wyrmShells || '',
         currentAmmoCount: action?.costs?.currentAmmoCount || '',
       },
@@ -384,7 +384,7 @@ const ActionForm = () => {
 
         <ArrowHeader2 title="Action Costs" />
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:gap-8">
-          <actionForm.Field name="costs.actionPoints">
+          <actionForm.Field name="costs.currentActions">
             {(field) => (
               <InputField
                 className="grow"
@@ -394,7 +394,7 @@ const ActionForm = () => {
               />
             )}
           </actionForm.Field>
-          <actionForm.Field name="costs.reactionPoints">
+          <actionForm.Field name="costs.currentReactions">
             {(field) => (
               <InputField
                 className="grow"
@@ -404,7 +404,7 @@ const ActionForm = () => {
               />
             )}
           </actionForm.Field>
-          <actionForm.Field name="costs.power">
+          <actionForm.Field name="costs.currentPower">
             {(field) => (
               <InputField
                 className="grow"
@@ -414,7 +414,7 @@ const ActionForm = () => {
               />
             )}
           </actionForm.Field>
-          <actionForm.Field name="costs.health">
+          <actionForm.Field name="costs.currentHealth">
             {(field) => (
               <InputField
                 className="grow"
@@ -424,7 +424,7 @@ const ActionForm = () => {
               />
             )}
           </actionForm.Field>
-          <actionForm.Field name="costs.sanity">
+          <actionForm.Field name="costs.currentSanity">
             {(field) => (
               <InputField
                 className="grow"

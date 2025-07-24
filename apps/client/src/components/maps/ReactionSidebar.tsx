@@ -16,29 +16,38 @@ import Icon from '@mdi/react';
 import { mdiAutorenew } from '@mdi/js';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import ReactionIcon from '../icons/ReactionIcon';
+import DieIcon from '../icons/DieIcon';
+import {
+  AttributeName,
+  AttributeTree,
+  SkillName,
+} from 'src/types/attributeTree';
+import { Action } from '@cloudinary/url-gen/internal/Action';
 
 const ReactionSidebar = ({
   form,
   reactions,
   actionSidebar,
   ownedCharacterId,
-  diceArray,
-  rolling,
-  calculateSuccesses,
-  successes,
+  calculateDiceCount,
+  rollData,
 }: {
   form: FormApi;
   reactions: number[];
   actionSidebar: boolean;
   ownedCharacterId: number;
-  diceArray: number[];
-  rolling: boolean;
-  calculateSuccesses: (
+  calculateDiceCount: (
     attributes: AttributeTree,
-    rolls: { attribute: string; skill: string }[],
+    action: Partial<Action>,
     modifiers: string[],
-  ) => number;
-  successes: number;
+  ) => {
+    diceCount: number;
+    roll: { attribute: AttributeName; skill: SkillName };
+  };
+  rollData: Map<
+    number,
+    { diceArray: number[]; rolling: boolean; successes: number }
+  >;
 }) => {
   const { filteredCharacter: character } = useCharacter(ownedCharacterId);
   const navigate = useNavigate();
@@ -50,6 +59,8 @@ const ReactionSidebar = ({
     filterBySubCategory,
     category,
   } = useActions(character?.actions, 'reaction');
+
+  const roll = rollData.get(ownedCharacterId);
 
   return (
     <div
@@ -217,31 +228,54 @@ const ReactionSidebar = ({
                 }}
               </form.Field>
             </div>
-            {diceArray.length > 0 && (
+            {roll?.diceArray.length > 0 && (
               <CharacterRoll
                 form={form}
                 characterId={ownedCharacterId}
-                diceArray={diceArray}
-                rolling={rolling}
-                calculateSuccesses={calculateSuccesses}
-                successes={successes}
+                rollData={rollData}
               />
             )}
-            <form.Subscribe selector={(state) => [state.values.reaction]}>
-              {([reaction]) => (
-                <BtnRect
-                  className={`${!reaction && 'pointer-events-none opacity-50'} w-full whitespace-nowrap`}
-                  ariaLabel="Roll action"
-                  type="button"
-                  onClick={() => {
-                    if (reaction) {
-                      form.handleSubmit();
-                    }
-                  }}
-                >
-                  Roll Reaction
-                </BtnRect>
-              )}
+            <form.Subscribe
+              selector={(state) => [
+                state.values.reaction,
+                state.values.modifiers,
+              ]}
+            >
+              {([reaction, modifiers]) => {
+                const diceCount =
+                  character && reaction && modifiers
+                    ? calculateDiceCount(
+                        character?.attributes,
+                        reaction,
+                        modifiers,
+                      ).diceCount
+                    : 'N/A';
+
+                return (
+                  <>
+                    <div className="flex items-center justify-between">
+                      <DieIcon className="text-secondary size-8" />
+                      {typeof diceCount === 'number' ? (
+                        <h2 className="!text-accent">{diceCount}</h2>
+                      ) : (
+                        <h3>{diceCount}</h3>
+                      )}
+                    </div>
+                    <BtnRect
+                      className={`${!reaction && 'pointer-events-none opacity-50'} w-full whitespace-nowrap`}
+                      ariaLabel="Roll action"
+                      type="button"
+                      onClick={() => {
+                        if (reaction) {
+                          form.handleSubmit();
+                        }
+                      }}
+                    >
+                      Roll Reaction
+                    </BtnRect>
+                  </>
+                );
+              }}
             </form.Subscribe>
           </>
         )}

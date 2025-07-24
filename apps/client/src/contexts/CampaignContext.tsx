@@ -53,15 +53,12 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
 
   const activeCampaignRef = useRef<number[]>([]);
 
-  const timeoutRef = useRef<number | null>(null);
-
   const {
-    diceArray,
-    setDiceArray,
-    rolling,
+    rollData,
+    calculateDiceCount,
     calculateRoll,
-    calculateSuccesses,
-    successes,
+    animateRoll,
+    resetRolls,
   } = useRoll();
 
   const setTarget = useCombatStore((state) => state.setTarget);
@@ -180,6 +177,9 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     });
 
     socket.on('advanceTurn', (encounterId) => {
+      resetRolls();
+      setDamage(null);
+      setTarget(null);
       queryClient.invalidateQueries({
         queryKey: ['encounter', encounterId],
       });
@@ -198,7 +198,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       }) => {
         setTarget(targetCharacter.id);
 
-        await calculateSuccesses(rollResult);
+        await animateRoll(activeCharacter.id, rollResult);
 
         setDamage(damage);
 
@@ -218,7 +218,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       'reactionRoll',
       async ({
         encounterId,
-        activeCharacter,
+        reactiveCharacter,
         targetCharacter,
         reaction,
         item,
@@ -228,7 +228,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           setTarget(targetCharacter.id);
         }
 
-        await calculateSuccesses(rollResult);
+        await animateRoll(reactiveCharacter.id, rollResult);
 
         setTimeout(() => {
           queryClient.invalidateQueries({
@@ -241,6 +241,12 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         // queryClient.invalidateQueries({ queryKey: ['character', targetCharacter.id] });
       },
     );
+
+    socket.on('resetRolls', () => {
+      resetRolls();
+      setDamage(null);
+      setTarget(null);
+    });
 
     socket.on('disconnect', (reason) => {
       console.log('Disconnected:', reason);
@@ -262,12 +268,10 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         gameMaster,
         campaigns,
         activeCampaigns,
-        diceArray,
-        setDiceArray,
-        rolling,
+        calculateDiceCount,
+        rollData,
         calculateRoll,
-        calculateSuccesses,
-        successes,
+        animateRoll,
       }}
     >
       {children}

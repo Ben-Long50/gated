@@ -16,27 +16,36 @@ import ActionIcon from '../icons/ActionIcon';
 import Icon from '@mdi/react';
 import { mdiAutorenew } from '@mdi/js';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import {
+  AttributeName,
+  AttributeTree,
+  SkillName,
+} from 'src/types/attributeTree';
+import { Action } from 'src/types/action';
+import DieIcon from '../icons/DieIcon';
 
 const ActionSidebar = ({
   form,
   actionSidebar,
   activeCharacterId,
-  diceArray,
-  rolling,
-  calculateSuccesses,
-  successes,
+  calculateDiceCount,
+  rollData,
 }: {
   form: FormApi;
   actionSidebar: boolean;
   activeCharacterId: number;
-  diceArray: number[];
-  rolling: boolean;
-  calculateSuccesses: (
+  calculateDiceCount: (
     attributes: AttributeTree,
-    rolls: { attribute: string; skill: string }[],
+    action: Partial<Action>,
     modifiers: string[],
-  ) => number;
-  successes: number;
+  ) => {
+    diceCount: number;
+    roll: { attribute: AttributeName; skill: SkillName };
+  };
+  rollData: Map<
+    number,
+    { diceArray: number[]; rolling: boolean; successes: number }
+  >;
 }) => {
   const { filteredCharacter: character } = useCharacter(activeCharacterId);
   const navigate = useNavigate();
@@ -48,6 +57,8 @@ const ActionSidebar = ({
     filterBySubCategory,
     category,
   } = useActions(character?.actions, 'action');
+
+  const roll = rollData.get(activeCharacterId);
 
   return (
     <div
@@ -97,31 +108,45 @@ const ActionSidebar = ({
           />
         )}
       </form.Field>
-      <form.Field name="action">
-        {(field) => (
-          <>
-            <InputSelectField
-              field={field}
-              label="Actions"
-              options={availableActions}
-            />
-            {field.state.value &&
-              Object.keys(field.state.value.costs).length > 0 && (
-                <div className="flex w-full flex-col justify-start gap-2">
-                  <p className="text-accent text-base tracking-widest">Costs</p>
-                  <div
-                    className={`grid h-full w-full grow grid-cols-[auto_auto_1fr_auto] place-items-center gap-2 gap-y-2 border-x-2 border-gray-400 border-opacity-50 px-2`}
-                  >
-                    <ActionStatBars
-                      stats={field.state.value.costs}
-                      cardWidth={499}
-                    />
-                  </div>
-                </div>
-              )}
-          </>
+      <form.Subscribe selector={(state) => state.values.item}>
+        {(item) => (
+          <form.Field name="action">
+            {(field) => {
+              const costs = field.state.value
+                ? field.state.value.name === 'Salvo Fire'
+                  ? {
+                      ...field.state.value.costs,
+                      currentAmmoCount: item?.stats.salvo,
+                    }
+                  : field.state.value.costs
+                : null;
+
+              return (
+                <>
+                  <InputSelectField
+                    field={field}
+                    label="Actions"
+                    options={availableActions}
+                  />
+                  {field.state.value && Object.keys(costs).length > 0 && (
+                    <div className="flex w-full flex-col justify-start gap-2">
+                      <p className="text-accent text-base tracking-widest">
+                        Costs
+                      </p>
+                      <div
+                        className={`grid h-full w-full grow grid-cols-[auto_auto_1fr_auto] place-items-center gap-2 gap-y-2 border-x-2 border-gray-400 border-opacity-50 px-2`}
+                      >
+                        <ActionStatBars stats={costs} cardWidth={499} />
+                      </div>
+                    </div>
+                  )}
+                </>
+              );
+            }}
+          </form.Field>
         )}
-      </form.Field>
+      </form.Subscribe>
+
       <form.Subscribe
         selector={(state) => [
           state.values.action,
@@ -203,14 +228,11 @@ const ActionSidebar = ({
           }}
         </form.Field>
       </div>
-      {diceArray.length > 0 && (
+      {roll?.diceArray.length > 0 && (
         <CharacterRoll
           form={form}
           characterId={activeCharacterId}
-          diceArray={diceArray}
-          rolling={rolling}
-          calculateSuccesses={calculateSuccesses}
-          successes={successes}
+          rollData={rollData}
         />
       )}
       <form.Subscribe
@@ -218,22 +240,56 @@ const ActionSidebar = ({
           state.values.action,
           state.values.item,
           state.values.target,
+          state.values.modifiers,
         ]}
       >
-        {([action, item, target]) => (
-          <BtnRect
-            className={`${(!action || !item || !target) && 'pointer-events-none opacity-50'} w-full whitespace-nowrap`}
-            ariaLabel="Roll action"
-            type="button"
-            onClick={() => {
-              if (action && target && item) {
-                form.handleSubmit();
-              }
-            }}
-          >
-            Roll Action
-          </BtnRect>
-        )}
+        {([action, item, target, modifiers]) => {
+          const diceCount =
+            character && action?.roll.length > 0 && modifiers
+              ? calculateDiceCount(character?.attributes, action, modifiers)
+                  .diceCount
+              : 'N/A';
+
+          return (
+            <>
+              <div className="flex items-center justify-between">
+                <DieIcon className="text-secondary size-8" />
+                {typeof diceCount === 'number' ? (
+                  <h2 className="!text-accent">{diceCount}</h2>
+                ) : (
+                  <h3>{diceCount}</h3>
+                )}
+              </div>
+              <form.Subscribe selector={(state) => state.errorMap}>
+                {(errorMap) => {
+                  const errors = errorMap.onSubmit?.split(', ') || [];
+
+                  return (
+                    errors.length > 0 && (
+                      <ul className="flex list-disc flex-col gap-2">
+                        {errors.map((error) => (
+                          <li className="text-error text-base">{error}</li>
+                        ))}
+                      </ul>
+                    )
+                  );
+                }}
+              </form.Subscribe>
+              <BtnRect
+                className={`${(!action || !item || !target) && 'pointer-events-none opacity-50'} w-full whitespace-nowrap`}
+                ariaLabel="Roll action"
+                type="button"
+                onClick={() => {
+                  if (action && target && item) {
+                    form.handleSubmit();
+                  }
+                }}
+              >
+                Roll Action
+              </BtnRect>
+            </>
+          );
+        }}
       </form.Subscribe>
     </div>
   );

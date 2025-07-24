@@ -22,50 +22,50 @@ const ActionStatBars = ({
 
   return (
     <>
-      {stats.actionPoints && (
+      {stats.currentActions && (
         <StatBar
           title="Actions"
-          current={stats.actionPoints}
+          current={stats.currentActions}
           color={statColorMap['AP']}
           cardWidth={cardWidth}
         >
           <ActionIcon className="text-secondary size-8" />
         </StatBar>
       )}
-      {stats.reactionPoints && (
+      {stats.currentReactions && (
         <StatBar
           title="Reactions"
-          current={stats.reactionPoints}
+          current={stats.currentReactions}
           color={statColorMap['RP']}
           cardWidth={cardWidth}
         >
           <ReactionIcon className="text-secondary size-8" />
         </StatBar>
       )}
-      {stats.health && (
+      {stats.currentHealth && (
         <StatBar
           title="Health"
-          current={stats.health}
+          current={stats.currentHealth}
           color={statColorMap['Health']}
           cardWidth={cardWidth}
         >
           <HealthIcon className="text-secondary size-8" />
         </StatBar>
       )}
-      {stats.sanity && (
+      {stats.currentSanity && (
         <StatBar
           title="Sanity"
-          current={stats.sanity}
+          current={stats.currentSanity}
           color={statColorMap['Sanity']}
           cardWidth={cardWidth}
         >
           <SanityIcon className="text-secondary size-8" />
         </StatBar>
       )}
-      {stats.power && (
+      {stats.currentPower && (
         <StatBar
           title="PWR"
-          current={stats.power}
+          current={stats.currentPower}
           color={statColorMap['PWR']}
           cardWidth={cardWidth}
         >

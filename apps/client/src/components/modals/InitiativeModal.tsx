@@ -12,17 +12,18 @@ const InitiativeModal = () => {
   const [rollCounter, setRollCounter] = useState(0);
   const rollRefs = useRef([]);
 
-  const { characterIds, combatForm } = useOutletContext() || {};
+  const { characterIds, combatForm, calculateRoll, animateRoll, rollData } =
+    useOutletContext() || {};
 
-  const rollInitiative = async () => {
+  const rollAllInitiative = async () => {
     setRollingInitiative(true);
     const rollAll = async (ids?: []) => {
       const rolls = rollRefs.current
         .map((ref) => {
-          if (ref?.roll && !ids) {
-            return ref.roll();
+          if (ref?.rollInitiative && !ids) {
+            return ref.rollInitiative();
           } else if (ids?.includes(ref.characterId)) {
-            return ref.roll();
+            return ref.rollInitiative();
           }
         })
         .filter((roll) => roll != null);
@@ -108,6 +109,9 @@ const InitiativeModal = () => {
                   ref={(ref) => {
                     rollRefs.current[index] = ref;
                   }}
+                  calculateRoll={calculateRoll}
+                  animateRoll={animateRoll}
+                  rollData={rollData}
                   characterId={characterId}
                 />
                 {index < characterIds.length - 1 && <Divider />}
@@ -123,7 +127,7 @@ const InitiativeModal = () => {
           type="button"
           onClick={() => {
             if (!rollingInitiative) {
-              rollInitiative();
+              rollAllInitiative();
             }
           }}
         >
