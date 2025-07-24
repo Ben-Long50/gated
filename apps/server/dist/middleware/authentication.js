@@ -6,7 +6,7 @@ const authentication = {
         var _a;
         try {
             jwt.sign({ id: (_a = req.user) === null || _a === void 0 ? void 0 : _a.id }, process.env.JWT_SECRET, {
-                expiresIn: '8h',
+                expiresIn: '24h',
             }, (err, token) => {
                 if (err) {
                     res.status(500).json({ message: 'Error generating token' });

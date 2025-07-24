@@ -10,7 +10,7 @@ const authentication = {
         { id: req.user?.id },
         process.env.JWT_SECRET,
         {
-          expiresIn: '8h',
+          expiresIn: '24h',
         },
         (err, token) => {
           if (err) {

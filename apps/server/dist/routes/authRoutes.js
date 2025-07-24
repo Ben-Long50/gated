@@ -23,7 +23,7 @@ router.post('/auth/signin', (req, res, next) => {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
-        maxAge: 1000 * 60 * 60 * 8,
+        maxAge: 1000 * 60 * 60 * 24,
     });
     res.status(200).json({
         message: `Signed in as user ${(_a = req.user) === null || _a === void 0 ? void 0 : _a.id}`,
@@ -45,7 +45,7 @@ router.get('/auth/google/callback', passport.authenticate('google', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
-        maxAge: 1000 * 60 * 60 * 8,
+        maxAge: 1000 * 60 * 60 * 24,
     });
     const redirectUrl = `${process.env.CLIENT_URL}/glam/codex`;
     res.redirect(redirectUrl);
@@ -59,7 +59,7 @@ router.get('/auth/facebook/callback', passport.authenticate('facebook', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
-        maxAge: 1000 * 60 * 60 * 8,
+        maxAge: 1000 * 60 * 60 * 24,
     });
     const redirectUrl = `${process.env.CLIENT_URL}/glam/codex`;
     res.redirect(redirectUrl);

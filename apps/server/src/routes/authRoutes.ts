@@ -33,7 +33,7 @@ router.post(
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 1000 * 60 * 60 * 8,
+      maxAge: 1000 * 60 * 60 * 24,
     });
     res.status(200).json({
       message: `Signed in as user ${req.user?.id}`,
@@ -68,7 +68,7 @@ router.get(
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 1000 * 60 * 60 * 8,
+      maxAge: 1000 * 60 * 60 * 24,
     });
     const redirectUrl = `${process.env.CLIENT_URL}/glam/codex`;
     res.redirect(redirectUrl);
@@ -89,7 +89,7 @@ router.get(
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 1000 * 60 * 60 * 8,
+      maxAge: 1000 * 60 * 60 * 24,
     });
     const redirectUrl = `${process.env.CLIENT_URL}/glam/codex`;
     res.redirect(redirectUrl);

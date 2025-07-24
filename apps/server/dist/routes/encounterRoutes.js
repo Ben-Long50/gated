@@ -4,6 +4,7 @@ import encounterController from '../controllers/encounterController.js';
 const router = express.Router();
 router.get('/encounters/batch', authentication.authenticate, encounterController.getBatchEncounters);
 router.get('/encounters/:encounterId', authentication.authenticate, encounterController.getEncounterById);
+router.get('/encounters/:encounterId/history', authentication.authenticate, encounterController.getEncounterHistory);
 router.post('/campaigns/:campaignId/maps/:mapId/encounters/create', authentication.authenticate, encounterController.createOrUpdateEncounter);
 router.patch('/encounters/:encounterId/advanceTurn', authentication.authenticate, encounterController.advanceTurn);
 export default router;

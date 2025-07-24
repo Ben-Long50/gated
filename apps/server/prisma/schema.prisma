@@ -128,8 +128,17 @@ model Encounter {
   event        Event?
   turnOrder    Int[]
   turnPosition Int
+  reactions    Int[]
+  passes       Int[]
+  combatPhase  CombatPhase @default(initiative)
   characters   Character[]
   history      History[]
+}
+
+enum CombatPhase {
+  initiative
+  action
+  reaction
 }
 
 model History {
@@ -147,6 +156,7 @@ model History {
   actionId    Int
   item        Item?      @relation(fields: [itemId], references: [id])
   itemId      Int?
+  rollResult  Json?
 }
 
 model Faction {

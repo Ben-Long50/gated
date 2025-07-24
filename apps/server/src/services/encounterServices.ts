@@ -75,6 +75,55 @@ const encounterServices = {
     }
   },
 
+  getEncounterHistory: async (encounterId: number) => {
+    try {
+      const history = await prisma.history.findMany({
+        where: {
+          encounterId,
+        },
+        include: {
+          character: {
+            select: {
+              firstName: true,
+              lastName: true,
+              picture: true,
+              id: true,
+            },
+          },
+          target: {
+            select: {
+              firstName: true,
+              lastName: true,
+              picture: true,
+              id: true,
+            },
+          },
+          action: {
+            select: {
+              actionType: true,
+              actionSubtypes: true,
+              name: true,
+              id: true,
+            },
+          },
+          item: {
+            select: {
+              name: true,
+              picture: true,
+              id: true,
+            },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      return history;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to fetch encounter history');
+    }
+  },
+
   advanceTurn: async (encounterId: number, turn: number) => {
     try {
       await prisma.encounter.update({
@@ -83,11 +132,143 @@ const encounterServices = {
         },
         data: {
           turnPosition: turn,
+          combatPhase: 'action',
+          reactions: [],
+          passes: [],
         },
       });
     } catch (error) {
       console.error(error);
       throw new Error('Failed to advance turn');
+    }
+  },
+
+  setCombatPhase: async (encounterId: number, phase: $Enums.CombatPhase) => {
+    try {
+      await prisma.encounter.update({
+        where: {
+          id: encounterId,
+        },
+        data: {
+          combatPhase: phase,
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to advance turn');
+    }
+  },
+
+  scheduleReaction: async (encounterId: number, characterId: number) => {
+    try {
+      await prisma.encounter.update({
+        where: {
+          id: encounterId,
+        },
+        data: {
+          reactions: { push: characterId },
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to advance turn');
+    }
+  },
+
+  passReaction: async (encounterId: number, characterId: number) => {
+    try {
+      await prisma.encounter.update({
+        where: {
+          id: encounterId,
+        },
+        data: {
+          passes: { push: characterId },
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to advance turn');
+    }
+  },
+
+  finishReaction: async (encounterId: number, characterId: number) => {
+    try {
+      const encounter = await prisma.encounter.findUnique({
+        where: { id: encounterId },
+        select: { reactions: true, passes: true },
+      });
+
+      if (!encounter) throw new Error('Encounter not found');
+
+      const updatedReactions =
+        encounter.reactions.filter((id) => id !== characterId) || [];
+
+      const updatedPasses = !encounter.passes.includes(characterId)
+        ? [...encounter.passes, characterId]
+        : encounter.passes;
+
+      await prisma.encounter.update({
+        where: {
+          id: encounterId,
+        },
+        data: {
+          reactions: updatedReactions,
+          passes: updatedPasses,
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to advance turn');
+    }
+  },
+
+  passAllReactions: async (encounterId: number) => {
+    try {
+      await prisma.encounter.update({
+        where: {
+          id: encounterId,
+        },
+        data: {
+          reactions: [],
+          passes: [],
+          combatPhase: 'action',
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to advance turn');
+    }
+  },
+
+  createEncounterHistory: async (
+    campaignId: number,
+    encounterId: number,
+    formData: {
+      characterId: number;
+      targetId?: number;
+      actionId: number;
+      itemId?: number;
+      rollResult?: {
+        result: number[];
+        successes: number;
+        modifiers: string[];
+        damage: number;
+      };
+    },
+  ) => {
+    try {
+      await prisma.history.create({
+        data: {
+          campaignId,
+          encounterId,
+          ...formData,
+        },
+      });
+
+      console.log(campaignId, encounterId, formData);
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to create encounter history entry');
     }
   },
 

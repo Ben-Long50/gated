@@ -48,6 +48,22 @@ const encounterController = {
     }
   },
 
+  getEncounterHistory: async (req: Request, res: Response) => {
+    try {
+      if (!req.user) {
+        throw new Error('Could not find authenticated user');
+      }
+
+      const history = await encounterServices.getEncounterHistory(
+        Number(req.params.encounterId),
+      );
+
+      res.status(200).json(history);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
   advanceTurn: async (req: Request, res: Response) => {
     try {
       if (!req.user) {

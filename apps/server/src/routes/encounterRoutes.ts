@@ -16,6 +16,12 @@ router.get(
   encounterController.getEncounterById,
 );
 
+router.get(
+  '/encounters/:encounterId/history',
+  authentication.authenticate,
+  encounterController.getEncounterHistory,
+);
+
 router.post(
   '/campaigns/:campaignId/maps/:mapId/encounters/create',
   authentication.authenticate,

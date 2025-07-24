@@ -1,7 +1,5 @@
 import prisma from '../config/database.js';
-import characterStatServices from '../services/characterStatServices.js';
-import characterServices from '../services/characterServices.js';
-import conditionServices from '../services/conditionServices.js';
+import encounterServices from '../services/encounterServices.js';
 export function setupSocketIO(io) {
     io.on('connection', (socket) => {
         console.log('User connected:', socket.id);
@@ -51,38 +49,109 @@ export function setupSocketIO(io) {
             io.to(campaignId).emit('affiliation', affiliationId);
             console.log(`Broadcasted affiliation ${affiliationId} to campaign ${campaignId}`);
         });
-        socket.on('combatRoll', async ({ campaignId, characterId, targetInfo, damage, rollResult }) => {
-            const targetCharacter = await characterServices.getCharacterById(targetInfo.id);
-            console.log(targetInfo.stats);
-            if ((targetCharacter === null || targetCharacter === void 0 ? void 0 : targetCharacter.stats.currentHealth) - damage <= 0) {
-                if (!!(targetCharacter === null || targetCharacter === void 0 ? void 0 : targetCharacter.conditions.some((condition) => condition.condition.name === 'Wounded'))) {
-                    await characterStatServices.editCharacterStat(targetInfo.id, {
-                        injuries: 1,
-                        currentHealth: targetInfo.stats.currentHealth * -1,
-                    });
-                }
-                else {
-                    const wounded = await conditionServices.getConditionByName('Wounded');
-                    await characterStatServices.resetCharacterStat(targetInfo.id, {
-                        currentHealth: targetInfo.stats.maxHealth,
-                    });
-                    await characterServices.createCharacterConditions(targetInfo.id, [
-                        { conditionId: wounded === null || wounded === void 0 ? void 0 : wounded.id },
-                    ]);
-                }
+        socket.on('encounter', ({ campaignId, encounterId }) => {
+            io.to(campaignId).emit('encounter', encounterId);
+            console.log(`Broadcasted encounter ${encounterId} to campaign ${campaignId}`);
+        });
+        socket.on('actionRoll', async ({ campaignId, encounterId, activeCharacter, targetCharacter, action, item, damage, rollResult, }) => {
+            const historyData = {
+                characterId: activeCharacter.id,
+                actionId: action.id,
+            };
+            if (targetCharacter) {
+                historyData.targetId = targetCharacter.id;
             }
-            else {
-                await characterStatServices.editCharacterStat(targetInfo.id, {
-                    currentHealth: damage * -1,
-                });
+            if (item) {
+                historyData.itemId = item.id;
             }
-            io.to(campaignId).emit('combatRoll', {
-                characterId,
-                targetId: targetInfo.id,
+            if (rollResult) {
+                historyData.rollResult = rollResult;
+            }
+            await encounterServices.createEncounterHistory(campaignId, encounterId, historyData);
+            await encounterServices.setCombatPhase(encounterId, 'reaction');
+            // const targetCharacter = await characterServices.getCharacterById(
+            //   targetInfo.id,
+            // );
+            // if (targetCharacter?.stats.currentHealth - damage <= 0) {
+            //   if (
+            //     !!targetCharacter?.conditions.some(
+            //       (condition) => condition.condition.name === 'Wounded',
+            //     )
+            //   ) {
+            //     await characterStatServices.editCharacterStat(targetInfo.id, {
+            //       injuries: 1,
+            //       currentHealth: targetInfo.stats.currentHealth * -1,
+            //     });
+            //   } else {
+            //     const wounded =
+            //       await conditionServices.getConditionByName('Wounded');
+            //     await characterStatServices.resetCharacterStat(targetInfo.id, {
+            //       currentHealth: targetInfo.stats.maxHealth,
+            //     });
+            //     await characterServices.createCharacterConditions(targetInfo.id, [
+            //       { conditionId: wounded?.id },
+            //     ]);
+            //   }
+            // } else {
+            //   await characterStatServices.editCharacterStat(targetInfo.id, {
+            //     currentHealth: damage * -1,
+            //   });
+            // }
+            io.to(campaignId).emit('actionRoll', {
+                encounterId,
+                activeCharacter,
+                targetCharacter,
+                action,
+                item,
                 damage,
                 rollResult,
             });
-            console.log(`Broadcasted combat roll to campaign ${campaignId}`);
+            console.log(`Broadcasted action roll to campaign ${campaignId}`);
+        });
+        socket.on('reactionRoll', async ({ campaignId, encounterId, activeCharacter, targetCharacter, reaction, item, rollResult, }) => {
+            const historyData = {
+                characterId: activeCharacter.id,
+                actionId: reaction.id,
+            };
+            if (targetCharacter) {
+                historyData.targetId = targetCharacter.id;
+            }
+            if (item) {
+                historyData.itemId = item.id;
+            }
+            if (rollResult) {
+                historyData.rollResult = rollResult;
+            }
+            await encounterServices.createEncounterHistory(campaignId, encounterId, historyData);
+            io.to(campaignId).emit('reactionRoll', {
+                encounterId,
+                activeCharacter,
+                targetCharacter,
+                reaction,
+                item,
+                rollResult,
+            });
+            console.log(`Broadcasted reaction roll to campaign ${campaignId}`);
+        });
+        socket.on('scheduleReaction', async ({ campaignId, encounterId, characterId }) => {
+            await encounterServices.scheduleReaction(encounterId, characterId);
+            io.to(campaignId).emit('encounter', encounterId);
+            console.log(`Broadcasted combat ${encounterId} to campaign ${campaignId}`);
+        });
+        socket.on('passReaction', async ({ campaignId, encounterId, characterId }) => {
+            await encounterServices.passReaction(encounterId, characterId);
+            io.to(campaignId).emit('encounter', encounterId);
+            console.log(`Broadcasted combat ${encounterId} to campaign ${campaignId}`);
+        });
+        socket.on('finishReaction', async ({ campaignId, encounterId, characterId }) => {
+            await encounterServices.finishReaction(encounterId, characterId);
+            io.to(campaignId).emit('encounter', encounterId);
+            console.log(`Broadcasted combat ${encounterId} to campaign ${campaignId}`);
+        });
+        socket.on('passAllReactions', async ({ campaignId, encounterId }) => {
+            await encounterServices.passAllReactions(encounterId);
+            io.to(campaignId).emit('encounter', encounterId);
+            console.log(`Broadcasted combat ${encounterId} to campaign ${campaignId}`);
         });
         socket.on('advanceTurn', ({ campaignId, encounterId }) => {
             io.to(campaignId).emit('advanceTurn', encounterId);
