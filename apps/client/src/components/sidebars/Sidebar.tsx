@@ -9,7 +9,6 @@ import useCharacters from 'src/hooks/useCharacters';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import useNavigationStore from 'src/stores/navbarStore';
 import { CampaignContext } from 'src/contexts/CampaignContext';
-import Loading from '../Loading';
 
 const Sidebar = ({ children }: { children: ReactNode }) => {
   const { mobile } = useContext(LayoutContext);
@@ -40,7 +39,7 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
   return (
     <nav
       ref={sidebarRef}
-      className={`${mobile ? mobileSidebarStyle : sidebarStyle} bg-secondary timing sticky z-20 col-start-1 row-start-1 flex overflow-x-hidden border-r`}
+      className={`${mobile ? mobileSidebarStyle : sidebarStyle} bg-secondary timing fixed z-20 col-start-1 row-start-1 flex overflow-x-hidden border-r`}
       style={{
         height: `calc(100dvh - ${navbarHeight}px)`,
         top: `${navbarHeight}px`,

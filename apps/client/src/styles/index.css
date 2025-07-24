@@ -237,6 +237,18 @@
   }
 }
 
+@keyframes reactiveToken {
+  0% {
+    box-shadow: 0px 0px 0px 0px rgb(33, 194, 219, 1);
+  }
+  50% {
+    box-shadow: 0px 0px 0px 5px rgb(33, 194, 219, 1);
+  }
+  100% {
+    box-shadow: 0px 0px 0px 10px rgb(33, 194, 219, 0);
+  }
+}
+
 @keyframes tokenEnter {
   0% {
     transform: scale(1.375);
@@ -268,6 +280,10 @@
     liveToken 1.5s ease-in-out infinite;
 }
 
+.reactiveToken {
+  animation: reactiveToken 2s ease-in-out infinite;
+}
+
 .spin {
   animation: spin 0.75s linear infinite;
 }
@@ -276,17 +292,40 @@
   animation: blur 0.3s linear forwards;
 }
 
-@keyframes damage {
+@keyframes damageMovement {
   0% {
-    transform: translateY(-100%) scale(1.375);
+    transform: translate(-10px, -100%) scale(1.375);
     opacity: 1;
   }
   10% {
-    transform: translateY(-100%) scale(1);
-    opacity: 1;
+    transform: translate(10px, -110%) scale(1);
+  }
+  20% {
+    transform: translate(-10px, -120%) scale(1);
+  }
+  30% {
+    transform: translate(10px, -130%) scale(1);
+  }
+  40% {
+    transform: translate(-10px, -140%) scale(1);
+  }
+  50% {
+    transform: translate(10px, -150%) scale(1);
+  }
+  60% {
+    transform: translate(-10px, -160%) scale(1);
+  }
+  70% {
+    transform: translate(10px, -170%) scale(1);
+  }
+  80% {
+    transform: translate(-10px, -180%) scale(1);
+  }
+  90% {
+    transform: translate(10px, -190%) scale(1);
   }
   100% {
-    transform: translateY(-100%) scale(1);
+    transform: translate(-10px, -200%) scale(1);
     opacity: 0;
   }
 }
@@ -304,7 +343,6 @@
 }
 
 .damage {
-  animation:
-    damage 5s ease-in forwards,
-    damageColor 1.5s ease-in-out infinite;
+  animation: damageMovement 5s ease-in-out forwards;
+  color: white;
 }

@@ -4,38 +4,30 @@ import { Location, Map } from 'src/types/map';
 import Icon from '@mdi/react';
 import { mdiCircleDouble, mdiClose } from '@mdi/js';
 import CharacterToken from './CharacterToken';
-import useUpdateCharacterLocationMutation from 'src/hooks/useUpdateCharacterLocationMutation/useUpdateCharacterLocationMutation';
-import { AuthContext } from 'src/contexts/AuthContext';
-import { useParams } from 'react-router-dom';
 import RangeIcon from '../icons/RangeIcon';
 import useCombatStore from 'src/stores/combatStore';
-import useRoll from 'src/hooks/useRoll';
 import { FormApi, useStore } from '@tanstack/react-form';
 import useCharacter from 'src/hooks/useCharacter';
+import Xarrow from 'react-xarrows';
 
 const MapGrid = ({
   form,
-  setCharacterList,
+  reactions,
   encounterPermissions,
   map,
   locations,
   activeCharacterId,
   gridDisplay,
-  diceArray,
-  rolling,
 }: {
   form: FormApi;
-  setCharacterList?: (state: boolean) => void;
+  reactions: number[];
   encounterPermissions: boolean;
   map: Map;
   locations: Location[];
   activeCharacterId: number;
   gridDisplay: boolean;
-  diceArray: number[];
-  rolling: boolean;
 }) => {
   const { accentPrimary, statColorMap } = useContext(ThemeContext);
-  const { mapId } = useParams();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [dragoverIndex, setDragoverIndex] = useState<number | null>(null);
 
@@ -68,6 +60,7 @@ const MapGrid = ({
   );
 
   const tempRange = useCombatStore((state) => state.range);
+  const target = useCombatStore((state) => state.target);
 
   const isInRange = (
     currentCoordinates: { x: number; y: number },
@@ -77,9 +70,18 @@ const MapGrid = ({
     if (!range) return null;
     const dx = mapCoordinates.x - currentCoordinates.x;
     const dy = mapCoordinates.y - currentCoordinates.y;
-    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    const distance =
+      range === 1
+        ? Math.max(Math.abs(dx), Math.abs(dy))
+        : Math.sqrt(dx * dx + dy * dy);
     return distance <= range;
   };
+
+  const actionTarget = useStore(form.store, (state) => state.values.target);
+
+  const arrowActive = activeCharacterId;
+  const arrowTarget = actionTarget?.id || target;
 
   return (
     <div
@@ -90,6 +92,23 @@ const MapGrid = ({
       }}
       onMouseLeave={() => setHoveredIndex(null)}
     >
+      {arrowActive && arrowTarget && (
+        <Xarrow
+          zIndex={20}
+          animateDrawing={0.3}
+          start={arrowActive.toString()}
+          end={arrowTarget?.toString()}
+          path="straight"
+          color={statColorMap.DMG}
+          startAnchor="middle"
+          endAnchor="middle"
+          showTail={true}
+          tailSize={3}
+          headSize={5}
+          headShape="arrow1"
+          tailShape="circle"
+        />
+      )}
       {Array.from({ length: gridLength }).map((_, index) => {
         const characterLocations =
           locations.filter((location) => location.index === index) || [];
@@ -121,7 +140,6 @@ const MapGrid = ({
                 mapCoordinates,
                 range,
               );
-
               return (
                 <div
                   className={`${gridDisplay && 'border'} relative flex size-12 items-center justify-center`}
@@ -172,16 +190,21 @@ const MapGrid = ({
                   {characterLocations.length > 0 &&
                     characterLocations.map((location) => (
                       <CharacterToken
-                        form={form}
-                        setCharacterList={setCharacterList}
-                        encounterPermissions={encounterPermissions}
                         key={location.characterId}
+                        form={form}
+                        reactions={reactions}
+                        encounterPermissions={encounterPermissions}
                         characterId={location.characterId}
                         activeCharacterId={activeCharacterId}
                         locationId={location.id}
                         setDragoverIndex={setDragoverIndex}
-                        diceArray={diceArray}
-                        rolling={rolling}
+                        onClick={() =>
+                          isInRange(
+                            activeCoordinates,
+                            getCoordinates(location.index),
+                            range,
+                          )
+                        }
                       />
                     ))}
                   {(hoveredIndex === index || dragoverIndex === index) && (

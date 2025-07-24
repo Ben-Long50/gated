@@ -49,6 +49,8 @@ interface CharacterStats {
   reactions: number;
   currentActions: number;
   currentReactions: number;
+  hands: number;
+  currentHands: number;
   maxCyber?: number;
   cyber?: number;
   maxEquip?: number;

@@ -1,7 +1,6 @@
 import { useParams } from 'react-router-dom';
 import useCampaignMapQuery from './useCampaignMapQuery/useCampaignMapQuery';
 import useLocationQueries from './useCampaignMapQuery/useLocationQueries';
-import useCombatStore from 'src/stores/combatStore';
 
 const useMap = () => {
   const { campaignId, mapId } = useParams();

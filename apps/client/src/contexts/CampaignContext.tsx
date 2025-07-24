@@ -14,10 +14,7 @@ import Loading from 'src/components/Loading';
 import { useNavigate, useParams } from 'react-router-dom';
 import useRoll from 'src/hooks/useRoll';
 import useCombatStore from 'src/stores/combatStore';
-import useCurrentHealthMutation from 'src/hooks/character stat hooks/useCurrentHealthMutation/useCurrentHealthMutation';
 import useCombatQueries from 'src/hooks/combat hooks/useCombatQueries/useCombatQueries';
-import useCharacterStatMutation from 'src/hooks/character stat hooks/useCharacterStatMutation/useCharacterStatMutation';
-import useCharacterStatHandlers from 'src/hooks/character stat hooks/useCharacterStatMutation/useCharacterStatHandlers';
 
 export const CampaignContext = createContext({
   socket,
@@ -67,9 +64,6 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     successes,
   } = useRoll();
 
-  const setActiveCharacter = useCombatStore(
-    (state) => state.setActiveCharacter,
-  );
   const setTarget = useCombatStore((state) => state.setTarget);
   const setDamage = useCombatStore((state) => state.setDamage);
 
@@ -179,6 +173,12 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       });
     });
 
+    socket.on('encounter', (encounterId) => {
+      queryClient.invalidateQueries({
+        queryKey: ['encounter', encounterId],
+      });
+    });
+
     socket.on('advanceTurn', (encounterId) => {
       queryClient.invalidateQueries({
         queryKey: ['encounter', encounterId],
@@ -186,26 +186,59 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     });
 
     socket.on(
-      'combatRoll',
-      async ({ characterId, targetId, damage, rollResult }) => {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current);
-          setDamage(null);
+      'actionRoll',
+      async ({
+        encounterId,
+        activeCharacter,
+        targetCharacter,
+        action,
+        item,
+        damage,
+        rollResult,
+      }) => {
+        setTarget(targetCharacter.id);
+
+        await calculateSuccesses(rollResult);
+
+        setDamage(damage);
+
+        setTimeout(() => {
+          queryClient.invalidateQueries({
+            queryKey: ['encounter', encounterId],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ['encounterHistory', encounterId],
+          });
+        }, 3000);
+        // queryClient.invalidateQueries({ queryKey: ['character', targetCharacter.id] });
+      },
+    );
+
+    socket.on(
+      'reactionRoll',
+      async ({
+        encounterId,
+        activeCharacter,
+        targetCharacter,
+        reaction,
+        item,
+        rollResult,
+      }) => {
+        if (targetCharacter) {
+          setTarget(targetCharacter.id);
         }
 
-        setActiveCharacter(characterId);
+        await calculateSuccesses(rollResult);
 
-        await calculateSuccesses(rollResult, damage);
-
-        setTarget(targetId);
-
-        queryClient.invalidateQueries({ queryKey: ['character', targetId] });
-
-        timeoutRef.current = setTimeout(() => {
-          setDiceArray([]);
-          setTarget(null);
-          setDamage(null);
-        }, 7000);
+        setTimeout(() => {
+          queryClient.invalidateQueries({
+            queryKey: ['encounter', encounterId],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ['encounterHistory', encounterId],
+          });
+        }, 3000);
+        // queryClient.invalidateQueries({ queryKey: ['character', targetCharacter.id] });
       },
     );
 

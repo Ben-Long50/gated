@@ -9,7 +9,7 @@ import ArrowHeader3 from './ArrowHeader3';
 import ThemeContainer from './ThemeContainer';
 import ActionStatBars from './ActionStatBars';
 import { capitalCase } from 'change-case';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ActionRadialMenu from './radialMenus/ActionRadialMenu';
 import ItemCardSmall from './ItemCardSmall';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
@@ -18,12 +18,15 @@ const LinkedActionCard = ({
   action,
   cardWidth,
   className,
+  onClick,
 }: {
   action: Action;
   cardWidth: number;
   className?: string;
+  onClick: () => void;
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
+  const navigate = useNavigate();
 
   const containerRef = useRef(null);
 
@@ -61,10 +64,11 @@ const LinkedActionCard = ({
     >
       <div
         ref={containerRef}
-        className={`${action.characterInventoryId ? (action.active ? 'opacity-100' : 'opacity-30') : ''} flex cursor-pointer flex-col items-start justify-start gap-4 p-4`}
+        className={`flex cursor-pointer flex-col items-start justify-start gap-4 p-4`}
         onClick={(e) => {
           e.stopPropagation();
-          handleMenu(e);
+          onClick();
+          navigate(-1);
         }}
       >
         {action.itemLink && (

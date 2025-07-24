@@ -59,6 +59,7 @@ const useActions = (characterActions?: Action[], initialCategory?: string) => {
 
   return {
     filteredActions,
+    category,
     filterByQuery,
     filterByCategory,
     filterBySubCategory,

@@ -1,7 +1,6 @@
 import CharacterPictureRound from '../CharacterPictureRound';
 import useCharacter from 'src/hooks/useCharacter';
 import Loading from '../Loading';
-import useMapStore from 'src/stores/mapStore';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import { useContext } from 'react';
 import Die from './Die';
@@ -12,49 +11,45 @@ import { CampaignContext } from 'src/contexts/CampaignContext';
 
 const CharacterToken = ({
   form,
-  setCharacterList,
+  reactions,
   encounterPermissions,
   characterId,
   activeCharacterId,
   locationId,
   setDragoverIndex,
+  onClick,
 }: {
   form: FormApi;
-  setCharacterList?: (state: boolean) => void;
+  reactions: number[];
   encounterPermissions: boolean;
   characterId: number;
   aciveCharacterId: number;
   locationId: number;
   setDragoverIndex: (index: number | null) => void;
+  onClick: () => void;
 }) => {
-  const { accentPrimary, statColorMap } = useContext(ThemeContext);
+  const { statColorMap } = useContext(ThemeContext);
   const { diceArray, rolling } = useContext(CampaignContext);
   const { filteredCharacter: character, isLoading } = useCharacter(characterId);
-
-  const action = useCombatStore((state) => state.action);
-  const setRange = useCombatStore((state) => state.setRange);
-  const setItem = useCombatStore((state) => state.setItem);
-  const setCharacterId = useMapStore((state) => state.setCharacterId);
-  const userCharacter = useCombatStore((state) => state.userCharacter);
 
   const target = useCombatStore((state) => state.target);
   const damage = useCombatStore((state) => state.damage);
 
-  const handleRange = () => {
-    if (action?.actionSubtypes.includes('attack')) {
-      if (character?.equipment && character?.equipment.weapons.length > 0) {
-        const weaponsByRange = character.equipment.weapons.sort(
-          (a, b) => b.stats.range - a.stats.range,
-        );
-        setRange(Math.ceil(weaponsByRange[0].stats.range), statColorMap.DMG);
-        setItem(weaponsByRange[0], false);
-      } else {
-        setRange(0, accentPrimary);
-      }
-    } else if (action?.actionSubtypes.includes('movement')) {
-      setRange(character?.stats.speed, statColorMap.SPD);
-    }
-  };
+  // const handleRange = () => {
+  //   if (action?.actionSubtypes.includes('attack')) {
+  //     if (character?.equipment && character?.equipment.weapons.length > 0) {
+  //       const weaponsByRange = character.equipment.weapons.sort(
+  //         (a, b) => b.stats.range - a.stats.range,
+  //       );
+  //       setRange(Math.ceil(weaponsByRange[0].stats.range), statColorMap.DMG);
+  //       setItem(weaponsByRange[0], false);
+  //     } else {
+  //       setRange(0, accentPrimary);
+  //     }
+  //   } else if (action?.actionSubtypes.includes('movement')) {
+  //     setRange(character?.stats.speed, statColorMap.SPD);
+  //   }
+  // };
 
   if (isLoading) return <Loading size={1.25} />;
 
@@ -62,6 +57,7 @@ const CharacterToken = ({
     <form.Field name="target">
       {(field) => (
         <div
+          id={characterId.toString()}
           className="tokenEnter group relative inset-0 size-12 cursor-grab rounded-full"
           draggable={true}
           onDragStart={(e) => {
@@ -71,29 +67,23 @@ const CharacterToken = ({
           onDragEnd={() => {
             setDragoverIndex(null);
           }}
-          onMouseEnter={() => {
-            if (action && activeCharacterId !== userCharacter) {
-              handleRange();
-            }
-            if (setCharacterList) {
-              setCharacterList(true);
-            }
-            setCharacterId(characterId);
-          }}
-          onMouseLeave={() => {
-            if (setCharacterList) {
-              setCharacterList(false);
-            }
-            setCharacterId(null);
-          }}
           onClick={() => {
             if (encounterPermissions) {
-              field.handleChange(character);
+              if (field.state.value?.id === characterId) {
+                field.handleChange(null);
+              } else {
+                const isInRange = onClick();
+                if (!isInRange) {
+                  console.log('not in range');
+                  return;
+                }
+                field.handleChange(character);
+              }
             }
           }}
         >
           <CharacterPictureRound
-            className={`${activeCharacterId === character?.id && 'activeToken'} group-hover:border-accent timing size-12 border-2 border-white`}
+            className={`${activeCharacterId === character?.id && 'activeToken'} ${reactions.includes(characterId) && 'reactiveToken'} group-hover:border-accent timing size-12 border-2 border-white`}
             character={character}
           />
           {activeCharacterId === character?.id && (
@@ -114,12 +104,12 @@ const CharacterToken = ({
             </form.Subscribe>
           )}
           {target === character?.id && damage !== null && (
-            <h2 className="damage text-shadow absolute top-0 w-full -translate-y-full pb-2 text-center font-zen text-shadow-black">
+            <h2 className="damage text-shadow absolute top-0 flex w-full -translate-y-full justify-center pb-2 text-center font-zen text-shadow-black">
               {damage ? damage : 'Miss'}
             </h2>
           )}
           {field.state.value?.id === characterId && (
-            <div className="absolute inset-0 scale-125">
+            <div className="absolute inset-0 z-10 scale-125">
               <RangeIcon
                 className="size-full"
                 style={{

@@ -38,6 +38,8 @@ const CharacterCardSmall = ({
   const setMenu = useRadialMenuStore((state) => state.setMenu);
   const setCoordinates = useRadialMenuStore((state) => state.setCoordinates);
 
+  const setCharacterId = useMapStore((state) => state.setCharacterId);
+
   const handleMenu = (e: MouseEvent) => {
     if (!containerRef.current) return;
     setMenu('character', 'large', characterId);
@@ -70,6 +72,8 @@ const CharacterCardSmall = ({
         e.stopPropagation();
         handleMenu(e);
       }}
+      onMouseEnter={() => setCharacterId(characterId)}
+      onMouseLeave={() => setCharacterId(null)}
     >
       <CharacterRadialMenu character={character} containerRef={containerRef} />
       <ArrowHeader4

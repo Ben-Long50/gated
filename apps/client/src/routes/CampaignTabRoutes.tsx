@@ -24,6 +24,7 @@ import Map from 'src/components/maps/Map';
 import InitiativeModal from 'src/components/modals/InitiativeModal';
 import CharacterMenuRoutes from './CharacterMenuRoutes';
 import Encounter from 'src/components/maps/Encounter';
+import ActionListModal from 'src/components/modals/ActionListModal';
 
 const CampaignTabRoutes = () => {
   return (
@@ -86,6 +87,8 @@ const CampaignTabRoutes = () => {
           <Route path=":mapId/encounters/:encounterId" element={<Encounter />}>
             <Route path="characters">{CharacterMenuRoutes()}</Route>
             <Route path="initiative" element={<InitiativeModal />} />
+            <Route path="availableActions" element={<ActionListModal />} />
+            <Route path="availableReactions" element={<ActionListModal />} />
           </Route>
         </Route>
 

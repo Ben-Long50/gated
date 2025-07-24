@@ -88,6 +88,7 @@ const useStats = (
       permanentInsanities: 5,
       actions: 3,
       reactions: 1,
+      hands: 2,
       chomebitsTn: attributeTree?.cybernetica.skills.chromebits.points,
       hardwiredTn: attributeTree?.cybernetica.skills.hardwired.points,
       motorizedTn: attributeTree?.cybernetica.skills.motorized.points,

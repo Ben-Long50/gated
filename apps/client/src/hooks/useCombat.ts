@@ -1,9 +1,8 @@
 import { useForm } from '@tanstack/react-form';
 import { camelCase } from 'change-case';
-import { useContext, useEffect, useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { CampaignContext } from 'src/contexts/CampaignContext';
-import useCombatStore from 'src/stores/combatStore';
 import { Action } from 'src/types/action';
 import { Item } from 'src/types/item';
 import useCreateCombatMutation from './combat hooks/useCreateCombatMutation/useCreateCombatMutation';
@@ -16,16 +15,22 @@ import useCharacter from './useCharacter';
 import useResetCharacterStatMutation from './character stat hooks/useResetCharacterStatMutation/useCharacterStatMutation';
 import { useQueryClient } from '@tanstack/react-query';
 import { Character } from 'src/types/character';
+import { socket } from 'src/socket';
+import useCharacterStatHandlers from './character stat hooks/useCharacterStatMutation/useCharacterStatHandlers';
+import useUpdateCharacterLocationMutation from './useUpdateCharacterLocationMutation/useUpdateCharacterLocationMutation';
+import useCombatStore from 'src/stores/combatStore';
 
 const useCombat = () => {
   const { user } = useContext(AuthContext);
-  const { gameMaster } = useContext(CampaignContext);
+  const { gameMaster, calculateRoll } = useContext(CampaignContext);
   const { campaignId, mapId, encounterId } = useParams();
   const queryClient = useQueryClient();
 
   const { locations } = useMap();
 
   const { data: combat, isLoading } = useCombatQuery(Number(encounterId));
+
+  const setItem = useCombatStore((state) => state.setItem);
 
   const { filteredCharacter: activeCharacter } = useCharacter(
     combat?.turnOrder[combat?.turnPosition],
@@ -52,14 +57,22 @@ const useCombat = () => {
     Number(encounterId),
   );
 
+  const characterStatHandlers = useCharacterStatHandlers(
+    gameMaster ? activeCharacter?.id : ownedCharacter?.id,
+  );
+
+  const updateCharacterLocation = useUpdateCharacterLocationMutation(
+    Number(mapId),
+  );
+
   const combatForm = useForm({
     defaultValues: {
       turnOrder:
-        combat?.turnOrder || locations?.map((location) => location.characterId),
+        combat?.turnOrder ||
+        locations?.map((location) => location?.characterId),
       turnPosition: 0,
     },
     onSubmit: ({ value }) => {
-      console.log(value);
       createCombat.mutate(value);
     },
   });
@@ -81,6 +94,7 @@ const useCombat = () => {
         value: {
           currentActions: nextCharacter?.stats.actions || 0,
           currentReactions: nextCharacter?.stats.reactions || 0,
+          currentHands: nextCharacter?.stats.hands || 0,
         },
       }),
         advanceTurn.mutate(0);
@@ -95,12 +109,128 @@ const useCombat = () => {
         value: {
           currentActions: nextCharacter?.stats.actions || 0,
           currentReactions: nextCharacter?.stats.reactions || 0,
+          currentHands: nextCharacter?.stats.hands || 0,
         },
       }),
-        advanceTurn.mutate(0);
-      advanceTurn.mutate(currentIndex + 1);
+        advanceTurn.mutate(currentIndex + 1);
     }
   };
+
+  const actionForm = useForm({
+    defaultValues: {
+      actionType: null as string | null,
+      action: null as Action | null,
+      locationId: null as number | null,
+      index: null as number | null,
+      item: null as Item | null,
+      target: null as Character | null,
+      modifiers: [] as string[],
+    },
+
+    onSubmit: async ({ value }) => {
+      if (activeCharacter?.stats.currentActions === 0) {
+        alert('You do not have any more actions this turn');
+        return;
+      }
+
+      if (
+        value.action?.actionSubtypes.includes('movement') &&
+        value.locationId
+      ) {
+        updateCharacterLocation.mutate({
+          characterId: activeCharacter?.id,
+          locationId: Number(value.locationId),
+          index: value.index,
+        });
+
+        if (value.action?.costs.actionPoints) {
+          characterStatHandlers.handleCurrentActions(
+            value.action?.costs.actionPoints * -1,
+          );
+        }
+      } else {
+        const rollResult = calculateRoll(
+          activeCharacter?.attributes,
+          value.action?.roll,
+          value.modifiers,
+        );
+
+        const damage = calculateDamage(
+          value.item,
+          value.action,
+          rollResult.successes,
+        );
+
+        socket.emit('actionRoll', {
+          campaignId: Number(campaignId),
+          encounterId: Number(encounterId),
+          activeCharacter: activeCharacter,
+          targetCharacter: value.target,
+          action: value.action,
+          item: value.item,
+          damage,
+          rollResult: { ...rollResult, modifiers: value.modifiers, damage },
+        });
+
+        actionForm.reset();
+        setItem(null);
+      }
+    },
+  });
+
+  const reactionForm = useForm({
+    defaultValues: {
+      reactionType: null as string | null,
+      reaction: null as Action | null,
+      locationId: null as number | null,
+      index: null as number | null,
+      item: null as Item | null,
+      target: null as Character | null,
+      modifiers: [] as string[],
+    },
+
+    onSubmit: async ({ value }) => {
+      if (ownedCharacter?.stats.currentReactions === 0) {
+        alert('You do not have any more reactions this turn');
+        return;
+      }
+
+      if (
+        value.reaction?.actionSubtypes.includes('movement') &&
+        value.locationId
+      ) {
+        updateCharacterLocation.mutate({
+          characterId: ownedCharacter?.id,
+          locationId: Number(value.locationId),
+          index: value.index,
+        });
+      } else {
+        const rollResult = calculateRoll(
+          ownedCharacter?.attributes,
+          value.reaction?.roll,
+          value.modifiers,
+        );
+
+        socket.emit('reactionRoll', {
+          campaignId: Number(campaignId),
+          encounterId: Number(encounterId),
+          activeCharacter: ownedCharacter,
+          targetCharacter: value.target,
+          reaction: value.reaction,
+          item: value.item,
+          rollResult: { ...rollResult, modifiers: value.modifiers },
+        });
+
+        reactionForm.reset();
+        setItem(null);
+      }
+      if (value.reaction?.costs.reactionPoints) {
+        characterStatHandlers.handleCurrentReactions(
+          value.reaction?.costs.reactionPoints * -1,
+        );
+      }
+    },
+  });
 
   const calculateDamage = (item: Item, action: Action, successes: number) => {
     if (
@@ -137,6 +267,8 @@ const useCombat = () => {
     handleAdvanceTurn,
     calculateDamage,
     combatForm,
+    actionForm,
+    reactionForm,
     isLoading,
   };
 };

@@ -1,5 +1,4 @@
 import { useRef, useState } from 'react';
-import useCombatStore from 'src/stores/combatStore';
 import {
   AttributeName,
   AttributeTree,
@@ -12,7 +11,6 @@ const useRoll = () => {
   const [successes, setSuccesses] = useState(<number | null>null);
 
   const timeoutRef = useRef<number | null>(null);
-  const setDamage = useCombatStore((state) => state.setDamage);
 
   const rollResult = (diceCount: number) => {
     return Array.from(
@@ -110,18 +108,12 @@ const useRoll = () => {
     return { result, successes };
   };
 
-  const calculateSuccesses = async (
-    roll: {
-      result: number[];
-      successes: number;
-    },
-    damage: number,
-  ) => {
-    console.log(roll, damage);
-
+  const calculateSuccesses = async (roll: {
+    result: number[];
+    successes: number;
+  }) => {
     await animateRoll(roll.result);
 
-    setDamage(damage);
     setSuccesses(roll.successes);
     return roll.successes;
   };

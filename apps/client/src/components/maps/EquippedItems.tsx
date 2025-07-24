@@ -62,7 +62,7 @@ const EquippedItems = ({
                 className={`relative size-20 shrink-0 overflow-hidden rounded border-2 sm:size-28`}
                 style={{
                   borderColor:
-                    equipment.id === item.item?.id
+                    equipment.id === item?.id
                       ? rarityColorMap[equipment.rarity]
                       : `${rarityColorMap[equipment.rarity]}80`,
                 }}
@@ -72,26 +72,25 @@ const EquippedItems = ({
                       ? field.handleChange(null)
                       : field.handleChange(equipment);
                   }
-
-                  setItem(equipment, false);
+                  setItem(equipment);
                 }}
                 onMouseEnter={() => {
                   if (timeoutRef.current) {
                     clearTimeout(timeoutRef.current);
                   }
                   setActionSidebar(true);
-                  setItem(equipment, false);
+                  setItem(equipment);
                   setRange(equipment.stats.range || null, statColorMap.DMG);
                 }}
                 onMouseLeave={() => {
                   if (field.state.value) {
                     timeoutRef.current = setTimeout(() => {
-                      setItem(field.state.value, false);
+                      setItem(field.state.value);
                       setRange(null, null);
                     }, 200);
                   } else {
                     setActionSidebar(false);
-                    setItem(null, false);
+                    setItem(null);
                     setRange(null, null);
                   }
                 }}
@@ -106,7 +105,7 @@ const EquippedItems = ({
                   </div>
                 )}
                 <div
-                  className="absolute inset-0 z-10 opacity-50"
+                  className="absolute inset-0 opacity-50"
                   style={{
                     backgroundImage: `radial-gradient(circle, transparent 65%, ${rarityColorMap[equipment.rarity]} 100%)`,
                   }}

@@ -1,11 +1,7 @@
 import useActions from 'src/hooks/useActions';
 import InputSelectField from '../InputSelectField';
-import useCombatStore from 'src/stores/combatStore';
 import useCharacter from 'src/hooks/useCharacter';
 import CharacterRoll from './CharacterRoll';
-import ThemeContainer from '../ThemeContainer';
-import { useContext } from 'react';
-import { ThemeContext } from 'src/contexts/ThemeContext';
 import { FormApi } from '@tanstack/react-form';
 import BtnRect from '../buttons/BtnRect';
 import CharacterPictureRound from '../CharacterPictureRound';
@@ -19,6 +15,7 @@ import ArrowHeader3 from '../ArrowHeader3';
 import ActionIcon from '../icons/ActionIcon';
 import Icon from '@mdi/react';
 import { mdiAutorenew } from '@mdi/js';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 const ActionSidebar = ({
   form,
@@ -42,18 +39,36 @@ const ActionSidebar = ({
   successes: number;
 }) => {
   const { filteredCharacter: character } = useCharacter(activeCharacterId);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const parts = location.pathname.split('/');
 
-  const { filteredActions: availableActions, filterBySubCategory } = useActions(
-    character?.actions,
-    'action',
-  );
+  const {
+    filteredActions: availableActions,
+    filterBySubCategory,
+    category,
+  } = useActions(character?.actions, 'action');
 
   return (
     <div
       className={`${actionSidebar ? 'visible translate-x-0 opacity-100' : 'invisible translate-x-full opacity-0'} timing z-10 flex flex-col gap-4 p-2`}
     >
-      <div className="flex items-center justify-between">
-        <ArrowHeader3 title="Action Form" />
+      {parts.includes('availableActions') && (
+        <Outlet context={{ actions: availableActions, category, form }} />
+      )}
+
+      <div className="flex items-center justify-between gap-2">
+        <ArrowHeader3 className="whitespace-nowrap" title="Action Form" />
+        <button
+          className="bg-tertiary group my-auto ml-auto flex justify-self-start rounded p-1.5 shadow-md shadow-black"
+          aria-label="Open save modal"
+          type="button"
+          onClick={() => navigate('availableActions')}
+        >
+          <ActionIcon
+            className={`group-hover:text-accent text-tertiary timing size-8`}
+          />
+        </button>
         <button
           className="bg-tertiary group my-auto flex justify-self-start rounded p-1.5 shadow-md shadow-black"
           aria-label="Open save modal"
@@ -82,10 +97,7 @@ const ActionSidebar = ({
           />
         )}
       </form.Field>
-      <form.Field
-        name="action"
-        listeners={{ onChange: () => form.setFieldValue('item', null) }}
-      >
+      <form.Field name="action">
         {(field) => (
           <>
             <InputSelectField
@@ -120,6 +132,19 @@ const ActionSidebar = ({
         {([action, item, target]) =>
           action?.actionSubtypes?.includes('attack') && (
             <>
+              {item ? (
+                <div className="flex flex-col items-start gap-4">
+                  <div className="flex w-full items-center gap-4">
+                    <CharacterPictureRound character={item} />
+                    <ArrowHeader4 className="w-[80%]" title={item.name} />
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-4">
+                  <WeaponIcon className="text-primary size-10" />
+                  <h4>Select Weapon from Equipment</h4>
+                </div>
+              )}
               {target ? (
                 <div className="flex flex-col items-start gap-4">
                   <div className="flex w-full items-center gap-4">
@@ -134,20 +159,6 @@ const ActionSidebar = ({
                 <div className="flex items-center gap-4">
                   <RangeIcon className="text-primary size-10" />
                   <h4>Select Target on Map</h4>
-                </div>
-              )}
-
-              {item ? (
-                <div className="flex flex-col items-start gap-4">
-                  <div className="flex w-full items-center gap-4">
-                    <CharacterPictureRound character={item} />
-                    <ArrowHeader4 className="w-[80%]" title={item.name} />
-                  </div>
-                </div>
-              ) : (
-                <div className="flex items-center gap-4">
-                  <WeaponIcon className="text-primary size-10" />
-                  <h4>Select Weapon from Equipment</h4>
                 </div>
               )}
             </>

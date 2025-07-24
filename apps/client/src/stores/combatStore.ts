@@ -1,43 +1,30 @@
-import { Action } from 'src/types/action';
 import { Item } from 'src/types/item';
 import { create } from 'zustand';
 
 const useCombatStore = create<{
-  userCharacter: number | null;
-  activeCharacter: number | null;
   target: number | null;
   damage: number | null;
-  turnOrder: number[] | null;
-  action: Action | null;
   range: number | null;
   rangeColor: string | null;
-  item: { item: Item | null; selected: boolean };
-  setUserCharacter: (state: number | null) => void;
-  setActiveCharacter: (state: number | null) => void;
+  item: Item | null;
+  combatPhase: string | null;
   setTarget: (state: number | null) => void;
   setDamage: (state: number | null) => void;
-  setTurnOrder: (state: number[]) => void;
-  setAction: (state: Action | null) => void;
   setRange: (value: number | null, color: string | null) => void;
-  setItem: (item: Item | null, selected: boolean) => void;
+  setItem: (item: Item | null) => void;
+  setCombatPhase: (phase: string | null) => void;
 }>((set) => ({
-  userCharacter: null,
-  activeCharacter: null,
   target: null,
   damage: null,
-  turnOrder: null,
-  action: null,
   range: 0,
   rangeColor: '',
-  item: { item: null, selected: false },
-  setUserCharacter: (state) => set({ userCharacter: state }),
-  setActiveCharacter: (state) => set({ activeCharacter: state }),
+  item: null,
+  combatPhase: null,
   setTarget: (state) => set({ target: state }),
   setDamage: (state) => set({ damage: state }),
-  setTurnOrder: (state) => set({ turnOrder: state }),
-  setAction: (state) => set({ action: state }),
   setRange: (value, color) => set({ range: value, rangeColor: color }),
-  setItem: (item, selected) => set({ item: { item, selected } }),
+  setItem: (item) => set({ item: item }),
+  setCombatPhase: (phase) => set({ combatPhase: phase }),
 }));
 
 export default useCombatStore;

@@ -3,21 +3,16 @@ import Modal from './Modal';
 import Divider from '../Divider';
 import BtnRect from '../buttons/BtnRect';
 import { useRef, useState } from 'react';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { useOutletContext } from 'react-router-dom';
 import Loading from '../Loading';
-import useCombatStore from 'src/stores/combatStore';
 import CharacterInitiativeRoll from '../maps/CharacterInitiativeRoll';
 
 const InitiativeModal = () => {
   const [rollingInitiative, setRollingInitiative] = useState(false);
   const [rollCounter, setRollCounter] = useState(0);
-  const navigate = useNavigate();
   const rollRefs = useRef([]);
 
-  const { advanceTurn, characterIds, combatForm } = useOutletContext() || {};
-
-  const turnOrder = useCombatStore((state) => state.turnOrder);
-  const setTurnOrder = useCombatStore((state) => state.setTurnOrder);
+  const { characterIds, combatForm } = useOutletContext() || {};
 
   const rollInitiative = async () => {
     setRollingInitiative(true);

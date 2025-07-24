@@ -60,6 +60,11 @@ const CharacterCard = ({ id }: { id: number }) => {
     }
   }, [inView]);
 
+  const awol =
+    (typeof character?.stats.injuries === 'number' &&
+      character?.stats.injuries >= character?.stats.permanentInjuries) ||
+    false;
+
   if (isLoading) return <Loading />;
 
   return (
@@ -80,6 +85,7 @@ const CharacterCard = ({ id }: { id: number }) => {
           >
             <div className="absolute left-0 top-0 flex h-full w-[375px] items-center overflow-hidden rounded-bl clip-6">
               <CloudinaryImage
+                className={`${awol && 'grayscale'}`}
                 publicId={character?.picture?.publicId}
                 position={character?.picture?.position}
                 style={{
@@ -89,6 +95,9 @@ const CharacterCard = ({ id }: { id: number }) => {
               />
               {mobile && (
                 <div className="absolute inset-0 z-10 bg-zinc-900 bg-opacity-60" />
+              )}
+              {awol && (
+                <InjuryIcon className="absolute left-2 top-4 size-14 fill-black stroke-red-600 stroke-2 p-0.5" />
               )}
             </div>
             <div className="z-10 flex h-full w-full flex-col justify-between gap-4 p-4 sm:col-start-2 md:gap-6 md:p-6">
