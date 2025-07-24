@@ -235,7 +235,6 @@ const encounterServices = {
                 data: Object.assign({ campaignId,
                     encounterId }, formData),
             });
-            console.log(campaignId, encounterId, formData);
         }
         catch (error) {
             console.error(error);

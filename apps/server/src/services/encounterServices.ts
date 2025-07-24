@@ -264,8 +264,6 @@ const encounterServices = {
           ...formData,
         },
       });
-
-      console.log(campaignId, encounterId, formData);
     } catch (error) {
       console.error(error);
       throw new Error('Failed to create encounter history entry');

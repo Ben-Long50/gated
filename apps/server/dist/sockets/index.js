@@ -1,5 +1,7 @@
 import prisma from '../config/database.js';
 import encounterServices from '../services/encounterServices.js';
+import characterStatServices from '../services/characterStatServices.js';
+import itemStatServices from '../services/itemStatServices.js';
 export function setupSocketIO(io) {
     io.on('connection', (socket) => {
         console.log('User connected:', socket.id);
@@ -68,6 +70,55 @@ export function setupSocketIO(io) {
                 historyData.rollResult = rollResult;
             }
             await encounterServices.createEncounterHistory(campaignId, encounterId, historyData);
+            const calculateCosts = (character, item, action) => {
+                const costs = action
+                    ? action.name === 'Salvo Fire'
+                        ? Object.assign(Object.assign({}, action.costs), { currentAmmoCount: item === null || item === void 0 ? void 0 : item.stats.salvo }) : action.costs
+                    : null;
+                if (item.keywords.some((keyword) => keyword.keyword.name === '2H')) {
+                    costs.currentHands = 2;
+                }
+                if (item.keywords.some((keyword) => keyword.keyword.name === '1H')) {
+                    costs.currentHands = 1;
+                }
+                const characterCosts = {};
+                const itemCosts = {};
+                Object.entries(costs).forEach(([stat, value]) => {
+                    if (character.stats[stat]) {
+                        const costInfo = {
+                            stat,
+                            available: character.stats[stat],
+                            required: value,
+                        };
+                        if (costInfo.required > costInfo.available) {
+                            alert(`Your character does not have enough ${stat} to complete this action`);
+                        }
+                        characterCosts[costInfo.stat] =
+                            costInfo.available - costInfo.required;
+                    }
+                    if (item.stats[stat]) {
+                        const costInfo = {
+                            stat,
+                            available: item.stats[stat],
+                            required: value,
+                        };
+                        if (costInfo.required > costInfo.available) {
+                            alert(`Your item does not have enough ${stat} to complete this action`);
+                        }
+                        itemCosts[costInfo.stat] = costInfo.available - costInfo.required;
+                    }
+                });
+                return { characterCosts, itemCosts };
+            };
+            const { characterCosts, itemCosts } = calculateCosts(activeCharacter, item, action);
+            if (Object.keys(characterCosts).length > 0) {
+                await characterStatServices.resetCharacterStat(activeCharacter.id, characterCosts);
+                socket.emit('character', activeCharacter.id);
+            }
+            if (Object.keys(itemCosts).length > 0) {
+                await itemStatServices.resetItemStats(item.id, itemCosts);
+                socket.emit('item', item.id);
+            }
             await encounterServices.setCombatPhase(encounterId, 'reaction');
             // const targetCharacter = await characterServices.getCharacterById(
             //   targetInfo.id,
@@ -108,9 +159,9 @@ export function setupSocketIO(io) {
             });
             console.log(`Broadcasted action roll to campaign ${campaignId}`);
         });
-        socket.on('reactionRoll', async ({ campaignId, encounterId, activeCharacter, targetCharacter, reaction, item, rollResult, }) => {
+        socket.on('reactionRoll', async ({ campaignId, encounterId, reactiveCharacter, targetCharacter, reaction, item, rollResult, }) => {
             const historyData = {
-                characterId: activeCharacter.id,
+                characterId: reactiveCharacter.id,
                 actionId: reaction.id,
             };
             if (targetCharacter) {
@@ -125,7 +176,7 @@ export function setupSocketIO(io) {
             await encounterServices.createEncounterHistory(campaignId, encounterId, historyData);
             io.to(campaignId).emit('reactionRoll', {
                 encounterId,
-                activeCharacter,
+                reactiveCharacter,
                 targetCharacter,
                 reaction,
                 item,
@@ -151,6 +202,7 @@ export function setupSocketIO(io) {
         socket.on('passAllReactions', async ({ campaignId, encounterId }) => {
             await encounterServices.passAllReactions(encounterId);
             io.to(campaignId).emit('encounter', encounterId);
+            io.to(campaignId).emit('resetRolls');
             console.log(`Broadcasted combat ${encounterId} to campaign ${campaignId}`);
         });
         socket.on('advanceTurn', ({ campaignId, encounterId }) => {
