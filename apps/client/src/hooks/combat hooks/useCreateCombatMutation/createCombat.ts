@@ -3,12 +3,11 @@ import handleResponse from '../../handleResponse';
 
 const createCombat = async (
   campaignId: number,
-  mapId: number,
-  formData: { turnOrder: number[]; turnPosition: number },
+  formData: { mapId: number; turnOrder: number[]; turnPosition: number },
 ) => {
   try {
     const response = await fetch(
-      `${apiUrl}/campaigns/${campaignId}/maps/${mapId}/encounters/create`,
+      `${apiUrl}/campaigns/${campaignId}/maps/${formData.mapId}/encounters/create`,
       {
         method: 'POST',
         credentials: 'include',

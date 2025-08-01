@@ -5,9 +5,7 @@ import { useParams } from 'react-router-dom';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import { Action } from 'src/types/action';
 import { Item } from 'src/types/item';
-import useCreateCombatMutation from './combat hooks/useCreateCombatMutation/useCreateCombatMutation';
 import useCombatQuery from './combat hooks/useCombatQueries/useCombatQuery';
-import useMap from './useMap';
 import useCharacterQuery from './useCharacterQuery/useCharacterQuery';
 import useAdvanceTurnMutation from './combat hooks/useAdvanceTurnMutation/useAdvanceTurnMutation';
 import { AuthContext } from 'src/contexts/AuthContext';
@@ -26,8 +24,6 @@ const useCombat = () => {
   const { gameMaster, calculateRoll } = useContext(CampaignContext);
   const { campaignId, mapId, encounterId } = useParams();
   const queryClient = useQueryClient();
-
-  const { locations } = useMap();
 
   const { data: combat, isLoading } = useCombatQuery(Number(encounterId));
 
@@ -48,11 +44,6 @@ const useCombat = () => {
     [activeCharacter],
   );
 
-  const createCombat = useCreateCombatMutation(
-    Number(campaignId),
-    Number(mapId),
-  );
-
   const advanceTurn = useAdvanceTurnMutation(
     Number(campaignId),
     Number(encounterId),
@@ -65,18 +56,6 @@ const useCombat = () => {
   const updateCharacterLocation = useUpdateCharacterLocationMutation(
     Number(mapId),
   );
-
-  const combatForm = useForm({
-    defaultValues: {
-      turnOrder:
-        combat?.turnOrder ||
-        locations?.map((location) => location?.characterId),
-      turnPosition: 0,
-    },
-    onSubmit: ({ value }) => {
-      createCombat.mutate(value);
-    },
-  });
 
   const handleAdvanceTurn = () => {
     if (!encounterPermissions) return;
@@ -283,7 +262,6 @@ const useCombat = () => {
     activeCharacter,
     handleAdvanceTurn,
     calculateDamage,
-    combatForm,
     actionForm,
     reactionForm,
     isLoading,

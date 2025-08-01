@@ -135,22 +135,21 @@ const CampaignLinks = () => {
             }
             title="Encounters"
           >
-            {campaign?.encounters.map((encounter) => (
-              <SubLinkSidebar
-                key={encounter?.id}
-                title={`Combat ${encounter.id}`}
-                path={`campaigns/${campaignId}/maps/${encounter?.mapId}/encounters/${encounter?.id}`}
-              />
-            ))}
             <SubLinkSidebar
               title={`Completed Encounters`}
               path={`campaigns/${campaignId}/encounters/completed`}
             />
             {gameMaster && (
-              <SubLinkSidebar
-                title={`Create Encounter`}
-                path={`campaigns/${campaignId}/encounters/create`}
-              />
+              <>
+                <SubLinkSidebar
+                  title={`Pending Encounters`}
+                  path={`campaigns/${campaignId}/encounters/pending`}
+                />
+                <SubLinkSidebar
+                  title={`Create Encounter`}
+                  path={`campaigns/${campaignId}/encounters/create`}
+                />
+              </>
             )}
           </LinkListSidebar>
           <LinkListSidebar
