@@ -236,6 +236,17 @@ const useCombat = () => {
         );
       }
     },
+    validators: {
+      onSubmit: ({ value }) => {
+        const { errors } = calculateCosts(
+          ownedCharacter,
+          value.reaction,
+          value.item,
+        );
+
+        return errors.length > 0 ? errors.join(', ') : undefined;
+      },
+    },
   });
 
   const calculateDamage = (item: Item, action: Action, successes: number) => {

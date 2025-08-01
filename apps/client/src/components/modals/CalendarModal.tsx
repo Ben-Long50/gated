@@ -11,12 +11,13 @@ import ExpandingList from '../ExpandingList';
 import BtnIcon from '../buttons/BtnIcon';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import { useContext } from 'react';
-import { AuthContext } from 'src/contexts/AuthContext';
 import Loading from '../Loading';
 import useSetCampaignDateMutation from 'src/hooks/useSetCampaignDateMutation/useSetCampaignDateMutation';
 import { format } from 'date-fns';
+import { CampaignContext } from 'src/contexts/CampaignContext';
 
 const CalendarModal = () => {
+  const { gameMaster } = useContext(CampaignContext);
   const { campaignId, month, day } = useParams();
   const navigate = useNavigate();
 
@@ -73,10 +74,12 @@ const CalendarModal = () => {
                     }
                   >
                     <div className="flex flex-col gap-2 border-x-2 border-gray-400 border-opacity-50 px-4">
-                      <div className="flex justify-between">
-                        <p>Organizer</p>
-                        <p>{event.character.firstName}</p>
-                      </div>
+                      {event.character && (
+                        <div className="flex justify-between">
+                          <p>Organizer</p>
+                          <p>{event.character?.firstName}</p>
+                        </div>
+                      )}
                       <p>{event.description}</p>
                     </div>
                   </ItemCardSmall>
@@ -87,33 +90,35 @@ const CalendarModal = () => {
         }
       </div>
       <Divider />
-      <div className="flex w-full flex-col items-start gap-4">
-        <ArrowHeader3 title="GM Options" />
-        <div className="w-full border-l-2 border-gray-400 border-opacity-50 pl-4">
-          <div className="flex w-full items-center justify-between">
-            <h4>Set Current Date</h4>
-            {campaign?.date.month === month &&
-            campaign?.date.day === Number(day) ? (
-              <BtnIcon
-                active={true}
-                path={mdiCheckCircleOutline}
-                onClick={() => {}}
-              />
-            ) : (
-              <BtnIcon
-                active={true}
-                loading={setCampaignDate.isPending}
-                path={mdiCircleOutline}
-                onClick={() => {
-                  if (month && day) {
-                    setCampaignDate.mutate({ month, day: Number(day) });
-                  }
-                }}
-              />
-            )}
+      {gameMaster && (
+        <div className="flex w-full flex-col items-start gap-4">
+          <ArrowHeader3 title="GM Options" />
+          <div className="w-full border-l-2 border-gray-400 border-opacity-50 pl-4">
+            <div className="flex w-full items-center justify-between">
+              <h4>Set Current Date</h4>
+              {campaign?.date.month === month &&
+              campaign?.date.day === Number(day) ? (
+                <BtnIcon
+                  active={true}
+                  path={mdiCheckCircleOutline}
+                  onClick={() => {}}
+                />
+              ) : (
+                <BtnIcon
+                  active={true}
+                  loading={setCampaignDate.isPending}
+                  path={mdiCircleOutline}
+                  onClick={() => {
+                    if (month && day) {
+                      setCampaignDate.mutate({ month, day: Number(day) });
+                    }
+                  }}
+                />
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
       <BtnRect
         className="w-full"
         type="button"

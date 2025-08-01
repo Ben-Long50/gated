@@ -15,8 +15,6 @@ const useUpdateCharacterLocationMutation = (mapId: number) => {
     },
 
     onMutate: (data) => {
-      console.log(data);
-
       queryClient.cancelQueries({ queryKey: ['location', data.locationId] });
 
       const prevLocationData: Location | undefined = queryClient.getQueryData([
@@ -32,8 +30,6 @@ const useUpdateCharacterLocationMutation = (mapId: number) => {
           (prev: Location) => ({
             ...prev,
             index: data.index,
-            characterId: data.characterId,
-            mapId: mapId,
           }),
         );
       }
@@ -42,8 +38,6 @@ const useUpdateCharacterLocationMutation = (mapId: number) => {
     },
 
     onSuccess: (data, __, context) => {
-      console.log(context);
-
       socket.emit('location', {
         locationId: data.location.id,
         campaignId: context.prevLocationData?.character.campaignId,

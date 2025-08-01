@@ -3,7 +3,6 @@ import handleResponse from '../handleResponse';
 
 const updateCharacterLocation = async (
   mapId: number,
-
   formData: { characterId: number; locationId: number; index: number },
 ) => {
   try {

@@ -1,4 +1,4 @@
-import { ReactNode, useContext, useEffect, useMemo, useRef } from 'react';
+import { ReactNode, useContext, useMemo, useRef } from 'react';
 import LinkSidebar from './LinkSidebar';
 import { LayoutContext } from '../../contexts/LayoutContext';
 import { mdiCartOutline } from '@mdi/js';
@@ -13,7 +13,7 @@ import { CampaignContext } from 'src/contexts/CampaignContext';
 const Sidebar = ({ children }: { children: ReactNode }) => {
   const { mobile } = useContext(LayoutContext);
   const { accentPrimary } = useContext(ThemeContext);
-  const { activeCampaigns } = useContext(CampaignContext);
+  const { activeCampaigns, activeEncounters } = useContext(CampaignContext);
 
   const sidebarRef = useRef<null | HTMLElement>(null);
 
@@ -99,6 +99,23 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
                 </div>
               }
               path={`/glam/campaigns/${campaign?.id}`}
+            />
+          ))}
+        {activeEncounters.length > 0 &&
+          activeEncounters.map((encounter, index) => (
+            <LinkSidebar
+              key={index}
+              title={`Combat - ${encounter.map.name}`}
+              icon={
+                <div className="liveToken z-10 size-12 shrink-0 rounded-full">
+                  <img
+                    className="bg-secondary size-full shrink-0 rounded-full object-cover"
+                    src={encounter.map.picture.imageUrl}
+                    alt={encounter.map.name + ' ' + "'s picture"}
+                  />
+                </div>
+              }
+              path={`/glam/campaigns/${encounter.campaignId}/maps/${encounter.mapId}/encounters/${encounter.id}`}
             />
           ))}
         {children}

@@ -5,7 +5,7 @@ const RangeIcon = ({
   style,
 }: {
   className?: string;
-  style: CSSProperties;
+  style?: CSSProperties;
 }) => {
   return (
     <svg

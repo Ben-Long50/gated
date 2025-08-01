@@ -16,7 +16,6 @@ import useCharacter from 'src/hooks/useCharacter';
 import { Item } from 'src/types/item';
 import ItemCard from './ItemCard';
 import { LayoutContext } from 'src/contexts/LayoutContext';
-import { DroneControls, VehicleControls } from './ItemCardControls';
 import useModalStore from 'src/stores/modalStore';
 import ThemeContainer from './ThemeContainer';
 import { ThemeContext } from 'src/contexts/ThemeContext';
@@ -122,15 +121,6 @@ const Deployments = () => {
               ownerId={character.userId}
               item={activeItem}
             />
-          )}
-          {activeItem !== null && active.category === 'vehicle' && (
-            <VehicleControls
-              stats={activeItem.stats}
-              vehicleId={activeItem.id}
-            />
-          )}
-          {activeItem !== null && active.category === 'drone' && (
-            <DroneControls stats={activeItem.stats} droneId={activeItem.id} />
           )}
           {activeItem !== null && activeItem.weapons?.length > 0 && (
             <div className="flex flex-col gap-8">

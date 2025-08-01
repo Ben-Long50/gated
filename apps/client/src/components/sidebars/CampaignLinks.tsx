@@ -20,10 +20,12 @@ import useToggleCampaignMutation from 'src/hooks/campaign hooks/useToggleCampaig
 import CrownIcon from '../icons/CrownIcon';
 import Loading from '../Loading';
 import CombatIcon from '../icons/CombatIcon';
+import { CampaignContext } from 'src/contexts/CampaignContext';
 
 const CampaignLinks = () => {
   const { user } = useContext(AuthContext);
   const { layoutSize } = useContext(LayoutContext);
+  const { gameMaster } = useContext(CampaignContext);
   const { campaignId } = useParams();
 
   const { data: campaign } = useCampaignQuery(Number(campaignId));
@@ -140,6 +142,16 @@ const CampaignLinks = () => {
                 path={`campaigns/${campaignId}/maps/${encounter?.mapId}/encounters/${encounter?.id}`}
               />
             ))}
+            <SubLinkSidebar
+              title={`Completed Encounters`}
+              path={`campaigns/${campaignId}/encounters/completed`}
+            />
+            {gameMaster && (
+              <SubLinkSidebar
+                title={`Create Encounter`}
+                path={`campaigns/${campaignId}/encounters/create`}
+              />
+            )}
           </LinkListSidebar>
           <LinkListSidebar
             icon={
@@ -169,7 +181,7 @@ const CampaignLinks = () => {
             }
             path={`campaigns/${campaignId}/rollSimulator`}
           />
-          {campaign?.ownerId === user.id && (
+          {gameMaster && (
             <LinkListSidebar
               icon={
                 <CrownIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />

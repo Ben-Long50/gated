@@ -5,7 +5,7 @@ import Loading from '../Loading';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import { mdiChevronDown, mdiGrid } from '@mdi/js';
 import Icon from '@mdi/react';
-import MapGrid from './MapGrid';
+import EncounterGrid from './EncounterGrid';
 import ItemCard from '../ItemCard';
 import CharacterCardSmall from '../CharacterCardSmall';
 import CharacterOptions from './CharacterOptions';
@@ -50,9 +50,11 @@ const Encounter = () => {
   const { map, locations, isLoading: mapLoading } = useMap();
   const characterOptionsRef = useRef<HTMLDivElement>(null);
 
-  const { data: history, isPending: historyPending } = useEncounterHistoryQuery(
-    Number(encounterId),
-  );
+  const {
+    data: history,
+    isLoading: historyLoading,
+    isPending: historyPending,
+  } = useEncounterHistoryQuery(Number(encounterId));
 
   const {
     combat,
@@ -81,11 +83,11 @@ const Encounter = () => {
     if (activeCharacter?.id === ownedCharacter?.id) {
       setCharacterOptions(true);
     }
-  }, [combat, characterOptionsRef]);
+  }, [combat, characterOptionsRef.current]);
 
   const item = useCombatStore((state) => state.item);
 
-  if (mapLoading || combatLoading) return <Loading />;
+  if (mapLoading || combatLoading || historyLoading) return <Loading />;
 
   if (!map) return <h1>No Map Found</h1>;
 
@@ -151,7 +153,7 @@ const Encounter = () => {
               ),
             )}
           </ReactGridLayout>
-          <MapGrid
+          <EncounterGrid
             form={actionForm}
             reactions={combat?.reactions}
             encounterPermissions={encounterPermissions}

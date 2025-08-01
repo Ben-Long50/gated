@@ -9,8 +9,13 @@ const useCombatQueries = (combatIds: number[]) => {
       enabled: !!combatId,
     })),
     combine: (results) => {
+      const encounters = results
+        .map((result) => result.data)
+        .filter((data) => data);
+
       return {
-        combats: results.map((result) => result.data).filter((data) => data),
+        activeEncounters: encounters.filter((data) => data.active),
+        inactiveEncounters: encounters.filter((data) => !data.active),
         isLoading: results.some((result) => result.isLoading),
       };
     },

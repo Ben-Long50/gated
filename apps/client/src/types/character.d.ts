@@ -5,6 +5,7 @@ import { Condition, ConditionReference } from './condition';
 import { Affiliation } from './faction';
 import { Gang } from './gang';
 import { Item } from './item';
+import { Location } from './map';
 import { Perk } from './perk';
 import { Picture } from './picture';
 
@@ -38,6 +39,7 @@ interface Character {
   characterCart: CharacterCart;
   characterInventory: CharacterInventory;
   affiliations: Affiliation[];
+  location: Location;
 }
 
 interface CharacterStats {

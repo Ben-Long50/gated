@@ -16,6 +16,8 @@ interface Action {
   cooldown: { unit: string; value: number | null };
   modifiers: Stats;
   keywordModifiers: { keyword: Keyword; value: number | null }[];
+  itemLink?: ItemLinkReference;
+  itemLinkId?: number;
 }
 
 interface ActionCosts {
@@ -47,4 +49,12 @@ enum ActionCostStat {
   sanity = 'sanity',
   power = 'power',
   wyrmShells = 'wyrmShells',
+}
+
+interface ItemLinkReference {
+  id: number;
+  item: Item;
+  itemId: number;
+  items: Item[];
+  actions: Action[];
 }

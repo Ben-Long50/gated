@@ -6,7 +6,8 @@ import { capitalCase } from 'change-case';
 import BtnRect from '../buttons/BtnRect';
 
 const ActionListModal = () => {
-  const { actions, category, form } = useOutletContext() || {};
+  const { actions, category, form, handleChosenItem } =
+    useOutletContext() || {};
   const navigate = useNavigate();
 
   return (
@@ -19,7 +20,10 @@ const ActionListModal = () => {
               className="w-full"
               action={action}
               cardWidth={500}
-              onClick={() => field.handleChange(action)}
+              onClick={() => {
+                field.handleChange(action);
+                handleChosenItem(action);
+              }}
             />
           ))
         }

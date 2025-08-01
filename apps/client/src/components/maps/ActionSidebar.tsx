@@ -23,6 +23,9 @@ import {
 } from 'src/types/attributeTree';
 import { Action } from 'src/types/action';
 import DieIcon from '../icons/DieIcon';
+import { useQueryClient } from '@tanstack/react-query';
+import { Item } from 'src/types/item';
+import useCombatStore from 'src/stores/combatStore';
 
 const ActionSidebar = ({
   form,
@@ -51,6 +54,7 @@ const ActionSidebar = ({
   const navigate = useNavigate();
   const location = useLocation();
   const parts = location.pathname.split('/');
+  const queryClient = useQueryClient();
 
   const {
     filteredActions: availableActions,
@@ -60,12 +64,39 @@ const ActionSidebar = ({
 
   const roll = rollData.get(activeCharacterId);
 
+  const setItem = useCombatStore((state) => state.setItem);
+
+  const handleChosenItem = (action: Action) => {
+    if (action.itemLinkId) {
+      const items = queryClient
+        .getQueriesData({
+          queryKey: ['item'],
+          exact: false,
+        })
+        .map((itemInfo) => itemInfo[1]) as Item[];
+
+      const uniqueItem =
+        items.find((item) => item.id === action.itemLink?.itemId) || null;
+
+      setItem(uniqueItem);
+
+      form.setFieldValue('item', uniqueItem);
+    }
+  };
+
   return (
     <div
       className={`${actionSidebar ? 'visible translate-x-0 opacity-100' : 'invisible translate-x-full opacity-0'} timing z-10 flex flex-col gap-4 p-2`}
     >
       {parts.includes('availableActions') && (
-        <Outlet context={{ actions: availableActions, category, form }} />
+        <Outlet
+          context={{
+            actions: availableActions,
+            category,
+            form,
+            handleChosenItem,
+          }}
+        />
       )}
 
       <div className="flex items-center justify-between gap-2">
@@ -84,7 +115,10 @@ const ActionSidebar = ({
           className="bg-tertiary group my-auto flex justify-self-start rounded p-1.5 shadow-md shadow-black"
           aria-label="Open save modal"
           type="button"
-          onClick={() => form.reset()}
+          onClick={() => {
+            form.reset();
+            setItem(null);
+          }}
         >
           <Icon
             path={mdiAutorenew}
@@ -110,7 +144,14 @@ const ActionSidebar = ({
       </form.Field>
       <form.Subscribe selector={(state) => state.values.item}>
         {(item) => (
-          <form.Field name="action">
+          <form.Field
+            name="action"
+            listeners={{
+              onChange: ({ value }) => {
+                handleChosenItem(value);
+              },
+            }}
+          >
             {(field) => {
               const costs = field.state.value
                 ? field.state.value.name === 'Salvo Fire'
@@ -245,7 +286,7 @@ const ActionSidebar = ({
       >
         {([action, item, target, modifiers]) => {
           const diceCount =
-            character && action?.roll.length > 0 && modifiers
+            character && action?.roll?.length > 0 && modifiers
               ? calculateDiceCount(character?.attributes, action, modifiers)
                   .diceCount
               : 'N/A';
@@ -268,7 +309,9 @@ const ActionSidebar = ({
                     errors.length > 0 && (
                       <ul className="flex list-disc flex-col gap-2">
                         {errors.map((error) => (
-                          <li className="text-error text-base">{error}</li>
+                          <li className="text-error w-full text-base">
+                            {error}
+                          </li>
                         ))}
                       </ul>
                     )

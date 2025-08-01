@@ -45,7 +45,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     [campaigns],
   );
 
-  const { combats } = useCombatQueries(
+  const { activeEncounters, inactiveEncounters } = useCombatQueries(
     activeCampaigns?.flatMap((campaign) =>
       campaign?.encounters.map((encounter) => encounter.id),
     ),
@@ -268,6 +268,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         gameMaster,
         campaigns,
         activeCampaigns,
+        activeEncounters,
         calculateDiceCount,
         rollData,
         calculateRoll,

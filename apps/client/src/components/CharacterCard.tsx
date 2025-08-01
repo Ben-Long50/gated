@@ -19,6 +19,7 @@ import { Outlet, useParams } from 'react-router-dom';
 import { useInView } from 'react-intersection-observer';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
 import CharacterRadialMenu from './radialMenus/characterRadialMenu/CharacterRadialMenu';
+import LocationIcon from './icons/LocationIcon';
 
 const CharacterCard = ({ id }: { id: number }) => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -137,6 +138,14 @@ const CharacterCard = ({ id }: { id: number }) => {
                   {character?.level}
                 </p>
               </div>
+              {character?.location && (
+                <div className="flex gap-4">
+                  <LocationIcon className="text-accent size-6" />
+                  <h4 className="!text-accent">
+                    {character.location.map.name}
+                  </h4>
+                </div>
+              )}
               {mobile && (
                 <div className="flex grow flex-wrap items-center justify-start gap-1">
                   {character?.conditions?.map((condition) => (

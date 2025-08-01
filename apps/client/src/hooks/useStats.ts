@@ -77,7 +77,7 @@ const useStats = (
       maxHealth: 10 + attributeTree?.violence.skills.threshold.points * 2,
       maxSanity: 5 + attributeTree?.esoterica.skills.mysticism.points * 1,
       maxEquip: 10 + attributeTree?.violence.skills.threshold.points * 1,
-      maxCyber: 4 + attributeTree?.cybernetica.skills.chromebits.points * 1,
+      maxCyber: 5 + attributeTree?.cybernetica.skills.chromebits.points * 1,
       speed: 4 + attributeTree?.violence.skills.assault.points * 1,
       armor: 0 + armorValue,
       ward: 0 + wardValue,

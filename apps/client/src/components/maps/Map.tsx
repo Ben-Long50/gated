@@ -7,6 +7,8 @@ import { mdiGrid } from '@mdi/js';
 import Icon from '@mdi/react';
 import MapGrid from './MapGrid';
 import { LayoutContext } from 'src/contexts/LayoutContext';
+import { useForm } from '@tanstack/react-form';
+import useUpdateCharacterLocationMutation from 'src/hooks/useUpdateCharacterLocationMutation/useUpdateCharacterLocationMutation';
 
 const Map = () => {
   const { mobile } = useContext(LayoutContext);
@@ -22,6 +24,19 @@ const Map = () => {
     isResizable: false,
     resizeHandles: [],
   }));
+
+  const updateLocation = useUpdateCharacterLocationMutation(map?.id);
+
+  const locationForm = useForm({
+    defaultValues: {
+      characterId: null as number | null,
+      locationId: null as number | null,
+      index: null as number | null,
+    },
+    onSubmit: ({ value }) => {
+      updateLocation.mutate(value);
+    },
+  });
 
   if (isLoading) return <Loading />;
 
@@ -84,7 +99,12 @@ const Map = () => {
             ),
           )}
         </ReactGridLayout>
-        <MapGrid map={map} locations={locations} />
+        <MapGrid
+          map={map}
+          locations={locations}
+          gridDisplay={gridDisplay}
+          form={locationForm}
+        />
       </div>
     </div>
   );
