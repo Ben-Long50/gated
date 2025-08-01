@@ -121,6 +121,7 @@ model Encounter {
   id           Int         @id @default(autoincrement())
   createdAt    DateTime    @default(now())
   active       Boolean     @default(false)
+  completed    Boolean     @default(false)
   campaign     Campaign    @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   campaignId   Int
   map          Map         @relation(fields: [mapId], references: [id])
