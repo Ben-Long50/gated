@@ -340,6 +340,7 @@ const campaignServices = {
             },
             orderBy: { character: { firstName: 'asc' } },
           },
+          encounters: { select: { active: true } },
         },
       });
 

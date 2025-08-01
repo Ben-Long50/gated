@@ -54,6 +54,7 @@ const characterServices = {
           characterCart: {
             include: includeCharacterCart,
           },
+          location: { include: { map: { select: { name: true } } } },
         },
       });
 

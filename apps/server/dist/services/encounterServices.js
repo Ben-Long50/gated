@@ -60,6 +60,7 @@ const encounterServices = {
                 },
                 include: {
                     characters: true,
+                    map: { select: { picture: true, name: true } },
                 },
             });
             return encounters;

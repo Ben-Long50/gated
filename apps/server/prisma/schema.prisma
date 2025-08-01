@@ -120,7 +120,7 @@ model Location {
 model Encounter {
   id           Int         @id @default(autoincrement())
   createdAt    DateTime    @default(now())
-  active       Boolean     @default(true)
+  active       Boolean     @default(false)
   campaign     Campaign    @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   campaignId   Int
   map          Map         @relation(fields: [mapId], references: [id])
@@ -130,12 +130,13 @@ model Encounter {
   turnPosition Int
   reactions    Int[]
   passes       Int[]
-  combatPhase  CombatPhase @default(initiative)
+  combatPhase  CombatPhase @default(pending)
   characters   Character[]
   history      History[]
 }
 
 enum CombatPhase {
+  pending
   initiative
   action
   reaction
