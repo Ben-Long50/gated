@@ -7,13 +7,11 @@ const updateCharacterLocation = async (
 ) => {
   try {
     const response = await fetch(
-      `${apiUrl}/characters/${formData.characterId}/locations/${formData.locationId}`,
+      `${apiUrl}/characters/${formData.characterId}/location`,
       {
         method: 'POST',
         credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mapId, index: formData.index }),
       },
     );

@@ -128,9 +128,7 @@ const MapBuilder = () => {
 
         const fileName = value.name.split(' ').join('_').toLowerCase();
 
-        const file = new File([blob], `${fileName}.png`, {
-          type: 'image/png',
-        });
+        const file = new File([blob], `${fileName}.png`, { type: 'image/png' });
         value.picture = file;
       }
 
@@ -173,10 +171,7 @@ const MapBuilder = () => {
 
   const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
     e.stopPropagation();
-    scrollRef.current?.scrollBy({
-      left: e.deltaY * 4,
-      behavior: 'auto',
-    });
+    scrollRef.current?.scrollBy({ left: e.deltaY * 4, behavior: 'auto' });
   };
 
   const handleTileDelete = (layout, item) => {
@@ -193,7 +188,7 @@ const MapBuilder = () => {
   return (
     <>
       <div
-        className={`timing mx-auto flex h-full w-full max-w-8xl flex-col items-center gap-8`}
+        className={`timing flex h-full w-full max-w-9xl flex-col items-center gap-8`}
         style={{
           transform:
             layoutSize === 'xlarge'
@@ -218,7 +213,7 @@ const MapBuilder = () => {
               className="scrollbar-primary timing relative overflow-x-auto overflow-y-auto rounded border-2"
               style={{
                 borderColor: accentPrimary,
-                maxWidth: layerMode ? '75dvw' : '85dvw',
+                maxWidth: layerMode ? '75dvw' : '90dvw',
               }}
             >
               <div
@@ -319,9 +314,7 @@ const MapBuilder = () => {
                         <div
                           key={item.i}
                           className={`${item.className} -z-10`}
-                          style={{
-                            backgroundColor: color,
-                          }}
+                          style={{ backgroundColor: color }}
                         />
                       ) : (
                         <div

@@ -27,10 +27,7 @@ const useUpdateCharacterLocationMutation = (mapId: number) => {
       } else {
         queryClient.setQueryData(
           ['location', data.locationId],
-          (prev: Location) => ({
-            ...prev,
-            index: data.index,
-          }),
+          (prev: Location) => ({ ...prev, index: data.index }),
         );
       }
 

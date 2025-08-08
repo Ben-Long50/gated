@@ -9,10 +9,12 @@ const MapGrid = ({
   map,
   locations,
   gridDisplay,
+  form,
 }: {
   map: Map;
   locations: Location[];
   gridDisplay: boolean;
+  form?: FormApi;
 }) => {
   const { mapId } = useParams();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -62,6 +64,12 @@ const MapGrid = ({
           gridTemplateRows: `repeat(${map.height}, 48px)`,
         }}
         onMouseLeave={() => setHoveredIndex(null)}
+        onClick={() => {
+          if (form) {
+            form.setFieldValue('index', hoveredIndex);
+            form.handleSubmit();
+          }
+        }}
       >
         {Array.from({ length: gridLength }).map((_, index) => {
           const characterLocations =
@@ -69,6 +77,7 @@ const MapGrid = ({
 
           return (
             <MapGridTile
+              key={index}
               index={index}
               gridDisplay={gridDisplay}
               characterLocations={characterLocations}

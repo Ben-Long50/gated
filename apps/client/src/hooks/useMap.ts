@@ -1,24 +1,14 @@
-import { useParams } from 'react-router-dom';
 import useCampaignMapQuery from './useCampaignMapQuery/useCampaignMapQuery';
 import useLocationQueries from './useCampaignMapQuery/useLocationQueries';
 
-const useMap = () => {
-  const { campaignId, mapId } = useParams();
-
-  const { data: map, isLoading: mapLoading } = useCampaignMapQuery(
-    Number(campaignId),
-    Number(mapId),
-  );
+const useMap = (mapId: number) => {
+  const { data: map, isLoading: mapLoading } = useCampaignMapQuery(mapId);
 
   const { locations, isLoading: locationsLoading } = useLocationQueries(
     map?.locations.map((location) => location.id) || [],
   );
 
-  return {
-    map,
-    locations,
-    isLoading: mapLoading || locationsLoading,
-  };
+  return { map, locations, isLoading: mapLoading || locationsLoading };
 };
 
 export default useMap;

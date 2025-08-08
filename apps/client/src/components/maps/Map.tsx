@@ -10,13 +10,13 @@ import { LayoutContext } from 'src/contexts/LayoutContext';
 import { useForm } from '@tanstack/react-form';
 import useUpdateCharacterLocationMutation from 'src/hooks/useUpdateCharacterLocationMutation/useUpdateCharacterLocationMutation';
 
-const Map = () => {
+const Map = ({ mapId, form }: { mapId: number; form?: FormApi }) => {
   const { mobile } = useContext(LayoutContext);
   const { accentPrimary } = useContext(ThemeContext);
 
   const [gridDisplay, setGridDisplay] = useState(false);
 
-  const { map, locations, isLoading } = useMap();
+  const { map, locations, isLoading } = useMap(mapId);
 
   const mapLayout = map?.layout.map((item) => ({
     ...item,
@@ -25,25 +25,12 @@ const Map = () => {
     resizeHandles: [],
   }));
 
-  const updateLocation = useUpdateCharacterLocationMutation(map?.id);
-
-  const locationForm = useForm({
-    defaultValues: {
-      characterId: null as number | null,
-      locationId: null as number | null,
-      index: null as number | null,
-    },
-    onSubmit: ({ value }) => {
-      updateLocation.mutate(value);
-    },
-  });
-
   if (isLoading) return <Loading />;
 
   if (!map) return <h1>No Map Found</h1>;
 
   return (
-    <div className="flex h-dvh w-full max-w-8xl flex-col items-center gap-4 sm:gap-8">
+    <div className="flex h-dvh w-full max-w-85dvw flex-col items-center gap-4 sm:gap-8">
       {!mobile && (
         <div className="flex w-full max-w-4xl items-center justify-center gap-8">
           <button
@@ -62,9 +49,7 @@ const Map = () => {
       )}
       <div
         className="scrollbar-primary pointer-events-auto relative max-h-full max-w-full overflow-x-auto overflow-y-auto rounded border-2"
-        style={{
-          borderColor: accentPrimary,
-        }}
+        style={{ borderColor: accentPrimary }}
       >
         <ReactGridLayout
           useCSSTransforms={false}
@@ -82,9 +67,7 @@ const Map = () => {
               <div
                 key={item.i}
                 className="-z-10"
-                style={{
-                  backgroundColor: map.baseColor,
-                }}
+                style={{ backgroundColor: map.baseColor }}
               />
             ) : (
               <div
@@ -103,7 +86,7 @@ const Map = () => {
           map={map}
           locations={locations}
           gridDisplay={gridDisplay}
-          form={locationForm}
+          form={form}
         />
       </div>
     </div>
