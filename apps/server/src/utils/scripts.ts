@@ -1,44 +1,4 @@
-import prisma from '../../config/database';
-
-const getItemUpdatedDates = async () => {
-  const items = await prisma.item.findMany({
-    where: { userId: { gt: 0 } },
-  });
-  console.log(items);
-};
-
-// getItemUpdatedDates();
-
-const getOwnerItems = async () => {
-  const items = await prisma.item.findMany({
-    where: { characterInventoryId: { gt: 0 } },
-    select: {
-      id: true,
-      characterInventory: {
-        select: { character: { select: { userId: true } } },
-      },
-    },
-  });
-
-  for (let item of items) {
-    await prisma.item.update({
-      where: { id: item.id },
-      data: {
-        user: { connect: { id: item.characterInventory.character.userId } },
-      },
-    });
-
-    console.log(`Successfully updated ${item.id}`);
-  }
-};
-
-// getOwnerItems();
-
-const deleteNullLocations = async () => {
-  await prisma.location.deleteMany({ where: { characterId: null } });
-};
-
-// deleteNullLocations();
+import prisma from '../config/database';
 
 const updateActionStats = async () => {
   const characters = await prisma.character.findMany({});
@@ -51,11 +11,11 @@ const updateActionStats = async () => {
     };
     console.log(character.stats);
 
-    // await prisma.character.update({
-    //   where: { id: character.id },
-    //   data: { stats },
-    // });
-    // console.log(`Updated ${character.firstName}`);
+    await prisma.character.update({
+      where: { id: character.id },
+      data: { stats },
+    });
+    console.log(`Updated ${character.firstName}`);
   }
 };
 
@@ -108,10 +68,4 @@ const updateActionCosts = async () => {
   }
 };
 
-updateActionCosts();
-
-const deleteAllHistory = async () => {
-  await prisma.history.deleteMany({});
-};
-
-// deleteAllHistory();
+// updateActionCosts();

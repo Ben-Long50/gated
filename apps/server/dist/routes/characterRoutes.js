@@ -13,7 +13,7 @@ router.post('/characters/:characterId/inventory/:inventoryId', authentication.au
 router.post('/characters', authentication.authenticate, characterController.createCharacter);
 router.post('/characters/:characterId/affiliations/create', authentication.authenticate, affiliationController.createCharacterAffiliation);
 router.post('/characters/:characterId/conditions', authentication.authenticate, characterController.createCharacterConditions);
-router.post('/characters/:characterId/locations/:locationId', authentication.authenticate, characterController.updateCharacterLocation);
+router.post('/characters/:characterId/location', authentication.authenticate, characterController.updateCharacterLocation);
 router.put('/characters/:characterId', authentication.authenticate, characterController.updateCharacter);
 router.put('/characters/:characterId/cart/:cartId', authentication.authenticate, characterController.clearCart);
 router.delete('/characters/:characterId', authentication.authenticate, characterController.deleteCharacter);

@@ -190,7 +190,6 @@ const characterController = {
 
       const location = await characterServices.createOrUpdateLocation(
         Number(req.params.characterId),
-        Number(req.params.locationId),
         req.body,
       );
 

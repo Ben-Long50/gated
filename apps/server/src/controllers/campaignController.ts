@@ -158,7 +158,6 @@ const campaignController = {
   getCampaignMap: async (req: Request, res: Response) => {
     try {
       const map = await campaignServices.getCampaignMap(
-        Number(req.params.campaignId),
         Number(req.params.mapId),
       );
       res.status(200).json(map);

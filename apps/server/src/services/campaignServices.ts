@@ -324,10 +324,10 @@ const campaignServices = {
     }
   },
 
-  getCampaignMap: async (campaignId: number, mapId: number) => {
+  getCampaignMap: async (mapId: number) => {
     try {
       const map = await prisma.map.findUnique({
-        where: { id: mapId, campaignId },
+        where: { id: mapId },
         include: {
           user: {
             select: {

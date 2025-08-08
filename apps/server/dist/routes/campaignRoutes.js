@@ -11,7 +11,7 @@ router.get('/campaigns/batch', authentication.authenticate, campaignAuthenticati
 router.get('/campaigns/:campaignId', authentication.authenticate, campaignAuthentication.filterCampaigns, campaignController.getCampaignById);
 router.get('/campaigns/:campaignId/maps', authentication.authenticate, campaignController.getCampaignMaps);
 router.get('/locations/:locationId', authentication.authenticate, campaignController.getBatchLocations);
-router.get('/campaigns/:campaignId/maps/:mapId', authentication.authenticate, campaignController.getCampaignMap);
+router.get('/maps/:mapId', authentication.authenticate, campaignController.getCampaignMap);
 router.get('/campaigns/:campaignId/characters/:characterId/notes', authentication.authenticate, campaignController.getCharacterNotes);
 router.get('/factions/:factionId', authentication.authenticate, factionController.getFactionById);
 router.post('/factions/:factionId/affiliations/create', authentication.authenticate, affiliationController.createFactionAffiliation);

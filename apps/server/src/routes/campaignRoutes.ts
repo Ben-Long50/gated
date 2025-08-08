@@ -46,7 +46,7 @@ router.get(
 );
 
 router.get(
-  '/campaigns/:campaignId/maps/:mapId',
+  '/maps/:mapId',
   authentication.authenticate,
   campaignController.getCampaignMap,
 );

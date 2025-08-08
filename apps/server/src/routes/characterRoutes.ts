@@ -66,7 +66,7 @@ router.post(
 );
 
 router.post(
-  '/characters/:characterId/locations/:locationId',
+  '/characters/:characterId/location',
   authentication.authenticate,
   characterController.updateCharacterLocation,
 );

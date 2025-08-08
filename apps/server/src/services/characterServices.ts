@@ -412,13 +412,12 @@ const characterServices = {
 
   createOrUpdateLocation: async (
     characterId: number,
-    locationId: number,
     formData: { mapId: number; index: number },
   ) => {
     try {
       const location = await prisma.location.upsert({
         where: {
-          id: Number(locationId) || 0,
+          characterId: characterId || 0,
         },
         update: {
           map: { connect: { id: formData.mapId } },

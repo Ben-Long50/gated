@@ -280,10 +280,10 @@ const campaignServices = {
             throw new Error('Failed to fetch campaign maps');
         }
     },
-    getCampaignMap: async (campaignId, mapId) => {
+    getCampaignMap: async (mapId) => {
         try {
             const map = await prisma.map.findUnique({
-                where: { id: mapId, campaignId },
+                where: { id: mapId },
                 include: {
                     user: {
                         select: {

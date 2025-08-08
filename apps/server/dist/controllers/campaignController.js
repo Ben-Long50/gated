@@ -114,7 +114,7 @@ const campaignController = {
     },
     getCampaignMap: async (req, res) => {
         try {
-            const map = await campaignServices.getCampaignMap(Number(req.params.campaignId), Number(req.params.mapId));
+            const map = await campaignServices.getCampaignMap(Number(req.params.mapId));
             res.status(200).json(map);
         }
         catch (error) {

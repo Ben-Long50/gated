@@ -345,11 +345,11 @@ const characterServices = {
             throw new Error('Failed to create character conditions');
         }
     },
-    createOrUpdateLocation: async (characterId, locationId, formData) => {
+    createOrUpdateLocation: async (characterId, formData) => {
         try {
             const location = await prisma.location.upsert({
                 where: {
-                    id: Number(locationId) || 0,
+                    characterId: characterId || 0,
                 },
                 update: {
                     map: { connect: { id: formData.mapId } },
