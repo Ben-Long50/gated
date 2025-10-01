@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Location, Map } from 'src/types/map';
 import { DndContext } from '@dnd-kit/core';
 import useUpdateCharacterLocationMutation from 'src/hooks/useUpdateCharacterLocationMutation/useUpdateCharacterLocationMutation';
-import { useParams } from 'react-router-dom';
 import MapGridTile from './MapGridTile';
 
 const MapGrid = ({
@@ -10,13 +9,14 @@ const MapGrid = ({
   locations,
   gridDisplay,
   form,
+  handleRemove,
 }: {
   map: Map;
   locations: Location[];
   gridDisplay: boolean;
   form?: FormApi;
+  handleRemove?: (characterId: number, locationId: number) => void;
 }) => {
-  const { mapId } = useParams();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const gridLength = map.width * map.height;
@@ -32,7 +32,7 @@ const MapGrid = ({
   };
 
   const updateCharacterLocation = useUpdateCharacterLocationMutation(
-    Number(mapId),
+    Number(map.id),
   );
 
   function handleDragEnd(e) {
@@ -84,6 +84,7 @@ const MapGrid = ({
               getCoordinates={getCoordinates}
               hoveredIndex={hoveredIndex}
               setHoveredIndex={setHoveredIndex}
+              handleRemove={handleRemove}
             />
           );
         })}

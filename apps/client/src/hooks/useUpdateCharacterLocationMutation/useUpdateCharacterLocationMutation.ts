@@ -22,13 +22,17 @@ const useUpdateCharacterLocationMutation = (mapId: number) => {
         data.locationId,
       ]);
 
-      if (mapId !== prevLocationData?.mapId) {
-        queryClient.removeQueries({ queryKey: ['location', data.locationId] });
-      } else {
-        queryClient.setQueryData(
-          ['location', data.locationId],
-          (prev: Location) => ({ ...prev, index: data.index }),
-        );
+      if (prevLocationData) {
+        if (mapId !== prevLocationData?.mapId) {
+          queryClient.removeQueries({
+            queryKey: ['location', data.locationId],
+          });
+        } else {
+          queryClient.setQueryData(
+            ['location', data.locationId],
+            (prev: Location) => ({ ...prev, index: data.index }),
+          );
+        }
       }
 
       return { prevLocationData };
@@ -39,11 +43,9 @@ const useUpdateCharacterLocationMutation = (mapId: number) => {
         locationId: data.location.id,
         campaignId: context.prevLocationData?.character.campaignId,
       });
-      if (data.location.mapId !== mapId) {
-        queryClient.invalidateQueries({
-          queryKey: ['map', data.location.mapId],
-        });
-      }
+      queryClient.invalidateQueries({
+        queryKey: ['map', mapId],
+      });
       return queryClient.invalidateQueries({
         queryKey: ['location', data.location.id],
       });

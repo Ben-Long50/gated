@@ -9,9 +9,11 @@ import { CampaignContext } from 'src/contexts/CampaignContext';
 const CharacterToken = ({
   characterId,
   locationId,
+  handleRemove,
 }: {
   characterId: number;
   locationId: number;
+  handleRemove?: (characterId: number, locationId: number) => void;
 }) => {
   const { user } = useContext(AuthContext);
   const { gameMaster } = useContext(CampaignContext);
@@ -41,6 +43,9 @@ const CharacterToken = ({
       }
       {...listeners}
       {...attributes}
+      onDoubleClick={() => {
+        if (handleRemove) handleRemove(characterId, locationId);
+      }}
     >
       <CharacterPictureRound
         className={`group-hover:border-accent timing size-12 border-2 border-white`}

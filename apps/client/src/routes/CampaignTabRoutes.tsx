@@ -26,6 +26,7 @@ import CharacterMenuRoutes from './CharacterMenuRoutes';
 import Encounter from 'src/components/maps/Encounter';
 import ActionListModal from 'src/components/modals/ActionListModal';
 import EncounterForm from 'src/components/maps/EncounterForm';
+import EncounterList from 'src/components/maps/EncounterList';
 
 const CampaignTabRoutes = () => {
   return (
@@ -94,6 +95,8 @@ const CampaignTabRoutes = () => {
         </Route>
         <Route path="encounters">
           <Route path="create" element={<EncounterForm />} />
+          <Route path="pending" element={<EncounterList />} />
+          <Route path="completed" element={<EncounterList />} />
         </Route>
         <Route path="affiliations" element={<CampaignAffiliations />} />
         <Route path="rollSimulator" element={<RollSimulator />}>

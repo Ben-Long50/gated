@@ -14,8 +14,10 @@ import ArrowHeader3 from '../ArrowHeader3';
 import useCampaignCharactersQuery from 'src/hooks/useCampaignCharactersQuery/useCampaignCharactersQuery';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import useMap from 'src/hooks/useMap';
-import Loading from '../Loading';
 import useUpdateCharacterLocationMutation from 'src/hooks/useUpdateCharacterLocationMutation/useUpdateCharacterLocationMutation';
+import useDeleteCharacterLocationMutation from 'src/hooks/useDeleteCharacterLocationMutation/useDeleteCharacterLocationMutation';
+import InputField from '../InputField';
+import Loading from '../Loading';
 
 const EncounterForm = () => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -33,11 +35,14 @@ const EncounterForm = () => {
 
   const encounterForm = useForm({
     defaultValues: {
+      name: '',
       mapId: null as number | null,
       turnOrder: [] as number[],
       turnPosition: 0,
     },
     onSubmit: ({ value }) => {
+      console.log(value);
+
       createCombat.mutate(value);
     },
   });
@@ -46,7 +51,27 @@ const EncounterForm = () => {
 
   const { map, locations, isLoading } = useMap(mapId);
 
+  const activeEncounter =
+    map?.encounters.some((encounter) => encounter.active) || false;
+
   const updateLocation = useUpdateCharacterLocationMutation(mapId);
+  const deleteLocation = useDeleteCharacterLocationMutation(mapId);
+
+  const handleRemove = (characterId: number, locationId: number) => {
+    if (activeEncounter) {
+      alert(
+        'You cannot remove a character from a map currently in an active encounter',
+      );
+      return;
+    }
+    const prevTurnOrder = encounterForm.getFieldValue('turnOrder');
+
+    encounterForm.setFieldValue('turnOrder', () => {
+      return prevTurnOrder.filter((id) => id !== characterId);
+    });
+
+    deleteLocation.mutate({ characterId, locationId });
+  };
 
   const locationForm = useForm({
     defaultValues: {
@@ -55,6 +80,12 @@ const EncounterForm = () => {
       index: null as number | null,
     },
     onSubmit: ({ value }) => {
+      if (activeEncounter) {
+        alert(
+          'You cannot place a character on a map currently in an active encounter',
+        );
+        return;
+      }
       const data = {
         characterId: value.character?.id,
         locationId: value.character?.location?.id,
@@ -62,16 +93,33 @@ const EncounterForm = () => {
       };
       if (data.characterId && data.index) {
         updateLocation.mutate(data);
+
+        const prevTurnOrder = encounterForm.getFieldValue('turnOrder');
+
+        encounterForm.setFieldValue('turnOrder', () => {
+          if (!prevTurnOrder.includes(value.character.id)) {
+            return [...prevTurnOrder, value.character.id];
+          } else {
+            return [...prevTurnOrder];
+          }
+        });
       }
       locationForm.reset();
     },
   });
 
   useEffect(() => {
-    encounterForm.setFieldValue('locations', locations);
-  }, [locations]);
+    if (!isLoading) {
+      console.log(locations);
 
-  if (isLoading) return <Loading />;
+      encounterForm.setFieldValue(
+        'turnOrder',
+        locations.map((location) => location.character.id),
+      );
+    }
+  }, [locations, isLoading]);
+
+  // if (isLoading) return <Loading />;
 
   return (
     <div className="flex max-h-full max-w-6xl flex-col items-center gap-8">
@@ -80,6 +128,14 @@ const EncounterForm = () => {
         <div className="flex flex-col gap-4 p-4 sm:gap-8 sm:p-8">
           {formStage === 'map' && (
             <>
+              <div className="flex w-full flex-col gap-8">
+                <ArrowHeader2 title="Create Encounter Name" />
+                <encounterForm.Field name="name">
+                  {(field) => (
+                    <InputField field={field} label="Encounter Name" />
+                  )}
+                </encounterForm.Field>
+              </div>
               <div className="flex items-center justify-between gap-8">
                 <ArrowHeader2 title="Select Encounter Location" />
                 <encounterForm.Subscribe
@@ -102,28 +158,39 @@ const EncounterForm = () => {
               <encounterForm.Field name="mapId">
                 {(field) => (
                   <div className="grid grid-cols-3 gap-4">
-                    {maps.map((location) => (
-                      <button
-                        key={location.id}
-                        className={`${field.state.value === location.id ? 'border-accent' : 'border-transparent border-opacity-50 hover:border-gray-400'} bg-secondary timing flex flex-col gap-4 rounded-md border-2 p-4 shadow-md shadow-black`}
-                        onClick={() => {
-                          if (field.state.value === location.id) {
-                            field.handleChange(null);
-                          } else {
-                            field.handleChange(location.id);
-                            setFormStage('characters');
-                          }
-                        }}
-                      >
-                        <h3>{location.name}</h3>
-                        <div className="flex h-80 w-full items-center justify-center">
-                          <CloudinaryImage
-                            className="border-accent overflow-hidden rounded border"
-                            publicId={location.picture.publicId}
-                          />
-                        </div>
-                      </button>
-                    ))}
+                    {maps.map((location) => {
+                      const activeEncounter =
+                        location?.encounters.some(
+                          (encounter) => !encounter.completed,
+                        ) || false;
+
+                      return (
+                        <button
+                          key={location.id}
+                          className={`${field.state.value === location.id ? 'border-accent' : 'border-transparent border-opacity-50 hover:border-gray-400'} ${activeEncounter && 'pointer-events-none opacity-50 grayscale'} bg-secondary timing flex flex-col gap-4 rounded-md border-2 p-4 shadow-md shadow-black`}
+                          onClick={() => {
+                            if (field.state.value === location.id) {
+                              field.handleChange(null);
+                            } else {
+                              field.handleChange(location.id);
+                              const encounterName =
+                                encounterForm.getFieldValue('name');
+                              if (encounterName) {
+                                setFormStage('characters');
+                              }
+                            }
+                          }}
+                        >
+                          <h3>{location.name}</h3>
+                          <div className="flex h-80 w-full items-center justify-center">
+                            <CloudinaryImage
+                              className="border-accent overflow-hidden rounded border"
+                              publicId={location.picture.publicId}
+                            />
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
               </encounterForm.Field>
@@ -145,7 +212,11 @@ const EncounterForm = () => {
                         Maps
                       </BtnRect>
                     </div>
-                    <Map mapId={mapId} form={locationForm} />
+                    <Map
+                      mapId={mapId}
+                      form={locationForm}
+                      handleRemove={handleRemove}
+                    />
                   </>
                 )
               }
@@ -172,14 +243,42 @@ const EncounterForm = () => {
             <ArrowHeader3 title="Place NPCs" />
             <locationForm.Field name="character">
               {(field) => (
-                <InputSelectField
-                  field={field}
-                  label="Campaign NPCs"
-                  options={nonPlayerCharacters}
-                  reverse={true}
-                />
+                <div className="flex items-center gap-4">
+                  <InputSelectField
+                    field={field}
+                    label="Campaign NPCs"
+                    options={nonPlayerCharacters}
+                    reverse={true}
+                  />
+                  {field.state.value && field.state.value.location?.id && (
+                    <BtnRect
+                      className="w-full"
+                      type="button"
+                      ariaLabel="Remove character"
+                      onClick={() =>
+                        handleRemove(
+                          field.state.value.id,
+                          field.state.value.location.id,
+                        )
+                      }
+                    >
+                      Remove Character
+                    </BtnRect>
+                  )}
+                </div>
               )}
             </locationForm.Field>
+            <BtnRect
+              type="button"
+              ariaLabel="Create encounter"
+              onClick={() => encounterForm.handleSubmit()}
+            >
+              {createCombat.isPending ? (
+                <Loading size={1.15} />
+              ) : (
+                'Create Encounter'
+              )}
+            </BtnRect>
           </div>
         </ThemeContainer>
       )}

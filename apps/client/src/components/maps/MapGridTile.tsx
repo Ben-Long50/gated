@@ -13,6 +13,7 @@ const MapGridTile = ({
   getCoordinates,
   hoveredIndex,
   setHoveredIndex,
+  handleRemove,
 }: {
   index: number;
   gridDisplay: boolean;
@@ -20,6 +21,7 @@ const MapGridTile = ({
   getCoordinates: (index: number) => { x: number; y: number };
   hoveredIndex: number;
   setHoveredIndex: (index: number) => void;
+  handleRemove?: (characterId: number, locationId: number) => void;
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
 
@@ -53,6 +55,7 @@ const MapGridTile = ({
             key={location.characterId}
             characterId={location.characterId}
             locationId={location.id}
+            handleRemove={handleRemove}
           />
         ))}
       {hoveredIndex === index && (

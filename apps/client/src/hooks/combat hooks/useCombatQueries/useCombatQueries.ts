@@ -14,8 +14,16 @@ const useCombatQueries = (combatIds: number[]) => {
         .filter((data) => data);
 
       return {
-        activeEncounters: encounters.filter((data) => data.active),
+        activeEncounters: encounters.filter(
+          (data) => data.active && !data.completed,
+        ),
         inactiveEncounters: encounters.filter((data) => !data.active),
+        completedEncounters: encounters.filter(
+          (data) => !data.active && data.completed,
+        ),
+        pendingEncounters: encounters.filter(
+          (data) => data.combatPhase === 'pending',
+        ),
         isLoading: results.some((result) => result.isLoading),
       };
     },

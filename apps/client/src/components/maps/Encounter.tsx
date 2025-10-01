@@ -38,7 +38,7 @@ const Encounter = () => {
     animateRoll,
   } = useContext(CampaignContext);
   const location = useLocation();
-  const { encounterId } = useParams();
+  const { encounterId, mapId } = useParams();
   const parts = location.pathname.split('/');
   const [gridDisplay, setGridDisplay] = useState(false);
   const [characterList, setCharacterList] = useState(false);
@@ -47,7 +47,7 @@ const Encounter = () => {
   const [characterOptionsHeight, setCharacterOptionsHeight] = useState(0);
   const [historyList, setHistoryList] = useState(false);
 
-  const { map, locations, isLoading: mapLoading } = useMap();
+  const { map, locations, isLoading: mapLoading } = useMap(Number(mapId));
   const characterOptionsRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -98,9 +98,7 @@ const Encounter = () => {
       >
         <div
           className={`scrollbar-primary timing pointer-events-auto relative mb-auto max-h-full max-w-full overflow-y-auto rounded border-2`}
-          style={{
-            borderColor: accentPrimary,
-          }}
+          style={{ borderColor: accentPrimary }}
         >
           {!mobile && (
             <div className="absolute left-1 top-1 z-10 flex w-full items-center gap-4">
@@ -136,9 +134,7 @@ const Encounter = () => {
                 <div
                   key={item.i}
                   className="-z-10"
-                  style={{
-                    backgroundColor: map.baseColor,
-                  }}
+                  style={{ backgroundColor: map.baseColor }}
                 />
               ) : (
                 <div

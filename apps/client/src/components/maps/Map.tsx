@@ -10,7 +10,15 @@ import { LayoutContext } from 'src/contexts/LayoutContext';
 import { useForm } from '@tanstack/react-form';
 import useUpdateCharacterLocationMutation from 'src/hooks/useUpdateCharacterLocationMutation/useUpdateCharacterLocationMutation';
 
-const Map = ({ mapId, form }: { mapId: number; form?: FormApi }) => {
+const Map = ({
+  mapId,
+  form,
+  handleRemove,
+}: {
+  mapId: number;
+  form?: FormApi;
+  handleRemove?: (characterId: number, locationId: number) => void;
+}) => {
   const { mobile } = useContext(LayoutContext);
   const { accentPrimary } = useContext(ThemeContext);
 
@@ -87,6 +95,7 @@ const Map = ({ mapId, form }: { mapId: number; form?: FormApi }) => {
           locations={locations}
           gridDisplay={gridDisplay}
           form={form}
+          handleRemove={handleRemove}
         />
       </div>
     </div>
