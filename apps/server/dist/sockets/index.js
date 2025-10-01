@@ -55,6 +55,11 @@ export function setupSocketIO(io) {
             io.to(campaignId).emit('encounter', encounterId);
             console.log(`Broadcasted encounter ${encounterId} to campaign ${campaignId}`);
         });
+        socket.on('activateEncounter', async ({ campaignId, encounterId }) => {
+            await encounterServices.activateEncounter(encounterId);
+            io.to(campaignId).emit('encounter', encounterId);
+            console.log(`Broadcasted encounter ${encounterId} to campaign ${campaignId}`);
+        });
         socket.on('actionRoll', async ({ campaignId, encounterId, activeCharacter, targetCharacter, action, item, damage, rollResult, }) => {
             const historyData = {
                 characterId: activeCharacter.id,

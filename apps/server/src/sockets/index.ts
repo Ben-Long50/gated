@@ -82,6 +82,16 @@ export function setupSocketIO(io: Server) {
       );
     });
 
+    socket.on('activateEncounter', async ({ campaignId, encounterId }) => {
+      await encounterServices.activateEncounter(encounterId);
+
+      io.to(campaignId).emit('encounter', encounterId);
+
+      console.log(
+        `Broadcasted encounter ${encounterId} to campaign ${campaignId}`,
+      );
+    });
+
     socket.on(
       'actionRoll',
       async ({

@@ -118,6 +118,26 @@ const encounterServices = {
             throw new Error('Failed to fetch encounter history');
         }
     },
+    activateEncounter: async (encounterId) => {
+        try {
+            const encounter = await prisma.encounter.findUnique({
+                where: { id: encounterId },
+            });
+            console.log(encounter === null || encounter === void 0 ? void 0 : encounter.active);
+            await prisma.encounter.update({
+                where: {
+                    id: encounterId,
+                },
+                data: {
+                    active: encounter ? !(encounter === null || encounter === void 0 ? void 0 : encounter.active) : true,
+                },
+            });
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to activate encounter');
+        }
+    },
     advanceTurn: async (encounterId, turn) => {
         try {
             await prisma.encounter.update({
@@ -243,7 +263,12 @@ const encounterServices = {
         }
     },
     createOrUpdateEncounter: async (campaignId, mapId, formData) => {
-        console.log(formData);
+        const existingEncounter = await prisma.encounter.findFirst({
+            where: { mapId },
+        });
+        if (existingEncounter) {
+            throw new Error('You cannot create an encounter on a map which already belongs to another active or pending encounter');
+        }
         const campaign = await prisma.campaign.findUnique({
             where: { id: campaignId },
             select: {
@@ -277,6 +302,7 @@ const encounterServices = {
             const encounter = await prisma.encounter.upsert({
                 where: { id: (formData === null || formData === void 0 ? void 0 : formData.id) || 0 },
                 update: {
+                    name: formData.name,
                     campaign: { connect: { id: campaignId } },
                     map: { connect: { id: mapId } },
                     characters: {
@@ -286,6 +312,7 @@ const encounterServices = {
                     turnPosition: formData.turnPosition,
                 },
                 create: {
+                    name: formData.name,
                     campaign: { connect: { id: campaignId } },
                     map: { connect: { id: mapId } },
                     characters: {

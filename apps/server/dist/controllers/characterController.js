@@ -157,6 +157,20 @@ const characterController = {
             res.status(500).json({ error: error.message });
         }
     },
+    deleteLocation: async (req, res) => {
+        try {
+            if (!req.user) {
+                throw new Error('Could not find authenticated user');
+            }
+            await characterServices.deleteLocation(Number(req.params.characterId));
+            res
+                .status(200)
+                .json({ message: 'Successfully deleted character location' });
+        }
+        catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
     deleteCharacter: async (req, res) => {
         try {
             if (!req.user) {

@@ -125,6 +125,28 @@ const encounterServices = {
     }
   },
 
+  activateEncounter: async (encounterId: number) => {
+    try {
+      const encounter = await prisma.encounter.findUnique({
+        where: { id: encounterId },
+      });
+
+      console.log(encounter?.active);
+
+      await prisma.encounter.update({
+        where: {
+          id: encounterId,
+        },
+        data: {
+          active: encounter ? !encounter?.active : true,
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to activate encounter');
+    }
+  },
+
   advanceTurn: async (encounterId: number, turn: number) => {
     try {
       await prisma.encounter.update({
@@ -276,11 +298,20 @@ const encounterServices = {
     mapId: number,
     formData: {
       id?: number;
+      name: string;
       turnOrder: number[];
       turnPosition: number;
     },
   ) => {
-    console.log(formData);
+    const existingEncounter = await prisma.encounter.findFirst({
+      where: { mapId },
+    });
+
+    if (existingEncounter) {
+      throw new Error(
+        'You cannot create an encounter on a map which already belongs to another active or pending encounter',
+      );
+    }
 
     const campaign = await prisma.campaign.findUnique({
       where: { id: campaignId },
@@ -324,6 +355,7 @@ const encounterServices = {
       const encounter = await prisma.encounter.upsert({
         where: { id: formData?.id || 0 },
         update: {
+          name: formData.name,
           campaign: { connect: { id: campaignId } },
           map: { connect: { id: mapId } },
           characters: {
@@ -333,6 +365,7 @@ const encounterServices = {
           turnPosition: formData.turnPosition,
         },
         create: {
+          name: formData.name,
           campaign: { connect: { id: campaignId } },
           map: { connect: { id: mapId } },
           characters: {

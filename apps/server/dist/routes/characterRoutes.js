@@ -16,5 +16,6 @@ router.post('/characters/:characterId/conditions', authentication.authenticate, 
 router.post('/characters/:characterId/location', authentication.authenticate, characterController.updateCharacterLocation);
 router.put('/characters/:characterId', authentication.authenticate, characterController.updateCharacter);
 router.put('/characters/:characterId/cart/:cartId', authentication.authenticate, characterController.clearCart);
+router.delete('/characters/:characterId/location', authentication.authenticate, characterController.deleteLocation);
 router.delete('/characters/:characterId', authentication.authenticate, characterController.deleteCharacter);
 export default router;

@@ -313,6 +313,7 @@ const campaignServices = {
               username: true,
             },
           },
+          encounters: true,
         },
         orderBy: { name: 'asc' },
       });

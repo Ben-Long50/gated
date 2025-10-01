@@ -84,6 +84,12 @@ router.put(
 );
 
 router.delete(
+  '/characters/:characterId/location',
+  authentication.authenticate,
+  characterController.deleteLocation,
+);
+
+router.delete(
   '/characters/:characterId',
   authentication.authenticate,
   characterController.deleteCharacter,

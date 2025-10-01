@@ -414,6 +414,8 @@ const characterServices = {
     characterId: number,
     formData: { mapId: number; index: number },
   ) => {
+    console.log(formData);
+
     try {
       const location = await prisma.location.upsert({
         where: {
@@ -434,6 +436,19 @@ const characterServices = {
     } catch (error) {
       console.error(error);
       throw new Error('Failed to update character location');
+    }
+  },
+
+  deleteLocation: async (characterId: number) => {
+    try {
+      await prisma.location.delete({
+        where: {
+          characterId,
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to delete character location');
     }
   },
 
