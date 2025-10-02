@@ -1,4 +1,11 @@
-import { Fragment, useContext, useLayoutEffect, useRef, useState } from 'react';
+import {
+  Fragment,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import ReactGridLayout from 'react-grid-layout';
 import useMap from 'src/hooks/useMap';
 import Loading from '../Loading';
@@ -10,7 +17,7 @@ import ItemCard from '../ItemCard';
 import CharacterCardSmall from '../CharacterCardSmall';
 import CharacterOptions from './CharacterOptions';
 import useCombat from 'src/hooks/useCombat';
-import { Outlet, useLocation, useParams } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import useCombatStore from 'src/stores/combatStore';
 import ActionSidebar from './ActionSidebar';
 import { LayoutContext } from 'src/contexts/LayoutContext';
@@ -26,10 +33,13 @@ import HistoryIcon from '../icons/HistoryIcon';
 import ArrowHeader4 from '../ArrowHeader4';
 import CharacterName from './CharacterName';
 import PassTurnIcon from '../icons/PassTurnIcon';
+import { socket } from 'src/socket';
+import { AuthContext } from 'src/contexts/AuthContext';
 
 const Encounter = () => {
   const { mobile } = useContext(LayoutContext);
   const { accentPrimary } = useContext(ThemeContext);
+  const { user } = useContext(AuthContext);
   const {
     gameMaster,
     calculateDiceCount,
@@ -37,7 +47,9 @@ const Encounter = () => {
     calculateRoll,
     animateRoll,
   } = useContext(CampaignContext);
+  const navigate = useNavigate();
   const location = useLocation();
+
   const { encounterId, mapId } = useParams();
   const parts = location.pathname.split('/');
   const [gridDisplay, setGridDisplay] = useState(false);
@@ -46,6 +58,7 @@ const Encounter = () => {
   const [characterOptions, setCharacterOptions] = useState(true);
   const [characterOptionsHeight, setCharacterOptionsHeight] = useState(0);
   const [historyList, setHistoryList] = useState(false);
+  const [joinedPlayerIds, setJoinedPlayerIds] = useState<string[]>([]);
 
   const { map, locations, isLoading: mapLoading } = useMap(Number(mapId));
   const characterOptionsRef = useRef<HTMLDivElement>(null);
@@ -62,11 +75,36 @@ const Encounter = () => {
     ownedCharacter,
     activeCharacter,
     handleAdvanceTurn,
-    combatForm,
     actionForm,
     reactionForm,
     isLoading: combatLoading,
   } = useCombat();
+
+  useEffect(() => {
+    socket.emit('joinEncounter', {
+      room: `encounter ${encounterId}`,
+      playerId: user.id,
+    });
+
+    socket.on('playerJoined', ({ playerId, playerIdList }) => {
+      console.log(`player ${playerId} joined encounter ${encounterId}`);
+      setJoinedPlayerIds(playerIdList);
+      console.log(playerIdList);
+    });
+
+    socket.on('playerLeft', ({ playerId, playerIdList }) => {
+      console.log(`player ${playerId} left encounter ${encounterId}`);
+      setJoinedPlayerIds(playerIdList);
+      console.log(playerIdList);
+    });
+
+    return () => {
+      socket.emit('leaveEncounter', {
+        room: `encounter ${encounterId}`,
+        playerId: user.id,
+      });
+    };
+  }, [encounterId]);
 
   const mapLayout = map?.layout.map((item) => ({
     ...item,
@@ -74,6 +112,14 @@ const Encounter = () => {
     isResizable: false,
     resizeHandles: [],
   }));
+
+  useEffect(() => {
+    console.log(combat);
+
+    if (combat && combat.combatPhase === 'pending') {
+      navigate('initiative');
+    }
+  }, [combat]);
 
   useLayoutEffect(() => {
     if (characterOptionsRef.current) {
@@ -374,12 +420,12 @@ const Encounter = () => {
       {(parts.includes('characters') || parts.includes('initiative')) && (
         <Outlet
           context={{
+            joinedPlayerIds,
             rollData,
             calculateRoll,
             animateRoll,
             handleAdvanceTurn,
             characterIds: locations?.map((location) => location.characterId),
-            combatForm,
           }}
         />
       )}

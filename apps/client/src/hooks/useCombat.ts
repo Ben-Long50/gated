@@ -34,7 +34,7 @@ const useCombat = () => {
   );
 
   const { data: ownedCharacter } = useCharacterQuery(
-    combat?.characters.find((character) => character.userId === user.id).id,
+    combat?.characters.find((character) => character.userId === user.id)?.id,
   );
 
   const resetCharacterStat = useResetCharacterStatMutation();
@@ -69,7 +69,7 @@ const useCombat = () => {
         combat.turnOrder[0],
       ]) as Character;
 
-      resetCharacterStat.mutate({
+      (resetCharacterStat.mutate({
         characterId: combat.turnOrder[0],
         value: {
           currentActions: nextCharacter?.stats.actions || 0,
@@ -77,14 +77,14 @@ const useCombat = () => {
           currentHands: nextCharacter?.stats.hands || 0,
         },
       }),
-        advanceTurn.mutate(0);
+        advanceTurn.mutate(0));
     } else {
       const nextCharacter = queryClient.getQueryData([
         'character',
         combat.turnOrder[currentIndex + 1],
       ]) as Character;
 
-      resetCharacterStat.mutate({
+      (resetCharacterStat.mutate({
         characterId: combat.turnOrder[currentIndex + 1],
         value: {
           currentActions: nextCharacter?.stats.actions || 0,
@@ -92,7 +92,7 @@ const useCombat = () => {
           currentHands: nextCharacter?.stats.hands || 0,
         },
       }),
-        advanceTurn.mutate(currentIndex + 1);
+        advanceTurn.mutate(currentIndex + 1));
     }
   };
 

@@ -6,14 +6,20 @@ import { useRef, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import Loading from '../Loading';
 import CharacterInitiativeRoll from '../maps/CharacterInitiativeRoll';
+import ArrowHeader4 from '../ArrowHeader4';
 
 const InitiativeModal = () => {
   const [rollingInitiative, setRollingInitiative] = useState(false);
   const [rollCounter, setRollCounter] = useState(0);
   const rollRefs = useRef([]);
 
-  const { characterIds, combatForm, calculateRoll, animateRoll, rollData } =
-    useOutletContext() || {};
+  const {
+    joinedPlayerIds,
+    characterIds,
+    calculateRoll,
+    animateRoll,
+    rollData,
+  } = useOutletContext() || {};
 
   const rollAllInitiative = async () => {
     setRollingInitiative(true);
@@ -89,10 +95,8 @@ const InitiativeModal = () => {
       }
     }
 
-    combatForm.setFieldValue(
-      'turnOrder',
-      resultsOrder.map((result) => result.characterId),
-    );
+    console.log(resultsOrder.map((result) => result.characterId));
+
     setRollingInitiative(false);
     setRollCounter((prev) => prev + 1);
   };
@@ -100,26 +104,27 @@ const InitiativeModal = () => {
   return (
     <Modal>
       <h1>Initiative Rolls</h1>
-      <combatForm.Subscribe selector={(state) => state.values.turnOrder}>
-        {(turnOrder) => (
-          <div className="flex w-full flex-col gap-2">
-            {turnOrder?.map((characterId, index) => (
-              <Fragment key={characterId}>
-                <CharacterInitiativeRoll
-                  ref={(ref) => {
-                    rollRefs.current[index] = ref;
-                  }}
-                  calculateRoll={calculateRoll}
-                  animateRoll={animateRoll}
-                  rollData={rollData}
-                  characterId={characterId}
-                />
-                {index < characterIds.length - 1 && <Divider />}
-              </Fragment>
-            ))}
-          </div>
-        )}
-      </combatForm.Subscribe>
+      <div className="mr-auto flex justify-start gap-4">
+        {joinedPlayerIds.map((playerId) => (
+          <ArrowHeader4 title={playerId} key={playerId} />
+        ))}
+      </div>
+      <div className="flex w-full flex-col gap-2">
+        {characterIds?.map((characterId, index) => (
+          <Fragment key={characterId}>
+            <CharacterInitiativeRoll
+              ref={(ref) => {
+                rollRefs.current[index] = ref;
+              }}
+              calculateRoll={calculateRoll}
+              animateRoll={animateRoll}
+              rollData={rollData}
+              characterId={characterId}
+            />
+            {index < characterIds.length - 1 && <Divider />}
+          </Fragment>
+        ))}
+      </div>
       <div className="flex w-full items-center gap-8">
         <BtnRect
           className="group w-full"

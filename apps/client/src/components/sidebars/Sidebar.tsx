@@ -105,7 +105,7 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
           activeEncounters.map((encounter, index) => (
             <LinkSidebar
               key={index}
-              title={`Combat - ${encounter.map.name}`}
+              title={encounter.name}
               icon={
                 <div className="liveToken z-10 size-12 shrink-0 rounded-full">
                   <img
@@ -115,7 +115,11 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
                   />
                 </div>
               }
-              path={`/glam/campaigns/${encounter.campaignId}/maps/${encounter.mapId}/encounters/${encounter.id}`}
+              path={
+                encounter.combatPhase === 'pending'
+                  ? `/glam/campaigns/${encounter.campaignId}/maps/${encounter.mapId}/encounters/${encounter.id}/initiative`
+                  : `/glam/campaigns/${encounter.campaignId}/maps/${encounter.mapId}/encounters/${encounter.id}`
+              }
             />
           ))}
         {children}

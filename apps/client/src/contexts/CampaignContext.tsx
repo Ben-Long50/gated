@@ -68,6 +68,11 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     const onConnect = () => {
       console.log('Socket connected');
 
+      socket.emit('registerData', {
+        playerId: user.id,
+        username: user.username,
+      });
+
       socket.on('campaign', (campaignId) => {
         queryClient.invalidateQueries({
           queryKey: ['campaign', campaignId],
