@@ -5,6 +5,11 @@ import itemStatServices from '../services/itemStatServices.js';
 export function setupSocketIO(io) {
     io.on('connection', (socket) => {
         console.log('User connected:', socket.id);
+        socket.on('registerData', ({ playerId, username }) => {
+            socket.data.playerId = playerId;
+            socket.data.username = username;
+            console.log(`Registered player ${username}`);
+        });
         socket.on('startCampaign', (campaignId) => {
             socket.join(campaignId);
             console.log(`Started campaign ${campaignId}`);
@@ -54,6 +59,22 @@ export function setupSocketIO(io) {
         socket.on('encounter', ({ campaignId, encounterId }) => {
             io.to(campaignId).emit('encounter', encounterId);
             console.log(`Broadcasted encounter ${encounterId} to campaign ${campaignId}`);
+        });
+        socket.on('joinEncounter', async ({ room, playerId }) => {
+            socket.join(room);
+            const sockets = (await io.in(room).fetchSockets())
+                .map((socket) => socket.data.username)
+                .sort();
+            io.to(room).emit('playerJoined', { playerId, playerIdList: sockets });
+            console.log(`${room} joined`);
+        });
+        socket.on('leaveEncounter', async ({ room, playerId }) => {
+            socket.leave(room);
+            const sockets = (await io.in(room).fetchSockets())
+                .map((socket) => socket.data.username)
+                .sort();
+            io.to(room).emit('playerLeft', { playerId, playerIdList: sockets });
+            console.log(`${room} left`);
         });
         socket.on('activateEncounter', async ({ campaignId, encounterId }) => {
             await encounterServices.activateEncounter(encounterId);
