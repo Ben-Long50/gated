@@ -2,6 +2,7 @@ import prisma from '../config/database.js';
 import encounterServices from '../services/encounterServices.js';
 import characterStatServices from '../services/characterStatServices.js';
 import itemStatServices from '../services/itemStatServices.js';
+import characterServices from '../services/characterServices.js';
 export function setupSocketIO(io) {
     io.on('connection', (socket) => {
         console.log('User connected:', socket.id);
@@ -63,7 +64,7 @@ export function setupSocketIO(io) {
         socket.on('joinEncounter', async ({ room, playerId }) => {
             socket.join(room);
             const sockets = (await io.in(room).fetchSockets())
-                .map((socket) => socket.data.username)
+                .map((socket) => socket.data)
                 .sort();
             io.to(room).emit('playerJoined', { playerId, playerIdList: sockets });
             console.log(`${room} joined`);
@@ -71,7 +72,7 @@ export function setupSocketIO(io) {
         socket.on('leaveEncounter', async ({ room, playerId }) => {
             socket.leave(room);
             const sockets = (await io.in(room).fetchSockets())
-                .map((socket) => socket.data.username)
+                .map((socket) => socket.data)
                 .sort();
             io.to(room).emit('playerLeft', { playerId, playerIdList: sockets });
             console.log(`${room} left`);
@@ -80,6 +81,75 @@ export function setupSocketIO(io) {
             await encounterServices.activateEncounter(encounterId);
             io.to(campaignId).emit('encounter', encounterId);
             console.log(`Broadcasted encounter ${encounterId} to campaign ${campaignId}`);
+        });
+        socket.on('rollInitiative', async (encounterId) => {
+            const encounter = await encounterServices.getEncounterById(encounterId);
+            const rolls = new Map();
+            for (const id of encounter.turnOrder) {
+                const character = await characterServices.getCharacterById(id);
+                const calculateRoll = (attributes, action, modifiers) => {
+                    if (!action.roll) {
+                        return;
+                    }
+                    const calculateDiceCount = (attributes, action, modifiers) => {
+                        var _a;
+                        const calculatedRolls = ((_a = action.roll) === null || _a === void 0 ? void 0 : _a.map((roll) => {
+                            const attributePoints = attributes[roll.attribute].points;
+                            const skillPoints = attributes[roll.attribute].skills[roll.skill].points;
+                            return {
+                                diceCount: attributePoints + skillPoints,
+                                roll,
+                            };
+                        })) || [];
+                        const bestRoll = calculatedRolls.sort((a, b) => b.diceCount - a.diceCount)[0];
+                        if (modifiers.includes('push')) {
+                            bestRoll.diceCount += 2;
+                        }
+                        if (action.name &&
+                            (action.name === 'Salvo Fire' || action.name === 'Flurry')) {
+                            bestRoll.diceCount += 2;
+                        }
+                        return bestRoll;
+                    };
+                    const bestRoll = calculateDiceCount(attributes, action, modifiers);
+                    const result = Array.from({ length: bestRoll.diceCount }, () => Math.floor(Math.random() * 6) + 1);
+                    let successes = 0;
+                    successes += result.filter((number) => number >= 5).length;
+                    if (modifiers.includes('booming')) {
+                        successes += result.filter((number) => number === 6).length;
+                    }
+                    if (modifiers.includes('dooming')) {
+                        successes -= result.filter((number) => number === 1).length;
+                    }
+                    if (modifiers.includes('lucky') && !modifiers.includes('unlucky')) {
+                        successes += result.filter((number) => number === 4).length;
+                    }
+                    if (modifiers.includes('unlucky') && !modifiers.includes('lucky')) {
+                        successes -= result.filter((number) => number === 5).length;
+                    }
+                    return { result, successes };
+                };
+                const violenceRolls = [
+                    { attribute: 'violence', skill: 'assault' },
+                    { attribute: 'violence', skill: 'shooting' },
+                    { attribute: 'violence', skill: 'subterfuge' },
+                    { attribute: 'violence', skill: 'threshold' },
+                ];
+                const rollInitiative = async () => {
+                    const rollResults = calculateRoll(character === null || character === void 0 ? void 0 : character.attributes, { roll: violenceRolls }, []) || { result: [], successes: 0 };
+                    rolls.set(character === null || character === void 0 ? void 0 : character.id, {
+                        characterId: character === null || character === void 0 ? void 0 : character.id,
+                        name: character === null || character === void 0 ? void 0 : character.firstName,
+                        playerCharacter: character === null || character === void 0 ? void 0 : character.playerCharacter,
+                        diceArray: rollResults.result,
+                        successes: rollResults.successes,
+                    });
+                };
+                rollInitiative();
+            }
+            console.log(rolls);
+            const rollsArray = Array.from(rolls.entries());
+            io.to(`encounter ${encounterId}`).emit('initiativeRoll', rollsArray);
         });
         socket.on('actionRoll', async ({ campaignId, encounterId, activeCharacter, targetCharacter, action, item, damage, rollResult, }) => {
             const historyData = {
