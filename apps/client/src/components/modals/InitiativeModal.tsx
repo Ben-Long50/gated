@@ -2,20 +2,28 @@ import { Fragment } from 'react/jsx-runtime';
 import Modal from './Modal';
 import Divider from '../Divider';
 import BtnRect from '../buttons/BtnRect';
-import { useRef, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useContext, useRef, useState } from 'react';
+import { useOutletContext, useParams } from 'react-router-dom';
 import Loading from '../Loading';
 import CharacterInitiativeRoll from '../maps/CharacterInitiativeRoll';
-import ArrowHeader4 from '../ArrowHeader4';
+import { CampaignContext } from 'src/contexts/CampaignContext';
+import Icon from '@mdi/react';
+import { mdiCrown } from '@mdi/js';
+import { socket } from 'src/socket';
 
 const InitiativeModal = () => {
+  const { gameMaster } = useContext(CampaignContext);
+  const { encounterId } = useParams();
   const [rollingInitiative, setRollingInitiative] = useState(false);
   const [rollCounter, setRollCounter] = useState(0);
   const rollRefs = useRef([]);
 
   const {
-    joinedPlayerIds,
+    campaign,
+    joinedPlayers,
     characterIds,
+    initiativeRolls,
+    initiativeComplete,
     calculateRoll,
     animateRoll,
     rollData,
@@ -104,64 +112,80 @@ const InitiativeModal = () => {
   return (
     <Modal>
       <h1>Initiative Rolls</h1>
-      <div className="mr-auto flex justify-start gap-4">
-        {joinedPlayerIds.map((playerId) => (
-          <ArrowHeader4 title={playerId} key={playerId} />
+      <div className="absolute left-4 top-4 mr-auto flex flex-col items-start justify-start">
+        {joinedPlayers.map((player) => (
+          <div className="flex items-center gap-2" key={player.username}>
+            <p className="text-base">{player.username}</p>
+            {campaign.ownerId === player.playerId && (
+              <Icon path={mdiCrown} color="gold" size={0.8} />
+            )}
+          </div>
         ))}
       </div>
       <div className="flex w-full flex-col gap-2">
-        {characterIds?.map((characterId, index) => (
-          <Fragment key={characterId}>
-            <CharacterInitiativeRoll
-              ref={(ref) => {
-                rollRefs.current[index] = ref;
-              }}
-              calculateRoll={calculateRoll}
-              animateRoll={animateRoll}
-              rollData={rollData}
-              characterId={characterId}
-            />
-            {index < characterIds.length - 1 && <Divider />}
-          </Fragment>
-        ))}
+        {characterIds?.map((characterId, index) => {
+          return (
+            <Fragment key={characterId}>
+              <CharacterInitiativeRoll
+                ref={(ref) => {
+                  rollRefs.current[index] = ref;
+                }}
+                calculateRoll={calculateRoll}
+                animateRoll={animateRoll}
+                rollData={initiativeRolls}
+                rollComplete={initiativeComplete}
+                characterId={characterId}
+              />
+              {index < characterIds.length - 1 && <Divider />}
+            </Fragment>
+          );
+        })}
       </div>
-      <div className="flex w-full items-center gap-8">
-        <BtnRect
-          className="group w-full"
-          ariaLabel="Roll initiative"
-          type="button"
-          onClick={() => {
-            if (!rollingInitiative) {
-              rollAllInitiative();
-            }
-          }}
-        >
-          {rollingInitiative ? (
-            <Loading
-              className="group-hover:text-accent text-zinc-950"
-              size={1.15}
-            />
-          ) : !rollingInitiative && rollCounter > 0 ? (
-            'Reroll Initiative'
-          ) : (
-            'Roll Initiative'
-          )}
-        </BtnRect>
-        {rollCounter > 0 && (
+      {gameMaster ? (
+        <div className="flex w-full items-center gap-8">
           <BtnRect
-            className={`${rollingInitiative && 'pointer-events-none opacity-50'} w-full`}
-            ariaLabel="Start combat"
+            className="group w-full"
+            ariaLabel="Roll initiative"
             type="button"
             onClick={() => {
-              combatForm.handleSubmit();
-              // advanceTurn();
-              // navigate(-1);
+              if (!rollingInitiative) {
+                socket.emit('rollInitiative', Number(encounterId));
+                // rollAllInitiative();
+              }
             }}
           >
-            Start Combat
+            {rollingInitiative ? (
+              <Loading
+                className="group-hover:text-accent text-zinc-950"
+                size={1.15}
+              />
+            ) : !rollingInitiative && rollCounter > 0 ? (
+              'Reroll Initiative'
+            ) : (
+              'Roll Initiative'
+            )}
           </BtnRect>
-        )}
-      </div>
+          {rollCounter > 0 && (
+            <BtnRect
+              className={`${rollingInitiative && 'pointer-events-none opacity-50'} w-full`}
+              ariaLabel="Start combat"
+              type="button"
+              onClick={() => {
+                combatForm.handleSubmit();
+                // advanceTurn();
+                // navigate(-1);
+              }}
+            >
+              Start Combat
+            </BtnRect>
+          )}
+        </div>
+      ) : (
+        <div className="flex items-center gap-4">
+          <h3>Waiting for the Game Master to roll initiative</h3>
+          <Loading size={1.15} />
+        </div>
+      )}
     </Modal>
   );
 };

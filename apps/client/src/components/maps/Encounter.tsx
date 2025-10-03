@@ -35,6 +35,7 @@ import CharacterName from './CharacterName';
 import PassTurnIcon from '../icons/PassTurnIcon';
 import { socket } from 'src/socket';
 import { AuthContext } from 'src/contexts/AuthContext';
+import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 
 const Encounter = () => {
   const { mobile } = useContext(LayoutContext);
@@ -50,7 +51,7 @@ const Encounter = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { encounterId, mapId } = useParams();
+  const { campaignId, encounterId, mapId } = useParams();
   const parts = location.pathname.split('/');
   const [gridDisplay, setGridDisplay] = useState(false);
   const [characterList, setCharacterList] = useState(false);
@@ -58,10 +59,16 @@ const Encounter = () => {
   const [characterOptions, setCharacterOptions] = useState(true);
   const [characterOptionsHeight, setCharacterOptionsHeight] = useState(0);
   const [historyList, setHistoryList] = useState(false);
-  const [joinedPlayerIds, setJoinedPlayerIds] = useState<string[]>([]);
+  const [joinedPlayers, setJoinedPlayers] = useState<string[]>([]);
+  const [initiativeRolls, setInitiativeRolls] = useState(new Map());
+  const [initiativeComplete, setInitiativeComplete] = useState(false);
+
+  const initiativeRollsRef = useRef<Map<number, any> | null>(null);
 
   const { map, locations, isLoading: mapLoading } = useMap(Number(mapId));
   const characterOptionsRef = useRef<HTMLDivElement>(null);
+
+  const { data: campaign } = useCampaignQuery(Number(campaignId));
 
   const {
     data: history,
@@ -88,14 +95,20 @@ const Encounter = () => {
 
     socket.on('playerJoined', ({ playerId, playerIdList }) => {
       console.log(`player ${playerId} joined encounter ${encounterId}`);
-      setJoinedPlayerIds(playerIdList);
+      setJoinedPlayers(playerIdList);
       console.log(playerIdList);
     });
 
     socket.on('playerLeft', ({ playerId, playerIdList }) => {
       console.log(`player ${playerId} left encounter ${encounterId}`);
-      setJoinedPlayerIds(playerIdList);
+      setJoinedPlayers(playerIdList);
       console.log(playerIdList);
+    });
+
+    socket.on('initiativeRoll', (rollsArray) => {
+      const rolls = new Map(rollsArray) as Map<number, any>;
+
+      animateRoll(rolls, setInitiativeRolls, setInitiativeComplete);
     });
 
     return () => {
@@ -420,7 +433,10 @@ const Encounter = () => {
       {(parts.includes('characters') || parts.includes('initiative')) && (
         <Outlet
           context={{
-            joinedPlayerIds,
+            campaign,
+            joinedPlayers,
+            initiativeRolls,
+            initiativeComplete,
             rollData,
             calculateRoll,
             animateRoll,

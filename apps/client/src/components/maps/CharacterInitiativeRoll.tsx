@@ -4,7 +4,14 @@ import ArrowHeader3 from '../ArrowHeader3';
 import useAttributeTree from 'src/hooks/useAttributeTree';
 import Die from './Die';
 import DieIcon from '../icons/DieIcon';
-import { Ref, useContext, useImperativeHandle } from 'react';
+import {
+  Ref,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState,
+} from 'react';
 import Loading from '../Loading';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import { Action } from 'src/types/action';
@@ -13,6 +20,7 @@ const CharacterInitiativeRoll = ({
   characterId,
   ref,
   calculateRoll,
+  rollComplete,
   animateRoll,
   rollData,
 }: {
@@ -23,6 +31,7 @@ const CharacterInitiativeRoll = ({
     action: Partial<Action>,
     modifiers: string[],
   ) => { result: number[]; successes: number };
+  rollComplete: boolean;
   animateRoll: (
     characterId: number,
     roll: {
@@ -37,6 +46,7 @@ const CharacterInitiativeRoll = ({
 }) => {
   const { mobile } = useContext(LayoutContext);
   const { filteredCharacter: character, isLoading } = useCharacter(characterId);
+  const [roll, setRoll] = useState<any>(null);
 
   const { emptyAttributeTree } = useAttributeTree();
 
@@ -50,8 +60,11 @@ const CharacterInitiativeRoll = ({
       { roll: violenceRolls },
       [],
     ) || { result: [], successes: 0 };
+    console.log(rollResults);
 
     const successes = await animateRoll(characterId, rollResults);
+
+    console.log(successes);
 
     return {
       characterId,
@@ -61,12 +74,16 @@ const CharacterInitiativeRoll = ({
     };
   };
 
+  useEffect(() => {
+    if (rollData) {
+      setRoll(rollData.get(characterId));
+    }
+  }, [rollData]);
+
   useImperativeHandle(ref, () => ({
     rollInitiative,
     characterId,
   }));
-
-  const roll = rollData.get(characterId);
 
   if (isLoading) return <Loading size={2} />;
 
@@ -113,7 +130,7 @@ const CharacterInitiativeRoll = ({
       </div>
       {!mobile && (
         <div className="flex items-center gap-4 justify-self-end">
-          {roll?.successes != null && (
+          {roll?.successes != null && rollComplete && (
             <h1 className="flex size-8 items-center justify-center">
               {roll?.successes}
             </h1>

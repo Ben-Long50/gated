@@ -11,13 +11,8 @@ const useRoll = () => {
   const rollRef = useRef(new Map());
   const timeoutRef = useRef<number | null>(null);
 
-  const animateRoll = (
-    characterId: number,
-    roll: {
-      result: number[];
-      successes: number;
-    },
-  ): Promise<number> => {
+  const animateRoll = (rollMap, setRolls, setComplete): Promise<number> => {
+    setComplete(false);
     return new Promise((resolve) => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
@@ -27,32 +22,31 @@ const useRoll = () => {
       let count = 1;
       const maxRolls = 18;
 
-      rollRef.current.set(characterId, { rolling: true });
-
       const rollOnce = () => {
-        const diceArray = Array.from(
-          { length: roll.result.length },
-          () => Math.floor(Math.random() * 6) + 1,
-        );
+        const fakeRollMap = new Map();
+        for (const [key, value] of rollMap) {
+          const fakeDiceArray = Array.from(
+            { length: value.diceArray.length },
+            () => Math.floor(Math.random() * 6) + 1,
+          );
+
+          fakeRollMap.set(key, { ...value, diceArray: fakeDiceArray });
+        }
 
         if (count < maxRolls) {
-          rollRef.current.set(characterId, { ...rollRef.current, diceArray });
+          setRolls(fakeRollMap);
           setRollCounter((prev) => prev + 1);
           count++;
         }
 
         if (count >= maxRolls) {
-          rollRef.current.set(characterId, {
-            rolling: false,
-            diceArray: roll.result,
-            successes: roll.successes,
-          });
-
-          resolve(roll.successes);
+          setRolls(rollMap);
+          setComplete(true);
+          resolve(rollMap);
           return;
         }
 
-        const delay = count * 10;
+        const delay = count * 15;
         timeoutRef.current = setTimeout(rollOnce, delay);
       };
 
