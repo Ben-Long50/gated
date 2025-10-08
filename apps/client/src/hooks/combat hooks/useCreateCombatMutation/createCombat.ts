@@ -6,6 +6,8 @@ const createCombat = async (
   formData: { mapId: number; turnOrder: number[]; turnPosition: number },
 ) => {
   try {
+    console.log(formData);
+
     const response = await fetch(
       `${apiUrl}/campaigns/${campaignId}/maps/${formData.mapId}/encounters/create`,
       {

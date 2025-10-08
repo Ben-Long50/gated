@@ -15,12 +15,12 @@ import {
 import Loading from '../Loading';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import { Action } from 'src/types/action';
+import { CampaignContext } from 'src/contexts/CampaignContext';
 
 const CharacterInitiativeRoll = ({
   characterId,
   ref,
   calculateRoll,
-  rollComplete,
   animateRoll,
   rollData,
 }: {
@@ -31,7 +31,6 @@ const CharacterInitiativeRoll = ({
     action: Partial<Action>,
     modifiers: string[],
   ) => { result: number[]; successes: number };
-  rollComplete: boolean;
   animateRoll: (
     characterId: number,
     roll: {
@@ -45,6 +44,7 @@ const CharacterInitiativeRoll = ({
   >;
 }) => {
   const { mobile } = useContext(LayoutContext);
+  const { rollComplete } = useContext(CampaignContext);
   const { filteredCharacter: character, isLoading } = useCharacter(characterId);
   const [roll, setRoll] = useState<any>(null);
 
@@ -60,11 +60,8 @@ const CharacterInitiativeRoll = ({
       { roll: violenceRolls },
       [],
     ) || { result: [], successes: 0 };
-    console.log(rollResults);
 
     const successes = await animateRoll(characterId, rollResults);
-
-    console.log(successes);
 
     return {
       characterId,
@@ -96,8 +93,8 @@ const CharacterInitiativeRoll = ({
         />
         {mobile && (
           <div className="ml-auto flex items-center gap-2 self-end justify-self-end">
-            {roll?.successes != null && (
-              <h2 className="flex size-8 items-center justify-center">
+            {roll?.successes != null && rollComplete && (
+              <h2 className="rollComplete flex size-8 items-center justify-center">
                 {roll?.successes}
               </h2>
             )}
@@ -124,6 +121,7 @@ const CharacterInitiativeRoll = ({
             size={64}
             number={number}
             rolling={roll?.rolling}
+            rollComplete={rollComplete}
             modifiers={[]}
           />
         ))}
@@ -131,7 +129,9 @@ const CharacterInitiativeRoll = ({
       {!mobile && (
         <div className="flex items-center gap-4 justify-self-end">
           {roll?.successes != null && rollComplete && (
-            <h1 className="flex size-8 items-center justify-center">
+            <h1
+              className={`rollComplete flex size-8 items-center justify-center`}
+            >
               {roll?.successes}
             </h1>
           )}

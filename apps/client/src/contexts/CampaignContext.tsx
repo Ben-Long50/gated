@@ -55,9 +55,12 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
 
   const {
     rollData,
+    rolling,
     calculateDiceCount,
     calculateRoll,
     animateRoll,
+    rollComplete,
+    rollCounter,
     resetRolls,
   } = useRoll();
 
@@ -276,8 +279,11 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         activeEncounters,
         calculateDiceCount,
         rollData,
+        rolling,
         calculateRoll,
         animateRoll,
+        rollComplete,
+        rollCounter,
       }}
     >
       {children}

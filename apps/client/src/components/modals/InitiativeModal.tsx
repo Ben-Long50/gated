@@ -10,12 +10,12 @@ import { CampaignContext } from 'src/contexts/CampaignContext';
 import Icon from '@mdi/react';
 import { mdiCrown } from '@mdi/js';
 import { socket } from 'src/socket';
+import useCreateCombatMutation from 'src/hooks/combat hooks/useCreateCombatMutation/useCreateCombatMutation';
 
 const InitiativeModal = () => {
   const { gameMaster } = useContext(CampaignContext);
-  const { encounterId } = useParams();
+  const { campaignId, mapId, encounterId } = useParams();
   const [rollingInitiative, setRollingInitiative] = useState(false);
-  const [rollCounter, setRollCounter] = useState(0);
   const rollRefs = useRef([]);
 
   const {
@@ -24,10 +24,14 @@ const InitiativeModal = () => {
     characterIds,
     initiativeRolls,
     initiativeComplete,
+    rolling,
     calculateRoll,
     animateRoll,
+    rollCounter,
     rollData,
   } = useOutletContext() || {};
+
+  const startCombat = useCreateCombatMutation(Number(campaignId));
 
   const rollAllInitiative = async () => {
     setRollingInitiative(true);
@@ -106,8 +110,12 @@ const InitiativeModal = () => {
     console.log(resultsOrder.map((result) => result.characterId));
 
     setRollingInitiative(false);
-    setRollCounter((prev) => prev + 1);
   };
+
+  const initiativeRollIdArray = Array.from(initiativeRolls.keys());
+
+  const initiativeOrder =
+    initiativeRollIdArray.length > 0 ? initiativeRollIdArray : characterIds;
 
   return (
     <Modal>
@@ -123,7 +131,7 @@ const InitiativeModal = () => {
         ))}
       </div>
       <div className="flex w-full flex-col gap-2">
-        {characterIds?.map((characterId, index) => {
+        {initiativeOrder?.map((characterId, index) => {
           return (
             <Fragment key={characterId}>
               <CharacterInitiativeRoll
@@ -171,7 +179,14 @@ const InitiativeModal = () => {
               ariaLabel="Start combat"
               type="button"
               onClick={() => {
-                combatForm.handleSubmit();
+                startCombat.mutate({
+                  id: Number(encounterId),
+                  mapId: Number(mapId),
+                  turnOrder: Array.from(initiativeRolls.keys()),
+                  combatPhase: 'action',
+                  turnPosition: 0,
+                });
+
                 // advanceTurn();
                 // navigate(-1);
               }}
@@ -181,10 +196,18 @@ const InitiativeModal = () => {
           )}
         </div>
       ) : (
-        <div className="flex items-center gap-4">
-          <h3>Waiting for the Game Master to roll initiative</h3>
-          <Loading size={1.15} />
-        </div>
+        !rolling && (
+          <div className="flex items-center gap-4">
+            <Loading size={1.15} />
+            {rollCounter === 0 ? (
+              <h3>Waiting for the Game Master to roll initiative</h3>
+            ) : (
+              <h3>
+                Waiting for the Game Master to reroll initiative or start combat
+              </h3>
+            )}
+          </div>
+        )
       )}
     </Modal>
   );

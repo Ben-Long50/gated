@@ -8,11 +8,13 @@ import Die6Icon from '../icons/Die6Icon';
 const Die = ({
   number,
   rolling,
+  rollComplete,
   size,
   modifiers,
 }: {
   number: number;
   rolling: boolean;
+  rollComplete: boolean;
   size: number;
   modifiers: string[];
 }) => {
@@ -66,7 +68,7 @@ const Die = ({
 
   return (
     <div
-      className={`${!rolling && 'rollComplete'} relative shrink-0 shadow-md shadow-black`}
+      className={`${rollComplete && 'rollComplete'} relative shrink-0 shadow-md shadow-black`}
       style={{
         width: size,
         height: size,

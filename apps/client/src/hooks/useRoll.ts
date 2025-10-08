@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
 import { Action } from 'src/types/action';
 import {
@@ -7,12 +8,17 @@ import {
 } from 'src/types/attributeTree';
 
 const useRoll = () => {
+  const [rolling, setRolling] = useState(false);
   const [rollCounter, setRollCounter] = useState(0);
+  const [rollComplete, setRollComplete] = useState(false);
   const rollRef = useRef(new Map());
   const timeoutRef = useRef<number | null>(null);
+  const queryClient = useQueryClient();
 
-  const animateRoll = (rollMap, setRolls, setComplete): Promise<number> => {
-    setComplete(false);
+  const animateRoll = (rollMap, setRolls): Promise<number> => {
+    setRollComplete(false);
+    setRolling(true);
+
     return new Promise((resolve) => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
@@ -35,14 +41,22 @@ const useRoll = () => {
 
         if (count < maxRolls) {
           setRolls(fakeRollMap);
-          setRollCounter((prev) => prev + 1);
           count++;
         }
 
         if (count >= maxRolls) {
-          setRolls(rollMap);
-          setComplete(true);
+          const sortedRollMap = new Map(
+            [...rollMap.entries()].sort(
+              (a, b) => b[1].successes - a[1].successes,
+            ),
+          );
+
+          setRolls(sortedRollMap);
+          setRollComplete(true);
+          setRolling(false);
+          setRollCounter((prev) => prev + 1);
           resolve(rollMap);
+
           return;
         }
 
@@ -132,9 +146,12 @@ const useRoll = () => {
 
   return {
     rollData: rollRef.current,
+    rolling,
     calculateDiceCount,
     calculateRoll,
     animateRoll,
+    rollComplete,
+    rollCounter,
     resetRolls,
   };
 };

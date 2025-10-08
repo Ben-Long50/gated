@@ -16,7 +16,7 @@ const useCreateCombatMutation = (campaignId: number) => {
     },
     onSuccess: (data) => {
       socket.emit('encounter', { campaignId, encounterId: data.encounterId });
-      navigate('../pending');
+      navigate('..');
       return queryClient.invalidateQueries({
         queryKey: ['encounter', data.encounterId],
       });

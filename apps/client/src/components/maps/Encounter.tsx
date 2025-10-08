@@ -45,8 +45,10 @@ const Encounter = () => {
     gameMaster,
     calculateDiceCount,
     rollData,
+    rolling,
     calculateRoll,
     animateRoll,
+    rollCounter,
   } = useContext(CampaignContext);
   const navigate = useNavigate();
   const location = useLocation();
@@ -62,8 +64,6 @@ const Encounter = () => {
   const [joinedPlayers, setJoinedPlayers] = useState<string[]>([]);
   const [initiativeRolls, setInitiativeRolls] = useState(new Map());
   const [initiativeComplete, setInitiativeComplete] = useState(false);
-
-  const initiativeRollsRef = useRef<Map<number, any> | null>(null);
 
   const { map, locations, isLoading: mapLoading } = useMap(Number(mapId));
   const characterOptionsRef = useRef<HTMLDivElement>(null);
@@ -106,9 +106,11 @@ const Encounter = () => {
     });
 
     socket.on('initiativeRoll', (rollsArray) => {
+      console.log(initiativeRolls, initiativeRolls.size);
+
       const rolls = new Map(rollsArray) as Map<number, any>;
 
-      animateRoll(rolls, setInitiativeRolls, setInitiativeComplete);
+      animateRoll(rolls, setInitiativeRolls);
     });
 
     return () => {
@@ -127,8 +129,6 @@ const Encounter = () => {
   }));
 
   useEffect(() => {
-    console.log(combat);
-
     if (combat && combat.combatPhase === 'pending') {
       navigate('initiative');
     }
@@ -438,10 +438,12 @@ const Encounter = () => {
             initiativeRolls,
             initiativeComplete,
             rollData,
+            rolling,
             calculateRoll,
             animateRoll,
+            rollCounter,
             handleAdvanceTurn,
-            characterIds: locations?.map((location) => location.characterId),
+            characterIds: combat.turnOrder,
           }}
         />
       )}
