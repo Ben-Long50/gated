@@ -68,6 +68,7 @@ const encounterController = {
                 });
                 return;
             }
+            console.log(req.body);
             await encounterServices.createOrUpdateEncounter(Number(req.params.campaignId), Number(req.params.mapId), req.body);
             res.status(200).json({ message: 'Successfully created encounter' });
         }

@@ -307,7 +307,7 @@ const encounterServices = {
       where: { mapId },
     });
 
-    if (existingEncounter) {
+    if (existingEncounter && formData.id !== existingEncounter.id) {
       throw new Error(
         'You cannot create an encounter on a map which already belongs to another active or pending encounter',
       );
@@ -351,21 +351,32 @@ const encounterServices = {
       eventData.time = campaign.time;
     }
 
+    const oldEncounter = await prisma.encounter.findUnique({
+      where: { id: formData?.id },
+    });
+
+    const {
+      id,
+      mapId: m,
+      campaignId: c,
+      ...data
+    } = { ...oldEncounter, ...formData };
+
+    console.log(data);
+
     try {
       const encounter = await prisma.encounter.upsert({
         where: { id: formData?.id || 0 },
         update: {
-          name: formData.name,
+          ...data,
           campaign: { connect: { id: campaignId } },
           map: { connect: { id: mapId } },
           characters: {
             set: formData.turnOrder.map((id) => ({ id })),
           },
-          turnOrder: formData.turnOrder,
-          turnPosition: formData.turnPosition,
         },
         create: {
-          name: formData.name,
+          ...data,
           campaign: { connect: { id: campaignId } },
           map: { connect: { id: mapId } },
           characters: {
@@ -374,10 +385,10 @@ const encounterServices = {
           event: {
             create: { campaign: { connect: { id: campaignId } }, ...eventData },
           },
-          turnOrder: formData.turnOrder,
-          turnPosition: formData.turnPosition,
         },
       });
+
+      console.log(encounter);
 
       return encounter;
     } catch (error) {

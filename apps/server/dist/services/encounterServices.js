@@ -1,3 +1,14 @@
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 import prisma from '../config/database.js';
 const encounterServices = {
     getEncounters: async (campaignId) => {
@@ -266,7 +277,7 @@ const encounterServices = {
         const existingEncounter = await prisma.encounter.findFirst({
             where: { mapId },
         });
-        if (existingEncounter) {
+        if (existingEncounter && formData.id !== existingEncounter.id) {
             throw new Error('You cannot create an encounter on a map which already belongs to another active or pending encounter');
         }
         const campaign = await prisma.campaign.findUnique({
@@ -298,33 +309,24 @@ const encounterServices = {
             //@ts-ignore
             eventData.time = campaign.time;
         }
+        const oldEncounter = await prisma.encounter.findUnique({
+            where: { id: formData === null || formData === void 0 ? void 0 : formData.id },
+        });
+        const _a = Object.assign(Object.assign({}, oldEncounter), formData), { id, mapId: m, campaignId: c } = _a, data = __rest(_a, ["id", "mapId", "campaignId"]);
+        console.log(data);
         try {
             const encounter = await prisma.encounter.upsert({
                 where: { id: (formData === null || formData === void 0 ? void 0 : formData.id) || 0 },
-                update: {
-                    name: formData.name,
-                    campaign: { connect: { id: campaignId } },
-                    map: { connect: { id: mapId } },
-                    characters: {
+                update: Object.assign(Object.assign({}, data), { campaign: { connect: { id: campaignId } }, map: { connect: { id: mapId } }, characters: {
                         set: formData.turnOrder.map((id) => ({ id })),
-                    },
-                    turnOrder: formData.turnOrder,
-                    turnPosition: formData.turnPosition,
-                },
-                create: {
-                    name: formData.name,
-                    campaign: { connect: { id: campaignId } },
-                    map: { connect: { id: mapId } },
-                    characters: {
+                    } }),
+                create: Object.assign(Object.assign({}, data), { campaign: { connect: { id: campaignId } }, map: { connect: { id: mapId } }, characters: {
                         connect: formData.turnOrder.map((id) => ({ id })),
-                    },
-                    event: {
+                    }, event: {
                         create: Object.assign({ campaign: { connect: { id: campaignId } } }, eventData),
-                    },
-                    turnOrder: formData.turnOrder,
-                    turnPosition: formData.turnPosition,
-                },
+                    } }),
             });
+            console.log(encounter);
             return encounter;
         }
         catch (error) {

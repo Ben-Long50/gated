@@ -147,7 +147,6 @@ export function setupSocketIO(io) {
                 };
                 rollInitiative();
             }
-            console.log(rolls);
             const rollsArray = Array.from(rolls.entries());
             io.to(`encounter ${encounterId}`).emit('initiativeRoll', rollsArray);
         });
