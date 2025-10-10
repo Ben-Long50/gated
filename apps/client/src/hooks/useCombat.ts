@@ -27,8 +27,6 @@ const useCombat = () => {
 
   const { data: combat, isLoading } = useCombatQuery(Number(encounterId));
 
-  console.log(combat);
-
   const setItem = useCombatStore((state) => state.setItem);
 
   const { filteredCharacter: activeCharacter } = useCharacter(

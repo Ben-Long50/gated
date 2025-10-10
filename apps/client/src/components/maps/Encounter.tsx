@@ -113,6 +113,12 @@ const Encounter = () => {
       animateRoll(rolls, setInitiativeRolls);
     });
 
+    socket.on('navigateToEncounter', ({ encounterId, mapId, campaignId }) => {
+      navigate(
+        `glam/campaigns/${campaignId}/maps/${mapId}/encounters/${encounterId}`,
+      );
+    });
+
     return () => {
       socket.emit('leaveEncounter', {
         room: `encounter ${encounterId}`,

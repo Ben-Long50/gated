@@ -27,7 +27,7 @@ const EncounterForm = () => {
 
   const { data: campaign } = useCampaignQuery(Number(campaignId));
 
-  const { nonPlayerCharacters } = useCampaignCharactersQuery(
+  const { nonPlayerCharacters, playerCharacters } = useCampaignCharactersQuery(
     campaign.characters.map((character) => character.id),
   );
 
@@ -222,15 +222,6 @@ const EncounterForm = () => {
               }
             </encounterForm.Subscribe>
           )}
-          <encounterForm.Subscribe selector={(state) => state.values.turnOrder}>
-            {(turnOrder) =>
-              turnOrder.length > 0 && (
-                <BtnRect ariaLabel="Create encounter" type="button">
-                  Create Encounter
-                </BtnRect>
-              )
-            }
-          </encounterForm.Subscribe>
         </div>
       </ThemeContainer>
       {formStage === 'characters' && (
@@ -240,14 +231,14 @@ const EncounterForm = () => {
           borderColor={accentPrimary}
         >
           <div className="flex w-full flex-col gap-4 p-4">
-            <ArrowHeader3 title="Place NPCs" />
+            <ArrowHeader3 title="Place Characters" />
             <locationForm.Field name="character">
               {(field) => (
                 <div className="flex items-center gap-4">
                   <InputSelectField
                     field={field}
                     label="Campaign NPCs"
-                    options={nonPlayerCharacters}
+                    options={[...playerCharacters, ...nonPlayerCharacters]}
                     reverse={true}
                   />
                   {field.state.value && field.state.value.location?.id && (

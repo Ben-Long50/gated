@@ -38,7 +38,7 @@ const Map = ({
   if (!map) return <h1>No Map Found</h1>;
 
   return (
-    <div className="flex h-dvh w-full max-w-85dvw flex-col items-center gap-4 sm:gap-8">
+    <div className="flex w-full max-w-85dvw flex-col items-center gap-4 sm:gap-8">
       {!mobile && (
         <div className="flex w-full max-w-4xl items-center justify-center gap-8">
           <button
