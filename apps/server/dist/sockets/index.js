@@ -6,6 +6,10 @@ import characterServices from '../services/characterServices.js';
 export function setupSocketIO(io) {
     io.on('connection', (socket) => {
         console.log('User connected:', socket.id);
+        socket.on('campaign', (campaignId) => {
+            console.log('campaign emitter');
+            io.to(campaignId).emit('campaign', campaignId);
+        });
         socket.on('registerData', ({ playerId, username }) => {
             socket.data.playerId = playerId;
             socket.data.username = username;
@@ -149,6 +153,11 @@ export function setupSocketIO(io) {
             }
             const rollsArray = Array.from(rolls.entries());
             io.to(`encounter ${encounterId}`).emit('initiativeRoll', rollsArray);
+        });
+        socket.on('navigateToEncounter', ({ encounterId, mapId, campaignId }) => {
+            socket
+                .to(`encounter ${encounterId}`)
+                .emit('navigateToEncounter', { encounterId, mapId, campaignId });
         });
         socket.on('actionRoll', async ({ campaignId, encounterId, activeCharacter, targetCharacter, action, item, damage, rollResult, }) => {
             const historyData = {

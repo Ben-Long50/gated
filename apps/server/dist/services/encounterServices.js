@@ -309,9 +309,12 @@ const encounterServices = {
             //@ts-ignore
             eventData.time = campaign.time;
         }
-        const oldEncounter = await prisma.encounter.findUnique({
-            where: { id: formData === null || formData === void 0 ? void 0 : formData.id },
-        });
+        const oldEncounter = (formData === null || formData === void 0 ? void 0 : formData.id)
+            ? await prisma.encounter.findUnique({
+                where: { id: formData === null || formData === void 0 ? void 0 : formData.id },
+            })
+            : {};
+        console.log(oldEncounter);
         const _a = Object.assign(Object.assign({}, oldEncounter), formData), { id, mapId: m, campaignId: c } = _a, data = __rest(_a, ["id", "mapId", "campaignId"]);
         console.log(data);
         try {

@@ -351,9 +351,13 @@ const encounterServices = {
       eventData.time = campaign.time;
     }
 
-    const oldEncounter = await prisma.encounter.findUnique({
-      where: { id: formData?.id },
-    });
+    const oldEncounter = formData?.id
+      ? await prisma.encounter.findUnique({
+          where: { id: formData?.id },
+        })
+      : {};
+
+    console.log(oldEncounter);
 
     const {
       id,
@@ -361,8 +365,6 @@ const encounterServices = {
       campaignId: c,
       ...data
     } = { ...oldEncounter, ...formData };
-
-    console.log(data);
 
     try {
       const encounter = await prisma.encounter.upsert({

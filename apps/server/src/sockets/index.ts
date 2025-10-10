@@ -9,6 +9,12 @@ export function setupSocketIO(io: Server) {
   io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
 
+    socket.on('campaign', (campaignId) => {
+      console.log('campaign emitter');
+
+      io.to(campaignId).emit('campaign', campaignId);
+    });
+
     socket.on('registerData', ({ playerId, username }) => {
       socket.data.playerId = playerId;
       socket.data.username = username;
@@ -227,6 +233,12 @@ export function setupSocketIO(io: Server) {
       const rollsArray = Array.from(rolls.entries());
 
       io.to(`encounter ${encounterId}`).emit('initiativeRoll', rollsArray);
+    });
+
+    socket.on('navigateToEncounter', ({ encounterId, mapId, campaignId }) => {
+      socket
+        .to(`encounter ${encounterId}`)
+        .emit('navigateToEncounter', { encounterId, mapId, campaignId });
     });
 
     socket.on(
