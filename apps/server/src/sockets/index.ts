@@ -4,6 +4,7 @@ import encounterServices from '../services/encounterServices.js';
 import characterStatServices from '../services/characterStatServices.js';
 import itemStatServices from '../services/itemStatServices.js';
 import characterServices from '../services/characterServices.js';
+import { calculateRoll } from '../utils/rollUtilities.js';
 
 export function setupSocketIO(io: Server) {
   io.on('connection', (socket) => {
@@ -134,77 +135,6 @@ export function setupSocketIO(io: Server) {
       for (const id of encounter.turnOrder) {
         const character = await characterServices.getCharacterById(id);
 
-        const calculateRoll = (
-          attributes: AttributeTree,
-          action: Partial<Action>,
-          modifiers: string[],
-        ) => {
-          if (!action.roll) {
-            return;
-          }
-
-          const calculateDiceCount = (
-            attributes: AttributeTree,
-            action: Partial<Action>,
-            modifiers: string[],
-          ) => {
-            const calculatedRolls =
-              action.roll?.map((roll) => {
-                const attributePoints =
-                  attributes[roll.attribute as AttributeName].points;
-                const skillPoints =
-                  attributes[roll.attribute as AttributeName].skills[
-                    roll.skill as SkillName
-                  ].points;
-                return {
-                  diceCount: attributePoints + skillPoints,
-                  roll,
-                };
-              }) || [];
-
-            const bestRoll = calculatedRolls.sort(
-              (a, b) => b.diceCount - a.diceCount,
-            )[0];
-
-            if (modifiers.includes('push')) {
-              bestRoll.diceCount += 2;
-            }
-
-            if (
-              action.name &&
-              (action.name === 'Salvo Fire' || action.name === 'Flurry')
-            ) {
-              bestRoll.diceCount += 2;
-            }
-
-            return bestRoll;
-          };
-
-          const bestRoll = calculateDiceCount(attributes, action, modifiers);
-
-          const result = Array.from(
-            { length: bestRoll.diceCount },
-            () => Math.floor(Math.random() * 6) + 1,
-          );
-
-          let successes = 0;
-          successes += result.filter((number) => number >= 5).length;
-          if (modifiers.includes('booming')) {
-            successes += result.filter((number) => number === 6).length;
-          }
-          if (modifiers.includes('dooming')) {
-            successes -= result.filter((number) => number === 1).length;
-          }
-          if (modifiers.includes('lucky') && !modifiers.includes('unlucky')) {
-            successes += result.filter((number) => number === 4).length;
-          }
-          if (modifiers.includes('unlucky') && !modifiers.includes('lucky')) {
-            successes -= result.filter((number) => number === 5).length;
-          }
-
-          return { result, successes };
-        };
-
         const violenceRolls = [
           { attribute: 'violence', skill: 'assault' },
           { attribute: 'violence', skill: 'shooting' },
@@ -241,165 +171,179 @@ export function setupSocketIO(io: Server) {
         .emit('navigateToEncounter', { encounterId, mapId, campaignId });
     });
 
-    socket.on(
-      'actionRoll',
-      async ({
+    socket.on('actionRoll', async (rollData) => {
+      const rollResults = calculateRoll(
+        rollData.activeCharacter.attributes,
+        { roll: rollData.action.roll },
+        [],
+      ) || { result: [], successes: 0 };
+
+      const roll = new Map();
+
+      roll.set(rollData.activeCharacter?.id, {
+        characterId: rollData.activeCharacter?.id,
+        name: rollData.activeCharacter?.firstName,
+        playerCharacter: rollData.activeCharacter?.playerCharacter,
+        diceArray: rollResults.result,
+        successes: rollResults.successes,
+      });
+
+      const rollArray = Array.from(roll.entries());
+
+      console.log(rollArray);
+
+      io.to(rollData.campaignId).emit('actionRoll', {
+        encounterId: rollData.encounterId,
+        rollArray,
+      });
+
+      const historyData = {
+        characterId: activeCharacter.id,
+        actionId: action.id,
+      } as {
+        characterId: number;
+        targetId?: number;
+        actionId: number;
+        itemId?: number;
+        rollResult?: {
+          result: number[];
+          successes: number;
+          modifiers: string[];
+          damage: number;
+        };
+      };
+
+      if (targetCharacter) {
+        historyData.targetId = targetCharacter.id;
+      }
+      if (item) {
+        historyData.itemId = item.id;
+      }
+      if (rollResult) {
+        historyData.rollResult = rollResult;
+      }
+
+      await encounterServices.createEncounterHistory(
         campaignId,
         encounterId,
-        activeCharacter,
-        targetCharacter,
-        action,
-        item,
-        damage,
-        rollResult,
-      }) => {
-        const historyData = {
-          characterId: activeCharacter.id,
-          actionId: action.id,
-        } as {
-          characterId: number;
-          targetId?: number;
-          actionId: number;
-          itemId?: number;
-          rollResult?: {
-            result: number[];
-            successes: number;
-            modifiers: string[];
-            damage: number;
-          };
-        };
-        if (targetCharacter) {
-          historyData.targetId = targetCharacter.id;
-        }
-        if (item) {
-          historyData.itemId = item.id;
-        }
-        if (rollResult) {
-          historyData.rollResult = rollResult;
-        }
+        historyData,
+      );
 
-        await encounterServices.createEncounterHistory(
-          campaignId,
-          encounterId,
-          historyData,
-        );
-
-        const calculateCosts = (character, item, action) => {
-          const costs = action
-            ? action.name === 'Salvo Fire'
-              ? {
-                  ...action.costs,
-                  currentAmmoCount: item?.stats.salvo,
-                }
-              : action.costs
-            : null;
-
-          if (item.keywords.some((keyword) => keyword.keyword.name === '2H')) {
-            costs.currentHands = 2;
-          }
-
-          if (item.keywords.some((keyword) => keyword.keyword.name === '1H')) {
-            costs.currentHands = 1;
-          }
-
-          const characterCosts = {};
-          const itemCosts = {};
-
-          Object.entries(costs).forEach(([stat, value]) => {
-            if (character.stats[stat]) {
-              const costInfo = {
-                stat,
-                available: character.stats[stat],
-                required: value,
-              };
-              if (costInfo.required > costInfo.available) {
-                alert(
-                  `Your character does not have enough ${stat} to complete this action`,
-                );
+      const calculateCosts = (character, item, action) => {
+        const costs = action
+          ? action.name === 'Salvo Fire'
+            ? {
+                ...action.costs,
+                currentAmmoCount: item?.stats.salvo,
               }
-              characterCosts[costInfo.stat] =
-                costInfo.available - costInfo.required;
-            }
-            if (item.stats[stat]) {
-              const costInfo = {
-                stat,
-                available: item.stats[stat],
-                required: value,
-              };
-              if (costInfo.required > costInfo.available) {
-                alert(
-                  `Your item does not have enough ${stat} to complete this action`,
-                );
-              }
-              itemCosts[costInfo.stat] = costInfo.available - costInfo.required;
-            }
-          });
-          return { characterCosts, itemCosts };
-        };
+            : action.costs
+          : null;
 
-        const { characterCosts, itemCosts } = calculateCosts(
-          activeCharacter,
-          item,
-          action,
-        );
-
-        if (Object.keys(characterCosts).length > 0) {
-          await characterStatServices.resetCharacterStat(
-            activeCharacter.id,
-            characterCosts,
-          );
-          socket.emit('character', activeCharacter.id);
+        if (item.keywords.some((keyword) => keyword.keyword.name === '2H')) {
+          costs.currentHands = 2;
         }
 
-        if (Object.keys(itemCosts).length > 0) {
-          await itemStatServices.resetItemStats(item.id, itemCosts);
-          socket.emit('item', item.id);
+        if (item.keywords.some((keyword) => keyword.keyword.name === '1H')) {
+          costs.currentHands = 1;
         }
 
-        await encounterServices.setCombatPhase(encounterId, 'reaction');
+        const characterCosts = {};
+        const itemCosts = {};
 
-        // const targetCharacter = await characterServices.getCharacterById(
-        //   targetInfo.id,
-        // );
-
-        // if (targetCharacter?.stats.currentHealth - damage <= 0) {
-        //   if (
-        //     !!targetCharacter?.conditions.some(
-        //       (condition) => condition.condition.name === 'Wounded',
-        //     )
-        //   ) {
-        //     await characterStatServices.editCharacterStat(targetInfo.id, {
-        //       injuries: 1,
-        //       currentHealth: targetInfo.stats.currentHealth * -1,
-        //     });
-        //   } else {
-        //     const wounded =
-        //       await conditionServices.getConditionByName('Wounded');
-        //     await characterStatServices.resetCharacterStat(targetInfo.id, {
-        //       currentHealth: targetInfo.stats.maxHealth,
-        //     });
-        //     await characterServices.createCharacterConditions(targetInfo.id, [
-        //       { conditionId: wounded?.id },
-        //     ]);
-        //   }
-        // } else {
-        //   await characterStatServices.editCharacterStat(targetInfo.id, {
-        //     currentHealth: damage * -1,
-        //   });
-        // }
-
-        io.to(campaignId).emit('actionRoll', {
-          encounterId,
-          activeCharacter,
-          targetCharacter,
-          action,
-          item,
-          damage,
-          rollResult,
+        Object.entries(costs).forEach(([stat, value]) => {
+          if (character.stats[stat]) {
+            const costInfo = {
+              stat,
+              available: character.stats[stat],
+              required: value,
+            };
+            if (costInfo.required > costInfo.available) {
+              alert(
+                `Your character does not have enough ${stat} to complete this action`,
+              );
+            }
+            characterCosts[costInfo.stat] =
+              costInfo.available - costInfo.required;
+          }
+          if (item.stats[stat]) {
+            const costInfo = {
+              stat,
+              available: item.stats[stat],
+              required: value,
+            };
+            if (costInfo.required > costInfo.available) {
+              alert(
+                `Your item does not have enough ${stat} to complete this action`,
+              );
+            }
+            itemCosts[costInfo.stat] = costInfo.available - costInfo.required;
+          }
         });
-        console.log(`Broadcasted action roll to campaign ${campaignId}`);
-      },
-    );
+        return { characterCosts, itemCosts };
+      };
+
+      const { characterCosts, itemCosts } = calculateCosts(
+        activeCharacter,
+        item,
+        action,
+      );
+
+      if (Object.keys(characterCosts).length > 0) {
+        await characterStatServices.resetCharacterStat(
+          activeCharacter.id,
+          characterCosts,
+        );
+        socket.emit('character', activeCharacter.id);
+      }
+
+      if (Object.keys(itemCosts).length > 0) {
+        await itemStatServices.resetItemStats(item.id, itemCosts);
+        socket.emit('item', item.id);
+      }
+
+      await encounterServices.setCombatPhase(encounterId, 'reaction');
+
+      // const targetCharacter = await characterServices.getCharacterById(
+      //   targetInfo.id,
+      // );
+
+      // if (targetCharacter?.stats.currentHealth - damage <= 0) {
+      //   if (
+      //     !!targetCharacter?.conditions.some(
+      //       (condition) => condition.condition.name === 'Wounded',
+      //     )
+      //   ) {
+      //     await characterStatServices.editCharacterStat(targetInfo.id, {
+      //       injuries: 1,
+      //       currentHealth: targetInfo.stats.currentHealth * -1,
+      //     });
+      //   } else {
+      //     const wounded =
+      //       await conditionServices.getConditionByName('Wounded');
+      //     await characterStatServices.resetCharacterStat(targetInfo.id, {
+      //       currentHealth: targetInfo.stats.maxHealth,
+      //     });
+      //     await characterServices.createCharacterConditions(targetInfo.id, [
+      //       { conditionId: wounded?.id },
+      //     ]);
+      //   }
+      // } else {
+      //   await characterStatServices.editCharacterStat(targetInfo.id, {
+      //     currentHealth: damage * -1,
+      //   });
+      // }
+
+      // io.to(campaignId).emit('actionRoll', {
+      //   encounterId,
+      //   activeCharacter,
+      //   targetCharacter,
+      //   action,
+      //   item,
+      //   damage,
+      //   rollResult,
+      // });
+      console.log(`Broadcasted action roll to campaign ${campaignId}`);
+    });
 
     socket.on(
       'reactionRoll',

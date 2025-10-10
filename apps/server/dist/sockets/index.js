@@ -3,6 +3,7 @@ import encounterServices from '../services/encounterServices.js';
 import characterStatServices from '../services/characterStatServices.js';
 import itemStatServices from '../services/itemStatServices.js';
 import characterServices from '../services/characterServices.js';
+import { calculateRoll } from '../utils/rollUtilities.js';
 export function setupSocketIO(io) {
     io.on('connection', (socket) => {
         console.log('User connected:', socket.id);
@@ -91,48 +92,6 @@ export function setupSocketIO(io) {
             const rolls = new Map();
             for (const id of encounter.turnOrder) {
                 const character = await characterServices.getCharacterById(id);
-                const calculateRoll = (attributes, action, modifiers) => {
-                    if (!action.roll) {
-                        return;
-                    }
-                    const calculateDiceCount = (attributes, action, modifiers) => {
-                        var _a;
-                        const calculatedRolls = ((_a = action.roll) === null || _a === void 0 ? void 0 : _a.map((roll) => {
-                            const attributePoints = attributes[roll.attribute].points;
-                            const skillPoints = attributes[roll.attribute].skills[roll.skill].points;
-                            return {
-                                diceCount: attributePoints + skillPoints,
-                                roll,
-                            };
-                        })) || [];
-                        const bestRoll = calculatedRolls.sort((a, b) => b.diceCount - a.diceCount)[0];
-                        if (modifiers.includes('push')) {
-                            bestRoll.diceCount += 2;
-                        }
-                        if (action.name &&
-                            (action.name === 'Salvo Fire' || action.name === 'Flurry')) {
-                            bestRoll.diceCount += 2;
-                        }
-                        return bestRoll;
-                    };
-                    const bestRoll = calculateDiceCount(attributes, action, modifiers);
-                    const result = Array.from({ length: bestRoll.diceCount }, () => Math.floor(Math.random() * 6) + 1);
-                    let successes = 0;
-                    successes += result.filter((number) => number >= 5).length;
-                    if (modifiers.includes('booming')) {
-                        successes += result.filter((number) => number === 6).length;
-                    }
-                    if (modifiers.includes('dooming')) {
-                        successes -= result.filter((number) => number === 1).length;
-                    }
-                    if (modifiers.includes('lucky') && !modifiers.includes('unlucky')) {
-                        successes += result.filter((number) => number === 4).length;
-                    }
-                    if (modifiers.includes('unlucky') && !modifiers.includes('lucky')) {
-                        successes -= result.filter((number) => number === 5).length;
-                    }
-                    return { result, successes };
-                };
                 const violenceRolls = [
                     { attribute: 'violence', skill: 'assault' },
                     { attribute: 'violence', skill: 'shooting' },
@@ -159,7 +118,23 @@ export function setupSocketIO(io) {
                 .to(`encounter ${encounterId}`)
                 .emit('navigateToEncounter', { encounterId, mapId, campaignId });
         });
-        socket.on('actionRoll', async ({ campaignId, encounterId, activeCharacter, targetCharacter, action, item, damage, rollResult, }) => {
+        socket.on('actionRoll', async (rollData) => {
+            var _a, _b, _c, _d;
+            const rollResults = calculateRoll(rollData.activeCharacter.attributes, { roll: rollData.action.roll }, []) || { result: [], successes: 0 };
+            const roll = new Map();
+            roll.set((_a = rollData.activeCharacter) === null || _a === void 0 ? void 0 : _a.id, {
+                characterId: (_b = rollData.activeCharacter) === null || _b === void 0 ? void 0 : _b.id,
+                name: (_c = rollData.activeCharacter) === null || _c === void 0 ? void 0 : _c.firstName,
+                playerCharacter: (_d = rollData.activeCharacter) === null || _d === void 0 ? void 0 : _d.playerCharacter,
+                diceArray: rollResults.result,
+                successes: rollResults.successes,
+            });
+            const rollArray = Array.from(roll.entries());
+            console.log(rollArray);
+            io.to(rollData.campaignId).emit('actionRoll', {
+                encounterId: rollData.encounterId,
+                rollArray,
+            });
             const historyData = {
                 characterId: activeCharacter.id,
                 actionId: action.id,
@@ -252,15 +227,15 @@ export function setupSocketIO(io) {
             //     currentHealth: damage * -1,
             //   });
             // }
-            io.to(campaignId).emit('actionRoll', {
-                encounterId,
-                activeCharacter,
-                targetCharacter,
-                action,
-                item,
-                damage,
-                rollResult,
-            });
+            // io.to(campaignId).emit('actionRoll', {
+            //   encounterId,
+            //   activeCharacter,
+            //   targetCharacter,
+            //   action,
+            //   item,
+            //   damage,
+            //   rollResult,
+            // });
             console.log(`Broadcasted action roll to campaign ${campaignId}`);
         });
         socket.on('reactionRoll', async ({ campaignId, encounterId, reactiveCharacter, targetCharacter, reaction, item, rollResult, }) => {

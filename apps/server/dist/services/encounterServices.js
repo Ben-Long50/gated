@@ -314,9 +314,7 @@ const encounterServices = {
                 where: { id: formData === null || formData === void 0 ? void 0 : formData.id },
             })
             : {};
-        console.log(oldEncounter);
         const _a = Object.assign(Object.assign({}, oldEncounter), formData), { id, mapId: m, campaignId: c } = _a, data = __rest(_a, ["id", "mapId", "campaignId"]);
-        console.log(data);
         try {
             const encounter = await prisma.encounter.upsert({
                 where: { id: (formData === null || formData === void 0 ? void 0 : formData.id) || 0 },
@@ -329,7 +327,6 @@ const encounterServices = {
                         create: Object.assign({ campaign: { connect: { id: campaignId } } }, eventData),
                     } }),
             });
-            console.log(encounter);
             return encounter;
         }
         catch (error) {

@@ -357,8 +357,6 @@ const encounterServices = {
         })
       : {};
 
-    console.log(oldEncounter);
-
     const {
       id,
       mapId: m,
@@ -389,8 +387,6 @@ const encounterServices = {
           },
         },
       });
-
-      console.log(encounter);
 
       return encounter;
     } catch (error) {
