@@ -41,15 +41,8 @@ const Encounter = () => {
   const { mobile } = useContext(LayoutContext);
   const { accentPrimary } = useContext(ThemeContext);
   const { user } = useContext(AuthContext);
-  const {
-    gameMaster,
-    calculateDiceCount,
-    rollData,
-    rolling,
-    calculateRoll,
-    animateRoll,
-    rollCounter,
-  } = useContext(CampaignContext);
+  const { gameMaster, rolls, rolling, animateRoll, rollCounter } =
+    useContext(CampaignContext);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -106,11 +99,9 @@ const Encounter = () => {
     });
 
     socket.on('initiativeRoll', (rollsArray) => {
-      console.log(initiativeRolls, initiativeRolls.size);
-
       const rolls = new Map(rollsArray) as Map<number, any>;
 
-      animateRoll(rolls, setInitiativeRolls);
+      animateRoll(rolls);
     });
 
     socket.on('navigateToEncounter', ({ encounterId, mapId, campaignId }) => {
@@ -347,8 +338,6 @@ const Encounter = () => {
                   form={actionForm}
                   actionSidebar={actionSidebar}
                   activeCharacterId={activeCharacter?.id}
-                  calculateDiceCount={calculateDiceCount}
-                  rollData={rollData}
                 />
               )}
             </>
@@ -399,8 +388,6 @@ const Encounter = () => {
                   reactions={combat?.reactions}
                   actionSidebar={actionSidebar}
                   ownedCharacterId={ownedCharacter?.id}
-                  calculateDiceCount={calculateDiceCount}
-                  rollData={rollData}
                 />
               )}
             </>
@@ -441,11 +428,10 @@ const Encounter = () => {
           context={{
             campaign,
             joinedPlayers,
-            initiativeRolls,
             initiativeComplete,
-            rollData,
+            rolls,
+
             rolling,
-            calculateRoll,
             animateRoll,
             rollCounter,
             handleAdvanceTurn,

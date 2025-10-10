@@ -53,16 +53,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
 
   const activeCampaignRef = useRef<number[]>([]);
 
-  const {
-    rollData,
-    rolling,
-    calculateDiceCount,
-    calculateRoll,
-    animateRoll,
-    rollComplete,
-    rollCounter,
-    resetRolls,
-  } = useRoll();
+  const { rolls, rolling, animateRoll, rollComplete, rollCounter } = useRoll();
 
   const setTarget = useCombatStore((state) => state.setTarget);
   const setDamage = useCombatStore((state) => state.setDamage);
@@ -193,34 +184,27 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       });
     });
 
-    socket.on(
-      'actionRoll',
-      async ({
-        encounterId,
-        activeCharacter,
-        targetCharacter,
-        action,
-        item,
-        damage,
-        rollResult,
-      }) => {
-        setTarget(targetCharacter.id);
+    socket.on('actionRoll', async ({ encounterId, rollArray }) => {
+      setTarget(targetCharacter.id);
 
-        await animateRoll(activeCharacter.id, rollResult);
+      const roll = new Map(rollArray) as Map<number, any>;
 
-        setDamage(damage);
+      await animateRoll(roll);
 
-        setTimeout(() => {
-          queryClient.invalidateQueries({
-            queryKey: ['encounter', encounterId],
-          });
-          queryClient.invalidateQueries({
-            queryKey: ['encounterHistory', encounterId],
-          });
-        }, 3000);
-        // queryClient.invalidateQueries({ queryKey: ['character', targetCharacter.id] });
-      },
-    );
+      console.log(roll);
+
+      // setDamage(damage);
+
+      setTimeout(() => {
+        queryClient.invalidateQueries({
+          queryKey: ['encounter', encounterId],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ['encounterHistory', encounterId],
+        });
+      }, 3000);
+      // queryClient.invalidateQueries({ queryKey: ['character', targetCharacter.id] });
+    });
 
     socket.on(
       'reactionRoll',
@@ -277,10 +261,8 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         campaigns,
         activeCampaigns,
         activeEncounters,
-        calculateDiceCount,
-        rollData,
+        rolls,
         rolling,
-        calculateRoll,
         animateRoll,
         rollComplete,
         rollCounter,

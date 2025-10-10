@@ -123,17 +123,28 @@ const useCombat = () => {
           );
         }
       } else {
-        const rollResult = calculateRoll(
-          activeCharacter?.attributes,
-          value.action,
-          value.modifiers,
-        );
+        // const rollResult = calculateRoll(
+        //   activeCharacter?.attributes,
+        //   value.action,
+        //   value.modifiers,
+        // );
 
-        const damage = calculateDamage(
-          value.item,
-          value.action,
-          rollResult.successes,
-        );
+        // const damage = calculateDamage(
+        //   value.item,
+        //   value.action,
+        //   rollResult.successes,
+        // );
+
+        console.log({
+          campaignId: Number(campaignId),
+          encounterId: Number(encounterId),
+          activeCharacter: activeCharacter,
+          targetCharacter: value.target,
+          action: value.action,
+          item: value.item,
+          // damage,
+          // rollResult: { ...rollResult, modifiers: value.modifiers, damage },
+        });
 
         socket.emit('actionRoll', {
           campaignId: Number(campaignId),
@@ -142,8 +153,8 @@ const useCombat = () => {
           targetCharacter: value.target,
           action: value.action,
           item: value.item,
-          damage,
-          rollResult: { ...rollResult, modifiers: value.modifiers, damage },
+          // damage,
+          // rollResult: { ...rollResult, modifiers: value.modifiers, damage },
         });
 
         actionForm.reset();

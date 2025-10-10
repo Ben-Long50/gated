@@ -2,12 +2,11 @@ import CharacterPictureRound from '../CharacterPictureRound';
 import useCharacter from 'src/hooks/useCharacter';
 import Loading from '../Loading';
 import { ThemeContext } from 'src/contexts/ThemeContext';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import Die from './Die';
 import useCombatStore from 'src/stores/combatStore';
 import { FormApi } from '@tanstack/react-form';
 import RangeIcon from '../icons/RangeIcon';
-import { CampaignContext } from 'src/contexts/CampaignContext';
 import { useDraggable } from '@dnd-kit/core';
 
 const CharacterEncounterToken = ({
@@ -28,8 +27,8 @@ const CharacterEncounterToken = ({
   onClick: () => void;
 }) => {
   const { statColorMap } = useContext(ThemeContext);
-  const { rollData } = useContext(CampaignContext);
   const { filteredCharacter: character, isLoading } = useCharacter(characterId);
+  const [roll, setRoll] = useState(null);
 
   const target = useCombatStore((state) => state.target);
   const damage = useCombatStore((state) => state.damage);
@@ -39,8 +38,6 @@ const CharacterEncounterToken = ({
     data: { characterId, locationId },
     disabled: activeCharacterId !== characterId,
   });
-
-  const roll = rollData.get(characterId);
 
   if (isLoading) return <Loading size={1.25} />;
 

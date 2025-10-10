@@ -32,7 +32,6 @@ const ActionSidebar = ({
   actionSidebar,
   activeCharacterId,
   calculateDiceCount,
-  rollData,
 }: {
   form: FormApi;
   actionSidebar: boolean;
@@ -45,10 +44,6 @@ const ActionSidebar = ({
     diceCount: number;
     roll: { attribute: AttributeName; skill: SkillName };
   };
-  rollData: Map<
-    number,
-    { diceArray: number[]; rolling: boolean; successes: number }
-  >;
 }) => {
   const { filteredCharacter: character } = useCharacter(activeCharacterId);
   const navigate = useNavigate();
@@ -61,8 +56,6 @@ const ActionSidebar = ({
     filterBySubCategory,
     category,
   } = useActions(character?.actions, 'action');
-
-  const roll = rollData.get(activeCharacterId);
 
   const setItem = useCombatStore((state) => state.setItem);
 
@@ -269,13 +262,12 @@ const ActionSidebar = ({
           }}
         </form.Field>
       </div>
-      {roll?.diceArray.length > 0 && (
+      {/* {roll?.diceArray.length > 0 && (
         <CharacterRoll
           form={form}
           characterId={activeCharacterId}
-          rollData={rollData}
         />
-      )}
+      )} */}
       <form.Subscribe
         selector={(state) => [
           state.values.action,

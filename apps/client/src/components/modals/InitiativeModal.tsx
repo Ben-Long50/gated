@@ -22,97 +22,95 @@ const InitiativeModal = () => {
     campaign,
     joinedPlayers,
     characterIds,
-    initiativeRolls,
+    rolls,
     initiativeComplete,
     rolling,
-    calculateRoll,
     animateRoll,
     rollCounter,
-    rollData,
   } = useOutletContext() || {};
 
   const startCombat = useCreateCombatMutation(Number(campaignId));
 
-  const rollAllInitiative = async () => {
-    setRollingInitiative(true);
-    const rollAll = async (ids?: []) => {
-      const rolls = rollRefs.current
-        .map((ref) => {
-          if (ref?.rollInitiative && !ids) {
-            return ref.rollInitiative();
-          } else if (ids?.includes(ref.characterId)) {
-            return ref.rollInitiative();
-          }
-        })
-        .filter((roll) => roll != null);
+  // const rollAllInitiative = async () => {
+  //   setRollingInitiative(true);
+  //   const rollAll = async (ids?: []) => {
+  //     const rolls = rollRefs.current
+  //       .map((ref) => {
+  //         if (ref?.rollInitiative && !ids) {
+  //           return ref.rollInitiative();
+  //         } else if (ids?.includes(ref.characterId)) {
+  //           return ref.rollInitiative();
+  //         }
+  //       })
+  //       .filter((roll) => roll != null);
 
-      const results = (await Promise.all(rolls)) as {
-        characterId: number;
-        playerCharacter: boolean;
-        successes: number;
-      }[];
+  //     const results = (await Promise.all(rolls)) as {
+  //       characterId: number;
+  //       playerCharacter: boolean;
+  //       successes: number;
+  //     }[];
 
-      const sortedResults = results.sort((a, b) => b.successes - a.successes);
+  //     const sortedResults = results.sort((a, b) => b.successes - a.successes);
 
-      const ties = new Map();
+  //     const ties = new Map();
 
-      sortedResults.map((result) => {
-        if (!ties.get(result.successes)) {
-          ties.set(result.successes, [result]);
-        } else {
-          const old = ties.get(result.successes);
-          ties.set(result.successes, [...old, result]);
-        }
-      });
+  //     sortedResults.map((result) => {
+  //       if (!ties.get(result.successes)) {
+  //         ties.set(result.successes, [result]);
+  //       } else {
+  //         const old = ties.get(result.successes);
+  //         ties.set(result.successes, [...old, result]);
+  //       }
+  //     });
 
-      let newResults = [] as {
-        characterId: number;
-        name: string;
-        playerCharacter: boolean;
-        successes: number;
-      }[];
+  //     let newResults = [] as {
+  //       characterId: number;
+  //       name: string;
+  //       playerCharacter: boolean;
+  //       successes: number;
+  //     }[];
 
-      for (const tie of ties.values()) {
-        if (tie.length > 1) {
-          const result = await rollAll(tie.map((result) => result.characterId));
-          newResults = [...newResults, ...result];
-        } else {
-          newResults = [...newResults, tie[0]];
-        }
-      }
+  //     for (const tie of ties.values()) {
+  //       if (tie.length > 1) {
+  //         const result = await rollAll(tie.map((result) => result.characterId));
+  //         newResults = [...newResults, ...result];
+  //       } else {
+  //         newResults = [...newResults, tie[0]];
+  //       }
+  //     }
 
-      return newResults;
-    };
+  //     return newResults;
+  //   };
 
-    const results = await rollAll();
+  //   const results = await rollAll();
 
-    let resultsOrder = results.splice(0, 1);
+  //   let resultsOrder = results.splice(0, 1);
 
-    const remainingPcs =
-      results.filter((result) => result.playerCharacter) || [];
-    const remainingNpcs =
-      results.filter((result) => !result.playerCharacter) || [];
+  //   const remainingPcs =
+  //     results.filter((result) => result.playerCharacter) || [];
+  //   const remainingNpcs =
+  //     results.filter((result) => !result.playerCharacter) || [];
 
-    for (let i = 0; i < results.length; i++) {
-      let previous = resultsOrder[i].playerCharacter;
+  //   for (let i = 0; i < results.length; i++) {
+  //     let previous = resultsOrder[i].playerCharacter;
 
-      if (previous && remainingNpcs.length > 0) {
-        resultsOrder = [...resultsOrder, ...remainingNpcs.splice(0, 1)];
-      } else if (!previous && remainingPcs.length > 0) {
-        resultsOrder = [...resultsOrder, ...remainingPcs.splice(0, 1)];
-      } else if (remainingNpcs.length > 0 && remainingPcs.length === 0) {
-        resultsOrder = [...resultsOrder, ...remainingNpcs.splice(0, 1)];
-      } else if (remainingNpcs.length === 0 && remainingPcs.length > 0) {
-        resultsOrder = [...resultsOrder, ...remainingNpcs.splice(0, 1)];
-      }
-    }
+  //     if (previous && remainingNpcs.length > 0) {
+  //       resultsOrder = [...resultsOrder, ...remainingNpcs.splice(0, 1)];
+  //     } else if (!previous && remainingPcs.length > 0) {
+  //       resultsOrder = [...resultsOrder, ...remainingPcs.splice(0, 1)];
+  //     } else if (remainingNpcs.length > 0 && remainingPcs.length === 0) {
+  //       resultsOrder = [...resultsOrder, ...remainingNpcs.splice(0, 1)];
+  //     } else if (remainingNpcs.length === 0 && remainingPcs.length > 0) {
+  //       resultsOrder = [...resultsOrder, ...remainingNpcs.splice(0, 1)];
+  //     }
+  //   }
 
-    console.log(resultsOrder.map((result) => result.characterId));
+  //   console.log(resultsOrder.map((result) => result.characterId));
 
-    setRollingInitiative(false);
-  };
+  //   setRollingInitiative(false);
+  // };
 
-  const initiativeRollIdArray = Array.from(initiativeRolls.keys());
+  const initiativeRollIdArray = Array.from(rolls.keys());
 
   const initiativeOrder =
     initiativeRollIdArray.length > 0 ? initiativeRollIdArray : characterIds;
@@ -135,12 +133,8 @@ const InitiativeModal = () => {
           return (
             <Fragment key={characterId}>
               <CharacterInitiativeRoll
-                ref={(ref) => {
-                  rollRefs.current[index] = ref;
-                }}
-                calculateRoll={calculateRoll}
                 animateRoll={animateRoll}
-                rollData={initiativeRolls}
+                rollData={rolls}
                 rollComplete={initiativeComplete}
                 characterId={characterId}
               />
@@ -158,7 +152,6 @@ const InitiativeModal = () => {
             onClick={() => {
               if (!rollingInitiative) {
                 socket.emit('rollInitiative', Number(encounterId));
-                // rollAllInitiative();
               }
             }}
           >
@@ -182,13 +175,10 @@ const InitiativeModal = () => {
                 startCombat.mutate({
                   id: Number(encounterId),
                   mapId: Number(mapId),
-                  turnOrder: Array.from(initiativeRolls.keys()),
+                  turnOrder: Array.from(rolls.keys()),
                   combatPhase: 'action',
                   turnPosition: 0,
                 });
-
-                // advanceTurn();
-                // navigate(-1);
               }}
             >
               Start Combat
