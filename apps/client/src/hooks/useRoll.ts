@@ -60,10 +60,15 @@ const useRoll = () => {
     });
   };
 
+  const resetRolls = () => {
+    setRolls(new Map());
+  };
+
   return {
     rolls,
     rolling,
     animateRoll,
+    resetRolls,
     rollComplete,
     rollCounter,
   };

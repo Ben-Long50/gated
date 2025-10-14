@@ -53,7 +53,8 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
 
   const activeCampaignRef = useRef<number[]>([]);
 
-  const { rolls, rolling, animateRoll, rollComplete, rollCounter } = useRoll();
+  const { rolls, rolling, animateRoll, resetRolls, rollComplete, rollCounter } =
+    useRoll();
 
   const setTarget = useCombatStore((state) => state.setTarget);
   const setDamage = useCombatStore((state) => state.setDamage);
@@ -183,56 +184,6 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         queryKey: ['encounter', encounterId],
       });
     });
-
-    socket.on('actionRoll', async ({ encounterId, rollArray }) => {
-      setTarget(targetCharacter.id);
-
-      const roll = new Map(rollArray) as Map<number, any>;
-
-      await animateRoll(roll);
-
-      console.log(roll);
-
-      // setDamage(damage);
-
-      setTimeout(() => {
-        queryClient.invalidateQueries({
-          queryKey: ['encounter', encounterId],
-        });
-        queryClient.invalidateQueries({
-          queryKey: ['encounterHistory', encounterId],
-        });
-      }, 3000);
-      // queryClient.invalidateQueries({ queryKey: ['character', targetCharacter.id] });
-    });
-
-    socket.on(
-      'reactionRoll',
-      async ({
-        encounterId,
-        reactiveCharacter,
-        targetCharacter,
-        reaction,
-        item,
-        rollResult,
-      }) => {
-        if (targetCharacter) {
-          setTarget(targetCharacter.id);
-        }
-
-        await animateRoll(reactiveCharacter.id, rollResult);
-
-        setTimeout(() => {
-          queryClient.invalidateQueries({
-            queryKey: ['encounter', encounterId],
-          });
-          queryClient.invalidateQueries({
-            queryKey: ['encounterHistory', encounterId],
-          });
-        }, 3000);
-        // queryClient.invalidateQueries({ queryKey: ['character', targetCharacter.id] });
-      },
-    );
 
     socket.on('resetRolls', () => {
       resetRolls();

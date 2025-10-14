@@ -17,6 +17,7 @@ const CharacterEncounterToken = ({
   activeCharacterId,
   locationId,
   onClick,
+  rolls,
 }: {
   form: FormApi;
   reactions: number[];
@@ -25,10 +26,12 @@ const CharacterEncounterToken = ({
   aciveCharacterId: number;
   locationId: number;
   onClick: () => void;
+  rolls: MapIterator<[]>;
 }) => {
   const { statColorMap } = useContext(ThemeContext);
   const { filteredCharacter: character, isLoading } = useCharacter(characterId);
-  const [roll, setRoll] = useState(null);
+
+  const roll = rolls.get(characterId) || null;
 
   const target = useCombatStore((state) => state.target);
   const damage = useCombatStore((state) => state.damage);

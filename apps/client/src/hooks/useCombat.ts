@@ -109,7 +109,9 @@ const useCombat = () => {
     onSubmit: async ({ value }) => {
       if (
         value.action?.actionSubtypes.includes('movement') &&
-        value.locationId
+        activeCharacter &&
+        value.locationId &&
+        value.index
       ) {
         updateCharacterLocation.mutate({
           characterId: activeCharacter?.id,
@@ -123,38 +125,14 @@ const useCombat = () => {
           );
         }
       } else {
-        // const rollResult = calculateRoll(
-        //   activeCharacter?.attributes,
-        //   value.action,
-        //   value.modifiers,
-        // );
-
-        // const damage = calculateDamage(
-        //   value.item,
-        //   value.action,
-        //   rollResult.successes,
-        // );
-
-        console.log({
-          campaignId: Number(campaignId),
-          encounterId: Number(encounterId),
-          activeCharacter: activeCharacter,
-          targetCharacter: value.target,
-          action: value.action,
-          item: value.item,
-          // damage,
-          // rollResult: { ...rollResult, modifiers: value.modifiers, damage },
-        });
-
         socket.emit('actionRoll', {
           campaignId: Number(campaignId),
           encounterId: Number(encounterId),
           activeCharacter: activeCharacter,
           targetCharacter: value.target,
           action: value.action,
+          modifiers: value.modifiers,
           item: value.item,
-          // damage,
-          // rollResult: { ...rollResult, modifiers: value.modifiers, damage },
         });
 
         actionForm.reset();
@@ -239,40 +217,12 @@ const useCombat = () => {
     },
   });
 
-  const calculateDamage = (item: Item, action: Action, successes: number) => {
-    if (
-      (camelCase(action.name) === 'salvoFire' ||
-        camelCase(action.name) === 'flurry') &&
-      successes > 0
-    ) {
-      const maxSuccesses = item.stats.salvo || item.stats.flurry || 0;
-      if (successes < maxSuccesses) {
-        return successes * item.stats.damage;
-      } else {
-        return maxSuccesses * item.stats.damage;
-      }
-    } else if (
-      action &&
-      camelCase(action.name) === 'haymaker' &&
-      successes > 0
-    ) {
-      return item.keywords.some((keyword) => keyword.keyword.name === '2H')
-        ? item.stats.damage + 3
-        : item.stats.damage + 2;
-    } else if (successes > 0) {
-      return item.stats.damage;
-    } else {
-      return 0;
-    }
-  };
-
   return {
     combat,
     encounterPermissions,
     ownedCharacter,
     activeCharacter,
     handleAdvanceTurn,
-    calculateDamage,
     actionForm,
     reactionForm,
     isLoading,

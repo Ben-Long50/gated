@@ -36,6 +36,7 @@ import PassTurnIcon from '../icons/PassTurnIcon';
 import { socket } from 'src/socket';
 import { AuthContext } from 'src/contexts/AuthContext';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
+import { useQueryClient } from '@tanstack/react-query';
 
 const Encounter = () => {
   const { mobile } = useContext(LayoutContext);
@@ -57,6 +58,8 @@ const Encounter = () => {
   const [joinedPlayers, setJoinedPlayers] = useState<string[]>([]);
   const [initiativeRolls, setInitiativeRolls] = useState(new Map());
   const [initiativeComplete, setInitiativeComplete] = useState(false);
+
+  const queryClient = useQueryClient();
 
   const { map, locations, isLoading: mapLoading } = useMap(Number(mapId));
   const characterOptionsRef = useRef<HTMLDivElement>(null);
@@ -103,6 +106,52 @@ const Encounter = () => {
 
       animateRoll(rolls);
     });
+
+    socket.on('actionRoll', ({ encounterId, rollsArray }) => {
+      // setTarget(targetCharacter.id);
+
+      const rolls = new Map(rollsArray) as Map<number, any>;
+
+      animateRoll(rolls);
+
+      setTimeout(() => {
+        queryClient.invalidateQueries({
+          queryKey: ['encounter', encounterId],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ['encounterHistory', encounterId],
+        });
+      }, 3000);
+      // queryClient.invalidateQueries({ queryKey: ['character', targetCharacter.id] });
+    });
+
+    socket.on(
+      'reactionRoll',
+      async ({
+        encounterId,
+        reactiveCharacter,
+        targetCharacter,
+        reaction,
+        item,
+        rollResult,
+      }) => {
+        if (targetCharacter) {
+          // setTarget(targetCharacter.id);
+        }
+
+        await animateRoll(reactiveCharacter.id, rollResult);
+
+        setTimeout(() => {
+          queryClient.invalidateQueries({
+            queryKey: ['encounter', encounterId],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ['encounterHistory', encounterId],
+          });
+        }, 3000);
+        // queryClient.invalidateQueries({ queryKey: ['character', targetCharacter.id] });
+      },
+    );
 
     socket.on('navigateToEncounter', ({ encounterId, mapId, campaignId }) => {
       navigate(
@@ -213,6 +262,7 @@ const Encounter = () => {
             locations={locations}
             activeCharacterId={activeCharacter?.id}
             gridDisplay={gridDisplay}
+            rolls={rolls}
           />
         </div>
         <div

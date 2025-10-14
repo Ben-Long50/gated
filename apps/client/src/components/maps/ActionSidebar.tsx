@@ -31,19 +31,10 @@ const ActionSidebar = ({
   form,
   actionSidebar,
   activeCharacterId,
-  calculateDiceCount,
 }: {
   form: FormApi;
   actionSidebar: boolean;
   activeCharacterId: number;
-  calculateDiceCount: (
-    attributes: AttributeTree,
-    action: Partial<Action>,
-    modifiers: string[],
-  ) => {
-    diceCount: number;
-    roll: { attribute: AttributeName; skill: SkillName };
-  };
 }) => {
   const { filteredCharacter: character } = useCharacter(activeCharacterId);
   const navigate = useNavigate();
@@ -75,6 +66,43 @@ const ActionSidebar = ({
 
       form.setFieldValue('item', uniqueItem);
     }
+  };
+
+  const calculateDiceCount = (
+    attributes: AttributeTree,
+    action: Partial<Action>,
+    modifiers: string[],
+  ) => {
+    const calculatedRolls =
+      action.roll?.map((roll) => {
+        const attributePoints =
+          attributes[roll.attribute as AttributeName].points;
+        const skillPoints =
+          attributes[roll.attribute as AttributeName].skills[
+            roll.skill as SkillName
+          ].points;
+        return {
+          diceCount: attributePoints + skillPoints,
+          roll,
+        };
+      }) || [];
+
+    const bestRoll = calculatedRolls.sort(
+      (a, b) => b.diceCount - a.diceCount,
+    )[0];
+
+    if (modifiers.includes('push')) {
+      bestRoll.diceCount += 2;
+    }
+
+    if (
+      action.name &&
+      (action.name === 'Salvo Fire' || action.name === 'Flurry')
+    ) {
+      bestRoll.diceCount += 2;
+    }
+
+    return bestRoll;
   };
 
   return (

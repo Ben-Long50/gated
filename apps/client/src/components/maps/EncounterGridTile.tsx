@@ -21,6 +21,7 @@ const EncounterGridTile = ({
   activeCoordinates,
   hoveredIndex,
   setHoveredIndex,
+  rolls,
 }: {
   form: FormApi;
   index: number;
@@ -33,6 +34,7 @@ const EncounterGridTile = ({
   activeCoordinates: { x: number; y: number };
   hoveredIndex: number;
   setHoveredIndex: (index: number) => void;
+  rolls: MapIterator<[]>;
 }) => {
   const { accentPrimary, statColorMap } = useContext(ThemeContext);
 
@@ -120,6 +122,7 @@ const EncounterGridTile = ({
                 range,
               )
             }
+            rolls={rolls}
           />
         ))}
       {hoveredIndex === index && (

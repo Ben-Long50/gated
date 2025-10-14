@@ -17,6 +17,7 @@ const MapGrid = ({
   locations,
   activeCharacterId,
   gridDisplay,
+  rolls,
 }: {
   form: FormApi;
   reactions: number[];
@@ -25,6 +26,7 @@ const MapGrid = ({
   locations: Location[];
   activeCharacterId: number;
   gridDisplay: boolean;
+  rolls: MapIterator<[]>;
 }) => {
   const { statColorMap } = useContext(ThemeContext);
   const { mapId } = useParams();
@@ -123,6 +125,7 @@ const MapGrid = ({
               activeCoordinates={activeCoordinates}
               hoveredIndex={hoveredIndex}
               setHoveredIndex={setHoveredIndex}
+              rolls={rolls}
             />
           );
         })}
