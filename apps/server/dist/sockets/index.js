@@ -1,9 +1,7 @@
 import prisma from '../config/database.js';
 import encounterServices from '../services/encounterServices.js';
-import characterStatServices from '../services/characterStatServices.js';
-import itemStatServices from '../services/itemStatServices.js';
 import characterServices from '../services/characterServices.js';
-import { calculateRoll } from '../utils/rollUtilities.js';
+import { applyDamage, calculateCosts, calculateDamage, calculateRoll, } from '../utils/rollUtilities.js';
 export function setupSocketIO(io) {
     io.on('connection', (socket) => {
         console.log('User connected:', socket.id);
@@ -118,23 +116,29 @@ export function setupSocketIO(io) {
                 .to(`encounter ${encounterId}`)
                 .emit('navigateToEncounter', { encounterId, mapId, campaignId });
         });
-        socket.on('actionRoll', async (rollData) => {
-            var _a, _b, _c, _d;
-            const rollResults = calculateRoll(rollData.activeCharacter.attributes, { roll: rollData.action.roll }, []) || { result: [], successes: 0 };
-            const roll = new Map();
-            roll.set((_a = rollData.activeCharacter) === null || _a === void 0 ? void 0 : _a.id, {
-                characterId: (_b = rollData.activeCharacter) === null || _b === void 0 ? void 0 : _b.id,
-                name: (_c = rollData.activeCharacter) === null || _c === void 0 ? void 0 : _c.firstName,
-                playerCharacter: (_d = rollData.activeCharacter) === null || _d === void 0 ? void 0 : _d.playerCharacter,
+        socket.on('actionRoll', async ({ campaignId, encounterId, activeCharacter, targetCharacter, action, modifiers, item, }) => {
+            const rollResults = calculateRoll(activeCharacter.attributes, { name: action.name, roll: action.roll }, modifiers) || { result: [], successes: 0 };
+            const rolls = new Map();
+            const damage = calculateDamage(item, action, rollResults.successes);
+            rolls.set(activeCharacter === null || activeCharacter === void 0 ? void 0 : activeCharacter.id, {
+                characterId: activeCharacter === null || activeCharacter === void 0 ? void 0 : activeCharacter.id,
+                name: activeCharacter === null || activeCharacter === void 0 ? void 0 : activeCharacter.firstName,
+                playerCharacter: activeCharacter === null || activeCharacter === void 0 ? void 0 : activeCharacter.playerCharacter,
                 diceArray: rollResults.result,
                 successes: rollResults.successes,
             });
-            const rollArray = Array.from(roll.entries());
-            console.log(rollArray);
-            io.to(rollData.campaignId).emit('actionRoll', {
-                encounterId: rollData.encounterId,
-                rollArray,
+            const rollsArray = Array.from(rolls.entries());
+            await calculateCosts(activeCharacter, item, action);
+            io.to(`encounter ${encounterId}`).emit('actionRoll', {
+                encounterId,
+                rollsArray,
             });
+            io.to(campaignId).emit('item', item.id);
+            io.to(campaignId).emit('character', activeCharacter.id);
+            await encounterServices.setCombatPhase(encounterId, 'reaction');
+            applyDamage(targetCharacter, damage);
+            io.to(campaignId).emit('character', targetCharacter.id);
+            return;
             const historyData = {
                 characterId: activeCharacter.id,
                 actionId: action.id,
@@ -145,98 +149,16 @@ export function setupSocketIO(io) {
             if (item) {
                 historyData.itemId = item.id;
             }
-            if (rollResult) {
-                historyData.rollResult = rollResult;
+            if (rollResults) {
+                historyData.rollResult = {
+                    result: rollResults.result,
+                    successes: rollResults.successes,
+                    modifiers: [],
+                    damage,
+                };
             }
             await encounterServices.createEncounterHistory(campaignId, encounterId, historyData);
-            const calculateCosts = (character, item, action) => {
-                const costs = action
-                    ? action.name === 'Salvo Fire'
-                        ? Object.assign(Object.assign({}, action.costs), { currentAmmoCount: item === null || item === void 0 ? void 0 : item.stats.salvo }) : action.costs
-                    : null;
-                if (item.keywords.some((keyword) => keyword.keyword.name === '2H')) {
-                    costs.currentHands = 2;
-                }
-                if (item.keywords.some((keyword) => keyword.keyword.name === '1H')) {
-                    costs.currentHands = 1;
-                }
-                const characterCosts = {};
-                const itemCosts = {};
-                Object.entries(costs).forEach(([stat, value]) => {
-                    if (character.stats[stat]) {
-                        const costInfo = {
-                            stat,
-                            available: character.stats[stat],
-                            required: value,
-                        };
-                        if (costInfo.required > costInfo.available) {
-                            alert(`Your character does not have enough ${stat} to complete this action`);
-                        }
-                        characterCosts[costInfo.stat] =
-                            costInfo.available - costInfo.required;
-                    }
-                    if (item.stats[stat]) {
-                        const costInfo = {
-                            stat,
-                            available: item.stats[stat],
-                            required: value,
-                        };
-                        if (costInfo.required > costInfo.available) {
-                            alert(`Your item does not have enough ${stat} to complete this action`);
-                        }
-                        itemCosts[costInfo.stat] = costInfo.available - costInfo.required;
-                    }
-                });
-                return { characterCosts, itemCosts };
-            };
-            const { characterCosts, itemCosts } = calculateCosts(activeCharacter, item, action);
-            if (Object.keys(characterCosts).length > 0) {
-                await characterStatServices.resetCharacterStat(activeCharacter.id, characterCosts);
-                socket.emit('character', activeCharacter.id);
-            }
-            if (Object.keys(itemCosts).length > 0) {
-                await itemStatServices.resetItemStats(item.id, itemCosts);
-                socket.emit('item', item.id);
-            }
-            await encounterServices.setCombatPhase(encounterId, 'reaction');
-            // const targetCharacter = await characterServices.getCharacterById(
-            //   targetInfo.id,
-            // );
-            // if (targetCharacter?.stats.currentHealth - damage <= 0) {
-            //   if (
-            //     !!targetCharacter?.conditions.some(
-            //       (condition) => condition.condition.name === 'Wounded',
-            //     )
-            //   ) {
-            //     await characterStatServices.editCharacterStat(targetInfo.id, {
-            //       injuries: 1,
-            //       currentHealth: targetInfo.stats.currentHealth * -1,
-            //     });
-            //   } else {
-            //     const wounded =
-            //       await conditionServices.getConditionByName('Wounded');
-            //     await characterStatServices.resetCharacterStat(targetInfo.id, {
-            //       currentHealth: targetInfo.stats.maxHealth,
-            //     });
-            //     await characterServices.createCharacterConditions(targetInfo.id, [
-            //       { conditionId: wounded?.id },
-            //     ]);
-            //   }
-            // } else {
-            //   await characterStatServices.editCharacterStat(targetInfo.id, {
-            //     currentHealth: damage * -1,
-            //   });
-            // }
-            // io.to(campaignId).emit('actionRoll', {
-            //   encounterId,
-            //   activeCharacter,
-            //   targetCharacter,
-            //   action,
-            //   item,
-            //   damage,
-            //   rollResult,
-            // });
-            console.log(`Broadcasted action roll to campaign ${campaignId}`);
+            console.log(`Broadcasted action roll to encounter ${encounterId}`);
         });
         socket.on('reactionRoll', async ({ campaignId, encounterId, reactiveCharacter, targetCharacter, reaction, item, rollResult, }) => {
             const historyData = {
