@@ -132,6 +132,7 @@ export function setupSocketIO(io) {
             io.to(`encounter ${encounterId}`).emit('actionRoll', {
                 encounterId,
                 rollsArray,
+                targetId: targetCharacter.id,
             });
             io.to(campaignId).emit('item', item.id);
             io.to(campaignId).emit('character', activeCharacter.id);
