@@ -10,7 +10,12 @@ import ReactGridLayout from 'react-grid-layout';
 import useMap from 'src/hooks/useMap';
 import Loading from '../Loading';
 import { ThemeContext } from 'src/contexts/ThemeContext';
-import { mdiChevronDown, mdiGrid } from '@mdi/js';
+import {
+  mdiChevronDown,
+  mdiCrown,
+  mdiGrid,
+  mdiQueueFirstInLastOut,
+} from '@mdi/js';
 import Icon from '@mdi/react';
 import EncounterGrid from './EncounterGrid';
 import ItemCard from '../ItemCard';
@@ -37,6 +42,7 @@ import { socket } from 'src/socket';
 import { AuthContext } from 'src/contexts/AuthContext';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import { useQueryClient } from '@tanstack/react-query';
+import { User } from 'src/types/user';
 
 const Encounter = () => {
   const { mobile } = useContext(LayoutContext);
@@ -65,6 +71,8 @@ const Encounter = () => {
   const characterOptionsRef = useRef<HTMLDivElement>(null);
 
   const { data: campaign } = useCampaignQuery(Number(campaignId));
+
+  const setTarget = useCombatStore((state) => state.setTarget);
 
   const {
     data: history,
@@ -107,8 +115,8 @@ const Encounter = () => {
       animateRoll(rolls);
     });
 
-    socket.on('actionRoll', ({ encounterId, rollsArray }) => {
-      // setTarget(targetCharacter.id);
+    socket.on('actionRoll', ({ encounterId, rollsArray, targetId }) => {
+      setTarget(targetId);
 
       const rolls = new Map(rollsArray) as Map<number, any>;
 
@@ -122,6 +130,7 @@ const Encounter = () => {
           queryKey: ['encounterHistory', encounterId],
         });
       }, 3000);
+
       // queryClient.invalidateQueries({ queryKey: ['character', targetCharacter.id] });
     });
 
@@ -201,6 +210,16 @@ const Encounter = () => {
       <div
         className={`${characterOptions ? 'gap-4' : 'gap-0'} timing grid h-full w-full max-w-8xl grid-rows-[1fr_auto] justify-center`}
       >
+        <div className="bg-primary shadow-primary absolute left-1.5 top-1.5 z-10 ml-[72px] mr-auto flex flex-col items-start justify-start rounded p-1.5">
+          {joinedPlayers.map((player) => (
+            <div className="flex items-center gap-2" key={player.username}>
+              <p className="text-base">{player.username}</p>
+              {campaign.ownerId === player.playerId && (
+                <Icon path={mdiCrown} color="gold" size={0.8} />
+              )}
+            </div>
+          ))}
+        </div>
         <div
           className={`scrollbar-primary timing pointer-events-auto relative mb-auto max-h-full max-w-full overflow-y-auto rounded border-2`}
           style={{ borderColor: accentPrimary }}
@@ -323,6 +342,15 @@ const Encounter = () => {
               )}
             </div>
           </div>
+          <button
+            className="bg-tertiary group flex items-center justify-center rounded p-1.5 shadow shadow-black"
+            onClick={() => navigate('actionQueue')}
+          >
+            <Icon
+              path={mdiQueueFirstInLastOut}
+              className={`timing text-tertiary group-hover:text-accent size-8`}
+            />
+          </button>
           <button
             className="bg-tertiary group flex items-center justify-center rounded p-1.5 shadow shadow-black"
             onClick={() => setCharacterOptions((prev) => !prev)}
@@ -473,14 +501,17 @@ const Encounter = () => {
           />
         </div>
       </div>
-      {(parts.includes('characters') || parts.includes('initiative')) && (
+      {(parts.includes('characters') ||
+        parts.includes('initiative') ||
+        parts.includes('actionQueue')) && (
         <Outlet
           context={{
             campaign,
+            combat,
             joinedPlayers,
+            activeCharacter,
             initiativeComplete,
             rolls,
-
             rolling,
             animateRoll,
             rollCounter,

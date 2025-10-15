@@ -17,37 +17,18 @@ import { mdiAutorenew } from '@mdi/js';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import ReactionIcon from '../icons/ReactionIcon';
 import DieIcon from '../icons/DieIcon';
-import {
-  AttributeName,
-  AttributeTree,
-  SkillName,
-} from 'src/types/attributeTree';
-import { Action } from '@cloudinary/url-gen/internal/Action';
+import calculateDiceCount from 'src/utils/calculateDiceCount';
 
 const ReactionSidebar = ({
   form,
   reactions,
   actionSidebar,
   ownedCharacterId,
-  calculateDiceCount,
-  rollData,
 }: {
   form: FormApi;
   reactions: number[];
   actionSidebar: boolean;
   ownedCharacterId: number;
-  calculateDiceCount: (
-    attributes: AttributeTree,
-    action: Partial<Action>,
-    modifiers: string[],
-  ) => {
-    diceCount: number;
-    roll: { attribute: AttributeName; skill: SkillName };
-  };
-  rollData: Map<
-    number,
-    { diceArray: number[]; rolling: boolean; successes: number }
-  >;
 }) => {
   const { filteredCharacter: character } = useCharacter(ownedCharacterId);
   const navigate = useNavigate();
@@ -59,8 +40,6 @@ const ReactionSidebar = ({
     filterBySubCategory,
     category,
   } = useActions(character?.actions, 'reaction');
-
-  const roll = rollData.get(ownedCharacterId);
 
   return (
     <div
@@ -100,7 +79,7 @@ const ReactionSidebar = ({
               </button>
             </div>
 
-            <form.Field
+            {/* <form.Field
               name="reactionType"
               listeners={{
                 onChange: () => form.setFieldValue('reaction', null),
@@ -116,7 +95,7 @@ const ReactionSidebar = ({
                   }}
                 />
               )}
-            </form.Field>
+            </form.Field> */}
             <form.Field
               name="reaction"
               listeners={{ onChange: () => form.setFieldValue('item', null) }}
@@ -228,13 +207,13 @@ const ReactionSidebar = ({
                 }}
               </form.Field>
             </div>
-            {roll?.diceArray.length > 0 && (
+            {/* {roll?.diceArray.length > 0 && (
               <CharacterRoll
                 form={form}
                 characterId={ownedCharacterId}
                 rollData={rollData}
               />
-            )}
+            )} */}
             <form.Subscribe
               selector={(state) => [
                 state.values.reaction,

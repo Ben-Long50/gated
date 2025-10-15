@@ -27,6 +27,7 @@ import Encounter from 'src/components/maps/Encounter';
 import ActionListModal from 'src/components/modals/ActionListModal';
 import EncounterForm from 'src/components/maps/EncounterForm';
 import EncounterList from 'src/components/maps/EncounterList';
+import ActionQueueModal from 'src/components/modals/ActionQueueModal';
 
 const CampaignTabRoutes = () => {
   return (
@@ -89,6 +90,7 @@ const CampaignTabRoutes = () => {
           <Route path=":mapId/encounters/:encounterId" element={<Encounter />}>
             <Route path="characters">{CharacterMenuRoutes()}</Route>
             <Route path="initiative" element={<InitiativeModal />} />
+            <Route path="actionQueue" element={<ActionQueueModal />} />
             <Route path="availableActions" element={<ActionListModal />} />
             <Route path="availableReactions" element={<ActionListModal />} />
           </Route>
