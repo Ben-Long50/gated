@@ -98,7 +98,7 @@ const ActionCard = ({ action, mode }: { action: Action; mode?: string }) => {
             ))}
           </div>
         )}
-        {action.keywordModifiers.length > 0 &&
+        {action.keywordModifiers?.length > 0 &&
           action.keywordModifiers.map((keyword, index) => (
             <ItemCardSmall
               key={index}
