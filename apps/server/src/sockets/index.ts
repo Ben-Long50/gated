@@ -218,13 +218,9 @@ export function setupSocketIO(io: Server) {
         io.to(campaignId).emit('item', item.id);
         io.to(campaignId).emit('character', activeCharacter.id);
 
-        await encounterServices.setCombatPhase(encounterId, 'reaction');
-
-        applyDamage(targetCharacter, damage);
+        // applyDamage(targetCharacter, damage);
 
         io.to(campaignId).emit('character', targetCharacter.id);
-
-        return;
 
         const historyData = {
           characterId: activeCharacter.id,
@@ -257,11 +253,17 @@ export function setupSocketIO(io: Server) {
           };
         }
 
-        await encounterServices.createEncounterHistory(
+        const phaseAction = await encounterServices.createEncounterHistory(
           campaignId,
           encounterId,
           historyData,
         );
+
+        await encounterServices.setCombatPhase(encounterId, 'reaction');
+
+        await encounterServices.setPhaseAction(encounterId, phaseAction);
+
+        socket.to(campaignId).emit('encounter', encounterId);
 
         console.log(`Broadcasted action roll to encounter ${encounterId}`);
       },

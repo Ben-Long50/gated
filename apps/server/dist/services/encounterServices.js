@@ -51,6 +51,8 @@ const encounterServices = {
                             item: true,
                         },
                     },
+                    phaseActionHistory: true,
+                    phaseReactionHistories: true,
                 },
             });
             if (!encounter) {
@@ -72,6 +74,22 @@ const encounterServices = {
                 include: {
                     characters: true,
                     map: { select: { picture: true, name: true } },
+                    phaseActionHistory: {
+                        include: {
+                            character: true,
+                            target: true,
+                            action: true,
+                            item: true,
+                        },
+                    },
+                    phaseReactionHistories: {
+                        include: {
+                            character: true,
+                            target: true,
+                            action: true,
+                            item: true,
+                        },
+                    },
                 },
             });
             return encounters;
@@ -263,15 +281,27 @@ const encounterServices = {
     },
     createEncounterHistory: async (campaignId, encounterId, formData) => {
         try {
-            await prisma.history.create({
+            const history = await prisma.history.create({
                 data: Object.assign({ campaignId,
                     encounterId }, formData),
             });
+            return history;
         }
         catch (error) {
             console.error(error);
             throw new Error('Failed to create encounter history entry');
         }
+    },
+    setPhaseAction: async (encounterId, phaseAction) => {
+        try {
+            await prisma.encounter.update({
+                where: { id: encounterId },
+                data: {
+                    phaseActionHistory: { connect: { id: phaseAction.id } },
+                },
+            });
+        }
+        catch (error) { }
     },
     createOrUpdateEncounter: async (campaignId, mapId, formData) => {
         const existingEncounter = await prisma.encounter.findFirst({

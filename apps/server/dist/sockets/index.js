@@ -1,7 +1,7 @@
 import prisma from '../config/database.js';
 import encounterServices from '../services/encounterServices.js';
 import characterServices from '../services/characterServices.js';
-import { applyDamage, calculateCosts, calculateDamage, calculateRoll, } from '../utils/rollUtilities.js';
+import { calculateCosts, calculateDamage, calculateRoll, } from '../utils/rollUtilities.js';
 export function setupSocketIO(io) {
     io.on('connection', (socket) => {
         console.log('User connected:', socket.id);
@@ -136,10 +136,8 @@ export function setupSocketIO(io) {
             });
             io.to(campaignId).emit('item', item.id);
             io.to(campaignId).emit('character', activeCharacter.id);
-            await encounterServices.setCombatPhase(encounterId, 'reaction');
-            applyDamage(targetCharacter, damage);
+            // applyDamage(targetCharacter, damage);
             io.to(campaignId).emit('character', targetCharacter.id);
-            return;
             const historyData = {
                 characterId: activeCharacter.id,
                 actionId: action.id,
@@ -158,7 +156,10 @@ export function setupSocketIO(io) {
                     damage,
                 };
             }
-            await encounterServices.createEncounterHistory(campaignId, encounterId, historyData);
+            const phaseAction = await encounterServices.createEncounterHistory(campaignId, encounterId, historyData);
+            await encounterServices.setCombatPhase(encounterId, 'reaction');
+            await encounterServices.setPhaseAction(encounterId, phaseAction);
+            socket.to(campaignId).emit('encounter', encounterId);
             console.log(`Broadcasted action roll to encounter ${encounterId}`);
         });
         socket.on('reactionRoll', async ({ campaignId, encounterId, reactiveCharacter, targetCharacter, reaction, item, rollResult, }) => {

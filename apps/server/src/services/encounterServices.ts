@@ -1,5 +1,6 @@
-import { $Enums } from '@prisma/client';
+import { $Enums, History } from '@prisma/client';
 import prisma from '../config/database.js';
+import { Action } from '../types/action.js';
 
 const encounterServices = {
   getEncounters: async (campaignId: number) => {
@@ -43,6 +44,8 @@ const encounterServices = {
               item: true,
             },
           },
+          phaseActionHistory: true,
+          phaseReactionHistories: true,
         },
       });
 
@@ -66,6 +69,22 @@ const encounterServices = {
         include: {
           characters: true,
           map: { select: { picture: true, name: true } },
+          phaseActionHistory: {
+            include: {
+              character: true,
+              target: true,
+              action: true,
+              item: true,
+            },
+          },
+          phaseReactionHistories: {
+            include: {
+              character: true,
+              target: true,
+              action: true,
+              item: true,
+            },
+          },
         },
       });
 
@@ -280,17 +299,30 @@ const encounterServices = {
     },
   ) => {
     try {
-      await prisma.history.create({
+      const history = await prisma.history.create({
         data: {
           campaignId,
           encounterId,
           ...formData,
         },
       });
+
+      return history;
     } catch (error) {
       console.error(error);
       throw new Error('Failed to create encounter history entry');
     }
+  },
+
+  setPhaseAction: async (encounterId: number, phaseAction: History) => {
+    try {
+      await prisma.encounter.update({
+        where: { id: encounterId },
+        data: {
+          phaseActionHistory: { connect: { id: phaseAction.id } },
+        },
+      });
+    } catch (error) {}
   },
 
   createOrUpdateEncounter: async (

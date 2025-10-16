@@ -118,23 +118,25 @@ model Location {
 }
 
 model Encounter {
-  id           Int         @id @default(autoincrement())
-  createdAt    DateTime    @default(now())
-  name         String
-  active       Boolean     @default(false)
-  completed    Boolean     @default(false)
-  campaign     Campaign    @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  campaignId   Int
-  map          Map         @relation(fields: [mapId], references: [id])
-  mapId        Int
-  event        Event?
-  turnOrder    Int[]
-  turnPosition Int
-  reactions    Int[]
-  passes       Int[]
-  combatPhase  CombatPhase @default(pending)
-  characters   Character[]
-  history      History[]
+  id                     Int         @id @default(autoincrement())
+  createdAt              DateTime    @default(now())
+  name                   String
+  active                 Boolean     @default(false)
+  completed              Boolean     @default(false)
+  campaign               Campaign    @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId             Int
+  map                    Map         @relation(fields: [mapId], references: [id])
+  mapId                  Int
+  event                  Event?
+  turnOrder              Int[]
+  turnPosition           Int
+  reactions              Int[]
+  passes                 Int[]
+  combatPhase            CombatPhase @default(pending)
+  characters             Character[]
+  phaseActionHistory     History?    @relation(name: "phaseAction")
+  phaseReactionHistories History[]   @relation(name: "phaseReactions")
+  history                History[]   @relation(name: "history")
 }
 
 enum CombatPhase {
@@ -145,21 +147,25 @@ enum CombatPhase {
 }
 
 model History {
-  id          Int        @id @default(autoincrement())
-  createdAt   DateTime   @default(now())
-  campaign    Campaign   @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  campaignId  Int
-  encounter   Encounter? @relation(fields: [encounterId], references: [id])
-  encounterId Int?
-  character   Character  @relation("activeCharacter", fields: [characterId], references: [id])
-  characterId Int
-  target      Character? @relation("targetCharacter", fields: [targetId], references: [id])
-  targetId    Int?
-  action      Action     @relation(fields: [actionId], references: [id])
-  actionId    Int
-  item        Item?      @relation(fields: [itemId], references: [id])
-  itemId      Int?
-  rollResult  Json?
+  id                       Int        @id @default(autoincrement())
+  createdAt                DateTime   @default(now())
+  campaign                 Campaign   @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId               Int
+  encounter                Encounter? @relation(name: "history", fields: [encounterId], references: [id])
+  encounterId              Int?
+  phaseActionEncounter     Encounter? @relation(name: "phaseAction", fields: [phaseActionEncounterId], references: [id])
+  phaseActionEncounterId   Int?       @unique
+  phaseReactionEncounter   Encounter? @relation(name: "phaseReactions", fields: [phaseReactionEncounterId], references: [id])
+  phaseReactionEncounterId Int?
+  character                Character  @relation("activeCharacter", fields: [characterId], references: [id])
+  characterId              Int
+  target                   Character? @relation("targetCharacter", fields: [targetId], references: [id])
+  targetId                 Int?
+  action                   Action     @relation(fields: [actionId], references: [id])
+  actionId                 Int
+  item                     Item?      @relation(fields: [itemId], references: [id])
+  itemId                   Int?
+  rollResult               Json?
 }
 
 model Faction {
