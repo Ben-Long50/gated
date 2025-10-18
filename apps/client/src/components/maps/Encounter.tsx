@@ -321,24 +321,21 @@ const Encounter = () => {
               )}
             </div>
             <div
-              className={`${historyList ? 'max-h-48 border-t-2 pt-4' : 'max-h-0'} timing border-accent scrollbar-secondary-2 flex h-full w-full flex-col overflow-y-auto overflow-x-hidden pr-2`}
+              className={`${historyList ? 'max-h-48 border-t-2 pt-4' : 'max-h-0'} timing border-accent scrollbar-secondary-2 flex h-full w-full flex-col overflow-y-auto overflow-x-hidden`}
             >
               {history.length > 0 && (
-                <>
-                  <ArrowHeader3
+                <button
+                  className="timing hover:bg-tertiary w-full rounded p-2 hover:shadow hover:shadow-black"
+                  onClick={() => navigate('history')}
+                >
+                  <ArrowHeader4
                     className="mb-2 whitespace-nowrap"
                     title="
-                  Action History"
+                  Last Action"
                   />
-                  {history.map((entry, index: number) => (
-                    <Fragment key={entry.id}>
-                      <HistoryCard history={entry} />
-                      {index < history.length - 1 && (
-                        <Divider className="opacity-50" />
-                      )}
-                    </Fragment>
-                  ))}
-                </>
+
+                  <HistoryCard history={history[0]} />
+                </button>
               )}
             </div>
           </div>
@@ -503,7 +500,8 @@ const Encounter = () => {
       </div>
       {(parts.includes('characters') ||
         parts.includes('initiative') ||
-        parts.includes('actionQueue')) && (
+        parts.includes('actionQueue') ||
+        parts.includes('history')) && (
         <Outlet
           context={{
             campaign,
