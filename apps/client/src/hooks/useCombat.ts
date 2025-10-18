@@ -1,6 +1,6 @@
 import { useForm } from '@tanstack/react-form';
 import { camelCase } from 'change-case';
-import { useContext, useMemo } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import { Action } from 'src/types/action';
@@ -21,21 +21,36 @@ import calculateCosts from 'src/utils/calculateCosts';
 
 const useCombat = () => {
   const { user } = useContext(AuthContext);
-  const { gameMaster, calculateRoll } = useContext(CampaignContext);
+  const { gameMaster } = useContext(CampaignContext);
   const { campaignId, mapId, encounterId } = useParams();
   const queryClient = useQueryClient();
 
   const { data: combat, isLoading } = useCombatQuery(Number(encounterId));
 
-  const setItem = useCombatStore((state) => state.setItem);
-
   const { filteredCharacter: activeCharacter } = useCharacter(
     combat?.turnOrder[combat?.turnPosition],
   );
 
-  const { data: ownedCharacter } = useCharacterQuery(
-    combat?.characters.find((character) => character.userId === user.id)?.id,
+  const [controlledCharacterId, setControlledCharacterId] = useState(
+    gameMaster
+      ? activeCharacter?.id
+      : combat?.characters.find(
+          (character: Character) =>
+            character.userId === user.id && character.playerCharacter,
+        )?.id,
   );
+
+  const { filteredCharacter: controlledCharacter } = useCharacter(
+    controlledCharacterId,
+  );
+
+  useEffect(() => {
+    if (gameMaster) {
+      setControlledCharacterId(combat?.turnOrder[combat?.turnPosition]);
+    }
+  }, [combat?.turnPosition]);
+
+  const setItem = useCombatStore((state) => state.setItem);
 
   const resetCharacterStat = useResetCharacterStatMutation();
 
@@ -49,9 +64,7 @@ const useCombat = () => {
     Number(encounterId),
   );
 
-  const characterStatHandlers = useCharacterStatHandlers(
-    gameMaster ? activeCharacter?.id : ownedCharacter?.id,
-  );
+  const characterStatHandlers = useCharacterStatHandlers(controlledCharacterId);
 
   const updateCharacterLocation = useUpdateCharacterLocationMutation(
     Number(mapId),
@@ -164,40 +177,24 @@ const useCombat = () => {
     },
 
     onSubmit: async ({ value }) => {
-      if (ownedCharacter?.stats.currentReactions === 0) {
+      if (controlledCharacter?.stats.currentReactions === 0) {
         alert('You do not have any more reactions this turn');
         return;
       }
 
-      if (
-        value.reaction?.actionSubtypes.includes('movement') &&
-        value.locationId
-      ) {
-        updateCharacterLocation.mutate({
-          characterId: ownedCharacter?.id,
-          locationId: Number(value.locationId),
-          index: value.index,
-        });
-      } else {
-        const rollResult = calculateRoll(
-          ownedCharacter?.attributes,
-          value.reaction,
-          value.modifiers,
-        );
+      socket.emit('reactionRoll', {
+        campaignId: Number(campaignId),
+        encounterId: Number(encounterId),
+        reactiveCharacter: controlledCharacter,
+        targetCharacter: value.target,
+        reaction: value.reaction,
+        modifiers: value.modifiers,
+        item: value.item,
+      });
 
-        socket.emit('reactionRoll', {
-          campaignId: Number(campaignId),
-          encounterId: Number(encounterId),
-          reactiveCharacter: ownedCharacter,
-          targetCharacter: value.target,
-          reaction: value.reaction,
-          item: value.item,
-          rollResult: { ...rollResult, modifiers: value.modifiers },
-        });
+      reactionForm.reset();
+      setItem(null);
 
-        reactionForm.reset();
-        setItem(null);
-      }
       if (value.reaction?.costs.currentReactions) {
         characterStatHandlers.handleCurrentReactions(
           value.reaction?.costs.currentReactions * -1,
@@ -207,7 +204,7 @@ const useCombat = () => {
     validators: {
       onSubmit: ({ value }) => {
         const { errors } = calculateCosts(
-          ownedCharacter,
+          controlledCharacter,
           value.reaction,
           value.item,
         );
@@ -220,7 +217,8 @@ const useCombat = () => {
   return {
     combat,
     encounterPermissions,
-    ownedCharacter,
+    controlledCharacterId,
+    setControlledCharacterId,
     activeCharacter,
     handleAdvanceTurn,
     actionForm,

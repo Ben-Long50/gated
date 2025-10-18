@@ -83,7 +83,8 @@ const Encounter = () => {
   const {
     combat,
     encounterPermissions,
-    ownedCharacter,
+    controlledCharacterId,
+    setControlledCharacterId,
     activeCharacter,
     handleAdvanceTurn,
     actionForm,
@@ -100,13 +101,11 @@ const Encounter = () => {
     socket.on('playerJoined', ({ playerId, playerIdList }) => {
       console.log(`player ${playerId} joined encounter ${encounterId}`);
       setJoinedPlayers(playerIdList);
-      console.log(playerIdList);
     });
 
     socket.on('playerLeft', ({ playerId, playerIdList }) => {
       console.log(`player ${playerId} left encounter ${encounterId}`);
       setJoinedPlayers(playerIdList);
-      console.log(playerIdList);
     });
 
     socket.on('initiativeRoll', (rollsArray) => {
@@ -130,37 +129,26 @@ const Encounter = () => {
           queryKey: ['encounterHistory', encounterId],
         });
       }, 3000);
-
-      // queryClient.invalidateQueries({ queryKey: ['character', targetCharacter.id] });
     });
 
-    socket.on(
-      'reactionRoll',
-      async ({
-        encounterId,
-        reactiveCharacter,
-        targetCharacter,
-        reaction,
-        item,
-        rollResult,
-      }) => {
-        if (targetCharacter) {
-          // setTarget(targetCharacter.id);
-        }
+    socket.on('reactionRoll', async ({ encounterId, rollsArray, targetId }) => {
+      if (targetId) {
+        // setTarget(targetId);
+      }
 
-        await animateRoll(reactiveCharacter.id, rollResult);
+      const rolls = new Map(rollsArray) as Map<number, any>;
 
-        setTimeout(() => {
-          queryClient.invalidateQueries({
-            queryKey: ['encounter', encounterId],
-          });
-          queryClient.invalidateQueries({
-            queryKey: ['encounterHistory', encounterId],
-          });
-        }, 3000);
-        // queryClient.invalidateQueries({ queryKey: ['character', targetCharacter.id] });
-      },
-    );
+      await animateRoll(rolls);
+
+      setTimeout(() => {
+        queryClient.invalidateQueries({
+          queryKey: ['encounter', encounterId],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ['encounterHistory', encounterId],
+        });
+      }, 3000);
+    });
 
     socket.on('navigateToEncounter', ({ encounterId, mapId, campaignId }) => {
       navigate(
@@ -194,7 +182,7 @@ const Encounter = () => {
       const rect = characterOptionsRef.current.getBoundingClientRect();
       setCharacterOptionsHeight(rect.height);
     }
-    if (activeCharacter?.id === ownedCharacter?.id) {
+    if (activeCharacter?.id === controlledCharacterId) {
       setCharacterOptions(true);
     }
   }, [combat, characterOptionsRef.current]);
@@ -365,7 +353,8 @@ const Encounter = () => {
             setActionSidebar(false);
           }}
         >
-          {encounterPermissions ? (
+          {encounterPermissions &&
+          controlledCharacterId === activeCharacter?.id ? (
             <>
               {combat?.combatPhase === 'action' ? (
                 <ActionIcon className="text-primary ml-1 size-10 shrink-0" />
@@ -427,7 +416,7 @@ const Encounter = () => {
                 </div>
               )}
               {combat?.combatPhase === 'reaction' &&
-                !combat?.reactions.includes(ownedCharacter?.id) && (
+                !combat?.reactions.includes(controlledCharacterId) && (
                   <>
                     <Divider />
                     <div className="flex flex-col gap-4">
@@ -462,7 +451,7 @@ const Encounter = () => {
                   form={reactionForm}
                   reactions={combat?.reactions}
                   actionSidebar={actionSidebar}
-                  ownedCharacterId={ownedCharacter?.id}
+                  controlledCharacterId={controlledCharacterId}
                 />
               )}
             </>
@@ -486,6 +475,10 @@ const Encounter = () => {
           <CharacterOptions
             ref={characterOptionsRef}
             form={actionForm}
+            controlledCharacterId={controlledCharacterId}
+            setControlledCharacterId={setControlledCharacterId}
+            turnPosition={combat?.turnPosition}
+            turnOrder={combat?.turnOrder}
             reactions={combat?.reactions}
             passes={combat?.passes}
             combatPhase={combat?.combatPhase}
@@ -493,7 +486,7 @@ const Encounter = () => {
             setActionSidebar={setActionSidebar}
             encounterPermissions={encounterPermissions}
             handleAdvanceTurn={handleAdvanceTurn}
-            characterId={gameMaster ? activeCharacter?.id : ownedCharacter?.id}
+            characterId={controlledCharacterId}
             characterOptions={characterOptions}
           />
         </div>

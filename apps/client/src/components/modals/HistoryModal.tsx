@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Loading from '../Loading';
 import PhaseActionCard from '../maps/PhaseActionCard';
 import useEncounterHistoryQuery from 'src/hooks/combat hooks/useEncounterHistoryQuery/useEncounterHistoryQuery';
+import Divider from '../Divider';
 
 const HistoryModal = () => {
   const { encounterId } = useParams();
@@ -17,14 +18,13 @@ const HistoryModal = () => {
     return <Loading />;
   }
 
-  console.log(history);
-
   return (
     <Modal>
       <h1>Action History</h1>
       {history.map((entry) => {
         return <PhaseActionCard phaseAction={entry} />;
       })}
+      <Divider />
       <BtnRect
         className="w-full"
         ariaLabel="Close"

@@ -13,13 +13,16 @@ const PhaseActionCard = ({ phaseAction }: { phaseAction: History }) => {
           characterId={phaseAction.characterId}
           characterList={true}
         />
-        <Icon path={mdiArrowRight} size={1.5} className="text-tertiary" />
+
         {phaseAction.targetId && (
-          <CharacterCardSmall
-            className="flex-1"
-            characterId={phaseAction.targetId}
-            characterList={true}
-          />
+          <>
+            <Icon path={mdiArrowRight} size={1.5} className="text-tertiary" />
+            <CharacterCardSmall
+              className="flex-1"
+              characterId={phaseAction.targetId}
+              characterList={true}
+            />
+          </>
         )}
       </div>
       <div className="col-span-2 grid grid-cols-2 items-start gap-8">

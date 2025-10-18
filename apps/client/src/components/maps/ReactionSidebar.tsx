@@ -23,14 +23,14 @@ const ReactionSidebar = ({
   form,
   reactions,
   actionSidebar,
-  ownedCharacterId,
+  controlledCharacterId,
 }: {
   form: FormApi;
   reactions: number[];
   actionSidebar: boolean;
-  ownedCharacterId: number;
+  controlledCharacterId: number;
 }) => {
-  const { filteredCharacter: character } = useCharacter(ownedCharacterId);
+  const { filteredCharacter: character } = useCharacter(controlledCharacterId);
   const navigate = useNavigate();
   const location = useLocation();
   const parts = location.pathname.split('/');
@@ -49,7 +49,7 @@ const ReactionSidebar = ({
         <Outlet context={{ actions: availableReactions, category, form }} />
       )}
       <>
-        {reactions.includes(ownedCharacterId) && (
+        {reactions.includes(controlledCharacterId) && (
           <>
             <div className="flex items-center justify-between gap-2">
               <ArrowHeader3
@@ -210,7 +210,7 @@ const ReactionSidebar = ({
             {/* {roll?.diceArray.length > 0 && (
               <CharacterRoll
                 form={form}
-                characterId={ownedCharacterId}
+                characterId={controlledCharacterId}
                 rollData={rollData}
               />
             )} */}
@@ -240,6 +240,23 @@ const ReactionSidebar = ({
                         <h3>{diceCount}</h3>
                       )}
                     </div>
+                    <form.Subscribe selector={(state) => state.errorMap}>
+                      {(errorMap) => {
+                        const errors = errorMap.onSubmit?.split(', ') || [];
+
+                        return (
+                          errors.length > 0 && (
+                            <ul className="flex list-disc flex-col gap-2">
+                              {errors.map((error) => (
+                                <li className="text-error w-full text-base">
+                                  {error}
+                                </li>
+                              ))}
+                            </ul>
+                          )
+                        );
+                      }}
+                    </form.Subscribe>
                     <BtnRect
                       className={`${!reaction && 'pointer-events-none opacity-50'} w-full whitespace-nowrap`}
                       ariaLabel="Roll action"
