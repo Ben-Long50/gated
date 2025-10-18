@@ -102,37 +102,10 @@ const encounterServices = {
           encounterId,
         },
         include: {
-          character: {
-            select: {
-              firstName: true,
-              lastName: true,
-              picture: true,
-              id: true,
-            },
-          },
-          target: {
-            select: {
-              firstName: true,
-              lastName: true,
-              picture: true,
-              id: true,
-            },
-          },
-          action: {
-            select: {
-              actionType: true,
-              actionSubtypes: true,
-              name: true,
-              id: true,
-            },
-          },
-          item: {
-            select: {
-              name: true,
-              picture: true,
-              id: true,
-            },
-          },
+          character: true,
+          target: true,
+          action: true,
+          item: true,
         },
         orderBy: { createdAt: 'desc' },
       });
