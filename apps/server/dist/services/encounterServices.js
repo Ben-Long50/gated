@@ -274,7 +274,39 @@ const encounterServices = {
                 },
             });
         }
-        catch (error) { }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to connect phase action');
+        }
+    },
+    setPhaseReaction: async (encounterId, phaseReaction) => {
+        try {
+            await prisma.encounter.update({
+                where: { id: encounterId },
+                data: {
+                    phaseReactionHistories: { connect: { id: phaseReaction.id } },
+                },
+            });
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to connect phase reaction');
+        }
+    },
+    clearPhaseActions: async (encounterId) => {
+        try {
+            await prisma.encounter.update({
+                where: { id: encounterId },
+                data: {
+                    phaseActionHistory: { disconnect: true },
+                    phaseReactionHistories: { set: [] },
+                },
+            });
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to clear phase actions');
+        }
     },
     createOrUpdateEncounter: async (campaignId, mapId, formData) => {
         const existingEncounter = await prisma.encounter.findFirst({

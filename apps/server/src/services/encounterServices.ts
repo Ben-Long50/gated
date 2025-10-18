@@ -295,7 +295,39 @@ const encounterServices = {
           phaseActionHistory: { connect: { id: phaseAction.id } },
         },
       });
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to connect phase action');
+    }
+  },
+
+  setPhaseReaction: async (encounterId: number, phaseReaction: History) => {
+    try {
+      await prisma.encounter.update({
+        where: { id: encounterId },
+        data: {
+          phaseReactionHistories: { connect: { id: phaseReaction.id } },
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to connect phase reaction');
+    }
+  },
+
+  clearPhaseActions: async (encounterId: number) => {
+    try {
+      await prisma.encounter.update({
+        where: { id: encounterId },
+        data: {
+          phaseActionHistory: { disconnect: true },
+          phaseReactionHistories: { set: [] },
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to clear phase actions');
+    }
   },
 
   createOrUpdateEncounter: async (

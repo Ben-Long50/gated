@@ -73,16 +73,18 @@ export const calculateCosts = async (character, item, action) => {
         ? action.name === 'Salvo Fire'
             ? Object.assign(Object.assign({}, action.costs), { currentAmmoCount: item === null || item === void 0 ? void 0 : item.stats.salvo }) : action.costs
         : null;
-    if (item.keywords.some((keyword) => keyword.keyword.name === '2H')) {
-        costs.currentHands = 2;
-    }
-    if (item.keywords.some((keyword) => keyword.keyword.name === '1H')) {
-        costs.currentHands = 1;
+    if (item) {
+        if (item.keywords.some((keyword) => keyword.keyword.name === '2H')) {
+            costs.currentHands = 2;
+        }
+        if (item.keywords.some((keyword) => keyword.keyword.name === '1H')) {
+            costs.currentHands = 1;
+        }
     }
     const characterCosts = {};
     const itemCosts = {};
     Object.entries(costs).forEach(([stat, value]) => {
-        if (character.stats[stat]) {
+        if (character && character.stats[stat]) {
             const costInfo = {
                 stat,
                 available: character.stats[stat],
@@ -93,7 +95,7 @@ export const calculateCosts = async (character, item, action) => {
             }
             characterCosts[costInfo.stat] = costInfo.available - costInfo.required;
         }
-        if (item.stats[stat]) {
+        if (item && item.stats[stat]) {
             const costInfo = {
                 stat,
                 available: item.stats[stat],

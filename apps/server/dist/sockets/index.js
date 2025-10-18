@@ -122,7 +122,7 @@ export function setupSocketIO(io) {
             const damage = calculateDamage(item, action, rollResults.successes);
             rolls.set(activeCharacter === null || activeCharacter === void 0 ? void 0 : activeCharacter.id, {
                 characterId: activeCharacter === null || activeCharacter === void 0 ? void 0 : activeCharacter.id,
-                name: activeCharacter === null || activeCharacter === void 0 ? void 0 : activeCharacter.firstName,
+                name: `${activeCharacter === null || activeCharacter === void 0 ? void 0 : activeCharacter.firstName} ${activeCharacter === null || activeCharacter === void 0 ? void 0 : activeCharacter.lastName}`,
                 playerCharacter: activeCharacter === null || activeCharacter === void 0 ? void 0 : activeCharacter.playerCharacter,
                 diceArray: rollResults.result,
                 successes: rollResults.successes,
@@ -132,12 +132,16 @@ export function setupSocketIO(io) {
             io.to(`encounter ${encounterId}`).emit('actionRoll', {
                 encounterId,
                 rollsArray,
-                targetId: targetCharacter.id,
+                targetId: (targetCharacter === null || targetCharacter === void 0 ? void 0 : targetCharacter.id) || null,
             });
-            io.to(campaignId).emit('item', item.id);
             io.to(campaignId).emit('character', activeCharacter.id);
-            // applyDamage(targetCharacter, damage);
-            io.to(campaignId).emit('character', targetCharacter.id);
+            if (item) {
+                io.to(campaignId).emit('item', item.id);
+            }
+            if (targetCharacter) {
+                io.to(campaignId).emit('character', targetCharacter.id);
+                // applyDamage(targetCharacter, damage);
+            }
             const historyData = {
                 characterId: activeCharacter.id,
                 actionId: action.id,
@@ -162,7 +166,30 @@ export function setupSocketIO(io) {
             socket.to(campaignId).emit('encounter', encounterId);
             console.log(`Broadcasted action roll to encounter ${encounterId}`);
         });
-        socket.on('reactionRoll', async ({ campaignId, encounterId, reactiveCharacter, targetCharacter, reaction, item, rollResult, }) => {
+        socket.on('reactionRoll', async ({ campaignId, encounterId, reactiveCharacter, targetCharacter, reaction, modifiers, item, }) => {
+            const rollResults = calculateRoll(reactiveCharacter.attributes, { name: reaction.name, roll: reaction.roll }, modifiers) || { result: [], successes: 0 };
+            const rolls = new Map();
+            rolls.set(reactiveCharacter === null || reactiveCharacter === void 0 ? void 0 : reactiveCharacter.id, {
+                characterId: reactiveCharacter === null || reactiveCharacter === void 0 ? void 0 : reactiveCharacter.id,
+                name: `${reactiveCharacter === null || reactiveCharacter === void 0 ? void 0 : reactiveCharacter.firstName} ${reactiveCharacter === null || reactiveCharacter === void 0 ? void 0 : reactiveCharacter.lastName}`,
+                playerCharacter: reactiveCharacter === null || reactiveCharacter === void 0 ? void 0 : reactiveCharacter.playerCharacter,
+                diceArray: rollResults.result,
+                successes: rollResults.successes,
+            });
+            const rollsArray = Array.from(rolls.entries());
+            await calculateCosts(reactiveCharacter, item, reaction);
+            io.to(`encounter ${encounterId}`).emit('reactionRoll', {
+                encounterId,
+                rollsArray,
+                targetId: (targetCharacter === null || targetCharacter === void 0 ? void 0 : targetCharacter.id) || null,
+            });
+            io.to(campaignId).emit('character', reactiveCharacter.id);
+            if (item) {
+                io.to(campaignId).emit('item', item.id);
+            }
+            if (targetCharacter) {
+                io.to(campaignId).emit('character', targetCharacter.id);
+            }
             const historyData = {
                 characterId: reactiveCharacter.id,
                 actionId: reaction.id,
@@ -173,44 +200,44 @@ export function setupSocketIO(io) {
             if (item) {
                 historyData.itemId = item.id;
             }
-            if (rollResult) {
-                historyData.rollResult = rollResult;
+            if (rollResults) {
+                historyData.rollResult = {
+                    result: rollResults.result,
+                    successes: rollResults.successes,
+                    modifiers: [],
+                    damage: rollResults.successes * -1,
+                };
             }
-            await encounterServices.createEncounterHistory(campaignId, encounterId, historyData);
-            io.to(campaignId).emit('reactionRoll', {
-                encounterId,
-                reactiveCharacter,
-                targetCharacter,
-                reaction,
-                item,
-                rollResult,
-            });
+            const phaseReaction = await encounterServices.createEncounterHistory(campaignId, encounterId, historyData);
+            await encounterServices.setPhaseReaction(encounterId, phaseReaction);
+            socket.to(campaignId).emit('encounter', encounterId);
             console.log(`Broadcasted reaction roll to campaign ${campaignId}`);
         });
         socket.on('scheduleReaction', async ({ campaignId, encounterId, characterId }) => {
             await encounterServices.scheduleReaction(encounterId, characterId);
             io.to(campaignId).emit('encounter', encounterId);
-            console.log(`Broadcasted combat ${encounterId} to campaign ${campaignId}`);
+            console.log(`Broadcasted encounter ${encounterId} to campaign ${campaignId}`);
         });
         socket.on('passReaction', async ({ campaignId, encounterId, characterId }) => {
             await encounterServices.passReaction(encounterId, characterId);
             io.to(campaignId).emit('encounter', encounterId);
-            console.log(`Broadcasted combat ${encounterId} to campaign ${campaignId}`);
+            console.log(`Broadcasted encounter ${encounterId} to campaign ${campaignId}`);
         });
         socket.on('finishReaction', async ({ campaignId, encounterId, characterId }) => {
             await encounterServices.finishReaction(encounterId, characterId);
             io.to(campaignId).emit('encounter', encounterId);
-            console.log(`Broadcasted combat ${encounterId} to campaign ${campaignId}`);
+            console.log(`Broadcasted encounter ${encounterId} to campaign ${campaignId}`);
         });
         socket.on('passAllReactions', async ({ campaignId, encounterId }) => {
             await encounterServices.passAllReactions(encounterId);
             io.to(campaignId).emit('encounter', encounterId);
             io.to(campaignId).emit('resetRolls');
-            console.log(`Broadcasted combat ${encounterId} to campaign ${campaignId}`);
+            console.log(`Broadcasted encounter ${encounterId} to campaign ${campaignId}`);
         });
         socket.on('advanceTurn', ({ campaignId, encounterId }) => {
+            encounterServices.clearPhaseActions(encounterId);
             io.to(campaignId).emit('advanceTurn', encounterId);
-            console.log(`Broadcasted combat ${encounterId} to campaign ${campaignId}`);
+            console.log(`Broadcasted encounter ${encounterId} to campaign ${campaignId}`);
         });
         socket.on('disconnect', (reason) => {
             console.log('User disconnected:', socket.id, 'Reason:', reason);
