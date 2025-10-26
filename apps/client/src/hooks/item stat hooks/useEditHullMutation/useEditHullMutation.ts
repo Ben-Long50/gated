@@ -4,11 +4,14 @@ import { Character } from 'src/types/character';
 import editHull from './editHull';
 import { Item } from 'src/types/item';
 import { socket } from 'src/socket';
+import useCombatStore from 'src/stores/combatStore';
 
 const useEditHullMutation = (itemId: number) => {
   const queryClient = useQueryClient();
   const updateBuffer = useRef(0);
   const timeoutRef = useRef(0);
+
+  const updateItem = useCombatStore((store) => store.updateItem);
 
   return useMutation({
     mutationFn: (value: number) => {
@@ -37,15 +40,20 @@ const useEditHullMutation = (itemId: number) => {
         itemId,
       ]);
 
-      queryClient.setQueryData(['item', itemId], (prev: Item) => ({
-        ...prev,
-        stats: {
-          ...prevItemData?.stats,
-          currentHull: prevItemData?.stats.currentHull
-            ? prevItemData?.stats.currentHull + value
-            : value,
-        },
-      }));
+      const newItemData = queryClient.setQueryData(
+        ['item', itemId],
+        (prev: Item) => ({
+          ...prev,
+          stats: {
+            ...prevItemData?.stats,
+            currentHull: prevItemData?.stats.currentHull
+              ? prevItemData?.stats.currentHull + value
+              : value,
+          },
+        }),
+      ) as Item;
+
+      updateItem(newItemData);
 
       return { prevItemData };
     },

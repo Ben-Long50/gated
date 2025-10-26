@@ -3,11 +3,14 @@ import editArmorPower from './editPower';
 import { useRef } from 'react';
 import { Item } from 'src/types/item';
 import { socket } from 'src/socket';
+import useCombatStore from 'src/stores/combatStore';
 
 const useEditPowerMutation = (itemId: number) => {
   const queryClient = useQueryClient();
   const updateBuffer = useRef(0);
   const timeoutRef = useRef(0);
+
+  const updateItem = useCombatStore((store) => store.updateItem);
 
   return useMutation({
     mutationFn: (value: number) => {
@@ -36,15 +39,20 @@ const useEditPowerMutation = (itemId: number) => {
         itemId,
       ]);
 
-      queryClient.setQueryData(['item', itemId], (prev: Item) => ({
-        ...prev,
-        stats: {
-          ...prevItemData?.stats,
-          currentPower: prevItemData?.stats.currentPower
-            ? prevItemData?.stats.currentPower + value
-            : value,
-        },
-      }));
+      const newItemData = queryClient.setQueryData(
+        ['item', itemId],
+        (prev: Item) => ({
+          ...prev,
+          stats: {
+            ...prevItemData?.stats,
+            currentPower: prevItemData?.stats.currentPower
+              ? prevItemData?.stats.currentPower + value
+              : value,
+          },
+        }),
+      ) as Item;
+
+      updateItem(newItemData);
 
       return { prevItemData };
     },

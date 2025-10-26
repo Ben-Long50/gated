@@ -9,6 +9,7 @@ const calculateDiceCount = (
   attributes: AttributeTree,
   action: Partial<Action>,
   modifiers: string[],
+  extraDice?: number,
 ) => {
   const calculatedRolls =
     action.roll?.map((roll) => {
@@ -35,6 +36,10 @@ const calculateDiceCount = (
     (action.name === 'Salvo Fire' || action.name === 'Flurry')
   ) {
     bestRoll.diceCount += 2;
+  }
+
+  if (extraDice) {
+    bestRoll.diceCount += extraDice;
   }
 
   return bestRoll;

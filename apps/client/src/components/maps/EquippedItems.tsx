@@ -6,7 +6,7 @@ import { Item } from 'src/types/item';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import useCombatStore from 'src/stores/combatStore';
 import Icon from '@mdi/react';
-import { mdiCheckCircle } from '@mdi/js';
+import { mdiCheckCircle, mdiCloseBoxOutline } from '@mdi/js';
 import { FormApi } from '@tanstack/react-form';
 
 const EquippedItems = ({
@@ -14,11 +14,13 @@ const EquippedItems = ({
   setActionSidebar,
   encounterPermissions,
   characterId,
+  setItemId,
 }: {
   form: FormApi;
   setActionSidebar: (state: boolean) => void;
   encounterPermissions: boolean;
   characterId: number;
+  setItemId?: (id: number) => void;
 }) => {
   const { rarityColorMap, statColorMap } = useContext(ThemeContext);
   const { filteredCharacter: character, isLoading } = useCharacter(characterId);
@@ -59,7 +61,7 @@ const EquippedItems = ({
             {equipmentList.map((equipment, index) => (
               <button
                 key={index}
-                className={`relative size-20 shrink-0 overflow-hidden rounded border-2 sm:size-28`}
+                className={`${!equipment.available && 'pointer-events-none'} relative size-20 shrink-0 overflow-hidden rounded border-2 sm:size-28`}
                 style={{
                   borderColor:
                     equipment.id === item?.id
@@ -72,29 +74,44 @@ const EquippedItems = ({
                       ? field.handleChange(null)
                       : field.handleChange(equipment);
                   }
-                  setItem(equipment);
+                  if (setItemId) {
+                    setItemId(equipment.id);
+                  }
                 }}
                 onMouseEnter={() => {
                   if (timeoutRef.current) {
                     clearTimeout(timeoutRef.current);
                   }
                   setActionSidebar(true);
-                  setItem(equipment);
+                  if (setItemId) {
+                    setItemId(equipment.id);
+                  }
                   setRange(equipment.stats.range || null, statColorMap.DMG);
                 }}
                 onMouseLeave={() => {
                   if (field.state.value) {
                     timeoutRef.current = setTimeout(() => {
-                      setItem(field.state.value);
+                      if (setItemId) {
+                        setItemId(field.state.value.id);
+                      }
                       setRange(null, null);
                     }, 200);
                   } else {
                     setActionSidebar(false);
-                    setItem(null);
+                    if (setItemId) {
+                      setItemId(null);
+                    }
                     setRange(null, null);
                   }
                 }}
               >
+                {!equipment.available && (
+                  <Icon
+                    path={mdiCloseBoxOutline}
+                    size={1.5}
+                    className="absolute right-0.5 top-0.5 z-10 text-red-600"
+                  />
+                )}
                 {field.state.value?.id === equipment.id && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <Icon
@@ -105,12 +122,14 @@ const EquippedItems = ({
                   </div>
                 )}
                 <div
-                  className="absolute inset-0 opacity-50"
                   style={{
                     backgroundImage: `radial-gradient(circle, transparent 65%, ${rarityColorMap[equipment.rarity]} 100%)`,
                   }}
                 />
-                <CloudinaryImage publicId={equipment.picture.publicId} />
+                <CloudinaryImage
+                  className={`${!equipment.available && 'opacity-50'} `}
+                  publicId={equipment.picture.publicId}
+                />
               </button>
             ))}
           </div>

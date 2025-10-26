@@ -1,7 +1,7 @@
 import useCharacter from 'src/hooks/useCharacter';
 import CharacterPictureRound from '../CharacterPictureRound';
 import ArrowHeader3 from '../ArrowHeader3';
-import { RefObject, useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 import EquippedItems from './EquippedItems';
 import BtnRect from '../buttons/BtnRect';
 import ActionIcon from '../icons/ActionIcon';
@@ -21,7 +21,6 @@ import useCharacterQueries from 'src/hooks/useCharactersQuery/useCharacterQuerie
 import useCombatStore from 'src/stores/combatStore';
 
 const CharacterOptions = ({
-  ref,
   form,
   controlledCharacterId,
   setControlledCharacterId,
@@ -34,8 +33,8 @@ const CharacterOptions = ({
   encounterPermissions,
   handleAdvanceTurn,
   characterOptions,
+  setItemId,
 }: {
-  ref: RefObject;
   form: FormApi;
   controlledCharacterId: number;
   setControlledCharacterId: (id: number) => void;
@@ -48,6 +47,7 @@ const CharacterOptions = ({
   encounterPermissions: boolean;
   handleAdvanceTurn: () => void;
   characterOptions: boolean;
+  setItemId: (id: number) => void;
 }) => {
   const { mobile } = useContext(LayoutContext);
   const { accentPrimary } = useContext(ThemeContext);
@@ -67,7 +67,7 @@ const CharacterOptions = ({
       borderColor={accentPrimary}
       chamfer="medium"
     >
-      <div ref={ref} className={`relative flex w-full flex-col gap-4 p-4`}>
+      <div className={`relative flex w-full flex-col gap-4 p-4`}>
         {gameMaster && (
           <InputSelectField
             label="Switch Character"
@@ -106,6 +106,7 @@ const CharacterOptions = ({
               setActionSidebar={setActionSidebar}
               encounterPermissions={encounterPermissions}
               characterId={controlledCharacterId}
+              setItemId={setItemId}
             />
           </div>
           <div className="flex flex-col justify-evenly gap-2">

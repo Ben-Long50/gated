@@ -118,6 +118,7 @@ const useCombat = () => {
       item: null as Item | null,
       target: null as Character | null,
       modifiers: [] as string[],
+      extraDice: null as number | null,
     },
     onSubmit: async ({ value }) => {
       if (
@@ -145,6 +146,7 @@ const useCombat = () => {
           targetCharacter: value.target,
           action: value.action,
           modifiers: value.modifiers,
+          extraDice: value.extraDice,
           item: value.item,
         });
 
@@ -174,6 +176,7 @@ const useCombat = () => {
       item: null as Item | null,
       target: null as Character | null,
       modifiers: [] as string[],
+      extraDice: null as number | null,
     },
 
     onSubmit: async ({ value }) => {
@@ -189,6 +192,7 @@ const useCombat = () => {
         targetCharacter: value.target,
         reaction: value.reaction,
         modifiers: value.modifiers,
+        extraDice: value.extraDice,
         item: value.item,
       });
 

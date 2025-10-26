@@ -27,6 +27,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Item } from 'src/types/item';
 import useCombatStore from 'src/stores/combatStore';
 import calculateDiceCount from 'src/utils/calculateDiceCount';
+import InputField from '../InputField';
 
 const ActionSidebar = ({
   form,
@@ -216,105 +217,118 @@ const ActionSidebar = ({
           )
         }
       </form.Subscribe>
-      <div className="relative flex w-full flex-col gap-2">
-        <form.Field name="modifiers">
-          {(field) => {
-            const modifiers = [
-              'push',
-              'booming',
-              'dooming',
-              'lucky',
-              'unlucky',
-            ];
-            return (
-              <>
-                {modifiers.map((modifier) => (
-                  <InputFieldCheckbox
-                    key={modifier}
-                    field={field}
-                    label={capitalCase(modifier)}
-                    value={modifier}
-                    checked={field.state.value.includes(modifier)}
-                    onChange={(value: string) => {
-                      if (field.state.value.includes(value)) {
-                        form.setFieldValue('modifiers', (prev) =>
-                          prev.filter((modifier) => modifier !== value),
-                        );
-                      } else {
-                        form.setFieldValue('modifiers', (prev) => [
-                          ...prev,
-                          value,
-                        ]);
-                      }
-                    }}
-                  />
-                ))}
-              </>
-            );
-          }}
-        </form.Field>
-      </div>
-      {/* {roll?.diceArray.length > 0 && (
-        <CharacterRoll
-          form={form}
-          characterId={activeCharacterId}
-        />
-      )} */}
       <form.Subscribe
         selector={(state) => [
           state.values.action,
           state.values.item,
           state.values.target,
           state.values.modifiers,
+          state.values.extraDice,
         ]}
       >
-        {([action, item, target, modifiers]) => {
+        {([action, item, target, modifiers, extraDice]) => {
           const diceCount =
             character && action?.roll?.length > 0 && modifiers
-              ? calculateDiceCount(character?.attributes, action, modifiers)
-                  .diceCount
+              ? calculateDiceCount(
+                  character?.attributes,
+                  action,
+                  modifiers,
+                  extraDice,
+                ).diceCount
               : 'N/A';
 
           return (
-            <>
-              <div className="flex items-center justify-between">
-                <DieIcon className="text-secondary size-8" />
-                {typeof diceCount === 'number' ? (
-                  <h2 className="!text-accent">{diceCount}</h2>
-                ) : (
-                  <h3>{diceCount}</h3>
-                )}
-              </div>
-              <form.Subscribe selector={(state) => state.errorMap}>
-                {(errorMap) => {
-                  const errors = errorMap.onSubmit?.split(', ') || [];
+            action?.roll &&
+            action?.roll.length > 0 && (
+              <>
+                <div className="relative flex w-full flex-col gap-2">
+                  <form.Field name="modifiers">
+                    {(field) => {
+                      const modifiers = [
+                        'push',
+                        'booming',
+                        'dooming',
+                        'lucky',
+                        'unlucky',
+                      ];
+                      return (
+                        <>
+                          {modifiers.map((modifier) => (
+                            <InputFieldCheckbox
+                              key={modifier}
+                              field={field}
+                              label={capitalCase(modifier)}
+                              value={modifier}
+                              checked={field.state.value.includes(modifier)}
+                              onChange={(value: string) => {
+                                if (field.state.value.includes(value)) {
+                                  form.setFieldValue('modifiers', (prev) =>
+                                    prev.filter(
+                                      (modifier) => modifier !== value,
+                                    ),
+                                  );
+                                } else {
+                                  form.setFieldValue('modifiers', (prev) => [
+                                    ...prev,
+                                    value,
+                                  ]);
+                                }
+                              }}
+                            />
+                          ))}
+                        </>
+                      );
+                    }}
+                  </form.Field>
+                  <form.Field name="extraDice">
+                    {(field) => (
+                      <InputField
+                        field={field}
+                        label="Extra Dice"
+                        type="number"
+                      />
+                    )}
+                  </form.Field>
+                </div>
+                <div className="flex items-center justify-between">
+                  <DieIcon className="text-secondary size-8" />
+                  {typeof diceCount === 'number' ? (
+                    <h2 className="!text-accent">{diceCount}</h2>
+                  ) : (
+                    <h3>{diceCount}</h3>
+                  )}
+                </div>
+                <form.Subscribe selector={(state) => state.errorMap}>
+                  {(errorMap) => {
+                    const errors = errorMap.onSubmit?.split(', ') || [];
 
-                  return (
-                    errors.length > 0 && (
-                      <ul className="flex list-disc flex-col gap-2">
-                        {errors.map((error) => (
-                          <li className="text-error w-full text-base">
-                            {error}
-                          </li>
-                        ))}
-                      </ul>
-                    )
-                  );
-                }}
-              </form.Subscribe>
-              <BtnRect
-                className={`${(!action || !item || !target) && 'pointer-events-none opacity-50'} w-full whitespace-nowrap`}
-                ariaLabel="Roll action"
-                type="button"
-                onClick={() => {
-                  if (action && target && item) {
-                    form.handleSubmit();
-                  }
-                }}
-              >
-                Roll Action
-              </BtnRect>
-            </>
+                    return (
+                      errors.length > 0 && (
+                        <ul className="flex list-disc flex-col gap-2">
+                          {errors.map((error) => (
+                            <li className="text-error w-full text-base">
+                              {error}
+                            </li>
+                          ))}
+                        </ul>
+                      )
+                    );
+                  }}
+                </form.Subscribe>
+                <BtnRect
+                  className={`${(!action || !item || !target) && 'pointer-events-none opacity-50'} w-full whitespace-nowrap`}
+                  ariaLabel="Roll action"
+                  type="button"
+                  onClick={() => {
+                    if (action && target && item) {
+                      form.handleSubmit();
+                    }
+                  }}
+                >
+                  Roll Action
+                </BtnRect>
+              </>
+            )
           );
         }}
       </form.Subscribe>

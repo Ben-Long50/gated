@@ -43,12 +43,13 @@ import { AuthContext } from 'src/contexts/AuthContext';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import { useQueryClient } from '@tanstack/react-query';
 import { User } from 'src/types/user';
+import useItemQuery from 'src/hooks/useItemQuery/useItemQuery';
 
 const Encounter = () => {
   const { mobile } = useContext(LayoutContext);
   const { accentPrimary } = useContext(ThemeContext);
   const { user } = useContext(AuthContext);
-  const { gameMaster, rolls, rolling, animateRoll, rollCounter } =
+  const { rolls, rolling, animateRoll, rollCounter } =
     useContext(CampaignContext);
   const navigate = useNavigate();
   const location = useLocation();
@@ -59,20 +60,20 @@ const Encounter = () => {
   const [characterList, setCharacterList] = useState(false);
   const [actionSidebar, setActionSidebar] = useState(false);
   const [characterOptions, setCharacterOptions] = useState(true);
-  const [characterOptionsHeight, setCharacterOptionsHeight] = useState(0);
   const [historyList, setHistoryList] = useState(false);
   const [joinedPlayers, setJoinedPlayers] = useState<string[]>([]);
-  const [initiativeRolls, setInitiativeRolls] = useState(new Map());
   const [initiativeComplete, setInitiativeComplete] = useState(false);
+  const [itemId, setItemId] = useState<number | null>(null);
 
   const queryClient = useQueryClient();
 
   const { map, locations, isLoading: mapLoading } = useMap(Number(mapId));
-  const characterOptionsRef = useRef<HTMLDivElement>(null);
 
   const { data: campaign } = useCampaignQuery(Number(campaignId));
 
   const setTarget = useCombatStore((state) => state.setTarget);
+
+  const { data: item } = useItemQuery(itemId);
 
   const {
     data: history,
@@ -171,23 +172,19 @@ const Encounter = () => {
     resizeHandles: [],
   }));
 
+  const phaseActionCount = combat
+    ? [combat.phaseActionHistory, ...combat.phaseReactionHistories].filter(
+        (action) => action,
+      ).length
+    : 0;
+
   useEffect(() => {
     if (combat && combat.combatPhase === 'pending') {
       navigate('initiative');
     }
   }, [combat]);
 
-  useLayoutEffect(() => {
-    if (characterOptionsRef.current) {
-      const rect = characterOptionsRef.current.getBoundingClientRect();
-      setCharacterOptionsHeight(rect.height);
-    }
-    if (activeCharacter?.id === controlledCharacterId) {
-      setCharacterOptions(true);
-    }
-  }, [combat, characterOptionsRef.current]);
-
-  const item = useCombatStore((state) => state.item);
+  // const item = useCombatStore((state) => state.item);
 
   if (mapLoading || combatLoading || historyLoading) return <Loading />;
 
@@ -328,13 +325,18 @@ const Encounter = () => {
             </div>
           </div>
           <button
-            className="bg-tertiary group flex items-center justify-center rounded p-1.5 shadow shadow-black"
+            className="bg-tertiary group relative flex items-center justify-center rounded p-1.5 shadow shadow-black"
             onClick={() => navigate('actionQueue')}
           >
             <Icon
               path={mdiQueueFirstInLastOut}
               className={`timing text-tertiary group-hover:text-accent size-8`}
             />
+            {phaseActionCount > 0 && (
+              <div className="text-primary absolute -right-1 -top-1 size-6 rounded-full bg-red-600 font-semibold">
+                {phaseActionCount}
+              </div>
+            )}
           </button>
           <button
             className="bg-tertiary group flex items-center justify-center rounded p-1.5 shadow shadow-black"
@@ -467,13 +469,10 @@ const Encounter = () => {
         <div
           className={`${!characterOptions && 'overflow-hidden'} timing relative mx-auto mt-auto w-full max-w-5xl p-0.5`}
           style={{
-            height: characterOptions
-              ? `${characterOptionsHeight + 4}px`
-              : '0px',
+            maxHeight: characterOptions ? '500px' : '0px',
           }}
         >
           <CharacterOptions
-            ref={characterOptionsRef}
             form={actionForm}
             controlledCharacterId={controlledCharacterId}
             setControlledCharacterId={setControlledCharacterId}
@@ -488,6 +487,7 @@ const Encounter = () => {
             handleAdvanceTurn={handleAdvanceTurn}
             characterId={controlledCharacterId}
             characterOptions={characterOptions}
+            setItemId={setItemId}
           />
         </div>
       </div>

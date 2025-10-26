@@ -3,10 +3,13 @@ import refreshAmmo from './refreshAmmo';
 import { useRef } from 'react';
 import { Item } from 'src/types/item';
 import { socket } from 'src/socket';
+import useCombatStore from 'src/stores/combatStore';
 
 const useRefreshAmmoMutation = (itemId: number) => {
   const queryClient = useQueryClient();
   const timeoutRef = useRef(0);
+
+  const updateItem = useCombatStore((store) => store.updateItem);
 
   return useMutation({
     mutationFn: () => {
@@ -30,16 +33,21 @@ const useRefreshAmmoMutation = (itemId: number) => {
         itemId,
       ]);
 
-      queryClient.setQueryData(['item', itemId], (prev: Item) => ({
-        ...prev,
-        stats: {
-          ...prevItemData?.stats,
-          currentAmmoCount: prevItemData?.stats.magCapacity,
-          currentMagCount: prevItemData?.stats.magCount
-            ? prevItemData?.stats.magCount - 1
-            : undefined,
-        },
-      }));
+      const newItemData = queryClient.setQueryData(
+        ['item', itemId],
+        (prev: Item) => ({
+          ...prev,
+          stats: {
+            ...prevItemData?.stats,
+            currentAmmoCount: prevItemData?.stats.magCapacity,
+            currentMagCount: prevItemData?.stats.magCount
+              ? prevItemData?.stats.magCount - 1
+              : undefined,
+          },
+        }),
+      ) as Item;
+
+      updateItem(newItemData);
 
       return { prevItemData };
     },

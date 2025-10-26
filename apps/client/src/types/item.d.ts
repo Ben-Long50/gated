@@ -15,6 +15,7 @@ interface Item {
   picture: Picture;
   price: number | null;
   equipped: boolean;
+  available: boolean;
   description: string;
   stats: Stats;
   modifiedStats?: Stats;

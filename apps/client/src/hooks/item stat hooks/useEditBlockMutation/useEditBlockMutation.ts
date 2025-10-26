@@ -3,11 +3,14 @@ import editArmorBlock from './editBlock';
 import { useRef } from 'react';
 import { Item } from 'src/types/item';
 import { socket } from 'src/socket';
+import useCombatStore from 'src/stores/combatStore';
 
 const useEditBlockMutation = (itemId: number) => {
   const queryClient = useQueryClient();
   const updateBuffer = useRef(0);
   const timeoutRef = useRef(0);
+
+  const updateItem = useCombatStore((store) => store.updateItem);
 
   return useMutation({
     mutationFn: (value: number) => {
@@ -36,15 +39,20 @@ const useEditBlockMutation = (itemId: number) => {
         itemId,
       ]);
 
-      queryClient.setQueryData(['item', itemId], (prev: Item) => ({
-        ...prev,
-        stats: {
-          ...prevItemData?.stats,
-          currentBlock: prevItemData?.stats.currentBlock
-            ? prevItemData?.stats.currentBlock + value
-            : value,
-        },
-      }));
+      const newItemData = queryClient.setQueryData(
+        ['item', itemId],
+        (prev: Item) => ({
+          ...prev,
+          stats: {
+            ...prevItemData?.stats,
+            currentBlock: prevItemData?.stats.currentBlock
+              ? prevItemData?.stats.currentBlock + value
+              : value,
+          },
+        }),
+      ) as Item;
+
+      updateItem(newItemData);
 
       return { prevItemData };
     },
