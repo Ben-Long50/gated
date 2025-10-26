@@ -8,6 +8,7 @@ export const calculateRoll = (
   attributes: AttributeTree,
   action: Partial<Action>,
   modifiers: string[],
+  extraDice?: number,
 ) => {
   if (!action.roll) {
     return;
@@ -17,6 +18,7 @@ export const calculateRoll = (
     attributes: AttributeTree,
     action: Partial<Action>,
     modifiers: string[],
+    extraDice?: number,
   ) => {
     const calculatedRolls =
       action.roll?.map((roll) => {
@@ -49,10 +51,14 @@ export const calculateRoll = (
       bestRoll.diceCount += 2;
     }
 
+    if (extraDice) {
+      bestRoll.diceCount += extraDice;
+    }
+
     return bestRoll;
   };
 
-  const bestRoll = calculateDiceCount(attributes, action, modifiers);
+  const bestRoll = calculateDiceCount(attributes, action, modifiers, extraDice);
 
   const result = Array.from(
     { length: bestRoll.diceCount },

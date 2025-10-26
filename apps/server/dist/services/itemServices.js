@@ -399,6 +399,52 @@ const itemServices = {
             throw new Error('Failed to create item conditions');
         }
     },
+    setItemAvailable: async (itemId) => {
+        try {
+            await prisma.item.update({
+                where: { id: itemId },
+                data: { available: true },
+            });
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to set item availability to true');
+        }
+    },
+    setAllCharacterItemsAvailable: async (characterId) => {
+        try {
+            const items = (await prisma.item.findMany({
+                where: { characterInventory: { characterId }, available: false },
+                select: { id: true },
+            })) || [];
+            if (items.length === 0)
+                return;
+            const itemIds = items.map((item) => item.id);
+            await prisma.item.updateMany({
+                where: {
+                    id: { in: itemIds },
+                },
+                data: { available: true },
+            });
+            return itemIds;
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to set item availability to true');
+        }
+    },
+    setItemNotAvailable: async (itemId) => {
+        try {
+            await prisma.item.update({
+                where: { id: itemId },
+                data: { available: false },
+            });
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to set item availability to false');
+        }
+    },
     deleteItem: async (itemId) => {
         try {
             await prisma.item.delete({

@@ -2,6 +2,7 @@ import prisma from '../config/database.js';
 import encounterServices from '../services/encounterServices.js';
 import characterServices from '../services/characterServices.js';
 import { calculateCosts, calculateDamage, calculateRoll, } from '../utils/rollUtilities.js';
+import itemServices from '../services/itemServices.js';
 export function setupSocketIO(io) {
     io.on('connection', (socket) => {
         console.log('User connected:', socket.id);
@@ -116,8 +117,8 @@ export function setupSocketIO(io) {
                 .to(`encounter ${encounterId}`)
                 .emit('navigateToEncounter', { encounterId, mapId, campaignId });
         });
-        socket.on('actionRoll', async ({ campaignId, encounterId, activeCharacter, targetCharacter, action, modifiers, item, }) => {
-            const rollResults = calculateRoll(activeCharacter.attributes, { name: action.name, roll: action.roll }, modifiers) || { result: [], successes: 0 };
+        socket.on('actionRoll', async ({ campaignId, encounterId, activeCharacter, targetCharacter, action, modifiers, extraDice, item, }) => {
+            const rollResults = calculateRoll(activeCharacter.attributes, { name: action.name, roll: action.roll }, modifiers, extraDice) || { result: [], successes: 0 };
             const rolls = new Map();
             const damage = calculateDamage(item, action, rollResults.successes);
             rolls.set(activeCharacter === null || activeCharacter === void 0 ? void 0 : activeCharacter.id, {
@@ -136,6 +137,7 @@ export function setupSocketIO(io) {
             });
             io.to(campaignId).emit('character', activeCharacter.id);
             if (item) {
+                await itemServices.setItemNotAvailable(item.id);
                 io.to(campaignId).emit('item', item.id);
             }
             if (targetCharacter) {
@@ -166,8 +168,8 @@ export function setupSocketIO(io) {
             socket.to(campaignId).emit('encounter', encounterId);
             console.log(`Broadcasted action roll to encounter ${encounterId}`);
         });
-        socket.on('reactionRoll', async ({ campaignId, encounterId, reactiveCharacter, targetCharacter, reaction, modifiers, item, }) => {
-            const rollResults = calculateRoll(reactiveCharacter.attributes, { name: reaction.name, roll: reaction.roll }, modifiers) || { result: [], successes: 0 };
+        socket.on('reactionRoll', async ({ campaignId, encounterId, reactiveCharacter, targetCharacter, reaction, modifiers, extraDice, item, }) => {
+            const rollResults = calculateRoll(reactiveCharacter.attributes, { name: reaction.name, roll: reaction.roll }, modifiers, extraDice) || { result: [], successes: 0 };
             const rolls = new Map();
             rolls.set(reactiveCharacter === null || reactiveCharacter === void 0 ? void 0 : reactiveCharacter.id, {
                 characterId: reactiveCharacter === null || reactiveCharacter === void 0 ? void 0 : reactiveCharacter.id,
@@ -234,7 +236,18 @@ export function setupSocketIO(io) {
             io.to(campaignId).emit('resetRolls');
             console.log(`Broadcasted encounter ${encounterId} to campaign ${campaignId}`);
         });
-        socket.on('advanceTurn', ({ campaignId, encounterId }) => {
+        socket.on('advanceTurn', async ({ campaignId, encounterId }) => {
+            const encounter = await encounterServices.getEncounterById(encounterId);
+            const nextCharacterId = encounter.turnPosition >= encounter.turnOrder.length - 1
+                ? encounter.turnOrder[0]
+                : encounter.turnOrder[encounter.turnPosition];
+            const itemIds = (await itemServices.setAllCharacterItemsAvailable(nextCharacterId)) ||
+                [];
+            if (itemIds.length > 0) {
+                for (const id of itemIds) {
+                    io.to(campaignId).emit('item', id);
+                }
+            }
             encounterServices.clearPhaseActions(encounterId);
             io.to(campaignId).emit('advanceTurn', encounterId);
             console.log(`Broadcasted encounter ${encounterId} to campaign ${campaignId}`);

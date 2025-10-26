@@ -440,6 +440,7 @@ model Item {
   modifiedStats        Json?
   price                Int?
   equipped             Boolean?                 @default(false)
+  available            Boolean?                 @default(true)
   characterInventory   CharacterInventory?      @relation(fields: [characterInventoryId], references: [id], onDelete: Cascade)
   characterInventoryId Int?
   baseItem             Item?                    @relation("BaseRelation", fields: [baseItemId], references: [id])

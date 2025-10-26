@@ -1,15 +1,13 @@
 import { Server } from 'socket.io';
 import prisma from '../config/database.js';
 import encounterServices from '../services/encounterServices.js';
-import characterStatServices from '../services/characterStatServices.js';
-import itemStatServices from '../services/itemStatServices.js';
 import characterServices from '../services/characterServices.js';
 import {
-  applyDamage,
   calculateCosts,
   calculateDamage,
   calculateRoll,
 } from '../utils/rollUtilities.js';
+import itemServices from '../services/itemServices.js';
 
 export function setupSocketIO(io: Server) {
   io.on('connection', (socket) => {
@@ -185,12 +183,14 @@ export function setupSocketIO(io: Server) {
         targetCharacter,
         action,
         modifiers,
+        extraDice,
         item,
       }) => {
         const rollResults = calculateRoll(
           activeCharacter.attributes,
           { name: action.name, roll: action.roll },
           modifiers,
+          extraDice,
         ) || { result: [], successes: 0 };
 
         const rolls = new Map();
@@ -218,6 +218,7 @@ export function setupSocketIO(io: Server) {
         io.to(campaignId).emit('character', activeCharacter.id);
 
         if (item) {
+          await itemServices.setItemNotAvailable(item.id);
           io.to(campaignId).emit('item', item.id);
         }
 
@@ -282,12 +283,14 @@ export function setupSocketIO(io: Server) {
         targetCharacter,
         reaction,
         modifiers,
+        extraDice,
         item,
       }) => {
         const rollResults = calculateRoll(
           reactiveCharacter.attributes,
           { name: reaction.name, roll: reaction.roll },
           modifiers,
+          extraDice,
         ) || { result: [], successes: 0 };
 
         const rolls = new Map();
@@ -406,7 +409,24 @@ export function setupSocketIO(io: Server) {
       );
     });
 
-    socket.on('advanceTurn', ({ campaignId, encounterId }) => {
+    socket.on('advanceTurn', async ({ campaignId, encounterId }) => {
+      const encounter = await encounterServices.getEncounterById(encounterId);
+
+      const nextCharacterId =
+        encounter.turnPosition >= encounter.turnOrder.length - 1
+          ? encounter.turnOrder[0]
+          : encounter.turnOrder[encounter.turnPosition];
+
+      const itemIds =
+        (await itemServices.setAllCharacterItemsAvailable(nextCharacterId)) ||
+        [];
+
+      if (itemIds.length > 0) {
+        for (const id of itemIds) {
+          io.to(campaignId).emit('item', id);
+        }
+      }
+
       encounterServices.clearPhaseActions(encounterId);
       io.to(campaignId).emit('advanceTurn', encounterId);
 

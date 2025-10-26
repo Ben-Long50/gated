@@ -2,11 +2,11 @@ import characterServices from '../services/characterServices.js';
 import characterStatServices from '../services/characterStatServices.js';
 import conditionServices from '../services/conditionServices.js';
 import itemStatServices from '../services/itemStatServices.js';
-export const calculateRoll = (attributes, action, modifiers) => {
+export const calculateRoll = (attributes, action, modifiers, extraDice) => {
     if (!action.roll) {
         return;
     }
-    const calculateDiceCount = (attributes, action, modifiers) => {
+    const calculateDiceCount = (attributes, action, modifiers, extraDice) => {
         var _a;
         const calculatedRolls = ((_a = action.roll) === null || _a === void 0 ? void 0 : _a.map((roll) => {
             const attributePoints = attributes[roll.attribute].points;
@@ -25,9 +25,12 @@ export const calculateRoll = (attributes, action, modifiers) => {
             (action.name === 'Salvo Fire' || action.name === 'Flurry')) {
             bestRoll.diceCount += 2;
         }
+        if (extraDice) {
+            bestRoll.diceCount += extraDice;
+        }
         return bestRoll;
     };
-    const bestRoll = calculateDiceCount(attributes, action, modifiers);
+    const bestRoll = calculateDiceCount(attributes, action, modifiers, extraDice);
     const result = Array.from({ length: bestRoll.diceCount }, () => Math.floor(Math.random() * 6) + 1);
     let successes = 0;
     successes += result.filter((number) => number >= 5).length;
