@@ -11,7 +11,15 @@ import ActionStatBars from './ActionStatBars';
 import { capitalCase } from 'change-case';
 import ThemeContainer from './ThemeContainer';
 
-const ActionCard = ({ action, mode }: { action: Action; mode?: string }) => {
+const ActionCard = ({
+  action,
+  mode,
+  className,
+}: {
+  action: Action;
+  mode?: string;
+  className?: string;
+}) => {
   const { user } = useContext(AuthContext);
 
   const cardRef = useRef(null);
@@ -25,6 +33,7 @@ const ActionCard = ({ action, mode }: { action: Action; mode?: string }) => {
 
   return (
     <ItemCardSmall
+      className={className}
       cardRef={cardRef}
       heading={
         <div

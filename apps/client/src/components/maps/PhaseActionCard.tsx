@@ -3,6 +3,10 @@ import Die from './Die';
 import ActionCard from '../ActionCard';
 import Icon from '@mdi/react';
 import { mdiArrowRight } from '@mdi/js';
+import CharacterPictureRound from '../CharacterPictureRound';
+import ArrowHeader3 from '../ArrowHeader3';
+import ItemCardSmall from '../ItemCardSmall';
+import StatBars from '../StatBars';
 
 const PhaseActionCard = ({ phaseAction }: { phaseAction: History }) => {
   return (
@@ -25,20 +29,38 @@ const PhaseActionCard = ({ phaseAction }: { phaseAction: History }) => {
           </>
         )}
       </div>
-      <div className="col-span-2 grid grid-cols-2 items-start gap-8">
-        <ActionCard action={phaseAction.action} />
-        <div className="ml-auto flex flex-wrap items-center gap-2">
-          {phaseAction?.rollResult?.result.map((number: number, index) => (
-            <Die
-              key={index}
-              size={64}
-              number={number}
-              rolling={phaseAction?.rolling}
-              rollComplete={false}
-              modifiers={[]}
-            />
-          ))}
-        </div>
+      {phaseAction.item && (
+        <ItemCardSmall
+          className="col-span-2"
+          heading={
+            <div className="flex items-center gap-4">
+              <CharacterPictureRound
+                className="-my-2 size-10"
+                character={phaseAction.item}
+              />
+              <ArrowHeader3 title={phaseAction.item.name} />
+            </div>
+          }
+        >
+          <div
+            className={`scrollbar-primary-2 grid w-full grid-cols-[auto_auto_1fr_auto] place-items-center gap-2 gap-y-2 overflow-y-auto border-x-2 border-gray-400 border-opacity-50 px-4`}
+          >
+            <StatBars stats={phaseAction.item.stats} cardWidth={501} />
+          </div>
+        </ItemCardSmall>
+      )}
+      <ActionCard className="col-span-2" action={phaseAction.action} />
+      <div className="col-span-2 flex w-full flex-wrap items-center justify-center gap-2">
+        {phaseAction?.rollResult?.result.map((number: number, index) => (
+          <Die
+            key={index}
+            size={64}
+            number={number}
+            rolling={phaseAction?.rolling}
+            rollComplete={false}
+            modifiers={[]}
+          />
+        ))}
       </div>
     </div>
   );

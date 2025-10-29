@@ -46,6 +46,7 @@ const ItemCard = ({
   className,
   style,
   mode,
+  menu,
   cardType,
   toggleFormLink,
   ownerId,
@@ -54,6 +55,7 @@ const ItemCard = ({
   className?: string;
   style?: CSSProperties;
   mode?: string;
+  menu?: boolean;
   cardType?: 'small' | 'large';
   toggleFormLink?: (item: Item) => void;
   ownerId?: number;
@@ -137,9 +139,7 @@ const ItemCard = ({
               handleMenu(e);
             }}
           >
-            {mode !== 'form' && (
-              <ItemRadialMenu item={item} containerRef={containerRef} />
-            )}
+            {menu && <ItemRadialMenu item={item} containerRef={containerRef} />}
             <div
               className={`${cardType === 'small' ? 'flex-col' : 'max-h-[300px] flex-row'} my-auto flex w-full gap-8`}
               onClick={
