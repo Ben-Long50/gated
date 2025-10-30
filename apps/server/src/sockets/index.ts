@@ -410,16 +410,7 @@ export function setupSocketIO(io: Server) {
     });
 
     socket.on('advanceTurn', async ({ campaignId, encounterId }) => {
-      const encounter = await encounterServices.getEncounterById(encounterId);
-
-      const nextCharacterId =
-        encounter.turnPosition >= encounter.turnOrder.length - 1
-          ? encounter.turnOrder[0]
-          : encounter.turnOrder[encounter.turnPosition];
-
-      const itemIds =
-        (await itemServices.setAllCharacterItemsAvailable(nextCharacterId)) ||
-        [];
+      const itemIds = await encounterServices.advanceTurn(encounterId);
 
       if (itemIds.length > 0) {
         for (const id of itemIds) {
@@ -427,8 +418,7 @@ export function setupSocketIO(io: Server) {
         }
       }
 
-      encounterServices.clearPhaseActions(encounterId);
-      io.to(campaignId).emit('advanceTurn', encounterId);
+      io.to(campaignId).emit('encounter', encounterId);
 
       console.log(
         `Broadcasted encounter ${encounterId} to campaign ${campaignId}`,

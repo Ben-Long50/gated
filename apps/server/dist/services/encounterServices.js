@@ -10,6 +10,7 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 import prisma from '../config/database.js';
+import itemServices from './itemServices.js';
 const encounterServices = {
     getEncounters: async (campaignId) => {
         try {
@@ -25,6 +26,26 @@ const encounterServices = {
                             target: true,
                             action: true,
                             item: true,
+                        },
+                    },
+                    phaseHistory: {
+                        include: {
+                            action: {
+                                include: {
+                                    character: true,
+                                    target: true,
+                                    action: true,
+                                    item: true,
+                                },
+                            },
+                            reactions: {
+                                include: {
+                                    character: true,
+                                    target: true,
+                                    action: true,
+                                    item: true,
+                                },
+                            },
                         },
                     },
                 },
@@ -51,8 +72,28 @@ const encounterServices = {
                             item: true,
                         },
                     },
-                    phaseActionHistory: true,
-                    phaseReactionHistories: true,
+                    phaseHistory: {
+                        take: 1,
+                        orderBy: { createdAt: 'desc' },
+                        include: {
+                            action: {
+                                include: {
+                                    character: true,
+                                    target: true,
+                                    action: true,
+                                    item: true,
+                                },
+                            },
+                            reactions: {
+                                include: {
+                                    character: true,
+                                    target: true,
+                                    action: true,
+                                    item: true,
+                                },
+                            },
+                        },
+                    },
                 },
             });
             if (!encounter) {
@@ -74,20 +115,26 @@ const encounterServices = {
                 include: {
                     characters: true,
                     map: { select: { picture: true, name: true } },
-                    phaseActionHistory: {
+                    phaseHistory: {
+                        take: 1,
+                        orderBy: { createdAt: 'desc' },
                         include: {
-                            character: true,
-                            target: true,
-                            action: true,
-                            item: true,
-                        },
-                    },
-                    phaseReactionHistories: {
-                        include: {
-                            character: true,
-                            target: true,
-                            action: true,
-                            item: true,
+                            action: {
+                                include: {
+                                    character: true,
+                                    target: true,
+                                    action: true,
+                                    item: true,
+                                },
+                            },
+                            reactions: {
+                                include: {
+                                    character: true,
+                                    target: true,
+                                    action: true,
+                                    item: true,
+                                },
+                            },
                         },
                     },
                 },
@@ -140,19 +187,36 @@ const encounterServices = {
             throw new Error('Failed to activate encounter');
         }
     },
-    advanceTurn: async (encounterId, turn) => {
+    advanceTurn: async (encounterId) => {
         try {
+            const encounter = await encounterServices.getEncounterById(encounterId);
+            const newRound = encounter.turnPosition + 1 >= encounter.turnOrder.length - 1;
+            const nextCharacterId = newRound
+                ? encounter.turnOrder[0]
+                : encounter.turnOrder[encounter.turnPosition + 1];
+            const data = {
+                turn: encounter.turn + 1,
+                turnPosition: newRound ? 0 : encounter.turnPosition + 1,
+                combatPhase: 'action',
+                reactions: [],
+                passes: [],
+            };
+            const phaseHistoryData = {
+                turn: encounter.turn + 1,
+            };
+            if (newRound) {
+                data.round = encounter.round + 1;
+                phaseHistoryData.round = encounter.round + 1;
+            }
             await prisma.encounter.update({
                 where: {
                     id: encounterId,
                 },
-                data: {
-                    turnPosition: turn,
-                    combatPhase: 'action',
-                    reactions: [],
-                    passes: [],
-                },
+                data: Object.assign({ phaseHistory: { create: phaseHistoryData } }, data),
             });
+            const itemIds = (await itemServices.setAllCharacterItemsAvailable(nextCharacterId)) ||
+                [];
+            return itemIds;
         }
         catch (error) {
             console.error(error);
@@ -267,10 +331,17 @@ const encounterServices = {
     },
     setPhaseAction: async (encounterId, phaseAction) => {
         try {
-            await prisma.encounter.update({
-                where: { id: encounterId },
+            const phaseHistory = await prisma.phaseHistory.findFirst({
+                where: { encounterId },
+                orderBy: { createdAt: 'desc' },
+            });
+            if (!phaseHistory) {
+                throw new Error(`Failed to find latest phase history entry for encounter ${encounterId}`);
+            }
+            await prisma.phaseHistory.update({
+                where: { id: phaseHistory.id },
                 data: {
-                    phaseActionHistory: { connect: { id: phaseAction.id } },
+                    action: { connect: { id: phaseAction.id } },
                 },
             });
         }
@@ -281,31 +352,23 @@ const encounterServices = {
     },
     setPhaseReaction: async (encounterId, phaseReaction) => {
         try {
-            await prisma.encounter.update({
-                where: { id: encounterId },
+            const phaseHistory = await prisma.phaseHistory.findFirst({
+                where: { encounterId },
+                orderBy: { createdAt: 'desc' },
+            });
+            if (!phaseHistory) {
+                throw new Error(`Failed to find latest phase history entry for encounter ${encounterId}`);
+            }
+            await prisma.phaseHistory.update({
+                where: { id: phaseHistory.id },
                 data: {
-                    phaseReactionHistories: { connect: { id: phaseReaction.id } },
+                    reactions: { connect: { id: phaseReaction.id } },
                 },
             });
         }
         catch (error) {
             console.error(error);
             throw new Error('Failed to connect phase reaction');
-        }
-    },
-    clearPhaseActions: async (encounterId) => {
-        try {
-            await prisma.encounter.update({
-                where: { id: encounterId },
-                data: {
-                    phaseActionHistory: { disconnect: true },
-                    phaseReactionHistories: { set: [] },
-                },
-            });
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to clear phase actions');
         }
     },
     createOrUpdateEncounter: async (campaignId, mapId, formData) => {

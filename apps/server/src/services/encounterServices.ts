@@ -1,6 +1,6 @@
 import { $Enums, History } from '@prisma/client';
 import prisma from '../config/database.js';
-import { Action } from '../types/action.js';
+import itemServices from './itemServices.js';
 
 const encounterServices = {
   getEncounters: async (campaignId: number) => {
@@ -19,6 +19,26 @@ const encounterServices = {
               item: true,
             },
           },
+          phaseHistory: {
+            include: {
+              action: {
+                include: {
+                  character: true,
+                  target: true,
+                  action: true,
+                  item: true,
+                },
+              },
+              reactions: {
+                include: {
+                  character: true,
+                  target: true,
+                  action: true,
+                  item: true,
+                },
+              },
+            },
+          },
         },
         orderBy: { id: 'asc' },
       });
@@ -30,7 +50,7 @@ const encounterServices = {
     }
   },
 
-  getEncounterById: async (encounterId: string) => {
+  getEncounterById: async (encounterId: number) => {
     try {
       const encounter = await prisma.encounter.findUnique({
         where: { id: Number(encounterId) },
@@ -44,8 +64,28 @@ const encounterServices = {
               item: true,
             },
           },
-          phaseActionHistory: true,
-          phaseReactionHistories: true,
+          phaseHistory: {
+            take: 1,
+            orderBy: { createdAt: 'desc' },
+            include: {
+              action: {
+                include: {
+                  character: true,
+                  target: true,
+                  action: true,
+                  item: true,
+                },
+              },
+              reactions: {
+                include: {
+                  character: true,
+                  target: true,
+                  action: true,
+                  item: true,
+                },
+              },
+            },
+          },
         },
       });
 
@@ -69,20 +109,26 @@ const encounterServices = {
         include: {
           characters: true,
           map: { select: { picture: true, name: true } },
-          phaseActionHistory: {
+          phaseHistory: {
+            take: 1,
+            orderBy: { createdAt: 'desc' },
             include: {
-              character: true,
-              target: true,
-              action: true,
-              item: true,
-            },
-          },
-          phaseReactionHistories: {
-            include: {
-              character: true,
-              target: true,
-              action: true,
-              item: true,
+              action: {
+                include: {
+                  character: true,
+                  target: true,
+                  action: true,
+                  item: true,
+                },
+              },
+              reactions: {
+                include: {
+                  character: true,
+                  target: true,
+                  action: true,
+                  item: true,
+                },
+              },
             },
           },
         },
@@ -139,19 +185,46 @@ const encounterServices = {
     }
   },
 
-  advanceTurn: async (encounterId: number, turn: number) => {
+  advanceTurn: async (encounterId: number) => {
     try {
+      const encounter = await encounterServices.getEncounterById(encounterId);
+
+      const newRound =
+        encounter.turnPosition + 1 >= encounter.turnOrder.length - 1;
+
+      const nextCharacterId = newRound
+        ? encounter.turnOrder[0]
+        : encounter.turnOrder[encounter.turnPosition + 1];
+
+      const data = {
+        turn: encounter.turn + 1,
+        turnPosition: newRound ? 0 : encounter.turnPosition + 1,
+        combatPhase: 'action',
+        reactions: [],
+        passes: [],
+      } as any;
+
+      const phaseHistoryData = {
+        turn: encounter.turn + 1,
+      } as any;
+
+      if (newRound) {
+        data.round = encounter.round + 1;
+        phaseHistoryData.round = encounter.round + 1;
+      }
+
       await prisma.encounter.update({
         where: {
           id: encounterId,
         },
-        data: {
-          turnPosition: turn,
-          combatPhase: 'action',
-          reactions: [],
-          passes: [],
-        },
+        data: { phaseHistory: { create: phaseHistoryData }, ...data },
       });
+
+      const itemIds =
+        (await itemServices.setAllCharacterItemsAvailable(nextCharacterId)) ||
+        [];
+
+      return itemIds;
     } catch (error) {
       console.error(error);
       throw new Error('Failed to advance turn');
@@ -289,10 +362,21 @@ const encounterServices = {
 
   setPhaseAction: async (encounterId: number, phaseAction: History) => {
     try {
-      await prisma.encounter.update({
-        where: { id: encounterId },
+      const phaseHistory = await prisma.phaseHistory.findFirst({
+        where: { encounterId },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      if (!phaseHistory) {
+        throw new Error(
+          `Failed to find latest phase history entry for encounter ${encounterId}`,
+        );
+      }
+
+      await prisma.phaseHistory.update({
+        where: { id: phaseHistory.id },
         data: {
-          phaseActionHistory: { connect: { id: phaseAction.id } },
+          action: { connect: { id: phaseAction.id } },
         },
       });
     } catch (error) {
@@ -303,30 +387,26 @@ const encounterServices = {
 
   setPhaseReaction: async (encounterId: number, phaseReaction: History) => {
     try {
-      await prisma.encounter.update({
-        where: { id: encounterId },
+      const phaseHistory = await prisma.phaseHistory.findFirst({
+        where: { encounterId },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      if (!phaseHistory) {
+        throw new Error(
+          `Failed to find latest phase history entry for encounter ${encounterId}`,
+        );
+      }
+
+      await prisma.phaseHistory.update({
+        where: { id: phaseHistory.id },
         data: {
-          phaseReactionHistories: { connect: { id: phaseReaction.id } },
+          reactions: { connect: { id: phaseReaction.id } },
         },
       });
     } catch (error) {
       console.error(error);
       throw new Error('Failed to connect phase reaction');
-    }
-  },
-
-  clearPhaseActions: async (encounterId: number) => {
-    try {
-      await prisma.encounter.update({
-        where: { id: encounterId },
-        data: {
-          phaseActionHistory: { disconnect: true },
-          phaseReactionHistories: { set: [] },
-        },
-      });
-    } catch (error) {
-      console.error(error);
-      throw new Error('Failed to clear phase actions');
     }
   },
 

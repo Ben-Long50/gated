@@ -5,7 +5,6 @@ import { enforceSingularLinking } from '../utils/enforceSingularLinking.js';
 import { createLinkedCopies } from '../utils/createLinkedCopies.js';
 import { $Enums, Keyword } from '@prisma/client';
 import actionServices from './actionServices.js';
-import characterServices from './characterServices.js';
 
 const itemServices = {
   getItems: async (category?: $Enums.ItemType[]) => {
