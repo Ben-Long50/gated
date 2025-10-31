@@ -404,10 +404,21 @@ export function setupSocketIO(io: Server) {
       await encounterServices.passAllReactions(encounterId);
       io.to(campaignId).emit('encounter', encounterId);
       io.to(campaignId).emit('resetRolls');
+
       console.log(
         `Broadcasted encounter ${encounterId} to campaign ${campaignId}`,
       );
     });
+
+    socket.on(
+      'confirmActionQueueResults',
+      async ({ campaignId, encounterId }) => {
+        const targetId =
+          await encounterServices.confirmActionQueueResults(encounterId);
+
+        io.to(campaignId).emit('character', targetId);
+      },
+    );
 
     socket.on('advanceTurn', async ({ campaignId, encounterId }) => {
       const itemIds = await encounterServices.advanceTurn(encounterId);
@@ -419,6 +430,7 @@ export function setupSocketIO(io: Server) {
       }
 
       io.to(campaignId).emit('encounter', encounterId);
+      io.to(campaignId).emit('resetRolls');
 
       console.log(
         `Broadcasted encounter ${encounterId} to campaign ${campaignId}`,

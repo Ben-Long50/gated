@@ -1,6 +1,13 @@
 import { $Enums, History } from '@prisma/client';
 import prisma from '../config/database.js';
 import itemServices from './itemServices.js';
+import {
+  applyDamage,
+  calculateActionQueueSuccesses,
+  calculateDamage,
+} from '../utils/rollUtilities.js';
+import characterServices from './characterServices.js';
+import characterStatServices from './characterStatServices.js';
 
 const encounterServices = {
   getEncounters: async (campaignId: number) => {
@@ -189,8 +196,7 @@ const encounterServices = {
     try {
       const encounter = await encounterServices.getEncounterById(encounterId);
 
-      const newRound =
-        encounter.turnPosition + 1 >= encounter.turnOrder.length - 1;
+      const newRound = encounter.turnPosition + 1 >= encounter.turnOrder.length;
 
       const nextCharacterId = newRound
         ? encounter.turnOrder[0]
@@ -206,6 +212,7 @@ const encounterServices = {
 
       const phaseHistoryData = {
         turn: encounter.turn + 1,
+        round: encounter.round,
       } as any;
 
       if (newRound) {
@@ -312,19 +319,83 @@ const encounterServices = {
 
   passAllReactions: async (encounterId: number) => {
     try {
+      const encounter = await prisma.encounter.findUnique({
+        where: { id: encounterId },
+        select: { turnOrder: true, turnPosition: true },
+      });
+
+      const reactiveIds = encounter?.turnOrder.filter(
+        (_, index) => index !== encounter.turnPosition,
+      );
+
       await prisma.encounter.update({
         where: {
           id: encounterId,
         },
         data: {
           reactions: [],
-          passes: [],
-          combatPhase: 'action',
+          passes: reactiveIds,
         },
       });
     } catch (error) {
       console.error(error);
       throw new Error('Failed to advance turn');
+    }
+  },
+
+  confirmActionQueueResults: async (encounterId: number) => {
+    try {
+      const encounter = await prisma.encounter.findUnique({
+        where: { id: encounterId },
+        select: {
+          phaseHistory: {
+            take: 1,
+            orderBy: { createdAt: 'desc' },
+            select: {
+              action: {
+                include: {
+                  item: true,
+                  character: { include: { conditions: true, perks: true } },
+                  action: true,
+                  target: { include: { conditions: true, perks: true } },
+                },
+              },
+              reactions: {
+                include: {
+                  item: true,
+                  character: { include: { conditions: true, perks: true } },
+                  action: true,
+                  target: { include: { conditions: true, perks: true } },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!encounter) {
+        throw new Error('Failed to find encounter');
+      }
+
+      if (encounter.phaseHistory[0].action) {
+        const successes = calculateActionQueueSuccesses(
+          encounter?.phaseHistory[0],
+        );
+
+        const damage = calculateDamage(
+          encounter.phaseHistory[0].action.item,
+          encounter.phaseHistory[0].action.action,
+          successes,
+        );
+
+        if (encounter.phaseHistory[0].action.target) {
+          await applyDamage(encounter.phaseHistory[0].action.target, damage);
+          return encounter.phaseHistory[0].action.target.id;
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to confirm action queue results');
     }
   },
 

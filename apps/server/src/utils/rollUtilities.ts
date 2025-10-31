@@ -83,6 +83,24 @@ export const calculateRoll = (
   return { result, successes };
 };
 
+export const calculateActionQueueSuccesses = (phaseHistory) => {
+  const actionSuccesses = phaseHistory.action.rollResult.successes;
+
+  const parries =
+    phaseHistory.reactions.filter((reaction) => reaction.name === 'Parry') ||
+    [];
+
+  const parrySuccesses =
+    parries.length > 0
+      ? parries.reduce(
+          (sum, reaction) => sum + reaction.rollResult.successes,
+          0,
+        )
+      : 0;
+
+  return actionSuccesses - parrySuccesses;
+};
+
 export const calculateDamage = (
   item: Item,
   action: Action,
@@ -192,7 +210,7 @@ export const applyDamage = async (
     } else {
       const wounded = await conditionServices.getConditionByName('Wounded');
       await characterStatServices.resetCharacterStat(targetCharacter.id, {
-        currentHealth: targetCharacter.stats.maxHealth,
+        currentHealth: 10,
       });
       await characterServices.createCharacterConditions(targetCharacter.id, [
         { conditionId: wounded?.id },

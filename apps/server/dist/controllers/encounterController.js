@@ -53,7 +53,7 @@ const encounterController = {
             if (!req.user) {
                 throw new Error('Could not find authenticated user');
             }
-            await encounterServices.advanceTurn(Number(req.params.encounterId), req.body.turn);
+            await encounterServices.advanceTurn(Number(req.params.encounterId));
             res.status(200).json({ message: 'Successfully advanced the turn' });
         }
         catch (error) {
