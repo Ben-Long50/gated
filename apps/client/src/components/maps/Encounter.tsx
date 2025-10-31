@@ -172,15 +172,21 @@ const Encounter = () => {
     resizeHandles: [],
   }));
 
-  const phaseActionCount = combat
-    ? [combat.phaseActionHistory, ...combat.phaseReactionHistories].filter(
-        (action) => action,
-      ).length
-    : 0;
+  const phaseActionCount =
+    combat?.phaseHistory.length > 0
+      ? [
+          combat.phaseHistory[0].action,
+          ...combat.phaseHistory[0].reactions,
+        ].filter((action) => action).length
+      : 0;
 
   useEffect(() => {
     if (combat && combat.combatPhase === 'pending') {
       navigate('initiative');
+    }
+
+    if (combat && combat.passes.length === combat.characters.length - 1) {
+      navigate('actionQueue');
     }
   }, [combat]);
 
@@ -481,6 +487,7 @@ const Encounter = () => {
             reactions={combat?.reactions}
             passes={combat?.passes}
             combatPhase={combat?.combatPhase}
+            phaseHistory={combat?.phaseHistory[0]}
             activeCharacter={activeCharacter}
             setActionSidebar={setActionSidebar}
             encounterPermissions={encounterPermissions}
@@ -499,6 +506,7 @@ const Encounter = () => {
           context={{
             campaign,
             combat,
+            encounterPermissions,
             joinedPlayers,
             activeCharacter,
             initiativeComplete,

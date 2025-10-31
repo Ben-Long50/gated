@@ -28,6 +28,7 @@ const CharacterOptions = ({
   reactions,
   passes,
   combatPhase,
+  phaseHistory,
   activeCharacter,
   setActionSidebar,
   encounterPermissions,
@@ -42,6 +43,7 @@ const CharacterOptions = ({
   reactions: number[];
   passes: number[];
   combatPhase: string;
+  phaseHistory: { action: History; reactions: History[] };
   activeCharacter: Character;
   setActionSidebar: (state: boolean) => void;
   encounterPermissions: boolean;
@@ -140,32 +142,55 @@ const CharacterOptions = ({
         {encounterPermissions &&
           controlledCharacterId === activeCharacter.id && (
             <div className="flex w-full gap-4">
-              <BtnRect
-                className="w-full"
-                ariaLabel="Pass turn"
-                type="button"
-                onClick={() => {
-                  handleAdvanceTurn();
-                  form.reset();
-                }}
-              >
-                Pass Turn
-              </BtnRect>
-              {gameMaster && combatPhase === 'reaction' && (
+              {phaseHistory?.action ? (
                 <BtnRect
                   className="w-full"
-                  ariaLabel="Pass All Reactions"
+                  ariaLabel="Close"
                   type="button"
-                  onClick={() =>
-                    socket.emit('passAllReactions', {
+                  onClick={() => {
+                    socket.emit('confirmActionQueueResults', {
                       campaignId: Number(campaignId),
                       encounterId: Number(encounterId),
-                    })
-                  }
+                    });
+
+                    socket.emit('advanceTurn', {
+                      campaignId: Number(campaignId),
+                      encounterId: Number(encounterId),
+                    });
+                  }}
                 >
-                  Pass All Reactions
+                  Confirm Action Queue Results
+                </BtnRect>
+              ) : (
+                <BtnRect
+                  className="w-full"
+                  ariaLabel="Pass turn"
+                  type="button"
+                  onClick={() => {
+                    handleAdvanceTurn();
+                    form.reset();
+                  }}
+                >
+                  Pass Turn
                 </BtnRect>
               )}
+              {gameMaster &&
+                combatPhase === 'reaction' &&
+                passes.length < turnOrder.length - 1 && (
+                  <BtnRect
+                    className="w-full"
+                    ariaLabel="Pass All Reactions"
+                    type="button"
+                    onClick={() =>
+                      socket.emit('passAllReactions', {
+                        campaignId: Number(campaignId),
+                        encounterId: Number(encounterId),
+                      })
+                    }
+                  >
+                    Pass All Reactions
+                  </BtnRect>
+                )}
             </div>
           )}
         {!reactions.includes(controlledCharacterId) &&

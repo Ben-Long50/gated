@@ -90,7 +90,12 @@ const useCombat = () => {
           currentHands: nextCharacter?.stats.hands || 0,
         },
       }),
-        advanceTurn.mutate(0));
+        socket.emit('advanceTurn', {
+          campaignId: Number(campaignId),
+          encounterId: Number(encounterId),
+        }));
+
+      // advanceTurn.mutate(0);
     } else {
       const nextCharacter = queryClient.getQueryData([
         'character',
@@ -105,7 +110,11 @@ const useCombat = () => {
           currentHands: nextCharacter?.stats.hands || 0,
         },
       }),
-        advanceTurn.mutate(currentIndex + 1));
+        socket.emit('advanceTurn', {
+          campaignId: Number(campaignId),
+          encounterId: Number(encounterId),
+        }));
+      // advanceTurn.mutate(currentIndex + 1));
     }
   };
 
