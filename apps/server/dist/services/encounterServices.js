@@ -11,7 +11,7 @@ var __rest = (this && this.__rest) || function (s, e) {
 };
 import prisma from '../config/database.js';
 import itemServices from './itemServices.js';
-import { applyDamage, calculateActionQueueSuccesses, calculateDamage, } from '../utils/rollUtilities.js';
+import { applyDamage, calculateActionQueueSuccesses, calculateArmorDamage, calculateDamage, } from '../utils/rollUtilities.js';
 const encounterServices = {
     getEncounters: async (campaignId) => {
         try {
@@ -173,7 +173,6 @@ const encounterServices = {
             const encounter = await prisma.encounter.findUnique({
                 where: { id: encounterId },
             });
-            console.log(encounter === null || encounter === void 0 ? void 0 : encounter.active);
             await prisma.encounter.update({
                 where: {
                     id: encounterId,
@@ -336,7 +335,13 @@ const encounterServices = {
                                     item: true,
                                     character: { include: { conditions: true, perks: true } },
                                     action: true,
-                                    target: { include: { conditions: true, perks: true } },
+                                    target: {
+                                        include: {
+                                            conditions: true,
+                                            perks: true,
+                                            characterInventory: { include: { items: true } },
+                                        },
+                                    },
                                 },
                             },
                             reactions: {
@@ -351,17 +356,26 @@ const encounterServices = {
                     },
                 },
             });
+            const phaseHistory = encounter === null || encounter === void 0 ? void 0 : encounter.phaseHistory[0];
+            if (!phaseHistory) {
+                throw new Error('Failed to find phase history');
+            }
             if (!encounter) {
                 throw new Error('Failed to find encounter');
             }
-            if (encounter.phaseHistory[0].action) {
+            if (phaseHistory.action) {
                 const successes = calculateActionQueueSuccesses(encounter === null || encounter === void 0 ? void 0 : encounter.phaseHistory[0]);
-                const damage = calculateDamage(encounter.phaseHistory[0].action.item, encounter.phaseHistory[0].action.action, successes);
-                if (encounter.phaseHistory[0].action.target) {
-                    await applyDamage(encounter.phaseHistory[0].action.target, damage);
-                    return encounter.phaseHistory[0].action.target.id;
+                const { damage, instances } = calculateDamage(phaseHistory.action.item, phaseHistory.action.action, successes);
+                const { armorIds, overflowDamage } = await calculateArmorDamage(phaseHistory.action.item, phaseHistory.action.target, instances);
+                if (phaseHistory.action.target) {
+                    await applyDamage(phaseHistory.action.target, overflowDamage);
+                    return {
+                        targetId: phaseHistory.action.target.id,
+                        armorIds,
+                    };
                 }
             }
+            return { targetId: null, armorIds: [] };
         }
         catch (error) {
             console.error(error);

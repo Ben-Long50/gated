@@ -20,7 +20,6 @@ export const calculateRoll = (attributes, action, modifiers, extraDice) => {
         if (modifiers.includes('push')) {
             bestRoll.diceCount += 2;
         }
-        console.log(action.name);
         if (action.name &&
             (action.name === 'Salvo Fire' || action.name === 'Flurry')) {
             bestRoll.diceCount += 2;
@@ -58,27 +57,63 @@ export const calculateActionQueueSuccesses = (phaseHistory) => {
     return actionSuccesses - parrySuccesses;
 };
 export const calculateDamage = (item, action, successes) => {
+    let damage = 0;
+    let instances = 0;
     if ((action.name === 'Salvo Fire' || action.name === 'Flurry') &&
         successes > 0) {
         const maxSuccesses = item.stats.salvo || item.stats.flurry || 0;
         if (successes < maxSuccesses) {
-            return successes * item.stats.damage;
+            damage = successes * item.stats.damage;
+            instances = successes;
         }
         else {
-            return maxSuccesses * item.stats.damage;
+            damage = maxSuccesses * item.stats.damage;
+            instances = maxSuccesses;
         }
     }
     else if (action && action.name === 'Haymaker' && successes > 0) {
-        return item.keywords.some((keyword) => keyword.keyword.name === '2H')
+        damage = item.keywords.some((keyword) => keyword.keyword.name === '2H')
             ? item.stats.damage + 3
             : item.stats.damage + 2;
+        instances = 1;
     }
     else if (successes > 0) {
-        return item.stats.damage;
+        damage = item.stats.damage;
+        instances = 1;
     }
-    else {
-        return 0;
+    return { damage, instances };
+};
+export const calculateArmorDamage = async (item, target, instances) => {
+    var _a;
+    const equippedArmor = target.characterInventory.items.filter((item) => item.itemTypes.includes('armor') && item.equipped);
+    const sortedArmor = equippedArmor
+        .filter((armor) => armor.stats.armor && armor.stats.currentBlock)
+        .sort((a, b) => b.stats.armor - a.stats.armor);
+    const sortedWardArmor = equippedArmor
+        .filter((armor) => armor.stats.ward && armor.stats.currentBlock)
+        .sort((a, b) => b.stats.ward - a.stats.ward);
+    const requiredArmor = (_a = item.stats) === null || _a === void 0 ? void 0 : _a.damage;
+    const selectedArmor = [];
+    let index = 0;
+    let totalSelectedArmorValue = 0;
+    while (totalSelectedArmorValue < requiredArmor &&
+        index < sortedArmor.length) {
+        totalSelectedArmorValue += sortedArmor[index].stats.armor;
+        selectedArmor.push(sortedArmor[index]);
+        index++;
     }
+    const overflowDamage = requiredArmor > totalSelectedArmorValue
+        ? requiredArmor - totalSelectedArmorValue
+        : 0;
+    const itemPromises = [];
+    for (const armor of selectedArmor) {
+        itemPromises.push(itemStatServices.editItemBlock(armor.id, instances * -1, armor.userId));
+    }
+    await Promise.all(itemPromises);
+    return {
+        armorIds: selectedArmor.map((armor) => armor.id),
+        overflowDamage,
+    };
 };
 export const calculateCosts = async (character, item, action) => {
     const costs = action

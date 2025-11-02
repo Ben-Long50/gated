@@ -195,7 +195,7 @@ export function setupSocketIO(io: Server) {
 
         const rolls = new Map();
 
-        const damage = calculateDamage(item, action, rollResults.successes);
+        const { damage } = calculateDamage(item, action, rollResults.successes);
 
         rolls.set(activeCharacter?.id, {
           characterId: activeCharacter?.id,
@@ -224,7 +224,6 @@ export function setupSocketIO(io: Server) {
 
         if (targetCharacter) {
           io.to(campaignId).emit('character', targetCharacter.id);
-          // applyDamage(targetCharacter, damage);
         }
 
         const historyData = {
@@ -413,10 +412,18 @@ export function setupSocketIO(io: Server) {
     socket.on(
       'confirmActionQueueResults',
       async ({ campaignId, encounterId }) => {
-        const targetId =
+        const { targetId, armorIds } =
           await encounterServices.confirmActionQueueResults(encounterId);
 
-        io.to(campaignId).emit('character', targetId);
+        if (targetId) {
+          io.to(campaignId).emit('character', targetId);
+        }
+
+        if (armorIds.length > 0) {
+          for (const id of armorIds) {
+            io.to(campaignId).emit('item', id);
+          }
+        }
       },
     );
 

@@ -120,7 +120,7 @@ export function setupSocketIO(io) {
         socket.on('actionRoll', async ({ campaignId, encounterId, activeCharacter, targetCharacter, action, modifiers, extraDice, item, }) => {
             const rollResults = calculateRoll(activeCharacter.attributes, { name: action.name, roll: action.roll }, modifiers, extraDice) || { result: [], successes: 0 };
             const rolls = new Map();
-            const damage = calculateDamage(item, action, rollResults.successes);
+            const { damage } = calculateDamage(item, action, rollResults.successes);
             rolls.set(activeCharacter === null || activeCharacter === void 0 ? void 0 : activeCharacter.id, {
                 characterId: activeCharacter === null || activeCharacter === void 0 ? void 0 : activeCharacter.id,
                 name: `${activeCharacter === null || activeCharacter === void 0 ? void 0 : activeCharacter.firstName} ${activeCharacter === null || activeCharacter === void 0 ? void 0 : activeCharacter.lastName}`,
@@ -142,7 +142,6 @@ export function setupSocketIO(io) {
             }
             if (targetCharacter) {
                 io.to(campaignId).emit('character', targetCharacter.id);
-                // applyDamage(targetCharacter, damage);
             }
             const historyData = {
                 characterId: activeCharacter.id,
@@ -237,8 +236,15 @@ export function setupSocketIO(io) {
             console.log(`Broadcasted encounter ${encounterId} to campaign ${campaignId}`);
         });
         socket.on('confirmActionQueueResults', async ({ campaignId, encounterId }) => {
-            const targetId = await encounterServices.confirmActionQueueResults(encounterId);
-            io.to(campaignId).emit('character', targetId);
+            const { targetId, armorIds } = await encounterServices.confirmActionQueueResults(encounterId);
+            if (targetId) {
+                io.to(campaignId).emit('character', targetId);
+            }
+            if (armorIds.length > 0) {
+                for (const id of armorIds) {
+                    io.to(campaignId).emit('item', id);
+                }
+            }
         });
         socket.on('advanceTurn', async ({ campaignId, encounterId }) => {
             const itemIds = await encounterServices.advanceTurn(encounterId);
