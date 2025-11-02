@@ -13,10 +13,12 @@ const ExpandingList = ({
   title,
   children,
   className,
+  onClick,
 }: {
   title: string;
   children: ReactNode;
   className?: string;
+  onClick?: () => void;
 }) => {
   const [listExpanded, setListExpanded] = useState(false);
 
@@ -32,6 +34,9 @@ const ExpandingList = ({
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
+            if (onClick) {
+              onClick();
+            }
             setListExpanded((prev) => !prev);
           }}
         >
