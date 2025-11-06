@@ -18,6 +18,7 @@ import { mdiMinus, mdiPlus } from '@mdi/js';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import ExpandingList from '../ExpandingList';
+import useEditBlockMutation from 'src/hooks/item stat hooks/useEditBlockMutation/useEditBlockMutation';
 
 const ActionQueueModal = () => {
   const navigate = useNavigate();
@@ -25,6 +26,8 @@ const ActionQueueModal = () => {
   const [listExpanded, setListExpanded] = useState(false);
 
   const { combat, encounterPermissions } = useOutletContext() || {};
+
+  const editBlock = useEditBlockMutation();
 
   const phaseAction = combat.phaseHistory[0].action || null;
   const phaseReactions = combat.phaseHistory[0].reactions || null;
@@ -59,6 +62,11 @@ const ActionQueueModal = () => {
     },
     onSubmit: ({ value }) => {
       console.log(value);
+      value.armorData.forEach((data) => {
+        if (data.blocks > 0) {
+          editBlock.mutate({ itemId: data.armor.id, value: -1 * data.blocks });
+        }
+      });
     },
   });
 
@@ -207,13 +215,33 @@ const ActionQueueModal = () => {
         {phaseAction && phaseAction.item && (
           <blockForm.Subscribe selector={(state) => state.values.armorData}>
             {(armorData) => {
-              const blockedDamage = armorData.reduce((sum, data) => {
-                const damagePerBlock =
-                  data.armor.stats.armor > phaseAction.item.stats.damage
-                    ? phaseAction.item.stats.damage
-                    : data.armor.stats.armor;
-                return sum + damagePerBlock * data.blocks;
-              }, 0);
+              const blockedDamagePerInstance = [] as number[];
+
+              const sortedArmorData = [...armorData].sort(
+                (a, b) => a.armor.stats.armor - b.armor.stats.armor,
+              );
+
+              if (instances) {
+                for (let i = 0; i < instances; i++) {
+                  let blockedDamage = 0;
+                  sortedArmorData.forEach((data) => {
+                    if (data.blocks > i && blockedDamage < damage / instances) {
+                      blockedDamage += data.armor.stats.armor;
+                    }
+                  });
+
+                  blockedDamagePerInstance.push(
+                    blockedDamage > damage / instances
+                      ? damage / instances
+                      : blockedDamage,
+                  );
+                }
+              }
+
+              const totalBlockedDamage = blockedDamagePerInstance.reduce(
+                (sum, damage) => sum + damage,
+                0,
+              );
 
               return (
                 <>
@@ -222,11 +250,11 @@ const ActionQueueModal = () => {
                     <div className="flex items-center gap-4">
                       <ArmorIcon className="text-primary size-8" />
                       <h2 className="flex size-6 items-center justify-center">
-                        {blockedDamage}
+                        {totalBlockedDamage}
                       </h2>
-                      {blockedDamage > damage && (
+                      {totalBlockedDamage > damage && (
                         <h3 className="text-base !text-red-600">
-                          ({blockedDamage - damage})
+                          ({totalBlockedDamage - damage})
                         </h3>
                       )}
                     </div>
@@ -236,8 +264,8 @@ const ActionQueueModal = () => {
                     <div className="flex items-center gap-4">
                       <DamageIcon className="text-primary size-8" />
                       <h2 className="flex size-6 items-center justify-center">
-                        {damage - blockedDamage > 0
-                          ? damage - blockedDamage
+                        {damage - totalBlockedDamage > 0
+                          ? damage - totalBlockedDamage
                           : 0}
                       </h2>
                     </div>
@@ -255,17 +283,28 @@ const ActionQueueModal = () => {
           ariaLabel="Close"
           type="button"
           onClick={() => {
+            const armorData = blockForm
+              .getFieldValue('armorData')
+              .filter((data) => data.blocks > 0)
+              .map((data) => ({
+                armorId: data.armor.id,
+                costs: { currentBlock: data.blocks },
+              }));
+
             socket.emit('confirmActionQueueResults', {
               campaignId: Number(campaignId),
               encounterId: Number(encounterId),
+              armorData,
             });
 
-            socket.emit('advanceTurn', {
-              campaignId: Number(campaignId),
-              encounterId: Number(encounterId),
-            });
+            // socket.emit('advanceTurn', {
+            //   campaignId: Number(campaignId),
+            //   encounterId: Number(encounterId),
+            // });
 
-            navigate('..');
+            // if (editBlock.isSuccess) {
+            //   navigate('..');
+            // }
           }}
         >
           Confirm Action Queue Results

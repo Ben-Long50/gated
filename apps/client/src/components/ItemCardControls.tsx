@@ -102,6 +102,7 @@ export const ArmorControls = ({
           title="Block"
           icon={<BlockIcon className="size-8 text-inherit" />}
           mutation={stats.currentBlock > 0 ? editBlock : null}
+          itemId={armorId}
           value={-1}
         />
       )}
@@ -110,6 +111,7 @@ export const ArmorControls = ({
           title="Repair"
           icon={<HullIcon className="size-8 text-inherit" />}
           mutation={stats.currentBlock < stats.block ? editBlock : null}
+          itemId={armorId}
           value={stats.block - stats.currentBlock}
         />
       )}

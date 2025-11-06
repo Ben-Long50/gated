@@ -6,11 +6,13 @@ const BtnControl = ({
   title,
   icon,
   mutation,
+  itemId,
   value,
 }: {
   title: string;
   icon: ReactNode;
   mutation?: UseMutationResult | null;
+  itemId?: number;
   value?: number;
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -24,7 +26,7 @@ const BtnControl = ({
         e.stopPropagation();
         if (mutation) {
           if (value) {
-            mutation.mutate(value);
+            mutation.mutate({ itemId, value });
           } else {
             mutation.mutate(undefined);
           }

@@ -5,7 +5,7 @@ import { Item } from 'src/types/item';
 import { socket } from 'src/socket';
 import useCombatStore from 'src/stores/combatStore';
 
-const useEditBlockMutation = (itemId: number) => {
+const useEditBlockMutation = () => {
   const queryClient = useQueryClient();
   const updateBuffer = useRef(0);
   const timeoutRef = useRef(0);
@@ -13,7 +13,7 @@ const useEditBlockMutation = (itemId: number) => {
   const updateItem = useCombatStore((store) => store.updateItem);
 
   return useMutation({
-    mutationFn: (value: number) => {
+    mutationFn: ({ itemId, value }) => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
@@ -31,7 +31,7 @@ const useEditBlockMutation = (itemId: number) => {
       });
     },
 
-    onMutate: (value) => {
+    onMutate: ({ itemId, value }) => {
       queryClient.cancelQueries({ queryKey: ['item', itemId] });
 
       const prevItemData: Item | undefined = queryClient.getQueryData([
@@ -56,14 +56,14 @@ const useEditBlockMutation = (itemId: number) => {
 
       return { prevItemData };
     },
-    onSuccess: (_, __, context) => {
+    onSuccess: (_, data, context) => {
       socket.emit('item', {
-        itemId,
+        itemId: data.itemId,
         campaignId:
           context.prevItemData?.characterInventory?.character.campaignId,
       });
       return queryClient.invalidateQueries({
-        queryKey: ['item', itemId],
+        queryKey: ['item', data.itemId],
       });
     },
     throwOnError: false,
