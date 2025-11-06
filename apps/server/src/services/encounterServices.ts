@@ -5,6 +5,8 @@ import {
   applyDamage,
   calculateActionQueueSuccesses,
   calculateArmorDamage,
+  calculateBlockedDamage,
+  calculateCosts,
   calculateDamage,
 } from '../utils/rollUtilities.js';
 import characterServices from './characterServices.js';
@@ -342,7 +344,10 @@ const encounterServices = {
     }
   },
 
-  confirmActionQueueResults: async (encounterId: number) => {
+  confirmActionQueueResults: async (
+    encounterId: number,
+    armorData: { armorId: number; costs: object }[],
+  ) => {
     try {
       const encounter = await prisma.encounter.findUnique({
         where: { id: encounterId },
@@ -358,7 +363,7 @@ const encounterServices = {
                   action: true,
                   target: {
                     include: {
-                      conditions: true,
+                      conditions: { include: { condition: true } },
                       perks: true,
                       characterInventory: { include: { items: true } },
                     },
@@ -398,17 +403,29 @@ const encounterServices = {
           successes,
         );
 
-        const { armorIds, overflowDamage } = await calculateArmorDamage(
-          phaseHistory.action.item,
-          phaseHistory.action.target,
-          instances,
-        );
+        let blockedDamage = 0;
+
+        if (armorData) {
+          for (const data of armorData) {
+            const armor = await itemServices.getItemById(data.armorId);
+            await calculateCosts(undefined, armor, data);
+            armorData = armorData.map((data) => {
+              if (data.armorId === armor.id) {
+                return { armor, blocks: data.costs.currentBlock };
+              } else {
+                return { ...data };
+              }
+            });
+          }
+
+          blockedDamage = calculateBlockedDamage(damage, instances, armorData);
+        }
 
         if (phaseHistory.action.target) {
-          await applyDamage(phaseHistory.action.target, overflowDamage);
+          await applyDamage(phaseHistory.action.target, damage - blockedDamage);
           return {
             targetId: phaseHistory.action.target.id,
-            armorIds,
+            armorIds: armorData.map((data) => data.armor.id),
           };
         }
       }

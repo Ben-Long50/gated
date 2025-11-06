@@ -11,7 +11,7 @@ var __rest = (this && this.__rest) || function (s, e) {
 };
 import prisma from '../config/database.js';
 import itemServices from './itemServices.js';
-import { applyDamage, calculateActionQueueSuccesses, calculateArmorDamage, calculateDamage, } from '../utils/rollUtilities.js';
+import { applyDamage, calculateActionQueueSuccesses, calculateBlockedDamage, calculateCosts, calculateDamage, } from '../utils/rollUtilities.js';
 const encounterServices = {
     getEncounters: async (campaignId) => {
         try {
@@ -321,7 +321,7 @@ const encounterServices = {
             throw new Error('Failed to advance turn');
         }
     },
-    confirmActionQueueResults: async (encounterId) => {
+    confirmActionQueueResults: async (encounterId, armorData) => {
         try {
             const encounter = await prisma.encounter.findUnique({
                 where: { id: encounterId },
@@ -337,7 +337,7 @@ const encounterServices = {
                                     action: true,
                                     target: {
                                         include: {
-                                            conditions: true,
+                                            conditions: { include: { condition: true } },
                                             perks: true,
                                             characterInventory: { include: { items: true } },
                                         },
@@ -366,12 +366,27 @@ const encounterServices = {
             if (phaseHistory.action) {
                 const successes = calculateActionQueueSuccesses(encounter === null || encounter === void 0 ? void 0 : encounter.phaseHistory[0]);
                 const { damage, instances } = calculateDamage(phaseHistory.action.item, phaseHistory.action.action, successes);
-                const { armorIds, overflowDamage } = await calculateArmorDamage(phaseHistory.action.item, phaseHistory.action.target, instances);
+                let blockedDamage = 0;
+                if (armorData) {
+                    for (const data of armorData) {
+                        const armor = await itemServices.getItemById(data.armorId);
+                        await calculateCosts(undefined, armor, data);
+                        armorData = armorData.map((data) => {
+                            if (data.armorId === armor.id) {
+                                return { armor, blocks: data.costs.currentBlock };
+                            }
+                            else {
+                                return Object.assign({}, data);
+                            }
+                        });
+                    }
+                    blockedDamage = calculateBlockedDamage(damage, instances, armorData);
+                }
                 if (phaseHistory.action.target) {
-                    await applyDamage(phaseHistory.action.target, overflowDamage);
+                    await applyDamage(phaseHistory.action.target, damage - blockedDamage);
                     return {
                         targetId: phaseHistory.action.target.id,
-                        armorIds,
+                        armorIds: armorData.map((data) => data.armor.id),
                     };
                 }
             }

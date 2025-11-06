@@ -411,17 +411,20 @@ export function setupSocketIO(io: Server) {
 
     socket.on(
       'confirmActionQueueResults',
-      async ({ campaignId, encounterId }) => {
+      async ({ campaignId, encounterId, armorData }) => {
         const { targetId, armorIds } =
-          await encounterServices.confirmActionQueueResults(encounterId);
+          await encounterServices.confirmActionQueueResults(
+            encounterId,
+            armorData,
+          );
 
         if (targetId) {
           io.to(campaignId).emit('character', targetId);
         }
 
         if (armorIds.length > 0) {
-          for (const id of armorIds) {
-            io.to(campaignId).emit('item', id);
+          for (const itemId of armorIds) {
+            io.to(campaignId).emit('item', itemId);
           }
         }
       },
@@ -431,8 +434,8 @@ export function setupSocketIO(io: Server) {
       const itemIds = await encounterServices.advanceTurn(encounterId);
 
       if (itemIds.length > 0) {
-        for (const id of itemIds) {
-          io.to(campaignId).emit('item', id);
+        for (const itemId of itemIds) {
+          io.to(campaignId).emit('item', itemId);
         }
       }
 

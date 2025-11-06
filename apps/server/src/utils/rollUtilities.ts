@@ -2,6 +2,7 @@ import characterServices from '../services/characterServices.js';
 import characterStatServices from '../services/characterStatServices.js';
 import conditionServices from '../services/conditionServices.js';
 import itemStatServices from '../services/itemStatServices.js';
+import { Armor } from '../types/armor.js';
 import { Character } from '../types/character.js';
 import { Item } from '../types/item.js';
 
@@ -132,6 +133,40 @@ export const calculateDamage = (
   return { damage, instances };
 };
 
+export const calculateBlockedDamage = (
+  damage: number,
+  instances: number,
+  armorData: { armor: Armor; blocks: number }[],
+) => {
+  const blockedDamagePerInstance = [] as number[];
+
+  const sortedArmorData = [...armorData].sort(
+    (a, b) => a.armor.stats.armor - b.armor.stats.armor,
+  );
+
+  if (instances) {
+    for (let i = 0; i < instances; i++) {
+      let blockedDamage = 0;
+      sortedArmorData.forEach((data) => {
+        if (data.blocks > i && blockedDamage < damage / instances) {
+          blockedDamage += data.armor.stats.armor;
+        }
+      });
+
+      blockedDamagePerInstance.push(
+        blockedDamage > damage / instances ? damage / instances : blockedDamage,
+      );
+    }
+  }
+
+  const totalBlockedDamage = blockedDamagePerInstance.reduce(
+    (sum, damage) => sum + damage,
+    0,
+  );
+
+  return totalBlockedDamage;
+};
+
 export const calculateArmorDamage = async (
   item: Item,
   target: Character,
@@ -228,6 +263,9 @@ export const calculateCosts = async (character, item, action) => {
         available: item.stats[stat],
         required: value,
       };
+
+      console.log(costInfo);
+
       if (costInfo.required > costInfo.available) {
         alert(`Your item does not have enough ${stat} to complete this action`);
       }

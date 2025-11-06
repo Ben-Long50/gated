@@ -83,6 +83,23 @@ export const calculateDamage = (item, action, successes) => {
     }
     return { damage, instances };
 };
+export const calculateBlockedDamage = (damage, instances, armorData) => {
+    const blockedDamagePerInstance = [];
+    const sortedArmorData = [...armorData].sort((a, b) => a.armor.stats.armor - b.armor.stats.armor);
+    if (instances) {
+        for (let i = 0; i < instances; i++) {
+            let blockedDamage = 0;
+            sortedArmorData.forEach((data) => {
+                if (data.blocks > i && blockedDamage < damage / instances) {
+                    blockedDamage += data.armor.stats.armor;
+                }
+            });
+            blockedDamagePerInstance.push(blockedDamage > damage / instances ? damage / instances : blockedDamage);
+        }
+    }
+    const totalBlockedDamage = blockedDamagePerInstance.reduce((sum, damage) => sum + damage, 0);
+    return totalBlockedDamage;
+};
 export const calculateArmorDamage = async (item, target, instances) => {
     var _a;
     const equippedArmor = target.characterInventory.items.filter((item) => item.itemTypes.includes('armor') && item.equipped);
@@ -148,6 +165,7 @@ export const calculateCosts = async (character, item, action) => {
                 available: item.stats[stat],
                 required: value,
             };
+            console.log(costInfo);
             if (costInfo.required > costInfo.available) {
                 alert(`Your item does not have enough ${stat} to complete this action`);
             }
