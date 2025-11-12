@@ -62,11 +62,21 @@ const EncounterGridTile = ({
   const tempRange = useCombatStore((state) => state.range);
   const item = useStore(form.store, (state) => state.values.item);
   const action = useStore(form.store, (state) => state.values.action);
+  const actionType = useStore(form.store, (state) => state.values.actionType);
 
-  const rangeColor =
-    action?.actionSubtypes?.includes('attack') || tempItem
-      ? statColorMap.DMG
-      : statColorMap.SPD;
+  let rangeColor;
+
+  switch (actionType) {
+    case 'attack':
+      rangeColor = statColorMap.DMG;
+      break;
+    case 'movement':
+      rangeColor = statColorMap.SPD;
+      break;
+    default:
+      rangeColor = 'transparent';
+      break;
+  }
 
   const range = tempRange
     ? tempRange

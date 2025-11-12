@@ -86,6 +86,20 @@ const EquippedItems = ({
                   if (setItemId) {
                     setItemId(equipment.id);
                   }
+
+                  if (equipment?.itemTypes.includes('weapon')) {
+                    form.setFieldValue('actionType', 'attack');
+                    form.setFieldValue('action', null);
+                  } else if (equipment.itemLinkReference?.actions.length > 0) {
+                    form.setFieldValue('actionType', 'unique');
+                    form.setFieldValue(
+                      'action',
+                      equipment.itemLinkReference?.actions[0],
+                    );
+                  } else {
+                    form.setFieldValue('actionType', null);
+                    form.setFieldValue('action', null);
+                  }
                   setRange(equipment.stats.range || null, statColorMap.DMG);
                 }}
                 onMouseLeave={() => {
@@ -102,6 +116,27 @@ const EquippedItems = ({
                       setItemId(null);
                     }
                     setRange(null, null);
+                  }
+                  if (field.state.value) {
+                    const chosenItem = field.state.value;
+                    if (chosenItem?.itemTypes.includes('weapon')) {
+                      form.setFieldValue('actionType', 'attack');
+                      form.setFieldValue('action', null);
+                    } else if (
+                      chosenItem.itemLinkReference?.actions.length > 0
+                    ) {
+                      form.setFieldValue('actionType', 'unique');
+                      form.setFieldValue(
+                        'action',
+                        chosenItem.itemLinkReference?.actions[0],
+                      );
+                    } else {
+                      form.setFieldValue('actionType', null);
+                      form.setFieldValue('action', null);
+                    }
+                  } else {
+                    form.setFieldValue('actionType', null);
+                    form.setFieldValue('action', null);
                   }
                 }}
               >

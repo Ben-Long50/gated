@@ -8,6 +8,8 @@ import EncounterGridTile from './EncounterGridTile';
 import { DndContext } from '@dnd-kit/core';
 import useUpdateCharacterLocationMutation from 'src/hooks/useUpdateCharacterLocationMutation/useUpdateCharacterLocationMutation';
 import { useParams } from 'react-router-dom';
+import useActions from 'src/hooks/useActions';
+import Loading from '../Loading';
 
 const MapGrid = ({
   form,
@@ -18,6 +20,7 @@ const MapGrid = ({
   activeCharacterId,
   gridDisplay,
   rolls,
+  setActionSidebar,
 }: {
   form: FormApi;
   reactions: number[];
@@ -27,6 +30,7 @@ const MapGrid = ({
   activeCharacterId: number;
   gridDisplay: boolean;
   rolls: MapIterator<[]>;
+  setActionSidebar: (value: boolean) => void;
 }) => {
   const { statColorMap } = useContext(ThemeContext);
   const { mapId } = useParams();
@@ -43,6 +47,11 @@ const MapGrid = ({
       y: Math.ceil(index / map.width),
     };
   };
+
+  const { filteredActions: actions, isLoading: actionsLoading } = useActions(
+    undefined,
+    'action',
+  );
 
   const target = useCombatStore((state) => state.target);
 
@@ -67,22 +76,38 @@ const MapGrid = ({
     [activeCharacterId, locations],
   );
 
-  function handleDragEnd(e) {
+  const handleDragEnd = (e) => {
     const { over, active } = e;
-
+    setActionSidebar(false);
     if (over.data.current.inRange) {
       updateCharacterLocation.mutate({
         characterId: active.data.current.characterId,
         locationId: active.data.current.locationId,
         index: over.data.current.index,
       });
+      form.reset();
     } else {
       alert('Not in range');
     }
-  }
+  };
+
+  const handleDragStart = () => {
+    setActionSidebar(true);
+    const selectedAction = form.getFieldValue('action') || null;
+
+    form.setFieldValue('actionType', 'movement');
+    if (actions && !selectedAction) {
+      form.setFieldValue(
+        'action',
+        actions.find((action) => action.name === 'Basic Movement'),
+      );
+    }
+  };
+
+  if (actionsLoading) return <Loading />;
 
   return (
-    <DndContext onDragEnd={handleDragEnd}>
+    <DndContext onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
       <div
         className="absolute inset-0 grid"
         style={{

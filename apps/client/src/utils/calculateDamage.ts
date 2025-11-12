@@ -6,6 +6,9 @@ export const calculateDamage = (
   action: Action,
   successes: number,
 ) => {
+  if (!action) return { damage: 0, instances: 0 };
+  console.log(item);
+
   let damage = 0;
   let instances = 0;
   if (
@@ -21,9 +24,11 @@ export const calculateDamage = (
       instances = maxSuccesses;
     }
   } else if (action && action.name === 'Haymaker' && successes > 0) {
-    damage = item.keywords.some((keyword) => keyword.keyword.name === '2H')
-      ? item.stats.damage + 3
-      : item.stats.damage + 2;
+    damage = item.keywords
+      ? item.keywords.some((keyword) => keyword.keyword.name === '2H')
+        ? item.stats.damage + 3
+        : item.stats.damage + 2
+      : item.stats.damage;
     instances = 1;
   } else if (successes > 0) {
     damage = item.stats.damage;

@@ -8,6 +8,7 @@ import useCombatStore from 'src/stores/combatStore';
 import { FormApi } from '@tanstack/react-form';
 import RangeIcon from '../icons/RangeIcon';
 import { useDraggable } from '@dnd-kit/core';
+import useActions from 'src/hooks/useActions';
 
 const CharacterEncounterToken = ({
   form,

@@ -44,6 +44,7 @@ import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import { useQueryClient } from '@tanstack/react-query';
 import { User } from 'src/types/user';
 import useItemQuery from 'src/hooks/useItemQuery/useItemQuery';
+import ItemCardBorderless from '../ItemCardBorderless';
 
 const Encounter = () => {
   const { mobile } = useContext(LayoutContext);
@@ -273,6 +274,7 @@ const Encounter = () => {
             activeCharacterId={activeCharacter?.id}
             gridDisplay={gridDisplay}
             rolls={rolls}
+            setActionSidebar={setActionSidebar}
           />
         </div>
         <div
@@ -465,7 +467,7 @@ const Encounter = () => {
             </>
           )}
           {item && (
-            <ItemCard
+            <ItemCardBorderless
               className={`${actionSidebar ? 'visible translate-x-0 opacity-100' : 'invisible translate-x-full opacity-0'} timing w-full`}
               cardType="small"
               item={item}

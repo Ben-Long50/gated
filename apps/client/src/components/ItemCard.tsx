@@ -286,21 +286,42 @@ const ItemCard = ({
               <div className="z-10">
                 {(gameMaster || ownerId === user?.id) &&
                   (item.itemTypes.includes('weapon') ? (
-                    <WeaponControls weaponId={item.id} stats={itemStats} />
+                    <WeaponControls
+                      weaponId={item.id}
+                      stats={itemStats}
+                      cardType={cardType}
+                    />
                   ) : item.itemTypes.includes('armor') ? (
-                    <ArmorControls armorId={item.id} stats={itemStats} />
+                    <ArmorControls
+                      armorId={item.id}
+                      stats={itemStats}
+                      cardType={cardType}
+                    />
                   ) : item.itemTypes.includes('augmentation') ? (
                     <CyberneticControls
                       cyberneticId={item.id}
                       stats={itemStats}
+                      cardType={cardType}
                     />
                   ) : item.itemTypes.includes('vehicle') ? (
-                    <VehicleControls vehicleId={item.id} stats={itemStats} />
+                    <VehicleControls
+                      vehicleId={item.id}
+                      stats={itemStats}
+                      cardType={cardType}
+                    />
                   ) : item.itemTypes.includes('drone') ? (
-                    <DroneControls droneId={item.id} stats={itemStats} />
+                    <DroneControls
+                      droneId={item.id}
+                      stats={itemStats}
+                      cardType={cardType}
+                    />
                   ) : (
                     item.itemTypes.includes('reusable') && (
-                      <ItemControls itemId={item.id} stats={itemStats} />
+                      <ItemControls
+                        itemId={item.id}
+                        stats={itemStats}
+                        cardType={cardType}
+                      />
                     )
                   ))}
               </div>

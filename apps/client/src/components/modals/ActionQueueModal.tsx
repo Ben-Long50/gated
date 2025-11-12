@@ -40,25 +40,29 @@ const ActionQueueModal = () => {
     }
   }, 0);
 
-  const { data: target } = useCharacterQuery(phaseAction.targetId);
+  const { data: target } = useCharacterQuery(phaseAction?.targetId);
 
-  const armor = target?.equipment.armors
-    .filter((armor) => armor.stats.armor && armor.stats.currentBlock > 0)
-    .sort((a, b) => b.stats.armor - a.stats.armor);
+  const armor = phaseAction?.targetId
+    ? target.equipment.armors
+        .filter((armor) => armor.stats.armor && armor.stats.currentBlock > 0)
+        .sort((a, b) => b.stats.armor - a.stats.armor)
+    : [];
 
-  const wardArmor = target?.equipment.armors
-    .filter((armor) => armor.stats.ward && armor.stats.currentBlock > 0)
-    .sort((a, b) => b.stats.ward - a.stats.ward);
+  const wardArmor = phaseAction?.targetId
+    ? target?.equipment.armors
+        .filter((armor) => armor.stats.ward && armor.stats.currentBlock > 0)
+        .sort((a, b) => b.stats.ward - a.stats.ward)
+    : [];
 
   const { damage, instances } = calculateDamage(
-    phaseAction.item,
-    phaseAction.action,
-    phaseAction.rollResult.successes - reducedSuccesses,
+    phaseAction?.item,
+    phaseAction?.action,
+    phaseAction?.rollResult.successes - reducedSuccesses,
   );
 
   const blockForm = useForm({
     defaultValues: {
-      armorData: armor.map((armor) => ({ armor, blocks: 0 })),
+      armorData: armor?.map((armor) => ({ armor, blocks: 0 })),
     },
     onSubmit: ({ value }) => {
       console.log(value);
@@ -95,9 +99,9 @@ const ActionQueueModal = () => {
       ) : (
         <h2>No Actions currently in Queue</h2>
       )}
-      <Divider className="!my-0 opacity-50" />
       {phaseReactions.length > 0 && (
         <>
+          <Divider className="!my-0 opacity-50" />
           <ArrowHeader3 title="Pending Reactions" className="self-start" />
           {phaseReactions.map((phaseReaction) => {
             return (
@@ -110,172 +114,176 @@ const ActionQueueModal = () => {
           <Divider className="!my-0 opacity-50" />
         </>
       )}
-      <div className="flex w-full flex-col gap-4">
-        {phaseAction && (
+      {phaseAction && (
+        <div className="flex w-full flex-col gap-4">
           <div className="flex w-full items-center justify-between">
             <ArrowHeader3 title="Action Successes" />
             <h2 className="flex size-6 items-center justify-center">
               {phaseAction.rollResult.successes}
             </h2>
           </div>
-        )}
-        {instances && (
-          <>
+
+          {instances && (
+            <>
+              <div className="flex w-full items-center justify-between">
+                <ArrowHeader3 title="Damage Instances" />
+                <h2 className="flex size-6 items-center justify-center">
+                  {instances}
+                </h2>
+              </div>
+              <div className="flex w-full items-center justify-between">
+                <ArrowHeader3 title="Damage Per Instance" />
+                <h2 className="flex size-6 items-center justify-center">
+                  {damage / instances}
+                </h2>
+              </div>
+            </>
+          )}
+          {phaseReactions && phaseReactions.length > 0 && (
             <div className="flex w-full items-center justify-between">
-              <ArrowHeader3 title="Damage Instances" />
+              <ArrowHeader3 title="Reaction Success Reductions" />
               <h2 className="flex size-6 items-center justify-center">
-                {instances}
+                {reducedSuccesses}
               </h2>
             </div>
-            <div className="flex w-full items-center justify-between">
-              <ArrowHeader3 title="Damage Per Instance" />
-              <h2 className="flex size-6 items-center justify-center">
-                {damage / instances}
-              </h2>
-            </div>
-          </>
-        )}
-        {phaseReactions.length > 0 && (
-          <div className="flex w-full items-center justify-between">
-            <ArrowHeader3 title="Reaction Success Reductions" />
-            <h2 className="flex size-6 items-center justify-center">
-              {reducedSuccesses}
-            </h2>
-          </div>
-        )}
-        <Divider className="opacity-50" />
-        {armor.length > 0 && (
-          <ExpandingList
-            title="Assign Blocks"
-            className="flex flex-col items-center gap-4"
-            onClick={() => setListExpanded((prev) => !prev)}
-          >
-            {
-              <blockForm.Field name="armorData">
-                {(field) =>
-                  field.state.value.map((_, i) => (
-                    <blockForm.Field key={i} name={`armorData[${i}]`}>
-                      {(subField) => (
-                        <div className="flex w-full items-center gap-8">
-                          <ItemCardExpanding
-                            expanded={listExpanded}
-                            itemId={subField.state.value.armor.id}
-                          />
-                          <div className="flex items-center gap-4">
-                            <button
-                              className="bg-tertiary group rounded p-1 shadow-md shadow-black"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (subField.state.value.blocks > 0) {
-                                  subField.handleChange({
-                                    ...subField.state.value,
-                                    blocks: subField.state.value.blocks - 1,
-                                  });
-                                }
-                              }}
-                            >
-                              <Icon
-                                className="text-primary group-hover:text-accent timing"
-                                path={mdiMinus}
-                                size={1}
-                              />
-                            </button>
-                            <button
-                              className="bg-tertiary group rounded p-1 shadow-md shadow-black"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (instances > subField.state.value.blocks) {
-                                  subField.handleChange({
-                                    ...subField.state.value,
-                                    blocks: subField.state.value.blocks + 1,
-                                  });
-                                }
-                              }}
-                            >
-                              <Icon
-                                className="text-primary group-hover:text-accent timing"
-                                path={mdiPlus}
-                                size={1}
-                              />
-                            </button>
-                            <BlockIcon className="text-primary size-8" />
-                            <h2 className="flex size-6 items-center justify-center">
-                              {subField.state.value.blocks}
-                            </h2>
+          )}
+          <Divider className="opacity-50" />
+          {armor && armor.length > 0 && (
+            <ExpandingList
+              title="Assign Blocks"
+              className="flex flex-col items-center gap-4"
+              onClick={() => setListExpanded((prev) => !prev)}
+            >
+              {
+                <blockForm.Field name="armorData">
+                  {(field) =>
+                    field.state.value.map((_, i) => (
+                      <blockForm.Field key={i} name={`armorData[${i}]`}>
+                        {(subField) => (
+                          <div className="flex w-full items-center gap-8">
+                            <ItemCardExpanding
+                              expanded={listExpanded}
+                              itemId={subField.state.value.armor.id}
+                            />
+                            <div className="flex items-center gap-4">
+                              <button
+                                className="bg-tertiary group rounded p-1 shadow-md shadow-black"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (subField.state.value.blocks > 0) {
+                                    subField.handleChange({
+                                      ...subField.state.value,
+                                      blocks: subField.state.value.blocks - 1,
+                                    });
+                                  }
+                                }}
+                              >
+                                <Icon
+                                  className="text-primary group-hover:text-accent timing"
+                                  path={mdiMinus}
+                                  size={1}
+                                />
+                              </button>
+                              <button
+                                className="bg-tertiary group rounded p-1 shadow-md shadow-black"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (instances > subField.state.value.blocks) {
+                                    subField.handleChange({
+                                      ...subField.state.value,
+                                      blocks: subField.state.value.blocks + 1,
+                                    });
+                                  }
+                                }}
+                              >
+                                <Icon
+                                  className="text-primary group-hover:text-accent timing"
+                                  path={mdiPlus}
+                                  size={1}
+                                />
+                              </button>
+                              <BlockIcon className="text-primary size-8" />
+                              <h2 className="flex size-6 items-center justify-center">
+                                {subField.state.value.blocks}
+                              </h2>
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </blockForm.Field>
-                  ))
-                }
-              </blockForm.Field>
-            }
-          </ExpandingList>
-        )}
-        {phaseAction && phaseAction.item && (
-          <blockForm.Subscribe selector={(state) => state.values.armorData}>
-            {(armorData) => {
-              const blockedDamagePerInstance = [] as number[];
-
-              const sortedArmorData = [...armorData].sort(
-                (a, b) => a.armor.stats.armor - b.armor.stats.armor,
-              );
-
-              if (instances) {
-                for (let i = 0; i < instances; i++) {
-                  let blockedDamage = 0;
-                  sortedArmorData.forEach((data) => {
-                    if (data.blocks > i && blockedDamage < damage / instances) {
-                      blockedDamage += data.armor.stats.armor;
-                    }
-                  });
-
-                  blockedDamagePerInstance.push(
-                    blockedDamage > damage / instances
-                      ? damage / instances
-                      : blockedDamage,
-                  );
-                }
+                        )}
+                      </blockForm.Field>
+                    ))
+                  }
+                </blockForm.Field>
               }
+            </ExpandingList>
+          )}
+          {phaseAction && phaseAction.item && (
+            <blockForm.Subscribe selector={(state) => state.values.armorData}>
+              {(armorData) => {
+                const blockedDamagePerInstance = [] as number[];
 
-              const totalBlockedDamage = blockedDamagePerInstance.reduce(
-                (sum, damage) => sum + damage,
-                0,
-              );
+                const sortedArmorData = [...armorData].sort(
+                  (a, b) => a.armor.stats.armor - b.armor.stats.armor,
+                );
 
-              return (
-                <>
-                  <div className="mt-2 flex w-full items-center justify-between">
-                    <ArrowHeader3 title="Blocked Damage" />
-                    <div className="flex items-center gap-4">
-                      <ArmorIcon className="text-primary size-8" />
-                      <h2 className="flex size-6 items-center justify-center">
-                        {totalBlockedDamage}
-                      </h2>
-                      {totalBlockedDamage > damage && (
-                        <h3 className="text-base !text-red-600">
-                          ({totalBlockedDamage - damage})
-                        </h3>
-                      )}
+                if (instances) {
+                  for (let i = 0; i < instances; i++) {
+                    let blockedDamage = 0;
+                    sortedArmorData.forEach((data) => {
+                      if (
+                        data.blocks > i &&
+                        blockedDamage < damage / instances
+                      ) {
+                        blockedDamage += data.armor.stats.armor;
+                      }
+                    });
+
+                    blockedDamagePerInstance.push(
+                      blockedDamage > damage / instances
+                        ? damage / instances
+                        : blockedDamage,
+                    );
+                  }
+                }
+
+                const totalBlockedDamage = blockedDamagePerInstance.reduce(
+                  (sum, damage) => sum + damage,
+                  0,
+                );
+
+                return (
+                  <>
+                    <div className="mt-2 flex w-full items-center justify-between">
+                      <ArrowHeader3 title="Blocked Damage" />
+                      <div className="flex items-center gap-4">
+                        <ArmorIcon className="text-primary size-8" />
+                        <h2 className="flex size-6 items-center justify-center">
+                          {totalBlockedDamage}
+                        </h2>
+                        {totalBlockedDamage > damage && (
+                          <h3 className="text-base !text-red-600">
+                            ({totalBlockedDamage - damage})
+                          </h3>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex w-full items-center justify-between">
-                    <ArrowHeader3 title="Total Damage" />
-                    <div className="flex items-center gap-4">
-                      <DamageIcon className="text-primary size-8" />
-                      <h2 className="flex size-6 items-center justify-center">
-                        {damage - totalBlockedDamage > 0
-                          ? damage - totalBlockedDamage
-                          : 0}
-                      </h2>
+                    <div className="flex w-full items-center justify-between">
+                      <ArrowHeader3 title="Total Damage" />
+                      <div className="flex items-center gap-4">
+                        <DamageIcon className="text-primary size-8" />
+                        <h2 className="flex size-6 items-center justify-center">
+                          {damage - totalBlockedDamage > 0
+                            ? damage - totalBlockedDamage
+                            : 0}
+                        </h2>
+                      </div>
                     </div>
-                  </div>
-                </>
-              );
-            }}
-          </blockForm.Subscribe>
-        )}
-      </div>
+                  </>
+                );
+              }}
+            </blockForm.Subscribe>
+          )}
+        </div>
+      )}
       {combat.passes.length >= combat.turnOrder.length - 1 &&
       encounterPermissions ? (
         <BtnRect
@@ -297,14 +305,12 @@ const ActionQueueModal = () => {
               armorData,
             });
 
-            // socket.emit('advanceTurn', {
-            //   campaignId: Number(campaignId),
-            //   encounterId: Number(encounterId),
-            // });
+            socket.emit('advanceTurn', {
+              campaignId: Number(campaignId),
+              encounterId: Number(encounterId),
+            });
 
-            // if (editBlock.isSuccess) {
-            //   navigate('..');
-            // }
+            navigate('..');
           }}
         >
           Confirm Action Queue Results

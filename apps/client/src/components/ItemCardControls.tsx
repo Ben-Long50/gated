@@ -24,16 +24,20 @@ import { Stats } from 'src/types/item';
 export const WeaponControls = ({
   stats,
   weaponId,
+  cardType,
 }: {
   stats: Stats;
   weaponId: number;
+  cardType?: 'small' | 'large';
 }) => {
   const editCurrentAmmo = useEditAmmoMutation(weaponId);
   const reloadAmmo = useReloadAmmoMutation(weaponId);
   const refreshAmmo = useRefreshAmmoMutation(weaponId);
 
   return (
-    <div className="col-span-2 grid grid-cols-1 items-center justify-start gap-2 sm:grid-cols-2 sm:gap-4">
+    <div
+      className={`${cardType === 'small' ? 'flex flex-col' : 'col-span-2 grid grid-cols-1 sm:grid-cols-2'} items-center justify-start gap-2`}
+    >
       {stats.currentAmmoCount !== undefined && (
         <BtnControl
           title="Single Shot"
@@ -88,15 +92,19 @@ export const WeaponControls = ({
 export const ArmorControls = ({
   armorId,
   stats,
+  cardType,
 }: {
   armorId: number;
   stats: Stats;
+  cardType?: 'small' | 'large';
 }) => {
   const editPower = useEditPowerMutation(armorId);
   const editBlock = useEditBlockMutation(armorId);
 
   return (
-    <div className="col-span-2 grid grid-cols-1 items-center justify-start gap-4 sm:grid-cols-2">
+    <div
+      className={`${cardType === 'small' ? 'flex flex-col' : 'col-span-2 grid grid-cols-1 sm:grid-cols-2'} items-center justify-start gap-2`}
+    >
       {stats.currentBlock !== undefined && (
         <BtnControl
           title="Block"
@@ -142,14 +150,18 @@ export const ArmorControls = ({
 export const CyberneticControls = ({
   cyberneticId,
   stats,
+  cardType,
 }: {
   cyberneticId: number;
   stats: Stats;
+  cardType?: 'small' | 'large';
 }) => {
   const editPower = useEditPowerMutation(cyberneticId);
 
   return (
-    <div className="col-span-2 grid grid-cols-1 items-center justify-start gap-4 sm:grid-cols-2">
+    <div
+      className={`${cardType === 'small' ? 'flex flex-col' : 'col-span-2 grid grid-cols-1 sm:grid-cols-2'} items-center justify-start gap-2`}
+    >
       {stats.currentPower !== undefined && (
         <BtnControl
           title="Activate"
@@ -178,9 +190,11 @@ export const CyberneticControls = ({
 export const VehicleControls = ({
   stats,
   vehicleId,
+  cardType,
 }: {
   stats: Stats;
   vehicleId: number;
+  cardType?: 'small' | 'large';
 }) => {
   const editHull = useEditHullMutation(vehicleId);
 
@@ -189,7 +203,9 @@ export const VehicleControls = ({
   const editPass = useEditPassMutation(vehicleId);
 
   return (
-    <div className="col-span-2 grid grid-cols-1 items-center justify-start gap-2 sm:grid-cols-2 sm:gap-4">
+    <div
+      className={`${cardType === 'small' ? 'flex flex-col' : 'col-span-2 grid grid-cols-1 sm:grid-cols-2'} items-center justify-start gap-2`}
+    >
       {stats.currentHull !== undefined && (
         <BtnControl
           title="Take Damage"
@@ -245,15 +261,19 @@ export const VehicleControls = ({
 export const DroneControls = ({
   stats,
   droneId,
+  cardType,
 }: {
   stats: Stats;
   droneId: number;
+  cardType?: 'small' | 'large';
 }) => {
   const editHull = useEditHullMutation(droneId);
   const editPower = useEditPowerMutation(droneId);
 
   return (
-    <div className="col-span-2 grid grid-cols-1 items-center justify-start gap-4 sm:grid-cols-2">
+    <div
+      className={`${cardType === 'small' ? 'flex flex-col' : 'col-span-2 grid grid-cols-1 sm:grid-cols-2'} items-center justify-start gap-2`}
+    >
       {stats.currentHull !== undefined && (
         <BtnControl
           title="Take Damage"
@@ -297,14 +317,18 @@ export const DroneControls = ({
 export const ItemControls = ({
   itemId,
   stats,
+  cardType,
 }: {
   itemId: number;
   stats: Stats;
+  cardType?: 'small' | 'large';
 }) => {
   const editPower = useEditPowerMutation(itemId);
 
   return (
-    <div className="col-span-2 grid grid-cols-1 items-center justify-start gap-4 sm:grid-cols-2">
+    <div
+      className={`${cardType === 'small' ? 'flex flex-col' : 'col-span-2 grid grid-cols-1 sm:grid-cols-2'} items-center justify-start gap-2`}
+    >
       {stats.currentPower !== undefined && (
         <BtnControl
           title="Activate"

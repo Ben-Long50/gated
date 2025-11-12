@@ -115,7 +115,14 @@ const ActionSidebar = ({
 
       <form.Field
         name="actionType"
-        listeners={{ onChange: () => form.setFieldValue('action', null) }}
+        listeners={{
+          onChange: ({ value }) => {
+            console.log(value);
+
+            form.setFieldValue('action', null);
+            filterBySubCategory(value);
+          },
+        }}
       >
         {(field) => (
           <InputSelectField
