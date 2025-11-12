@@ -72,9 +72,11 @@ export const calculateDamage = (item, action, successes) => {
         }
     }
     else if (action && action.name === 'Haymaker' && successes > 0) {
-        damage = item.keywords.some((keyword) => keyword.keyword.name === '2H')
-            ? item.stats.damage + 3
-            : item.stats.damage + 2;
+        damage = item.keywords
+            ? item.keywords.some((keyword) => keyword.keyword.name === '2H')
+                ? item.stats.damage + 3
+                : item.stats.damage + 2
+            : item.stats.damage;
         instances = 1;
     }
     else if (successes > 0) {
