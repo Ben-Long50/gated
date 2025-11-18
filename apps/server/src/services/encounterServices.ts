@@ -1,16 +1,13 @@
-import { $Enums, History } from '@prisma/client';
+import { $Enums, CombatPhase, History } from '@prisma/client';
 import prisma from '../config/database.js';
 import itemServices from './itemServices.js';
 import {
   applyDamage,
   calculateActionQueueSuccesses,
-  calculateArmorDamage,
   calculateBlockedDamage,
   calculateCosts,
   calculateDamage,
 } from '../utils/rollUtilities.js';
-import characterServices from './characterServices.js';
-import characterStatServices from './characterStatServices.js';
 
 const encounterServices = {
   getEncounters: async (campaignId: number) => {
@@ -190,6 +187,57 @@ const encounterServices = {
     } catch (error) {
       console.error(error);
       throw new Error('Failed to activate encounter');
+    }
+  },
+
+  advancePhase: async (encounterId: number) => {
+    try {
+      const encounter = await prisma.encounter.findUnique({
+        where: { id: encounterId },
+        select: { combatPhase: true, turn: true, round: true },
+      });
+
+      let nextPhase = null as CombatPhase | null;
+
+      switch (encounter?.combatPhase) {
+        case 'pending':
+          nextPhase = 'initiative';
+          break;
+        case 'initiative':
+          nextPhase = 'action';
+          break;
+        case 'action':
+          nextPhase = 'reaction';
+          break;
+        case 'reaction':
+          nextPhase = 'action';
+          break;
+        default:
+          nextPhase = null;
+          break;
+      }
+
+      if (!nextPhase || !encounter) {
+        return;
+      }
+
+      const phaseHistoryData = {
+        turn: encounter.turn + 1,
+        round: encounter.round,
+      } as any;
+
+      await prisma.encounter.update({
+        where: { id: encounterId },
+        data: {
+          combatPhase: nextPhase,
+          reactions: [],
+          passes: [],
+          phaseHistory: { create: phaseHistoryData },
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to advance phase');
     }
   },
 
@@ -392,7 +440,7 @@ const encounterServices = {
         throw new Error('Failed to find encounter');
       }
 
-      if (phaseHistory.action) {
+      if (phaseHistory.action?.rollResult) {
         const successes = calculateActionQueueSuccesses(
           encounter?.phaseHistory[0],
         );
@@ -425,7 +473,7 @@ const encounterServices = {
           await applyDamage(phaseHistory.action.target, damage - blockedDamage);
           return {
             targetId: phaseHistory.action.target.id,
-            armorIds: armorData.map((data) => data.armor.id),
+            armorIds: armorData ? armorData.map((data) => data.armor.id) : [],
           };
         }
       }

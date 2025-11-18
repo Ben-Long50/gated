@@ -346,7 +346,6 @@ const characterServices = {
         }
     },
     createOrUpdateLocation: async (characterId, formData) => {
-        console.log(formData);
         try {
             const location = await prisma.location.upsert({
                 where: {

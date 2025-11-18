@@ -83,6 +83,7 @@ export function setupSocketIO(io) {
         });
         socket.on('activateEncounter', async ({ campaignId, encounterId }) => {
             await encounterServices.activateEncounter(encounterId);
+            await encounterServices.advancePhase(encounterId);
             io.to(campaignId).emit('encounter', encounterId);
             console.log(`Broadcasted encounter ${encounterId} to campaign ${campaignId}`);
         });
@@ -118,23 +119,31 @@ export function setupSocketIO(io) {
                 .emit('navigateToEncounter', { encounterId, mapId, campaignId });
         });
         socket.on('actionRoll', async ({ campaignId, encounterId, activeCharacter, targetCharacter, action, modifiers, extraDice, item, }) => {
-            const rollResults = calculateRoll(activeCharacter.attributes, { name: action.name, roll: action.roll }, modifiers, extraDice) || { result: [], successes: 0 };
+            const rollResults = action.roll.length > 0
+                ? calculateRoll(activeCharacter.attributes, { name: action.name, roll: action.roll }, modifiers, extraDice) || { result: [], successes: 0 }
+                : null;
             const rolls = new Map();
-            const { damage } = calculateDamage(item, action, rollResults.successes);
-            rolls.set(activeCharacter === null || activeCharacter === void 0 ? void 0 : activeCharacter.id, {
-                characterId: activeCharacter === null || activeCharacter === void 0 ? void 0 : activeCharacter.id,
-                name: `${activeCharacter === null || activeCharacter === void 0 ? void 0 : activeCharacter.firstName} ${activeCharacter === null || activeCharacter === void 0 ? void 0 : activeCharacter.lastName}`,
-                playerCharacter: activeCharacter === null || activeCharacter === void 0 ? void 0 : activeCharacter.playerCharacter,
-                diceArray: rollResults.result,
-                successes: rollResults.successes,
-            });
-            const rollsArray = Array.from(rolls.entries());
+            const { damage } = rollResults
+                ? calculateDamage(item, action, rollResults.successes)
+                : { damage: null };
+            if (rollResults) {
+                rolls.set(activeCharacter === null || activeCharacter === void 0 ? void 0 : activeCharacter.id, {
+                    characterId: activeCharacter === null || activeCharacter === void 0 ? void 0 : activeCharacter.id,
+                    name: `${activeCharacter === null || activeCharacter === void 0 ? void 0 : activeCharacter.firstName} ${activeCharacter === null || activeCharacter === void 0 ? void 0 : activeCharacter.lastName}`,
+                    playerCharacter: activeCharacter === null || activeCharacter === void 0 ? void 0 : activeCharacter.playerCharacter,
+                    diceArray: rollResults.result,
+                    successes: rollResults.successes,
+                });
+            }
+            const rollsArray = rollResults ? Array.from(rolls.entries()) : null;
             await calculateCosts(activeCharacter, item, action);
-            io.to(`encounter ${encounterId}`).emit('actionRoll', {
-                encounterId,
-                rollsArray,
-                targetId: (targetCharacter === null || targetCharacter === void 0 ? void 0 : targetCharacter.id) || null,
-            });
+            if (rollResults) {
+                io.to(`encounter ${encounterId}`).emit('actionRoll', {
+                    encounterId,
+                    rollsArray,
+                    targetId: (targetCharacter === null || targetCharacter === void 0 ? void 0 : targetCharacter.id) || null,
+                });
+            }
             io.to(campaignId).emit('character', activeCharacter.id);
             if (item) {
                 await itemServices.setItemNotAvailable(item.id);
@@ -162,9 +171,9 @@ export function setupSocketIO(io) {
                 };
             }
             const phaseAction = await encounterServices.createEncounterHistory(campaignId, encounterId, historyData);
-            await encounterServices.setCombatPhase(encounterId, 'reaction');
+            await encounterServices.advancePhase(encounterId);
             await encounterServices.setPhaseAction(encounterId, phaseAction);
-            socket.to(campaignId).emit('encounter', encounterId);
+            io.to(campaignId).emit('encounter', encounterId);
             console.log(`Broadcasted action roll to encounter ${encounterId}`);
         });
         socket.on('reactionRoll', async ({ campaignId, encounterId, reactiveCharacter, targetCharacter, reaction, modifiers, extraDice, item, }) => {
@@ -210,8 +219,9 @@ export function setupSocketIO(io) {
                 };
             }
             const phaseReaction = await encounterServices.createEncounterHistory(campaignId, encounterId, historyData);
+            await encounterServices.advancePhase(encounterId);
             await encounterServices.setPhaseReaction(encounterId, phaseReaction);
-            socket.to(campaignId).emit('encounter', encounterId);
+            io.to(campaignId).emit('encounter', encounterId);
             console.log(`Broadcasted reaction roll to campaign ${campaignId}`);
         });
         socket.on('scheduleReaction', async ({ campaignId, encounterId, characterId }) => {
@@ -245,6 +255,15 @@ export function setupSocketIO(io) {
                     io.to(campaignId).emit('item', itemId);
                 }
             }
+        });
+        socket.on('advancePhase', async ({ campaignId, encounterId }) => {
+            await encounterServices.advancePhase(encounterId);
+            io.to(campaignId).emit('encounter', encounterId);
+            io.to(campaignId).emit('resetRolls');
+            console.log(`Broadcasted encounter ${encounterId} to campaign ${campaignId}`);
+        });
+        socket.on('disconnect', (reason) => {
+            console.log('User disconnected:', socket.id, 'Reason:', reason);
         });
         socket.on('advanceTurn', async ({ campaignId, encounterId }) => {
             const itemIds = await encounterServices.advanceTurn(encounterId);

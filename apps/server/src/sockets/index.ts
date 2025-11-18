@@ -122,6 +122,7 @@ export function setupSocketIO(io: Server) {
 
     socket.on('activateEncounter', async ({ campaignId, encounterId }) => {
       await encounterServices.activateEncounter(encounterId);
+      await encounterServices.advancePhase(encounterId);
 
       io.to(campaignId).emit('encounter', encounterId);
 
@@ -186,34 +187,43 @@ export function setupSocketIO(io: Server) {
         extraDice,
         item,
       }) => {
-        const rollResults = calculateRoll(
-          activeCharacter.attributes,
-          { name: action.name, roll: action.roll },
-          modifiers,
-          extraDice,
-        ) || { result: [], successes: 0 };
+        const rollResults =
+          action.roll.length > 0
+            ? calculateRoll(
+                activeCharacter.attributes,
+                { name: action.name, roll: action.roll },
+                modifiers,
+                extraDice,
+              ) || { result: [], successes: 0 }
+            : null;
 
         const rolls = new Map();
 
-        const { damage } = calculateDamage(item, action, rollResults.successes);
+        const { damage } = rollResults
+          ? calculateDamage(item, action, rollResults.successes)
+          : { damage: null };
 
-        rolls.set(activeCharacter?.id, {
-          characterId: activeCharacter?.id,
-          name: `${activeCharacter?.firstName} ${activeCharacter?.lastName}`,
-          playerCharacter: activeCharacter?.playerCharacter,
-          diceArray: rollResults.result,
-          successes: rollResults.successes,
-        });
+        if (rollResults) {
+          rolls.set(activeCharacter?.id, {
+            characterId: activeCharacter?.id,
+            name: `${activeCharacter?.firstName} ${activeCharacter?.lastName}`,
+            playerCharacter: activeCharacter?.playerCharacter,
+            diceArray: rollResults.result,
+            successes: rollResults.successes,
+          });
+        }
 
-        const rollsArray = Array.from(rolls.entries());
+        const rollsArray = rollResults ? Array.from(rolls.entries()) : null;
 
         await calculateCosts(activeCharacter, item, action);
 
-        io.to(`encounter ${encounterId}`).emit('actionRoll', {
-          encounterId,
-          rollsArray,
-          targetId: targetCharacter?.id || null,
-        });
+        if (rollResults) {
+          io.to(`encounter ${encounterId}`).emit('actionRoll', {
+            encounterId,
+            rollsArray,
+            targetId: targetCharacter?.id || null,
+          });
+        }
 
         io.to(campaignId).emit('character', activeCharacter.id);
 
@@ -263,11 +273,11 @@ export function setupSocketIO(io: Server) {
           historyData,
         );
 
-        await encounterServices.setCombatPhase(encounterId, 'reaction');
+        await encounterServices.advancePhase(encounterId);
 
         await encounterServices.setPhaseAction(encounterId, phaseAction);
 
-        socket.to(campaignId).emit('encounter', encounterId);
+        io.to(campaignId).emit('encounter', encounterId);
 
         console.log(`Broadcasted action roll to encounter ${encounterId}`);
       },
@@ -358,9 +368,11 @@ export function setupSocketIO(io: Server) {
           historyData,
         );
 
+        await encounterServices.advancePhase(encounterId);
+
         await encounterServices.setPhaseReaction(encounterId, phaseReaction);
 
-        socket.to(campaignId).emit('encounter', encounterId);
+        io.to(campaignId).emit('encounter', encounterId);
 
         console.log(`Broadcasted reaction roll to campaign ${campaignId}`);
       },
@@ -429,6 +441,21 @@ export function setupSocketIO(io: Server) {
         }
       },
     );
+
+    socket.on('advancePhase', async ({ campaignId, encounterId }) => {
+      await encounterServices.advancePhase(encounterId);
+
+      io.to(campaignId).emit('encounter', encounterId);
+      io.to(campaignId).emit('resetRolls');
+
+      console.log(
+        `Broadcasted encounter ${encounterId} to campaign ${campaignId}`,
+      );
+    });
+
+    socket.on('disconnect', (reason) => {
+      console.log('User disconnected:', socket.id, 'Reason:', reason);
+    });
 
     socket.on('advanceTurn', async ({ campaignId, encounterId }) => {
       const itemIds = await encounterServices.advanceTurn(encounterId);

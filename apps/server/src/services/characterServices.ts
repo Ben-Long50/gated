@@ -414,8 +414,6 @@ const characterServices = {
     characterId: number,
     formData: { mapId: number; index: number },
   ) => {
-    console.log(formData);
-
     try {
       const location = await prisma.location.upsert({
         where: {

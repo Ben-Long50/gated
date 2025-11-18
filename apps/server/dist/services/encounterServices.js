@@ -187,6 +187,52 @@ const encounterServices = {
             throw new Error('Failed to activate encounter');
         }
     },
+    advancePhase: async (encounterId) => {
+        try {
+            const encounter = await prisma.encounter.findUnique({
+                where: { id: encounterId },
+                select: { combatPhase: true, turn: true, round: true },
+            });
+            let nextPhase = null;
+            switch (encounter === null || encounter === void 0 ? void 0 : encounter.combatPhase) {
+                case 'pending':
+                    nextPhase = 'initiative';
+                    break;
+                case 'initiative':
+                    nextPhase = 'action';
+                    break;
+                case 'action':
+                    nextPhase = 'reaction';
+                    break;
+                case 'reaction':
+                    nextPhase = 'action';
+                    break;
+                default:
+                    nextPhase = null;
+                    break;
+            }
+            if (!nextPhase || !encounter) {
+                return;
+            }
+            const phaseHistoryData = {
+                turn: encounter.turn + 1,
+                round: encounter.round,
+            };
+            await prisma.encounter.update({
+                where: { id: encounterId },
+                data: {
+                    combatPhase: nextPhase,
+                    reactions: [],
+                    passes: [],
+                    phaseHistory: { create: phaseHistoryData },
+                },
+            });
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to advance phase');
+        }
+    },
     advanceTurn: async (encounterId) => {
         try {
             const encounter = await encounterServices.getEncounterById(encounterId);
@@ -322,6 +368,7 @@ const encounterServices = {
         }
     },
     confirmActionQueueResults: async (encounterId, armorData) => {
+        var _a;
         try {
             const encounter = await prisma.encounter.findUnique({
                 where: { id: encounterId },
@@ -363,7 +410,7 @@ const encounterServices = {
             if (!encounter) {
                 throw new Error('Failed to find encounter');
             }
-            if (phaseHistory.action) {
+            if ((_a = phaseHistory.action) === null || _a === void 0 ? void 0 : _a.rollResult) {
                 const successes = calculateActionQueueSuccesses(encounter === null || encounter === void 0 ? void 0 : encounter.phaseHistory[0]);
                 const { damage, instances } = calculateDamage(phaseHistory.action.item, phaseHistory.action.action, successes);
                 let blockedDamage = 0;
@@ -386,7 +433,7 @@ const encounterServices = {
                     await applyDamage(phaseHistory.action.target, damage - blockedDamage);
                     return {
                         targetId: phaseHistory.action.target.id,
-                        armorIds: armorData.map((data) => data.armor.id),
+                        armorIds: armorData ? armorData.map((data) => data.armor.id) : [],
                     };
                 }
             }
