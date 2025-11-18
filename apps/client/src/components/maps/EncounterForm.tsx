@@ -41,8 +41,6 @@ const EncounterForm = () => {
       turnPosition: 0,
     },
     onSubmit: ({ value }) => {
-      console.log(value);
-
       createCombat.mutate(value);
     },
   });
@@ -110,8 +108,6 @@ const EncounterForm = () => {
 
   useEffect(() => {
     if (!isLoading) {
-      console.log(locations);
-
       encounterForm.setFieldValue(
         'turnOrder',
         locations.map((location) => location.character.id),

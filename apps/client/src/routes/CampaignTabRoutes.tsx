@@ -29,6 +29,7 @@ import EncounterForm from 'src/components/maps/EncounterForm';
 import EncounterList from 'src/components/maps/EncounterList';
 import ActionQueueModal from 'src/components/modals/ActionQueueModal';
 import HistoryModal from 'src/components/modals/HistoryModal';
+import { EncounterProvider } from 'src/contexts/EncounterContext';
 
 const CampaignTabRoutes = () => {
   return (
@@ -88,7 +89,14 @@ const CampaignTabRoutes = () => {
             <Route path="save" element={<MapSaveModal />} />
             <Route path="tileList" element={<TileListModal />} />
           </Route>
-          <Route path=":mapId/encounters/:encounterId" element={<Encounter />}>
+          <Route
+            path=":mapId/encounters/:encounterId"
+            element={
+              <EncounterProvider>
+                <Encounter />
+              </EncounterProvider>
+            }
+          >
             <Route path="characters">{CharacterMenuRoutes()}</Route>
             <Route path="initiative" element={<InitiativeModal />} />
             <Route path="actionQueue" element={<ActionQueueModal />} />

@@ -1,0 +1,73 @@
+import { Action } from './action';
+import { Campaign } from './campaign';
+import { Character } from './character';
+import { Item } from './item';
+import { Map } from './map';
+
+export interface Encounter {
+  id: number;
+  createdAt: Date;
+  name: string;
+  active: boolean;
+  campaign: Campaign;
+  campaignId: number;
+  map: Map;
+  mapId: number;
+  //   event
+  turn: number;
+  round: number;
+  turnOrder: number[];
+  turnPosition: number;
+  reactions: number[];
+  passes: number[];
+  combatPhase: CombatPhase;
+  characters: Character[];
+  phaseHistory: PhaseHistory[];
+  history: History[];
+}
+
+enum CombatPhase {
+  pending = 'pending',
+  initiative = 'initiative',
+  action = 'action',
+  reaction = 'reaction',
+  completed = 'completed',
+}
+
+export interface PhaseHistory {
+  id: number;
+  createdAt: Date;
+  turn: number;
+  round: number;
+  encounter: Encounter;
+  encounterId: number;
+  action: History;
+  reactions: History[];
+}
+
+export interface History {
+  id: number;
+  createdAt: Date;
+  campaign: Campaign;
+  campaignId: number;
+  encounter: Encounter;
+  encounterId: number;
+  phaseHistoryAction: PhaseHistory;
+  phaseHistoryActionId: number;
+  phaseHistoryReaction: PhaseHistory;
+  phaseHistoryReactionId: number;
+  character: Character;
+  characterId: number;
+  target?: Character;
+  targetId?: number;
+  action: Action;
+  actionId: number;
+  item?: Item;
+  itemId?: number;
+  rollResult: RollResult;
+}
+
+type RollResult = {
+  diceArray: number[];
+  successes: number;
+};

@@ -1,7 +1,6 @@
 import useActions from 'src/hooks/useActions';
 import InputSelectField from '../InputSelectField';
 import useCharacter from 'src/hooks/useCharacter';
-import CharacterRoll from './CharacterRoll';
 import { FormApi } from '@tanstack/react-form';
 import BtnRect from '../buttons/BtnRect';
 import CharacterPictureRound from '../CharacterPictureRound';
@@ -16,11 +15,6 @@ import ActionIcon from '../icons/ActionIcon';
 import Icon from '@mdi/react';
 import { mdiAutorenew } from '@mdi/js';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import {
-  AttributeName,
-  AttributeTree,
-  SkillName,
-} from 'src/types/attributeTree';
 import { Action } from 'src/types/action';
 import DieIcon from '../icons/DieIcon';
 import { useQueryClient } from '@tanstack/react-query';
@@ -28,27 +22,25 @@ import { Item } from 'src/types/item';
 import useCombatStore from 'src/stores/combatStore';
 import calculateDiceCount from 'src/utils/calculateDiceCount';
 import InputField from '../InputField';
+import { useContext } from 'react';
+import { EncounterContext } from 'src/contexts/EncounterContext';
 
-const ActionSidebar = ({
-  form,
-  actionSidebar,
-  activeCharacterId,
-}: {
-  form: FormApi;
-  actionSidebar: boolean;
-  activeCharacterId: number;
-}) => {
-  const { filteredCharacter: character } = useCharacter(activeCharacterId);
+const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
+  const { activeCharacter, actionForm } = useContext(EncounterContext);
+
+  const { filteredCharacter: character } = useCharacter(activeCharacter.id);
   const navigate = useNavigate();
   const location = useLocation();
   const parts = location.pathname.split('/');
   const queryClient = useQueryClient();
 
+  const characterActions = character?.characterInventory.actions;
+
   const {
     filteredActions: availableActions,
     filterBySubCategory,
     category,
-  } = useActions(character?.actions, 'action');
+  } = useActions(characterActions, 'action');
 
   const setItem = useCombatStore((state) => state.setItem);
 
@@ -66,7 +58,7 @@ const ActionSidebar = ({
 
       setItem(uniqueItem);
 
-      form.setFieldValue('item', uniqueItem);
+      actionForm.setFieldValue('item', uniqueItem);
     }
   };
 
@@ -79,7 +71,7 @@ const ActionSidebar = ({
           context={{
             actions: availableActions,
             category,
-            form,
+            form: actionForm,
             handleChosenItem,
           }}
         />
@@ -102,7 +94,7 @@ const ActionSidebar = ({
           aria-label="Open save modal"
           type="button"
           onClick={() => {
-            form.reset();
+            actionForm.reset();
             setItem(null);
           }}
         >
@@ -113,13 +105,13 @@ const ActionSidebar = ({
         </button>
       </div>
 
-      <form.Field
+      <actionForm.Field
         name="actionType"
         listeners={{
           onChange: ({ value }) => {
             console.log(value);
 
-            form.setFieldValue('action', null);
+            actionForm.setFieldValue('action', null);
             filterBySubCategory(value);
           },
         }}
@@ -134,10 +126,10 @@ const ActionSidebar = ({
             }}
           />
         )}
-      </form.Field>
-      <form.Subscribe selector={(state) => state.values.item}>
+      </actionForm.Field>
+      <actionForm.Subscribe selector={(state) => state.values.item}>
         {(item) => (
-          <form.Field
+          <actionForm.Field
             name="action"
             listeners={{
               onChange: ({ value }) => {
@@ -177,11 +169,11 @@ const ActionSidebar = ({
                 </>
               );
             }}
-          </form.Field>
+          </actionForm.Field>
         )}
-      </form.Subscribe>
+      </actionForm.Subscribe>
 
-      <form.Subscribe
+      <actionForm.Subscribe
         selector={(state) => [
           state.values.action,
           state.values.item,
@@ -223,8 +215,8 @@ const ActionSidebar = ({
             </>
           )
         }
-      </form.Subscribe>
-      <form.Subscribe
+      </actionForm.Subscribe>
+      <actionForm.Subscribe
         selector={(state) => [
           state.values.action,
           state.values.item,
@@ -249,7 +241,7 @@ const ActionSidebar = ({
             action?.roll.length > 0 && (
               <>
                 <div className="relative flex w-full flex-col gap-2">
-                  <form.Field name="modifiers">
+                  <actionForm.Field name="modifiers">
                     {(field) => {
                       const modifiers = [
                         'push',
@@ -266,19 +258,21 @@ const ActionSidebar = ({
                               field={field}
                               label={capitalCase(modifier)}
                               value={modifier}
-                              checked={field.state.value.includes(modifier)}
+                              checked={field.state.value?.includes(modifier)}
                               onChange={(value: string) => {
-                                if (field.state.value.includes(value)) {
-                                  form.setFieldValue('modifiers', (prev) =>
-                                    prev.filter(
-                                      (modifier) => modifier !== value,
-                                    ),
+                                if (field.state.value?.includes(value)) {
+                                  actionForm.setFieldValue(
+                                    'modifiers',
+                                    (prev) =>
+                                      prev.filter(
+                                        (modifier) => modifier !== value,
+                                      ),
                                   );
                                 } else {
-                                  form.setFieldValue('modifiers', (prev) => [
-                                    ...prev,
-                                    value,
-                                  ]);
+                                  actionForm.setFieldValue(
+                                    'modifiers',
+                                    (prev) => [...prev, value],
+                                  );
                                 }
                               }}
                             />
@@ -286,8 +280,8 @@ const ActionSidebar = ({
                         </>
                       );
                     }}
-                  </form.Field>
-                  <form.Field name="extraDice">
+                  </actionForm.Field>
+                  <actionForm.Field name="extraDice">
                     {(field) => (
                       <InputField
                         field={field}
@@ -295,7 +289,7 @@ const ActionSidebar = ({
                         type="number"
                       />
                     )}
-                  </form.Field>
+                  </actionForm.Field>
                 </div>
                 <div className="flex items-center justify-between">
                   <DieIcon className="text-secondary size-8" />
@@ -305,7 +299,7 @@ const ActionSidebar = ({
                     <h3>{diceCount}</h3>
                   )}
                 </div>
-                <form.Subscribe selector={(state) => state.errorMap}>
+                <actionForm.Subscribe selector={(state) => state.errorMap}>
                   {(errorMap) => {
                     const errors = errorMap.onSubmit?.split(', ') || [];
 
@@ -321,14 +315,14 @@ const ActionSidebar = ({
                       )
                     );
                   }}
-                </form.Subscribe>
+                </actionForm.Subscribe>
                 <BtnRect
                   className={`${(!action || !item || !target) && 'pointer-events-none opacity-50'} w-full whitespace-nowrap`}
                   ariaLabel="Roll action"
                   type="button"
                   onClick={() => {
                     if (action && target && item) {
-                      form.handleSubmit();
+                      actionForm.handleSubmit();
                     }
                   }}
                 >
@@ -338,7 +332,7 @@ const ActionSidebar = ({
             )
           );
         }}
-      </form.Subscribe>
+      </actionForm.Subscribe>
     </div>
   );
 };

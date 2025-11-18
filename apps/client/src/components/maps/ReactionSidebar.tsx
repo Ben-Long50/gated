@@ -2,7 +2,7 @@ import useActions from 'src/hooks/useActions';
 import InputSelectField from '../InputSelectField';
 import useCharacter from 'src/hooks/useCharacter';
 import CharacterRoll from './CharacterRoll';
-import { FormApi } from '@tanstack/react-form';
+import { FormApi } from '@tanstack/react-reactionForm';
 import BtnRect from '../buttons/BtnRect';
 import CharacterPictureRound from '../CharacterPictureRound';
 import ActionStatBars from '../ActionStatBars';
@@ -18,18 +18,13 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import ReactionIcon from '../icons/ReactionIcon';
 import DieIcon from '../icons/DieIcon';
 import calculateDiceCount from 'src/utils/calculateDiceCount';
+import { useContext } from 'react';
+import { EncounterContext } from 'src/contexts/EncounterContext';
 
-const ReactionSidebar = ({
-  form,
-  reactions,
-  actionSidebar,
-  controlledCharacterId,
-}: {
-  form: FormApi;
-  reactions: number[];
-  actionSidebar: boolean;
-  controlledCharacterId: number;
-}) => {
+const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
+  const { controlledCharacterId, reactions, reactionForm } =
+    useContext(EncounterContext);
+
   const { filteredCharacter: character } = useCharacter(controlledCharacterId);
   const navigate = useNavigate();
   const location = useLocation();
@@ -46,7 +41,13 @@ const ReactionSidebar = ({
       className={`${actionSidebar ? 'visible translate-x-0 opacity-100' : 'invisible translate-x-full opacity-0'} timing z-10 flex flex-col gap-4 p-2`}
     >
       {parts.includes('availableReactions') && (
-        <Outlet context={{ actions: availableReactions, category, form }} />
+        <Outlet
+          context={{
+            actions: availableReactions,
+            category,
+            form: reactionForm,
+          }}
+        />
       )}
       <>
         {reactions.includes(controlledCharacterId) && (
@@ -70,7 +71,7 @@ const ReactionSidebar = ({
                 className="bg-tertiary group my-auto flex justify-self-start rounded p-1.5 shadow-md shadow-black"
                 aria-label="Open save modal"
                 type="button"
-                onClick={() => form.reset()}
+                onClick={() => reactionForm.reset()}
               >
                 <Icon
                   path={mdiAutorenew}
@@ -78,27 +79,11 @@ const ReactionSidebar = ({
                 />
               </button>
             </div>
-
-            {/* <form.Field
-              name="reactionType"
-              listeners={{
-                onChange: () => form.setFieldValue('reaction', null),
-              }}
-            >
-              {(field) => (
-                <InputSelectField
-                  label="Reaction Category"
-                  options={['attack', 'movement', 'unique']}
-                  field={field}
-                  onChange={(category) => {
-                    filterBySubCategory(category);
-                  }}
-                />
-              )}
-            </form.Field> */}
-            <form.Field
+            <reactionForm.Field
               name="reaction"
-              listeners={{ onChange: () => form.setFieldValue('item', null) }}
+              listeners={{
+                onChange: () => reactionForm.setFieldValue('item', null),
+              }}
             >
               {(field) => (
                 <>
@@ -125,8 +110,8 @@ const ReactionSidebar = ({
                     )}
                 </>
               )}
-            </form.Field>
-            <form.Subscribe
+            </reactionForm.Field>
+            <reactionForm.Subscribe
               selector={(state) => [
                 state.values.reaction,
                 state.values.item,
@@ -168,9 +153,9 @@ const ReactionSidebar = ({
                   </>
                 )
               }
-            </form.Subscribe>
+            </reactionForm.Subscribe>
             <div className="relative flex w-full flex-col gap-2">
-              <form.Field name="modifiers">
+              <reactionForm.Field name="modifiers">
                 {(field) => {
                   const modifiers = [
                     'push',
@@ -190,14 +175,14 @@ const ReactionSidebar = ({
                           checked={field.state.value.includes(modifier)}
                           onChange={(value: string) => {
                             if (field.state.value.includes(value)) {
-                              form.setFieldValue('modifiers', (prev) =>
+                              reactionForm.setFieldValue('modifiers', (prev) =>
                                 prev.filter((modifier) => modifier !== value),
                               );
                             } else {
-                              form.setFieldValue('modifiers', (prev) => [
-                                ...prev,
-                                value,
-                              ]);
+                              reactionForm.setFieldValue(
+                                'modifiers',
+                                (prev) => [...prev, value],
+                              );
                             }
                           }}
                         />
@@ -205,16 +190,9 @@ const ReactionSidebar = ({
                     </>
                   );
                 }}
-              </form.Field>
+              </reactionForm.Field>
             </div>
-            {/* {roll?.diceArray.length > 0 && (
-              <CharacterRoll
-                form={form}
-                characterId={controlledCharacterId}
-                rollData={rollData}
-              />
-            )} */}
-            <form.Subscribe
+            <reactionForm.Subscribe
               selector={(state) => [
                 state.values.reaction,
                 state.values.modifiers,
@@ -240,7 +218,9 @@ const ReactionSidebar = ({
                         <h3>{diceCount}</h3>
                       )}
                     </div>
-                    <form.Subscribe selector={(state) => state.errorMap}>
+                    <reactionForm.Subscribe
+                      selector={(state) => state.errorMap}
+                    >
                       {(errorMap) => {
                         const errors = errorMap.onSubmit?.split(', ') || [];
 
@@ -256,14 +236,14 @@ const ReactionSidebar = ({
                           )
                         );
                       }}
-                    </form.Subscribe>
+                    </reactionForm.Subscribe>
                     <BtnRect
                       className={`${!reaction && 'pointer-events-none opacity-50'} w-full whitespace-nowrap`}
                       ariaLabel="Roll action"
                       type="button"
                       onClick={() => {
                         if (reaction) {
-                          form.handleSubmit();
+                          reactionForm.handleSubmit();
                         }
                       }}
                     >
@@ -272,7 +252,7 @@ const ReactionSidebar = ({
                   </>
                 );
               }}
-            </form.Subscribe>
+            </reactionForm.Subscribe>
           </>
         )}
       </>

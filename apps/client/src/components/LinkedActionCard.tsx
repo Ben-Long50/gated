@@ -147,7 +147,8 @@ const LinkedActionCard = ({
                 </div>
               </ThemeContainer>
             ))}
-          {action.keywordModifiers.length > 0 &&
+          {action.keywordModifiers &&
+            action.keywordModifiers.length > 0 &&
             action.keywordModifiers.map((keyword, index) => (
               <ItemCardSmall
                 key={index}

@@ -15,14 +15,14 @@ const useCombatQueries = (combatIds: number[]) => {
 
       return {
         activeEncounters: encounters.filter(
-          (data) => data.active && !data.completed,
+          (data) => data?.active && data?.combatPhase !== 'completed',
         ),
-        inactiveEncounters: encounters.filter((data) => !data.active),
+        inactiveEncounters: encounters.filter((data) => !data?.active),
         completedEncounters: encounters.filter(
-          (data) => !data.active && data.completed,
+          (data) => !data?.active && data?.combatPhase === 'completed',
         ),
         pendingEncounters: encounters.filter(
-          (data) => data.combatPhase === 'pending',
+          (data) => data?.combatPhase === 'pending',
         ),
         isLoading: results.some((result) => result.isLoading),
       };

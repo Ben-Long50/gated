@@ -6,8 +6,9 @@ const useActions = (characterActions?: Action[], initialCategory?: string) => {
   const { data: actions, isLoading, isPending } = useActionsQuery();
 
   const generalActions =
-    actions?.filter((action) => !action.actionSubtypes.includes('unique')) ||
-    [];
+    actions?.filter(
+      (action) => !action.itemLinkId && !action.characterInventoryId,
+    ) || [];
 
   const list = characterActions
     ? [...characterActions, ...generalActions]
@@ -40,6 +41,20 @@ const useActions = (characterActions?: Action[], initialCategory?: string) => {
         : (list?.filter((action: Action) =>
             action.name.toLowerCase().includes(query.toLowerCase()),
           ) ?? []);
+
+  const actionLists = {
+    actions: list?.filter((action) => action.actionType === 'action'),
+    reactions: list?.filter((action) => action.actionType === 'reaction'),
+    passives: list?.filter((action) => action.actionType === 'passive'),
+    extendedActions: list?.filter(
+      (action) => action.actionType === 'extendedAction',
+    ),
+    attacks: list?.filter((action) => action.actionSubtypes.includes('attack')),
+    movements: list?.filter((action) =>
+      action.actionSubtypes.includes('movement'),
+    ),
+    uniques: list?.filter((action) => action.actionSubtypes.includes('unique')),
+  };
 
   const filterByQuery = (query: string) => {
     setQuery(query);

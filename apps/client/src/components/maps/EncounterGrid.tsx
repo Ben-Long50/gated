@@ -10,29 +10,21 @@ import useUpdateCharacterLocationMutation from 'src/hooks/useUpdateCharacterLoca
 import { useParams } from 'react-router-dom';
 import useActions from 'src/hooks/useActions';
 import Loading from '../Loading';
+import { EncounterContext } from 'src/contexts/EncounterContext';
 
 const MapGrid = ({
-  form,
-  reactions,
-  encounterPermissions,
   map,
   locations,
-  activeCharacterId,
   gridDisplay,
-  rolls,
   setActionSidebar,
 }: {
-  form: FormApi;
-  reactions: number[];
-  encounterPermissions: boolean;
   map: Map;
   locations: Location[];
-  activeCharacterId: number;
   gridDisplay: boolean;
-  rolls: MapIterator<[]>;
   setActionSidebar: (value: boolean) => void;
 }) => {
   const { statColorMap } = useContext(ThemeContext);
+  const { activeCharacter, actionForm, rolls } = useContext(EncounterContext);
   const { mapId } = useParams();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
@@ -55,9 +47,12 @@ const MapGrid = ({
 
   const target = useCombatStore((state) => state.target);
 
-  const actionTarget = useStore(form.store, (state) => state.values.target);
+  const actionTarget = useStore(
+    actionForm.store,
+    (state) => state.values.target,
+  );
 
-  const arrowActive = activeCharacterId;
+  const arrowActive = activeCharacter.id;
   const arrowTarget = actionTarget?.id || target;
 
   const updateCharacterLocation = useUpdateCharacterLocationMutation(
@@ -66,26 +61,23 @@ const MapGrid = ({
 
   const activeCoordinates = useMemo(
     () =>
-      activeCharacterId
+      activeCharacter.id
         ? getCoordinates(
             locations.find(
-              (location) => location.characterId === activeCharacterId,
+              (location) => location.characterId === activeCharacter.id,
             )?.index || 0,
           )
         : null,
-    [activeCharacterId, locations],
+    [activeCharacter, locations],
   );
 
   const handleDragEnd = (e) => {
     const { over, active } = e;
     setActionSidebar(false);
     if (over.data.current.inRange) {
-      updateCharacterLocation.mutate({
-        characterId: active.data.current.characterId,
-        locationId: active.data.current.locationId,
-        index: over.data.current.index,
-      });
-      form.reset();
+      actionForm.setFieldValue('locationId', active.data.current.locationId);
+      actionForm.setFieldValue('index', over.data.current.index);
+      actionForm.handleSubmit();
     } else {
       alert('Not in range');
     }
@@ -93,11 +85,11 @@ const MapGrid = ({
 
   const handleDragStart = () => {
     setActionSidebar(true);
-    const selectedAction = form.getFieldValue('action') || null;
+    const selectedAction = actionForm.getFieldValue('action') || null;
 
-    form.setFieldValue('actionType', 'movement');
+    actionForm.setFieldValue('actionType', 'movement');
     if (actions && !selectedAction) {
-      form.setFieldValue(
+      actionForm.setFieldValue(
         'action',
         actions.find((action) => action.name === 'Basic Movement'),
       );
@@ -136,16 +128,12 @@ const MapGrid = ({
         {Array.from({ length: gridLength }).map((_, index) => {
           const characterLocations =
             locations.filter((location) => location.index === index) || [];
-
           return (
             <EncounterGridTile
-              form={form}
+              key={index}
               index={index}
               gridDisplay={gridDisplay}
               characterLocations={characterLocations}
-              reactions={reactions}
-              encounterPermissions={encounterPermissions}
-              activeCharacterId={activeCharacterId}
               getCoordinates={getCoordinates}
               activeCoordinates={activeCoordinates}
               hoveredIndex={hoveredIndex}

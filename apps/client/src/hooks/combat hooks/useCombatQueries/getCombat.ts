@@ -1,6 +1,7 @@
 import { create, keyResolver, windowScheduler } from '@yornaath/batshit';
 import handleResponse from '../../handleResponse';
 import apiUrl from 'src/utils/configureUrl';
+import { Encounter } from 'src/types/encounter';
 
 const getCombat = create({
   fetcher: async (combatIds: number[]) => {
@@ -11,7 +12,7 @@ const getCombat = create({
         credentials: 'include',
       },
     );
-    const data: Combat[] = await handleResponse(response);
+    const data: Encounter[] = await handleResponse(response);
 
     return data;
   },

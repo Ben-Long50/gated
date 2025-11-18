@@ -9,27 +9,27 @@ import { FormApi } from '@tanstack/react-form';
 import RangeIcon from '../icons/RangeIcon';
 import { useDraggable } from '@dnd-kit/core';
 import useActions from 'src/hooks/useActions';
+import { EncounterContext } from 'src/contexts/EncounterContext';
 
 const CharacterEncounterToken = ({
-  form,
-  reactions,
-  encounterPermissions,
   characterId,
-  activeCharacterId,
   locationId,
   onClick,
-  rolls,
 }: {
-  form: FormApi;
-  reactions: number[];
-  encounterPermissions: boolean;
   characterId: number;
-  aciveCharacterId: number;
   locationId: number;
-  onClick: () => void;
-  rolls: MapIterator<[]>;
+  onClick: () => boolean;
 }) => {
   const { statColorMap } = useContext(ThemeContext);
+  const {
+    combat,
+    activeCharacter,
+    encounterPermissions,
+    rolls,
+    rollCounter,
+    actionForm,
+  } = useContext(EncounterContext);
+
   const { filteredCharacter: character, isLoading } = useCharacter(characterId);
 
   const roll = rolls.get(characterId) || null;
@@ -40,13 +40,13 @@ const CharacterEncounterToken = ({
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: `${characterId} ${locationId}`,
     data: { characterId, locationId },
-    disabled: activeCharacterId !== characterId,
+    disabled: activeCharacter.id !== characterId,
   });
 
   if (isLoading) return <Loading size={1.25} />;
 
   return (
-    <form.Field name="target">
+    <actionForm.Field name="target">
       {(field) => (
         <div
           ref={setNodeRef}
@@ -78,11 +78,11 @@ const CharacterEncounterToken = ({
           }}
         >
           <CharacterPictureRound
-            className={`${activeCharacterId === character?.id && 'activeToken'} ${reactions.includes(characterId) && 'reactiveToken'} group-hover:border-accent timing size-12 border-2 border-white`}
+            className={`${activeCharacter.id === character?.id && 'activeToken'} ${combat.reactions.includes(characterId) && 'reactiveToken'} group-hover:border-accent timing size-12 border-2 border-white`}
             character={character}
           />
-          {roll && (
-            <form.Subscribe selector={(state) => state.values.modifiers}>
+          {roll && rollCounter > 0 && combat.combatPhase !== 'initiative' && (
+            <actionForm.Subscribe selector={(state) => state.values.modifiers}>
               {(modifiers: string[]) => (
                 <div className="absolute right-1/2 top-0 grid shrink-0 -translate-y-full translate-x-1/2 grid-cols-[repeat(3,_44px)] justify-center gap-2 pb-2">
                   {roll?.diceArray.map((number: number, index: number) => (
@@ -96,7 +96,7 @@ const CharacterEncounterToken = ({
                   ))}
                 </div>
               )}
-            </form.Subscribe>
+            </actionForm.Subscribe>
           )}
           {target === character?.id && damage !== null && (
             <h2 className="damage text-shadow absolute top-0 flex w-full -translate-y-full justify-center pb-2 text-center font-zen text-shadow-black">
@@ -117,7 +117,7 @@ const CharacterEncounterToken = ({
           )}
         </div>
       )}
-    </form.Field>
+    </actionForm.Field>
   );
 };
 

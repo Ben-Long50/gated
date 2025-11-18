@@ -96,44 +96,7 @@ const EncounterList = () => {
                       <div className="flex items-center gap-4">
                         <h2>{encounter.name}</h2>
                       </div>
-                      <div className="flex items-center gap-4">
-                        <button
-                          className="bg-tertiary group rounded p-1.5 shadow-md shadow-black"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`../${encounter.id}`);
-                          }}
-                        >
-                          <Icon
-                            className="text-secondary group-hover:text-accent timing size-6"
-                            path={mdiEye}
-                          />
-                        </button>
-                        <button
-                          className="bg-tertiary group rounded p-1.5 shadow-md shadow-black"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`../${encounter.id}/update`);
-                          }}
-                        >
-                          <Icon
-                            className="text-secondary group-hover:text-accent timing size-6"
-                            path={mdiTagEdit}
-                          />
-                        </button>
-                        <button
-                          className="bg-tertiary group rounded p-1.5 shadow-md shadow-black"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`${encounter.id}/delete`);
-                          }}
-                        >
-                          <Icon
-                            className="text-secondary group-hover:text-accent timing size-6"
-                            path={mdiTrashCanOutline}
-                          />
-                        </button>
-                      </div>
+                      <div className="flex items-center gap-4"></div>
                     </div>
                   }
                 >
@@ -170,7 +133,7 @@ const EncounterList = () => {
                       />
                     </div>
                   </div>
-                  {gameMaster && (
+                  {gameMaster && !encounter.active && (
                     <BtnRect
                       type="button"
                       ariaLabel="Begin encounter"
@@ -182,7 +145,7 @@ const EncounterList = () => {
                         });
                       }}
                     >
-                      {encounter.active ? 'End Encounter' : 'Begin Encounter'}
+                      Begin Encounter
                     </BtnRect>
                   )}
                 </ItemCardSmall>

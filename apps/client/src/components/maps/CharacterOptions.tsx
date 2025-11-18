@@ -12,56 +12,46 @@ import { LayoutContext } from 'src/contexts/LayoutContext';
 import ThemeContainer from '../ThemeContainer';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CampaignContext } from 'src/contexts/CampaignContext';
-import { Character } from 'src/types/character';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import HandIcon from '../icons/HandIcon';
 import { socket } from 'src/socket';
 import InputSelectField from '../InputSelectField';
 import useCharacterQueries from 'src/hooks/useCharactersQuery/useCharacterQueries';
 import useCombatStore from 'src/stores/combatStore';
+import optimisticUpdateEncounter from 'src/utils/optimisticUpdateEncounter';
+import { EncounterContext } from 'src/contexts/EncounterContext';
 
 const CharacterOptions = ({
-  form,
-  controlledCharacterId,
-  setControlledCharacterId,
-  turnOrder,
-  reactions,
-  passes,
-  combatPhase,
-  phaseHistory,
-  activeCharacter,
   setActionSidebar,
-  encounterPermissions,
-  handleAdvanceTurn,
   characterOptions,
   setItemId,
 }: {
-  form: FormApi;
-  controlledCharacterId: number;
-  setControlledCharacterId: (id: number) => void;
-  turnOrder: number[];
-  reactions: number[];
-  passes: number[];
-  combatPhase: string;
-  phaseHistory: { action: History; reactions: History[] };
-  activeCharacter: Character;
   setActionSidebar: (state: boolean) => void;
-  encounterPermissions: boolean;
-  handleAdvanceTurn: () => void;
   characterOptions: boolean;
   setItemId: (id: number) => void;
 }) => {
   const { mobile } = useContext(LayoutContext);
   const { accentPrimary } = useContext(ThemeContext);
   const { gameMaster } = useContext(CampaignContext);
+  const {
+    combat,
+    encounterPermissions,
+    activeCharacter,
+    controlledCharacterId,
+    setControlledCharacterId,
+    handleAdvanceTurn,
+    resetRolls,
+  } = useContext(EncounterContext);
+
   const { campaignId, encounterId } = useParams();
   const navigate = useNavigate();
 
   const { filteredCharacter: character } = useCharacter(controlledCharacterId);
 
-  const { characters } = useCharacterQueries(turnOrder);
+  const { characters } = useCharacterQueries(combat.turnOrder);
 
   const setItem = useCombatStore((state) => state.setItem);
+  const setTarget = useCombatStore((state) => state.setTarget);
 
   return (
     <ThemeContainer
@@ -73,6 +63,7 @@ const CharacterOptions = ({
         {gameMaster && (
           <InputSelectField
             label="Switch Character"
+            reverse={true}
             options={characters}
             onChange={(value) => {
               setControlledCharacterId(value.id);
@@ -83,7 +74,10 @@ const CharacterOptions = ({
         <div className="grid grid-cols-[1fr_auto] gap-8">
           <div className="flex flex-col items-center justify-start gap-4 overflow-hidden">
             <div className="grid w-full grid-cols-[auto_1fr_3fr] items-center gap-4">
-              <CharacterPictureRound character={character} />
+              <CharacterPictureRound
+                key={character?.id}
+                character={character}
+              />
               {!mobile && (
                 <ArrowHeader3
                   title={`${character?.firstName} ${character?.lastName}`}
@@ -104,10 +98,7 @@ const CharacterOptions = ({
               </div>
             </div>
             <EquippedItems
-              form={form}
               setActionSidebar={setActionSidebar}
-              encounterPermissions={encounterPermissions}
-              characterId={controlledCharacterId}
               setItemId={setItemId}
             />
           </div>
@@ -142,7 +133,7 @@ const CharacterOptions = ({
         {encounterPermissions &&
           controlledCharacterId === activeCharacter.id && (
             <div className="flex w-full gap-4">
-              {phaseHistory?.action ? (
+              {combat.phaseHistory[0]?.action ? (
                 <BtnRect
                   className="w-full"
                   ariaLabel="Close"
@@ -153,10 +144,13 @@ const CharacterOptions = ({
                       encounterId: Number(encounterId),
                     });
 
-                    socket.emit('advanceTurn', {
+                    socket.emit('advancePhase', {
                       campaignId: Number(campaignId),
                       encounterId: Number(encounterId),
                     });
+
+                    resetRolls();
+                    setTarget(null);
                   }}
                 >
                   Confirm Action Queue Results
@@ -168,35 +162,41 @@ const CharacterOptions = ({
                   type="button"
                   onClick={() => {
                     handleAdvanceTurn();
-                    form.reset();
                   }}
                 >
                   Pass Turn
                 </BtnRect>
               )}
               {gameMaster &&
-                combatPhase === 'reaction' &&
-                passes.length < turnOrder.length - 1 && (
+                combat.combatPhase === 'reaction' &&
+                combat.passes.length < combat.turnOrder.length - 1 && (
                   <BtnRect
                     className="w-full"
                     ariaLabel="Pass All Reactions"
                     type="button"
-                    onClick={() =>
+                    onClick={() => {
+                      optimisticUpdateEncounter(Number(encounterId), {
+                        reactions: [],
+                        passes: combat.turnOrder.filter(
+                          (id) => id !== activeCharacter.id,
+                        ),
+                      });
+
                       socket.emit('passAllReactions', {
                         campaignId: Number(campaignId),
                         encounterId: Number(encounterId),
-                      })
-                    }
+                      });
+                    }}
                   >
                     Pass All Reactions
                   </BtnRect>
                 )}
             </div>
           )}
-        {!reactions.includes(controlledCharacterId) &&
-          !passes.includes(controlledCharacterId) &&
+        {!combat.reactions.includes(controlledCharacterId) &&
+          !combat.passes.includes(controlledCharacterId) &&
           activeCharacter.id !== controlledCharacterId &&
-          combatPhase === 'reaction' && (
+          combat.combatPhase === 'reaction' && (
             <div className="flex w-full gap-4">
               <BtnRect
                 className="w-full"
@@ -228,7 +228,7 @@ const CharacterOptions = ({
               </BtnRect>
             </div>
           )}
-        {reactions.includes(controlledCharacterId) && (
+        {combat.reactions.includes(controlledCharacterId) && (
           <BtnRect
             ariaLabel="Pass Reaction"
             type="button"
@@ -238,7 +238,6 @@ const CharacterOptions = ({
                 encounterId: Number(encounterId),
                 characterId: controlledCharacterId,
               });
-              form.reset();
             }}
           >
             Pass Reaction

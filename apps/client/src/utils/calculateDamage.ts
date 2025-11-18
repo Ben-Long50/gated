@@ -7,7 +7,6 @@ export const calculateDamage = (
   successes: number,
 ) => {
   if (!action) return { damage: 0, instances: 0 };
-  console.log(item);
 
   let damage = 0;
   let instances = 0;

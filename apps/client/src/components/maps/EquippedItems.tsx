@@ -7,23 +7,22 @@ import { ThemeContext } from 'src/contexts/ThemeContext';
 import useCombatStore from 'src/stores/combatStore';
 import Icon from '@mdi/react';
 import { mdiCheckCircle, mdiCloseBoxOutline } from '@mdi/js';
-import { FormApi } from '@tanstack/react-form';
+import { EncounterContext } from 'src/contexts/EncounterContext';
 
 const EquippedItems = ({
-  form,
   setActionSidebar,
-  encounterPermissions,
-  characterId,
   setItemId,
 }: {
-  form: FormApi;
   setActionSidebar: (state: boolean) => void;
-  encounterPermissions: boolean;
-  characterId: number;
   setItemId?: (id: number) => void;
 }) => {
   const { rarityColorMap, statColorMap } = useContext(ThemeContext);
-  const { filteredCharacter: character, isLoading } = useCharacter(characterId);
+  const { encounterPermissions, controlledCharacterId, actionForm } =
+    useContext(EncounterContext);
+
+  const { filteredCharacter: character, isLoading } = useCharacter(
+    controlledCharacterId,
+  );
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<number>(null);
@@ -50,7 +49,7 @@ const EquippedItems = ({
 
   return (
     character?.equipment && (
-      <form.Field name="item">
+      <actionForm.Field name="item">
         {(field) => (
           <div
             ref={scrollRef}
@@ -88,17 +87,17 @@ const EquippedItems = ({
                   }
 
                   if (equipment?.itemTypes.includes('weapon')) {
-                    form.setFieldValue('actionType', 'attack');
-                    form.setFieldValue('action', null);
+                    actionForm.setFieldValue('actionType', 'attack');
+                    actionForm.setFieldValue('action', null);
                   } else if (equipment.itemLinkReference?.actions.length > 0) {
-                    form.setFieldValue('actionType', 'unique');
-                    form.setFieldValue(
+                    actionForm.setFieldValue('actionType', 'unique');
+                    actionForm.setFieldValue(
                       'action',
                       equipment.itemLinkReference?.actions[0],
                     );
                   } else {
-                    form.setFieldValue('actionType', null);
-                    form.setFieldValue('action', null);
+                    actionForm.setFieldValue('actionType', null);
+                    actionForm.setFieldValue('action', null);
                   }
                   setRange(equipment.stats.range || null, statColorMap.DMG);
                 }}
@@ -120,23 +119,23 @@ const EquippedItems = ({
                   if (field.state.value) {
                     const chosenItem = field.state.value;
                     if (chosenItem?.itemTypes.includes('weapon')) {
-                      form.setFieldValue('actionType', 'attack');
-                      form.setFieldValue('action', null);
+                      actionForm.setFieldValue('actionType', 'attack');
+                      actionForm.setFieldValue('action', null);
                     } else if (
                       chosenItem.itemLinkReference?.actions.length > 0
                     ) {
-                      form.setFieldValue('actionType', 'unique');
-                      form.setFieldValue(
+                      actionForm.setFieldValue('actionType', 'unique');
+                      actionForm.setFieldValue(
                         'action',
                         chosenItem.itemLinkReference?.actions[0],
                       );
                     } else {
-                      form.setFieldValue('actionType', null);
-                      form.setFieldValue('action', null);
+                      actionForm.setFieldValue('actionType', null);
+                      actionForm.setFieldValue('action', null);
                     }
                   } else {
-                    form.setFieldValue('actionType', null);
-                    form.setFieldValue('action', null);
+                    actionForm.setFieldValue('actionType', null);
+                    actionForm.setFieldValue('action', null);
                   }
                 }}
               >
@@ -169,7 +168,7 @@ const EquippedItems = ({
             ))}
           </div>
         )}
-      </form.Field>
+      </actionForm.Field>
     )
   );
 };

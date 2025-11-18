@@ -8,37 +8,29 @@ import { mdiCircleDouble, mdiClose } from '@mdi/js';
 import { useDroppable } from '@dnd-kit/core';
 import useCombatStore from 'src/stores/combatStore';
 import useCharacter from 'src/hooks/useCharacter';
+import { EncounterContext } from 'src/contexts/EncounterContext';
 
 const EncounterGridTile = ({
-  form,
   index,
   gridDisplay,
   characterLocations,
-  reactions,
-  encounterPermissions,
-  activeCharacterId,
   getCoordinates,
   activeCoordinates,
   hoveredIndex,
   setHoveredIndex,
-  rolls,
 }: {
-  form: FormApi;
   index: number;
   gridDisplay: boolean;
   characterLocations: Location[];
-  reactions: number[];
-  encounterPermissions: boolean;
-  activeCharacterId: number;
   getCoordinates: (index: number) => { x: number; y: number };
   activeCoordinates: { x: number; y: number };
   hoveredIndex: number;
   setHoveredIndex: (index: number) => void;
-  rolls: MapIterator<[]>;
 }) => {
   const { accentPrimary, statColorMap } = useContext(ThemeContext);
+  const { activeCharacter, actionForm } = useContext(EncounterContext);
 
-  const { filteredCharacter: character } = useCharacter(activeCharacterId);
+  const { filteredCharacter: character } = useCharacter(activeCharacter.id);
 
   const mapCoordinates = getCoordinates(index);
 
@@ -60,9 +52,12 @@ const EncounterGridTile = ({
 
   const tempItem = useCombatStore((state) => state.item);
   const tempRange = useCombatStore((state) => state.range);
-  const item = useStore(form.store, (state) => state.values.item);
-  const action = useStore(form.store, (state) => state.values.action);
-  const actionType = useStore(form.store, (state) => state.values.actionType);
+  const item = useStore(actionForm.store, (state) => state.values.item);
+  const action = useStore(actionForm.store, (state) => state.values.action);
+  const actionType = useStore(
+    actionForm.store,
+    (state) => state.values.actionType,
+  );
 
   let rangeColor;
 
@@ -119,11 +114,7 @@ const EncounterGridTile = ({
         characterLocations.map((location) => (
           <CharacterEncounterToken
             key={location.characterId}
-            form={form}
-            reactions={reactions}
-            encounterPermissions={encounterPermissions}
             characterId={location.characterId}
-            activeCharacterId={activeCharacterId}
             locationId={location.id}
             onClick={() =>
               isInRange(
@@ -132,7 +123,6 @@ const EncounterGridTile = ({
                 range,
               )
             }
-            rolls={rolls}
           />
         ))}
       {hoveredIndex === index && (

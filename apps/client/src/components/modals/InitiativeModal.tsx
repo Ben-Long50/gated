@@ -2,8 +2,8 @@ import { Fragment } from 'react/jsx-runtime';
 import Modal from './Modal';
 import Divider from '../Divider';
 import BtnRect from '../buttons/BtnRect';
-import { useContext, useRef, useState } from 'react';
-import { useOutletContext, useParams } from 'react-router-dom';
+import { useContext } from 'react';
+import { useParams } from 'react-router-dom';
 import Loading from '../Loading';
 import CharacterInitiativeRoll from '../maps/CharacterInitiativeRoll';
 import { CampaignContext } from 'src/contexts/CampaignContext';
@@ -11,23 +11,21 @@ import Icon from '@mdi/react';
 import { mdiCrown } from '@mdi/js';
 import { socket } from 'src/socket';
 import useCreateCombatMutation from 'src/hooks/combat hooks/useCreateCombatMutation/useCreateCombatMutation';
+import { EncounterContext } from 'src/contexts/EncounterContext';
 
 const InitiativeModal = () => {
   const { gameMaster } = useContext(CampaignContext);
-  const { campaignId, mapId, encounterId } = useParams();
-  const [rollingInitiative, setRollingInitiative] = useState(false);
-  const rollRefs = useRef([]);
-
   const {
+    combat,
     campaign,
     joinedPlayers,
-    characterIds,
     rolls,
-    initiativeComplete,
     rolling,
-    animateRoll,
     rollCounter,
-  } = useOutletContext() || {};
+    resetRolls,
+  } = useContext(EncounterContext);
+
+  const { campaignId, mapId, encounterId } = useParams();
 
   const startCombat = useCreateCombatMutation(Number(campaignId));
 
@@ -113,13 +111,13 @@ const InitiativeModal = () => {
   const initiativeRollIdArray = Array.from(rolls.keys());
 
   const initiativeOrder =
-    initiativeRollIdArray.length > 0 ? initiativeRollIdArray : characterIds;
+    initiativeRollIdArray.length > 0 ? initiativeRollIdArray : combat.turnOrder;
 
   return (
     <Modal>
       <h1>Initiative Rolls</h1>
       <div className="absolute left-4 top-4 mr-auto flex flex-col items-start justify-start">
-        {joinedPlayers.map((player) => (
+        {joinedPlayers?.map((player) => (
           <div className="flex items-center gap-2" key={player.username}>
             <p className="text-base">{player.username}</p>
             {campaign.ownerId === player.playerId && (
@@ -129,16 +127,11 @@ const InitiativeModal = () => {
         ))}
       </div>
       <div className="flex w-full flex-col gap-2">
-        {initiativeOrder?.map((characterId, index) => {
+        {initiativeOrder?.map((characterId: number, index: number) => {
           return (
             <Fragment key={characterId}>
-              <CharacterInitiativeRoll
-                animateRoll={animateRoll}
-                rollData={rolls}
-                rollComplete={initiativeComplete}
-                characterId={characterId}
-              />
-              {index < characterIds.length - 1 && <Divider />}
+              <CharacterInitiativeRoll characterId={characterId} />
+              {index < combat.turnOrder.length - 1 && <Divider />}
             </Fragment>
           );
         })}
@@ -150,17 +143,17 @@ const InitiativeModal = () => {
             ariaLabel="Roll initiative"
             type="button"
             onClick={() => {
-              if (!rollingInitiative) {
+              if (!rolling) {
                 socket.emit('rollInitiative', Number(encounterId));
               }
             }}
           >
-            {rollingInitiative ? (
+            {rolling ? (
               <Loading
                 className="group-hover:text-accent text-zinc-950"
                 size={1.15}
               />
-            ) : !rollingInitiative && rollCounter > 0 ? (
+            ) : !rolling && rollCounter > 0 ? (
               'Reroll Initiative'
             ) : (
               'Roll Initiative'
@@ -168,7 +161,7 @@ const InitiativeModal = () => {
           </BtnRect>
           {rollCounter > 0 && (
             <BtnRect
-              className={`${rollingInitiative && 'pointer-events-none opacity-50'} w-full`}
+              className={`${rolling && 'pointer-events-none opacity-50'} w-full`}
               ariaLabel="Start combat"
               type="button"
               onClick={() => {
@@ -179,6 +172,7 @@ const InitiativeModal = () => {
                   combatPhase: 'action',
                   turnPosition: 0,
                 });
+                resetRolls();
               }}
             >
               Start Combat

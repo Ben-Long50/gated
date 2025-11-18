@@ -21,7 +21,7 @@ const HistoryCard = ({ history }: { history: any }) => {
               />
             ))}
           </div>
-          {history.rollResult.damage != null && (
+          {history.rollResult !== null && (
             <div className="flex items-center gap-2">
               <DamageIcon className="text-secondary size-6" />
               <p>{history.rollResult.damage}</p>

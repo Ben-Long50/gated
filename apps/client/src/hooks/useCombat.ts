@@ -130,6 +130,29 @@ const useCombat = () => {
       extraDice: null as number | null,
     },
     onSubmit: async ({ value }) => {
+      const data = {
+        campaignId: Number(campaignId),
+        encounterId: Number(encounterId),
+        activeCharacter: activeCharacter,
+        action: value.action,
+      };
+
+      if (value.target) {
+        data.targetCharacter = value.target;
+      }
+
+      if (value.item) {
+        data.item = value.item;
+      }
+
+      if (value.action?.roll) {
+        data.modifiers = value.modifiers;
+      }
+
+      if (value.extraDice) {
+        data.extraDice = value.extraDice;
+      }
+
       if (
         value.action?.actionSubtypes.includes('movement') &&
         activeCharacter &&
@@ -141,27 +164,11 @@ const useCombat = () => {
           locationId: Number(value.locationId),
           index: value.index,
         });
-
-        if (value.action?.costs.currentActions) {
-          characterStatHandlers.handleCurrentActions(
-            value.action?.costs.currentActions * -1,
-          );
-        }
-      } else {
-        socket.emit('actionRoll', {
-          campaignId: Number(campaignId),
-          encounterId: Number(encounterId),
-          activeCharacter: activeCharacter,
-          targetCharacter: value.target,
-          action: value.action,
-          modifiers: value.modifiers,
-          extraDice: value.extraDice,
-          item: value.item,
-        });
-
-        actionForm.reset();
-        setItem(null);
       }
+      socket.emit('actionRoll', data);
+
+      actionForm.reset();
+      setItem(null);
     },
     validators: {
       onSubmit: ({ value }) => {

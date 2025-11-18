@@ -1,14 +1,13 @@
 import Modal from './Modal';
 import Divider from '../Divider';
 import BtnRect from '../buttons/BtnRect';
-import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import ArrowHeader3 from '../ArrowHeader3';
 import PhaseActionCard from '../maps/PhaseActionCard';
 import { calculateDamage } from 'src/utils/calculateDamage';
 import DamageIcon from '../icons/DamageIcon';
 import ArrowHeader4 from '../ArrowHeader4';
 import { socket } from 'src/socket';
-import { calculateArmorDamage } from 'src/utils/calculateArmorDamage';
 import ItemCardExpanding from '../maps/ItemCardExpanding';
 import useCharacterQuery from 'src/hooks/useCharacterQuery/useCharacterQuery';
 import BlockIcon from '../icons/BlockIcon';
@@ -16,16 +15,19 @@ import ArmorIcon from '../icons/ArmorIcon';
 import Icon from '@mdi/react';
 import { mdiMinus, mdiPlus } from '@mdi/js';
 import { useForm } from '@tanstack/react-form';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import ExpandingList from '../ExpandingList';
 import useEditBlockMutation from 'src/hooks/item stat hooks/useEditBlockMutation/useEditBlockMutation';
+import { EncounterContext } from 'src/contexts/EncounterContext';
+import useCombatStore from 'src/stores/combatStore';
 
 const ActionQueueModal = () => {
+  const { combat, encounterPermissions, resetRolls } =
+    useContext(EncounterContext);
+
   const navigate = useNavigate();
   const { campaignId, encounterId } = useParams();
   const [listExpanded, setListExpanded] = useState(false);
-
-  const { combat, encounterPermissions } = useOutletContext() || {};
 
   const editBlock = useEditBlockMutation();
 
@@ -39,6 +41,8 @@ const ActionQueueModal = () => {
       return sum;
     }
   }, 0);
+
+  const setTarget = useCombatStore((state) => state.setTarget);
 
   const { data: target } = useCharacterQuery(phaseAction?.targetId);
 
@@ -54,11 +58,13 @@ const ActionQueueModal = () => {
         .sort((a, b) => b.stats.ward - a.stats.ward)
     : [];
 
-  const { damage, instances } = calculateDamage(
-    phaseAction?.item,
-    phaseAction?.action,
-    phaseAction?.rollResult.successes - reducedSuccesses,
-  );
+  const { damage, instances } = phaseAction?.rollResult
+    ? calculateDamage(
+        phaseAction?.item,
+        phaseAction?.action,
+        phaseAction?.rollResult.successes - reducedSuccesses,
+      )
+    : { damage: null, instances: null };
 
   const blockForm = useForm({
     defaultValues: {
@@ -116,12 +122,14 @@ const ActionQueueModal = () => {
       )}
       {phaseAction && (
         <div className="flex w-full flex-col gap-4">
-          <div className="flex w-full items-center justify-between">
-            <ArrowHeader3 title="Action Successes" />
-            <h2 className="flex size-6 items-center justify-center">
-              {phaseAction.rollResult.successes}
-            </h2>
-          </div>
+          {phaseAction.rollResult && (
+            <div className="flex w-full items-center justify-between">
+              <ArrowHeader3 title="Action Successes" />
+              <h2 className="flex size-6 items-center justify-center">
+                {phaseAction.rollResult.successes}
+              </h2>
+            </div>
+          )}
 
           {instances && (
             <>
@@ -305,11 +313,13 @@ const ActionQueueModal = () => {
               armorData,
             });
 
-            socket.emit('advanceTurn', {
+            socket.emit('advancePhase', {
               campaignId: Number(campaignId),
               encounterId: Number(encounterId),
             });
 
+            resetRolls();
+            setTarget(null);
             navigate('..');
           }}
         >

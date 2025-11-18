@@ -38,7 +38,10 @@ const InputSelectField = ({
   className?: string;
   reverse?: boolean;
 }) => {
-  const [borderColor, setBorderColor] = useState('transparent');
+  const [fieldColor, setFieldColor] = useState({
+    border: 'transparent',
+    background: 'bg-zinc-300 dark:bg-zinc-700',
+  });
   const [focus, setFocus] = useState(false);
   const { accentPrimary, errorPrimary } = useContext(ThemeContext);
   const [query, setQuery] = useState('');
@@ -66,16 +69,32 @@ const InputSelectField = ({
 
   const name = field ? field.name : label.toLowerCase();
   const errors = field ? field.state.meta.errors : [];
+  const isPristine = field ? field.state.meta.isPristine : false;
+  const isTouched = field
+    ? field.state.meta.isTouched
+    : false || value || focus;
 
   const handleBorder = () => {
-    if (!value && errors?.length === 0 && !focus) {
-      setBorderColor('transparent');
-    } else if (focus && errors?.length === 0) {
-      setBorderColor(accentPrimary);
+    if (isTouched || (focus && errors?.length === 0)) {
+      setFieldColor({
+        border: accentPrimary,
+        background: 'bg-primary',
+      });
+    } else if (!value && errors?.length === 0 && !focus) {
+      setFieldColor({
+        border: 'transparent',
+        background: 'bg-zinc-300 dark:bg-zinc-700',
+      });
     } else if (errors?.length > 0) {
-      setBorderColor(errorPrimary);
+      setFieldColor({
+        border: errorPrimary,
+        background: 'bg-primary',
+      });
     } else if (value) {
-      setBorderColor(accentPrimary);
+      setFieldColor({
+        border: accentPrimary,
+        background: 'bg-primary',
+      });
     }
   };
 
@@ -123,11 +142,11 @@ const InputSelectField = ({
       <ThemeContainer
         className="grow"
         chamfer="small"
-        borderColor={borderColor}
+        borderColor={fieldColor.border}
       >
         <input
           ref={inputRef}
-          className={`${value ? 'bg-primary' : 'bg-zinc-300 dark:bg-zinc-700'} text-secondary timing focus:bg-primary relative w-full rounded-none pb-2 pl-4 pr-2 pt-3 outline-none clip-4`}
+          className={`${fieldColor.border} ${fieldColor.background} text-secondary timing relative w-full rounded-none pb-2 pl-4 pr-2 pt-3 outline-none clip-4`}
           name={name}
           id={name}
           value={field ? optionName(field.state.value) : optionName(value)}
@@ -141,7 +160,7 @@ const InputSelectField = ({
         />
         <label
           htmlFor={name}
-          className={` ${errors?.length > 0 ? 'text-error' : ''} ${value || focus ? 'bg-primary text-accent -translate-y-6' : 'text-gray-400'} timing absolute left-5 top-3.5 z-20 transform cursor-text transition-all`}
+          className={` ${errors?.length > 0 ? 'text-error' : ''} ${isTouched ? 'bg-primary text-accent -translate-y-6' : 'text-gray-400'} timing absolute left-5 top-3.5 z-20 transform cursor-text transition-all`}
         >
           {label}
         </label>

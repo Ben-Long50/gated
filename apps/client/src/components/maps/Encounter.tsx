@@ -38,20 +38,22 @@ import HistoryIcon from '../icons/HistoryIcon';
 import ArrowHeader4 from '../ArrowHeader4';
 import CharacterName from './CharacterName';
 import PassTurnIcon from '../icons/PassTurnIcon';
-import { socket } from 'src/socket';
-import { AuthContext } from 'src/contexts/AuthContext';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
-import { useQueryClient } from '@tanstack/react-query';
-import { User } from 'src/types/user';
 import useItemQuery from 'src/hooks/useItemQuery/useItemQuery';
 import ItemCardBorderless from '../ItemCardBorderless';
+import { EncounterContext } from 'src/contexts/EncounterContext';
+import { User } from 'src/types/user';
 
 const Encounter = () => {
   const { mobile } = useContext(LayoutContext);
   const { accentPrimary } = useContext(ThemeContext);
-  const { user } = useContext(AuthContext);
-  const { rolls, rolling, animateRoll, rollCounter } =
-    useContext(CampaignContext);
+  const {
+    combat,
+    joinedPlayers,
+    encounterPermissions,
+    activeCharacter,
+    controlledCharacterId,
+  } = useContext(EncounterContext);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -62,17 +64,11 @@ const Encounter = () => {
   const [actionSidebar, setActionSidebar] = useState(false);
   const [characterOptions, setCharacterOptions] = useState(true);
   const [historyList, setHistoryList] = useState(false);
-  const [joinedPlayers, setJoinedPlayers] = useState<string[]>([]);
-  const [initiativeComplete, setInitiativeComplete] = useState(false);
   const [itemId, setItemId] = useState<number | null>(null);
-
-  const queryClient = useQueryClient();
 
   const { map, locations, isLoading: mapLoading } = useMap(Number(mapId));
 
   const { data: campaign } = useCampaignQuery(Number(campaignId));
-
-  const setTarget = useCombatStore((state) => state.setTarget);
 
   const { data: item } = useItemQuery(itemId);
 
@@ -81,90 +77,6 @@ const Encounter = () => {
     isLoading: historyLoading,
     isPending: historyPending,
   } = useEncounterHistoryQuery(Number(encounterId));
-
-  const {
-    combat,
-    encounterPermissions,
-    controlledCharacterId,
-    setControlledCharacterId,
-    activeCharacter,
-    handleAdvanceTurn,
-    actionForm,
-    reactionForm,
-    isLoading: combatLoading,
-  } = useCombat();
-
-  useEffect(() => {
-    socket.emit('joinEncounter', {
-      room: `encounter ${encounterId}`,
-      playerId: user.id,
-    });
-
-    socket.on('playerJoined', ({ playerId, playerIdList }) => {
-      console.log(`player ${playerId} joined encounter ${encounterId}`);
-      setJoinedPlayers(playerIdList);
-    });
-
-    socket.on('playerLeft', ({ playerId, playerIdList }) => {
-      console.log(`player ${playerId} left encounter ${encounterId}`);
-      setJoinedPlayers(playerIdList);
-    });
-
-    socket.on('initiativeRoll', (rollsArray) => {
-      const rolls = new Map(rollsArray) as Map<number, any>;
-
-      animateRoll(rolls);
-    });
-
-    socket.on('actionRoll', ({ encounterId, rollsArray, targetId }) => {
-      setTarget(targetId);
-
-      const rolls = new Map(rollsArray) as Map<number, any>;
-
-      animateRoll(rolls);
-
-      setTimeout(() => {
-        queryClient.invalidateQueries({
-          queryKey: ['encounter', encounterId],
-        });
-        queryClient.invalidateQueries({
-          queryKey: ['encounterHistory', encounterId],
-        });
-      }, 3000);
-    });
-
-    socket.on('reactionRoll', async ({ encounterId, rollsArray, targetId }) => {
-      if (targetId) {
-        // setTarget(targetId);
-      }
-
-      const rolls = new Map(rollsArray) as Map<number, any>;
-
-      await animateRoll(rolls);
-
-      setTimeout(() => {
-        queryClient.invalidateQueries({
-          queryKey: ['encounter', encounterId],
-        });
-        queryClient.invalidateQueries({
-          queryKey: ['encounterHistory', encounterId],
-        });
-      }, 3000);
-    });
-
-    socket.on('navigateToEncounter', ({ encounterId, mapId, campaignId }) => {
-      navigate(
-        `glam/campaigns/${campaignId}/maps/${mapId}/encounters/${encounterId}`,
-      );
-    });
-
-    return () => {
-      socket.emit('leaveEncounter', {
-        room: `encounter ${encounterId}`,
-        playerId: user.id,
-      });
-    };
-  }, [encounterId]);
 
   const mapLayout = map?.layout.map((item) => ({
     ...item,
@@ -182,7 +94,7 @@ const Encounter = () => {
       : 0;
 
   useEffect(() => {
-    if (combat && combat.combatPhase === 'pending') {
+    if (combat && combat.combatPhase === 'initiative') {
       navigate('initiative');
     }
 
@@ -191,9 +103,7 @@ const Encounter = () => {
     }
   }, [combat]);
 
-  // const item = useCombatStore((state) => state.item);
-
-  if (mapLoading || combatLoading || historyLoading) return <Loading />;
+  if (mapLoading || historyLoading) return <Loading />;
 
   if (!map) return <h1>No Map Found</h1>;
 
@@ -203,10 +113,10 @@ const Encounter = () => {
         className={`${characterOptions ? 'gap-4' : 'gap-0'} timing grid h-full w-full max-w-8xl grid-rows-[1fr_auto] justify-center`}
       >
         <div className="bg-primary shadow-primary absolute left-1.5 top-1.5 z-10 ml-[72px] mr-auto flex flex-col items-start justify-start rounded p-1.5">
-          {joinedPlayers.map((player) => (
+          {joinedPlayers?.map((player: any) => (
             <div className="flex items-center gap-2" key={player.username}>
               <p className="text-base">{player.username}</p>
-              {campaign.ownerId === player.playerId && (
+              {campaign?.ownerId === player.playerId && (
                 <Icon path={mdiCrown} color="gold" size={0.8} />
               )}
             </div>
@@ -266,14 +176,9 @@ const Encounter = () => {
             )}
           </ReactGridLayout>
           <EncounterGrid
-            form={actionForm}
-            reactions={combat?.reactions}
-            encounterPermissions={encounterPermissions}
             map={map}
             locations={locations}
-            activeCharacterId={activeCharacter?.id}
             gridDisplay={gridDisplay}
-            rolls={rolls}
             setActionSidebar={setActionSidebar}
           />
         </div>
@@ -408,11 +313,7 @@ const Encounter = () => {
                 </>
               )}
               {combat?.combatPhase === 'action' && (
-                <ActionSidebar
-                  form={actionForm}
-                  actionSidebar={actionSidebar}
-                  activeCharacterId={activeCharacter?.id}
-                />
+                <ActionSidebar actionSidebar={actionSidebar} />
               )}
             </>
           ) : (
@@ -457,12 +358,7 @@ const Encounter = () => {
                   </>
                 )}
               {combat?.combatPhase === 'reaction' && (
-                <ReactionSidebar
-                  form={reactionForm}
-                  reactions={combat?.reactions}
-                  actionSidebar={actionSidebar}
-                  controlledCharacterId={controlledCharacterId}
-                />
+                <ReactionSidebar actionSidebar={actionSidebar} />
               )}
             </>
           )}
@@ -481,20 +377,7 @@ const Encounter = () => {
           }}
         >
           <CharacterOptions
-            form={actionForm}
-            controlledCharacterId={controlledCharacterId}
-            setControlledCharacterId={setControlledCharacterId}
-            turnPosition={combat?.turnPosition}
-            turnOrder={combat?.turnOrder}
-            reactions={combat?.reactions}
-            passes={combat?.passes}
-            combatPhase={combat?.combatPhase}
-            phaseHistory={combat?.phaseHistory[0]}
-            activeCharacter={activeCharacter}
             setActionSidebar={setActionSidebar}
-            encounterPermissions={encounterPermissions}
-            handleAdvanceTurn={handleAdvanceTurn}
-            characterId={controlledCharacterId}
             characterOptions={characterOptions}
             setItemId={setItemId}
           />
@@ -507,17 +390,6 @@ const Encounter = () => {
         <Outlet
           context={{
             campaign,
-            combat,
-            encounterPermissions,
-            joinedPlayers,
-            activeCharacter,
-            initiativeComplete,
-            rolls,
-            rolling,
-            animateRoll,
-            rollCounter,
-            handleAdvanceTurn,
-            characterIds: combat.turnOrder,
           }}
         />
       )}

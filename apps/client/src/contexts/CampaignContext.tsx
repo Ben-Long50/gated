@@ -53,12 +53,6 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
 
   const activeCampaignRef = useRef<number[]>([]);
 
-  const { rolls, rolling, animateRoll, resetRolls, rollComplete, rollCounter } =
-    useRoll();
-
-  const setTarget = useCombatStore((state) => state.setTarget);
-  const setDamage = useCombatStore((state) => state.setDamage);
-
   useEffect(() => {
     const onConnect = () => {
       console.log('Socket connected');
@@ -176,21 +170,6 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       });
     });
 
-    socket.on('advanceTurn', (encounterId) => {
-      resetRolls();
-      setDamage(null);
-      setTarget(null);
-      queryClient.invalidateQueries({
-        queryKey: ['encounter', encounterId],
-      });
-    });
-
-    socket.on('resetRolls', () => {
-      resetRolls();
-      setDamage(null);
-      setTarget(null);
-    });
-
     socket.on('disconnect', (reason) => {
       console.log('Disconnected:', reason);
     });
@@ -212,11 +191,6 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         campaigns,
         activeCampaigns,
         activeEncounters,
-        rolls,
-        rolling,
-        animateRoll,
-        rollComplete,
-        rollCounter,
       }}
     >
       {children}
