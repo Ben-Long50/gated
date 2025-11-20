@@ -2,7 +2,11 @@ import { useState } from 'react';
 import useActionsQuery from './useActionsQuery/useActionsQuery';
 import { Action } from '../types/action';
 
-const useActions = (characterActions?: Action[], initialCategory?: string) => {
+const useActions = (
+  characterActions?: Action[],
+  initialCategory?: string,
+  initialSubcategory?: string,
+) => {
   const { data: actions, isLoading, isPending } = useActionsQuery();
 
   const generalActions =
@@ -16,7 +20,9 @@ const useActions = (characterActions?: Action[], initialCategory?: string) => {
 
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState(initialCategory || '');
-  const [subCategory, setSubCategory] = useState('');
+  // const [subCategory, setSubCategory] = useState(initialSubcategory || '');
+
+  const subCategory = initialSubcategory || '';
 
   const filteredActions =
     category.length > 0
@@ -41,20 +47,6 @@ const useActions = (characterActions?: Action[], initialCategory?: string) => {
         : (list?.filter((action: Action) =>
             action.name.toLowerCase().includes(query.toLowerCase()),
           ) ?? []);
-
-  const actionLists = {
-    actions: list?.filter((action) => action.actionType === 'action'),
-    reactions: list?.filter((action) => action.actionType === 'reaction'),
-    passives: list?.filter((action) => action.actionType === 'passive'),
-    extendedActions: list?.filter(
-      (action) => action.actionType === 'extendedAction',
-    ),
-    attacks: list?.filter((action) => action.actionSubtypes.includes('attack')),
-    movements: list?.filter((action) =>
-      action.actionSubtypes.includes('movement'),
-    ),
-    uniques: list?.filter((action) => action.actionSubtypes.includes('unique')),
-  };
 
   const filterByQuery = (query: string) => {
     setQuery(query);

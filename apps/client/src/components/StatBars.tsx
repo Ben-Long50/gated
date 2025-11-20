@@ -28,11 +28,9 @@ import { useLocation } from 'react-router-dom';
 
 const StatBars = ({
   stats,
-  mode,
   cardWidth,
 }: {
   stats: Stats;
-  mode?: string;
   cardWidth: number;
 }) => {
   const { statColorMap } = useContext(ThemeContext);

@@ -1,7 +1,7 @@
 import useActions from 'src/hooks/useActions';
 import InputSelectField from '../InputSelectField';
 import useCharacter from 'src/hooks/useCharacter';
-import { FormApi } from '@tanstack/react-form';
+import { FormApi, useStore } from '@tanstack/react-form';
 import BtnRect from '../buttons/BtnRect';
 import CharacterPictureRound from '../CharacterPictureRound';
 import ActionStatBars from '../ActionStatBars';
@@ -36,29 +36,56 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
 
   const characterActions = character?.characterInventory.actions;
 
-  const {
-    filteredActions: availableActions,
-    filterBySubCategory,
-    category,
-  } = useActions(characterActions, 'action');
+  const subcategory = useStore(
+    actionForm.store,
+    (state) => state.values.actionType,
+  );
+  const item = useStore(actionForm.store, (state) => state.values.item) as Item;
+
+  const { filteredActions: availableActions, category } = useActions(
+    characterActions,
+    'action',
+    subcategory,
+  );
+
+  const filterActions = (item: Item) => {
+    const rangedActions = ['Single Shot', 'Salvo Fire'];
+    const meleeActions = ['Single Strike', 'Flurry', 'Haymaker'];
+
+    const itemActions = item.itemLinkReference?.actions || [];
+
+    if (item.keywords.some((data) => data.keyword.name === 'Ranged')) {
+      return [
+        ...availableActions.filter((action) =>
+          rangedActions.includes(action.name),
+        ),
+        ...itemActions,
+      ];
+    } else if (item.keywords.some((data) => data.keyword.name === 'Melee')) {
+      return [
+        ...availableActions.filter((action) =>
+          meleeActions.includes(action.name),
+        ),
+        ...itemActions,
+      ];
+    } else {
+      return [...itemActions];
+    }
+  };
+  const actionList = item ? filterActions(item) : availableActions;
 
   const setItem = useCombatStore((state) => state.setItem);
 
   const handleChosenItem = (action: Action) => {
-    if (action.itemLinkId) {
-      const items = queryClient
-        .getQueriesData({
-          queryKey: ['item'],
-          exact: false,
-        })
-        .map((itemInfo) => itemInfo[1]) as Item[];
+    if (action.itemLink) {
+      const item = queryClient.getQueryData([
+        'item',
+        action.itemLink.itemId,
+      ]) as Item;
 
-      const uniqueItem =
-        items.find((item) => item.id === action.itemLink?.itemId) || null;
+      setItem(item);
 
-      setItem(uniqueItem);
-
-      actionForm.setFieldValue('item', uniqueItem);
+      actionForm.setFieldValue('item', item);
     }
   };
 
@@ -108,11 +135,8 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
       <actionForm.Field
         name="actionType"
         listeners={{
-          onChange: ({ value }) => {
-            console.log(value);
-
+          onChange: () => {
             actionForm.setFieldValue('action', null);
-            filterBySubCategory(value);
           },
         }}
       >
@@ -121,9 +145,6 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
             label="Action Category"
             options={['attack', 'movement', 'unique']}
             field={field}
-            onChange={(category) => {
-              filterBySubCategory(category);
-            }}
           />
         )}
       </actionForm.Field>
@@ -152,7 +173,7 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
                   <InputSelectField
                     field={field}
                     label="Actions"
-                    options={availableActions}
+                    options={actionList}
                   />
                   {field.state.value && Object.keys(costs).length > 0 && (
                     <div className="flex w-full flex-col justify-start gap-2">

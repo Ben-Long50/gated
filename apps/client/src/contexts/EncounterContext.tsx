@@ -64,28 +64,31 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
       animateRoll(rolls);
     });
 
-    socket.on('actionRoll', ({ encounterId, rollsArray, targetId }) => {
-      setTarget(targetId);
-
-      const rolls = new Map(rollsArray) as Map<number, any>;
-
-      animateRoll(rolls);
-
-      setTimeout(() => {
-        queryClient.invalidateQueries({
-          queryKey: ['encounter', encounterId],
-        });
-        queryClient.invalidateQueries({
-          queryKey: ['encounterHistory', encounterId],
-        });
-      }, 3000);
+    socket.on('resetBoard', () => {
+      resetRolls();
+      setTarget(null);
     });
 
-    socket.on('reactionRoll', async ({ encounterId, rollsArray, targetId }) => {
+    socket.on('actionRoll', async ({ encounterId, rollsArray, targetId }) => {
       if (targetId) {
-        // setTarget(targetId);
+        setTarget(targetId);
       }
 
+      if (rollsArray) {
+        const rolls = new Map(rollsArray) as Map<number, any>;
+
+        await animateRoll(rolls);
+      }
+
+      queryClient.invalidateQueries({
+        queryKey: ['encounter', encounterId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['encounterHistory', encounterId],
+      });
+    });
+
+    socket.on('reactionRoll', async ({ encounterId, rollsArray }) => {
       const rolls = new Map(rollsArray) as Map<number, any>;
 
       await animateRoll(rolls);
@@ -104,6 +107,10 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
       navigate(
         `glam/campaigns/${campaignId}/maps/${mapId}/encounters/${encounterId}`,
       );
+    });
+
+    socket.on('changeTarget', ({ characterId }) => {
+      setTarget(characterId);
     });
 
     return () => {

@@ -183,7 +183,7 @@ const Encounter = () => {
           />
         </div>
         <div
-          className={`${characterList ? 'w-96' : 'w-[72px]'} bg-primary timing absolute left-0 top-0 z-10 flex h-full flex-col justify-start gap-3 p-3 shadow-md shadow-black`}
+          className={`${characterList ? 'w-96' : 'w-[72px]'} scrollbar-secondary-2 bg-primary timing absolute left-0 top-0 z-10 flex h-full flex-col justify-start gap-3 overflow-y-auto p-3 shadow-md shadow-black`}
           onMouseEnter={() => {
             setCharacterList(true);
             setHistoryList(true);

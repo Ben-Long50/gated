@@ -2,22 +2,21 @@ import CharacterPictureRound from '../CharacterPictureRound';
 import useCharacter from 'src/hooks/useCharacter';
 import Loading from '../Loading';
 import { ThemeContext } from 'src/contexts/ThemeContext';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import Die from './Die';
 import useCombatStore from 'src/stores/combatStore';
-import { FormApi } from '@tanstack/react-form';
 import RangeIcon from '../icons/RangeIcon';
 import { useDraggable } from '@dnd-kit/core';
-import useActions from 'src/hooks/useActions';
 import { EncounterContext } from 'src/contexts/EncounterContext';
+import { socket } from 'src/socket';
+import { useParams } from 'react-router-dom';
+import { Location } from 'src/types/map';
 
 const CharacterEncounterToken = ({
-  characterId,
-  locationId,
+  location,
   onClick,
 }: {
-  characterId: number;
-  locationId: number;
+  location: Location;
   onClick: () => boolean;
 }) => {
   const { statColorMap } = useContext(ThemeContext);
@@ -29,18 +28,25 @@ const CharacterEncounterToken = ({
     rollCounter,
     actionForm,
   } = useContext(EncounterContext);
+  const { encounterId } = useParams();
 
-  const { filteredCharacter: character, isLoading } = useCharacter(characterId);
+  const { filteredCharacter: character, isLoading } = useCharacter(
+    location.characterId,
+  );
 
-  const roll = rolls.get(characterId) || null;
+  const roll = rolls.get(location.characterId) || null;
 
   const target = useCombatStore((state) => state.target);
   const damage = useCombatStore((state) => state.damage);
 
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: `${characterId} ${locationId}`,
-    data: { characterId, locationId },
-    disabled: activeCharacter.id !== characterId,
+    id: `${location.characterId} ${location.id}`,
+    data: {
+      characterId: location.characterId,
+      locationId: location.id,
+      index: location.index,
+    },
+    disabled: activeCharacter.id !== location.characterId,
   });
 
   if (isLoading) return <Loading size={1.25} />;
@@ -50,7 +56,7 @@ const CharacterEncounterToken = ({
       {(field) => (
         <div
           ref={setNodeRef}
-          id={characterId.toString()}
+          id={location.characterId.toString()}
           className="group relative inset-0 size-12 cursor-grab touch-none rounded-full"
           style={
             transform
@@ -64,46 +70,50 @@ const CharacterEncounterToken = ({
           {...attributes}
           onClick={() => {
             if (encounterPermissions) {
-              if (field.state.value?.id === characterId) {
+              if (field.state.value?.id === location.characterId) {
                 field.handleChange(null);
+                socket.emit('changeTarget', {
+                  encounterId: Number(encounterId),
+                  characterId: null,
+                });
               } else {
                 const isInRange = onClick();
                 if (!isInRange) {
                   console.log('not in range');
                   return;
                 }
+                socket.emit('changeTarget', {
+                  encounterId: Number(encounterId),
+                  characterId: location.characterId,
+                });
                 field.handleChange(character);
               }
             }
           }}
         >
           <CharacterPictureRound
-            className={`${activeCharacter.id === character?.id && 'activeToken'} ${combat.reactions.includes(characterId) && 'reactiveToken'} group-hover:border-accent timing size-12 border-2 border-white`}
+            className={`${activeCharacter.id === character?.id && 'activeToken'} ${combat.reactions.includes(location.characterId) && 'reactiveToken'} group-hover:border-accent timing size-12 border-2 border-white`}
             character={character}
           />
-          {roll && rollCounter > 0 && combat.combatPhase !== 'initiative' && (
-            <actionForm.Subscribe selector={(state) => state.values.modifiers}>
-              {(modifiers: string[]) => (
-                <div className="absolute right-1/2 top-0 grid shrink-0 -translate-y-full translate-x-1/2 grid-cols-[repeat(3,_44px)] justify-center gap-2 pb-2">
-                  {roll?.diceArray.map((number: number, index: number) => (
-                    <Die
-                      key={index}
-                      size={44}
-                      number={number}
-                      rolling={roll.rolling}
-                      modifiers={modifiers}
-                    />
-                  ))}
-                </div>
-              )}
-            </actionForm.Subscribe>
+          {roll && combat.combatPhase !== 'initiative' && (
+            <div className="absolute right-1/2 top-0 grid shrink-0 -translate-y-full translate-x-1/2 grid-cols-[repeat(3,_44px)] justify-center gap-2 pb-2">
+              {roll?.diceArray.map((number: number, index: number) => (
+                <Die
+                  key={index}
+                  size={44}
+                  number={number}
+                  rolling={roll.rolling}
+                  modifiers={roll.modifiers}
+                />
+              ))}
+            </div>
           )}
           {target === character?.id && damage !== null && (
             <h2 className="damage text-shadow absolute top-0 flex w-full -translate-y-full justify-center pb-2 text-center font-zen text-shadow-black">
               {damage ? damage : 'Miss'}
             </h2>
           )}
-          {field.state.value?.id === characterId && (
+          {field.state.value?.id === location.characterId && (
             <div className="absolute inset-0 z-10 scale-125">
               <RangeIcon
                 className="size-full"

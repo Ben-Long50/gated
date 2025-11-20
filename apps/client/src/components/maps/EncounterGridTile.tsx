@@ -114,8 +114,7 @@ const EncounterGridTile = ({
         characterLocations.map((location) => (
           <CharacterEncounterToken
             key={location.characterId}
-            characterId={location.characterId}
-            locationId={location.id}
+            location={location}
             onClick={() =>
               isInRange(
                 activeCoordinates,

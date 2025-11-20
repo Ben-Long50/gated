@@ -58,7 +58,7 @@ const PhaseActionCard = ({ phaseAction }: { phaseAction: History }) => {
             number={number}
             rolling={phaseAction?.rolling}
             rollComplete={false}
-            modifiers={[]}
+            modifiers={phaseAction.rollResult.modifiers}
           />
         ))}
       </div>

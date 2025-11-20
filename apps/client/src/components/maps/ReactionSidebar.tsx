@@ -22,7 +22,7 @@ import { useContext } from 'react';
 import { EncounterContext } from 'src/contexts/EncounterContext';
 
 const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
-  const { controlledCharacterId, reactions, reactionForm } =
+  const { combat, controlledCharacterId, reactionForm } =
     useContext(EncounterContext);
 
   const { filteredCharacter: character } = useCharacter(controlledCharacterId);
@@ -50,7 +50,7 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
         />
       )}
       <>
-        {reactions.includes(controlledCharacterId) && (
+        {combat.reactions.includes(controlledCharacterId) && (
           <>
             <div className="flex items-center justify-between gap-2">
               <ArrowHeader3

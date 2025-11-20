@@ -8,13 +8,11 @@ import Die6Icon from '../icons/Die6Icon';
 const Die = ({
   number,
   rolling,
-  rollComplete,
   size,
   modifiers,
 }: {
   number: number;
   rolling: boolean;
-  rollComplete: boolean;
   size: number;
   modifiers: string[];
 }) => {
@@ -27,7 +25,7 @@ const Die = ({
     case 1:
       die = (
         <Die1Icon
-          className={`${!rolling && modifiers.includes('dooming') ? 'fill-red-500' : 'fill-zinc-600 dark:fill-gray-200'} h-full w-full`}
+          className={`${modifiers.includes('dooming') ? 'fill-red-500' : 'fill-zinc-600 dark:fill-gray-200'} h-full w-full`}
         />
       );
       break;
@@ -44,21 +42,21 @@ const Die = ({
     case 4:
       die = (
         <Die4Icon
-          className={`${!rolling && lucky ? 'fill-green-500' : 'fill-zinc-600 dark:fill-gray-200'} h-full w-full`}
+          className={`${lucky ? 'fill-green-500' : 'fill-zinc-600 dark:fill-gray-200'} h-full w-full`}
         />
       );
       break;
     case 5:
       die = (
         <Die5Icon
-          className={`${!rolling && !unlucky ? 'fill-green-500' : 'fill-zinc-600 dark:fill-gray-200'} h-full w-full`}
+          className={`${!unlucky ? 'fill-green-500' : 'fill-zinc-600 dark:fill-gray-200'} h-full w-full`}
         />
       );
       break;
     case 6:
       die = (
         <Die6Icon
-          className={`${!rolling && modifiers.includes('booming') ? 'fill-yellow-400' : !rolling && !modifiers.includes('booming') ? 'fill-green-500' : 'fill-zinc-600 dark:fill-gray-200'} h-full w-full`}
+          className={`${modifiers.includes('booming') ? 'fill-yellow-400' : !modifiers.includes('booming') ? 'fill-green-500' : 'fill-zinc-600 dark:fill-gray-200'} h-full w-full`}
         />
       );
       break;
@@ -68,7 +66,7 @@ const Die = ({
 
   return (
     <div
-      className={`${rollComplete && 'rollComplete'} relative shrink-0 shadow-md shadow-black`}
+      className={`${!rolling && 'rollComplete'} relative shrink-0 shadow-md shadow-black`}
       style={{
         width: size,
         height: size,

@@ -24,7 +24,8 @@ const MapGrid = ({
   setActionSidebar: (value: boolean) => void;
 }) => {
   const { statColorMap } = useContext(ThemeContext);
-  const { activeCharacter, actionForm, rolls } = useContext(EncounterContext);
+  const { combat, activeCharacter, actionForm, rolls } =
+    useContext(EncounterContext);
   const { mapId } = useParams();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
@@ -71,15 +72,23 @@ const MapGrid = ({
     [activeCharacter, locations],
   );
 
-  const handleDragEnd = (e) => {
+  const handleDragEnd = (e: Event) => {
     const { over, active } = e;
+
     setActionSidebar(false);
-    if (over.data.current.inRange) {
-      actionForm.setFieldValue('locationId', active.data.current.locationId);
-      actionForm.setFieldValue('index', over.data.current.index);
-      actionForm.handleSubmit();
+    if (
+      over.data.current.index !== active.data.current.index &&
+      combat.combatPhase === 'action'
+    ) {
+      if (over.data.current.inRange) {
+        actionForm.setFieldValue('locationId', active.data.current.locationId);
+        actionForm.setFieldValue('index', over.data.current.index);
+        actionForm.handleSubmit();
+      } else {
+        alert('Not in range');
+      }
     } else {
-      alert('Not in range');
+      console.log('Action cancelled');
     }
   };
 

@@ -13,13 +13,14 @@ import useCharacterQuery from 'src/hooks/useCharacterQuery/useCharacterQuery';
 import BlockIcon from '../icons/BlockIcon';
 import ArmorIcon from '../icons/ArmorIcon';
 import Icon from '@mdi/react';
-import { mdiMinus, mdiPlus } from '@mdi/js';
+import { mdiChevronDown, mdiMinus, mdiPlus } from '@mdi/js';
 import { useForm } from '@tanstack/react-form';
 import { useContext, useState } from 'react';
 import ExpandingList from '../ExpandingList';
 import useEditBlockMutation from 'src/hooks/item stat hooks/useEditBlockMutation/useEditBlockMutation';
 import { EncounterContext } from 'src/contexts/EncounterContext';
 import useCombatStore from 'src/stores/combatStore';
+import { Item } from 'src/types/item';
 
 const ActionQueueModal = () => {
   const { combat, encounterPermissions, resetRolls } =
@@ -28,6 +29,7 @@ const ActionQueueModal = () => {
   const navigate = useNavigate();
   const { campaignId, encounterId } = useParams();
   const [listExpanded, setListExpanded] = useState(false);
+  const [blockDataIndex, setBlockDataIndex] = useState(0);
 
   const editBlock = useEditBlockMutation();
 
@@ -68,15 +70,22 @@ const ActionQueueModal = () => {
 
   const blockForm = useForm({
     defaultValues: {
-      armorData: armor?.map((armor) => ({ armor, blocks: 0 })),
+      blockData:
+        damage && instances
+          ? Array.from({ length: instances }, () => ({
+              damage: damage / instances,
+              blockedDamage: 0,
+              armorIds: [] as number[],
+            }))
+          : [],
     },
     onSubmit: ({ value }) => {
       console.log(value);
-      value.armorData.forEach((data) => {
-        if (data.blocks > 0) {
-          editBlock.mutate({ itemId: data.armor.id, value: -1 * data.blocks });
-        }
-      });
+      // value.armorData.forEach((data) => {
+      //   if (data.blocks > 0) {
+      //     editBlock.mutate({ itemId: data.armor.id, value: -1 * data.blocks });
+      //   }
+      // });
     },
   });
 
@@ -130,8 +139,7 @@ const ActionQueueModal = () => {
               </h2>
             </div>
           )}
-
-          {instances && (
+          {!!instances && (
             <>
               <div className="flex w-full items-center justify-between">
                 <ArrowHeader3 title="Damage Instances" />
@@ -157,106 +165,158 @@ const ActionQueueModal = () => {
           )}
           <Divider className="opacity-50" />
           {armor && armor.length > 0 && (
-            <ExpandingList
-              title="Assign Blocks"
-              className="flex flex-col items-center gap-4"
-              onClick={() => setListExpanded((prev) => !prev)}
-            >
-              {
-                <blockForm.Field name="armorData">
-                  {(field) =>
-                    field.state.value.map((_, i) => (
-                      <blockForm.Field key={i} name={`armorData[${i}]`}>
-                        {(subField) => (
-                          <div className="flex w-full items-center gap-8">
-                            <ItemCardExpanding
-                              expanded={listExpanded}
-                              itemId={subField.state.value.armor.id}
-                            />
-                            <div className="flex items-center gap-4">
-                              <button
-                                className="bg-tertiary group rounded p-1 shadow-md shadow-black"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  if (subField.state.value.blocks > 0) {
-                                    subField.handleChange({
-                                      ...subField.state.value,
-                                      blocks: subField.state.value.blocks - 1,
-                                    });
-                                  }
-                                }}
-                              >
+            <blockForm.Field name="blockData">
+              {(field) => (
+                <>
+                  <div className="flex flex-wrap items-end justify-center gap-4 sm:gap-8">
+                    {field.state.value.map((_, i) => (
+                      <blockForm.Field key={i} name={`blockData[${i}]`}>
+                        {(subField) => {
+                          const blocked =
+                            subField.state.value.blockedDamage >=
+                            subField.state.value.damage;
+                          return (
+                            <div className="flex flex-col items-center justify-end gap-2">
+                              {blockDataIndex === i && (
                                 <Icon
-                                  className="text-primary group-hover:text-accent timing"
-                                  path={mdiMinus}
+                                  path={mdiChevronDown}
                                   size={1}
+                                  className="text-primary"
                                 />
-                              </button>
+                              )}
                               <button
-                                className="bg-tertiary group rounded p-1 shadow-md shadow-black"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  if (instances > subField.state.value.blocks) {
-                                    subField.handleChange({
-                                      ...subField.state.value,
-                                      blocks: subField.state.value.blocks + 1,
-                                    });
-                                  }
-                                }}
+                                onClick={() => setBlockDataIndex(i)}
+                                className={`${blocked ? 'border-green-500' : 'border-red-500'} group flex size-12 items-center justify-center rounded-full border-2`}
                               >
-                                <Icon
-                                  className="text-primary group-hover:text-accent timing"
-                                  path={mdiPlus}
-                                  size={1}
-                                />
+                                {blocked ? (
+                                  <BlockIcon className="text-primary group-hover:text-accent size-8" />
+                                ) : (
+                                  <h3 className="group-hover:text-accent timing">
+                                    {i + 1}
+                                  </h3>
+                                )}
                               </button>
-                              <BlockIcon className="text-primary size-8" />
-                              <h2 className="flex size-6 items-center justify-center">
-                                {subField.state.value.blocks}
-                              </h2>
+                              <p>
+                                {subField.state.value.blockedDamage} /{' '}
+                                {subField.state.value.damage}
+                              </p>
                             </div>
-                          </div>
-                        )}
+                          );
+                        }}
                       </blockForm.Field>
-                    ))
-                  }
-                </blockForm.Field>
-              }
-            </ExpandingList>
+                    ))}
+                  </div>
+                  <ExpandingList
+                    title="Assign Blocks"
+                    className="flex flex-col items-center gap-4"
+                    onClick={() => setListExpanded((prev) => !prev)}
+                  >
+                    {field.state.value.map(
+                      (_, i) =>
+                        blockDataIndex === i && (
+                          <blockForm.Field name={`blockData[${i}]`}>
+                            {(subField) =>
+                              armor.map((armor: Item) => {
+                                const blocking =
+                                  subField.state.value.armorIds.includes(
+                                    armor.id,
+                                  );
+
+                                const uses = field.state.value.reduce(
+                                  (sum, data) => {
+                                    if (data.armorIds.includes(armor.id)) {
+                                      return sum + 1;
+                                    } else {
+                                      return sum;
+                                    }
+                                  },
+                                  0,
+                                );
+
+                                const available = armor.stats.currentBlock
+                                  ? uses < armor.stats.currentBlock
+                                  : 0;
+
+                                return (
+                                  <div
+                                    className={`${!blocking && !available && 'opacity-50'} flex w-full items-center gap-8`}
+                                  >
+                                    <ItemCardExpanding
+                                      expanded={listExpanded}
+                                      itemId={armor.id}
+                                    />
+                                    <div className="flex items-center gap-4">
+                                      <button
+                                        className={`${blocking && 'ring-2 ring-green-500'} ${!blocking && !available && 'pointer-events-none opacity-50'} bg-tertiary group rounded p-2 shadow-md shadow-black`}
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          console.log(
+                                            subField.state.value.armorIds,
+                                            armor.id,
+                                          );
+
+                                          if (
+                                            subField.state.value.armorIds.includes(
+                                              armor.id,
+                                            )
+                                          ) {
+                                            const newArmorIds =
+                                              subField.state.value.armorIds.filter(
+                                                (id) => id !== armor.id,
+                                              );
+
+                                            subField.handleChange({
+                                              ...subField.state.value,
+                                              blockedDamage:
+                                                subField.state.value
+                                                  .blockedDamage -
+                                                armor.stats.armor,
+                                              armorIds: newArmorIds,
+                                            });
+                                          } else {
+                                            subField.handleChange({
+                                              ...subField.state.value,
+                                              blockedDamage:
+                                                subField.state.value
+                                                  .blockedDamage +
+                                                armor.stats.armor,
+                                              armorIds: [
+                                                ...subField.state.value
+                                                  .armorIds,
+                                                armor.id,
+                                              ],
+                                            });
+                                          }
+                                        }}
+                                      >
+                                        <BlockIcon className="text-primary hover:text-accent size-8" />
+                                      </button>
+                                    </div>
+                                  </div>
+                                );
+                              })
+                            }
+                          </blockForm.Field>
+                        ),
+                    )}
+                  </ExpandingList>
+                </>
+              )}
+            </blockForm.Field>
           )}
+
           {phaseAction && phaseAction.item && (
-            <blockForm.Subscribe selector={(state) => state.values.armorData}>
-              {(armorData) => {
-                const blockedDamagePerInstance = [] as number[];
-
-                const sortedArmorData = [...armorData].sort(
-                  (a, b) => a.armor.stats.armor - b.armor.stats.armor,
-                );
-
-                if (instances) {
-                  for (let i = 0; i < instances; i++) {
-                    let blockedDamage = 0;
-                    sortedArmorData.forEach((data) => {
-                      if (
-                        data.blocks > i &&
-                        blockedDamage < damage / instances
-                      ) {
-                        blockedDamage += data.armor.stats.armor;
+            <blockForm.Subscribe selector={(state) => state.values.blockData}>
+              {(blockData) => {
+                const totalBlockedDamage = blockData
+                  ? blockData.reduce((sum, data) => {
+                      if (data.blockedDamage >= data.damage) {
+                        return sum + data.damage;
+                      } else {
+                        return sum + data.blockedDamage;
                       }
-                    });
-
-                    blockedDamagePerInstance.push(
-                      blockedDamage > damage / instances
-                        ? damage / instances
-                        : blockedDamage,
-                    );
-                  }
-                }
-
-                const totalBlockedDamage = blockedDamagePerInstance.reduce(
-                  (sum, damage) => sum + damage,
-                  0,
-                );
+                    }, 0)
+                  : 0;
 
                 return (
                   <>
@@ -275,7 +335,7 @@ const ActionQueueModal = () => {
                       </div>
                     </div>
                     <div className="flex w-full items-center justify-between">
-                      <ArrowHeader3 title="Total Damage" />
+                      <ArrowHeader3 title="Final Damage" />
                       <div className="flex items-center gap-4">
                         <DamageIcon className="text-primary size-8" />
                         <h2 className="flex size-6 items-center justify-center">
@@ -296,21 +356,15 @@ const ActionQueueModal = () => {
       encounterPermissions ? (
         <BtnRect
           className="w-full"
-          ariaLabel="Close"
+          ariaLabel="Confirm action queue results"
           type="button"
           onClick={() => {
-            const armorData = blockForm
-              .getFieldValue('armorData')
-              .filter((data) => data.blocks > 0)
-              .map((data) => ({
-                armorId: data.armor.id,
-                costs: { currentBlock: data.blocks },
-              }));
+            const blockData = blockForm.getFieldValue('blockData');
 
             socket.emit('confirmActionQueueResults', {
               campaignId: Number(campaignId),
               encounterId: Number(encounterId),
-              armorData,
+              blockData,
             });
 
             socket.emit('advancePhase', {
@@ -318,8 +372,12 @@ const ActionQueueModal = () => {
               encounterId: Number(encounterId),
             });
 
+            socket.emit('resetBoard', {
+              encounterId: Number(encounterId),
+            });
             resetRolls();
             setTarget(null);
+
             navigate('..');
           }}
         >

@@ -149,6 +149,9 @@ const CharacterOptions = ({
                       encounterId: Number(encounterId),
                     });
 
+                    socket.emit('resetBoard', {
+                      encounterId: Number(encounterId),
+                    });
                     resetRolls();
                     setTarget(null);
                   }}
@@ -162,6 +165,11 @@ const CharacterOptions = ({
                   type="button"
                   onClick={() => {
                     handleAdvanceTurn();
+                    socket.emit('resetBoard', {
+                      encounterId: Number(encounterId),
+                    });
+                    resetRolls();
+                    setTarget(null);
                   }}
                 >
                   Pass Turn

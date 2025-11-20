@@ -31,14 +31,22 @@ const useCombat = () => {
     combat?.turnOrder[combat?.turnPosition],
   );
 
-  const [controlledCharacterId, setControlledCharacterId] = useState(
-    gameMaster
-      ? activeCharacter?.id
-      : combat?.characters.find(
-          (character: Character) =>
-            character.userId === user.id && character.playerCharacter,
-        )?.id,
-  );
+  const [controlledCharacterId, setControlledCharacterId] = useState<
+    number | undefined
+  >(undefined);
+
+  useEffect(() => {
+    if (combat?.characters) {
+      setControlledCharacterId(
+        gameMaster
+          ? activeCharacter?.id
+          : combat?.characters.find(
+              (character: Character) =>
+                character.userId === user.id && character.playerCharacter,
+            )?.id,
+      );
+    }
+  }, [combat?.characters]);
 
   const { filteredCharacter: controlledCharacter } = useCharacter(
     controlledCharacterId,

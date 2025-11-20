@@ -57,9 +57,9 @@ const EquippedItems = ({
             onWheel={handleWheel}
             style={{ overscrollBehavior: 'contain' }}
           >
-            {equipmentList.map((equipment, index) => (
+            {equipmentList.map((equipment) => (
               <button
-                key={index}
+                key={equipment.id}
                 className={`${!equipment.available && 'pointer-events-none'} relative size-20 shrink-0 overflow-hidden rounded border-2 sm:size-28`}
                 style={{
                   borderColor:
@@ -114,6 +114,7 @@ const EquippedItems = ({
                     if (setItemId) {
                       setItemId(null);
                     }
+                    actionForm.reset();
                     setRange(null, null);
                   }
                   if (field.state.value) {
