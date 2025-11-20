@@ -11,7 +11,7 @@ var __rest = (this && this.__rest) || function (s, e) {
 };
 import prisma from '../config/database.js';
 import itemServices from './itemServices.js';
-import { applyDamage, calculateActionQueueSuccesses, calculateBlockedDamage, calculateCosts, calculateDamage, } from '../utils/rollUtilities.js';
+import { applyDamage, calculateActionQueueSuccesses, calculateCosts, calculateDamage, } from '../utils/rollUtilities.js';
 const encounterServices = {
     getEncounters: async (campaignId) => {
         try {
@@ -367,7 +367,7 @@ const encounterServices = {
             throw new Error('Failed to advance turn');
         }
     },
-    confirmActionQueueResults: async (encounterId, armorData) => {
+    confirmActionQueueResults: async (encounterId, blockData) => {
         var _a;
         try {
             const encounter = await prisma.encounter.findUnique({
@@ -413,27 +413,35 @@ const encounterServices = {
             if ((_a = phaseHistory.action) === null || _a === void 0 ? void 0 : _a.rollResult) {
                 const successes = calculateActionQueueSuccesses(encounter === null || encounter === void 0 ? void 0 : encounter.phaseHistory[0]);
                 const { damage, instances } = calculateDamage(phaseHistory.action.item, phaseHistory.action.action, successes);
-                let blockedDamage = 0;
-                if (armorData) {
-                    for (const data of armorData) {
-                        const armor = await itemServices.getItemById(data.armorId);
-                        await calculateCosts(undefined, armor, data);
-                        armorData = armorData.map((data) => {
-                            if (data.armorId === armor.id) {
-                                return { armor, blocks: data.costs.currentBlock };
+                let blockedDamage = blockData.reduce((sum, data) => sum + data.blockedDamage, 0);
+                const armorCosts = new Map();
+                if (blockData) {
+                    for (const data of blockData) {
+                        data.armorIds.forEach((id) => {
+                            const currentValue = armorCosts.get(id);
+                            if (currentValue) {
+                                armorCosts.set(id, currentValue + 1);
                             }
                             else {
-                                return Object.assign({}, data);
+                                armorCosts.set(id, 1);
                             }
                         });
                     }
-                    blockedDamage = calculateBlockedDamage(damage, instances, armorData);
+                    for (const id of armorCosts.keys()) {
+                        const armor = await itemServices.getItemById(id);
+                        await calculateCosts(undefined, armor, {
+                            costs: {
+                                currentBlock: armorCosts.get(id),
+                            },
+                        });
+                    }
                 }
+                const finalDamage = damage - blockedDamage > 0 ? damage - blockedDamage : 0;
                 if (phaseHistory.action.target) {
-                    await applyDamage(phaseHistory.action.target, damage - blockedDamage);
+                    await applyDamage(phaseHistory.action.target, finalDamage);
                     return {
                         targetId: phaseHistory.action.target.id,
-                        armorIds: armorData ? armorData.map((data) => data.armor.id) : [],
+                        armorIds: Array.from(armorCosts.keys()) || [],
                     };
                 }
             }

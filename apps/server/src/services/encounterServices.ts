@@ -394,7 +394,7 @@ const encounterServices = {
 
   confirmActionQueueResults: async (
     encounterId: number,
-    armorData: { armorId: number; costs: object }[],
+    blockData: { damage: number; blockedDamage: number; armorIds: number[] }[],
   ) => {
     try {
       const encounter = await prisma.encounter.findUnique({
@@ -451,29 +451,43 @@ const encounterServices = {
           successes,
         );
 
-        let blockedDamage = 0;
+        let blockedDamage = blockData.reduce(
+          (sum, data) => sum + data.blockedDamage,
+          0,
+        );
 
-        if (armorData) {
-          for (const data of armorData) {
-            const armor = await itemServices.getItemById(data.armorId);
-            await calculateCosts(undefined, armor, data);
-            armorData = armorData.map((data) => {
-              if (data.armorId === armor.id) {
-                return { armor, blocks: data.costs.currentBlock };
+        const armorCosts = new Map();
+
+        if (blockData) {
+          for (const data of blockData) {
+            data.armorIds.forEach((id) => {
+              const currentValue = armorCosts.get(id);
+              if (currentValue) {
+                armorCosts.set(id, currentValue + 1);
               } else {
-                return { ...data };
+                armorCosts.set(id, 1);
               }
             });
           }
 
-          blockedDamage = calculateBlockedDamage(damage, instances, armorData);
+          for (const id of armorCosts.keys()) {
+            const armor = await itemServices.getItemById(id);
+            await calculateCosts(undefined, armor, {
+              costs: {
+                currentBlock: armorCosts.get(id),
+              },
+            });
+          }
         }
 
+        const finalDamage =
+          damage - blockedDamage > 0 ? damage - blockedDamage : 0;
+
         if (phaseHistory.action.target) {
-          await applyDamage(phaseHistory.action.target, damage - blockedDamage);
+          await applyDamage(phaseHistory.action.target, finalDamage);
           return {
             targetId: phaseHistory.action.target.id,
-            armorIds: armorData ? armorData.map((data) => data.armor.id) : [],
+            armorIds: Array.from(armorCosts.keys()) || [],
           };
         }
       }

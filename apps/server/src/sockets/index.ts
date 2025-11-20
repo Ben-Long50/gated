@@ -175,6 +175,19 @@ export function setupSocketIO(io: Server) {
         .emit('navigateToEncounter', { encounterId, mapId, campaignId });
     });
 
+    socket.on('changeTarget', ({ encounterId, characterId }) => {
+      io.to(`encounter ${encounterId}`).emit('changeTarget', { characterId });
+
+      console.log(
+        `Broadcasted change target ${characterId} to encounter ${encounterId}`,
+      );
+    });
+
+    socket.on('resetBoard', ({ encounterId }) => {
+      socket.to(`encounter ${encounterId}`).emit('resetBoard');
+      console.log(`Broadcasted reset board to encounter ${encounterId}`);
+    });
+
     socket.on(
       'actionRoll',
       async ({
@@ -210,31 +223,13 @@ export function setupSocketIO(io: Server) {
             playerCharacter: activeCharacter?.playerCharacter,
             diceArray: rollResults.result,
             successes: rollResults.successes,
+            modifiers,
           });
         }
 
         const rollsArray = rollResults ? Array.from(rolls.entries()) : null;
 
         await calculateCosts(activeCharacter, item, action);
-
-        if (rollResults) {
-          io.to(`encounter ${encounterId}`).emit('actionRoll', {
-            encounterId,
-            rollsArray,
-            targetId: targetCharacter?.id || null,
-          });
-        }
-
-        io.to(campaignId).emit('character', activeCharacter.id);
-
-        if (item) {
-          await itemServices.setItemNotAvailable(item.id);
-          io.to(campaignId).emit('item', item.id);
-        }
-
-        if (targetCharacter) {
-          io.to(campaignId).emit('character', targetCharacter.id);
-        }
 
         const historyData = {
           characterId: activeCharacter.id,
@@ -262,7 +257,7 @@ export function setupSocketIO(io: Server) {
           historyData.rollResult = {
             result: rollResults.result,
             successes: rollResults.successes,
-            modifiers: [],
+            modifiers,
             damage,
           };
         }
@@ -277,7 +272,28 @@ export function setupSocketIO(io: Server) {
 
         await encounterServices.setPhaseAction(encounterId, phaseAction);
 
-        io.to(campaignId).emit('encounter', encounterId);
+        if (rollResults) {
+          io.to(`encounter ${encounterId}`).emit('actionRoll', {
+            encounterId,
+            rollsArray,
+            targetId: targetCharacter?.id || null,
+          });
+        } else {
+          io.to(`encounter ${encounterId}`).emit('actionRoll', {
+            encounterId,
+          });
+        }
+
+        io.to(campaignId).emit('character', activeCharacter.id);
+
+        if (item) {
+          await itemServices.setItemNotAvailable(item.id);
+          io.to(campaignId).emit('item', item.id);
+        }
+
+        if (targetCharacter) {
+          io.to(campaignId).emit('character', targetCharacter.id);
+        }
 
         console.log(`Broadcasted action roll to encounter ${encounterId}`);
       },
@@ -423,16 +439,18 @@ export function setupSocketIO(io: Server) {
 
     socket.on(
       'confirmActionQueueResults',
-      async ({ campaignId, encounterId, armorData }) => {
+      async ({ campaignId, encounterId, blockData }) => {
         const { targetId, armorIds } =
           await encounterServices.confirmActionQueueResults(
             encounterId,
-            armorData,
+            blockData,
           );
 
         if (targetId) {
           io.to(campaignId).emit('character', targetId);
         }
+
+        console.log(armorIds);
 
         if (armorIds.length > 0) {
           for (const itemId of armorIds) {
