@@ -17,7 +17,7 @@ import { mdiChevronDown, mdiMinus, mdiPlus } from '@mdi/js';
 import { useForm } from '@tanstack/react-form';
 import { useContext, useState } from 'react';
 import ExpandingList from '../ExpandingList';
-import useEditBlockMutation from 'src/hooks/item stat hooks/useEditBlockMutation/useEditBlockMutation';
+import useEditBlockMutation from 'src/hooks/item stat hooks/useItemStatMutation/useItemStatMutation';
 import { EncounterContext } from 'src/contexts/EncounterContext';
 import useCombatStore from 'src/stores/combatStore';
 import { Item } from 'src/types/item';

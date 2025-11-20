@@ -1,19 +1,14 @@
 import { ReactNode, useContext } from 'react';
-import { UseMutationResult } from '@tanstack/react-query';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 
 const BtnControl = ({
   title,
   icon,
   mutation,
-  itemId,
-  value,
 }: {
   title: string;
   icon: ReactNode;
-  mutation?: UseMutationResult | null;
-  itemId?: number;
-  value?: number;
+  mutation?: (() => void) | null;
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
 
@@ -25,11 +20,7 @@ const BtnControl = ({
         e.preventDefault();
         e.stopPropagation();
         if (mutation) {
-          if (value) {
-            mutation.mutate({ itemId, value });
-          } else {
-            mutation.mutate(undefined);
-          }
+          mutation();
         }
       }}
     >
