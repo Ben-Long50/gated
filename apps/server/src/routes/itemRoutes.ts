@@ -48,63 +48,9 @@ router.put(
 );
 
 router.patch(
-  '/items/:itemId/stats/currentAmmoCount',
+  '/items/:itemId/stats',
   authentication.authenticate,
-  itemStatController.editItemAmmo,
-);
-
-router.patch(
-  '/items/:itemId/stats/currentMagCount',
-  authentication.authenticate,
-  itemStatController.reloadItem,
-);
-
-router.patch(
-  '/items/:itemId/stats/refreshAmmo',
-  authentication.authenticate,
-  itemStatController.refreshAmmo,
-);
-
-router.patch(
-  '/items/:itemId/stats/currentBlock',
-  authentication.authenticate,
-  itemStatController.editItemBlock,
-);
-
-router.patch(
-  '/items/:itemId/stats/refreshBlock',
-  authentication.authenticate,
-  itemStatController.refreshItemBlock,
-);
-
-router.patch(
-  '/items/:itemId/stats/currentPower',
-  authentication.authenticate,
-  itemStatController.editItemPower,
-);
-
-router.patch(
-  '/items/:itemId/stats/refreshPower',
-  authentication.authenticate,
-  itemStatController.refreshItemPower,
-);
-
-router.patch(
-  '/items/:itemId/stats/currentHull',
-  authentication.authenticate,
-  itemStatController.editItemHull,
-);
-
-router.patch(
-  '/items/:itemId/stats/currentCargo',
-  authentication.authenticate,
-  itemStatController.editItemCargo,
-);
-
-router.patch(
-  '/items/:itemId/stats/currentPass',
-  authentication.authenticate,
-  itemStatController.editItemPass,
+  itemStatController.editItemStat,
 );
 
 router.delete(

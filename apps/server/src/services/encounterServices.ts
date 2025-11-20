@@ -4,10 +4,10 @@ import itemServices from './itemServices.js';
 import {
   applyDamage,
   calculateActionQueueSuccesses,
-  calculateBlockedDamage,
   calculateCosts,
   calculateDamage,
 } from '../utils/rollUtilities.js';
+1;
 
 const encounterServices = {
   getEncounters: async (campaignId: number) => {

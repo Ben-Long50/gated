@@ -15,6 +15,7 @@ const characterStatServices = {
       }
 
       const statsObject = character.stats as Record<string, number>;
+
       let adjustedValues = Object.fromEntries(
         Object.entries(value).map(([stat, value]) => [
           stat,

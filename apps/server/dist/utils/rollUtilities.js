@@ -85,55 +85,6 @@ export const calculateDamage = (item, action, successes) => {
     }
     return { damage, instances };
 };
-export const calculateBlockedDamage = (damage, instances, armorData) => {
-    const blockedDamagePerInstance = [];
-    const sortedArmorData = [...armorData].sort((a, b) => a.armor.stats.armor - b.armor.stats.armor);
-    if (instances) {
-        for (let i = 0; i < instances; i++) {
-            let blockedDamage = 0;
-            sortedArmorData.forEach((data) => {
-                if (data.blocks > i && blockedDamage < damage / instances) {
-                    blockedDamage += data.armor.stats.armor;
-                }
-            });
-            blockedDamagePerInstance.push(blockedDamage > damage / instances ? damage / instances : blockedDamage);
-        }
-    }
-    const totalBlockedDamage = blockedDamagePerInstance.reduce((sum, damage) => sum + damage, 0);
-    return totalBlockedDamage;
-};
-export const calculateArmorDamage = async (item, target, instances) => {
-    var _a;
-    const equippedArmor = target.characterInventory.items.filter((item) => item.itemTypes.includes('armor') && item.equipped);
-    const sortedArmor = equippedArmor
-        .filter((armor) => armor.stats.armor && armor.stats.currentBlock)
-        .sort((a, b) => b.stats.armor - a.stats.armor);
-    const sortedWardArmor = equippedArmor
-        .filter((armor) => armor.stats.ward && armor.stats.currentBlock)
-        .sort((a, b) => b.stats.ward - a.stats.ward);
-    const requiredArmor = (_a = item.stats) === null || _a === void 0 ? void 0 : _a.damage;
-    const selectedArmor = [];
-    let index = 0;
-    let totalSelectedArmorValue = 0;
-    while (totalSelectedArmorValue < requiredArmor &&
-        index < sortedArmor.length) {
-        totalSelectedArmorValue += sortedArmor[index].stats.armor;
-        selectedArmor.push(sortedArmor[index]);
-        index++;
-    }
-    const overflowDamage = requiredArmor > totalSelectedArmorValue
-        ? requiredArmor - totalSelectedArmorValue
-        : 0;
-    const itemPromises = [];
-    for (const armor of selectedArmor) {
-        itemPromises.push(itemStatServices.editItemBlock(armor.id, instances * -1, armor.userId));
-    }
-    await Promise.all(itemPromises);
-    return {
-        armorIds: selectedArmor.map((armor) => armor.id),
-        overflowDamage,
-    };
-};
 export const calculateCosts = async (character, item, action) => {
     const costs = action
         ? action.name === 'Salvo Fire'

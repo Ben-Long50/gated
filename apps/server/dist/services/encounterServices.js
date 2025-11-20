@@ -12,6 +12,7 @@ var __rest = (this && this.__rest) || function (s, e) {
 import prisma from '../config/database.js';
 import itemServices from './itemServices.js';
 import { applyDamage, calculateActionQueueSuccesses, calculateCosts, calculateDamage, } from '../utils/rollUtilities.js';
+1;
 const encounterServices = {
     getEncounters: async (campaignId) => {
         try {
