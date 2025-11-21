@@ -1,6 +1,6 @@
 import prisma from '../config/database';
 
-const updateActionStats = async () => {
+const updateCharacterStats = async () => {
   const characters = await prisma.character.findMany({});
 
   for (let character of characters) {
@@ -8,25 +8,6 @@ const updateActionStats = async () => {
       ...character.stats,
       currentActions: 3,
       currentReactions: 1,
-    };
-    console.log(character.stats);
-
-    await prisma.character.update({
-      where: { id: character.id },
-      data: { stats },
-    });
-    console.log(`Updated ${character.firstName}`);
-  }
-};
-
-// updateActionStats();
-
-const updateHandsStats = async () => {
-  const characters = await prisma.character.findMany({});
-
-  for (let character of characters) {
-    const stats = {
-      ...character.stats,
       currentHands: 2,
     };
 
@@ -38,7 +19,7 @@ const updateHandsStats = async () => {
   }
 };
 
-// updateHandsStats();
+// updateCharacterStats();
 
 const updateActionCosts = async () => {
   const actions = await prisma.action.findMany({});
@@ -69,3 +50,21 @@ const updateActionCosts = async () => {
 };
 
 // updateActionCosts();
+
+const updateCampaignDates = async () => {
+  const campaigns = await prisma.campaign.findMany({});
+
+  for (let campaign of campaigns) {
+    await prisma.campaign.update({
+      where: { id: campaign.id },
+      data: {
+        date: { month: 'arctus', day: 1 },
+        time: { hour: 1, minute: 1, second: 1 },
+      },
+    });
+
+    console.log(`Updated ${campaign.name}`);
+  }
+};
+
+// updateCampaignDates();
