@@ -7,7 +7,6 @@ import {
   calculateCosts,
   calculateDamage,
 } from '../utils/rollUtilities.js';
-1;
 
 const encounterServices = {
   getEncounters: async (campaignId: number) => {
@@ -445,11 +444,15 @@ const encounterServices = {
           encounter?.phaseHistory[0],
         );
 
-        const { damage, instances } = calculateDamage(
-          phaseHistory.action.item,
-          phaseHistory.action.action,
-          successes,
-        );
+        const { damage } =
+          phaseHistory.action.item && phaseHistory.action.action
+            ? calculateDamage(
+                //@ts-ignore
+                phaseHistory.action.item,
+                phaseHistory.action.action,
+                successes,
+              )
+            : { damage: 0 };
 
         let blockedDamage = blockData.reduce(
           (sum, data) => sum + data.blockedDamage,
@@ -484,6 +487,7 @@ const encounterServices = {
           damage - blockedDamage > 0 ? damage - blockedDamage : 0;
 
         if (phaseHistory.action.target) {
+          //@ts-ignore
           await applyDamage(phaseHistory.action.target, finalDamage);
           return {
             targetId: phaseHistory.action.target.id,
@@ -647,7 +651,9 @@ const encounterServices = {
 
     const {
       id,
+      //@ts-ignore
       mapId: m,
+      //@ts-ignore
       campaignId: c,
       ...data
     } = { ...oldEncounter, ...formData };

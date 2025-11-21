@@ -258,7 +258,7 @@ export function setupSocketIO(io: Server) {
             result: rollResults.result,
             successes: rollResults.successes,
             modifiers,
-            damage,
+            damage: damage || 0,
           };
         }
 

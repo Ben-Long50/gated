@@ -94,7 +94,7 @@ const itemController = {
         const parsedBody = parseRequestBody(req.body);
 
         const character = await characterServices.getCharacterById(
-          req.params.characterId,
+          Number(req.params.characterId),
         );
 
         if (!character) {

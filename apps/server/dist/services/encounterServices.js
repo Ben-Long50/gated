@@ -12,7 +12,6 @@ var __rest = (this && this.__rest) || function (s, e) {
 import prisma from '../config/database.js';
 import itemServices from './itemServices.js';
 import { applyDamage, calculateActionQueueSuccesses, calculateCosts, calculateDamage, } from '../utils/rollUtilities.js';
-1;
 const encounterServices = {
     getEncounters: async (campaignId) => {
         try {
@@ -413,7 +412,11 @@ const encounterServices = {
             }
             if ((_a = phaseHistory.action) === null || _a === void 0 ? void 0 : _a.rollResult) {
                 const successes = calculateActionQueueSuccesses(encounter === null || encounter === void 0 ? void 0 : encounter.phaseHistory[0]);
-                const { damage, instances } = calculateDamage(phaseHistory.action.item, phaseHistory.action.action, successes);
+                const { damage } = phaseHistory.action.item && phaseHistory.action.action
+                    ? calculateDamage(
+                    //@ts-ignore
+                    phaseHistory.action.item, phaseHistory.action.action, successes)
+                    : { damage: 0 };
                 let blockedDamage = blockData.reduce((sum, data) => sum + data.blockedDamage, 0);
                 const armorCosts = new Map();
                 if (blockData) {
@@ -439,6 +442,7 @@ const encounterServices = {
                 }
                 const finalDamage = damage - blockedDamage > 0 ? damage - blockedDamage : 0;
                 if (phaseHistory.action.target) {
+                    //@ts-ignore
                     await applyDamage(phaseHistory.action.target, finalDamage);
                     return {
                         targetId: phaseHistory.action.target.id,
@@ -549,7 +553,11 @@ const encounterServices = {
                 where: { id: formData === null || formData === void 0 ? void 0 : formData.id },
             })
             : {};
-        const _a = Object.assign(Object.assign({}, oldEncounter), formData), { id, mapId: m, campaignId: c } = _a, data = __rest(_a, ["id", "mapId", "campaignId"]);
+        const _a = Object.assign(Object.assign({}, oldEncounter), formData), { id, 
+        //@ts-ignore
+        mapId: m, 
+        //@ts-ignore
+        campaignId: c } = _a, data = __rest(_a, ["id", "mapId", "campaignId"]);
         try {
             const encounter = await prisma.encounter.upsert({
                 where: { id: (formData === null || formData === void 0 ? void 0 : formData.id) || 0 },

@@ -161,7 +161,7 @@ export function setupSocketIO(io) {
                     result: rollResults.result,
                     successes: rollResults.successes,
                     modifiers,
-                    damage,
+                    damage: damage || 0,
                 };
             }
             const phaseAction = await encounterServices.createEncounterHistory(campaignId, encounterId, historyData);

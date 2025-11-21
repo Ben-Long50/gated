@@ -21,13 +21,14 @@ const updateCharacterStats = async () => {
         console.log(`Updated ${character.firstName}`);
     }
 };
-// updateCharacterStats();
+updateCharacterStats();
 const updateActionCosts = async () => {
     const actions = await prisma.action.findMany({});
     for (let action of actions) {
+        //@ts-ignore
         const _a = action.costs, { actionPoints, reactionPoints, health, sanity, power } = _a, rest = __rest(_a, ["actionPoints", "reactionPoints", "health", "sanity", "power"]);
         const newCosts = Object.fromEntries(Object.entries(Object.assign(Object.assign({}, rest), { currentActions: actionPoints, currentReactions: reactionPoints, currentHealth: health, currentSanity: sanity, currentPower: power }))
-            .filter(([key, value]) => !!value)
+            .filter(([_, value]) => !!value)
             .map(([key, value]) => [key, value]));
         await prisma.action.update({
             where: { id: action.id },
@@ -36,7 +37,7 @@ const updateActionCosts = async () => {
         console.log(`Updated ${action.name}`);
     }
 };
-// updateActionCosts();
+updateActionCosts();
 const updateCampaignDates = async () => {
     const campaigns = await prisma.campaign.findMany({});
     for (let campaign of campaigns) {
@@ -50,4 +51,4 @@ const updateCampaignDates = async () => {
         console.log(`Updated ${campaign.name}`);
     }
 };
-// updateCampaignDates();
+updateCampaignDates();

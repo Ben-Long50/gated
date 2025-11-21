@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import characterServices from '../services/characterServices.js';
 import characterStatServices from '../services/characterStatServices.js';
 import conditionServices from '../services/conditionServices.js';

@@ -31,7 +31,7 @@ const characterController = {
     },
     getCharacterById: async (req, res) => {
         try {
-            const character = await characterServices.getCharacterById(req.params.characterId);
+            const character = await characterServices.getCharacterById(Number(req.params.characterId));
             res.status(200).json(character);
         }
         catch (error) {

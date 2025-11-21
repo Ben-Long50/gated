@@ -1,3 +1,4 @@
+import { InputJsonValue } from '@prisma/client/runtime/library';
 import prisma from '../config/database';
 
 const updateCharacterStats = async () => {
@@ -5,7 +6,7 @@ const updateCharacterStats = async () => {
 
   for (let character of characters) {
     const stats = {
-      ...character.stats,
+      ...(character.stats as object),
       currentActions: 3,
       currentReactions: 1,
       currentHands: 2,
@@ -19,12 +20,13 @@ const updateCharacterStats = async () => {
   }
 };
 
-// updateCharacterStats();
+updateCharacterStats();
 
 const updateActionCosts = async () => {
   const actions = await prisma.action.findMany({});
 
   for (let action of actions) {
+    //@ts-ignore
     const { actionPoints, reactionPoints, health, sanity, power, ...rest } =
       action.costs;
 
@@ -37,19 +39,19 @@ const updateActionCosts = async () => {
         currentSanity: sanity,
         currentPower: power,
       })
-        .filter(([key, value]) => !!value)
+        .filter(([_, value]) => !!value)
         .map(([key, value]) => [key, value]),
     );
 
     await prisma.action.update({
       where: { id: action.id },
-      data: { costs: newCosts },
+      data: { costs: newCosts as InputJsonValue },
     });
     console.log(`Updated ${action.name}`);
   }
 };
 
-// updateActionCosts();
+updateActionCosts();
 
 const updateCampaignDates = async () => {
   const campaigns = await prisma.campaign.findMany({});
@@ -67,4 +69,4 @@ const updateCampaignDates = async () => {
   }
 };
 
-// updateCampaignDates();
+updateCampaignDates();

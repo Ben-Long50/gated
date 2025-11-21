@@ -62,7 +62,7 @@ const characterServices = {
         try {
             const character = await prisma.character.findUnique({
                 where: {
-                    id: Number(characterId),
+                    id: characterId,
                 },
                 include: {
                     campaign: {

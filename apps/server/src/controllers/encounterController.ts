@@ -24,7 +24,7 @@ const encounterController = {
   getEncounterById: async (req: Request, res: Response) => {
     try {
       const encounter = await encounterServices.getEncounterById(
-        req.params.encounterId,
+        Number(req.params.encounterId),
       );
       res.status(200).json(encounter);
     } catch (error: any) {
