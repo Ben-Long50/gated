@@ -131,7 +131,6 @@ const ItemCardBorderless = ({
             handleMenu(e);
           }}
         >
-          {menu && <ItemRadialMenu item={item} containerRef={containerRef} />}
           <div
             className={`${cardType === 'small' ? 'flex-col' : 'max-h-[300px] flex-row'} my-auto flex w-full gap-8`}
             onClick={
@@ -154,17 +153,6 @@ const ItemCardBorderless = ({
                 <div className="flex w-full items-center gap-4">
                   <div className="flex items-center justify-between gap-4">
                     <ArrowHeader2 title={item?.name} />
-                    {item.baseItemId && (
-                      <Link
-                        className="timing group ml-auto flex items-center gap-4 py-2"
-                        to={`/glam/codex/${item.itemTypes[0]}s/${item.baseItemId}`}
-                      >
-                        <Icon
-                          path={mdiLinkBoxVariantOutline}
-                          className="group-hover:text-accent timing text-tertiary size-8 shrink-0"
-                        />
-                      </Link>
-                    )}
                   </div>
                   <div className="flex grow flex-wrap items-center justify-start gap-1">
                     {item.conditions?.map((condition) => (
@@ -179,12 +167,6 @@ const ItemCardBorderless = ({
                       </Fragment>
                     ))}
                   </div>
-                </div>
-                <div className="flex grow items-start justify-end gap-4">
-                  <p>{item?.price ? item.price + 'p' : 'N/A'}</p>
-                  {parts.includes('shop') && (
-                    <CartButton character={character} itemId={item?.id} />
-                  )}
                 </div>
               </div>
               {cardType === 'small' && item.picture?.imageUrl && (

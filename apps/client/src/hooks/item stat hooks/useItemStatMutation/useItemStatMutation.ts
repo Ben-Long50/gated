@@ -2,15 +2,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRef } from 'react';
 import { Item, Stats } from 'src/types/item';
 import { socket } from 'src/socket';
-import useCombatStore from 'src/stores/combatStore';
 import editItemStat from './editItemStat';
 
 const useItemStatMutation = () => {
   const queryClient = useQueryClient();
   const updateBuffer = useRef(new Map());
   const timeoutRef = useRef(new Map());
-
-  const updateItem = useCombatStore((store) => store.updateItem);
 
   return useMutation({
     mutationFn: (data: {
@@ -45,6 +42,7 @@ const useItemStatMutation = () => {
 
           await editItemStat(data.itemId, data.stat, finalValue);
 
+          clearTimeout(timeoutRef.current.get(data.itemId));
           resolve(finalValue);
         }, 1000);
 
@@ -77,7 +75,7 @@ const useItemStatMutation = () => {
         }),
       ) as Item;
 
-      updateItem(newItemData);
+      console.log(newItemData);
 
       return { prevItemData };
     },
