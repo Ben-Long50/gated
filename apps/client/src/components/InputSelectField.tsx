@@ -137,7 +137,7 @@ const InputSelectField = ({
   return (
     <div
       ref={selectRef}
-      className={`${className} ${focus ? 'z-50' : 'z-10'} timing relative flex w-full items-center`}
+      className={`${className} timing relative flex w-full items-center`}
     >
       <ThemeContainer
         className="grow"
@@ -160,12 +160,12 @@ const InputSelectField = ({
         />
         <label
           htmlFor={name}
-          className={` ${errors?.length > 0 ? 'text-error' : ''} ${isTouched ? 'bg-primary text-accent -translate-y-6' : 'text-gray-400'} timing absolute left-5 top-3.5 z-20 transform cursor-text transition-all`}
+          className={` ${errors?.length > 0 ? 'text-error' : ''} ${isTouched ? 'bg-primary text-accent -translate-y-6' : 'text-gray-400'} timing absolute left-5 top-3.5 transform cursor-text transition-all`}
         >
           {label}
         </label>
         <div
-          className={`${focus ? 'max-h-96 py-3' : 'max-h-0'} ${!reverse ? 'top-full translate-y-2' : 'bottom-full -translate-y-5'} bg-secondary timing absolute left-0 flex w-full flex-col items-start overflow-hidden rounded-md px-3 shadow-lg shadow-zinc-950`}
+          className={`${focus ? 'max-h-96 py-3' : 'max-h-0'} ${!reverse ? 'top-full translate-y-2' : 'bottom-full -translate-y-5'} bg-secondary timing absolute left-0 z-10 flex w-full flex-col items-start overflow-hidden rounded-md px-3 shadow-lg shadow-zinc-950`}
         >
           <div className="flex w-full items-center gap-4">
             <InputFieldBasic

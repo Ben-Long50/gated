@@ -11,6 +11,9 @@ const calculateDiceCount = (
   modifiers: string[],
   extraDice?: number,
 ) => {
+  if (!action.roll || action.roll.length === 0) {
+    return { diceCount: 'N/A' };
+  }
   const calculatedRolls =
     action.roll?.map((roll) => {
       const attributePoints =

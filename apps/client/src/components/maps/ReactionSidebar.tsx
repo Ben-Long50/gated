@@ -199,6 +199,8 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
               ]}
             >
               {([reaction, modifiers]) => {
+                console.log(reaction);
+
                 const diceCount =
                   character && reaction && modifiers
                     ? calculateDiceCount(
