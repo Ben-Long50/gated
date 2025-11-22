@@ -32,7 +32,7 @@ router.post(
     res.cookie('token', req.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'none',
       maxAge: 1000 * 60 * 60 * 24,
     });
     res.status(200).json({
@@ -67,7 +67,7 @@ router.get(
     res.cookie('token', req.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'none',
       maxAge: 1000 * 60 * 60 * 24,
     });
     const redirectUrl = `${process.env.CLIENT_URL}/glam/codex`;
@@ -88,7 +88,7 @@ router.get(
     res.cookie('token', req.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'none',
       maxAge: 1000 * 60 * 60 * 24,
     });
     const redirectUrl = `${process.env.CLIENT_URL}/glam/codex`;
