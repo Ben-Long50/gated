@@ -12,20 +12,16 @@ import { mdiCrown } from '@mdi/js';
 import { socket } from 'src/socket';
 import useCreateCombatMutation from 'src/hooks/combat hooks/useCreateCombatMutation/useCreateCombatMutation';
 import { EncounterContext } from 'src/contexts/EncounterContext';
+import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 
 const InitiativeModal = () => {
   const { gameMaster } = useContext(CampaignContext);
-  const {
-    combat,
-    campaign,
-    joinedPlayers,
-    rolls,
-    rolling,
-    rollCounter,
-    resetRolls,
-  } = useContext(EncounterContext);
+  const { combat, joinedPlayers, rolls, rolling, rollCounter, resetRolls } =
+    useContext(EncounterContext);
 
   const { campaignId, mapId, encounterId } = useParams();
+
+  const { data: campaign } = useCampaignQuery(Number(campaignId));
 
   const startCombat = useCreateCombatMutation(Number(campaignId));
 
@@ -120,7 +116,7 @@ const InitiativeModal = () => {
         {joinedPlayers?.map((player) => (
           <div className="flex items-center gap-2" key={player.username}>
             <p className="text-base">{player.username}</p>
-            {campaign.ownerId === player.playerId && (
+            {campaign?.ownerId === player.playerId && (
               <Icon path={mdiCrown} color="gold" size={0.8} />
             )}
           </div>
