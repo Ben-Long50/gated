@@ -35,6 +35,7 @@ const limiter = rateLimit({
 if (process.env.NODE_ENV === 'production') {
     app.set('trust proxy', 1);
 }
+console.log('DATABASE_URL =', process.env.DATABASE_URL);
 app.use(cors({
     origin: [
         process.env.CLIENT_URL,
