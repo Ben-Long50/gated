@@ -13,5 +13,6 @@ declare namespace NodeJS {
     GOOGLE_SECRET: string;
     GOOGLE_ID: string;
     NODE_ENV: 'development' | 'production';
+    SAME_SITE: 'strict' | 'none';
   }
 }

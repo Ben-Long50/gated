@@ -22,7 +22,7 @@ router.post('/auth/signin', (req, res, next) => {
     res.cookie('token', req.token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: process.env.SAME_SITE,
         maxAge: 1000 * 60 * 60 * 24,
     });
     res.status(200).json({
@@ -44,7 +44,7 @@ router.get('/auth/google/callback', passport.authenticate('google', {
     res.cookie('token', req.token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: process.env.SAME_SITE,
         maxAge: 1000 * 60 * 60 * 24,
     });
     const redirectUrl = `${process.env.CLIENT_URL}/glam/codex`;
@@ -58,7 +58,7 @@ router.get('/auth/facebook/callback', passport.authenticate('facebook', {
     res.cookie('token', req.token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: process.env.SAME_SITE,
         maxAge: 1000 * 60 * 60 * 24,
     });
     const redirectUrl = `${process.env.CLIENT_URL}/glam/codex`;

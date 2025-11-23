@@ -2,3 +2,4 @@
 /backups
 .env
 /src/utils/updaterScripts
+/src/types
