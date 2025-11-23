@@ -58,10 +58,7 @@ const MapBuilder = () => {
   const layerRef = useRef<HTMLDivElement>(null);
   const colorRef = useRef(null);
 
-  const { data: map, isLoading } = useCampaignMapQuery(
-    Number(campaignId),
-    Number(mapId),
-  );
+  const { data: map, isLoading } = useCampaignMapQuery(Number(mapId));
 
   const handleCounter = (layout) => {
     const lastCount =
