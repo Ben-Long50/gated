@@ -18,6 +18,7 @@ const EncounterGridTile = ({
   activeCoordinates,
   hoveredIndex,
   setHoveredIndex,
+  isDown,
 }: {
   index: number;
   gridDisplay: boolean;
@@ -26,6 +27,7 @@ const EncounterGridTile = ({
   activeCoordinates: { x: number; y: number };
   hoveredIndex: number;
   setHoveredIndex: (index: number) => void;
+  isDown?: boolean;
 }) => {
   const { accentPrimary, statColorMap } = useContext(ThemeContext);
   const { activeCharacter, actionForm } = useContext(EncounterContext);
@@ -95,11 +97,14 @@ const EncounterGridTile = ({
       style={{
         borderColor: `${accentPrimary}80`,
         transition: 'background 0.2s ease',
-        background: inRange
-          ? `radial-gradient(circle, transparent, 75%, ${rangeColor})`
-          : hoveredIndex === index && characterLocations.length === 0
-            ? `radial-gradient(circle, transparent, 75%, ${accentPrimary})`
-            : 'transparent',
+        background:
+          isDown === false
+            ? inRange
+              ? `radial-gradient(circle, transparent, 75%, ${rangeColor})`
+              : hoveredIndex === index && characterLocations.length === 0
+                ? `radial-gradient(circle, transparent, 75%, ${accentPrimary})`
+                : 'transparent'
+            : '',
       }}
       onMouseEnter={() => setHoveredIndex(index)}
     >
@@ -124,7 +129,7 @@ const EncounterGridTile = ({
             }
           />
         ))}
-      {hoveredIndex === index && (
+      {hoveredIndex === index && isDown === false && (
         <p
           className={`bg-tertiary pointer-events-none absolute right-1/2 top-0 z-20 select-none whitespace-nowrap rounded p-1 py-0.5 text-sm`}
           style={{

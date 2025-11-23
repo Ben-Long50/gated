@@ -17,11 +17,13 @@ const MapGrid = ({
   locations,
   gridDisplay,
   setActionSidebar,
+  isDown,
 }: {
   map: Map;
   locations: Location[];
   gridDisplay: boolean;
   setActionSidebar: (value: boolean) => void;
+  isDown?: boolean;
 }) => {
   const { statColorMap } = useContext(ThemeContext);
   const { combat, activeCharacter, actionForm, rolls } =
@@ -148,6 +150,7 @@ const MapGrid = ({
               hoveredIndex={hoveredIndex}
               setHoveredIndex={setHoveredIndex}
               rolls={rolls}
+              isDown={isDown}
             />
           );
         })}

@@ -1,12 +1,11 @@
 import useCharacter from 'src/hooks/useCharacter';
 import CharacterPictureRound from '../CharacterPictureRound';
 import ArrowHeader3 from '../ArrowHeader3';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import EquippedItems from './EquippedItems';
 import BtnRect from '../buttons/BtnRect';
 import ActionIcon from '../icons/ActionIcon';
 import ReactionIcon from '../icons/ReactionIcon';
-import { FormApi } from '@tanstack/react-form';
 import CharacterStatBars from '../CharacterStatBars';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import ThemeContainer from '../ThemeContainer';
@@ -46,6 +45,8 @@ const CharacterOptions = ({
   const { campaignId, encounterId } = useParams();
   const navigate = useNavigate();
 
+  const [visible, setVisible] = useState(false);
+
   const { filteredCharacter: character } = useCharacter(controlledCharacterId);
 
   const { characters } = useCharacterQueries(combat.turnOrder);
@@ -55,12 +56,16 @@ const CharacterOptions = ({
 
   return (
     <ThemeContainer
-      className={`${characterOptions ? 'visible opacity-100' : 'invisible opacity-0'} timing w-full`}
+      className={`${characterOptions ? 'visible opacity-100' : 'invisible opacity-0'} timing mx-auto w-full max-w-5xl`}
       borderColor={accentPrimary}
       chamfer="medium"
     >
-      <div className={`relative flex w-full flex-col gap-4 p-4`}>
-        {gameMaster && (
+      <div
+        className={`relative flex w-full flex-col gap-4 p-4`}
+        onMouseEnter={() => setVisible(true)}
+        onMouseLeave={() => setVisible(false)}
+      >
+        {gameMaster && visible && (
           <InputSelectField
             label="Switch Character"
             reverse={true}
@@ -97,168 +102,185 @@ const CharacterOptions = ({
                 />
               </div>
             </div>
-            <EquippedItems
-              setActionSidebar={setActionSidebar}
-              setItemId={setItemId}
-            />
-          </div>
-          <div className="flex flex-col justify-evenly gap-2">
-            <div className={`${mobile ? 'gap-2' : 'gap-4'} flex items-center`}>
-              <ActionIcon
-                className={`${mobile ? 'size-7' : 'size-8'} text-primary shrink-0`}
+            {visible && (
+              <EquippedItems
+                setActionSidebar={setActionSidebar}
+                setItemId={setItemId}
               />
-              <h2 className={`${mobile ? 'size-6' : 'size-8'} text-center`}>
+            )}
+          </div>
+          <div
+            className={`${visible ? 'flex-col justify-evenly' : 'flex-row justify-end'} flex gap-2`}
+          >
+            <div
+              className={`${mobile || !visible ? 'gap-2' : 'gap-4'} flex items-center`}
+            >
+              <ActionIcon
+                className={`${mobile || !visible ? 'size-7' : 'size-8'} text-primary shrink-0`}
+              />
+              <h2
+                className={`${mobile || !visible ? 'size-6' : 'size-8'} text-center`}
+              >
                 {character?.stats.currentActions}
               </h2>
             </div>
-            <div className={`${mobile ? 'gap-2' : 'gap-4'} flex items-center`}>
+            <div
+              className={`${mobile || !visible ? 'gap-2' : 'gap-4'} flex items-center`}
+            >
               <ReactionIcon
-                className={`${mobile ? 'size-7' : 'size-8'} text-primary shrink-0`}
+                className={`${mobile || !visible ? 'size-7' : 'size-8'} text-primary shrink-0`}
               />
-              <h2 className={`${mobile ? 'size-6' : 'size-8'} text-center`}>
+              <h2
+                className={`${mobile || !visible ? 'size-6' : 'size-8'} text-center`}
+              >
                 {character?.stats.currentReactions}
               </h2>
             </div>
-            <div className={`${mobile ? 'gap-2' : 'gap-4'} flex items-center`}>
+            <div
+              className={`${mobile || !visible ? 'gap-2' : 'gap-4'} flex items-center`}
+            >
               <HandIcon
-                className={`${mobile ? 'size-7' : 'size-8'} text-primary shrink-0`}
+                className={`${mobile || !visible ? 'size-7' : 'size-8'} text-primary shrink-0`}
               />
-              <h2 className={`${mobile ? 'size-6' : 'size-8'} text-center`}>
+              <h2
+                className={`${mobile || !visible ? 'size-6' : 'size-8'} text-center`}
+              >
                 {character?.stats.currentHands}
               </h2>
             </div>
           </div>
         </div>
+        {visible && (
+          <div className="flex w-full gap-4">
+            {encounterPermissions &&
+            controlledCharacterId === activeCharacter.id &&
+            combat.phaseHistory[0]?.action ? (
+              <BtnRect
+                className="w-full"
+                ariaLabel="Close"
+                type="button"
+                onClick={() => {
+                  socket.emit('confirmActionQueueResults', {
+                    campaignId: Number(campaignId),
+                    encounterId: Number(encounterId),
+                  });
 
-        {encounterPermissions &&
-          controlledCharacterId === activeCharacter.id && (
-            <div className="flex w-full gap-4">
-              {combat.phaseHistory[0]?.action ? (
+                  socket.emit('advancePhase', {
+                    campaignId: Number(campaignId),
+                    encounterId: Number(encounterId),
+                  });
+
+                  socket.emit('resetBoard', {
+                    encounterId: Number(encounterId),
+                  });
+                  resetRolls();
+                  setTarget(null);
+                }}
+              >
+                Confirm Action Queue Results
+              </BtnRect>
+            ) : (
+              <BtnRect
+                className="w-full"
+                ariaLabel="Pass turn"
+                type="button"
+                onClick={() => {
+                  handleAdvanceTurn();
+                  socket.emit('resetBoard', {
+                    encounterId: Number(encounterId),
+                  });
+                  resetRolls();
+                  setTarget(null);
+                }}
+              >
+                Pass Turn
+              </BtnRect>
+            )}
+            {gameMaster &&
+              combat.combatPhase === 'reaction' &&
+              combat.passes.length < combat.turnOrder.length - 1 && (
                 <BtnRect
                   className="w-full"
-                  ariaLabel="Close"
+                  ariaLabel="Pass All Reactions"
                   type="button"
                   onClick={() => {
-                    socket.emit('confirmActionQueueResults', {
+                    optimisticUpdateEncounter(Number(encounterId), {
+                      reactions: [],
+                      passes: combat.turnOrder.filter(
+                        (id) => id !== activeCharacter.id,
+                      ),
+                    });
+
+                    socket.emit('passAllReactions', {
                       campaignId: Number(campaignId),
                       encounterId: Number(encounterId),
                     });
-
-                    socket.emit('advancePhase', {
-                      campaignId: Number(campaignId),
-                      encounterId: Number(encounterId),
-                    });
-
-                    socket.emit('resetBoard', {
-                      encounterId: Number(encounterId),
-                    });
-                    resetRolls();
-                    setTarget(null);
                   }}
                 >
-                  Confirm Action Queue Results
-                </BtnRect>
-              ) : (
-                <BtnRect
-                  className="w-full"
-                  ariaLabel="Pass turn"
-                  type="button"
-                  onClick={() => {
-                    handleAdvanceTurn();
-                    socket.emit('resetBoard', {
-                      encounterId: Number(encounterId),
-                    });
-                    resetRolls();
-                    setTarget(null);
-                  }}
-                >
-                  Pass Turn
+                  Pass All Reactions
                 </BtnRect>
               )}
-              {gameMaster &&
-                combat.combatPhase === 'reaction' &&
-                combat.passes.length < combat.turnOrder.length - 1 && (
+
+            {!combat.reactions.includes(controlledCharacterId) &&
+              !combat.passes.includes(controlledCharacterId) &&
+              activeCharacter.id !== controlledCharacterId &&
+              combat.combatPhase === 'reaction' && (
+                <>
                   <BtnRect
                     className="w-full"
-                    ariaLabel="Pass All Reactions"
                     type="button"
-                    onClick={() => {
-                      optimisticUpdateEncounter(Number(encounterId), {
-                        reactions: [],
-                        passes: combat.turnOrder.filter(
-                          (id) => id !== activeCharacter.id,
-                        ),
-                      });
-
-                      socket.emit('passAllReactions', {
+                    ariaLabel="Make reaction"
+                    onClick={() =>
+                      socket.emit('scheduleReaction', {
                         campaignId: Number(campaignId),
                         encounterId: Number(encounterId),
-                      });
-                    }}
+                        characterId: controlledCharacterId,
+                      })
+                    }
                   >
-                    Pass All Reactions
+                    Make Reaction
                   </BtnRect>
-                )}
-            </div>
-          )}
-        {!combat.reactions.includes(controlledCharacterId) &&
-          !combat.passes.includes(controlledCharacterId) &&
-          activeCharacter.id !== controlledCharacterId &&
-          combat.combatPhase === 'reaction' && (
-            <div className="flex w-full gap-4">
+                  <BtnRect
+                    className="w-full"
+                    type="button"
+                    ariaLabel="Pass"
+                    onClick={() =>
+                      socket.emit('passReaction', {
+                        campaignId: Number(campaignId),
+                        encounterId: Number(encounterId),
+                        characterId: controlledCharacterId,
+                      })
+                    }
+                  >
+                    Pass
+                  </BtnRect>
+                </>
+              )}
+            {combat.reactions.includes(controlledCharacterId) && (
               <BtnRect
-                className="w-full"
+                ariaLabel="Pass Reaction"
                 type="button"
-                ariaLabel="Make reaction"
-                onClick={() =>
-                  socket.emit('scheduleReaction', {
+                onClick={() => {
+                  socket.emit('finishReaction', {
                     campaignId: Number(campaignId),
                     encounterId: Number(encounterId),
                     characterId: controlledCharacterId,
-                  })
-                }
+                  });
+                }}
               >
-                Make Reaction
+                Pass Reaction
               </BtnRect>
+            )}
+            {gameMaster && !activeCharacter && (
               <BtnRect
-                className="w-full"
+                ariaLabel="Open initiative modal"
                 type="button"
-                ariaLabel="Pass"
-                onClick={() =>
-                  socket.emit('passReaction', {
-                    campaignId: Number(campaignId),
-                    encounterId: Number(encounterId),
-                    characterId: controlledCharacterId,
-                  })
-                }
+                onClick={() => navigate('initiative')}
               >
-                Pass
+                Start Combat
               </BtnRect>
-            </div>
-          )}
-        {combat.reactions.includes(controlledCharacterId) && (
-          <BtnRect
-            ariaLabel="Pass Reaction"
-            type="button"
-            onClick={() => {
-              socket.emit('finishReaction', {
-                campaignId: Number(campaignId),
-                encounterId: Number(encounterId),
-                characterId: controlledCharacterId,
-              });
-            }}
-          >
-            Pass Reaction
-          </BtnRect>
-        )}
-        {gameMaster && !activeCharacter && (
-          <BtnRect
-            ariaLabel="Open initiative modal"
-            type="button"
-            onClick={() => navigate('initiative')}
-          >
-            Start Combat
-          </BtnRect>
+            )}
+          </div>
         )}
       </div>
     </ThemeContainer>

@@ -20,14 +20,8 @@ const CharacterEncounterToken = ({
   onClick: () => boolean;
 }) => {
   const { statColorMap } = useContext(ThemeContext);
-  const {
-    combat,
-    activeCharacter,
-    encounterPermissions,
-    rolls,
-    rollCounter,
-    actionForm,
-  } = useContext(EncounterContext);
+  const { combat, activeCharacter, encounterPermissions, rolls, actionForm } =
+    useContext(EncounterContext);
   const { encounterId } = useParams();
 
   const { filteredCharacter: character, isLoading } = useCharacter(
@@ -57,7 +51,7 @@ const CharacterEncounterToken = ({
         <div
           ref={setNodeRef}
           id={location.characterId.toString()}
-          className="group relative inset-0 size-12 cursor-grab touch-none rounded-full"
+          className="token group relative inset-0 size-12 cursor-grab touch-none rounded-full"
           style={
             transform
               ? {
@@ -68,7 +62,8 @@ const CharacterEncounterToken = ({
           }
           {...listeners}
           {...attributes}
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation();
             if (encounterPermissions) {
               if (field.state.value?.id === location.characterId) {
                 field.handleChange(null);

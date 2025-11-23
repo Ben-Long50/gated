@@ -1,11 +1,4 @@
-import {
-  Fragment,
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
+import { Fragment, useContext, useEffect, useMemo, useState } from 'react';
 import ReactGridLayout from 'react-grid-layout';
 import useMap from 'src/hooks/useMap';
 import Loading from '../Loading';
@@ -18,16 +11,12 @@ import {
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import EncounterGrid from './EncounterGrid';
-import ItemCard from '../ItemCard';
 import CharacterCardSmall from '../CharacterCardSmall';
 import CharacterOptions from './CharacterOptions';
-import useCombat from 'src/hooks/useCombat';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
-import useCombatStore from 'src/stores/combatStore';
 import ActionSidebar from './ActionSidebar';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import ActionIcon from '../icons/ActionIcon';
-import { CampaignContext } from 'src/contexts/CampaignContext';
 import Divider from '../Divider';
 import ReactionIcon from '../icons/ReactionIcon';
 import ReactionSidebar from './ReactionSidebar';
@@ -42,7 +31,7 @@ import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import useItemQuery from 'src/hooks/useItemQuery/useItemQuery';
 import ItemCardBorderless from '../ItemCardBorderless';
 import { EncounterContext } from 'src/contexts/EncounterContext';
-import { User } from 'src/types/user';
+import DragScrollContainer from './DragScrollContainer';
 
 const Encounter = () => {
   const { mobile } = useContext(LayoutContext);
@@ -78,20 +67,27 @@ const Encounter = () => {
     isPending: historyPending,
   } = useEncounterHistoryQuery(Number(encounterId));
 
-  const mapLayout = map?.layout.map((item) => ({
-    ...item,
-    isDraggable: false,
-    isResizable: false,
-    resizeHandles: [],
-  }));
+  const mapLayout = useMemo(
+    () =>
+      map?.layout.map((item) => ({
+        ...item,
+        isDraggable: false,
+        isResizable: false,
+        resizeHandles: [],
+      })),
+    [map],
+  );
 
-  const phaseActionCount =
-    combat?.phaseHistory.length > 0
-      ? [
-          combat.phaseHistory[0].action,
-          ...combat.phaseHistory[0].reactions,
-        ].filter((action) => action).length
-      : 0;
+  const phaseActionCount = useMemo(
+    () =>
+      combat?.phaseHistory.length > 0
+        ? [
+            combat.phaseHistory[0].action,
+            ...combat.phaseHistory[0].reactions,
+          ].filter((action) => action).length
+        : 0,
+    [combat?.phaseHistory],
+  );
 
   useEffect(() => {
     if (combat && combat.combatPhase === 'initiative') {
@@ -110,7 +106,7 @@ const Encounter = () => {
   return (
     <>
       <div
-        className={`${characterOptions ? 'gap-4' : 'gap-0'} timing grid h-full w-full max-w-8xl grid-rows-[1fr_auto] justify-center`}
+        className={`${characterOptions ? 'gap-4' : 'gap-0'} timing h-full w-full grid-rows-[1fr_auto] items-center justify-center`}
       >
         <div className="bg-primary shadow-primary absolute left-1.5 top-1.5 z-10 ml-[72px] mr-auto flex flex-col items-start justify-start rounded p-1.5">
           {joinedPlayers?.map((player: any) => (
@@ -122,8 +118,8 @@ const Encounter = () => {
             </div>
           ))}
         </div>
-        <div
-          className={`scrollbar-primary timing pointer-events-auto relative mb-auto max-h-full max-w-full overflow-y-auto rounded border-2`}
+        <DragScrollContainer
+          className={`scrollbar-primary timing pointer-events-auto relative mx-auto mb-auto max-h-full max-w-full overflow-y-auto rounded border-2`}
           style={{ borderColor: accentPrimary }}
         >
           {!mobile && (
@@ -181,7 +177,7 @@ const Encounter = () => {
             gridDisplay={gridDisplay}
             setActionSidebar={setActionSidebar}
           />
-        </div>
+        </DragScrollContainer>
         <div
           className={`${characterList ? 'w-96' : 'w-[72px]'} scrollbar-secondary-2 bg-primary timing absolute left-0 top-0 z-10 flex h-full flex-col justify-start gap-3 overflow-y-auto p-3 shadow-md shadow-black`}
           onMouseEnter={() => {
@@ -371,7 +367,7 @@ const Encounter = () => {
           )}
         </div>
         <div
-          className={`${!characterOptions && 'overflow-hidden'} timing relative mx-auto mt-auto w-full max-w-5xl p-0.5`}
+          className={`${!characterOptions && 'overflow-hidden'} timing absolute bottom-4 mt-auto w-full p-0.5`}
           style={{
             maxHeight: characterOptions ? '500px' : '0px',
           }}

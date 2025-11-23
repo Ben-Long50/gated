@@ -15,11 +15,13 @@ const MainLayout = () => {
   const { theme, accentPrimary } = useContext(ThemeContext);
   const { mobile } = useContext(LayoutContext);
   const { pathname } = useLocation();
+  const parts = pathname.split('/');
 
   const navbar = useNavigationStore((state) => state.navbar);
   const setNavbar = useNavigationStore((state) => state.setNavbar);
   const sidebar = useNavigationStore((state) => state.sidebar);
   const setSidebar = useNavigationStore((state) => state.setSidebar);
+  const encounterLayout = useNavigationStore((state) => state.encounterLayout);
 
   const navbarHeight = useNavigationStore((state) => state.navbarHeight);
 
@@ -32,15 +34,17 @@ const MainLayout = () => {
         style={{ '--accent-primary': accentPrimary } as React.CSSProperties}
       >
         <Navbar navbarRef={navbarRef} />
-        <Sidebar>
-          {pathname.startsWith('/glam/codex') && <CodexLinks />}
-          {pathname.startsWith('/glam/characters') && <CharacterLinks />}
-          {pathname.startsWith('/glam/campaigns') && <CampaignLinks />}
-          {pathname.startsWith('/glam/account') && <AccountLinks />}
-        </Sidebar>
+        {!parts.includes('encounters') && (
+          <Sidebar>
+            {pathname.startsWith('/glam/codex') && <CodexLinks />}
+            {pathname.startsWith('/glam/characters') && <CharacterLinks />}
+            {pathname.startsWith('/glam/campaigns') && <CampaignLinks />}
+            {pathname.startsWith('/glam/account') && <AccountLinks />}
+          </Sidebar>
+        )}
         <div
           id="portal-root"
-          className={`${!mobile && 'ml-[68px]'} timing relative z-10 col-span-2 col-start-1 row-start-1 flex flex-col items-center px-2 py-4 max-xl:col-start-1 sm:p-8`}
+          className={`${!mobile && !encounterLayout && 'ml-[68px]'} ${encounterLayout && 'sm:px-20 sm:py-2.5'} relative z-10 col-span-2 col-start-1 row-start-1 flex flex-col items-center px-2 py-4 max-xl:col-start-1 sm:p-8`}
           style={{
             marginTop: navbarHeight,
             height: `calc(100dvh - ${navbarHeight}px)`,

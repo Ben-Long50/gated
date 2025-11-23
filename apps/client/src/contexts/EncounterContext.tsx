@@ -13,6 +13,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import useRoll from 'src/hooks/useRoll';
 import useCombatStore from 'src/stores/combatStore';
 import useCombat from 'src/hooks/useCombat';
+import useNavigationStore from 'src/stores/navbarStore';
 
 export const EncounterContext = createContext({
   socket,
@@ -40,9 +41,14 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
   const { rolls, rolling, animateRoll, resetRolls, rollComplete, rollCounter } =
     useRoll();
 
+  const setEncounterLayout = useNavigationStore(
+    (state) => state.setEncounterLayout,
+  );
   const setTarget = useCombatStore((state) => state.setTarget);
 
   useEffect(() => {
+    setEncounterLayout(true);
+
     socket.emit('joinEncounter', {
       room: `encounter ${encounterId}`,
       playerId: user.id,
@@ -114,6 +120,8 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
     });
 
     return () => {
+      setEncounterLayout(false);
+
       socket.emit('leaveEncounter', {
         room: `encounter ${encounterId}`,
         playerId: user.id,
