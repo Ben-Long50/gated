@@ -55,7 +55,7 @@ const MapGrid = ({
     (state) => state.values.target,
   );
 
-  const arrowActive = activeCharacter.id;
+  const arrowActive = activeCharacter?.id;
   const arrowTarget = actionTarget?.id || target;
 
   const updateCharacterLocation = useUpdateCharacterLocationMutation(
@@ -64,7 +64,7 @@ const MapGrid = ({
 
   const activeCoordinates = useMemo(
     () =>
-      activeCharacter.id
+      activeCharacter?.id
         ? getCoordinates(
             locations.find(
               (location) => location.characterId === activeCharacter.id,

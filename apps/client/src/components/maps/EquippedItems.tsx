@@ -10,9 +10,11 @@ import { mdiCheckCircle, mdiCloseBoxOutline } from '@mdi/js';
 import { EncounterContext } from 'src/contexts/EncounterContext';
 
 const EquippedItems = ({
+  className,
   setActionSidebar,
   setItemId,
 }: {
+  className?: string;
   setActionSidebar: (state: boolean) => void;
   setItemId?: (id: number) => void;
 }) => {
@@ -53,7 +55,7 @@ const EquippedItems = ({
         {(field) => (
           <div
             ref={scrollRef}
-            className="scrollbar-primary-2 col-span-3 flex w-full gap-2 overflow-x-auto"
+            className={`${className} scrollbar-primary-2 col-span-3 flex w-full gap-2 overflow-x-auto`}
             onWheel={handleWheel}
             style={{ overscrollBehavior: 'contain' }}
           >

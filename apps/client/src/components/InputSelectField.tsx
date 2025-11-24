@@ -1,4 +1,5 @@
 import {
+  RefObject,
   useContext,
   useEffect,
   useLayoutEffect,
@@ -22,6 +23,7 @@ import { Campaign } from 'src/types/campaign';
 type onChangeArg = Character | Action | Keyword | Campaign | string;
 
 const InputSelectField = ({
+  ref,
   field,
   onChange,
   label,
@@ -30,6 +32,7 @@ const InputSelectField = ({
   initialValue,
   reverse,
 }: {
+  ref?: RefObject<HTMLDivElement>;
   field?: FieldApi;
   label: string;
   options: any[];
@@ -165,6 +168,7 @@ const InputSelectField = ({
           {label}
         </label>
         <div
+          ref={ref}
           className={`${focus ? 'max-h-96 py-3' : 'max-h-0'} ${!reverse ? 'top-full translate-y-2' : 'bottom-full -translate-y-5'} bg-secondary timing absolute left-0 z-10 flex w-full flex-col items-start overflow-hidden rounded-md px-3 shadow-lg shadow-zinc-950`}
         >
           <div className="flex w-full items-center gap-4">
