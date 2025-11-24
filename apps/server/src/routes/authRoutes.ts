@@ -45,10 +45,15 @@ router.post(
   '/auth/signout',
   authentication.authenticate,
   (_req: Request, res: Response) => {
-    res.cookie('token', null);
-    res.status(200).json({
-      message: `You have been signed out`,
-    });
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.SAME_SITE,
+      path: '/',
+    }),
+      res.status(200).json({
+        message: `You have been signed out`,
+      });
   },
 );
 

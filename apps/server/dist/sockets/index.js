@@ -190,29 +190,22 @@ export function setupSocketIO(io) {
             console.log(`Broadcasted action roll to encounter ${encounterId}`);
         });
         socket.on('reactionRoll', async ({ campaignId, encounterId, reactiveCharacter, targetCharacter, reaction, modifiers, extraDice, item, }) => {
-            const rollResults = calculateRoll(reactiveCharacter.attributes, { name: reaction.name, roll: reaction.roll }, modifiers, extraDice) || { result: [], successes: 0 };
+            const rollResults = reaction.roll.length > 0
+                ? calculateRoll(reactiveCharacter.attributes, { name: reaction.name, roll: reaction.roll }, modifiers, extraDice) || { result: [], successes: 0 }
+                : null;
             const rolls = new Map();
-            rolls.set(reactiveCharacter === null || reactiveCharacter === void 0 ? void 0 : reactiveCharacter.id, {
-                characterId: reactiveCharacter === null || reactiveCharacter === void 0 ? void 0 : reactiveCharacter.id,
-                name: `${reactiveCharacter === null || reactiveCharacter === void 0 ? void 0 : reactiveCharacter.firstName} ${reactiveCharacter === null || reactiveCharacter === void 0 ? void 0 : reactiveCharacter.lastName}`,
-                playerCharacter: reactiveCharacter === null || reactiveCharacter === void 0 ? void 0 : reactiveCharacter.playerCharacter,
-                diceArray: rollResults.result,
-                successes: rollResults.successes,
-            });
-            const rollsArray = Array.from(rolls.entries());
+            if (rollResults) {
+                rolls.set(reactiveCharacter === null || reactiveCharacter === void 0 ? void 0 : reactiveCharacter.id, {
+                    characterId: reactiveCharacter === null || reactiveCharacter === void 0 ? void 0 : reactiveCharacter.id,
+                    name: `${reactiveCharacter === null || reactiveCharacter === void 0 ? void 0 : reactiveCharacter.firstName} ${reactiveCharacter === null || reactiveCharacter === void 0 ? void 0 : reactiveCharacter.lastName}`,
+                    playerCharacter: reactiveCharacter === null || reactiveCharacter === void 0 ? void 0 : reactiveCharacter.playerCharacter,
+                    diceArray: rollResults.result,
+                    successes: rollResults.successes,
+                    modifiers,
+                });
+            }
+            const rollsArray = rollResults ? Array.from(rolls.entries()) : null;
             await calculateCosts(reactiveCharacter, item, reaction);
-            io.to(`encounter ${encounterId}`).emit('reactionRoll', {
-                encounterId,
-                rollsArray,
-                targetId: (targetCharacter === null || targetCharacter === void 0 ? void 0 : targetCharacter.id) || null,
-            });
-            io.to(campaignId).emit('character', reactiveCharacter.id);
-            if (item) {
-                io.to(campaignId).emit('item', item.id);
-            }
-            if (targetCharacter) {
-                io.to(campaignId).emit('character', targetCharacter.id);
-            }
             const historyData = {
                 characterId: reactiveCharacter.id,
                 actionId: reaction.id,
@@ -227,14 +220,30 @@ export function setupSocketIO(io) {
                 historyData.rollResult = {
                     result: rollResults.result,
                     successes: rollResults.successes,
-                    modifiers: [],
-                    damage: rollResults.successes * -1,
+                    modifiers,
                 };
             }
             const phaseReaction = await encounterServices.createEncounterHistory(campaignId, encounterId, historyData);
-            await encounterServices.advancePhase(encounterId);
             await encounterServices.setPhaseReaction(encounterId, phaseReaction);
-            io.to(campaignId).emit('encounter', encounterId);
+            if (rollResults) {
+                io.to(`encounter ${encounterId}`).emit('reactionRoll', {
+                    encounterId,
+                    rollsArray,
+                    targetId: (targetCharacter === null || targetCharacter === void 0 ? void 0 : targetCharacter.id) || null,
+                });
+            }
+            else {
+                io.to(`encounter ${encounterId}`).emit('reactionRoll', {
+                    encounterId,
+                });
+            }
+            io.to(campaignId).emit('character', reactiveCharacter.id);
+            if (item) {
+                io.to(campaignId).emit('item', item.id);
+            }
+            if (targetCharacter) {
+                io.to(campaignId).emit('character', targetCharacter.id);
+            }
             console.log(`Broadcasted reaction roll to campaign ${campaignId}`);
         });
         socket.on('scheduleReaction', async ({ campaignId, encounterId, characterId }) => {

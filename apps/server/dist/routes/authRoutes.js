@@ -30,10 +30,15 @@ router.post('/auth/signin', (req, res, next) => {
     });
 });
 router.post('/auth/signout', authentication.authenticate, (_req, res) => {
-    res.cookie('token', null);
-    res.status(200).json({
-        message: `You have been signed out`,
-    });
+    res.clearCookie('token', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.SAME_SITE,
+        path: '/',
+    }),
+        res.status(200).json({
+            message: `You have been signed out`,
+        });
 });
 router.get('/auth/status', sendAuthStatus);
 router.get('/auth/google', passport.authenticate('google'));
