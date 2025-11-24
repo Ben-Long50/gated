@@ -515,7 +515,7 @@ const encounterServices = {
         result: number[];
         successes: number;
         modifiers: string[];
-        damage: number;
+        damage?: number;
       };
     },
   ) => {

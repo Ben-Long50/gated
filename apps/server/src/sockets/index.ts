@@ -350,7 +350,7 @@ export function setupSocketIO(io: Server) {
             result: number[];
             successes: number;
             modifiers: string[];
-            damage: number;
+            damage?: number;
           };
         };
         if (targetCharacter) {
