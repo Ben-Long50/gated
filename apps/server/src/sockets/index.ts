@@ -8,6 +8,7 @@ import {
   calculateRoll,
 } from '../utils/rollUtilities.js';
 import itemServices from '../services/itemServices.js';
+import actionServices from '../services/actionServices.js';
 
 export function setupSocketIO(io: Server) {
   io.on('connection', (socket) => {
@@ -107,7 +108,7 @@ export function setupSocketIO(io: Server) {
         .sort();
 
       io.to(room).emit('playerJoined', { playerId, playerIdList: sockets });
-      console.log(`${room} joined`);
+      console.log(`${playerId} joined ${room}`);
     });
 
     socket.on('leaveEncounter', async ({ room, playerId }) => {
@@ -117,7 +118,7 @@ export function setupSocketIO(io: Server) {
         .sort();
 
       io.to(room).emit('playerLeft', { playerId, playerIdList: sockets });
-      console.log(`${room} left`);
+      console.log(`${playerId} left ${room}`);
     });
 
     socket.on('activateEncounter', async ({ campaignId, encounterId }) => {
@@ -193,17 +194,42 @@ export function setupSocketIO(io: Server) {
       async ({
         campaignId,
         encounterId,
-        activeCharacter,
-        targetCharacter,
-        action,
+        activeCharacterId,
+        targetCharacterId,
+        actionId,
         modifiers,
         extraDice,
-        item,
+        itemId,
       }) => {
+        const reactiveCharacterPromise = activeCharacterId
+          ? characterServices.getCharacterById(activeCharacterId)
+          : Promise.resolve(null);
+
+        const targetCharacterPromise = targetCharacterId
+          ? characterServices.getCharacterById(targetCharacterId)
+          : Promise.resolve(null);
+
+        const reactionPromise = actionId
+          ? actionServices.getActionById(actionId)
+          : Promise.resolve(null);
+
+        const itemPromise = itemId
+          ? itemServices.getItemById(itemId)
+          : Promise.resolve(null);
+
+        const [activeCharacter, targetCharacter, action, item] =
+          await Promise.all([
+            reactiveCharacterPromise,
+            targetCharacterPromise,
+            reactionPromise,
+            itemPromise,
+          ]);
+
         const rollResults =
-          action.roll.length > 0
+          action && action.roll
             ? calculateRoll(
-                activeCharacter.attributes,
+                activeCharacter?.attributes,
+                //@ts-ignore
                 { name: action.name, roll: action.roll },
                 modifiers,
                 extraDice,
@@ -212,9 +238,11 @@ export function setupSocketIO(io: Server) {
 
         const rolls = new Map();
 
-        const { damage } = rollResults
-          ? calculateDamage(item, action, rollResults.successes)
-          : { damage: null };
+        const { damage } =
+          rollResults && item
+            ? //@ts-ignore
+              calculateDamage(item, action, rollResults.successes)
+            : { damage: null };
 
         if (rollResults) {
           rolls.set(activeCharacter?.id, {
@@ -232,8 +260,8 @@ export function setupSocketIO(io: Server) {
         await calculateCosts(activeCharacter, item, action);
 
         const historyData = {
-          characterId: activeCharacter.id,
-          actionId: action.id,
+          characterId: activeCharacter?.id,
+          actionId: action?.id,
         } as {
           characterId: number;
           targetId?: number;
@@ -276,7 +304,6 @@ export function setupSocketIO(io: Server) {
           io.to(`encounter ${encounterId}`).emit('actionRoll', {
             encounterId,
             rollsArray,
-            targetId: targetCharacter?.id || null,
           });
         } else {
           io.to(`encounter ${encounterId}`).emit('actionRoll', {
@@ -284,7 +311,7 @@ export function setupSocketIO(io: Server) {
           });
         }
 
-        io.to(campaignId).emit('character', activeCharacter.id);
+        io.to(campaignId).emit('character', activeCharacter?.id);
 
         if (item) {
           await itemServices.setItemNotAvailable(item.id);
@@ -304,17 +331,42 @@ export function setupSocketIO(io: Server) {
       async ({
         campaignId,
         encounterId,
-        reactiveCharacter,
-        targetCharacter,
-        reaction,
+        reactiveCharacterId,
+        targetCharacterId,
+        reactionId,
         modifiers,
         extraDice,
-        item,
+        itemId,
       }) => {
+        const reactiveCharacterPromise = reactiveCharacterId
+          ? characterServices.getCharacterById(reactiveCharacterId)
+          : Promise.resolve(null);
+
+        const targetCharacterPromise = targetCharacterId
+          ? characterServices.getCharacterById(targetCharacterId)
+          : Promise.resolve(null);
+
+        const reactionPromise = reactionId
+          ? actionServices.getActionById(reactionId)
+          : Promise.resolve(null);
+
+        const itemPromise = itemId
+          ? itemServices.getItemById(itemId)
+          : Promise.resolve(null);
+
+        const [reactiveCharacter, targetCharacter, reaction, item] =
+          await Promise.all([
+            reactiveCharacterPromise,
+            targetCharacterPromise,
+            reactionPromise,
+            itemPromise,
+          ]);
+
         const rollResults =
-          reaction.roll.length > 0
+          reaction && reaction.roll
             ? calculateRoll(
-                reactiveCharacter.attributes,
+                reactiveCharacter?.attributes,
+                //@ts-ignore
                 { name: reaction.name, roll: reaction.roll },
                 modifiers,
                 extraDice,
@@ -339,8 +391,8 @@ export function setupSocketIO(io: Server) {
         await calculateCosts(reactiveCharacter, item, reaction);
 
         const historyData = {
-          characterId: reactiveCharacter.id,
-          actionId: reaction.id,
+          characterId: reactiveCharacter?.id,
+          actionId: reaction?.id,
         } as {
           characterId: number;
           targetId?: number;
@@ -379,7 +431,6 @@ export function setupSocketIO(io: Server) {
           io.to(`encounter ${encounterId}`).emit('reactionRoll', {
             encounterId,
             rollsArray,
-            targetId: targetCharacter?.id || null,
           });
         } else {
           io.to(`encounter ${encounterId}`).emit('reactionRoll', {
@@ -387,7 +438,7 @@ export function setupSocketIO(io: Server) {
           });
         }
 
-        io.to(campaignId).emit('character', reactiveCharacter.id);
+        io.to(campaignId).emit('character', reactiveCharacter?.id);
 
         if (item) {
           io.to(campaignId).emit('item', item.id);
