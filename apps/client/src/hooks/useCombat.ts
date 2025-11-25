@@ -141,16 +141,16 @@ const useCombat = () => {
       const data = {
         campaignId: Number(campaignId),
         encounterId: Number(encounterId),
-        activeCharacter: activeCharacter,
-        action: value.action,
+        activeCharacterId: activeCharacter.id,
+        actionId: value.action.id,
       };
 
       if (value.target) {
-        data.targetCharacter = value.target;
+        data.targetCharacterId = value.target.id;
       }
 
       if (value.item) {
-        data.item = value.item;
+        data.itemId = value.item.id;
       }
 
       if (value.action?.roll) {
@@ -173,6 +173,7 @@ const useCombat = () => {
           index: value.index,
         });
       }
+
       socket.emit('actionRoll', data);
 
       actionForm.reset();
@@ -209,16 +210,30 @@ const useCombat = () => {
         return;
       }
 
-      socket.emit('reactionRoll', {
+      const data = {
         campaignId: Number(campaignId),
         encounterId: Number(encounterId),
-        reactiveCharacter: controlledCharacter,
-        targetCharacter: value.target,
-        reaction: value.reaction,
-        modifiers: value.modifiers,
-        extraDice: value.extraDice,
-        item: value.item,
-      });
+        activeCharacterId: activeCharacter.id,
+        reactionId: value.reaction.id,
+      };
+
+      if (value.target) {
+        data.targetCharacterId = value.target.id;
+      }
+
+      if (value.item) {
+        data.itemId = value.item.id;
+      }
+
+      if (value.reaction?.roll) {
+        data.modifiers = value.modifiers;
+      }
+
+      if (value.extraDice) {
+        data.extraDice = value.extraDice;
+      }
+
+      socket.emit('reactionRoll', data);
 
       reactionForm.reset();
       setItem(null);
