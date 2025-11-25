@@ -146,7 +146,9 @@ export function setupSocketIO(io) {
                 reactionPromise,
                 itemPromise,
             ]);
-            const rollResults = action && action.roll
+            const rollResults = 
+            //@ts-ignore
+            action && action.roll.length > 0
                 ? calculateRoll(activeCharacter === null || activeCharacter === void 0 ? void 0 : activeCharacter.attributes, 
                 //@ts-ignore
                 { name: action.name, roll: action.roll }, modifiers, extraDice) || { result: [], successes: 0 }
@@ -229,7 +231,9 @@ export function setupSocketIO(io) {
                 reactionPromise,
                 itemPromise,
             ]);
-            const rollResults = reaction && reaction.roll
+            const rollResults = 
+            //@ts-ignore
+            reaction && reaction.roll.length > 0
                 ? calculateRoll(reactiveCharacter === null || reactiveCharacter === void 0 ? void 0 : reactiveCharacter.attributes, 
                 //@ts-ignore
                 { name: reaction.name, roll: reaction.roll }, modifiers, extraDice) || { result: [], successes: 0 }

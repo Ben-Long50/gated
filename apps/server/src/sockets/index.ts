@@ -226,7 +226,8 @@ export function setupSocketIO(io: Server) {
           ]);
 
         const rollResults =
-          action && action.roll
+          //@ts-ignore
+          action && action.roll.length > 0
             ? calculateRoll(
                 activeCharacter?.attributes,
                 //@ts-ignore
@@ -363,7 +364,8 @@ export function setupSocketIO(io: Server) {
           ]);
 
         const rollResults =
-          reaction && reaction.roll
+          //@ts-ignore
+          reaction && reaction.roll.length > 0
             ? calculateRoll(
                 reactiveCharacter?.attributes,
                 //@ts-ignore
