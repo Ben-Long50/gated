@@ -1,19 +1,63 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Modal from '../modals/Modal';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import BtnRect from '../buttons/BtnRect';
 import { capitalCase } from 'change-case';
 import Icon from '@mdi/react';
-import { mdiArrowULeftBottom, mdiFolderOutline } from '@mdi/js';
+import { mdiArrowULeftBottom, mdiCancel, mdiFolderOutline } from '@mdi/js';
 import Divider from '../Divider';
 import ArrowHeader3 from '../ArrowHeader3';
+import BtnIcon from '../buttons/BtnIcon';
 
 const TileListModal = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [grid, setGrid] = useState({ rows: 0, cols: 0 });
+
   const navigate = useNavigate();
 
-  const { folders, currentFolder, setCurrentFolder, path, setPath } =
-    useOutletContext() || {};
+  const pngRef = useRef<HTMLDivElement | null>(null);
+
+  const getCoords = (width: number, index: number) => {
+    const row = Math.floor((index - 1) / width + 1);
+    const col = index % width === 0 ? width : index % width;
+
+    return { row, col };
+  };
+
+  const {
+    folders,
+    currentFolder,
+    setCurrentFolder,
+    path,
+    setPath,
+    isPng,
+    pngPath,
+    handleTileSelect,
+    tempComponent,
+    setTempComponent,
+  } = useOutletContext() || {};
+
+  useEffect(() => {
+    if (!pngPath) return;
+
+    const div = pngRef.current;
+    if (!div) return;
+
+    // Step 1 — Load image to get intrinsic size
+    const img = new Image();
+    img.src = pngPath;
+    img.onload = () => {
+      console.log(img.width, img.height);
+
+      const naturalW = img.width;
+      const naturalH = img.height;
+
+      setGrid({
+        rows: Math.ceil(naturalH / 48),
+        cols: Math.ceil(naturalW / 48),
+      });
+    };
+  }, [pngPath]);
 
   return (
     <Modal className="relative h-full">
@@ -52,64 +96,121 @@ const TileListModal = () => {
         ))}
       </div>
       <Divider className="!my-0" />
-      <div className="scrollbar-primary mb-auto grid w-full grid-cols-1 gap-4 overflow-y-auto rounded pb-2 sm:grid-cols-2">
-        {Object.entries(currentFolder).map(([key, value], index) =>
-          key !== 'files' ? (
-            <button
-              key={index}
-              className="bg-tertiary group flex w-full items-center gap-4 rounded p-2 shadow-md shadow-black"
-              onClick={() => {
-                setCurrentFolder((prev) => prev[key]);
-                setPath((prev) => [...prev, key]);
-              }}
-            >
-              <Icon
-                path={mdiFolderOutline}
-                className="text-secondary group-hover:text-accent timing size-8"
-              />
-              <h4 className="group-hover:text-accent timing">
-                {capitalCase(key)}
-              </h4>
-            </button>
-          ) : (
-            value.length > 0 && (
-              <div className="col-span-2 grid grid-cols-[repeat(auto-fill,_minmax(140px,_1fr))] gap-4">
-                {value.map((file: string, index: number) => {
-                  const fullPath = path.join('/');
-                  return (
-                    <div
-                      key={index}
-                      className="hover:border-accent relative aspect-square size-full rounded border-2 border-gray-500 shadow-md shadow-black"
-                      style={{
-                        backgroundImage: `url(${fullPath}/${file})`,
-                        backgroundSize: 'contain',
-                        backgroundPosition: 'center',
-                        imageRendering: 'pixelated',
-                        backgroundRepeat: 'no-repeat',
-                      }}
-                      onMouseEnter={() => setHoveredIndex(index)}
-                      onMouseLeave={() => setHoveredIndex(null)}
-                    >
-                      {hoveredIndex === index && (
-                        <p className="bg-tertiary absolute right-0 top-0 rounded !bg-opacity-90 p-1 text-sm">
-                          {file}
-                        </p>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            )
-          ),
+      <div className="flex items-center">
+        <BtnIcon
+          active={!!tempComponent}
+          path={mdiCancel}
+          onClick={() => {
+            setTempComponent(null);
+          }}
+        />
+      </div>
+      <div className="scrollbar-primary flex h-full w-full items-start justify-center overflow-y-auto">
+        {isPng ? (
+          <div
+            ref={pngRef}
+            className="relative grid justify-center"
+            style={{
+              height: `${grid.rows * 48}px`,
+              width: `${grid.cols * 48}px`,
+              backgroundImage: `url(${pngPath})`,
+              backgroundSize: 'cover',
+              gridTemplateColumns: `repeat(${grid.cols}, 1fr)`,
+              gridTemplateRows: `repeat(${grid.rows}, 1fr)`,
+            }}
+          >
+            {Array.from({ length: grid.rows * grid.cols }).map((_, index) => {
+              const { row, col } = getCoords(grid.cols, index + 1);
+
+              const inCol = tempComponent
+                ? col >= tempComponent.imageColStart &&
+                  col < tempComponent.width + tempComponent.imageColStart
+                : false;
+
+              const inRow = tempComponent
+                ? row >= tempComponent.imageRowStart &&
+                  row < tempComponent.height + tempComponent.imageRowStart
+                : false;
+
+              const selected = inCol && inRow;
+
+              return (
+                <div
+                  key={index}
+                  className={`${selected ? 'bg-yellow-300/50 hover:bg-yellow-300/80' : 'hover:bg-gray-400/50'} size-full ring-1 ring-inset ring-gray-400/50`}
+                  style={{ gridRow: row, gridColumn: col }}
+                  onClick={() => {
+                    handleTileSelect(row, col);
+                  }}
+                />
+              );
+            })}
+          </div>
+        ) : (
+          <div className="scrollbar-primary mb-auto grid w-full grid-cols-1 gap-4 overflow-y-auto rounded pb-2 sm:grid-cols-2">
+            {Object.entries(currentFolder).map(([key, value], index) =>
+              key !== 'files' ? (
+                <button
+                  key={index}
+                  className="bg-tertiary group flex w-full items-center gap-4 rounded p-2 shadow-md shadow-black"
+                  onClick={() => {
+                    setCurrentFolder((prev) => prev[key]);
+                    setPath((prev) => [...prev, key]);
+                  }}
+                >
+                  <Icon
+                    path={mdiFolderOutline}
+                    className="text-secondary group-hover:text-accent timing size-8"
+                  />
+                  <h4 className="group-hover:text-accent timing">
+                    {capitalCase(key)}
+                  </h4>
+                </button>
+              ) : (
+                value.length > 0 && (
+                  <div className="col-span-2 grid grid-cols-3 gap-4">
+                    {value.map((file: string, index: number) => {
+                      const fullPath = path.join('/');
+                      return (
+                        <button
+                          key={index}
+                          className="hover:border-accent relative aspect-square size-full rounded border-2 border-gray-500 shadow-md shadow-black"
+                          style={{
+                            backgroundImage: `url(${fullPath}/${file})`,
+                            backgroundSize: 'contain',
+                            backgroundPosition: 'center',
+                            imageRendering: 'pixelated',
+                            backgroundRepeat: 'no-repeat',
+                          }}
+                          onClick={() =>
+                            setPath((prev) => [...prev, `${file}`])
+                          }
+                          onMouseEnter={() => setHoveredIndex(index)}
+                          onMouseLeave={() => setHoveredIndex(null)}
+                        >
+                          {hoveredIndex === index && (
+                            <p className="bg-tertiary absolute right-0 top-0 rounded !bg-opacity-90 p-1 text-sm">
+                              {file}
+                            </p>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )
+              ),
+            )}
+          </div>
         )}
       </div>
+
       <BtnRect
         className="sticky bottom-0 w-full"
         type="button"
         ariaLabel="Select category"
         onClick={() => navigate(-1)}
       >
-        Select Category
+        Select
       </BtnRect>
     </Modal>
   );

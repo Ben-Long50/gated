@@ -12,24 +12,31 @@ export interface Map {
   width: number;
   height: number;
   baseColor: string;
-  layout: {
-    i: string;
-    w: number;
-    h: number;
-    x: number;
-    y: number;
-    tileWidth: number;
-    tileHeight: number;
-    tileUrl: string;
-    isDraggable: boolean;
-    static: boolean;
-  }[];
+  layers: Layer[];
+  picture: File | null;
+  publicId: string;
   locations: Location[];
 }
 
+interface Layer {
+  name: string;
+  components: Component[];
+}
+
+interface Component {
+  name?: string;
+  imageUrl: string;
+  width: number;
+  height: number;
+  imageColStart: number;
+  imageRowStart: number;
+  mapColStart: number;
+  mapRowStart: number;
+}
+
 enum MapType {
-  location,
-  component,
+  location = 'location',
+  component = 'component',
 }
 
 export interface Location {
