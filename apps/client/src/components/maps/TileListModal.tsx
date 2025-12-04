@@ -147,7 +147,7 @@ const TileListModal = () => {
             })}
           </div>
         ) : (
-          <div className="scrollbar-primary mb-auto grid w-full grid-cols-1 gap-4 overflow-y-auto rounded pb-2 sm:grid-cols-2">
+          <div className="scrollbar-primary mb-auto grid w-full grid-cols-1 gap-4 overflow-y-auto rounded px-2 sm:grid-cols-2">
             {Object.entries(currentFolder).map(([key, value], index) =>
               key !== 'files' ? (
                 <button

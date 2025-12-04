@@ -5,6 +5,7 @@ import InputField from '../InputField';
 import { useForm } from '@tanstack/react-form';
 import Icon from '@mdi/react';
 import {
+  mdiCancel,
   mdiContentSaveCheckOutline,
   mdiContentSaveMinusOutline,
   mdiContentSaveOffOutline,
@@ -16,8 +17,7 @@ import useCreateMapMutation from 'src/hooks/useCreateMapMutation/useCreateMapMut
 import useCampaignMapQuery from 'src/hooks/useCampaignMapQuery/useCampaignMapQuery';
 import Loading from '../Loading';
 import { LayoutContext } from 'src/contexts/LayoutContext';
-import useNavigationStore from 'src/stores/navbarStore';
-import { Component, Map, MapType } from 'src/types/map';
+import { Component, Layer, Map, MapType } from 'src/types/map';
 import MapGrid2 from './MapGrid2';
 import MapLayerList from './MapLayerList';
 
@@ -31,7 +31,12 @@ const MapBuilder = () => {
   const [currentFolder, setCurrentFolder] = useState({});
   const [path, setPath] = useState(['/assets', 'tiles']);
   const [tempComponent, setTempComponent] = useState<Component | null>(null);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  const { data: map, isLoading } = useCampaignMapQuery(Number(mapId));
+
+  const [activeLayerId, setActiveLayerId] = useState(() =>
+    map ? map.layers[0].id : 1,
+  );
 
   const [mapDraft, setMapDraft] = useState(() =>
     localStorage.getItem('mapDraft')
@@ -39,22 +44,11 @@ const MapBuilder = () => {
       : null,
   );
 
-  const navbarHeight = useNavigationStore((state) => state.navbarHeight);
-
   const isPng = path[path.length - 1].endsWith('.png');
   const pngPath = isPng ? path.join('/') : null;
 
   const mapRef = useRef(null);
   const colorRef = useRef(null);
-
-  const { data: map, isLoading } = useCampaignMapQuery(Number(mapId));
-
-  const handeMouseMove = (e) => {
-    setMousePosition({
-      x: e.clientX - navbarHeight - 8,
-      y: e.clientY - navbarHeight + 4,
-    });
-  };
 
   useEffect(() => {
     const fetchFolders = async () => {
@@ -72,9 +66,9 @@ const MapBuilder = () => {
   const defaultWidth = map?.width ?? 24;
   const defaultHeight = map?.height ?? 14;
 
-  const mapForm = useForm<Partial<Map>>({
+  const mapForm = useForm({
     defaultValues: {
-      id: Number(mapId) || 0,
+      id: map?.id || null,
       type: map?.type || ('location' as MapType),
       draft: map?.draft ?? true,
       name: map?.name || '',
@@ -82,9 +76,13 @@ const MapBuilder = () => {
       width: map?.width || defaultWidth,
       height: map?.height || defaultHeight,
       baseColor: map?.baseColor || 'black',
+      layerCount: map?.layerCount || 1,
       layers: map?.layers || [
         {
           name: 'Layer 1',
+          id: 1,
+          hidden: false,
+          componentCount: 0,
           components: [],
         },
       ],
@@ -124,6 +122,169 @@ const MapBuilder = () => {
     },
   });
 
+  const handleAddLayer = () => {
+    const currentLayers = mapForm.getFieldValue('layers');
+    const nextLayerNumber = mapForm.getFieldValue('layerCount') + 1;
+
+    if (Array.isArray(currentLayers)) {
+      mapForm.setFieldValue('layers', [
+        ...currentLayers,
+        {
+          name: `Layer ${nextLayerNumber}`,
+          id: nextLayerNumber,
+          hidden: false,
+          componentCount: 0,
+          components: [],
+        },
+      ]);
+
+      mapForm.setFieldValue('layerCount', nextLayerNumber);
+    }
+  };
+
+  const handleDeleteLayer = (id: number) => {
+    const currentLayers = mapForm.getFieldValue('layers');
+    if (currentLayers.length < 2) {
+      return;
+    }
+
+    const newLayers = currentLayers.filter((layer) => layer.id !== id);
+
+    mapForm.setFieldValue('layers', newLayers);
+  };
+
+  const handleHiddenLayer = (id: number) => {
+    const currentLayers = mapForm.getFieldValue('layers');
+
+    const layer = currentLayers.find((layer: Layer) => layer.id === id);
+
+    if (!layer) {
+      return;
+    }
+
+    const newLayer = {
+      ...layer,
+      hidden: !layer.hidden,
+    };
+
+    const newLayers = currentLayers.map((layer: Layer) => {
+      if (layer.id === id) {
+        return newLayer;
+      } else {
+        return layer;
+      }
+    });
+
+    mapForm.setFieldValue('layers', newLayers);
+  };
+
+  const handleEditLayerName = (id: number, newName: string) => {
+    const currentLayers = mapForm.getFieldValue('layers');
+    const newLayers = currentLayers.map((layer) => {
+      if (layer.id === id) {
+        return { ...layer, name: newName };
+      } else {
+        return layer;
+      }
+    });
+
+    mapForm.setFieldValue('layers', newLayers);
+  };
+
+  const handleAddComponent = (
+    e: MouseEvent,
+    row: number,
+    col: number,
+    layers: Layer[],
+    callback: (layers: Layer[]) => void,
+  ) => {
+    const components = document
+      .elementsFromPoint(e.clientX, e.clientY)
+      .filter((el) => el instanceof HTMLDivElement);
+
+    const conflict = components.some(
+      (component) => component.dataset.layerid === String(activeLayerId),
+    );
+
+    if (conflict) {
+      return;
+    }
+
+    const layer = layers.find((layer: Layer) => layer.id === activeLayerId);
+
+    if (!layer || !tempComponent?.imageUrl) {
+      return;
+    }
+
+    const nextComponentNumber = layer.componentCount + 1;
+
+    const newLayer: Layer = {
+      ...layer,
+      componentCount: nextComponentNumber,
+      components: [
+        ...layer.components,
+        {
+          ...tempComponent,
+          name: `Component ${nextComponentNumber}`,
+          id: nextComponentNumber,
+          mapRowStart: row,
+          mapColStart: col,
+        },
+      ],
+    };
+
+    const newLayers = layers.map((layer: Layer) => {
+      if (layer.id === activeLayerId) {
+        return newLayer;
+      } else {
+        return layer;
+      }
+    });
+
+    callback(newLayers);
+  };
+
+  const handleDeleteComponent = (
+    e: MouseEvent,
+    layers: Layer[],
+    callback: (layers: Layer[]) => void,
+  ) => {
+    const componentIds = document
+      .elementsFromPoint(e.clientX, e.clientY)
+      .filter(
+        (el) =>
+          el instanceof HTMLDivElement &&
+          el.dataset.componentid &&
+          el.dataset.layerid === String(activeLayerId),
+      )
+      .map((component) => Number(component.dataset.componentid));
+
+    const layer = layers.find((layer: Layer) => layer.id === activeLayerId);
+
+    if (!layer) {
+      return;
+    }
+
+    const newComponents = layer.components.filter(
+      (component) => !componentIds.includes(component.id),
+    );
+
+    const newLayer = {
+      ...layer,
+      components: newComponents,
+    };
+
+    const newLayers = layers.map((layer: Layer) => {
+      if (layer.id === activeLayerId) {
+        return newLayer;
+      } else {
+        return layer;
+      }
+    }) as Layer[];
+
+    callback(newLayers);
+  };
+
   // const handleLayerReorder = (layout) => {
   //   if (dragging?.i === 'base') return;
   //   if (dragging?.i === dragover?.i) return;
@@ -139,19 +300,10 @@ const MapBuilder = () => {
   //   mapForm.setFieldValue('layout', newLayout);
   // };
 
-  const autoSave = (layout) => {
-    localStorage.setItem('mapDraft', JSON.stringify(layout));
-    setMapDraft(layout);
+  const autoSave = () => {
+    const currentLayers = mapForm.getFieldValue('layers');
+    localStorage.setItem('mapDraft', JSON.stringify(currentLayers));
   };
-
-  // const handleTileDelete = (layout, item) => {
-  //   if (item.i === 'base') return;
-  //   const layoutCopy = [...layout];
-
-  //   const newLayout = layoutCopy.filter((tile) => tile.i !== item.i);
-
-  //   mapForm.setFieldValue('layout', newLayout);
-  // };
 
   const getComponentStyle = (component: Component) => {
     return {
@@ -170,6 +322,8 @@ const MapBuilder = () => {
     if (pngPath) {
       if (!tempComponent) {
         setTempComponent({
+          name: 'Temp Component',
+          id: 0,
           imageUrl: pngPath,
           width: 1,
           height: 1,
@@ -215,42 +369,23 @@ const MapBuilder = () => {
           ]}
         >
           {([baseColor, width, height]) => (
-            <div
-              ref={mapRef}
-              className="scrollbar-primary timing relative overflow-x-auto overflow-y-auto rounded border-2"
-              style={{
-                borderColor: accentPrimary,
-              }}
-            >
-              <div
-                className="absolute inset-0 grid"
-                style={{
-                  gridTemplateColumns: `repeat(${width}, 48px)`,
-                  gridTemplateRows: `repeat(${height}, 48px)`,
-                }}
-                onMouseMove={handeMouseMove}
-              >
-                {Array.from({ length: width * height }).map(() => (
-                  <div
-                    className="size-12 border bg-transparent opacity-15"
-                    style={{ borderColor: accentPrimary }}
-                  />
-                ))}
-              </div>
-              <mapForm.Field name="layers">
-                {(field) => (
-                  <MapGrid2
-                    field={field}
-                    width={width}
-                    height={height}
-                    baseColor={baseColor}
-                    layers={field.state.value}
-                    tempComponent={tempComponent}
-                    getComponentStyle={getComponentStyle}
-                  />
-                )}
-              </mapForm.Field>
-            </div>
+            <mapForm.Field name="layers">
+              {(field) => (
+                <MapGrid2
+                  ref={mapRef}
+                  field={field}
+                  width={width}
+                  height={height}
+                  baseColor={baseColor}
+                  layers={field.state.value}
+                  activeLayerId={activeLayerId}
+                  tempComponent={tempComponent}
+                  getComponentStyle={getComponentStyle}
+                  handleAddComponent={handleAddComponent}
+                  handleDeleteComponent={handleDeleteComponent}
+                />
+              )}
+            </mapForm.Field>
           )}
         </mapForm.Subscribe>
         <ThemeContainer
@@ -267,38 +402,12 @@ const MapBuilder = () => {
             }}
           >
             <div className="flex items-center gap-4">
-              <mapForm.Field
-                name="width"
-                listeners={{
-                  onChange: ({ value }) => {
-                    const layout = mapForm.getFieldValue('layout');
-                    mapForm.setFieldValue(
-                      'layout',
-                      layout.map((item) =>
-                        item.i === 'base' ? { ...item, w: value } : item,
-                      ),
-                    );
-                  },
-                }}
-              >
+              <mapForm.Field name="width">
                 {(field) => (
                   <InputField field={field} type="number" label="Map Width" />
                 )}
               </mapForm.Field>
-              <mapForm.Field
-                name="height"
-                listeners={{
-                  onChange: ({ value }) => {
-                    const layout = mapForm.getFieldValue('layout');
-                    mapForm.setFieldValue(
-                      'layout',
-                      layout.map((item) =>
-                        item.i === 'base' ? { ...item, h: value } : item,
-                      ),
-                    );
-                  },
-                }}
-              >
+              <mapForm.Field name="height">
                 {(field) => (
                   <InputField field={field} type="number" label="Map Height" />
                 )}
@@ -358,6 +467,7 @@ const MapBuilder = () => {
                     />
                   )}
                 </button>
+
                 <button
                   className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
                   aria-label="Clear autosaved map"
@@ -384,6 +494,21 @@ const MapBuilder = () => {
                     className="text-tertiary group-hover:text-accent timing size-8"
                   />
                 </button>
+                {tempComponent && (
+                  <button
+                    className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
+                    aria-label="Clear temporary component"
+                    type="button"
+                    onClick={() => {
+                      setTempComponent(null);
+                    }}
+                  >
+                    <Icon
+                      path={mdiCancel}
+                      className="text-tertiary group-hover:text-accent timing size-8"
+                    />
+                  </button>
+                )}
                 <button
                   className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
                   aria-label="Open save modal"
@@ -417,7 +542,17 @@ const MapBuilder = () => {
         </ThemeContainer>
       </div>
       <mapForm.Subscribe selector={(state) => state.values.layers}>
-        {(layers) => <MapLayerList layers={layers} />}
+        {(layers) => (
+          <MapLayerList
+            layers={layers}
+            activeLayerId={activeLayerId}
+            setActiveLayerId={setActiveLayerId}
+            handleAddLayer={handleAddLayer}
+            handleDeleteLayer={handleDeleteLayer}
+            handleEditLayerName={handleEditLayerName}
+            handleHiddenLayer={handleHiddenLayer}
+          />
+        )}
       </mapForm.Subscribe>
     </>
   );

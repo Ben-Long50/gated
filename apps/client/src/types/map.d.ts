@@ -12,6 +12,7 @@ export interface Map {
   width: number;
   height: number;
   baseColor: string;
+  layerCount: number;
   layers: Layer[];
   picture: File | null;
   publicId: string;
@@ -20,11 +21,15 @@ export interface Map {
 
 interface Layer {
   name: string;
+  id: number;
+  hidden: boolean;
+  componentCount: number;
   components: Component[];
 }
 
 interface Component {
-  name?: string;
+  name: string;
+  id: number;
   imageUrl: string;
   width: number;
   height: number;

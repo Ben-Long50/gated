@@ -52,6 +52,7 @@ const InputFieldBasic = ({
           name={name}
           id={name}
           value={inputValue}
+          onClick={(e) => e.stopPropagation()}
           onFocus={() => {
             setFocus(true);
           }}
