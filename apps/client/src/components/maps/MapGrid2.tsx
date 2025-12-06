@@ -30,6 +30,7 @@ const MapGrid2 = ({
   setTempComponent: (component: Component) => void;
   getComponentStyle: (component: Component) => CSSProperties;
   handleAddComponent: (
+    component: Component,
     row: number,
     col: number,
     layers: Layer[],
@@ -41,7 +42,7 @@ const MapGrid2 = ({
     callback: (layers: Layer[]) => void,
   ) => void;
   getOccupiedTiles: (component: Component) => { col: number; row: number }[];
-  findConflict: () => boolean;
+  findConflict: (component: Component) => boolean;
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
 
@@ -52,7 +53,7 @@ const MapGrid2 = ({
     return { row, col };
   };
 
-  const conflict = findConflict();
+  const conflict = findConflict(tempComponent);
 
   return (
     <div
@@ -120,24 +121,26 @@ const MapGrid2 = ({
                     className={`relative flex size-full items-center justify-center`}
                     style={{ gridRow: row, gridColumn: col }}
                     onMouseEnter={(e) => {
+                      const newTempComponent = {
+                        ...tempComponent,
+                        mapColStart: col,
+                        mapRowStart: row,
+                      };
+
                       if (e.buttons === 1) {
                         handleAddComponent(
+                          newTempComponent,
                           row,
                           col,
                           field.state.value,
                           field.handleChange,
                         );
-                      } else {
-                        const newTempComponent = {
-                          ...tempComponent,
-                          mapColStart: col,
-                          mapRowStart: row,
-                        };
-                        setTempComponent(newTempComponent);
                       }
+                      setTempComponent(newTempComponent);
                     }}
                     onMouseDown={() => {
                       handleAddComponent(
+                        tempComponent,
                         row,
                         col,
                         field.state.value,

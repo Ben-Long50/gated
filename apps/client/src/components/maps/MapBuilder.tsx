@@ -211,12 +211,12 @@ const MapBuilder = () => {
     return tiles;
   };
 
-  const findConflict = () => {
-    if (!tempComponent) {
+  const findConflict = (component: Component) => {
+    if (!component) {
       return;
     }
 
-    const tiles = getOccupiedTiles(tempComponent);
+    const tiles = getOccupiedTiles(component);
 
     const layer = document.getElementById(`layer ${activeLayerId}`);
 
@@ -238,12 +238,13 @@ const MapBuilder = () => {
   };
 
   const handleAddComponent = (
+    component: Component,
     row: number,
     col: number,
     layers: Layer[],
     callback: (layers: Layer[]) => void,
   ) => {
-    const conflict = findConflict();
+    const conflict = findConflict(component);
 
     if (conflict) {
       return;
@@ -251,7 +252,7 @@ const MapBuilder = () => {
 
     const layer = layers.find((layer: Layer) => layer.id === activeLayerId);
 
-    if (!layer || !tempComponent?.imageUrl) {
+    if (!layer || !component?.imageUrl) {
       return;
     }
 
@@ -263,7 +264,7 @@ const MapBuilder = () => {
       components: [
         ...layer.components,
         {
-          ...tempComponent,
+          ...component,
           name: `Component ${nextComponentNumber}`,
           id: nextComponentNumber,
           mapRowStart: row,
