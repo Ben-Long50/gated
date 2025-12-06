@@ -191,20 +191,59 @@ const MapBuilder = () => {
     mapForm.setFieldValue('layers', newLayers);
   };
 
+  const getOccupiedTiles = (component: Component) => {
+    const tiles = [];
+
+    for (
+      let col = component.mapColStart;
+      col < component.mapColStart + component.width;
+      col++
+    ) {
+      for (
+        let row = component.mapRowStart;
+        row < component.mapRowStart + component.height;
+        row++
+      ) {
+        tiles.push({ col, row });
+      }
+    }
+
+    return tiles;
+  };
+
+  const findConflict = () => {
+    if (!tempComponent) {
+      return;
+    }
+
+    const tiles = getOccupiedTiles(tempComponent);
+
+    const layer = document.getElementById(`layer ${activeLayerId}`);
+
+    if (!layer) {
+      return;
+    }
+
+    const componentTiles = Array.from(layer.children)
+      .filter((child) => child.id && child instanceof HTMLDivElement)
+      .flatMap((component) => JSON.parse(component.dataset.tiles.split(',')));
+
+    const conflict = tiles.some((tile) =>
+      componentTiles.some(
+        (compTile) => compTile.row === tile.row && compTile.col === tile.col,
+      ),
+    );
+
+    return conflict;
+  };
+
   const handleAddComponent = (
-    e: MouseEvent,
     row: number,
     col: number,
     layers: Layer[],
     callback: (layers: Layer[]) => void,
   ) => {
-    const components = document
-      .elementsFromPoint(e.clientX, e.clientY)
-      .filter((el) => el instanceof HTMLDivElement);
-
-    const conflict = components.some(
-      (component) => component.dataset.layerid === String(activeLayerId),
-    );
+    const conflict = findConflict();
 
     if (conflict) {
       return;
@@ -380,9 +419,12 @@ const MapBuilder = () => {
                   layers={field.state.value}
                   activeLayerId={activeLayerId}
                   tempComponent={tempComponent}
+                  setTempComponent={setTempComponent}
                   getComponentStyle={getComponentStyle}
                   handleAddComponent={handleAddComponent}
                   handleDeleteComponent={handleDeleteComponent}
+                  getOccupiedTiles={getOccupiedTiles}
+                  findConflict={findConflict}
                 />
               )}
             </mapForm.Field>

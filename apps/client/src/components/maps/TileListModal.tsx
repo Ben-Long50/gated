@@ -43,12 +43,9 @@ const TileListModal = () => {
     const div = pngRef.current;
     if (!div) return;
 
-    // Step 1 — Load image to get intrinsic size
     const img = new Image();
     img.src = pngPath;
     img.onload = () => {
-      console.log(img.width, img.height);
-
       const naturalW = img.width;
       const naturalH = img.height;
 

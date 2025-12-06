@@ -12,9 +12,12 @@ const MapGrid2 = ({
   layers,
   activeLayerId,
   tempComponent,
+  setTempComponent,
   getComponentStyle,
   handleAddComponent,
   handleDeleteComponent,
+  getOccupiedTiles,
+  findConflict,
 }: {
   ref: any;
   field: FieldApi;
@@ -24,9 +27,9 @@ const MapGrid2 = ({
   layers: Layer[];
   activeLayerId: number;
   tempComponent: Component;
+  setTempComponent: (component: Component) => void;
   getComponentStyle: (component: Component) => CSSProperties;
   handleAddComponent: (
-    e: MouseEvent,
     row: number,
     col: number,
     layers: Layer[],
@@ -37,12 +40,10 @@ const MapGrid2 = ({
     layers: Layer[],
     callback: (layers: Layer[]) => void,
   ) => void;
+  getOccupiedTiles: (component: Component) => { col: number; row: number }[];
+  findConflict: () => boolean;
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
-  const [hoveredCoords, setHoveredCoords] = useState<{
-    row: number;
-    col: number;
-  } | null>(null);
 
   const getCoords = (width: number, index: number) => {
     const row = Math.floor((index - 1) / width + 1);
@@ -51,14 +52,7 @@ const MapGrid2 = ({
     return { row, col };
   };
 
-  const previewComponentStyle =
-    hoveredCoords && tempComponent
-      ? getComponentStyle({
-          ...tempComponent,
-          mapColStart: hoveredCoords.col,
-          mapRowStart: hoveredCoords.row,
-        })
-      : {};
+  const conflict = findConflict();
 
   return (
     <div
@@ -88,6 +82,7 @@ const MapGrid2 = ({
         if (!layer.hidden) {
           return (
             <div
+              id={`layer ${layer.id}`}
               className="layout absolute inset-px grid overflow-hidden rounded"
               style={{
                 gridTemplateColumns: `repeat(${width}, 1fr)`,
@@ -98,18 +93,23 @@ const MapGrid2 = ({
                 return (
                   <div
                     key={index}
-                    data-layerid={layer.id}
-                    data-componentid={component.id}
+                    id={`component ${component.id}`}
+                    data-tiles={JSON.stringify(getOccupiedTiles(component))}
                     className={`${active && 'ring-2 ring-inset ring-[var(--accent-primary)]'}`}
                     style={getComponentStyle(component)}
                   />
                 );
               })}
-              {tempComponent && hoveredCoords && (
+              {tempComponent && (
                 <div
-                  className="pointer-events-none opacity-50"
-                  style={previewComponentStyle}
-                />
+                  className="pointer-events-none relative opacity-50"
+                  data-tiles={JSON.stringify(getOccupiedTiles(tempComponent))}
+                  style={getComponentStyle(tempComponent)}
+                >
+                  {conflict && (
+                    <div className={`absolute inset-0 bg-red-500/50`} />
+                  )}
+                </div>
               )}
               {Array.from({ length: width * height }).map((_, index) => {
                 const { row, col } = getCoords(width, index + 1);
@@ -117,23 +117,27 @@ const MapGrid2 = ({
                 return (
                   <div
                     key={index}
-                    className="relative flex size-full items-center justify-center"
+                    className={`relative flex size-full items-center justify-center`}
                     style={{ gridRow: row, gridColumn: col }}
                     onMouseEnter={(e) => {
-                      setHoveredCoords({ row, col });
                       if (e.buttons === 1) {
                         handleAddComponent(
-                          e,
                           row,
                           col,
                           field.state.value,
                           field.handleChange,
                         );
+                      } else {
+                        const newTempComponent = {
+                          ...tempComponent,
+                          mapColStart: col,
+                          mapRowStart: row,
+                        };
+                        setTempComponent(newTempComponent);
                       }
                     }}
-                    onMouseDown={(e) => {
+                    onMouseDown={() => {
                       handleAddComponent(
-                        e,
                         row,
                         col,
                         field.state.value,
