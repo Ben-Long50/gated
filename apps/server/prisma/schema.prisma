@@ -96,13 +96,14 @@ model Map {
   width       Int
   height      Int
   baseColor   String
-  layout      Json
+  layerCount  Int
+  layers      Json
   locations   Location[]
   encounters  Encounter[]
 }
 
 enum MapType {
-  location
+  map
   component
 }
 
