@@ -11,6 +11,7 @@ const MapGrid2 = ({
   baseColor,
   layers,
   activeLayerId,
+  activeComponentId,
   tempComponent,
   setTempComponent,
   getComponentStyle,
@@ -26,6 +27,7 @@ const MapGrid2 = ({
   baseColor: string;
   layers: Layer[];
   activeLayerId: number;
+  activeComponentId: number | null;
   tempComponent: Component;
   setTempComponent: (component: Component) => void;
   getComponentStyle: (component: Component) => CSSProperties;
@@ -38,6 +40,7 @@ const MapGrid2 = ({
   ) => void;
   handleDeleteComponent: (
     e: MouseEvent,
+    id: number | undefined,
     layers: Layer[],
     callback: (layers: Layer[]) => void,
   ) => void;
@@ -95,10 +98,17 @@ const MapGrid2 = ({
                   <div
                     key={index}
                     id={`component ${component.id}`}
+                    data-layer={`layer ${layer.id}`}
                     data-tiles={JSON.stringify(getOccupiedTiles(component))}
-                    className={`${active && 'ring-2 ring-inset ring-[var(--accent-primary)]'}`}
+                    className={`${active && 'ring-2 ring-inset ring-[var(--accent-primary)]'} relative`}
                     style={getComponentStyle(component)}
-                  />
+                  >
+                    {activeComponentId === component.id && (
+                      <div
+                        className={`absolute inset-0 bg-[var(--accent-primary)] opacity-40`}
+                      />
+                    )}
+                  </div>
                 );
               })}
               {tempComponent && (
@@ -108,7 +118,7 @@ const MapGrid2 = ({
                   style={getComponentStyle(tempComponent)}
                 >
                   {conflict && (
-                    <div className={`absolute inset-0 bg-red-500/50`} />
+                    <div className={`absolute inset-0 bg-red-500 opacity-40`} />
                   )}
                 </div>
               )}
@@ -150,6 +160,7 @@ const MapGrid2 = ({
                     onDoubleClick={(e) => {
                       handleDeleteComponent(
                         e,
+                        undefined,
                         field.state.value,
                         field.handleChange,
                       );

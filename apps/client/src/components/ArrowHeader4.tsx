@@ -21,13 +21,13 @@ const ArrowHeader4 = ({
       className={`${className} text-left ${reverse && 'flex-row-reverse'} flex items-start gap-4`}
     >
       <Icon
-        className={`${mobile ? 'mt-[7px]' : 'mt-[9px]'} text-primary shrink-0`}
+        className={`${mobile ? 'mt-[7px]' : 'mt-[9px]'} shrink-0`}
         style={{ ...style }}
         path={mdiTriangleDown}
         size={0.375}
         rotate={reverse ? 90 : -90}
       />
-      <h4 className="truncate text-inherit" style={{ ...style }}>
+      <h4 className="truncate !text-inherit" style={{ ...style }}>
         {title}
       </h4>
     </div>

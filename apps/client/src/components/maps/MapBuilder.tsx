@@ -17,9 +17,9 @@ import useCreateMapMutation from 'src/hooks/useCreateMapMutation/useCreateMapMut
 import useCampaignMapQuery from 'src/hooks/useCampaignMapQuery/useCampaignMapQuery';
 import Loading from '../Loading';
 import { LayoutContext } from 'src/contexts/LayoutContext';
-import { Component, Layer, Map, MapType } from 'src/types/map';
+import { Component, Layer, MapType } from 'src/types/map';
 import MapGrid2 from './MapGrid2';
-import MapLayerList from './MapLayerList';
+import MapSidebar from './MapSidebar';
 
 const MapBuilder = () => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -36,6 +36,9 @@ const MapBuilder = () => {
 
   const [activeLayerId, setActiveLayerId] = useState(() =>
     map ? map.layers[0].id : 1,
+  );
+  const [activeComponentId, setActiveComponentId] = useState<number | null>(
+    null,
   );
 
   const [mapDraft, setMapDraft] = useState(() =>
@@ -139,6 +142,7 @@ const MapBuilder = () => {
       ]);
 
       mapForm.setFieldValue('layerCount', nextLayerNumber);
+      setActiveLayerId(nextLayerNumber);
     }
   };
 
@@ -183,6 +187,31 @@ const MapBuilder = () => {
     const newLayers = currentLayers.map((layer) => {
       if (layer.id === id) {
         return { ...layer, name: newName };
+      } else {
+        return layer;
+      }
+    });
+
+    mapForm.setFieldValue('layers', newLayers);
+  };
+
+  const handleEditComponentName = (
+    layerId: number,
+    componentId: number,
+    newName: string,
+  ) => {
+    const currentLayers = mapForm.getFieldValue('layers');
+
+    const newLayers = currentLayers.map((layer) => {
+      if (layer.id === layerId) {
+        return {
+          ...layer,
+          components: layer?.components.map((component) =>
+            component.id === componentId
+              ? { ...component, name: newName }
+              : component,
+          ),
+        };
       } else {
         return layer;
       }
@@ -285,29 +314,38 @@ const MapBuilder = () => {
   };
 
   const handleDeleteComponent = (
-    e: MouseEvent,
+    e: MouseEvent | undefined,
+    id: number | undefined,
     layers: Layer[],
     callback: (layers: Layer[]) => void,
   ) => {
-    const componentIds = document
-      .elementsFromPoint(e.clientX, e.clientY)
-      .filter(
-        (el) =>
-          el instanceof HTMLDivElement &&
-          el.dataset.componentid &&
-          el.dataset.layerid === String(activeLayerId),
-      )
-      .map((component) => Number(component.dataset.componentid));
-
     const layer = layers.find((layer: Layer) => layer.id === activeLayerId);
+    let newComponents = [] as Component[];
 
     if (!layer) {
       return;
     }
 
-    const newComponents = layer.components.filter(
-      (component) => !componentIds.includes(component.id),
-    );
+    if (id) {
+      newComponents = layer.components.filter(
+        (component) => component.id !== id,
+      );
+    } else if (e) {
+      const components = document
+        .elementsFromPoint(e.clientX, e.clientY)
+        .filter(
+          (el) =>
+            el instanceof HTMLDivElement &&
+            el.dataset.layer === `layer ${activeLayerId}`,
+        )
+        .map((component) => component.id);
+
+      newComponents = layer.components.filter(
+        (component) => !components.includes(`component ${component.id}`),
+      );
+    } else {
+      return;
+    }
 
     const newLayer = {
       ...layer,
@@ -322,23 +360,33 @@ const MapBuilder = () => {
       }
     }) as Layer[];
 
-    callback(newLayers);
+    if (callback) {
+      callback(newLayers);
+    } else {
+      mapForm.setFieldValue('layers', newLayers);
+    }
   };
 
-  // const handleLayerReorder = (layout) => {
-  //   if (dragging?.i === 'base') return;
-  //   if (dragging?.i === dragover?.i) return;
+  const handleLayerReorder = (
+    oldIndex: number,
+    newIndex: number,
+    callback: (layers: Layer[]) => void,
+  ) => {
+    if (typeof oldIndex !== 'number' || typeof newIndex !== 'number') {
+      return;
+    }
 
-  //   const newLayout = [...layout];
+    const layers = mapForm.getFieldValue('layers');
 
-  //   const draggedIndex = newLayout.findIndex((item) => item.i === dragging?.i);
-  //   const dragoverIndex = newLayout.findIndex((item) => item.i === dragover?.i);
+    const [item] = layers.splice(oldIndex, 1);
+    layers.splice(newIndex, 0, item);
 
-  //   const [draggedItem] = newLayout.splice(draggedIndex, 1);
-  //   newLayout.splice(dragoverIndex, 0, draggedItem);
-
-  //   mapForm.setFieldValue('layout', newLayout);
-  // };
+    if (callback) {
+      callback(layers);
+    } else {
+      mapForm.setFieldValue('layers', layers);
+    }
+  };
 
   const autoSave = () => {
     const currentLayers = mapForm.getFieldValue('layers');
@@ -419,6 +467,7 @@ const MapBuilder = () => {
                   baseColor={baseColor}
                   layers={field.state.value}
                   activeLayerId={activeLayerId}
+                  activeComponentId={activeComponentId}
                   tempComponent={tempComponent}
                   setTempComponent={setTempComponent}
                   getComponentStyle={getComponentStyle}
@@ -584,19 +633,24 @@ const MapBuilder = () => {
           </form>
         </ThemeContainer>
       </div>
-      <mapForm.Subscribe selector={(state) => state.values.layers}>
-        {(layers) => (
-          <MapLayerList
-            layers={layers}
+      <mapForm.Field name="layers">
+        {(field) => (
+          <MapSidebar
+            field={field}
+            layers={field.state.value}
             activeLayerId={activeLayerId}
             setActiveLayerId={setActiveLayerId}
+            setActiveComponentId={setActiveComponentId}
             handleAddLayer={handleAddLayer}
             handleDeleteLayer={handleDeleteLayer}
             handleEditLayerName={handleEditLayerName}
             handleHiddenLayer={handleHiddenLayer}
+            handleEditComponentName={handleEditComponentName}
+            handleDeleteComponent={handleDeleteComponent}
+            handleLayerReorder={handleLayerReorder}
           />
         )}
-      </mapForm.Subscribe>
+      </mapForm.Field>
     </>
   );
 };
