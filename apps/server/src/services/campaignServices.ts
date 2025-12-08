@@ -419,7 +419,8 @@ const campaignServices = {
       width: number;
       height: number;
       baseColor: string;
-      layout: JsonObject;
+      layerCount: number;
+      layers: JsonObject;
     },
   ) => {
     const { id, ...data } = formData;
