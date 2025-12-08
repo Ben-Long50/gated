@@ -40,7 +40,7 @@ interface Component {
 }
 
 enum MapType {
-  location = 'location',
+  map = 'map',
   component = 'component',
 }
 

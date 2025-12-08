@@ -9,7 +9,7 @@ const useMaps = () => {
   const { data: maps, isLoading } = useCampaignMapsQuery(Number(campaignId));
 
   return {
-    locations: maps?.filter((map) => map.type === 'location') || [],
+    locations: maps?.filter((map) => map.type === 'map') || [],
     components: maps?.filter((map) => map.type === 'component') || [],
     drafts: maps?.filter((map) => map.draft) || [],
     isLoading,

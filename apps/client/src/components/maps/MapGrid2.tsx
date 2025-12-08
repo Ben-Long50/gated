@@ -1,7 +1,8 @@
 import { FieldApi } from '@tanstack/react-form';
-import { CSSProperties, Ref, useContext, useState } from 'react';
+import { CSSProperties, useContext } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import { Component, Layer } from 'src/types/map';
+import DragScrollContainer from './DragScrollContainer';
 
 const MapGrid2 = ({
   ref,
@@ -59,122 +60,132 @@ const MapGrid2 = ({
   const conflict = findConflict(tempComponent);
 
   return (
-    <div
-      ref={ref}
-      className="scrollbar-primary timing relative rounded p-1 ring-1 ring-inset ring-[var(--accent-primary)]"
-      style={{
-        borderColor: accentPrimary,
-        backgroundColor: baseColor,
-        width: width * 48,
-        height: height * 48,
-      }}
+    <DragScrollContainer
+      draggable={tempComponent === null}
+      className={`scrollbar-primary timing pointer-events-auto relative mx-auto mb-auto max-h-full max-w-full overflow-y-auto rounded border-2`}
+      style={{ borderColor: accentPrimary }}
     >
       <div
-        className="pointer-events-none absolute inset-px grid rounded"
+        ref={ref}
+        className="timing relative overflow-hidden"
         style={{
-          gridTemplateColumns: `repeat(${width}, 48px)`,
-          gridTemplateRows: `repeat(${height}, 48px)`,
+          backgroundColor: baseColor,
+          width: width * 48,
+          height: height * 48,
         }}
       >
-        {Array.from({ length: width * height }).map(() => (
-          <div className="border-accent bg-transparent opacity-20 ring-1 ring-inset ring-[var(--accent-primary)]" />
-        ))}
-      </div>
-      {layers.map((layer) => {
-        const active = layer.id === activeLayerId;
+        <div
+          className="pointer-events-none absolute inset-px grid rounded"
+          style={{
+            gridTemplateColumns: `repeat(${width}, 48px)`,
+            gridTemplateRows: `repeat(${height}, 48px)`,
+          }}
+        >
+          {Array.from({ length: width * height }).map(() => (
+            <div className="border-accent bg-transparent opacity-20 ring-1 ring-inset ring-[var(--accent-primary)]" />
+          ))}
+        </div>
+        {layers.map((layer) => {
+          const active = layer.id === activeLayerId;
 
-        if (!layer.hidden) {
-          return (
-            <div
-              id={`layer ${layer.id}`}
-              className="layout absolute inset-px grid overflow-hidden rounded"
-              style={{
-                gridTemplateColumns: `repeat(${width}, 1fr)`,
-                gridTemplateRows: `repeat(${height}, 1fr)`,
-              }}
-            >
-              {layer.components.map((component, index) => {
-                return (
+          if (!layer.hidden) {
+            return (
+              <div
+                id={`layer ${layer.id}`}
+                className="layout absolute inset-px grid overflow-hidden rounded"
+                style={{
+                  gridTemplateColumns: `repeat(${width}, 1fr)`,
+                  gridTemplateRows: `repeat(${height}, 1fr)`,
+                }}
+              >
+                {layer.components.map((component, index) => {
+                  return (
+                    <div
+                      key={index}
+                      id={`component ${component.id}`}
+                      data-layer={`layer ${layer.id}`}
+                      data-tiles={JSON.stringify(getOccupiedTiles(component))}
+                      className={`${active && 'ring-2 ring-inset ring-[var(--accent-primary)]'} relative`}
+                      style={getComponentStyle(component)}
+                    >
+                      {activeComponentId === component.id && (
+                        <div
+                          className={`absolute inset-0 bg-[var(--accent-primary)] opacity-40`}
+                        />
+                      )}
+                    </div>
+                  );
+                })}
+                {tempComponent && (
                   <div
-                    key={index}
-                    id={`component ${component.id}`}
-                    data-layer={`layer ${layer.id}`}
-                    data-tiles={JSON.stringify(getOccupiedTiles(component))}
-                    className={`${active && 'ring-2 ring-inset ring-[var(--accent-primary)]'} relative`}
-                    style={getComponentStyle(component)}
+                    className="pointer-events-none relative opacity-50"
+                    data-tiles={JSON.stringify(getOccupiedTiles(tempComponent))}
+                    style={getComponentStyle(tempComponent)}
                   >
-                    {activeComponentId === component.id && (
+                    {conflict && (
                       <div
-                        className={`absolute inset-0 bg-[var(--accent-primary)] opacity-40`}
+                        className={`absolute inset-0 bg-red-500 opacity-40`}
                       />
                     )}
                   </div>
-                );
-              })}
-              {tempComponent && (
-                <div
-                  className="pointer-events-none relative opacity-50"
-                  data-tiles={JSON.stringify(getOccupiedTiles(tempComponent))}
-                  style={getComponentStyle(tempComponent)}
-                >
-                  {conflict && (
-                    <div className={`absolute inset-0 bg-red-500 opacity-40`} />
-                  )}
-                </div>
-              )}
-              {Array.from({ length: width * height }).map((_, index) => {
-                const { row, col } = getCoords(width, index + 1);
+                )}
+                {Array.from({ length: width * height }).map((_, index) => {
+                  const { row, col } = getCoords(width, index + 1);
 
-                return (
-                  <div
-                    key={index}
-                    className={`relative flex size-full items-center justify-center`}
-                    style={{ gridRow: row, gridColumn: col }}
-                    onMouseEnter={(e) => {
-                      const newTempComponent = {
-                        ...tempComponent,
-                        mapColStart: col,
-                        mapRowStart: row,
-                      };
+                  return (
+                    <div
+                      key={index}
+                      className={`relative flex size-full items-center justify-center`}
+                      style={{ gridRow: row, gridColumn: col }}
+                      onMouseEnter={(e) => {
+                        if (!tempComponent) {
+                          return;
+                        }
+                        const newTempComponent = {
+                          ...tempComponent,
+                          mapColStart: col,
+                          mapRowStart: row,
+                        };
 
-                      if (e.buttons === 1) {
+                        if (e.buttons === 1) {
+                          handleAddComponent(
+                            newTempComponent,
+                            row,
+                            col,
+                            field.state.value,
+                            field.handleChange,
+                          );
+                        }
+                        setTempComponent(newTempComponent);
+                      }}
+                      onMouseDown={() => {
                         handleAddComponent(
-                          newTempComponent,
+                          tempComponent,
                           row,
                           col,
                           field.state.value,
                           field.handleChange,
                         );
-                      }
-                      setTempComponent(newTempComponent);
-                    }}
-                    onMouseDown={() => {
-                      handleAddComponent(
-                        tempComponent,
-                        row,
-                        col,
-                        field.state.value,
-                        field.handleChange,
-                      );
-                    }}
-                    onDoubleClick={(e) => {
-                      handleDeleteComponent(
-                        e,
-                        undefined,
-                        field.state.value,
-                        field.handleChange,
-                      );
-                    }}
-                  />
-                );
-              })}
-            </div>
-          );
-        } else {
-          return;
-        }
-      })}
-    </div>
+                      }}
+                      onDoubleClick={(e) => {
+                        handleDeleteComponent(
+                          e,
+                          undefined,
+                          field.state.value,
+                          field.handleChange,
+                        );
+                      }}
+                    />
+                  );
+                })}
+              </div>
+            );
+          } else {
+            return;
+          }
+        })}
+      </div>
+    </DragScrollContainer>
   );
 };
 

@@ -92,7 +92,7 @@ const MapLayerList = ({
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
-        <div className="scrollbar-primary-2 mt-4 flex h-full flex-col gap-3 overflow-y-auto pb-2">
+        <div className="scrollbar-primary-2 my-4 flex h-full flex-col gap-3 overflow-y-auto pb-2">
           {layers?.map((layer, index) => {
             const active = layer.id === activeLayerId;
 

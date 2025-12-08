@@ -20,6 +20,7 @@ import { LayoutContext } from 'src/contexts/LayoutContext';
 import { Component, Layer, MapType } from 'src/types/map';
 import MapGrid2 from './MapGrid2';
 import MapSidebar from './MapSidebar';
+import html2canvas from 'html2canvas';
 
 const MapBuilder = () => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -72,7 +73,7 @@ const MapBuilder = () => {
   const mapForm = useForm({
     defaultValues: {
       id: map?.id || null,
-      type: map?.type || ('location' as MapType),
+      type: map?.type || ('map' as MapType),
       draft: map?.draft ?? true,
       name: map?.name || '',
       description: map?.description || '',
@@ -95,33 +96,35 @@ const MapBuilder = () => {
     onSubmit: async ({ value }) => {
       console.log(value);
 
-      // if (mapRef.current) {
-      //   const canvas = await html2canvas(mapRef.current);
+      if (mapRef.current) {
+        const canvas = await html2canvas(mapRef.current);
 
-      //   const blob = await new Promise<Blob | null>((resolve) => {
-      //     canvas.toBlob((blob) => resolve(blob), 'image/png');
-      //   });
+        const blob = await new Promise<Blob | null>((resolve) => {
+          canvas.toBlob((blob) => resolve(blob), 'image/png');
+        });
 
-      //   if (!blob) return;
+        if (!blob) return;
 
-      //   const fileName = value.name.split(' ').join('_').toLowerCase();
+        const fileName = value.name.split(' ').join('_').toLowerCase();
 
-      //   const file = new File([blob], `${fileName}.png`, { type: 'image/png' });
-      //   value.picture = file;
-      // }
+        const file = new File([blob], `${fileName}.png`, { type: 'image/png' });
+        value.picture = file;
+      }
 
-      // const formData = new FormData();
+      const formData = new FormData();
 
-      // Object.entries(value).forEach(([key, value]) => {
-      //   if (key === 'picture' && value instanceof File) {
-      //     formData.append(key, value);
-      //   } else {
-      //     formData.append(key, JSON.stringify(value));
-      //   }
-      // });
+      const { publicId, ...data } = value;
 
-      // createMap.mutate(formData);
-      // localStorage.removeItem('mapDraft');
+      Object.entries(data).forEach(([key, value]) => {
+        if (key === 'picture' && value instanceof File) {
+          formData.append(key, value);
+        } else {
+          formData.append(key, JSON.stringify(value));
+        }
+      });
+
+      createMap.mutate(formData);
+      localStorage.removeItem('mapDraft');
     },
   });
 
@@ -443,12 +446,11 @@ const MapBuilder = () => {
   return (
     <>
       <div
-        className={`timing flex h-full w-full max-w-9xl flex-col items-center gap-8`}
+        className={`timing flex h-full w-full flex-col items-center gap-8 pr-16`}
       >
         <h1 className="w-full text-center">
           {map ? `Edit ${map?.name}` : 'Create Map'}
         </h1>
-
         <mapForm.Subscribe
           selector={(state) => [
             state.values.baseColor,
@@ -480,20 +482,31 @@ const MapBuilder = () => {
             </mapForm.Field>
           )}
         </mapForm.Subscribe>
-        <ThemeContainer
-          className="!sticky bottom-[33px] z-10 mt-auto w-full"
-          borderColor={accentPrimary}
-          chamfer="medium"
-        >
-          <form
-            className="flex flex-col gap-6 p-6"
-            onSubmit={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              mapForm.handleSubmit();
-            }}
+      </div>
+      <mapForm.Field name="layers">
+        {(field) => (
+          <MapSidebar
+            field={field}
+            layers={field.state.value}
+            activeLayerId={activeLayerId}
+            setActiveLayerId={setActiveLayerId}
+            setActiveComponentId={setActiveComponentId}
+            handleAddLayer={handleAddLayer}
+            handleDeleteLayer={handleDeleteLayer}
+            handleEditLayerName={handleEditLayerName}
+            handleHiddenLayer={handleHiddenLayer}
+            handleEditComponentName={handleEditComponentName}
+            handleDeleteComponent={handleDeleteComponent}
+            handleLayerReorder={handleLayerReorder}
           >
-            <div className="flex items-center gap-4">
+            <form
+              className="flex flex-col gap-4"
+              onSubmit={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                mapForm.handleSubmit();
+              }}
+            >
               <mapForm.Field name="width">
                 {(field) => (
                   <InputField field={field} type="number" label="Map Width" />
@@ -504,29 +517,58 @@ const MapBuilder = () => {
                   <InputField field={field} type="number" label="Map Height" />
                 )}
               </mapForm.Field>
-              <div className="ml-auto flex items-center gap-4">
-                <mapForm.Field name="baseColor">
-                  {(field) => (
-                    <div className="flex items-center gap-4">
-                      {!mobile && <h4 className="text-tertiary">Base Color</h4>}
-                      <label
-                        className="shadow-color size-10 shrink-0 cursor-pointer rounded-full shadow-md"
-                        style={{ backgroundColor: field.state.value }}
-                        htmlFor="baseColor"
-                        onClick={() => colorRef.current?.focus()}
-                      >
-                        <input
-                          ref={colorRef}
-                          className="size-0"
-                          id="baseColor"
-                          name="baseColor"
-                          type="color"
-                          onChange={(e) => field.handleChange(e.target.value)}
-                        />
-                      </label>
-                    </div>
-                  )}
-                </mapForm.Field>
+              <mapForm.Field name="baseColor">
+                {(field) => (
+                  <div className="flex items-center justify-between gap-4">
+                    {!mobile && <h4 className="text-tertiary">Base Color</h4>}
+                    <label
+                      className="shadow-color size-10 shrink-0 cursor-pointer rounded-full shadow-md"
+                      style={{ backgroundColor: field.state.value }}
+                      htmlFor="baseColor"
+                      onClick={() => colorRef.current?.focus()}
+                    >
+                      <input
+                        ref={colorRef}
+                        className="size-0"
+                        id="baseColor"
+                        name="baseColor"
+                        type="color"
+                        onChange={(e) => field.handleChange(e.target.value)}
+                      />
+                    </label>
+                  </div>
+                )}
+              </mapForm.Field>
+              <div className="mr-auto flex items-center gap-4">
+                <button
+                  className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
+                  aria-label="Open save modal"
+                  type="button"
+                  onClick={() => {
+                    setTempComponent(null);
+                    navigate('tileList');
+                  }}
+                >
+                  <Icon
+                    path={mdiGrid}
+                    className="text-tertiary group-hover:text-accent timing size-8"
+                  />
+                </button>
+                {tempComponent && (
+                  <button
+                    className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
+                    aria-label="Clear temporary component"
+                    type="button"
+                    onClick={() => {
+                      setTempComponent(null);
+                    }}
+                  >
+                    <Icon
+                      path={mdiCancel}
+                      className="text-tertiary group-hover:text-accent timing size-8"
+                    />
+                  </button>
+                )}
                 <button
                   className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
                   aria-label="Load autosaved map"
@@ -586,69 +628,25 @@ const MapBuilder = () => {
                     className="text-tertiary group-hover:text-accent timing size-8"
                   />
                 </button>
-                {tempComponent && (
-                  <button
-                    className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
-                    aria-label="Clear temporary component"
-                    type="button"
-                    onClick={() => {
-                      setTempComponent(null);
-                    }}
-                  >
-                    <Icon
-                      path={mdiCancel}
-                      className="text-tertiary group-hover:text-accent timing size-8"
-                    />
-                  </button>
-                )}
-                <button
-                  className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
-                  aria-label="Open save modal"
-                  type="button"
-                  onClick={() => navigate('tileList')}
-                >
-                  <Icon
-                    path={mdiGrid}
-                    className="text-tertiary group-hover:text-accent timing size-8"
-                  />
-                </button>
               </div>
-            </div>
-            <Outlet
-              context={{
-                form: mapForm,
-                isPending: createMap.isPending,
-                folders,
-                currentFolder,
-                setCurrentFolder,
-                path,
-                setPath,
-                isPng,
-                pngPath,
-                handleTileSelect,
-                tempComponent,
-                setTempComponent,
-              }}
-            />
-          </form>
-        </ThemeContainer>
-      </div>
-      <mapForm.Field name="layers">
-        {(field) => (
-          <MapSidebar
-            field={field}
-            layers={field.state.value}
-            activeLayerId={activeLayerId}
-            setActiveLayerId={setActiveLayerId}
-            setActiveComponentId={setActiveComponentId}
-            handleAddLayer={handleAddLayer}
-            handleDeleteLayer={handleDeleteLayer}
-            handleEditLayerName={handleEditLayerName}
-            handleHiddenLayer={handleHiddenLayer}
-            handleEditComponentName={handleEditComponentName}
-            handleDeleteComponent={handleDeleteComponent}
-            handleLayerReorder={handleLayerReorder}
-          />
+              <Outlet
+                context={{
+                  form: mapForm,
+                  isPending: createMap.isPending,
+                  folders,
+                  currentFolder,
+                  setCurrentFolder,
+                  path,
+                  setPath,
+                  isPng,
+                  pngPath,
+                  handleTileSelect,
+                  tempComponent,
+                  setTempComponent,
+                }}
+              />
+            </form>
+          </MapSidebar>
         )}
       </mapForm.Field>
     </>

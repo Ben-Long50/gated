@@ -8,10 +8,12 @@ import {
 } from 'react';
 
 const DragScrollContainer = ({
+  draggable,
   className,
   children,
   style,
 }: {
+  draggable: boolean;
   className: string;
   children: ReactNode;
   style: CSSProperties;
@@ -22,6 +24,9 @@ const DragScrollContainer = ({
   const [scroll, setScroll] = useState({ x: 0, y: 0 });
 
   const handleMouseDown = (e) => {
+    if (!draggable) {
+      return;
+    }
     if (e.target.closest('.token')) return;
 
     setIsDown(true);
@@ -41,6 +46,9 @@ const DragScrollContainer = ({
   const handleMouseUp = () => setIsDown(false);
 
   const handleMouseMove = (e) => {
+    if (!draggable) {
+      return;
+    }
     if (!isDown) return;
     e.preventDefault();
     if (containerRef.current) {
@@ -56,7 +64,7 @@ const DragScrollContainer = ({
   return (
     <div
       ref={containerRef}
-      className={`${className} ${isDown ? 'cursor-grabbing' : 'cursor-grab'} select-none overflow-x-auto overflow-y-auto whitespace-nowrap`}
+      className={`${className} ${draggable ? (isDown ? 'cursor-grabbing' : 'cursor-grab') : 'pointer-events-none'} select-none overflow-x-auto overflow-y-auto whitespace-nowrap`}
       onMouseDown={handleMouseDown}
       onMouseLeave={handleMouseLeave}
       onMouseUp={handleMouseUp}

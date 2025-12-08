@@ -119,6 +119,7 @@ const Encounter = () => {
           ))}
         </div>
         <DragScrollContainer
+          draggable={true}
           className={`scrollbar-primary timing pointer-events-auto relative mx-auto mb-auto max-h-full max-w-full overflow-y-auto rounded border-2`}
           style={{ borderColor: accentPrimary }}
         >

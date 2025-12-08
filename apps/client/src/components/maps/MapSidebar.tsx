@@ -1,13 +1,14 @@
 import { Layer } from 'src/types/map';
 import { mdiLayers, mdiPuzzleOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import useNavigationStore from 'src/stores/navbarStore';
 import MapLayerList from './MapLayerList';
 import MapComponentList from './MapComponentList';
 import { FieldApi } from '@tanstack/react-form';
 
 const MapSidebar = ({
+  children,
   field,
   layers,
   activeLayerId,
@@ -21,6 +22,7 @@ const MapSidebar = ({
   handleDeleteComponent,
   handleLayerReorder,
 }: {
+  children: ReactNode;
   field: FieldApi;
   layers: Layer[];
   activeLayerId: number;
@@ -98,6 +100,7 @@ const MapSidebar = ({
             handleDeleteComponent={handleDeleteComponent}
           />
         )}
+        {children}
       </div>
     </div>
   );
