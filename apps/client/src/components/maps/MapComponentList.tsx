@@ -55,7 +55,7 @@ const MapComponentList = ({
       >
         Back
       </BtnRect>
-      <div className="scrollbar-primary-2 my-4 flex flex-col gap-3 overflow-y-auto pb-2">
+      <div className="scrollbar-primary-2 my-4 flex h-full flex-col gap-3 overflow-y-auto pb-2">
         {activeLayer?.components.map((component, index) => {
           return (
             <div

@@ -1,5 +1,5 @@
 import { Layer } from 'src/types/map';
-import { mdiLayers, mdiPuzzleOutline } from '@mdi/js';
+import { mdiLayersOutline, mdiPuzzleOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { ReactNode, useState } from 'react';
 import useNavigationStore from 'src/stores/navbarStore';
@@ -65,7 +65,10 @@ const MapSidebar = ({
       }}
     >
       {sidebarMode === 'layer' ? (
-        <Icon path={mdiLayers} className="text-primary ml-1 size-10 shrink-0" />
+        <Icon
+          path={mdiLayersOutline}
+          className="text-primary ml-1 size-10 shrink-0"
+        />
       ) : (
         <Icon
           path={mdiPuzzleOutline}

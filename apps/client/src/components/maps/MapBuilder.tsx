@@ -1,6 +1,4 @@
 import { useContext, useEffect, useRef, useState } from 'react';
-import ThemeContainer from '../ThemeContainer';
-import { ThemeContext } from 'src/contexts/ThemeContext';
 import InputField from '../InputField';
 import { useForm } from '@tanstack/react-form';
 import Icon from '@mdi/react';
@@ -11,6 +9,8 @@ import {
   mdiContentSaveOffOutline,
   mdiContentSaveOutline,
   mdiGrid,
+  mdiLayersOff,
+  mdiLayersOffOutline,
 } from '@mdi/js';
 import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import useCreateMapMutation from 'src/hooks/useCreateMapMutation/useCreateMapMutation';
@@ -23,7 +23,6 @@ import MapSidebar from './MapSidebar';
 import html2canvas from 'html2canvas';
 
 const MapBuilder = () => {
-  const { accentPrimary } = useContext(ThemeContext);
   const { mobile } = useContext(LayoutContext);
 
   const { campaignId, mapId } = useParams();
@@ -35,7 +34,7 @@ const MapBuilder = () => {
 
   const { data: map, isLoading } = useCampaignMapQuery(Number(mapId));
 
-  const [activeLayerId, setActiveLayerId] = useState(() =>
+  const [activeLayerId, setActiveLayerId] = useState<number | null>(() =>
     map ? map.layers[0].id : 1,
   );
   const [activeComponentId, setActiveComponentId] = useState<number | null>(
@@ -257,7 +256,12 @@ const MapBuilder = () => {
     }
 
     const componentTiles = Array.from(layer.children)
-      .filter((child) => child.id && child instanceof HTMLDivElement)
+      .filter(
+        (child) =>
+          child.id &&
+          child instanceof HTMLDivElement &&
+          child.id !== `component ${component.id}`,
+      )
       .flatMap((component) => JSON.parse(component.dataset.tiles.split(',')));
 
     const conflict = tiles.some((tile) =>
@@ -470,6 +474,7 @@ const MapBuilder = () => {
                   layers={field.state.value}
                   activeLayerId={activeLayerId}
                   activeComponentId={activeComponentId}
+                  setActiveComponentId={setActiveComponentId}
                   tempComponent={tempComponent}
                   setTempComponent={setTempComponent}
                   getComponentStyle={getComponentStyle}
@@ -554,6 +559,22 @@ const MapBuilder = () => {
                     className="text-tertiary group-hover:text-accent timing size-8"
                   />
                 </button>
+                {activeLayerId && (
+                  <button
+                    className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
+                    aria-label="Open save modal"
+                    type="button"
+                    onClick={() => {
+                      setActiveLayerId(null);
+                      setTempComponent(null);
+                    }}
+                  >
+                    <Icon
+                      path={mdiLayersOffOutline}
+                      className="text-tertiary group-hover:text-accent timing size-8"
+                    />
+                  </button>
+                )}
                 {tempComponent && (
                   <button
                     className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
