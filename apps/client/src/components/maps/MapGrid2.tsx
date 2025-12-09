@@ -154,7 +154,7 @@ const MapGrid2 = ({
               return (
                 <div
                   id={`layer ${layer.id}`}
-                  className="layout absolute inset-px grid overflow-hidden rounded"
+                  className={`${activeLayerId !== layer.id && 'pointer-events-none'} layout absolute inset-px grid overflow-hidden rounded`}
                   style={{
                     gridTemplateColumns: `repeat(${width}, 1fr)`,
                     gridTemplateRows: `repeat(${height}, 1fr)`,
