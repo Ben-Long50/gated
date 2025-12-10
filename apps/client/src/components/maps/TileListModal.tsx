@@ -91,17 +91,23 @@ const TileListModal = () => {
         {path.slice(1).map((part: string, index: number) => (
           <ArrowHeader3 key={index} title={capitalCase(part)} />
         ))}
+        {tempComponent && (
+          <button
+            className="bg-tertiary group ml-auto flex rounded p-1.5 shadow-md shadow-black"
+            aria-label="Clear temporary component"
+            type="button"
+            onClick={() => {
+              setTempComponent(null);
+            }}
+          >
+            <Icon
+              path={mdiCancel}
+              className="text-tertiary group-hover:text-accent timing size-8"
+            />
+          </button>
+        )}
       </div>
       <Divider className="!my-0" />
-      <div className="flex items-center">
-        <BtnIcon
-          active={!!tempComponent}
-          path={mdiCancel}
-          onClick={() => {
-            setTempComponent(null);
-          }}
-        />
-      </div>
       <div className="scrollbar-primary flex h-full w-full items-start justify-center overflow-y-auto">
         {isPng ? (
           <div
@@ -144,7 +150,7 @@ const TileListModal = () => {
             })}
           </div>
         ) : (
-          <div className="scrollbar-primary mb-auto grid w-full grid-cols-1 gap-4 overflow-y-auto rounded px-2 sm:grid-cols-2">
+          <div className="scrollbar-primary mb-auto grid w-full grid-cols-1 gap-4 overflow-y-auto rounded pb-2 sm:grid-cols-2">
             {Object.entries(currentFolder).map(([key, value], index) =>
               key !== 'files' ? (
                 <button

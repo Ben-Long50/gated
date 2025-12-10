@@ -51,6 +51,7 @@
     "react-router-dom": "^6.23.1",
     "react-xarrows": "^2.0.2",
     "romans": "^3.0.0",
+    "sharp": "^0.34.5",
     "socket.io-client": "^4.8.1",
     "zustand": "^5.0.5"
   },

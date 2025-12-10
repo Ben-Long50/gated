@@ -3,7 +3,13 @@ import { CSSProperties, useContext, useState } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import { Component, Layer } from 'src/types/map';
 import DragScrollContainer from './DragScrollContainer';
-import { DndContext, useDroppable } from '@dnd-kit/core';
+import {
+  DndContext,
+  PointerSensor,
+  useDroppable,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
 import MapBuilderTile from './MapBuilderTile';
 import MapBuilderComponent from './MapBuilderComponent';
 import { ReturnDocument } from 'mongodb';
@@ -122,13 +128,23 @@ const MapGrid2 = ({
     setTempComponent(null);
   };
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { delay: 100 },
+    }),
+  );
+
   return (
     <DragScrollContainer
       draggable={tempComponent === null && activeLayerId === null}
       className={`scrollbar-primary timing pointer-events-auto relative mx-auto mb-auto max-h-full max-w-full overflow-y-auto rounded border-2`}
       style={{ borderColor: accentPrimary }}
     >
-      <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+      <DndContext
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        sensors={sensors}
+      >
         <div
           ref={ref}
           className={`${dragging && 'cursor-grabbing'} timing relative overflow-hidden`}
@@ -164,6 +180,7 @@ const MapGrid2 = ({
                     return (
                       <MapBuilderComponent
                         key={index}
+                        field={field}
                         component={component}
                         activeComponentId={activeComponentId}
                         activeLayerId={activeLayerId}
@@ -171,6 +188,7 @@ const MapGrid2 = ({
                         setActiveComponentId={setActiveComponentId}
                         getOccupiedTiles={getOccupiedTiles}
                         getComponentStyle={getComponentStyle}
+                        handleDeleteComponent={handleDeleteComponent}
                       />
                     );
                   })}

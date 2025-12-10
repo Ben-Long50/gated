@@ -1,8 +1,15 @@
-import { useDraggable } from '@dnd-kit/core';
+import {
+  PointerSensor,
+  useDraggable,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import { FieldApi } from '@tanstack/react-form';
 import { CSSProperties } from 'react';
-import { Component } from 'src/types/map';
+import { Component, Layer } from 'src/types/map';
 
 const MapBuilderComponent = ({
+  field,
   component,
   activeComponentId,
   setActiveComponentId,
@@ -10,7 +17,9 @@ const MapBuilderComponent = ({
   layerId,
   getOccupiedTiles,
   getComponentStyle,
+  handleDeleteComponent,
 }: {
+  field: FieldApi;
   component: Component;
   activeComponentId: number | null;
   setActiveComponentId: (id: number | null) => void;
@@ -18,6 +27,12 @@ const MapBuilderComponent = ({
   layerId: number;
   getOccupiedTiles: (component: Component) => { col: number; row: number }[];
   getComponentStyle: (component: Component) => CSSProperties;
+  handleDeleteComponent: (
+    e: MouseEvent,
+    id: number | undefined,
+    layers: Layer[],
+    callback: (layers: Layer[]) => void,
+  ) => void;
 }) => {
   const { setNodeRef, listeners, attributes, transform } = useDraggable({
     id: `layer ${layerId} component ${component.id}`,
@@ -58,6 +73,14 @@ const MapBuilderComponent = ({
       {activeLayerId === layerId && activeComponentId === component.id && (
         <div
           className={`absolute inset-0 cursor-grab bg-[var(--accent-primary)] opacity-40`}
+          onDoubleClick={(e) => {
+            handleDeleteComponent(
+              e,
+              undefined,
+              field.state.value,
+              field.handleChange,
+            );
+          }}
         />
       )}
     </div>
