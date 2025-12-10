@@ -130,7 +130,7 @@ const MapGrid2 = ({
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: { delay: 100 },
+      activationConstraint: { distance: 5 },
     }),
   );
 
