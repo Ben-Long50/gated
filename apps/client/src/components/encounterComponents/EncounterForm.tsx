@@ -8,7 +8,7 @@ import useCreateCombatMutation from 'src/hooks/combat hooks/useCreateCombatMutat
 import { useParams } from 'react-router-dom';
 import { useForm, useStore } from '@tanstack/react-form';
 import BtnRect from '../buttons/BtnRect';
-import Map from './Map';
+import Map from '../mapComponents/map/Map';
 import InputSelectField from '../InputSelectField';
 import ArrowHeader3 from '../ArrowHeader3';
 import useCampaignCharactersQuery from 'src/hooks/useCampaignCharactersQuery/useCampaignCharactersQuery';

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from 'react';
-import InputField from '../InputField';
+import InputField from '../../InputField';
 import { useForm } from '@tanstack/react-form';
 import Icon from '@mdi/react';
 import {
@@ -9,18 +9,24 @@ import {
   mdiContentSaveOffOutline,
   mdiContentSaveOutline,
   mdiGrid,
-  mdiLayersOff,
   mdiLayersOffOutline,
 } from '@mdi/js';
 import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import useCreateMapMutation from 'src/hooks/useCreateMapMutation/useCreateMapMutation';
 import useCampaignMapQuery from 'src/hooks/useCampaignMapQuery/useCampaignMapQuery';
-import Loading from '../Loading';
+import Loading from '../../Loading';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import { Component, Layer, MapType } from 'src/types/map';
-import MapGrid2 from './MapGrid2';
-import MapSidebar from './MapSidebar';
 import html2canvas from 'html2canvas';
+import MapBuilderSidebar from './MapBuilderSidebar';
+import {
+  DndContext,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import MapBuilderGrid from './MapBuilderGrid';
+import getOccupiedTiles from '../mapUtils/getOccupiedTiles';
 
 const MapBuilder = () => {
   const { mobile } = useContext(LayoutContext);
@@ -31,12 +37,15 @@ const MapBuilder = () => {
   const [currentFolder, setCurrentFolder] = useState({});
   const [path, setPath] = useState(['/assets', 'tiles']);
   const [tempComponent, setTempComponent] = useState<Component | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const [gridDisplay, setGridDisplay] = useState(true);
 
   const { data: map, isLoading } = useCampaignMapQuery(Number(mapId));
 
   const [activeLayerId, setActiveLayerId] = useState<number | null>(() =>
     map ? map.layers[0].id : 1,
   );
+  const [previewLayerId, setPreviewLayerId] = useState<number | null>(null);
   const [activeComponentId, setActiveComponentId] = useState<number | null>(
     null,
   );
@@ -222,104 +231,6 @@ const MapBuilder = () => {
     mapForm.setFieldValue('layers', newLayers);
   };
 
-  const getOccupiedTiles = (component: Component) => {
-    const tiles = [];
-
-    for (
-      let col = component.mapColStart;
-      col < component.mapColStart + component.width;
-      col++
-    ) {
-      for (
-        let row = component.mapRowStart;
-        row < component.mapRowStart + component.height;
-        row++
-      ) {
-        tiles.push({ col, row });
-      }
-    }
-
-    return tiles;
-  };
-
-  const findConflict = (component: Component) => {
-    if (!component) {
-      return;
-    }
-
-    const tiles = getOccupiedTiles(component);
-
-    const layer = document.getElementById(`layer ${activeLayerId}`);
-
-    if (!layer) {
-      return;
-    }
-
-    const componentTiles = Array.from(layer.children)
-      .filter(
-        (child) =>
-          child.id &&
-          child instanceof HTMLDivElement &&
-          child.id !== `component ${component.id}`,
-      )
-      .flatMap((component) => JSON.parse(component.dataset.tiles.split(',')));
-
-    const conflict = tiles.some((tile) =>
-      componentTiles.some(
-        (compTile) => compTile.row === tile.row && compTile.col === tile.col,
-      ),
-    );
-
-    return conflict;
-  };
-
-  const handleAddComponent = (
-    component: Component,
-    row: number,
-    col: number,
-    layers: Layer[],
-    callback: (layers: Layer[]) => void,
-  ) => {
-    const conflict = findConflict(component);
-
-    if (conflict) {
-      return;
-    }
-
-    const layer = layers.find((layer: Layer) => layer.id === activeLayerId);
-
-    if (!layer || !component?.imageUrl) {
-      return;
-    }
-
-    const nextComponentNumber = layer.componentCount + 1;
-
-    const newLayer: Layer = {
-      ...layer,
-      componentCount: nextComponentNumber,
-      components: [
-        ...layer.components,
-        {
-          ...component,
-          name: `Component ${nextComponentNumber}`,
-          id: nextComponentNumber,
-          mapRowStart: row,
-          mapColStart: col,
-        },
-      ],
-    };
-
-    const newLayers = layers.map((layer: Layer) => {
-      if (layer.id === activeLayerId) {
-        return newLayer;
-      } else {
-        return layer;
-      }
-    });
-
-    callback(newLayers);
-  };
-
   const handleDeleteComponent = (
     e: MouseEvent | undefined,
     id: number | undefined,
@@ -400,19 +311,6 @@ const MapBuilder = () => {
     localStorage.setItem('mapDraft', JSON.stringify(currentLayers));
   };
 
-  const getComponentStyle = (component: Component) => {
-    return {
-      backgroundImage: `url(${component.imageUrl})`,
-      backgroundPosition: `-${(component.imageColStart - 1) * 48}px -${(component.imageRowStart - 1) * 48}px`,
-      imageRendering: 'pixelated',
-      backgroundRepeat: 'no-repeat',
-      gridColumnStart: component.mapColStart,
-      gridRowStart: component.mapRowStart,
-      gridColumnEnd: component.mapColStart + component.width,
-      gridRowEnd: component.mapRowStart + component.height,
-    };
-  };
-
   const handleTileSelect = (row: number, col: number) => {
     if (pngPath) {
       if (!tempComponent) {
@@ -445,6 +343,150 @@ const MapBuilder = () => {
     }
   };
 
+  const handleDragStart = (e) => {
+    if (setTempComponent) {
+      setDragging(true);
+      const { active } = e;
+      setTempComponent(active.data.current.component);
+    }
+  };
+
+  const moveComponent = (componentId: number, col: number, row: number) => {
+    const layers = mapForm.getFieldValue('layers');
+
+    const newLayers = layers.map((layer) => {
+      if (layer.id === activeLayerId) {
+        return {
+          ...layer,
+          components: layer.components.map((component) => {
+            if (component.id === componentId) {
+              return { ...component, mapColStart: col, mapRowStart: row };
+            } else {
+              return component;
+            }
+          }),
+        };
+      } else {
+        return layer;
+      }
+    });
+
+    mapForm.setFieldValue('layers', newLayers);
+  };
+
+  const handleAddComponent = (
+    component: Component,
+    row: number,
+    col: number,
+    layers: Layer[],
+    callback: (layers: Layer[]) => void,
+  ) => {
+    const conflict = findConflict(component);
+
+    if (conflict) {
+      return;
+    }
+
+    const layer = layers.find((layer: Layer) => layer.id === activeLayerId);
+
+    if (!layer || !component?.imageUrl) {
+      return;
+    }
+
+    const nextComponentNumber = layer.componentCount + 1;
+
+    const newLayer: Layer = {
+      ...layer,
+      componentCount: nextComponentNumber,
+      components: [
+        ...layer.components,
+        {
+          ...component,
+          name: `Component ${nextComponentNumber}`,
+          id: nextComponentNumber,
+          mapRowStart: row,
+          mapColStart: col,
+        },
+      ],
+    };
+
+    const newLayers = layers.map((layer: Layer) => {
+      if (layer.id === activeLayerId) {
+        return newLayer;
+      } else {
+        return layer;
+      }
+    });
+
+    callback(newLayers);
+  };
+
+  const findConflict = (component: Component) => {
+    if (!component) {
+      return;
+    }
+
+    const tiles = getOccupiedTiles(component);
+
+    const layer = document.getElementById(`layer ${activeLayerId}`);
+
+    if (!layer) {
+      return;
+    }
+
+    const componentTiles = Array.from(layer.children)
+      .filter(
+        (child) =>
+          child.id &&
+          child instanceof HTMLDivElement &&
+          child.id !== `component ${component.id}`,
+      )
+      .flatMap((component) => JSON.parse(component.dataset.tiles.split(',')));
+
+    const conflict = tiles.some((tile) =>
+      componentTiles.some(
+        (compTile) => compTile.row === tile.row && compTile.col === tile.col,
+      ),
+    );
+
+    return conflict;
+  };
+
+  const handleDragEnd = (e) => {
+    if (!tempComponent) {
+      return;
+    }
+
+    const conflict = findConflict(tempComponent);
+
+    if (conflict) {
+      return;
+    }
+
+    setDragging(false);
+    const { over, active } = e;
+
+    if (setTempComponent) {
+      if (!over) {
+        setTempComponent(null);
+        return;
+      }
+
+      moveComponent(
+        active.data.current.component.id,
+        over.data.current.col,
+        over.data.current.row,
+      );
+      setTempComponent(null);
+    }
+  };
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 5 },
+    }),
+  );
+
   if (isLoading) return <Loading />;
 
   return (
@@ -452,9 +494,25 @@ const MapBuilder = () => {
       <div
         className={`timing flex h-full w-full flex-col items-center gap-8 pr-16`}
       >
-        <h1 className="w-full text-center">
-          {map ? `Edit ${map?.name}` : 'Create Map'}
-        </h1>
+        {!mobile && (
+          <div className="flex w-full max-w-4xl items-center justify-center gap-8">
+            <button
+              className="bg-tertiary group my-auto flex justify-self-start rounded p-1.5 shadow-md shadow-black"
+              aria-label="Open save modal"
+              type="button"
+              onClick={() => setGridDisplay((prev) => !prev)}
+            >
+              <Icon
+                path={mdiGrid}
+                className={`${gridDisplay ? 'text-accent' : 'text-tertiary'} group-hover:text-accent timing size-8`}
+              />
+            </button>
+            <h1 className="text-center">
+              {map ? `Edit ${map?.name}` : 'Create Map'}
+            </h1>
+          </div>
+        )}
+
         <mapForm.Subscribe
           selector={(state) => [
             state.values.baseColor,
@@ -465,24 +523,31 @@ const MapBuilder = () => {
           {([baseColor, width, height]) => (
             <mapForm.Field name="layers">
               {(field) => (
-                <MapGrid2
-                  ref={mapRef}
-                  field={field}
-                  width={width}
-                  height={height}
-                  baseColor={baseColor}
-                  layers={field.state.value}
-                  activeLayerId={activeLayerId}
-                  activeComponentId={activeComponentId}
-                  setActiveComponentId={setActiveComponentId}
-                  tempComponent={tempComponent}
-                  setTempComponent={setTempComponent}
-                  getComponentStyle={getComponentStyle}
-                  handleAddComponent={handleAddComponent}
-                  handleDeleteComponent={handleDeleteComponent}
-                  getOccupiedTiles={getOccupiedTiles}
-                  findConflict={findConflict}
-                />
+                <DndContext
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                  sensors={sensors}
+                >
+                  <MapBuilderGrid
+                    ref={mapRef}
+                    field={field}
+                    width={width}
+                    height={height}
+                    baseColor={baseColor}
+                    layers={field.state.value}
+                    dragging={dragging}
+                    findConflict={findConflict}
+                    activeLayerId={activeLayerId}
+                    activeComponentId={activeComponentId}
+                    previewLayerId={previewLayerId}
+                    setActiveComponentId={setActiveComponentId}
+                    tempComponent={tempComponent}
+                    setTempComponent={setTempComponent}
+                    handleAddComponent={handleAddComponent}
+                    handleDeleteComponent={handleDeleteComponent}
+                    gridDisplay={gridDisplay}
+                  />
+                </DndContext>
               )}
             </mapForm.Field>
           )}
@@ -490,11 +555,12 @@ const MapBuilder = () => {
       </div>
       <mapForm.Field name="layers">
         {(field) => (
-          <MapSidebar
+          <MapBuilderSidebar
             field={field}
             layers={field.state.value}
             activeLayerId={activeLayerId}
             setActiveLayerId={setActiveLayerId}
+            setPreviewLayerId={setPreviewLayerId}
             setActiveComponentId={setActiveComponentId}
             handleAddLayer={handleAddLayer}
             handleDeleteLayer={handleDeleteLayer}
@@ -562,7 +628,7 @@ const MapBuilder = () => {
                 {activeLayerId && (
                   <button
                     className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
-                    aria-label="Open save modal"
+                    aria-label="Clear active layer"
                     type="button"
                     onClick={() => {
                       setActiveLayerId(null);
@@ -642,7 +708,11 @@ const MapBuilder = () => {
                   className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
                   aria-label="Open save modal"
                   type="button"
-                  onClick={() => navigate('save')}
+                  onClick={() => {
+                    setActiveLayerId(null);
+                    setTempComponent(null);
+                    navigate('save');
+                  }}
                 >
                   <Icon
                     path={mdiContentSaveOutline}
@@ -667,7 +737,7 @@ const MapBuilder = () => {
                 }}
               />
             </form>
-          </MapSidebar>
+          </MapBuilderSidebar>
         )}
       </mapForm.Field>
     </>

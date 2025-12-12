@@ -1,14 +1,14 @@
 import { capitalCase } from 'change-case';
 import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
-import Loading from '../Loading';
-import ItemCardSmall from '../ItemCardSmall';
+import Loading from '../../Loading';
+import ItemCardSmall from '../../ItemCardSmall';
 import Icon from '@mdi/react';
 import { mdiEye, mdiTagEdit, mdiTrashCanOutline } from '@mdi/js';
 import useMaps from 'src/hooks/useMaps';
-import BtnRect from '../buttons/BtnRect';
-import Divider from '../Divider';
-import CloudinaryImage from '../CloudinaryImage';
+import BtnRect from '../../buttons/BtnRect';
+import Divider from '../../Divider';
+import CloudinaryImage from '../../CloudinaryImage';
 
 const MapList = () => {
   const { mapId } = useParams();

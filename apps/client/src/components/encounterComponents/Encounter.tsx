@@ -1,8 +1,6 @@
 import { Fragment, useContext, useEffect, useMemo, useState } from 'react';
-import ReactGridLayout from 'react-grid-layout';
 import useMap from 'src/hooks/useMap';
 import Loading from '../Loading';
-import { ThemeContext } from 'src/contexts/ThemeContext';
 import {
   mdiChevronDown,
   mdiCrown,
@@ -31,11 +29,9 @@ import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import useItemQuery from 'src/hooks/useItemQuery/useItemQuery';
 import ItemCardBorderless from '../ItemCardBorderless';
 import { EncounterContext } from 'src/contexts/EncounterContext';
-import DragScrollContainer from './DragScrollContainer';
 
 const Encounter = () => {
   const { mobile } = useContext(LayoutContext);
-  const { accentPrimary } = useContext(ThemeContext);
   const {
     combat,
     joinedPlayers,
@@ -66,17 +62,6 @@ const Encounter = () => {
     isLoading: historyLoading,
     isPending: historyPending,
   } = useEncounterHistoryQuery(Number(encounterId));
-
-  const mapLayout = useMemo(
-    () =>
-      map?.layout.map((item) => ({
-        ...item,
-        isDraggable: false,
-        isResizable: false,
-        resizeHandles: [],
-      })),
-    [map],
-  );
 
   const phaseActionCount = useMemo(
     () =>
@@ -118,67 +103,31 @@ const Encounter = () => {
             </div>
           ))}
         </div>
-        <DragScrollContainer
-          draggable={true}
-          className={`scrollbar-primary timing pointer-events-auto relative mx-auto mb-auto max-h-full max-w-full overflow-y-auto rounded border-2`}
-          style={{ borderColor: accentPrimary }}
-        >
-          {!mobile && (
-            <div className="absolute left-1 top-1 z-10 flex w-full items-center gap-4">
-              <button
-                className="bg-tertiary group my-auto flex justify-self-start rounded p-1.5 shadow shadow-black"
-                aria-label="Open save modal"
-                type="button"
-                onClick={() => setGridDisplay((prev) => !prev)}
-              >
-                <Icon
-                  path={mdiGrid}
-                  className={`${gridDisplay ? 'text-accent' : 'text-tertiary'} group-hover:text-accent timing size-6`}
-                />
-              </button>
-              <h3 className="text-shadow text-center text-shadow-black">
-                {map.name}
-              </h3>
-            </div>
-          )}
-          <ReactGridLayout
-            useCSSTransforms={false}
-            className="layout overflow-hidden rounded"
-            style={{ width: map.width * 48, height: map.height * 48 }}
-            layout={mapLayout}
-            cols={map.width}
-            rowHeight={48}
-            width={map.width * 48}
-            margin={[0, 0]}
-            allowOverlap={true}
-          >
-            {mapLayout?.map((item) =>
-              item.i === 'base' ? (
-                <div
-                  key={item.i}
-                  className="-z-10"
-                  style={{ backgroundColor: map.baseColor }}
-                />
-              ) : (
-                <div
-                  key={item.i}
-                  style={{
-                    backgroundPosition: '0 0',
-                    imageRendering: 'pixelated',
-                    backgroundSize: `${48 * item.tileWidth}px ${48 * item.tileHeight}px`,
-                    backgroundImage: `url(${item.tileUrl})`,
-                  }}
-                />
-              ),
-            )}
-          </ReactGridLayout>
-          <EncounterGrid
-            map={map}
-            locations={locations}
-            gridDisplay={gridDisplay}
-            setActionSidebar={setActionSidebar}
-          />
-        </DragScrollContainer>
+        {!mobile && (
+          <div className="flex w-full max-w-4xl items-center justify-center gap-8">
+            <button
+              className="bg-tertiary group my-auto flex justify-self-start rounded p-1.5 shadow-md shadow-black"
+              aria-label="Open save modal"
+              type="button"
+              onClick={() => setGridDisplay((prev) => !prev)}
+            >
+              <Icon
+                path={mdiGrid}
+                className={`${gridDisplay ? 'text-accent' : 'text-tertiary'} group-hover:text-accent timing size-8`}
+              />
+            </button>
+            <h1 className="text-center">{map.name}</h1>
+          </div>
+        )}
+        <EncounterGrid
+          width={map.width}
+          height={map.height}
+          baseColor={map.baseColor}
+          layers={map.layers}
+          locations={locations}
+          gridDisplay={gridDisplay}
+          setActionSidebar={setActionSidebar}
+        />
         <div
           className={`${characterList ? 'w-96' : 'w-[72px]'} scrollbar-secondary-2 bg-primary timing absolute left-0 top-0 z-10 flex h-full flex-col justify-start gap-3 overflow-y-auto p-3 shadow-md shadow-black`}
           onMouseEnter={() => {
@@ -193,6 +142,7 @@ const Encounter = () => {
           {combat.turnOrder?.map((characterId: number, index: number) => (
             <Fragment key={characterId}>
               <CharacterCardSmall
+                expanding={true}
                 characterList={characterList}
                 characterId={characterId}
                 active={

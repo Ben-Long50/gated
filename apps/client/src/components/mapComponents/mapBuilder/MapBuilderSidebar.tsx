@@ -7,12 +7,13 @@ import MapLayerList from './MapLayerList';
 import MapComponentList from './MapComponentList';
 import { FieldApi } from '@tanstack/react-form';
 
-const MapSidebar = ({
+const MapBuilderSidebar = ({
   children,
   field,
   layers,
   activeLayerId,
   setActiveLayerId,
+  setPreviewLayerId,
   setActiveComponentId,
   handleAddLayer,
   handleDeleteLayer,
@@ -27,6 +28,7 @@ const MapSidebar = ({
   layers: Layer[];
   activeLayerId: number;
   setActiveLayerId: (id: number) => void;
+  setPreviewLayerId: (id: number) => void;
   setActiveComponentId: (id: number | null) => void;
   handleAddLayer: () => void;
   handleDeleteLayer: (id: number) => void;
@@ -86,6 +88,7 @@ const MapSidebar = ({
             layers={layers}
             activeLayerId={activeLayerId}
             setActiveLayerId={setActiveLayerId}
+            setPreviewLayerId={setPreviewLayerId}
             setSidebarMode={setSidebarMode}
             handleAddLayer={handleAddLayer}
             handleDeleteLayer={handleDeleteLayer}
@@ -109,4 +112,4 @@ const MapSidebar = ({
   );
 };
 
-export default MapSidebar;
+export default MapBuilderSidebar;

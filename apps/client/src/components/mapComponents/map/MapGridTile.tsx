@@ -7,44 +7,51 @@ import { useDroppable } from '@dnd-kit/core';
 import CharacterToken from './CharacterToken';
 
 const MapGridTile = ({
-  index,
+  row,
+  col,
   gridDisplay,
   characterLocations,
-  getCoordinates,
-  hoveredIndex,
-  setHoveredIndex,
-  handleRemove,
+  hoveredCoords,
+  setHoveredCoords,
 }: {
-  index: number;
+  row: number;
+  col: number;
   gridDisplay: boolean;
   characterLocations: Location[];
-  getCoordinates: (index: number) => { x: number; y: number };
-  hoveredIndex: number;
-  setHoveredIndex: (index: number) => void;
-  handleRemove?: (characterId: number, locationId: number) => void;
+  hoveredCoords: {
+    row: number | null;
+    col: number | null;
+  };
+  setHoveredCoords: ({
+    row,
+    col,
+  }: {
+    row: number | null;
+    col: number | null;
+  }) => void;
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
 
-  const mapCoordinates = getCoordinates(index);
+  const active = hoveredCoords?.col === col && hoveredCoords?.row === row;
 
   const { isOver, setNodeRef } = useDroppable({
-    id: `${index}`,
-    data: { index },
+    id: `row ${row}, col ${col}`,
+    data: { row, col },
   });
 
   return (
     <div
       ref={setNodeRef}
-      className={`${gridDisplay && 'border'} relative flex size-12 items-center justify-center`}
+      className={`${gridDisplay && 'border'} relative z-10 flex size-12 items-center justify-center`}
       style={{
         borderColor: `${accentPrimary}80`,
         transition: 'background 0.2s ease',
         background:
-          hoveredIndex === index && characterLocations.length === 0
+          active && characterLocations.length === 0
             ? `radial-gradient(circle, transparent, 75%, ${accentPrimary})`
             : 'transparent',
       }}
-      onMouseEnter={() => setHoveredIndex(index)}
+      onMouseEnter={() => setHoveredCoords({ row, col })}
     >
       {isOver ? (
         <Icon path={mdiCircleDouble} className="text-accent size-12" />
@@ -55,17 +62,16 @@ const MapGridTile = ({
             key={location.characterId}
             characterId={location.characterId}
             locationId={location.id}
-            handleRemove={handleRemove}
           />
         ))}
-      {hoveredIndex === index && (
+      {active && (
         <p
           className={`bg-tertiary pointer-events-none absolute right-1/2 top-0 z-20 select-none whitespace-nowrap rounded p-1 py-0.5 text-sm`}
           style={{
             transform: 'translateY(-100%) translateY(-4px) translateX(50%)',
           }}
         >
-          [{mapCoordinates.x}, {mapCoordinates.y}]
+          [{col}, {row}]
         </p>
       )}
     </div>

@@ -2,7 +2,7 @@ import Modal from './Modal';
 import BtnRect from '../buttons/BtnRect';
 import { useNavigate, useParams } from 'react-router-dom';
 import Loading from '../Loading';
-import PhaseActionCard from '../maps/PhaseActionCard';
+import PhaseActionCard from '../encounterComponents/PhaseActionCard';
 import useEncounterHistoryQuery from 'src/hooks/combat hooks/useEncounterHistoryQuery/useEncounterHistoryQuery';
 import Divider from '../Divider';
 

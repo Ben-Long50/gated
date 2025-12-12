@@ -1,6 +1,6 @@
-import CharacterPictureRound from '../CharacterPictureRound';
+import CharacterPictureRound from '../../CharacterPictureRound';
 import useCharacter from 'src/hooks/useCharacter';
-import Loading from '../Loading';
+import Loading from '../../Loading';
 import { useDraggable } from '@dnd-kit/core';
 import { useContext } from 'react';
 import { AuthContext } from 'src/contexts/AuthContext';
@@ -9,11 +9,9 @@ import { CampaignContext } from 'src/contexts/CampaignContext';
 const CharacterToken = ({
   characterId,
   locationId,
-  handleRemove,
 }: {
   characterId: number;
   locationId: number;
-  handleRemove?: (characterId: number, locationId: number) => void;
 }) => {
   const { user } = useContext(AuthContext);
   const { gameMaster } = useContext(CampaignContext);
@@ -37,15 +35,11 @@ const CharacterToken = ({
         transform
           ? {
               transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-              opacity: '0.5',
             }
           : undefined
       }
       {...listeners}
       {...attributes}
-      onDoubleClick={() => {
-        if (handleRemove) handleRemove(characterId, locationId);
-      }}
     >
       <CharacterPictureRound
         className={`group-hover:border-accent timing size-12 border-2 border-white`}

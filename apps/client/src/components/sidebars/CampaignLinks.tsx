@@ -113,7 +113,7 @@ const CampaignLinks = () => {
             title="Campaign Maps"
           >
             <SubLinkSidebar
-              title="Locations"
+              title="Maps"
               path={`campaigns/${campaignId}/maps/locations`}
             />
             <SubLinkSidebar

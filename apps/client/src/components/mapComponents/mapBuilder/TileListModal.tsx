@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import Modal from '../modals/Modal';
+import Modal from '../../modals/Modal';
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import BtnRect from '../buttons/BtnRect';
+import BtnRect from '../../buttons/BtnRect';
 import { capitalCase } from 'change-case';
 import Icon from '@mdi/react';
 import { mdiArrowULeftBottom, mdiCancel, mdiFolderOutline } from '@mdi/js';
-import Divider from '../Divider';
-import ArrowHeader3 from '../ArrowHeader3';
-import BtnIcon from '../buttons/BtnIcon';
+import Divider from '../../Divider';
+import ArrowHeader3 from '../../ArrowHeader3';
+import getCoords from '../mapUtils/getCoords';
 
 const TileListModal = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -16,13 +16,6 @@ const TileListModal = () => {
   const navigate = useNavigate();
 
   const pngRef = useRef<HTMLDivElement | null>(null);
-
-  const getCoords = (width: number, index: number) => {
-    const row = Math.floor((index - 1) / width + 1);
-    const col = index % width === 0 ? width : index % width;
-
-    return { row, col };
-  };
 
   const {
     folders,

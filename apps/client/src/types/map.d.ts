@@ -1,3 +1,5 @@
+import { Item } from './item';
+
 export interface Map {
   id: number;
   user: User;
@@ -46,9 +48,12 @@ enum MapType {
 
 export interface Location {
   id: number;
-  index: number;
+  row: number;
+  col: number;
   map: Map;
   mapId: number;
   character?: Character;
   characterId?: number;
+  item?: Item;
+  itemId?: number;
 }

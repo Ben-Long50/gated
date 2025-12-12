@@ -19,11 +19,13 @@ const CharacterCardSmall = ({
   characterList,
   characterId,
   className,
+  expanding,
   active,
 }: {
   characterList: boolean;
   characterId: number;
   className?: string;
+  expanding: boolean;
   active: boolean;
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -72,8 +74,16 @@ const CharacterCardSmall = ({
         e.stopPropagation();
         handleMenu(e);
       }}
-      onMouseEnter={() => setCharacterId(characterId)}
-      onMouseLeave={() => setCharacterId(null)}
+      onMouseEnter={() => {
+        if (expanding) {
+          setCharacterId(characterId);
+        }
+      }}
+      onMouseLeave={() => {
+        if (expanding) {
+          setCharacterId(null);
+        }
+      }}
     >
       <CharacterRadialMenu character={character} containerRef={containerRef} />
       <ArrowHeader4
@@ -105,59 +115,61 @@ const CharacterCardSmall = ({
           />
         </div>
       </div>
-      <div
-        className={`${characterList ? 'visible translate-x-0 opacity-100' : 'invisible -translate-x-full opacity-0'} timing w-full overflow-hidden`}
-      >
-        <motion.div
-          ref={detailRef}
-          className="flex w-full flex-col items-center justify-around gap-2 pt-2"
-          initial={{ marginTop: -detailHeight - 8 }}
-          animate={{
-            marginTop: id === characterId ? 0 : -detailHeight - 8,
-          }}
-          transition={{ duration: 0.2 }}
+      {expanding && (
+        <div
+          className={`${characterList ? 'visible translate-x-0 opacity-100' : 'invisible -translate-x-full opacity-0'} timing w-full overflow-hidden`}
         >
-          {character?.conditions && character.conditions.length > 0 && (
-            <div className="flex w-full justify-start gap-1">
-              {character?.conditions.map((condition) => (
-                <ConditionTag key={condition.id} condition={condition} />
-              ))}
-            </div>
-          )}
-          <div className="flex w-full items-center justify-around gap-2">
-            <div className="flex flex-col items-center justify-between gap-2">
+          <motion.div
+            ref={detailRef}
+            className="flex w-full flex-col items-center justify-around gap-2 pt-2"
+            initial={{ marginTop: -detailHeight - 8 }}
+            animate={{
+              marginTop: id === characterId ? 0 : -detailHeight - 8,
+            }}
+            transition={{ duration: 0.2 }}
+          >
+            {character?.conditions && character.conditions.length > 0 && (
+              <div className="flex w-full justify-start gap-1">
+                {character?.conditions.map((condition) => (
+                  <ConditionTag key={condition.id} condition={condition} />
+                ))}
+              </div>
+            )}
+            <div className="flex w-full items-center justify-around gap-2">
+              <div className="flex flex-col items-center justify-between gap-2">
+                <div className="flex items-center justify-center gap-2">
+                  <SpeedIcon className="text-secondary size-7" />
+                  <p className="text-secondary text-xl sm:pt-1">
+                    {character?.stats.speed}
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-col items-center justify-between gap-2">
+                <div className="flex items-center justify-center gap-2">
+                  <EvasionIcon className="text-secondary size-7" />
+                  <p className="text-secondary text-xl sm:pt-1">
+                    {character?.stats.evasion}
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-col items-center justify-between gap-2">
+                <div className="flex items-center justify-center gap-2">
+                  <ArmorIcon className="text-secondary size-7" />
+                  <p className="text-secondary text-xl sm:pt-1">
+                    {character?.stats.armor}
+                  </p>
+                </div>
+              </div>
               <div className="flex items-center justify-center gap-2">
-                <SpeedIcon className="text-secondary size-7" />
+                <WardIcon className="text-secondary size-7" />
                 <p className="text-secondary text-xl sm:pt-1">
-                  {character?.stats.speed}
+                  {character?.stats.ward}
                 </p>
               </div>
             </div>
-            <div className="flex flex-col items-center justify-between gap-2">
-              <div className="flex items-center justify-center gap-2">
-                <EvasionIcon className="text-secondary size-7" />
-                <p className="text-secondary text-xl sm:pt-1">
-                  {character?.stats.evasion}
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-col items-center justify-between gap-2">
-              <div className="flex items-center justify-center gap-2">
-                <ArmorIcon className="text-secondary size-7" />
-                <p className="text-secondary text-xl sm:pt-1">
-                  {character?.stats.armor}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center justify-center gap-2">
-              <WardIcon className="text-secondary size-7" />
-              <p className="text-secondary text-xl sm:pt-1">
-                {character?.stats.ward}
-              </p>
-            </div>
-          </div>
-        </motion.div>
-      </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };

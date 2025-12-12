@@ -11,13 +11,16 @@ import { EncounterContext } from 'src/contexts/EncounterContext';
 import { socket } from 'src/socket';
 import { useParams } from 'react-router-dom';
 import { Location } from 'src/types/map';
+import isInRange from './encounterUtils/isInRange';
 
 const CharacterEncounterToken = ({
   location,
-  onClick,
+  activeCoordinates,
+  range,
 }: {
   location: Location;
-  onClick: () => boolean;
+  activeCoordinates: { row: number; col: number } | null;
+  range: number;
 }) => {
   const { statColorMap } = useContext(ThemeContext);
   const { combat, activeCharacter, encounterPermissions, rolls, actionForm } =
@@ -38,7 +41,8 @@ const CharacterEncounterToken = ({
     data: {
       characterId: location.characterId,
       locationId: location.id,
-      index: location.index,
+      row: location.row,
+      col: location.col,
     },
     disabled: activeCharacter.id !== location.characterId,
   });
@@ -72,8 +76,14 @@ const CharacterEncounterToken = ({
                   characterId: null,
                 });
               } else {
-                const isInRange = onClick();
-                if (!isInRange) {
+                const inRange = activeCoordinates
+                  ? isInRange(
+                      activeCoordinates,
+                      { row: location.row, col: location.col },
+                      range,
+                    )
+                  : false;
+                if (!inRange) {
                   console.log('not in range');
                   return;
                 }

@@ -3,7 +3,12 @@ import handleResponse from '../handleResponse';
 
 const updateCharacterLocation = async (
   mapId: number,
-  formData: { characterId: number; locationId: number; index: number },
+  formData: {
+    characterId: number;
+    locationId: number;
+    row: number;
+    col: number;
+  },
 ) => {
   try {
     const response = await fetch(
@@ -12,7 +17,7 @@ const updateCharacterLocation = async (
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mapId, index: formData.index }),
+        body: JSON.stringify({ mapId, row: formData.row, col: formData.col }),
       },
     );
     const data = await handleResponse(response);

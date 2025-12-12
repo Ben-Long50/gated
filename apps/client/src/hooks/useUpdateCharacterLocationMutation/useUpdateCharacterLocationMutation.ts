@@ -9,7 +9,8 @@ const useUpdateCharacterLocationMutation = (mapId: number) => {
     mutationFn: (data: {
       characterId: number;
       locationId: number;
-      index: number;
+      row: number;
+      col: number;
     }) => {
       return updateCharacterLocation(mapId, data);
     },
@@ -30,7 +31,7 @@ const useUpdateCharacterLocationMutation = (mapId: number) => {
         } else {
           queryClient.setQueryData(
             ['location', data.locationId],
-            (prev: Location) => ({ ...prev, index: data.index }),
+            (prev: Location) => ({ ...prev, row: data.row, col: data.col }),
           );
         }
       }
@@ -38,13 +39,16 @@ const useUpdateCharacterLocationMutation = (mapId: number) => {
       return { prevLocationData };
     },
 
-    onSuccess: (data, __, context) => {
+    onSuccess: (data, value, context) => {
       socket.emit('location', {
         locationId: data.location.id,
         campaignId: context.prevLocationData?.character.campaignId,
       });
       queryClient.invalidateQueries({
         queryKey: ['map', mapId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['character', value.characterId],
       });
       return queryClient.invalidateQueries({
         queryKey: ['location', data.location.id],

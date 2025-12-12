@@ -11,12 +11,12 @@ import {
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import { useState } from 'react';
-import ArrowHeader3 from '../ArrowHeader3';
-import Divider from '../Divider';
+import ArrowHeader3 from '../../ArrowHeader3';
+import Divider from '../../Divider';
 import { capitalCase } from 'change-case';
-import BtnRect from '../buttons/BtnRect';
-import InputFieldBasic from '../InputFieldBasic';
-import ArrowHeader4 from '../ArrowHeader4';
+import BtnRect from '../../buttons/BtnRect';
+import InputFieldBasic from '../../InputFieldBasic';
+import ArrowHeader4 from '../../ArrowHeader4';
 import { DndContext, useDraggable, useDroppable } from '@dnd-kit/core';
 
 const MapLayerList = ({
@@ -24,6 +24,7 @@ const MapLayerList = ({
   layers,
   activeLayerId,
   setActiveLayerId,
+  setPreviewLayerId,
   setSidebarMode,
   handleAddLayer,
   handleDeleteLayer,
@@ -35,6 +36,7 @@ const MapLayerList = ({
   layers: Layer[];
   activeLayerId: number;
   setActiveLayerId: (id: number) => void;
+  setPreviewLayerId: (id: number) => void;
   setSidebarMode: (mode: 'layer' | 'component') => void;
   handleAddLayer: () => void;
   handleDeleteLayer: (id: number) => void;
@@ -108,6 +110,7 @@ const MapLayerList = ({
                 newLayerName={newLayerName}
                 setNewLayerName={setNewLayerName}
                 setActiveLayerId={setActiveLayerId}
+                setPreviewLayerId={setPreviewLayerId}
                 setSidebarMode={setSidebarMode}
                 handleDeleteLayer={handleDeleteLayer}
                 handleEditLayerName={handleEditLayerName}
@@ -131,6 +134,7 @@ const LayerListItem = ({
   newLayerName,
   setNewLayerName,
   setActiveLayerId,
+  setPreviewLayerId,
   setSidebarMode,
   handleDeleteLayer,
   handleEditLayerName,
@@ -145,6 +149,7 @@ const LayerListItem = ({
   newLayerName: string | null;
   setNewLayerName: (newName: string | null) => void;
   setActiveLayerId: (id: number) => void;
+  setPreviewLayerId: (id: number) => void;
   setSidebarMode: (mode: 'layer' | 'component') => void;
   handleDeleteLayer: (id: number) => void;
   handleEditLayerName: (id: number, newName: string) => void;
@@ -193,6 +198,8 @@ const LayerListItem = ({
         <div
           className={`text-secondary layers-center group flex w-full cursor-pointer select-none items-center gap-2`}
           onClick={() => setActiveLayerId(layer.id)}
+          onMouseEnter={() => setPreviewLayerId(layer.id)}
+          onMouseLeave={() => setPreviewLayerId(null)}
         >
           {editId === layer.id ? (
             <>

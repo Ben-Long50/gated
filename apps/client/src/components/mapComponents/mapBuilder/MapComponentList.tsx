@@ -6,11 +6,11 @@ import {
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import { useState } from 'react';
-import ArrowHeader3 from '../ArrowHeader3';
-import Divider from '../Divider';
+import ArrowHeader3 from '../../ArrowHeader3';
+import Divider from '../../Divider';
 import { capitalCase } from 'change-case';
-import InputFieldBasic from '../InputFieldBasic';
-import BtnRect from '../buttons/BtnRect';
+import InputFieldBasic from '../../InputFieldBasic';
+import BtnRect from '../../buttons/BtnRect';
 
 const MapComponentList = ({
   layers,

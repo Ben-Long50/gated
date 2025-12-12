@@ -5,7 +5,7 @@ import BtnRect from '../buttons/BtnRect';
 import { useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import Loading from '../Loading';
-import CharacterInitiativeRoll from '../maps/CharacterInitiativeRoll';
+import CharacterInitiativeRoll from '../encounterComponents/CharacterInitiativeRoll';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import Icon from '@mdi/react';
 import { mdiCrown } from '@mdi/js';

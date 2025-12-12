@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import CharacterEncounterToken from './CharacterEncounterToken';
-import { FormApi, useStore } from '@tanstack/react-form';
+import { useStore } from '@tanstack/react-form';
 import { Location } from 'src/types/map';
 import Icon from '@mdi/react';
 import { mdiCircleDouble, mdiClose } from '@mdi/js';
@@ -9,24 +9,31 @@ import { useDroppable } from '@dnd-kit/core';
 import useCombatStore from 'src/stores/combatStore';
 import useCharacter from 'src/hooks/useCharacter';
 import { EncounterContext } from 'src/contexts/EncounterContext';
+import isInRange from './encounterUtils/isInRange';
 
 const EncounterGridTile = ({
-  index,
+  row,
+  col,
   gridDisplay,
   characterLocations,
-  getCoordinates,
   activeCoordinates,
-  hoveredIndex,
-  setHoveredIndex,
+  hoveredCoords,
+  setHoveredCoords,
   isDown,
 }: {
-  index: number;
+  row: number;
+  col: number;
   gridDisplay: boolean;
   characterLocations: Location[];
-  getCoordinates: (index: number) => { x: number; y: number };
-  activeCoordinates: { x: number; y: number };
-  hoveredIndex: number;
-  setHoveredIndex: (index: number) => void;
+  activeCoordinates: { row: number; col: number } | null;
+  hoveredCoords: { row: number | null; col: number | null };
+  setHoveredCoords: ({
+    row,
+    col,
+  }: {
+    row: number | null;
+    col: number | null;
+  }) => void;
   isDown?: boolean;
 }) => {
   const { accentPrimary, statColorMap } = useContext(ThemeContext);
@@ -34,25 +41,8 @@ const EncounterGridTile = ({
 
   const { filteredCharacter: character } = useCharacter(activeCharacter.id);
 
-  const mapCoordinates = getCoordinates(index);
+  const active = hoveredCoords.row === row && hoveredCoords.col === col;
 
-  const isInRange = (
-    currentCoordinates: { x: number; y: number },
-    mapCoordinates: { x: number; y: number },
-    range: number,
-  ) => {
-    if (!range) return null;
-    const dx = mapCoordinates.x - currentCoordinates.x;
-    const dy = mapCoordinates.y - currentCoordinates.y;
-
-    const distance =
-      range === 1
-        ? Math.max(Math.abs(dx), Math.abs(dy))
-        : Math.sqrt(dx * dx + dy * dy);
-    return distance <= range;
-  };
-
-  const tempItem = useCombatStore((state) => state.item);
   const tempRange = useCombatStore((state) => state.range);
   const item = useStore(actionForm.store, (state) => state.values.item);
   const action = useStore(actionForm.store, (state) => state.values.action);
@@ -83,11 +73,13 @@ const EncounterGridTile = ({
         : character?.stats.speed
       : item?.stats.range;
 
-  const inRange = isInRange(activeCoordinates, mapCoordinates, range);
+  const inRange = activeCoordinates
+    ? isInRange(activeCoordinates, { row, col }, range)
+    : false;
 
   const { isOver, setNodeRef } = useDroppable({
-    id: `${index}`,
-    data: { index, inRange },
+    id: `row ${row}, col ${col}`,
+    data: { row, col, inRange },
   });
 
   return (
@@ -101,12 +93,12 @@ const EncounterGridTile = ({
           isDown === false
             ? inRange
               ? `radial-gradient(circle, transparent, 75%, ${rangeColor})`
-              : hoveredIndex === index && characterLocations.length === 0
+              : active && characterLocations.length === 0
                 ? `radial-gradient(circle, transparent, 75%, ${accentPrimary})`
                 : 'transparent'
             : '',
       }}
-      onMouseEnter={() => setHoveredIndex(index)}
+      onMouseEnter={() => setHoveredCoords({ row, col })}
     >
       {isOver ? (
         inRange ? (
@@ -120,23 +112,18 @@ const EncounterGridTile = ({
           <CharacterEncounterToken
             key={location.characterId}
             location={location}
-            onClick={() =>
-              isInRange(
-                activeCoordinates,
-                getCoordinates(location.index),
-                range,
-              )
-            }
+            activeCoordinates={activeCoordinates}
+            range={range}
           />
         ))}
-      {hoveredIndex === index && isDown === false && (
+      {active && isDown === false && (
         <p
           className={`bg-tertiary pointer-events-none absolute right-1/2 top-0 z-20 select-none whitespace-nowrap rounded p-1 py-0.5 text-sm`}
           style={{
             transform: 'translateY(-100%) translateY(-4px) translateX(50%)',
           }}
         >
-          [{mapCoordinates.x}, {mapCoordinates.y}]
+          [{col}, {row}]
         </p>
       )}
     </div>

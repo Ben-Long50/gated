@@ -1,12 +1,8 @@
-import {
-  PointerSensor,
-  useDraggable,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
+import { useDraggable } from '@dnd-kit/core';
 import { FieldApi } from '@tanstack/react-form';
-import { CSSProperties } from 'react';
 import { Component, Layer } from 'src/types/map';
+import getOccupiedTiles from '../mapUtils/getOccupiedTiles';
+import getComponentStyle from '../mapUtils/getComponentStyle';
 
 const MapBuilderComponent = ({
   field,
@@ -15,8 +11,7 @@ const MapBuilderComponent = ({
   setActiveComponentId,
   activeLayerId,
   layerId,
-  getOccupiedTiles,
-  getComponentStyle,
+  previewLayerId,
   handleDeleteComponent,
 }: {
   field: FieldApi;
@@ -25,8 +20,7 @@ const MapBuilderComponent = ({
   setActiveComponentId: (id: number | null) => void;
   activeLayerId: number;
   layerId: number;
-  getOccupiedTiles: (component: Component) => { col: number; row: number }[];
-  getComponentStyle: (component: Component) => CSSProperties;
+  previewLayerId?: number;
   handleDeleteComponent: (
     e: MouseEvent,
     id: number | undefined,
@@ -42,20 +36,23 @@ const MapBuilderComponent = ({
     disabled: activeLayerId !== layerId,
   });
 
+  const tiles = getOccupiedTiles(component);
+  const style = getComponentStyle(component);
+
   return (
     <div
       ref={setNodeRef}
       id={`component ${component.id}`}
       data-layer={`layer ${layerId}`}
-      data-tiles={JSON.stringify(getOccupiedTiles(component))}
-      className={`${activeLayerId === layerId && 'ring-2 ring-inset ring-[var(--accent-primary)]'} relative`}
+      data-tiles={JSON.stringify(tiles)}
+      className={`${activeLayerId === layerId && 'ring-2 ring-inset ring-[var(--accent-primary)]'} ${previewLayerId === layerId && 'ring-2 ring-inset ring-yellow-300'} relative`}
       style={
         transform
           ? {
-              ...getComponentStyle(component),
+              ...style,
               opacity: 0,
             }
-          : getComponentStyle(component)
+          : style
       }
       {...listeners}
       {...attributes}
