@@ -109,7 +109,8 @@ enum MapType {
 
 model Location {
   id          Int        @id @default(autoincrement())
-  index       Int
+  row         Int
+  col         Int
   map         Map        @relation(fields: [mapId], references: [id], onDelete: Cascade)
   mapId       Int
   character   Character? @relation(fields: [characterId], references: [id], onDelete: Cascade)

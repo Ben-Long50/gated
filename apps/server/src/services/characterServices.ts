@@ -94,6 +94,7 @@ const characterServices = {
           characterCart: {
             include: includeCharacterCart,
           },
+          location: { include: { map: { select: { name: true } } } },
         },
       });
 
@@ -412,7 +413,7 @@ const characterServices = {
 
   createOrUpdateLocation: async (
     characterId: number,
-    formData: { mapId: number; index: number },
+    formData: { mapId: number; row: number; col: number },
   ) => {
     try {
       const location = await prisma.location.upsert({
@@ -421,12 +422,14 @@ const characterServices = {
         },
         update: {
           map: { connect: { id: formData.mapId } },
-          index: formData.index,
+          row: formData.row,
+          col: formData.col,
         },
         create: {
           character: { connect: { id: characterId } },
           map: { connect: { id: formData.mapId } },
-          index: formData.index,
+          row: formData.row,
+          col: formData.col,
         },
       });
 
