@@ -1,150 +1,52 @@
 import { capitalCase } from 'change-case';
-import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useRef } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Loading from '../../Loading';
-import ItemCardSmall from '../../ItemCardSmall';
-import Icon from '@mdi/react';
-import { mdiEye, mdiTagEdit, mdiTrashCanOutline } from '@mdi/js';
 import useMaps from 'src/hooks/useMaps';
 import BtnRect from '../../buttons/BtnRect';
-import Divider from '../../Divider';
-import CloudinaryImage from '../../CloudinaryImage';
+import MapCard from './MapCard';
 
 const MapList = () => {
-  const { mapId } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
-  const parts = location.pathname.split('/');
-  const [widthModifier, setWidthModifier] = useState(500);
+
+  const [searchParams] = useSearchParams();
+
+  const mapType = searchParams.get('mapType') || '';
+  const draftParam = searchParams.get('draft');
+
+  const draft = draftParam === 'true';
 
   const containerRef = useRef(null);
 
-  useLayoutEffect(() => {
-    if (containerRef.current) {
-      const { width } = containerRef.current.getBoundingClientRect();
-      setWidthModifier(width);
-    }
-  }, [containerRef.current]);
+  const { maps, isLoading } = useMaps(draft, mapType);
 
-  const mode = (() => {
-    if (parts.includes('drafts')) {
-      return 'drafts';
-    } else if (parts.includes('locations')) {
-      return 'locations';
-    } else if (parts.includes('components')) {
-      return 'components';
-    }
-    throw new Error('Incorrent map type provided');
-  })();
-
-  const maps = useMaps();
-
-  if (maps.isLoading) return <Loading />;
+  if (isLoading) return <Loading />;
 
   return (
     <div
       ref={containerRef}
-      className="flex w-full max-w-5xl flex-col items-center gap-8"
+      className="flex w-full max-w-7xl flex-col items-center gap-8"
     >
-      <h1>Map {capitalCase(mode)}</h1>
-      {maps[mode].length === 0 ? (
+      <h1>{capitalCase(mapType || 'draft')}s</h1>
+      {maps && maps.length === 0 ? (
         <>
           <h3 className="text-center">
-            Your campaign has no map {mode}. Head to the Map Builder to create
-            new campaign maps
+            Your campaign has no {capitalCase(mapType)}s. Head to the Map
+            Builder to create a new Map or Component
           </h3>
           <BtnRect
             className="min-w-80"
             type="button"
             ariaLabel="Navigate to map builder"
-            onClick={() => navigate('../create')}
+            onClick={() => navigate('create')}
           >
             Map Builder
           </BtnRect>
         </>
       ) : (
-        <div className="flex w-full flex-col gap-4">
-          {maps[mode]?.map((map) => {
-            return (
-              <Fragment key={map.id}>
-                <ItemCardSmall
-                  heading={
-                    <div className="mr-4 flex w-full items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <h3>{map.name}</h3>
-                        {map.draft && <p className="text-tertiary">(draft)</p>}
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <button
-                          className="bg-tertiary group rounded p-1.5 shadow-md shadow-black"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`../${map.id}`);
-                          }}
-                        >
-                          <Icon
-                            className="text-secondary group-hover:text-accent timing size-6"
-                            path={mdiEye}
-                          />
-                        </button>
-                        <button
-                          className="bg-tertiary group rounded p-1.5 shadow-md shadow-black"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`../${map.id}/update`);
-                          }}
-                        >
-                          <Icon
-                            className="text-secondary group-hover:text-accent timing size-6"
-                            path={mdiTagEdit}
-                          />
-                        </button>
-                        <button
-                          className="bg-tertiary group rounded p-1.5 shadow-md shadow-black"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`${map.id}/delete`);
-                          }}
-                        >
-                          <Icon
-                            className="text-secondary group-hover:text-accent timing size-6"
-                            path={mdiTrashCanOutline}
-                          />
-                        </button>
-                      </div>
-                    </div>
-                  }
-                >
-                  <Divider />
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="flex flex-col gap-4">
-                      <div className="bg-tertiary flex items-center justify-between gap-4 rounded p-3 shadow-md shadow-black">
-                        <h4>Map Author</h4>
-                        <p>{map.user.username}</p>
-                      </div>
-                      <div className="bg-tertiary flex items-center justify-between gap-4 rounded p-3 shadow-md shadow-black">
-                        <h4>Tile Size</h4>
-                        <p>
-                          {map.width} x {map.height}
-                        </p>
-                      </div>
-                      <p className="border-x-2 border-gray-400 border-opacity-50 px-4">
-                        {map.description}
-                      </p>
-                    </div>
-                    <div className="flex h-80 w-full items-center justify-center">
-                      <CloudinaryImage
-                        className="border-accent overflow-hidden rounded border"
-                        publicId={map.picture.publicId}
-                      />
-                    </div>
-                  </div>
-                </ItemCardSmall>
-                {map.id === Number(mapId) && (
-                  <Outlet context={{ name: map.name }} />
-                )}
-              </Fragment>
-            );
+        <div className="grid w-full grid-cols-[repeat(auto-fit,minmax(360px,1fr))] gap-4">
+          {maps?.map((map) => {
+            return <MapCard key={map.id} mapId={map.id} />;
           })}
         </div>
       )}

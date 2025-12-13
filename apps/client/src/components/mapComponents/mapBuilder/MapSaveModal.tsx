@@ -1,10 +1,10 @@
 import { useOutletContext } from 'react-router-dom';
-import Modal from './Modal';
-import InputField from '../InputField';
-import InputSelectField from '../InputSelectField';
-import TextAreaField from '../TextAreaField';
-import BtnRect from '../buttons/BtnRect';
-import Loading from '../Loading';
+import Modal from '../../modals/Modal';
+import InputField from '../../InputField';
+import InputSelectField from '../../InputSelectField';
+import TextAreaField from '../../TextAreaField';
+import BtnRect from '../../buttons/BtnRect';
+import Loading from '../../Loading';
 
 const MapSaveModal = () => {
   const { form, isPending } = useOutletContext() || {};

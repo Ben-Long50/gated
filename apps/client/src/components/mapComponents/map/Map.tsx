@@ -26,19 +26,6 @@ const Map = () => {
   const [dragging, setDragging] = useState(false);
   const [draggingId, setDraggingId] = useState<number | null>(null);
   const [gridDisplay, setGridDisplay] = useState(true);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    function handleMouseMove(e: MouseEvent) {
-      if (dragging) {
-        setMousePosition({ x: e.clientX, y: e.clientY });
-        console.log(e.clientX, e.clientY);
-      }
-    }
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [dragging]);
 
   const { map, locations, mapLoading, locationsLoading } = useMap(
     Number(mapId),
@@ -112,7 +99,7 @@ const Map = () => {
           gridDisplay={gridDisplay}
         />
         <MapSidebar locations={locations} locationsLoading={locationsLoading} />
-        <DragOverlay>
+        <DragOverlay dropAnimation={null}>
           {dragging && draggingId ? (
             <CharacterToken
               className="cursor-grabbing"

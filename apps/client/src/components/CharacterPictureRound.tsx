@@ -12,7 +12,7 @@ const CharacterPictureRound = ({
 }: {
   character: Character;
   className?: string;
-  style: CSSProperties;
+  style?: CSSProperties;
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
 

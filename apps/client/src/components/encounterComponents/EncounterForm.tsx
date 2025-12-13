@@ -154,21 +154,21 @@ const EncounterForm = () => {
               <encounterForm.Field name="mapId">
                 {(field) => (
                   <div className="grid grid-cols-3 gap-4">
-                    {maps.map((location) => {
+                    {maps.map((map) => {
                       const activeEncounter =
-                        location?.encounters.some(
+                        map?.encounters.some(
                           (encounter) => !encounter.completed,
                         ) || false;
 
                       return (
                         <button
-                          key={location.id}
-                          className={`${field.state.value === location.id ? 'border-accent' : 'border-transparent border-opacity-50 hover:border-gray-400'} ${activeEncounter && 'pointer-events-none opacity-50 grayscale'} bg-secondary timing flex flex-col gap-4 rounded-md border-2 p-4 shadow-md shadow-black`}
+                          key={map.id}
+                          className={`${field.state.value === map.id ? 'border-accent' : 'border-transparent border-opacity-50 hover:border-gray-400'} ${activeEncounter && 'pointer-events-none opacity-50 grayscale'} bg-secondary timing flex flex-col gap-4 rounded-md border-2 p-4 shadow-md shadow-black`}
                           onClick={() => {
-                            if (field.state.value === location.id) {
+                            if (field.state.value === map.id) {
                               field.handleChange(null);
                             } else {
-                              field.handleChange(location.id);
+                              field.handleChange(map.id);
                               const encounterName =
                                 encounterForm.getFieldValue('name');
                               if (encounterName) {
@@ -177,11 +177,11 @@ const EncounterForm = () => {
                             }
                           }}
                         >
-                          <h3>{location.name}</h3>
+                          <h3>{map.name}</h3>
                           <div className="flex h-80 w-full items-center justify-center">
                             <CloudinaryImage
                               className="border-accent overflow-hidden rounded border"
-                              publicId={location.picture.publicId}
+                              publicId={map.picture.publicId}
                             />
                           </div>
                         </button>

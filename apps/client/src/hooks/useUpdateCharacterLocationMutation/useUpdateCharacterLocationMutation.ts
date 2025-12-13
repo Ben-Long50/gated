@@ -16,8 +16,6 @@ const useUpdateCharacterLocationMutation = (mapId: number) => {
     },
 
     onMutate: (data) => {
-      console.log(data);
-
       queryClient.cancelQueries({ queryKey: ['location', data.locationId] });
 
       const prevLocationData: Location | undefined = queryClient.getQueryData([

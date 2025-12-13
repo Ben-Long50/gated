@@ -16,7 +16,7 @@ import CalendarModal from 'src/components/modals/CalendarModal';
 import EventForm from 'src/components/EventForm';
 import TimeModal from 'src/components/modals/TimeModal';
 import MapBuilder from 'src/components/mapComponents/mapBuilder/MapBuilder';
-import MapSaveModal from 'src/components/modals/MapSaveModal';
+import MapSaveModal from 'src/components/mapComponents/mapBuilder/MapSaveModal';
 import MapList from 'src/components/mapComponents/map/MapList';
 import DeleteModal from 'src/components/modals/DeleteModal';
 import TileListModal from 'src/components/mapComponents/mapBuilder/TileListModal';
@@ -68,19 +68,12 @@ const CampaignTabRoutes = () => {
         </Route>
         {SessionRoutes()}
         <Route path="maps">
+          <Route path="" element={<MapList />} />
           <Route path=":mapId" element={<Map />}>
             <Route path="characters">{CharacterMenuRoutes()}</Route>
             <Route path="initiative" element={<InitiativeModal />} />
           </Route>
-          <Route path="locations" element={<MapList />}>
-            <Route path=":mapId/delete" element={<DeleteModal />} />
-          </Route>
-          <Route path="components" element={<MapList />}>
-            <Route path=":mapId/delete" element={<DeleteModal />} />
-          </Route>
-          <Route path="drafts" element={<MapList />}>
-            <Route path=":mapId/delete" element={<DeleteModal />} />
-          </Route>
+          <Route path=":mapId/delete" element={<DeleteModal />} />
           <Route path="create" element={<MapBuilder key="create" />}>
             <Route path="save" element={<MapSaveModal />} />
             <Route path="tileList" element={<TileListModal />} />

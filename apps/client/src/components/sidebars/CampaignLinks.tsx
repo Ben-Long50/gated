@@ -114,15 +114,15 @@ const CampaignLinks = () => {
           >
             <SubLinkSidebar
               title="Maps"
-              path={`campaigns/${campaignId}/maps/locations`}
+              path={`campaigns/${campaignId}/maps/?mapType=map&draft=false`}
             />
             <SubLinkSidebar
               title="Components"
-              path={`campaigns/${campaignId}/maps/components`}
+              path={`campaigns/${campaignId}/maps/?mapType=component&draft=false`}
             />
             <SubLinkSidebar
               title="Drafts"
-              path={`campaigns/${campaignId}/maps/drafts`}
+              path={`campaigns/${campaignId}/maps/?draft=true`}
             />
             <SubLinkSidebar
               title="Create a New Map"
