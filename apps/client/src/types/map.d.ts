@@ -1,3 +1,4 @@
+import { Encounter } from './encounter';
 import { Item } from './item';
 
 export interface Map {
@@ -19,6 +20,7 @@ export interface Map {
   picture: File | null;
   publicId: string;
   locations: Location[];
+  encounters: Encounter[];
 }
 
 interface Layer {

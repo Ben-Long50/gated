@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import useMap from 'src/hooks/useMap';
 import Loading from '../../Loading';
 import { mdiGrid } from '@mdi/js';
@@ -17,7 +17,6 @@ import {
 } from '@dnd-kit/core';
 import useUpdateCharacterLocationMutation from 'src/hooks/useUpdateCharacterLocationMutation/useUpdateCharacterLocationMutation';
 import MapGrid from './MapGrid';
-import CharacterPictureRound from 'src/components/CharacterPictureRound';
 import CharacterToken from './CharacterToken';
 
 const Map = () => {

@@ -1,13 +1,10 @@
 import { useForm } from '@tanstack/react-form';
-import { camelCase } from 'change-case';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import { Action } from 'src/types/action';
 import { Item } from 'src/types/item';
 import useCombatQuery from './combat hooks/useCombatQueries/useCombatQuery';
-import useCharacterQuery from './useCharacterQuery/useCharacterQuery';
-import useAdvanceTurnMutation from './combat hooks/useAdvanceTurnMutation/useAdvanceTurnMutation';
 import { AuthContext } from 'src/contexts/AuthContext';
 import useCharacter from './useCharacter';
 import useResetCharacterStatMutation from './character stat hooks/useResetCharacterStatMutation/useCharacterStatMutation';
@@ -67,11 +64,6 @@ const useCombat = () => {
     [activeCharacter],
   );
 
-  const advanceTurn = useAdvanceTurnMutation(
-    Number(campaignId),
-    Number(encounterId),
-  );
-
   const characterStatHandlers = useCharacterStatHandlers(controlledCharacterId);
 
   const updateCharacterLocation = useUpdateCharacterLocationMutation(
@@ -102,8 +94,6 @@ const useCombat = () => {
           campaignId: Number(campaignId),
           encounterId: Number(encounterId),
         }));
-
-      // advanceTurn.mutate(0);
     } else {
       const nextCharacter = queryClient.getQueryData([
         'character',
@@ -122,7 +112,6 @@ const useCombat = () => {
           campaignId: Number(campaignId),
           encounterId: Number(encounterId),
         }));
-      // advanceTurn.mutate(currentIndex + 1));
     }
   };
 
@@ -131,7 +120,8 @@ const useCombat = () => {
       actionType: null as string | null,
       action: null as Action | null,
       locationId: null as number | null,
-      index: null as number | null,
+      row: null as number | null,
+      col: null as number | null,
       item: null as Item | null,
       target: null as Character | null,
       modifiers: [] as string[],
@@ -165,12 +155,14 @@ const useCombat = () => {
         value.action?.actionSubtypes.includes('movement') &&
         activeCharacter &&
         value.locationId &&
-        value.index
+        value.row &&
+        value.col
       ) {
         updateCharacterLocation.mutate({
           characterId: activeCharacter?.id,
           locationId: Number(value.locationId),
-          index: value.index,
+          row: value.row,
+          col: value.col,
         });
       }
 
@@ -197,7 +189,8 @@ const useCombat = () => {
       reactionType: null as string | null,
       reaction: null as Action | null,
       locationId: null as number | null,
-      index: null as number | null,
+      row: null as number | null,
+      col: null as number | null,
       item: null as Item | null,
       target: null as Character | null,
       modifiers: [] as string[],

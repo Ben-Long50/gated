@@ -87,7 +87,7 @@ const CharacterCardSmall = ({
     >
       <CharacterRadialMenu character={character} containerRef={containerRef} />
       <ArrowHeader4
-        className={`${characterList ? 'visible h-8 translate-x-0 opacity-100' : 'invisible h-0 -translate-x-full opacity-0'} timing w-full`}
+        className={`${characterList ? 'visible h-8 translate-x-0 opacity-100' : 'invisible h-0 -translate-x-full opacity-0'} text-primary timing w-full`}
         style={{ color: active ? `${accentPrimary}` : undefined }}
         title={`${character?.firstName} ${character?.lastName}`}
       />

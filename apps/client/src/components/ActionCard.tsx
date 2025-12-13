@@ -1,5 +1,4 @@
 import { useContext, useRef } from 'react';
-import Tag from './ConditionTag';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import DieIcon from './icons/DieIcon';
@@ -87,26 +86,27 @@ const ActionCard = ({
           </div>
         )}
         <p>{description1}</p>
-        {action.modifiers && (
-          <div className="flex flex-col gap-4">
-            {Object.entries(action.modifiers).map(([stat, value], index) => (
-              <ThemeContainer
-                key={index}
-                borderColor="transparent"
-                chamfer="small"
-              >
-                <div className="bg-tertiary flex w-full items-center justify-between p-3 px-4 clip-4">
-                  <h4>{capitalCase(stat)}</h4>
-                  <p
-                    className={`${index !== 0 && 'ml-1'} ${value > 0 || typeof value === 'string' ? 'text-accent' : 'text-error'} mr-1 inline-block font-semibold`}
-                  >
-                    {value}
-                  </p>
-                </div>
-              </ThemeContainer>
-            ))}
-          </div>
-        )}
+        {action.modifiers &&
+          Array.from(Object.keys(action.modifiers)).length > 0 && (
+            <div className="flex flex-col gap-4">
+              {Object.entries(action.modifiers).map(([stat, value], index) => (
+                <ThemeContainer
+                  key={index}
+                  borderColor="transparent"
+                  chamfer="small"
+                >
+                  <div className="bg-tertiary flex w-full items-center justify-between p-3 px-4 clip-4">
+                    <h4>{capitalCase(stat)}</h4>
+                    <p
+                      className={`${index !== 0 && 'ml-1'} ${value > 0 || typeof value === 'string' ? 'text-accent' : 'text-error'} mr-1 inline-block font-semibold`}
+                    >
+                      {value}
+                    </p>
+                  </div>
+                </ThemeContainer>
+              ))}
+            </div>
+          )}
         {action.keywordModifiers?.length > 0 &&
           action.keywordModifiers.map((keyword, index) => (
             <ItemCardSmall

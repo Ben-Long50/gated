@@ -14,15 +14,16 @@ import isInRange from './encounterUtils/isInRange';
 const EncounterGridTile = ({
   row,
   col,
+  height,
   gridDisplay,
   characterLocations,
   activeCoordinates,
   hoveredCoords,
   setHoveredCoords,
-  isDown,
 }: {
   row: number;
   col: number;
+  height: number;
   gridDisplay: boolean;
   characterLocations: Location[];
   activeCoordinates: { row: number; col: number } | null;
@@ -34,7 +35,6 @@ const EncounterGridTile = ({
     row: number | null;
     col: number | null;
   }) => void;
-  isDown?: boolean;
 }) => {
   const { accentPrimary, statColorMap } = useContext(ThemeContext);
   const { activeCharacter, actionForm } = useContext(EncounterContext);
@@ -44,6 +44,7 @@ const EncounterGridTile = ({
   const active = hoveredCoords.row === row && hoveredCoords.col === col;
 
   const tempRange = useCombatStore((state) => state.range);
+  const tempRangeColor = useCombatStore((state) => state.rangeColor);
   const item = useStore(actionForm.store, (state) => state.values.item);
   const action = useStore(actionForm.store, (state) => state.values.action);
   const actionType = useStore(
@@ -61,7 +62,7 @@ const EncounterGridTile = ({
       rangeColor = statColorMap.SPD;
       break;
     default:
-      rangeColor = 'transparent';
+      rangeColor = tempRangeColor || 'transparent';
       break;
   }
 
@@ -85,18 +86,15 @@ const EncounterGridTile = ({
   return (
     <div
       ref={setNodeRef}
-      className={`${gridDisplay && 'border'} relative flex size-12 items-center justify-center`}
+      className={`${gridDisplay && 'border'} relative z-10 flex size-12 items-center justify-center`}
       style={{
         borderColor: `${accentPrimary}80`,
         transition: 'background 0.2s ease',
-        background:
-          isDown === false
-            ? inRange
-              ? `radial-gradient(circle, transparent, 75%, ${rangeColor})`
-              : active && characterLocations.length === 0
-                ? `radial-gradient(circle, transparent, 75%, ${accentPrimary})`
-                : 'transparent'
-            : '',
+        background: inRange
+          ? `radial-gradient(circle, transparent, 75%, ${rangeColor})`
+          : active && characterLocations.length === 0
+            ? `radial-gradient(circle, transparent, 75%, ${accentPrimary})`
+            : 'transparent',
       }}
       onMouseEnter={() => setHoveredCoords({ row, col })}
     >
@@ -114,13 +112,17 @@ const EncounterGridTile = ({
             location={location}
             activeCoordinates={activeCoordinates}
             range={range}
+            height={height}
           />
         ))}
-      {active && isDown === false && (
+      {active && (
         <p
-          className={`bg-tertiary pointer-events-none absolute right-1/2 top-0 z-20 select-none whitespace-nowrap rounded p-1 py-0.5 text-sm`}
+          className={`bg-tertiary pointer-events-none absolute right-1/2 top-1/2 z-20 select-none whitespace-nowrap rounded p-1 py-0.5 text-sm`}
           style={{
-            transform: 'translateY(-100%) translateY(-4px) translateX(50%)',
+            transform:
+              row > height / 2
+                ? 'translateY(-50%) translateY(-42px)  translateX(50%)'
+                : 'translateY(-50%) translateY(42px)  translateX(50%)',
           }}
         >
           [{col}, {row}]

@@ -50,18 +50,20 @@ const PhaseActionCard = ({ phaseAction }: { phaseAction: History }) => {
         </ItemCardSmall>
       )}
       <ActionCard className="col-span-2" action={phaseAction.action} />
-      <div className="col-span-2 flex w-full flex-wrap items-center justify-center gap-2">
-        {phaseAction?.rollResult?.result.map((number: number, index) => (
-          <Die
-            key={index}
-            size={64}
-            number={number}
-            rolling={phaseAction?.rolling}
-            rollComplete={false}
-            modifiers={phaseAction.rollResult.modifiers}
-          />
-        ))}
-      </div>
+      {phaseAction.rollResult && (
+        <div className="col-span-2 flex w-full flex-wrap items-center justify-center gap-2">
+          {phaseAction?.rollResult?.result.map((number: number, index) => (
+            <Die
+              key={index}
+              size={64}
+              number={number}
+              rolling={phaseAction?.rolling}
+              rollComplete={false}
+              modifiers={phaseAction.rollResult.modifiers}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

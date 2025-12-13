@@ -17,10 +17,12 @@ const CharacterEncounterToken = ({
   location,
   activeCoordinates,
   range,
+  height,
 }: {
   location: Location;
   activeCoordinates: { row: number; col: number } | null;
   range: number;
+  height: number;
 }) => {
   const { statColorMap } = useContext(ThemeContext);
   const { combat, activeCharacter, encounterPermissions, rolls, actionForm } =
@@ -35,6 +37,7 @@ const CharacterEncounterToken = ({
 
   const target = useCombatStore((state) => state.target);
   const damage = useCombatStore((state) => state.damage);
+  const setRange = useCombatStore((state) => state.setRange);
 
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: `${location.characterId} ${location.id}`,
@@ -60,7 +63,6 @@ const CharacterEncounterToken = ({
             transform
               ? {
                   transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-                  opacity: '0.5',
                 }
               : undefined
           }
@@ -95,13 +97,31 @@ const CharacterEncounterToken = ({
               }
             }
           }}
+          onMouseEnter={() => {
+            if (activeCharacter.id === character?.id) {
+              setRange(character?.stats.speed, statColorMap.SPD);
+            }
+          }}
+          onMouseLeave={() => {
+            if (activeCharacter.id === character?.id) {
+              setRange(0, 'transparent');
+            }
+          }}
         >
           <CharacterPictureRound
             className={`${activeCharacter.id === character?.id && 'activeToken'} ${combat.reactions.includes(location.characterId) && 'reactiveToken'} group-hover:border-accent timing size-12 border-2 border-white`}
             character={character}
           />
           {roll && combat.combatPhase !== 'initiative' && (
-            <div className="absolute right-1/2 top-0 grid shrink-0 -translate-y-full translate-x-1/2 grid-cols-[repeat(3,_44px)] justify-center gap-2 pb-2">
+            <div
+              className="absolute right-1/2 top-1/2 grid shrink-0 grid-cols-[repeat(3,_44px)] justify-center gap-2"
+              style={{
+                transform:
+                  location.row > height / 2
+                    ? 'translateY(-50%) translateY(-100%)  translateX(50%)'
+                    : 'translateY(-50%) translateY(100%)  translateX(50%)',
+              }}
+            >
               {roll?.diceArray.map((number: number, index: number) => (
                 <Die
                   key={index}

@@ -51,7 +51,7 @@ const Encounter = () => {
   const [historyList, setHistoryList] = useState(false);
   const [itemId, setItemId] = useState<number | null>(null);
 
-  const { map, locations, isLoading: mapLoading } = useMap(Number(mapId));
+  const { map, locations, mapLoading } = useMap(Number(mapId));
 
   const { data: campaign } = useCampaignQuery(Number(campaignId));
 
@@ -91,7 +91,7 @@ const Encounter = () => {
   return (
     <>
       <div
-        className={`${characterOptions ? 'gap-4' : 'gap-0'} timing h-full w-full grid-rows-[1fr_auto] items-center justify-center`}
+        className={`flex w-full max-w-85dvw flex-col items-center gap-4 sm:gap-8`}
       >
         <div className="bg-primary shadow-primary absolute left-1.5 top-1.5 z-10 ml-[72px] mr-auto flex flex-col items-start justify-start rounded p-1.5">
           {joinedPlayers?.map((player: any) => (
@@ -174,7 +174,7 @@ const Encounter = () => {
                   onClick={() => navigate('history')}
                 >
                   <ArrowHeader4
-                    className="mb-2 whitespace-nowrap"
+                    className="text-primary mb-2 whitespace-nowrap"
                     title="
                   Last Action"
                   />

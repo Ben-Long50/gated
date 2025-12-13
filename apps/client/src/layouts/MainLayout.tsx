@@ -1,5 +1,5 @@
 import { useContext, useRef } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, useParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LayoutContext } from '../contexts/LayoutContext';
@@ -15,7 +15,7 @@ const MainLayout = () => {
   const { theme, accentPrimary } = useContext(ThemeContext);
   const { mobile } = useContext(LayoutContext);
   const { pathname } = useLocation();
-  const parts = pathname.split('/');
+  const { encounterId } = useParams();
 
   const navbar = useNavigationStore((state) => state.navbar);
   const setNavbar = useNavigationStore((state) => state.setNavbar);
@@ -34,7 +34,7 @@ const MainLayout = () => {
         style={{ '--accent-primary': accentPrimary } as React.CSSProperties}
       >
         <Navbar navbarRef={navbarRef} />
-        {!parts.includes('encounters') && (
+        {!encounterId && (
           <Sidebar>
             {pathname.startsWith('/glam/codex') && <CodexLinks />}
             {pathname.startsWith('/glam/characters') && <CharacterLinks />}

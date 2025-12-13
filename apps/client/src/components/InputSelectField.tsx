@@ -163,7 +163,7 @@ const InputSelectField = ({
         />
         <label
           htmlFor={name}
-          className={` ${errors?.length > 0 ? 'text-error' : ''} ${isTouched ? 'bg-primary text-accent -translate-y-6' : 'text-gray-400'} timing absolute left-5 top-3.5 transform cursor-text transition-all`}
+          className={` ${errors?.length > 0 ? 'text-error' : ''} ${isTouched || value ? 'bg-primary text-accent -translate-y-6' : 'text-gray-400'} timing absolute left-5 top-3.5 transform cursor-text transition-all`}
         >
           {label}
         </label>

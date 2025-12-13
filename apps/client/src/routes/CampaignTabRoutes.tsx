@@ -30,6 +30,8 @@ import EncounterList from 'src/components/encounterComponents/EncounterList';
 import ActionQueueModal from 'src/components/modals/ActionQueueModal';
 import HistoryModal from 'src/components/modals/HistoryModal';
 import { EncounterProvider } from 'src/contexts/EncounterContext';
+import EncounterFormMap from 'src/components/encounterComponents/EncounterFormMap';
+import EncounterFormInfo from 'src/components/encounterComponents/EncounterFormInfo';
 
 const CampaignTabRoutes = () => {
   return (
@@ -99,7 +101,10 @@ const CampaignTabRoutes = () => {
           </Route>
         </Route>
         <Route path="encounters">
-          <Route path="create" element={<EncounterForm />} />
+          <Route path="create" element={<EncounterForm />}>
+            <Route path="" element={<EncounterFormInfo />} />
+            <Route path="maps/:mapId" element={<EncounterFormMap />} />
+          </Route>
           <Route path="pending" element={<EncounterList />} />
           <Route path="completed" element={<EncounterList />} />
         </Route>

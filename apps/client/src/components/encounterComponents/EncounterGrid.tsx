@@ -23,7 +23,6 @@ const EncounterGrid = ({
   locations,
   gridDisplay,
   setActionSidebar,
-  isDown,
 }: {
   width: number;
   height: number;
@@ -32,7 +31,6 @@ const EncounterGrid = ({
   locations: Location[];
   gridDisplay: boolean;
   setActionSidebar: (value: boolean) => void;
-  isDown?: boolean;
 }) => {
   const { statColorMap, accentPrimary } = useContext(ThemeContext);
   const { combat, activeCharacter, actionForm, rolls } =
@@ -57,10 +55,6 @@ const EncounterGrid = ({
 
   const arrowActive = activeCharacter?.id;
   const arrowTarget = actionTarget?.id || target;
-
-  const updateCharacterLocation = useUpdateCharacterLocationMutation(
-    Number(mapId),
-  );
 
   const activeCoordinates = useMemo(() => {
     if (activeCharacter?.id) {
@@ -87,12 +81,14 @@ const EncounterGrid = ({
 
     setActionSidebar(false);
     if (
-      over.data.current.index !== active.data.current.index &&
+      (over.data.current.row !== active.data.current.row ||
+        over.data.current.col !== active.data.current.col) &&
       combat.combatPhase === 'action'
     ) {
       if (over.data.current.inRange) {
         actionForm.setFieldValue('locationId', active.data.current.locationId);
-        actionForm.setFieldValue('index', over.data.current.index);
+        actionForm.setFieldValue('row', over.data.current.row);
+        actionForm.setFieldValue('col', over.data.current.col);
         actionForm.handleSubmit();
       } else {
         alert('Not in range');
@@ -155,21 +151,23 @@ const EncounterGrid = ({
             const { row, col } = getCoords(width, index);
 
             const characterLocations =
-              locations.filter(
-                (location) => location.row === row && location.col === col,
-              ) || [];
+              locations.length > 0
+                ? locations.filter(
+                    (location) => location.row === row && location.col === col,
+                  )
+                : [];
 
             return (
               <EncounterGridTile
                 key={index}
                 row={row}
                 col={col}
+                height={height}
                 gridDisplay={gridDisplay}
                 characterLocations={characterLocations}
                 activeCoordinates={activeCoordinates}
                 hoveredCoords={hoveredCoords}
                 setHoveredCoords={setHoveredCoords}
-                isDown={isDown}
               />
             );
           })}

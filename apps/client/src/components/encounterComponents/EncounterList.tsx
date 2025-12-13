@@ -1,18 +1,8 @@
 import { capitalCase } from 'change-case';
-import {
-  Fragment,
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
-import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Fragment, useContext, useRef } from 'react';
+import { Outlet, useLocation, useParams } from 'react-router-dom';
 import Loading from '../Loading';
 import ItemCardSmall from '../ItemCardSmall';
-import Icon from '@mdi/react';
-import { mdiEye, mdiTagEdit, mdiTrashCanOutline } from '@mdi/js';
-import useMaps from 'src/hooks/useMaps';
 import BtnRect from '../buttons/BtnRect';
 import Divider from '../Divider';
 import CloudinaryImage from '../CloudinaryImage';
@@ -20,17 +10,14 @@ import useCombatQueries from 'src/hooks/combat hooks/useCombatQueries/useCombatQ
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import CharacterCardSmall from '../CharacterCardSmall';
 import ArrowHeader3 from '../ArrowHeader3';
-import ArrowHeader4 from '../ArrowHeader4';
 import { socket } from 'src/socket';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 
 const EncounterList = () => {
   const { mapId, campaignId } = useParams();
   const { gameMaster } = useContext(CampaignContext);
-  const navigate = useNavigate();
   const location = useLocation();
   const parts = location.pathname.split('/');
-  const [widthModifier, setWidthModifier] = useState(500);
 
   const containerRef = useRef(null);
 
@@ -49,13 +36,6 @@ const EncounterList = () => {
 
   const { pendingEncounters, completedEncounters, isLoading } =
     useCombatQueries(campaign?.encounters.map((encounter) => encounter.id));
-
-  useEffect(() => {
-    if (containerRef.current) {
-      const { width } = containerRef.current.getBoundingClientRect();
-      setWidthModifier(width);
-    }
-  }, [containerRef.current, pendingEncounters, completedEncounters]);
 
   let encounters = [] as any[];
 
@@ -102,6 +82,13 @@ const EncounterList = () => {
                 >
                   <Divider />
                   <div className="grid grid-cols-2 gap-8">
+                    <div className="col-span-2 flex w-full flex-col items-start gap-4">
+                      <ArrowHeader3 title={encounter.map.name} />
+                      <CloudinaryImage
+                        className="border-accent overflow-hidden rounded border"
+                        publicId={encounter.map.picture.publicId}
+                      />
+                    </div>
                     <div className="flex flex-col gap-4">
                       <ArrowHeader3 title="Player Characters" />
                       {encounter.characters
@@ -113,7 +100,8 @@ const EncounterList = () => {
                             active={false}
                           />
                         ))}
-                      <Divider />
+                    </div>
+                    <div className="flex flex-col gap-4">
                       <ArrowHeader3 title="Non-Player Characters" />
                       {encounter.characters
                         .filter((character) => !character.playerCharacter)
@@ -125,14 +113,8 @@ const EncounterList = () => {
                           />
                         ))}
                     </div>
-                    <div className="flex w-full flex-col items-start gap-4">
-                      <ArrowHeader3 title={encounter.map.name} />
-                      <CloudinaryImage
-                        className="border-accent overflow-hidden rounded border"
-                        publicId={encounter.map.picture.publicId}
-                      />
-                    </div>
                   </div>
+                  <Divider />
                   {gameMaster && !encounter.active && (
                     <BtnRect
                       type="button"
