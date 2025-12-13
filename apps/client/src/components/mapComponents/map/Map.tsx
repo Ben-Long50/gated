@@ -23,7 +23,9 @@ const Map = () => {
 
   const [gridDisplay, setGridDisplay] = useState(true);
 
-  const { map, locations, isLoading } = useMap(Number(mapId));
+  const { map, locations, mapLoading, locationsLoading } = useMap(
+    Number(mapId),
+  );
 
   const updateLocation = useUpdateCharacterLocationMutation(Number(mapId));
 
@@ -52,7 +54,7 @@ const Map = () => {
     });
   };
 
-  if (isLoading) return <Loading />;
+  if (mapLoading) return <Loading />;
 
   if (!map) return <h1>No Map Found</h1>;
 
@@ -87,7 +89,7 @@ const Map = () => {
           locations={locations}
           gridDisplay={gridDisplay}
         />
-        <MapSidebar locations={locations} />
+        <MapSidebar locations={locations} locationsLoading={locationsLoading} />
       </DndContext>
     </div>
   );

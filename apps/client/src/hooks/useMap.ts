@@ -4,11 +4,18 @@ import useLocationQueries from './useCampaignMapQuery/useLocationQueries';
 const useMap = (mapId: number) => {
   const { data: map, isLoading: mapLoading } = useCampaignMapQuery(mapId);
 
-  const { locations, isLoading: locationsLoading } = useLocationQueries(
-    map?.locations.map((location) => location.id) || [],
-  );
+  const {
+    locations,
+    isLoading: locationsLoading,
+    isPending: locationsPending,
+  } = useLocationQueries(map?.locations.map((location) => location.id) || []);
 
-  return { map, locations, isLoading: mapLoading || locationsLoading };
+  return {
+    map,
+    locations: locations.filter((location) => location),
+    mapLoading,
+    locationsLoading: locationsLoading || locationsPending,
+  };
 };
 
 export default useMap;

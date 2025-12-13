@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Map } from 'src/types/map';
 import deleteCharacterLocation from './deleteCharacterLocation';
+import { Character } from 'src/types/character';
 
 const useDeleteCharacterLocationMutation = (mapId: number) => {
   const queryClient = useQueryClient();
@@ -18,6 +19,15 @@ const useDeleteCharacterLocationMutation = (mapId: number) => {
     onMutate: (data) => {
       queryClient.removeQueries({ queryKey: ['location', data.locationId] });
 
+      queryClient.setQueryData(
+        ['character', data.characterId],
+        (prev: Character) => ({
+          ...prev,
+          location: null,
+          locationId: null,
+        }),
+      );
+
       const prevMap = queryClient.getQueriesData({ queryKey: ['map', mapId] });
 
       queryClient.setQueryData(['map', mapId], (prev: Map) => ({
@@ -29,7 +39,10 @@ const useDeleteCharacterLocationMutation = (mapId: number) => {
 
       return { prevMap };
     },
-    onSuccess: () => {
+    onSuccess: (_, value) => {
+      queryClient.invalidateQueries({
+        queryKey: ['character', value.characterId],
+      });
       return queryClient.invalidateQueries({ queryKey: ['map', mapId] });
     },
 

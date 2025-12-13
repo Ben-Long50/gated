@@ -116,7 +116,7 @@ const TileListModal = () => {
             }}
           >
             {Array.from({ length: grid.rows * grid.cols }).map((_, index) => {
-              const { row, col } = getCoords(grid.cols, index + 1);
+              const { row, col } = getCoords(grid.cols, index);
 
               const inCol = tempComponent
                 ? col >= tempComponent.imageColStart &&

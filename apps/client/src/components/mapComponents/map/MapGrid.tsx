@@ -48,15 +48,18 @@ const MapGrid = ({
           const { row, col } = getCoords(width, index);
 
           const characterLocations =
-            locations.filter(
-              (location) => location.row === row && location.col === col,
-            ) || [];
+            locations.length > 0
+              ? locations.filter(
+                  (location) => location.row === row && location.col === col,
+                )
+              : [];
 
           return (
             <MapGridTile
               key={index}
               row={row}
               col={col}
+              height={height}
               characterLocations={characterLocations}
               gridDisplay={gridDisplay}
               hoveredCoords={hoveredCoords}

@@ -9,6 +9,7 @@ import CharacterToken from './CharacterToken';
 const MapGridTile = ({
   row,
   col,
+  height,
   gridDisplay,
   characterLocations,
   hoveredCoords,
@@ -16,6 +17,7 @@ const MapGridTile = ({
 }: {
   row: number;
   col: number;
+  height: number;
   gridDisplay: boolean;
   characterLocations: Location[];
   hoveredCoords: {
@@ -66,9 +68,12 @@ const MapGridTile = ({
         ))}
       {active && (
         <p
-          className={`bg-tertiary pointer-events-none absolute right-1/2 top-0 z-20 select-none whitespace-nowrap rounded p-1 py-0.5 text-sm`}
+          className={`bg-tertiary pointer-events-none absolute right-1/2 top-1/2 z-20 select-none whitespace-nowrap rounded p-1 py-0.5 text-sm`}
           style={{
-            transform: 'translateY(-100%) translateY(-4px) translateX(50%)',
+            transform:
+              row > height / 2
+                ? 'translateY(-50%) translateY(-42px)  translateX(50%)'
+                : 'translateY(-50%) translateY(42px)  translateX(50%)',
           }}
         >
           [{col}, {row}]
