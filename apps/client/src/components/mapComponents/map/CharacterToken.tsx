@@ -2,16 +2,18 @@ import CharacterPictureRound from '../../CharacterPictureRound';
 import useCharacter from 'src/hooks/useCharacter';
 import Loading from '../../Loading';
 import { useDraggable } from '@dnd-kit/core';
-import { useContext } from 'react';
+import { CSSProperties, useContext } from 'react';
 import { AuthContext } from 'src/contexts/AuthContext';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 
 const CharacterToken = ({
   characterId,
   locationId,
+  className,
 }: {
   characterId: number;
-  locationId: number;
+  locationId?: number;
+  className?: string;
 }) => {
   const { user } = useContext(AuthContext);
   const { gameMaster } = useContext(CampaignContext);
@@ -30,7 +32,7 @@ const CharacterToken = ({
     <div
       ref={setNodeRef}
       id={characterId.toString()}
-      className="group relative inset-0 size-12 cursor-grab touch-none rounded-full"
+      className={`${className} group relative inset-0 size-12 cursor-grab touch-none rounded-full`}
       style={
         transform
           ? {

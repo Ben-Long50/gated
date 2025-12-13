@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import useMap from 'src/hooks/useMap';
 import Loading from '../../Loading';
 import { mdiGrid } from '@mdi/js';
@@ -9,6 +9,7 @@ import MapSidebar from './MapSidebar';
 import {
   DndContext,
   DragEndEvent,
+  DragOverlay,
   DragStartEvent,
   PointerSensor,
   useSensor,
@@ -16,12 +17,28 @@ import {
 } from '@dnd-kit/core';
 import useUpdateCharacterLocationMutation from 'src/hooks/useUpdateCharacterLocationMutation/useUpdateCharacterLocationMutation';
 import MapGrid from './MapGrid';
+import CharacterPictureRound from 'src/components/CharacterPictureRound';
+import CharacterToken from './CharacterToken';
 
 const Map = () => {
   const { mobile } = useContext(LayoutContext);
   const { mapId } = useParams();
-
+  const [dragging, setDragging] = useState(false);
+  const [draggingId, setDraggingId] = useState<number | null>(null);
   const [gridDisplay, setGridDisplay] = useState(true);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    function handleMouseMove(e: MouseEvent) {
+      if (dragging) {
+        setMousePosition({ x: e.clientX, y: e.clientY });
+        console.log(e.clientX, e.clientY);
+      }
+    }
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [dragging]);
 
   const { map, locations, mapLoading, locationsLoading } = useMap(
     Number(mapId),
@@ -37,6 +54,11 @@ const Map = () => {
 
   const onDragStart = (e: DragStartEvent) => {
     const { active } = e;
+    if (!active.data.current) {
+      return;
+    }
+    setDragging(true);
+    setDraggingId(active.data.current.characterId);
   };
 
   const onDragEnd = (e: DragEndEvent) => {
@@ -45,7 +67,7 @@ const Map = () => {
     if (!active.data.current || !over?.data.current) {
       return;
     }
-
+    setDragging(false);
     updateLocation.mutate({
       characterId: active.data.current.characterId,
       locationId: active.data.current.locationId,
@@ -90,6 +112,14 @@ const Map = () => {
           gridDisplay={gridDisplay}
         />
         <MapSidebar locations={locations} locationsLoading={locationsLoading} />
+        <DragOverlay>
+          {dragging && draggingId ? (
+            <CharacterToken
+              className="cursor-grabbing"
+              characterId={draggingId}
+            />
+          ) : null}
+        </DragOverlay>
       </DndContext>
     </div>
   );

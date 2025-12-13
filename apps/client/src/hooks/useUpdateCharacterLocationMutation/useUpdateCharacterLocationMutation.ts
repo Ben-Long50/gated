@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import updateCharacterLocation from './updateCharacterLocation';
-import { Location } from 'src/types/map';
+import { Location, Map } from 'src/types/map';
 import { socket } from 'src/socket';
 
 const useUpdateCharacterLocationMutation = (mapId: number) => {
@@ -16,6 +16,8 @@ const useUpdateCharacterLocationMutation = (mapId: number) => {
     },
 
     onMutate: (data) => {
+      console.log(data);
+
       queryClient.cancelQueries({ queryKey: ['location', data.locationId] });
 
       const prevLocationData: Location | undefined = queryClient.getQueryData([
@@ -25,15 +27,33 @@ const useUpdateCharacterLocationMutation = (mapId: number) => {
 
       if (prevLocationData) {
         if (mapId !== prevLocationData?.mapId) {
-          queryClient.removeQueries({
-            queryKey: ['location', data.locationId],
-          });
+          queryClient.setQueryData(
+            ['location', data.locationId],
+            (prev: Location) => ({
+              ...prev,
+              mapId,
+              row: data.row,
+              col: data.col,
+            }),
+          );
         } else {
           queryClient.setQueryData(
             ['location', data.locationId],
             (prev: Location) => ({ ...prev, row: data.row, col: data.col }),
           );
         }
+      } else {
+        queryClient.setQueryData(['location', 'temp'], {
+          mapId,
+          id: 0,
+          characterId: data.characterId,
+          row: data.row,
+          col: data.col,
+        });
+        queryClient.setQueryData(['map', mapId], (prev: Map) => ({
+          ...prev,
+          locations: [...prev.locations, { id: 'temp' }],
+        }));
       }
 
       return { prevLocationData };
