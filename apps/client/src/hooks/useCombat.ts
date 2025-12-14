@@ -250,6 +250,11 @@ const useCombat = () => {
     },
   });
 
+  const resetForms = () => {
+    actionForm.reset();
+    reactionForm.reset();
+  };
+
   return {
     combat,
     encounterPermissions,
@@ -259,6 +264,7 @@ const useCombat = () => {
     handleAdvanceTurn,
     actionForm,
     reactionForm,
+    resetForms,
     isLoading,
   };
 };

@@ -40,6 +40,7 @@ const CharacterOptions = ({
     setControlledCharacterId,
     handleAdvanceTurn,
     resetRolls,
+    resetForms,
   } = useContext(EncounterContext);
 
   const { campaignId, encounterId } = useParams();
@@ -55,6 +56,7 @@ const CharacterOptions = ({
 
   const setItem = useCombatStore((state) => state.setItem);
   const setTarget = useCombatStore((state) => state.setTarget);
+  const setRange = useCombatStore((state) => state.setRange);
 
   return (
     <ThemeContainer
@@ -161,12 +163,14 @@ const CharacterOptions = ({
                 ariaLabel="Pass turn"
                 type="button"
                 onClick={() => {
+                  resetRolls();
+                  resetForms();
+                  setTarget(null);
+                  setRange(null, null);
                   handleAdvanceTurn();
                   socket.emit('resetBoard', {
                     encounterId: Number(encounterId),
                   });
-                  resetRolls();
-                  setTarget(null);
                 }}
               >
                 Pass Turn

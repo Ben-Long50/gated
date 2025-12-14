@@ -35,6 +35,7 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
     handleAdvanceTurn,
     actionForm,
     reactionForm,
+    resetForms,
     isLoading: combatLoading,
   } = useCombat();
 
@@ -143,6 +144,7 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
         handleAdvanceTurn,
         actionForm,
         reactionForm,
+        resetForms,
         rolls,
         rolling,
         rollComplete,
