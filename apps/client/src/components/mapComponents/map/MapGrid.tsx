@@ -71,6 +71,7 @@ const MapGrid = ({
           if (!layer.hidden) {
             return (
               <div
+                key={layer.id}
                 id={`layer ${layer.id}`}
                 className={`layout absolute inset-px grid overflow-hidden rounded`}
                 style={{

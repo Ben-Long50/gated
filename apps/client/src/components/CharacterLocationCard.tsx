@@ -30,7 +30,7 @@ const CharacterLocationCard = ({
     id: characterId,
     data: {
       characterId: character?.id,
-      locationId: character?.location.id || null,
+      locationId: character?.location?.id || null,
     },
   });
 
