@@ -52,7 +52,7 @@ const MapSidebar = ({
             className="text-primary ml-1 size-10 shrink-0"
           />
           <div
-            className={`${layerSidebar ? 'visible translate-x-0 px-4 opacity-100' : 'invisible translate-x-full opacity-0'} timing bg-primary fixed bottom-0 right-0 z-10 flex w-full max-w-96 flex-col rounded py-4 shadow-lg shadow-black`}
+            className={`${layerSidebar ? 'visible translate-x-0 px-4 opacity-100' : 'invisible translate-x-full opacity-0'} scrollbar-secondary-2 timing bg-primary fixed bottom-0 right-0 z-10 flex w-full max-w-96 flex-col overflow-y-auto rounded py-4 shadow-lg shadow-black`}
             style={{ top: navbarHeight }}
           >
             <div className="flex w-full flex-col gap-4">
