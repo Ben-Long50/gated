@@ -364,6 +364,7 @@ const campaignServices = {
               id: true,
               userId: true,
               campaignId: true,
+              picture: true,
             },
           },
         },

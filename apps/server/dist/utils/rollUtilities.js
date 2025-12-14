@@ -7,8 +7,10 @@ export const calculateRoll = (attributes, action, modifiers, extraDice) => {
     if (!action.roll) {
         return;
     }
+    console.log(attributes);
     const calculateDiceCount = (attributes, action, modifiers, extraDice) => {
         var _a;
+        console.log(action);
         const calculatedRolls = ((_a = action.roll) === null || _a === void 0 ? void 0 : _a.map((roll) => {
             const attributePoints = attributes[roll.attribute].points;
             const skillPoints = attributes[roll.attribute].skills[roll.skill].points;
