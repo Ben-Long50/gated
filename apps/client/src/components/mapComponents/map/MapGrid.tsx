@@ -23,11 +23,6 @@ const MapGrid = ({
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
 
-  const [hoveredCoords, setHoveredCoords] = useState<{
-    row: number | null;
-    col: number | null;
-  }>({ row: null, col: null });
-
   return (
     <DragScrollContainer
       draggable={true}
@@ -62,8 +57,6 @@ const MapGrid = ({
               height={height}
               characterLocations={characterLocations}
               gridDisplay={gridDisplay}
-              hoveredCoords={hoveredCoords}
-              setHoveredCoords={setHoveredCoords}
             />
           );
         })}

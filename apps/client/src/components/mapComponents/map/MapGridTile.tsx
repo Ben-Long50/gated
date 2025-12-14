@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import { Location } from 'src/types/map';
 import Icon from '@mdi/react';
@@ -12,29 +12,16 @@ const MapGridTile = ({
   height,
   gridDisplay,
   characterLocations,
-  hoveredCoords,
-  setHoveredCoords,
 }: {
   row: number;
   col: number;
   height: number;
   gridDisplay: boolean;
   characterLocations: Location[];
-  hoveredCoords: {
-    row: number | null;
-    col: number | null;
-  };
-  setHoveredCoords: ({
-    row,
-    col,
-  }: {
-    row: number | null;
-    col: number | null;
-  }) => void;
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
 
-  const active = hoveredCoords?.col === col && hoveredCoords?.row === row;
+  const [hover, setHover] = useState(false);
 
   const { isOver, setNodeRef } = useDroppable({
     id: `row ${row}, col ${col}`,
@@ -49,11 +36,12 @@ const MapGridTile = ({
         borderColor: `${accentPrimary}80`,
         transition: 'background 0.2s ease',
         background:
-          active && characterLocations.length === 0
+          hover && characterLocations.length === 0
             ? `radial-gradient(circle, transparent, 75%, ${accentPrimary})`
             : 'transparent',
       }}
-      onMouseEnter={() => setHoveredCoords({ row, col })}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
     >
       {isOver ? (
         <Icon path={mdiCircleDouble} className="text-accent size-12" />
@@ -66,7 +54,7 @@ const MapGridTile = ({
             locationId={location.id}
           />
         ))}
-      {active && (
+      {hover && (
         <p
           className={`bg-tertiary pointer-events-none absolute right-1/2 top-1/2 z-20 select-none whitespace-nowrap rounded p-1 py-0.5 text-sm`}
           style={{
