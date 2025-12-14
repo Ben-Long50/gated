@@ -67,6 +67,11 @@ const MapBuilderComponent = ({
         }
       }}
     >
+      {component.subComponents &&
+        component.subComponents.length > 0 &&
+        component.subComponents.map((component) => (
+          <div style={getComponentStyle(component)} />
+        ))}
       {activeLayerId === layerId && activeComponentId === component.id && (
         <div
           className={`absolute inset-0 cursor-grab bg-[var(--accent-primary)] opacity-40`}

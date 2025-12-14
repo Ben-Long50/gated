@@ -34,13 +34,14 @@ interface Layer {
 interface Component {
   name: string;
   id: number;
-  imageUrl: string;
+  imageUrl?: string;
   width: number;
   height: number;
-  imageColStart: number;
-  imageRowStart: number;
+  imageColStart?: number;
+  imageRowStart?: number;
   mapColStart: number;
   mapRowStart: number;
+  subComponents: Component[];
 }
 
 enum MapType {

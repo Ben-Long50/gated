@@ -18,7 +18,7 @@ const MapSaveModal = () => {
             <InputSelectField
               field={field}
               label="Map Type"
-              options={['location', 'component']}
+              options={['map', 'component']}
             />
           )}
         </form.Field>

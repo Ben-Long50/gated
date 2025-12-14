@@ -30,7 +30,10 @@ const EncounterFormInfo = () => {
                     field.handleChange(map.id);
                   }}
                 >
-                  <ArrowHeader3 title={map.name} />
+                  <div className="flex w-full items-center justify-between">
+                    <ArrowHeader3 title={map.name} />
+                    <p>{`${map.width} x ${map.height}`}</p>
+                  </div>
                   <div className="flex h-80 w-full items-center justify-center">
                     <CloudinaryImage
                       className="border-accent overflow-hidden rounded border"

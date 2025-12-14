@@ -10,6 +10,9 @@ const getComponentStyle = (component: Component) => {
     gridRowStart: component.mapRowStart,
     gridColumnEnd: component.mapColStart + component.width,
     gridRowEnd: component.mapRowStart + component.height,
+    display: 'grid',
+    gridColumns: component.width,
+    gridRows: component.height,
   };
 };
 

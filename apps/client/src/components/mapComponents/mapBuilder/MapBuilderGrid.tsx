@@ -130,6 +130,11 @@ const MapBuilderGrid = ({
                     data-tiles={JSON.stringify(getOccupiedTiles(tempComponent))}
                     style={getComponentStyle(tempComponent)}
                   >
+                    {tempComponent.subComponents &&
+                      tempComponent.subComponents.length > 0 &&
+                      tempComponent.subComponents.map((component) => (
+                        <div style={getComponentStyle(component)} />
+                      ))}
                     {conflict && (
                       <div
                         className={`absolute inset-0 bg-red-500 opacity-40`}

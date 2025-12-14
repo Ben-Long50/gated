@@ -19,7 +19,13 @@ const MapComponent = ({
       data-tiles={JSON.stringify(tiles)}
       className={`relative`}
       style={style}
-    />
+    >
+      {component.subComponents &&
+        component.subComponents.length > 0 &&
+        component.subComponents.map((component) => (
+          <div style={getComponentStyle(component)} />
+        ))}
+    </div>
   );
 };
 

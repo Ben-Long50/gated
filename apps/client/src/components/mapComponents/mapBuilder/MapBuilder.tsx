@@ -384,7 +384,7 @@ const MapBuilder = () => {
 
     const layer = layers.find((layer: Layer) => layer.id === activeLayerId);
 
-    if (!layer || !component?.imageUrl) {
+    if (!layer || (!component?.imageUrl && !component.subComponents.length)) {
       return;
     }
 
