@@ -273,7 +273,7 @@ const AffiliationForm = () => {
           {factionId && (
             <div className={`flex items-center gap-4 justify-self-start`}>
               <CharacterPictureRound character={faction} />
-              <ArrowHeader4 title={faction.name} />
+              <ArrowHeader4 className="text-primary" title={faction.name} />
             </div>
           )}
           <AffiliationIcon
@@ -295,7 +295,7 @@ const AffiliationForm = () => {
                         className={`flex items-center gap-4 justify-self-end`}
                       >
                         <ArrowHeader4
-                          className="text-right"
+                          className="text-primary text-right"
                           title={faction.name}
                           reverse={true}
                         />
@@ -312,7 +312,7 @@ const AffiliationForm = () => {
                         className={`flex items-center gap-4 justify-self-end`}
                       >
                         <ArrowHeader4
-                          className="text-right"
+                          className="text-primary text-right"
                           title={
                             character?.firstName + ' ' + character?.lastName
                           }

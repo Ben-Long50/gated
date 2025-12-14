@@ -149,11 +149,11 @@ const ItemUpdateModal = () => {
       <div className="grid grid-cols-2 gap-8">
         <ItemPicture item={item} />
         <div className="flex flex-col items-start gap-4">
-          <ArrowHeader4 title="Name" />
+          <ArrowHeader4 className="text-primary" title="Name" />
           <p className="w-full border-x-2 border-gray-400 border-opacity-50 px-4">
             {baseItem.name}
           </p>
-          <ArrowHeader4 title="Description" />
+          <ArrowHeader4 className="text-primary" title="Description" />
           <p className="w-full border-x-2 border-gray-400 border-opacity-50 px-4">
             {baseItem.description}
           </p>

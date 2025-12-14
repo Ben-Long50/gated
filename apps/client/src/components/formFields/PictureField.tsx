@@ -102,7 +102,7 @@ const PictureField = ({
         </ThemeContainer>
       </div>
       <div className="items-centerv flex w-full flex-col items-start justify-between gap-4">
-        <ArrowHeader4 title="Aspect Ratio Previews" />
+        <ArrowHeader4 className="text-primary" title="Aspect Ratio Previews" />
         <div className="grid w-full grid-cols-3 items-center gap-4">
           <button
             className={`${aspectRatio === '1/1' ? 'text-accent' : 'text-tertiary'} bg-tertiary timing hover:text-accent shadow-color rounded-md p-2 text-center font-semibold shadow-md`}
@@ -137,7 +137,10 @@ const PictureField = ({
         {(field) => (
           <label className="flex flex-col gap-4" htmlFor="position">
             <div className="flex justify-between">
-              <ArrowHeader4 title="Picture Position (Vertical)" />
+              <ArrowHeader4
+                className="text-primary"
+                title="Picture Position (Vertical)"
+              />
               <h4>{field.state.value}%</h4>
             </div>
             <input

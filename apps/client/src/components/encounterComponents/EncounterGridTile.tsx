@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import CharacterEncounterToken from './CharacterEncounterToken';
 import { useStore } from '@tanstack/react-form';
@@ -66,17 +66,21 @@ const EncounterGridTile = ({
       break;
   }
 
-  const range = tempRange
-    ? tempRange
-    : action?.actionSubtypes?.includes('movement')
-      ? action?.modifiers?.speed
-        ? character?.stats.speed + action?.modifiers?.speed
-        : character?.stats.speed
-      : item?.stats.range;
+  const range = useMemo(() => {
+    return tempRange
+      ? tempRange
+      : action?.actionSubtypes?.includes('movement')
+        ? action?.modifiers?.speed
+          ? character?.stats.speed + action?.modifiers?.speed
+          : character?.stats.speed
+        : item?.stats.range;
+  }, [tempRange]);
 
-  const inRange = activeCoordinates
-    ? isInRange(activeCoordinates, { row, col }, range)
-    : false;
+  const inRange = useMemo(() => {
+    return activeCoordinates
+      ? isInRange(activeCoordinates, { row, col }, range)
+      : false;
+  }, [activeCoordinates, range]);
 
   const { isOver, setNodeRef } = useDroppable({
     id: `row ${row}, col ${col}`,

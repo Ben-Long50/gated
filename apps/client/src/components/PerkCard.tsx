@@ -95,7 +95,10 @@ const PerkCard = ({
             {attributes.map(([attribute, points]) => (
               <div key={attribute} className="flex items-center gap-2">
                 <div className="flex items-center justify-between">
-                  <ArrowHeader4 title={capitalCase(attribute)} />
+                  <ArrowHeader4
+                    className="text-primary"
+                    title={capitalCase(attribute)}
+                  />
                 </div>
                 <div className="flex gap-2">
                   {Array.from({ length: points }).map((_, index) => (

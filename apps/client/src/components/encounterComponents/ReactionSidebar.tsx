@@ -126,7 +126,7 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
                         <div className="flex w-full items-center gap-4">
                           <CharacterPictureRound character={target} />
                           <ArrowHeader4
-                            className="w-[80%]"
+                            className="text-primary w-[80%]"
                             title={`${target.firstName} ${target.lastName}`}
                           />
                         </div>
@@ -141,7 +141,10 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
                       <div className="flex flex-col items-start gap-4">
                         <div className="flex w-full items-center gap-4">
                           <CharacterPictureRound character={item} />
-                          <ArrowHeader4 className="w-[80%]" title={item.name} />
+                          <ArrowHeader4
+                            className="text-primary w-[80%]"
+                            title={item.name}
+                          />
                         </div>
                       </div>
                     ) : (

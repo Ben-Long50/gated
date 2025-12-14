@@ -8,7 +8,10 @@ const CharacterName = ({ characterId }: { characterId: number }) => {
   return (
     <div className="flex items-center gap-4">
       <CharacterPictureRound character={character} />
-      <ArrowHeader4 title={`${character?.firstName} ${character?.lastName}`} />
+      <ArrowHeader4
+        className="text-primary"
+        title={`${character?.firstName} ${character?.lastName}`}
+      />
     </div>
   );
 };

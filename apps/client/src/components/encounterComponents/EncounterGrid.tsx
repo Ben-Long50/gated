@@ -6,8 +6,6 @@ import { useStore } from '@tanstack/react-form';
 import Xarrow from 'react-xarrows';
 import EncounterGridTile from './EncounterGridTile';
 import { DndContext, DragEndEvent } from '@dnd-kit/core';
-import useUpdateCharacterLocationMutation from 'src/hooks/useUpdateCharacterLocationMutation/useUpdateCharacterLocationMutation';
-import { useParams } from 'react-router-dom';
 import useActions from 'src/hooks/useActions';
 import Loading from '../Loading';
 import { EncounterContext } from 'src/contexts/EncounterContext';
@@ -35,7 +33,6 @@ const EncounterGrid = ({
   const { statColorMap, accentPrimary } = useContext(ThemeContext);
   const { combat, activeCharacter, actionForm, rolls } =
     useContext(EncounterContext);
-  const { mapId } = useParams();
   const [hoveredCoords, setHoveredCoords] = useState<{
     row: number | null;
     col: number | null;
