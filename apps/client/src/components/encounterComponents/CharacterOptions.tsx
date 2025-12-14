@@ -60,7 +60,7 @@ const CharacterOptions = ({
 
   return (
     <ThemeContainer
-      className={`${characterOptions ? 'visible opacity-100' : 'invisible opacity-0'} timing mx-auto w-full max-w-5xl`}
+      className={`${characterOptions ? 'visible opacity-100' : 'invisible opacity-0'} timing z-20 mx-auto w-full max-w-5xl`}
       borderColor={accentPrimary}
       chamfer="medium"
     >
