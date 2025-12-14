@@ -206,7 +206,7 @@ const useCombat = () => {
       const data = {
         campaignId: Number(campaignId),
         encounterId: Number(encounterId),
-        activeCharacterId: activeCharacter.id,
+        reactiveCharacterId: activeCharacter.id,
         reactionId: value.reaction.id,
       };
 

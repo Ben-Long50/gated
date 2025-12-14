@@ -39,7 +39,7 @@ const EncounterGridTile = ({
   const { accentPrimary, statColorMap } = useContext(ThemeContext);
   const { activeCharacter, actionForm } = useContext(EncounterContext);
 
-  const { filteredCharacter: character } = useCharacter(activeCharacter.id);
+  const { filteredCharacter: character } = useCharacter(activeCharacter?.id);
 
   const active = hoveredCoords.row === row && hoveredCoords.col === col;
 
