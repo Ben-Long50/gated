@@ -9,6 +9,7 @@ import useCharacters from 'src/hooks/useCharacters';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import useNavigationStore from 'src/stores/navbarStore';
 import { CampaignContext } from 'src/contexts/CampaignContext';
+import Divider from '../Divider';
 
 const Sidebar = ({ children }: { children: ReactNode }) => {
   const { mobile } = useContext(LayoutContext);
@@ -64,6 +65,7 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
             />
           )
         )}
+        <Divider className="!my-0" />
         {!isLoading && cartLength > 0 && (
           <LinkSidebar
             title={activeCharacter?.firstName + "'s cart"}
@@ -86,42 +88,48 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
         )}
         {activeCampaigns.length > 0 &&
           activeCampaigns.map((campaign, index) => (
-            <LinkSidebar
-              key={index}
-              title={campaign?.name}
-              icon={
-                <div className="liveCampaign z-10 size-12 shrink-0 rounded-full">
-                  <img
-                    className="bg-secondary size-full shrink-0 rounded-full object-cover"
-                    src={campaign?.picture.imageUrl}
-                    alt={campaign?.name + ' ' + "'s cover picture"}
-                  />
-                </div>
-              }
-              path={`/glam/campaigns/${campaign?.id}`}
-            />
+            <>
+              <LinkSidebar
+                key={index}
+                title={campaign?.name}
+                icon={
+                  <div className="liveCampaign z-10 size-12 shrink-0 rounded-full">
+                    <img
+                      className="bg-secondary size-full shrink-0 rounded-full object-cover"
+                      src={campaign?.picture.imageUrl}
+                      alt={campaign?.name + ' ' + "'s cover picture"}
+                    />
+                  </div>
+                }
+                path={`/glam/campaigns/${campaign?.id}`}
+              />
+              {activeEncounters.length > 0 &&
+                activeEncounters
+                  .filter((encounter) => encounter.campaignId === campaign.id)
+                  .map((encounter, index) => (
+                    <LinkSidebar
+                      key={index}
+                      title={encounter.name}
+                      icon={
+                        <div className="liveToken z-10 size-12 shrink-0 rounded-full">
+                          <img
+                            className="bg-secondary size-full shrink-0 rounded-full object-cover"
+                            src={encounter.map.picture.imageUrl}
+                            alt={encounter.map.name + ' ' + "'s picture"}
+                          />
+                        </div>
+                      }
+                      path={
+                        encounter.combatPhase === 'pending'
+                          ? `/glam/campaigns/${encounter.campaignId}/maps/${encounter.mapId}/encounters/${encounter.id}/initiative`
+                          : `/glam/campaigns/${encounter.campaignId}/maps/${encounter.mapId}/encounters/${encounter.id}`
+                      }
+                    />
+                  ))}
+              <Divider className="!my-0" />
+            </>
           ))}
-        {activeEncounters.length > 0 &&
-          activeEncounters.map((encounter, index) => (
-            <LinkSidebar
-              key={index}
-              title={encounter.name}
-              icon={
-                <div className="liveToken z-10 size-12 shrink-0 rounded-full">
-                  <img
-                    className="bg-secondary size-full shrink-0 rounded-full object-cover"
-                    src={encounter.map.picture.imageUrl}
-                    alt={encounter.map.name + ' ' + "'s picture"}
-                  />
-                </div>
-              }
-              path={
-                encounter.combatPhase === 'pending'
-                  ? `/glam/campaigns/${encounter.campaignId}/maps/${encounter.mapId}/encounters/${encounter.id}/initiative`
-                  : `/glam/campaigns/${encounter.campaignId}/maps/${encounter.mapId}/encounters/${encounter.id}`
-              }
-            />
-          ))}
+
         {children}
       </div>
     </nav>
