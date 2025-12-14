@@ -50,8 +50,13 @@ const EncounterGrid = ({
     (state) => state.values.target,
   );
 
-  const arrowActive = activeCharacter?.id;
-  const arrowTarget = actionTarget?.id || target;
+  const arrowActive = useMemo(() => {
+    return activeCharacter?.id;
+  }, [activeCharacter]);
+
+  const arrowTarget = useMemo(() => {
+    return actionTarget?.id || target;
+  }, [actionTarget]);
 
   const activeCoordinates = useMemo(() => {
     if (activeCharacter?.id) {
@@ -108,6 +113,20 @@ const EncounterGrid = ({
     }
   };
 
+  const locationMap = useMemo(() => {
+    const map = new Map();
+
+    for (const loc of locations) {
+      const key = `${loc.row},${loc.col}`;
+      if (!map.has(key)) {
+        map.set(key, []);
+      }
+      map.get(key).push(loc);
+    }
+
+    return map;
+  }, [locations]);
+
   if (actionsLoading) return <Loading />;
 
   return (
@@ -147,12 +166,9 @@ const EncounterGrid = ({
           {Array.from({ length: width * height }).map((_, index) => {
             const { row, col } = getCoords(width, index);
 
-            const characterLocations =
-              locations.length > 0
-                ? locations.filter(
-                    (location) => location.row === row && location.col === col,
-                  )
-                : [];
+            const key = `${row},${col}`;
+
+            const characterLocations = locationMap.get(key) ?? [];
 
             return (
               <EncounterGridTile

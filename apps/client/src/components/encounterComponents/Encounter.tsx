@@ -91,7 +91,7 @@ const Encounter = () => {
   return (
     <>
       <div
-        className={`flex w-full max-w-85dvw flex-col items-center gap-4 sm:gap-8`}
+        className={`flex h-full w-full max-w-85dvw flex-col items-center gap-4 sm:gap-8`}
       >
         <div className="bg-primary shadow-primary absolute left-1.5 top-1.5 z-10 ml-[72px] mr-auto flex flex-col items-start justify-start rounded p-1.5">
           {joinedPlayers?.map((player: any) => (

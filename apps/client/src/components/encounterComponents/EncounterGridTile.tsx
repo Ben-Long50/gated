@@ -41,7 +41,9 @@ const EncounterGridTile = ({
 
   const { filteredCharacter: character } = useCharacter(activeCharacter?.id);
 
-  const active = hoveredCoords.row === row && hoveredCoords.col === col;
+  const active = useMemo(() => {
+    return hoveredCoords.row === row && hoveredCoords.col === col;
+  }, [hoveredCoords]);
 
   const tempRange = useCombatStore((state) => state.range);
   const tempRangeColor = useCombatStore((state) => state.rangeColor);
@@ -52,19 +54,16 @@ const EncounterGridTile = ({
     (state) => state.values.actionType,
   );
 
-  let rangeColor;
-
-  switch (actionType) {
-    case 'attack':
-      rangeColor = statColorMap.DMG;
-      break;
-    case 'movement':
-      rangeColor = statColorMap.SPD;
-      break;
-    default:
-      rangeColor = tempRangeColor || 'transparent';
-      break;
-  }
+  const rangeColor = useMemo(() => {
+    switch (actionType) {
+      case 'attack':
+        return statColorMap.DMG;
+      case 'movement':
+        return statColorMap.SPD;
+      default:
+        return tempRangeColor || 'transparent';
+    }
+  }, [actionType]);
 
   const range = useMemo(() => {
     return tempRange
@@ -96,7 +95,7 @@ const EncounterGridTile = ({
         transition: 'background 0.2s ease',
         background: inRange
           ? `radial-gradient(circle, transparent, 75%, ${rangeColor})`
-          : active && characterLocations.length === 0
+          : active && characterLocations && characterLocations.length === 0
             ? `radial-gradient(circle, transparent, 75%, ${accentPrimary})`
             : 'transparent',
       }}

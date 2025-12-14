@@ -44,7 +44,7 @@ const MainLayout = () => {
         )}
         <div
           id="portal-root"
-          className={`${!mobile && !encounterLayout && 'ml-[68px]'} ${encounterLayout && 'sm:px-20 sm:py-2.5'} relative z-10 col-span-2 col-start-1 row-start-1 flex flex-col items-center px-2 py-4 max-xl:col-start-1 sm:p-8`}
+          className={`${!mobile && !encounterLayout && 'ml-[68px]'} ${encounterLayout && 'sm:px-20 sm:py-4'} relative z-10 col-span-2 col-start-1 row-start-1 flex flex-col items-center px-2 py-4 max-xl:col-start-1 sm:p-8`}
           style={{
             marginTop: navbarHeight,
             height: `calc(100dvh - ${navbarHeight}px)`,

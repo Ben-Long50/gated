@@ -10,8 +10,7 @@ import ArmorIcon from './icons/ArmorIcon';
 import useMapStore from 'src/stores/mapStore';
 import { motion } from 'motion/react';
 import ConditionTag from './ConditionTag';
-import { useContext, useLayoutEffect, useRef, useState } from 'react';
-import { ThemeContext } from 'src/contexts/ThemeContext';
+import { useLayoutEffect, useRef, useState } from 'react';
 import CharacterRadialMenu from './radialMenus/characterRadialMenu/CharacterRadialMenu';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
 
@@ -28,7 +27,6 @@ const CharacterCardSmall = ({
   expanding: boolean;
   active: boolean;
 }) => {
-  const { accentPrimary } = useContext(ThemeContext);
   const { filteredCharacter: character, isLoading } = useCharacter(characterId);
   const [detailHeight, setDetailHeight] = useState(1000);
 

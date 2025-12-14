@@ -2,7 +2,7 @@ import CharacterPictureRound from '../CharacterPictureRound';
 import useCharacter from 'src/hooks/useCharacter';
 import Loading from '../Loading';
 import { ThemeContext } from 'src/contexts/ThemeContext';
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import Die from './Die';
 import useCombatStore from 'src/stores/combatStore';
 import RangeIcon from '../icons/RangeIcon';
@@ -33,7 +33,9 @@ const CharacterEncounterToken = ({
     location.characterId,
   );
 
-  const roll = rolls.get(location.characterId) || null;
+  const roll = useMemo(() => {
+    return rolls.get(location.characterId) || null;
+  }, [rolls]);
 
   const target = useCombatStore((state) => state.target);
   const damage = useCombatStore((state) => state.damage);
