@@ -33,10 +33,6 @@ const EncounterGrid = ({
   const { statColorMap, accentPrimary } = useContext(ThemeContext);
   const { combat, activeCharacter, actionForm, rolls } =
     useContext(EncounterContext);
-  const [hoveredCoords, setHoveredCoords] = useState<{
-    row: number | null;
-    col: number | null;
-  }>({ row: null, col: null });
 
   const { filteredActions: actions, isLoading: actionsLoading } = useActions(
     undefined,
@@ -179,8 +175,6 @@ const EncounterGrid = ({
                 gridDisplay={gridDisplay}
                 characterLocations={characterLocations}
                 activeCoordinates={activeCoordinates}
-                hoveredCoords={hoveredCoords}
-                setHoveredCoords={setHoveredCoords}
               />
             );
           })}

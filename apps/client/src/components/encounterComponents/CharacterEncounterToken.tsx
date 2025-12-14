@@ -33,9 +33,7 @@ const CharacterEncounterToken = ({
     location.characterId,
   );
 
-  const roll = useMemo(() => {
-    return rolls.get(location.characterId) || null;
-  }, [rolls]);
+  const roll = rolls.get(location.characterId) || null;
 
   const target = useCombatStore((state) => state.target);
   const damage = useCombatStore((state) => state.damage);
@@ -49,7 +47,7 @@ const CharacterEncounterToken = ({
       row: location.row,
       col: location.col,
     },
-    disabled: activeCharacter.id !== location.characterId,
+    disabled: activeCharacter?.id !== location.characterId,
   });
 
   if (isLoading) return <Loading size={1.25} />;
