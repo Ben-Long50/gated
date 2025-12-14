@@ -13,11 +13,10 @@ import useCharacterQuery from 'src/hooks/useCharacterQuery/useCharacterQuery';
 import BlockIcon from '../icons/BlockIcon';
 import ArmorIcon from '../icons/ArmorIcon';
 import Icon from '@mdi/react';
-import { mdiChevronDown, mdiMinus, mdiPlus } from '@mdi/js';
+import { mdiChevronDown } from '@mdi/js';
 import { useForm } from '@tanstack/react-form';
 import { useContext, useState } from 'react';
 import ExpandingList from '../ExpandingList';
-import useEditBlockMutation from 'src/hooks/item stat hooks/useItemStatMutation/useItemStatMutation';
 import { EncounterContext } from 'src/contexts/EncounterContext';
 import useCombatStore from 'src/stores/combatStore';
 import { Item } from 'src/types/item';
@@ -30,8 +29,6 @@ const ActionQueueModal = () => {
   const { campaignId, encounterId } = useParams();
   const [listExpanded, setListExpanded] = useState(false);
   const [blockDataIndex, setBlockDataIndex] = useState(0);
-
-  const editBlock = useEditBlockMutation();
 
   const phaseAction = combat.phaseHistory[0].action || null;
   const phaseReactions = combat.phaseHistory[0].reactions || null;
@@ -79,22 +76,21 @@ const ActionQueueModal = () => {
             }))
           : [],
     },
-    onSubmit: ({ value }) => {
-      console.log(value);
-      // value.armorData.forEach((data) => {
-      //   if (data.blocks > 0) {
-      //     editBlock.mutate({ itemId: data.armor.id, value: -1 * data.blocks });
-      //   }
-      // });
-    },
+    onSubmit: ({ value }) => {},
   });
 
   return (
     <Modal>
       <h1>Action Queue</h1>
-      <div className="absolute left-4 top-4 flex flex-col gap-2">
-        <ArrowHeader4 title={`Round ${combat.phaseHistory[0].round}`} />
-        <ArrowHeader4 title={`Turn ${combat.phaseHistory[0].turn}`} />
+      <div className="absolute left-4 top-4 flex flex-col">
+        <ArrowHeader4
+          className="text-primary"
+          title={`Round ${combat.phaseHistory[0].round}`}
+        />
+        <ArrowHeader4
+          className="text-primary"
+          title={`Turn ${combat.phaseHistory[0].turn}`}
+        />
       </div>
       <Divider className="opacity-50" />
       <p className="text-tertiary w-full border-x-2 border-x-gray-400 border-opacity-50 px-4">

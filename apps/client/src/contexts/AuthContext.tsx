@@ -28,6 +28,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     isError,
     isSuccess,
     isLoading: authenticationLoading,
+    isPending: authenticationPending,
   } = useAccountQuery();
 
   const { data: user, isLoading: userLoading } = useUserQuery(
@@ -46,7 +47,8 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [isSuccess, isError]);
 
-  const isLoading = authenticationLoading || userLoading;
+  const isLoading =
+    authenticationPending || authenticationLoading || userLoading;
 
   if (isLoading) {
     return <Loading />;

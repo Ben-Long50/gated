@@ -224,7 +224,7 @@ const Encounter = () => {
                 <div className="flex items-center gap-4">
                   <Loading size={2} className="text-accent mb-auto size-full" />
                   <ArrowHeader4
-                    className="w-full"
+                    className="text-primary w-full"
                     title="Waiting for Reactions"
                   />
                 </div>
@@ -241,7 +241,10 @@ const Encounter = () => {
                         </div>
 
                         {combat?.reactions.map((characterId: number) => (
-                          <CharacterName characterId={characterId} />
+                          <CharacterName
+                            key={characterId}
+                            characterId={characterId}
+                          />
                         ))}
                       </div>
                     )}
@@ -252,7 +255,10 @@ const Encounter = () => {
                           <ArrowHeader3 title="Passes" />
                         </div>
                         {combat?.passes.map((characterId: number) => (
-                          <CharacterName characterId={characterId} />
+                          <CharacterName
+                            key={characterId}
+                            characterId={characterId}
+                          />
                         ))}
                       </div>
                     )}
@@ -270,7 +276,10 @@ const Encounter = () => {
               ) : (
                 <div className="flex items-center gap-4">
                   <Loading size={2} className="text-accent mb-auto" />
-                  <ArrowHeader4 title="Waiting for Action" />
+                  <ArrowHeader4
+                    className="text-primary w-full"
+                    title="Waiting for Action"
+                  />
                 </div>
               )}
               {combat?.combatPhase === 'reaction' &&
@@ -286,7 +295,10 @@ const Encounter = () => {
                           </div>
 
                           {combat?.reactions.map((characterId: number) => (
-                            <CharacterName characterId={characterId} />
+                            <CharacterName
+                              key={characterId}
+                              characterId={characterId}
+                            />
                           ))}
                         </div>
                       )}
@@ -297,7 +309,10 @@ const Encounter = () => {
                             <ArrowHeader3 title="Passes" />
                           </div>
                           {combat?.passes.map((characterId: number) => (
-                            <CharacterName characterId={characterId} />
+                            <CharacterName
+                              key={characterId}
+                              characterId={characterId}
+                            />
                           ))}
                         </div>
                       )}

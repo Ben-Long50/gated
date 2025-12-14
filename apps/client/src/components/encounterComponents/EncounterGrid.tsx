@@ -171,10 +171,11 @@ const EncounterGrid = ({
               />
             );
           })}
-          {layers.map((layer) => {
+          {layers.map((layer, index) => {
             if (!layer.hidden) {
               return (
                 <div
+                  key={index}
                   id={`layer ${layer.id}`}
                   className={`layout absolute inset-px grid overflow-hidden rounded`}
                   style={{

@@ -46,10 +46,9 @@ const DragScrollContainer = ({
   const handleMouseUp = () => setIsDown(false);
 
   const handleMouseMove = (e) => {
-    if (!draggable) {
+    if (!draggable || !isDown) {
       return;
     }
-    if (!isDown) return;
     e.preventDefault();
     if (containerRef.current) {
       const x = e.pageX - containerRef.current.offsetLeft;
@@ -71,7 +70,9 @@ const DragScrollContainer = ({
       onMouseMove={handleMouseMove}
       style={style}
     >
-      {Children.map(children, (child) => cloneElement(child, { isDown }))}
+      {Children.map(children, (child) =>
+        cloneElement(child, { isdown: isDown.toString() }),
+      )}
     </div>
   );
 };
