@@ -313,7 +313,11 @@ const MapBuilder = () => {
 
   const handleTileSelect = (row: number, col: number) => {
     if (pngPath) {
-      if (!tempComponent) {
+      if (
+        !tempComponent ||
+        tempComponent.width > 1 ||
+        tempComponent.height > 1
+      ) {
         setTempComponent({
           name: 'Temp Component',
           id: 0,
@@ -334,50 +338,41 @@ const MapBuilder = () => {
       ) {
         setTempComponent(null);
       } else {
-        setTempComponent((prev) => ({
-          ...prev,
-          width: col - prev.imageColStart + 1,
-          height: row - prev.imageRowStart + 1,
-        }));
-      }
-    }
-  };
+        setTempComponent((prev) => {
+          if (!prev) {
+            return null;
+          }
 
-  const handleDragStart = (e) => {
-    if (setTempComponent) {
-      setDragging(true);
-      const { active } = e;
-      setTempComponent(active.data.current.component);
-    }
-  };
+          const newTempComponent = { ...prev };
 
-  const moveComponent = (componentId: number, col: number, row: number) => {
-    const layers = mapForm.getFieldValue('layers');
-
-    const newLayers = layers.map((layer) => {
-      if (layer.id === activeLayerId) {
-        return {
-          ...layer,
-          components: layer.components.map((component) => {
-            if (component.id === componentId) {
-              return { ...component, mapColStart: col, mapRowStart: row };
+          if (!prev.imageColStart || !prev.imageRowStart) {
+            newTempComponent.width = 1;
+            newTempComponent.height = 1;
+            newTempComponent.imageColStart = col;
+            newTempComponent.imageRowStart = row;
+          } else {
+            if (col > newTempComponent.imageColStart) {
+              newTempComponent.width = col - prev.imageColStart + 1;
             } else {
-              return component;
+              newTempComponent.width = prev?.imageColStart - col + 1;
+              newTempComponent.imageColStart = col;
             }
-          }),
-        };
-      } else {
-        return layer;
-      }
-    });
+            if (row > newTempComponent.imageRowStart) {
+              newTempComponent.height = row - prev.imageRowStart + 1;
+            } else {
+              newTempComponent.height = prev?.imageRowStart - row + 1;
+              newTempComponent.imageRowStart = row;
+            }
+          }
 
-    mapForm.setFieldValue('layers', newLayers);
+          return newTempComponent;
+        });
+      }
+    }
   };
 
   const handleAddComponent = (
     component: Component,
-    row: number,
-    col: number,
     layers: Layer[],
     callback: (layers: Layer[]) => void,
   ) => {
@@ -404,8 +399,6 @@ const MapBuilder = () => {
           ...component,
           name: `Component ${nextComponentNumber}`,
           id: nextComponentNumber,
-          mapRowStart: row,
-          mapColStart: col,
         },
       ],
     };
@@ -452,6 +445,41 @@ const MapBuilder = () => {
     return conflict;
   };
 
+  const handleDragStart = (e) => {
+    if (setTempComponent) {
+      setDragging(true);
+      const { active } = e;
+      setTempComponent(active.data.current.component);
+    }
+  };
+
+  const moveComponent = (componentId: number, tempComponent: Component) => {
+    const layers = mapForm.getFieldValue('layers');
+
+    const newLayers = layers.map((layer) => {
+      if (layer.id === activeLayerId) {
+        return {
+          ...layer,
+          components: layer.components.map((component) => {
+            if (component.id === componentId) {
+              return {
+                ...component,
+                mapColStart: tempComponent.mapColStart,
+                mapRowStart: tempComponent.mapRowStart,
+              };
+            } else {
+              return component;
+            }
+          }),
+        };
+      } else {
+        return layer;
+      }
+    });
+
+    mapForm.setFieldValue('layers', newLayers);
+  };
+
   const handleDragEnd = (e) => {
     if (!tempComponent) {
       return;
@@ -472,11 +500,7 @@ const MapBuilder = () => {
         return;
       }
 
-      moveComponent(
-        active.data.current.component.id,
-        over.data.current.col,
-        over.data.current.row,
-      );
+      moveComponent(active.data.current.component.id, tempComponent);
       setTempComponent(null);
     }
   };

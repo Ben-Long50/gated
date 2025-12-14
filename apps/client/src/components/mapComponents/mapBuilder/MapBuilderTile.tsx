@@ -6,6 +6,8 @@ import { Component, Layer } from 'src/types/map';
 
 const MapBuilderTile = ({
   field,
+  width,
+  height,
   row,
   col,
   gridDisplay,
@@ -16,6 +18,8 @@ const MapBuilderTile = ({
   handleDeleteComponent,
 }: {
   field: FieldApi;
+  width: number;
+  height: number;
   row: number;
   col: number;
   gridDisplay: boolean;
@@ -24,8 +28,6 @@ const MapBuilderTile = ({
   dragging: boolean;
   handleAddComponent: (
     component: Component,
-    row: number,
-    col: number,
     layers: Layer[],
     callback: (layers: Layer[]) => void,
   ) => void;
@@ -59,17 +61,34 @@ const MapBuilderTile = ({
         if (!tempComponent) {
           return;
         }
+
+        let newMapColStart =
+          col > width / 2
+            ? Math.floor(col - tempComponent.width / 2) + 1
+            : Math.ceil(col - tempComponent.width / 2);
+
+        if (newMapColStart + tempComponent.width > width) {
+          newMapColStart = width - tempComponent.width + 1;
+        }
+
+        let newMapRowStart =
+          row > height / 2
+            ? Math.floor(row - tempComponent.height / 2) + 1
+            : Math.ceil(row - tempComponent.height / 2);
+
+        if (newMapRowStart + tempComponent.height > height) {
+          newMapRowStart = height - tempComponent.height + 1;
+        }
+
         const newTempComponent = {
           ...tempComponent,
-          mapColStart: col,
-          mapRowStart: row,
+          mapColStart: newMapColStart < 1 ? 1 : newMapColStart,
+          mapRowStart: newMapRowStart < 1 ? 1 : newMapRowStart,
         };
 
         if (e.buttons === 1 && !dragging) {
           handleAddComponent(
             newTempComponent,
-            row,
-            col,
             field.state.value,
             field.handleChange,
           );
@@ -79,8 +98,6 @@ const MapBuilderTile = ({
       onMouseDown={() => {
         handleAddComponent(
           tempComponent,
-          row,
-          col,
           field.state.value,
           field.handleChange,
         );

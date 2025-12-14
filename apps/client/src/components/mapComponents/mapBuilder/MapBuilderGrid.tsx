@@ -17,9 +17,6 @@ const MapBuilderGrid = ({
   height,
   baseColor,
   layers,
-  locations,
-  hoveredCoords,
-  setHoveredCoords,
   gridDisplay,
   dragging,
   findConflict,
@@ -38,15 +35,6 @@ const MapBuilderGrid = ({
   height: number;
   baseColor: string;
   layers: Layer[];
-  locations?: Location[];
-  hoveredCoords?: { row: number | null; col: number | null };
-  setHoveredCoords?: ({
-    row,
-    col,
-  }: {
-    row: number | null;
-    col: number | null;
-  }) => void;
   gridDisplay: boolean;
   dragging?: boolean;
   findConflict?: (component: Component) => boolean;
@@ -58,8 +46,6 @@ const MapBuilderGrid = ({
   setTempComponent?: (component: Component | null) => void;
   handleAddComponent: (
     component: Component,
-    row: number,
-    col: number,
     layers: Layer[],
     callback: (layers: Layer[]) => void,
   ) => void;
@@ -99,6 +85,8 @@ const MapBuilderGrid = ({
             <MapBuilderTile
               key={index}
               field={field}
+              width={width}
+              height={height}
               row={row}
               col={col}
               gridDisplay={gridDisplay}

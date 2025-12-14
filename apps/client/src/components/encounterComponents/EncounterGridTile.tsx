@@ -10,7 +10,6 @@ import useCombatStore from 'src/stores/combatStore';
 import useCharacter from 'src/hooks/useCharacter';
 import { EncounterContext } from 'src/contexts/EncounterContext';
 import isInRange from './encounterUtils/isInRange';
-import getCoords from '../mapComponents/mapUtils/getCoords';
 
 const EncounterGridTile = ({
   row,
