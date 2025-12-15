@@ -7,7 +7,7 @@ import ArmorIcon from './icons/ArmorIcon';
 import EvasionIcon from './icons/EvasionIcon';
 import SpeedIcon from './icons/SpeedIcon';
 import CloudinaryImage from './CloudinaryImage';
-import ArrowHeader1 from './ArrowHeader2';
+import ArrowHeader2 from './ArrowHeader2';
 import InjuryIcon from './icons/InjuryIcon';
 import InsanityIcon from './icons/InsanityIcon';
 import CharacterStatBars from './CharacterStatBars';
@@ -66,6 +66,11 @@ const CharacterCard = ({ id }: { id: number }) => {
       character?.stats.injuries >= character?.stats.permanentInjuries) ||
     false;
 
+  const insane =
+    (typeof character?.stats?.insanities === 'number' &&
+      character?.stats?.insanities >= character.stats?.permanentInsanities) ||
+    false;
+
   if (isLoading) return <Loading />;
 
   return (
@@ -78,13 +83,17 @@ const CharacterCard = ({ id }: { id: number }) => {
         >
           <div
             ref={containerRef}
-            className="relative grid cursor-pointer sm:grid-cols-[1fr_4fr]"
+            className="relative grid w-full cursor-pointer select-none sm:grid-cols-[1fr_1fr_4fr]"
             onClick={(e) => {
               e.stopPropagation();
               handleMenu(e);
             }}
           >
-            <div className="absolute left-0 top-0 flex h-full w-[375px] items-center overflow-hidden rounded-bl clip-6">
+            <CharacterRadialMenu
+              character={character}
+              containerRef={containerRef}
+            />
+            <div className="col-span-2 col-start-1 row-start-1 flex aspect-square h-full w-[300px] items-center overflow-hidden rounded-bl clip-6">
               <CloudinaryImage
                 className={`${awol && 'grayscale'}`}
                 publicId={character?.picture?.publicId}
@@ -95,19 +104,26 @@ const CharacterCard = ({ id }: { id: number }) => {
                 }}
               />
               {mobile && (
-                <div className="absolute inset-0 z-10 bg-zinc-900 bg-opacity-60" />
+                <div className="absolute inset-0 bg-zinc-900 bg-opacity-60" />
               )}
-              {awol && (
-                <InjuryIcon className="absolute left-2 top-4 size-14 fill-black stroke-red-600 stroke-2 p-0.5" />
+              {(awol || insane) && (
+                <div className="absolute left-2 top-4 flex items-center justify-start gap-4">
+                  {awol && (
+                    <div className="bg-primary rounded-full border-2 border-white p-1.5 shadow-md shadow-black">
+                      <InjuryIcon className="size-12 fill-white stroke-red-700 stroke-2 p-0.5" />
+                    </div>
+                  )}
+                  {insane && (
+                    <div className="bg-primary rounded-full border-2 border-white p-1.5 shadow-md shadow-black">
+                      <InsanityIcon className="size-12 fill-white stroke-blue-600 stroke-[2.25] p-0.5" />
+                    </div>
+                  )}
+                </div>
               )}
             </div>
-            <div className="z-10 flex h-full w-full flex-col justify-between gap-4 p-4 sm:col-start-2 md:gap-6 md:p-6">
-              <CharacterRadialMenu
-                character={character}
-                containerRef={containerRef}
-              />
+            <div className="relative col-span-2 col-start-2 row-start-1 flex h-full w-full flex-col justify-between gap-4 p-4 md:gap-6 md:p-6">
               <div className="flex w-full items-center justify-between gap-4">
-                <ArrowHeader1
+                <ArrowHeader2
                   title={character?.firstName + ' ' + character?.lastName}
                 />
                 {character?.npcTypes?.length > 0 && (

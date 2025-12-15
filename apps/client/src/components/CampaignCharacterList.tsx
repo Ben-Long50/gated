@@ -1,28 +1,22 @@
-import { useContext, useEffect, useState } from 'react';
-import { AuthContext } from '../contexts/AuthContext';
 import CharacterCard from './CharacterCard';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import Loading from './Loading';
 import { Character } from 'src/types/character';
 import useCampaignQuery from '../hooks/useCampaignQuery/useCampaignQuery';
-import useCampaignCharactersQuery from 'src/hooks/useCampaignCharactersQuery/useCampaignCharactersQuery';
-import useCharacters from 'src/hooks/useCharacters';
+import useCampaignCharacters from 'src/hooks/useCampaignCharacters';
+import { useForm } from '@tanstack/react-form';
+import Icon from '@mdi/react';
+import { mdiSync } from '@mdi/js';
+import InputField from './InputField';
+import ArrowHeader1 from './ArrowHeader1';
+import ThemeContainer from './ThemeContainer';
+import { useContext } from 'react';
+import { ThemeContext } from 'src/contexts/ThemeContext';
+import ArrowHeader2 from './ArrowHeader2';
 
 const CampaignCharacterList = () => {
-  const { user } = useContext(AuthContext);
+  const { accentPrimary } = useContext(ThemeContext);
   const { campaignId } = useParams();
-  const [searchParams] = useSearchParams();
-
-  const [characters, setCharacters] = useState(
-    searchParams.get('list') || 'playerCharacters',
-  );
-
-  useEffect(() => {
-    const param = searchParams.get('list');
-    if (param) {
-      setCharacters(param);
-    }
-  }, [searchParams]);
 
   const { data: campaign, isLoading: campaignLoading } = useCampaignQuery(
     Number(campaignId),
@@ -31,10 +25,17 @@ const CampaignCharacterList = () => {
   const {
     playerCharacters,
     nonPlayerCharacters,
+    filterByQuery,
     isLoading: charactersLoading,
-  } = useCampaignCharactersQuery(
+  } = useCampaignCharacters(
     campaign?.characters.map((character) => character.id) || [],
   );
+
+  const searchForm = useForm({
+    defaultValues: {
+      query: '' as string,
+    },
+  });
 
   const isLoading = campaignLoading || charactersLoading;
 
@@ -43,21 +44,58 @@ const CampaignCharacterList = () => {
   }
 
   return (
-    <div className="flex w-full max-w-7xl flex-col items-center gap-6">
-      <h1 className="text-center">
-        {characters === 'playerCharacters'
-          ? 'Player Characters'
-          : 'Non-player Characters'}
-      </h1>
-      <div className="grid w-full grid-flow-row gap-10">
-        {characters === 'playerCharacters' &&
-          playerCharacters?.map((character: Character) => {
-            return <CharacterCard key={character.id} id={character.id} />;
-          })}
-        {characters === 'nonPlayerCharacters' &&
-          nonPlayerCharacters?.map((character: Character) => {
-            return <CharacterCard key={character.id} id={character.id} />;
-          })}
+    <div className="flex w-full max-w-7xl flex-col items-center gap-8">
+      <ThemeContainer
+        className="w-full"
+        chamfer="medium"
+        borderColor={accentPrimary}
+      >
+        <div className="flex w-full flex-col items-start gap-4 p-4">
+          <ArrowHeader2 title="Search Characters" />
+          <div className="flex w-full gap-4">
+            <searchForm.Field name="query">
+              {(field) => (
+                <InputField
+                  field={field}
+                  className="w-full"
+                  label="Search Characters"
+                  onChange={() => filterByQuery(field.state.value)}
+                />
+              )}
+            </searchForm.Field>
+            <button
+              className="text-accent bg-tertiary shadow-color group grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
+              onClick={(e) => {
+                e.preventDefault();
+                searchForm.reset();
+                filterByQuery('');
+              }}
+            >
+              <Icon
+                path={mdiSync}
+                className="text-secondary group-hover:text-accent timing"
+              />
+            </button>
+          </div>
+        </div>
+      </ThemeContainer>
+      <div className="grid w-full grid-flow-row gap-8">
+        {playerCharacters.length > 0 && (
+          <>
+            <ArrowHeader1 title="Player Characters" />
+            {playerCharacters?.map((character: Character) => (
+              <CharacterCard key={character.id} id={character.id} />
+            ))}
+          </>
+        )}
+        {nonPlayerCharacters.length > 0 && (
+          <>
+            <ArrowHeader1 title="Non-player Characters" />
+            {nonPlayerCharacters?.map((character: Character) => (
+              <CharacterCard key={character.id} id={character.id} />
+            ))}
+          </>
+        )}
       </div>
     </div>
   );

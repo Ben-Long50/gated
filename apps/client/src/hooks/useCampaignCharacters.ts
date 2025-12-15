@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import useCharacterQueries from './useCharactersQuery/useCharacterQueries';
 
 const useCampaignCharacters = (characterIds: number[]) => {
@@ -6,18 +6,20 @@ const useCampaignCharacters = (characterIds: number[]) => {
 
   const [query, setQuery] = useState('');
 
+  const filteredCharacters = characters.filter(
+    (character) =>
+      character?.firstName?.toLowerCase().includes(query.toLowerCase()) ||
+      character?.lastName?.toLowerCase().includes(query.toLowerCase()),
+  );
+
   const playerCharacters =
-    useMemo(
-      () =>
-        characters?.filter((character) => character?.playerCharacter === true),
-      [characters],
+    filteredCharacters?.filter(
+      (character) => character?.playerCharacter === true,
     ) || [];
 
   const nonPlayerCharacters =
-    useMemo(
-      () =>
-        characters?.filter((character) => character?.playerCharacter === false),
-      [characters],
+    filteredCharacters?.filter(
+      (character) => character?.playerCharacter === false,
     ) || [];
 
   const filterByQuery = (query: string) => {

@@ -26,6 +26,7 @@ import { capitalCase } from 'change-case';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import useCharacterQueries from 'src/hooks/useCharactersQuery/useCharacterQueries';
 import Calendar from './Calendar';
+import CampaignCharacterList from './CampaignCharacterList';
 
 const Campaign = () => {
   const { user } = useContext(AuthContext);
@@ -158,52 +159,55 @@ const Campaign = () => {
                 </BtnAuth>
               </div>
               <Divider />
-              {tab === 'sessions' && (
-                <>
-                  {campaign.sessions.map((session: Session) => (
-                    <Link
-                      className="w-full"
-                      key={session.id}
-                      to={`sessions/${session.id}`}
-                    >
-                      <BtnAuth className="timing flex w-full items-center justify-between gap-4 !p-4 !px-6">
-                        <ArrowHeader3 title={session.name} />
-                        <p className="text-right">
-                          {format(session.createdAt, 'PP')}
-                        </p>
-                      </BtnAuth>
-                    </Link>
-                  ))}
-                </>
-              )}
-              {tab === 'factions' && (
-                <>
-                  {campaign.factions.map((faction: Faction) => (
-                    <Link
-                      className="w-full"
-                      key={faction.id}
-                      to={`factions/${faction.id}`}
-                    >
-                      <BtnAuth className="timing flex w-full items-center justify-between p-4">
-                        <div className="flex items-center gap-4">
-                          {faction.picture?.imageUrl && (
-                            <img
-                              className="shadow-color size-16 rounded-full object-cover shadow"
-                              src={faction.picture?.imageUrl}
-                              alt={faction.name + "'s picture"}
-                            />
-                          )}
-                          <ArrowHeader3 title={faction.name} />
-                        </div>
-                      </BtnAuth>
-                    </Link>
-                  ))}
-                </>
-              )}
+              <div className="scrollbar-primary-2 flex max-h-80 w-full flex-col gap-4 overflow-y-auto px-0.5 py-2">
+                {tab === 'sessions' && (
+                  <>
+                    {campaign.sessions.map((session: Session) => (
+                      <Link
+                        className="w-full"
+                        key={session.id}
+                        to={`sessions/${session.id}`}
+                      >
+                        <BtnAuth className="timing flex w-full items-center justify-between gap-4 !p-4 !px-6">
+                          <ArrowHeader3 title={session.name} />
+                          <p className="text-right">
+                            {format(session.createdAt, 'PP')}
+                          </p>
+                        </BtnAuth>
+                      </Link>
+                    ))}
+                  </>
+                )}
+                {tab === 'factions' && (
+                  <>
+                    {campaign.factions.map((faction: Faction) => (
+                      <Link
+                        className="w-full"
+                        key={faction.id}
+                        to={`factions/${faction.id}`}
+                      >
+                        <BtnAuth className="timing flex w-full items-center justify-between p-4">
+                          <div className="flex items-center gap-4">
+                            {faction.picture?.imageUrl && (
+                              <img
+                                className="shadow-color size-16 rounded-full object-cover shadow"
+                                src={faction.picture?.imageUrl}
+                                alt={faction.name + "'s picture"}
+                              />
+                            )}
+                            <ArrowHeader3 title={faction.name} />
+                          </div>
+                        </BtnAuth>
+                      </Link>
+                    ))}
+                  </>
+                )}
+              </div>
             </div>
           </ThemeContainer>
           <Divider className="col-span-2" />
-          {[...playerCharacters, ...nonPlayerCharacters].length > 0 && (
+          <CampaignCharacterList />
+          {/* {[...playerCharacters, ...nonPlayerCharacters].length > 0 && (
             <>
               <div className="col-span-2 flex flex-col items-start gap-8">
                 {playerCharacters?.length > 0 && (
@@ -224,7 +228,7 @@ const Campaign = () => {
                 )}
               </div>
             </>
-          )}
+          )} */}
           {campaign.ownerId === user?.id && (
             <>
               <Divider />
