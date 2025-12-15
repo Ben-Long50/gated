@@ -22,7 +22,7 @@ const EncounterGridTile = ({
   col: number;
   height: number;
   gridDisplay: boolean;
-  mapScale;
+  mapScale: number;
   characterLocations: Location[];
   activeCoordinates: { row: number; col: number } | null;
   range: number;

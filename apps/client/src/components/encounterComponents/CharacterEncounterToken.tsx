@@ -111,12 +111,12 @@ const CharacterEncounterToken = ({
           }}
           onMouseLeave={() => {
             if (activeCharacter.id === character?.id) {
-              setRange(0, 'transparent');
+              setRange(null, null);
             }
           }}
         >
           <CharacterPictureRound
-            className={`${activeCharacter.id === character?.id && 'activeToken'} ${combat.reactions.includes(location.characterId) && 'reactiveToken'} group-hover:border-accent timing size-12 size-full border-2 border-white`}
+            className={`${activeCharacter.id === character?.id && 'activeToken'} ${combat.reactions.includes(location.characterId) && 'reactiveToken'} group-hover:border-accent timing size-full border-2 border-white`}
             character={character}
           />
           {roll && combat.combatPhase !== 'initiative' && (

@@ -64,7 +64,7 @@ const EncounterGrid = ({
       rangeColor = statColorMap.SPD;
       break;
     default:
-      tempRangeColor || 'transparent';
+      rangeColor = tempRangeColor || 'transparent';
       break;
   }
 
