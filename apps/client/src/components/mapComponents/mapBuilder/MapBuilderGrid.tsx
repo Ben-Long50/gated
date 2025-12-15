@@ -134,7 +134,7 @@ const MapBuilderGrid = ({
                   <div
                     className="pointer-events-none relative opacity-50"
                     data-tiles={JSON.stringify(getOccupiedTiles(tempComponent))}
-                    style={tempComponentStyle}
+                    style={getComponentStyle(tempComponent, mapScale)}
                   >
                     {tempComponent.subComponents &&
                       tempComponent.subComponents.length > 0 &&

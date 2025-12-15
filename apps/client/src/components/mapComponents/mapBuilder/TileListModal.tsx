@@ -233,9 +233,21 @@ const TileListModal = () => {
                   layer.components.map((component) => component),
                 );
 
-                console.log(componentParts);
+                console.log({
+                  name: component.name,
+                  id: 0,
+                  mapColStart: 1,
+                  mapRowStart: 1,
+                  width: component.width,
+                  height: component.height,
+                  subComponents: componentParts,
+                });
 
                 setTempComponent({
+                  name: component.name,
+                  id: 0,
+                  mapColStart: 1,
+                  mapRowStart: 1,
                   width: component.width,
                   height: component.height,
                   subComponents: componentParts,
