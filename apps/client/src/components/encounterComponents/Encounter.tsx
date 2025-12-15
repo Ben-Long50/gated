@@ -1,12 +1,7 @@
 import { Fragment, useContext, useEffect, useMemo, useState } from 'react';
 import useMap from 'src/hooks/useMap';
 import Loading from '../Loading';
-import {
-  mdiChevronDown,
-  mdiCrown,
-  mdiGrid,
-  mdiQueueFirstInLastOut,
-} from '@mdi/js';
+import { mdiChevronDown, mdiCrown, mdiQueueFirstInLastOut } from '@mdi/js';
 import Icon from '@mdi/react';
 import EncounterGrid from './EncounterGrid';
 import CharacterCardSmall from '../CharacterCardSmall';
@@ -29,7 +24,6 @@ import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import useItemQuery from 'src/hooks/useItemQuery/useItemQuery';
 import ItemCardBorderless from '../ItemCardBorderless';
 import { EncounterContext } from 'src/contexts/EncounterContext';
-import MapScaler from '../mapComponents/map/MapScaler';
 import MapHeader from '../mapComponents/map/MapHeader';
 
 const Encounter = () => {
@@ -329,18 +323,20 @@ const Encounter = () => {
             />
           )}
         </div>
-        <div
-          className={`${!characterOptions && 'overflow-hidden'} timing absolute bottom-4 mt-auto w-full p-0.5`}
-          style={{
-            maxHeight: characterOptions ? '500px' : '0px',
-          }}
-        >
-          <CharacterOptions
-            setActionSidebar={setActionSidebar}
-            characterOptions={characterOptions}
-            setItemId={setItemId}
-          />
-        </div>
+        {controlledCharacterId && (
+          <div
+            className={`${!characterOptions && 'overflow-hidden'} timing absolute bottom-4 mt-auto w-full p-0.5`}
+            style={{
+              maxHeight: characterOptions ? '500px' : '0px',
+            }}
+          >
+            <CharacterOptions
+              setActionSidebar={setActionSidebar}
+              characterOptions={characterOptions}
+              setItemId={setItemId}
+            />
+          </div>
+        )}
       </div>
       {(parts.includes('characters') ||
         parts.includes('initiative') ||
