@@ -10,10 +10,12 @@ const CharacterToken = ({
   characterId,
   locationId,
   className,
+  mapScale,
 }: {
   characterId: number;
   locationId?: number;
   className?: string;
+  mapScale: number;
 }) => {
   const { user } = useContext(AuthContext);
   const { gameMaster } = useContext(CampaignContext);
@@ -32,19 +34,24 @@ const CharacterToken = ({
     <div
       ref={setNodeRef}
       id={characterId.toString()}
-      className={`${className} group relative inset-0 size-12 cursor-grab touch-none rounded-full`}
+      className={`${className} group relative inset-0 cursor-grab touch-none rounded-full`}
       style={
         transform
           ? {
               transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+              height: `${48 * mapScale * 0.9}px`,
+              width: `${48 * mapScale * 0.9}px`,
             }
-          : undefined
+          : {
+              height: `${48 * mapScale * 0.9}px`,
+              width: `${48 * mapScale * 0.9}px`,
+            }
       }
       {...listeners}
       {...attributes}
     >
       <CharacterPictureRound
-        className={`group-hover:border-accent timing size-12 border-2 border-white`}
+        className={`group-hover:border-accent timing size-full border-2 border-white`}
         character={character}
       />
     </div>

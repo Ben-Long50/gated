@@ -18,11 +18,13 @@ const CharacterEncounterToken = ({
   activeCoordinates,
   range,
   height,
+  mapScale,
 }: {
   location: Location;
   activeCoordinates: { row: number; col: number } | null;
   range: number;
   height: number;
+  mapScale: number;
 }) => {
   const { statColorMap } = useContext(ThemeContext);
   const { combat, activeCharacter, encounterPermissions, rolls, actionForm } =
@@ -63,8 +65,13 @@ const CharacterEncounterToken = ({
             transform
               ? {
                   transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+                  height: `${48 * mapScale * 0.9}px`,
+                  width: `${48 * mapScale * 0.9}px`,
                 }
-              : undefined
+              : {
+                  height: `${48 * mapScale * 0.9}px`,
+                  width: `${48 * mapScale * 0.9}px`,
+                }
           }
           {...listeners}
           {...attributes}
@@ -109,7 +116,7 @@ const CharacterEncounterToken = ({
           }}
         >
           <CharacterPictureRound
-            className={`${activeCharacter.id === character?.id && 'activeToken'} ${combat.reactions.includes(location.characterId) && 'reactiveToken'} group-hover:border-accent timing size-12 border-2 border-white`}
+            className={`${activeCharacter.id === character?.id && 'activeToken'} ${combat.reactions.includes(location.characterId) && 'reactiveToken'} group-hover:border-accent timing size-12 size-full border-2 border-white`}
             character={character}
           />
           {roll && combat.combatPhase !== 'initiative' && (

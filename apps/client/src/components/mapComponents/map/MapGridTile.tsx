@@ -11,12 +11,14 @@ const MapGridTile = ({
   col,
   height,
   gridDisplay,
+  mapScale,
   characterLocations,
 }: {
   row: number;
   col: number;
   height: number;
   gridDisplay: boolean;
+  mapScale: number;
   characterLocations: Location[];
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -31,9 +33,11 @@ const MapGridTile = ({
   return (
     <div
       ref={setNodeRef}
-      className={`${gridDisplay && 'border'} relative z-10 flex size-12 items-center justify-center`}
+      className={`${gridDisplay && 'border'} relative z-10 flex size-full items-center justify-center`}
       style={{
         borderColor: `${accentPrimary}80`,
+        gridRow: row,
+        gridColumn: col,
         transition: 'background 0.2s ease',
         background:
           hover && characterLocations.length === 0
@@ -52,6 +56,7 @@ const MapGridTile = ({
             key={location.characterId}
             characterId={location.characterId}
             locationId={location.id}
+            mapScale={mapScale}
           />
         ))}
       {hover && (

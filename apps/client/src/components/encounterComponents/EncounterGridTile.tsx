@@ -1,14 +1,10 @@
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useState } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import CharacterEncounterToken from './CharacterEncounterToken';
-import { useStore } from '@tanstack/react-form';
 import { Location } from 'src/types/map';
 import Icon from '@mdi/react';
 import { mdiCircleDouble, mdiClose } from '@mdi/js';
 import { useDroppable } from '@dnd-kit/core';
-import useCombatStore from 'src/stores/combatStore';
-import useCharacter from 'src/hooks/useCharacter';
-import { EncounterContext } from 'src/contexts/EncounterContext';
 import isInRange from './encounterUtils/isInRange';
 
 const EncounterGridTile = ({
@@ -16,59 +12,29 @@ const EncounterGridTile = ({
   col,
   height,
   gridDisplay,
+  mapScale,
   characterLocations,
   activeCoordinates,
+  range,
+  rangeColor,
 }: {
   row: number;
   col: number;
   height: number;
   gridDisplay: boolean;
+  mapScale;
   characterLocations: Location[];
   activeCoordinates: { row: number; col: number } | null;
+  range: number;
+  rangeColor: string;
 }) => {
-  const { accentPrimary, statColorMap } = useContext(ThemeContext);
-  const { activeCharacter, actionForm } = useContext(EncounterContext);
+  const { accentPrimary } = useContext(ThemeContext);
 
   const [hover, setHover] = useState(false);
 
-  const { filteredCharacter: character } = useCharacter(activeCharacter?.id);
-
-  const tempRange = useCombatStore((state) => state.range);
-  const tempRangeColor = useCombatStore((state) => state.rangeColor);
-  const item = useStore(actionForm.store, (state) => state.values.item);
-  const action = useStore(actionForm.store, (state) => state.values.action);
-  const actionType = useStore(
-    actionForm.store,
-    (state) => state.values.actionType,
-  );
-
-  let rangeColor;
-
-  switch (actionType) {
-    case 'attack':
-      statColorMap.DMG;
-      break;
-    case 'movement':
-      statColorMap.SPD;
-      break;
-    default:
-      tempRangeColor || 'transparent';
-      break;
-  }
-
-  const range = tempRange
-    ? tempRange
-    : action?.actionSubtypes?.includes('movement')
-      ? action?.modifiers?.speed
-        ? character?.stats.speed + action?.modifiers?.speed
-        : character?.stats.speed
-      : item?.stats.range;
-
-  const inRange = useMemo(() => {
-    return activeCoordinates
-      ? isInRange(activeCoordinates, { row, col }, range)
-      : false;
-  }, [activeCoordinates, range]);
+  const inRange = activeCoordinates
+    ? isInRange(activeCoordinates, { row, col }, range)
+    : false;
 
   const { isOver, setNodeRef } = useDroppable({
     id: `row ${row}, col ${col}`,
@@ -78,9 +44,11 @@ const EncounterGridTile = ({
   return (
     <div
       ref={setNodeRef}
-      className={`${gridDisplay && 'border'} relative z-10 flex size-12 items-center justify-center`}
+      className={`${gridDisplay && 'border'} relative z-10 flex size-full items-center justify-center`}
       style={{
         borderColor: `${accentPrimary}80`,
+        gridRow: row,
+        gridColumn: col,
         transition: 'background 0.2s ease',
         background: inRange
           ? `radial-gradient(circle, transparent, 75%, ${rangeColor})`
@@ -106,6 +74,7 @@ const EncounterGridTile = ({
             activeCoordinates={activeCoordinates}
             range={range}
             height={height}
+            mapScale={mapScale}
           />
         ))}
       {hover && (

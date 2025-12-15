@@ -1,11 +1,10 @@
 import { FieldApi } from '@tanstack/react-form';
 import { useContext } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
-import { Component, Layer, Location } from 'src/types/map';
+import { Component, Layer } from 'src/types/map';
 import DragScrollContainer from '../DragScrollContainer';
 import MapBuilderTile from './MapBuilderTile';
 import MapBuilderComponent from './MapBuilderComponent';
-import MapGridTile from '../map/MapGridTile';
 import getOccupiedTiles from '../mapUtils/getOccupiedTiles';
 import getComponentStyle from '../mapUtils/getComponentStyle';
 import getCoords from '../mapUtils/getCoords';
@@ -18,6 +17,7 @@ const MapBuilderGrid = ({
   baseColor,
   layers,
   gridDisplay,
+  mapScale,
   dragging,
   findConflict,
   activeLayerId,
@@ -36,6 +36,7 @@ const MapBuilderGrid = ({
   baseColor: string;
   layers: Layer[];
   gridDisplay: boolean;
+  mapScale: number;
   dragging?: boolean;
   findConflict?: (component: Component) => boolean;
   activeLayerId?: number;
@@ -61,6 +62,10 @@ const MapBuilderGrid = ({
   const conflict =
     tempComponent && findConflict ? findConflict(tempComponent) : false;
 
+  const tempComponentStyle = tempComponent
+    ? getComponentStyle(tempComponent, mapScale)
+    : {};
+
   return (
     <DragScrollContainer
       draggable={tempComponent === null && activeLayerId === null}
@@ -72,10 +77,10 @@ const MapBuilderGrid = ({
         className={`${dragging && 'cursor-grabbing'} timing relative grid overflow-hidden`}
         style={{
           backgroundColor: baseColor,
-          width: width * 48,
-          height: height * 48,
-          gridTemplateColumns: `repeat(${width}, 48px)`,
-          gridTemplateRows: `repeat(${height}, 48px)`,
+          width: width * 48 * mapScale,
+          height: height * 48 * mapScale,
+          gridTemplateColumns: `repeat(${width},  ${48 * mapScale}px)`,
+          gridTemplateRows: `repeat(${height},  ${48 * mapScale}px)`,
         }}
       >
         {Array.from({ length: width * height }).map((_, index) => {
@@ -105,8 +110,8 @@ const MapBuilderGrid = ({
                 id={`layer ${layer.id}`}
                 className={`${activeLayerId !== layer.id && 'pointer-events-none'} layout absolute inset-px grid overflow-hidden rounded`}
                 style={{
-                  gridTemplateColumns: `repeat(${width}, 1fr)`,
-                  gridTemplateRows: `repeat(${height}, 1fr)`,
+                  gridTemplateColumns: `repeat(${width}, ${48 * mapScale}px)`,
+                  gridTemplateRows: `repeat(${height},  ${48 * mapScale}px)`,
                 }}
               >
                 {layer.components.map((component, index) => {
@@ -115,6 +120,7 @@ const MapBuilderGrid = ({
                       key={index}
                       field={field}
                       component={component}
+                      mapScale={mapScale}
                       activeComponentId={activeComponentId}
                       activeLayerId={activeLayerId}
                       layerId={layer.id}
@@ -128,13 +134,18 @@ const MapBuilderGrid = ({
                   <div
                     className="pointer-events-none relative opacity-50"
                     data-tiles={JSON.stringify(getOccupiedTiles(tempComponent))}
-                    style={getComponentStyle(tempComponent)}
+                    style={tempComponentStyle}
                   >
                     {tempComponent.subComponents &&
                       tempComponent.subComponents.length > 0 &&
-                      tempComponent.subComponents.map((component) => (
-                        <div style={getComponentStyle(component)} />
-                      ))}
+                      tempComponent.subComponents.map((component) => {
+                        const subComponentStyle = getComponentStyle(
+                          component,
+                          mapScale,
+                        );
+
+                        return <div style={subComponentStyle} />;
+                      })}
                     {conflict && (
                       <div
                         className={`absolute inset-0 bg-red-500 opacity-40`}

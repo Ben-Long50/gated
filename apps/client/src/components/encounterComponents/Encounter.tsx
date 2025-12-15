@@ -29,6 +29,8 @@ import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import useItemQuery from 'src/hooks/useItemQuery/useItemQuery';
 import ItemCardBorderless from '../ItemCardBorderless';
 import { EncounterContext } from 'src/contexts/EncounterContext';
+import MapScaler from '../mapComponents/map/MapScaler';
+import MapHeader from '../mapComponents/map/MapHeader';
 
 const Encounter = () => {
   const { mobile } = useContext(LayoutContext);
@@ -50,6 +52,7 @@ const Encounter = () => {
   const [characterOptions, setCharacterOptions] = useState(true);
   const [historyList, setHistoryList] = useState(false);
   const [itemId, setItemId] = useState<number | null>(null);
+  const [mapScale, setMapScale] = useState(1);
 
   const { map, locations, mapLoading } = useMap(Number(mapId));
 
@@ -104,26 +107,20 @@ const Encounter = () => {
           ))}
         </div>
         {!mobile && (
-          <div className="flex w-full max-w-4xl items-center justify-center gap-8">
-            <button
-              className="bg-tertiary group my-auto flex justify-self-start rounded p-1.5 shadow-md shadow-black"
-              aria-label="Open save modal"
-              type="button"
-              onClick={() => setGridDisplay((prev) => !prev)}
-            >
-              <Icon
-                path={mdiGrid}
-                className={`${gridDisplay ? 'text-accent' : 'text-tertiary'} group-hover:text-accent timing size-8`}
-              />
-            </button>
-            <h1 className="text-center">{map.name}</h1>
-          </div>
+          <MapHeader
+            mapName={map.name}
+            gridDisplay={gridDisplay}
+            setGridDisplay={setGridDisplay}
+            mapScale={mapScale}
+            setMapScale={setMapScale}
+          />
         )}
         <EncounterGrid
           width={map.width}
           height={map.height}
           baseColor={map.baseColor}
           layers={map.layers}
+          mapScale={mapScale}
           locations={locations}
           gridDisplay={gridDisplay}
           setActionSidebar={setActionSidebar}

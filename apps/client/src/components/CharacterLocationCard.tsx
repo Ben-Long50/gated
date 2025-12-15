@@ -52,7 +52,7 @@ const CharacterLocationCard = ({
 
   return (
     <div
-      className={`${className} relative flex cursor-pointer flex-col`}
+      className={`${className} relative flex max-w-full cursor-pointer flex-col overflow-hidden`}
       onClick={(e) => {
         e.stopPropagation();
         handleMenu(e);
@@ -71,9 +71,9 @@ const CharacterLocationCard = ({
             character={character}
           />
         </div>
-        <div className="flex flex-col">
+        <div className="flex flex-col overflow-hidden">
           <ArrowHeader4
-            className={`${locationList ? 'visible h-8 translate-x-0 opacity-100' : 'invisible h-0 -translate-x-full opacity-0'} text-primary timing w-full`}
+            className={`${locationList ? 'visible h-8 translate-x-0 opacity-100' : 'invisible h-0 -translate-x-full opacity-0'} text-primary timing w-full truncate`}
             title={`${character?.firstName} ${character?.lastName}`}
           />
           <div className="flex items-center gap-4">

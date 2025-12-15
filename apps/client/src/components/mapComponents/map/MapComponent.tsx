@@ -5,12 +5,14 @@ import getComponentStyle from '../mapUtils/getComponentStyle';
 const MapComponent = ({
   component,
   layerId,
+  mapScale,
 }: {
   component: Component;
   layerId: number;
+  mapScale: number;
 }) => {
   const tiles = getOccupiedTiles(component);
-  const style = getComponentStyle(component);
+  const style = getComponentStyle(component, mapScale);
 
   return (
     <div
@@ -23,7 +25,7 @@ const MapComponent = ({
       {component.subComponents &&
         component.subComponents.length > 0 &&
         component.subComponents.map((component) => (
-          <div style={getComponentStyle(component)} />
+          <div style={getComponentStyle(component, mapScale)} />
         ))}
     </div>
   );

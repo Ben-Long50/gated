@@ -18,6 +18,7 @@ import {
 import useUpdateCharacterLocationMutation from 'src/hooks/useUpdateCharacterLocationMutation/useUpdateCharacterLocationMutation';
 import MapGrid from './MapGrid';
 import CharacterToken from './CharacterToken';
+import MapHeader from './MapHeader';
 
 const Map = () => {
   const { mobile } = useContext(LayoutContext);
@@ -25,6 +26,7 @@ const Map = () => {
   const [dragging, setDragging] = useState(false);
   const [draggingId, setDraggingId] = useState<number | null>(null);
   const [gridDisplay, setGridDisplay] = useState(true);
+  const [mapScale, setMapScale] = useState(1);
 
   const { map, locations, mapLoading, locationsLoading } = useMap(
     Number(mapId),
@@ -69,20 +71,13 @@ const Map = () => {
   return (
     <div className="flex h-full w-full max-w-85dvw flex-col items-center gap-4 sm:gap-8">
       {!mobile && (
-        <div className="flex w-full max-w-4xl items-center justify-center gap-8">
-          <button
-            className="bg-tertiary group my-auto flex justify-self-start rounded p-1.5 shadow-md shadow-black"
-            aria-label="Open save modal"
-            type="button"
-            onClick={() => setGridDisplay((prev) => !prev)}
-          >
-            <Icon
-              path={mdiGrid}
-              className={`${gridDisplay ? 'text-accent' : 'text-tertiary'} group-hover:text-accent timing size-8`}
-            />
-          </button>
-          <h1 className="text-center">{map.name}</h1>
-        </div>
+        <MapHeader
+          mapName={map.name}
+          gridDisplay={gridDisplay}
+          setGridDisplay={setGridDisplay}
+          mapScale={mapScale}
+          setMapScale={setMapScale}
+        />
       )}
       <DndContext
         sensors={sensors}
@@ -94,6 +89,7 @@ const Map = () => {
           height={map.height}
           baseColor={map.baseColor}
           layers={map.layers}
+          mapScale={mapScale}
           locations={locations}
           gridDisplay={gridDisplay}
         />
@@ -103,6 +99,7 @@ const Map = () => {
             <CharacterToken
               className="cursor-grabbing"
               characterId={draggingId}
+              mapScale={mapScale}
             />
           ) : null}
         </DragOverlay>

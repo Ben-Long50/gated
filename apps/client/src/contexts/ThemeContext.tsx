@@ -1,4 +1,5 @@
-import { createContext, ReactNode, useState } from 'react';
+import { createContext, ReactNode, useEffect, useState } from 'react';
+import { preloadAllSpriteSheets } from 'src/components/mapComponents/mapUtils/spriteSheetCache';
 
 interface ThemeContextType {
   theme: 'light' | 'dark';
@@ -31,6 +32,16 @@ const ThemeProvider = ({ children }: { children: ReactNode }) => {
       return 'light';
     }
   });
+
+  useEffect(() => {
+    const fetchFolders = async () => {
+      const response = await fetch('/assets/tiles.json');
+      const data = await response.json();
+      await preloadAllSpriteSheets(data);
+    };
+
+    fetchFolders();
+  }, []);
 
   const [accentPrimary, setAccentPrimary] = useState(() => {
     const storedAccent = localStorage.getItem('accent');

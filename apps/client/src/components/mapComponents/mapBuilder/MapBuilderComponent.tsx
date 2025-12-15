@@ -7,6 +7,7 @@ import getComponentStyle from '../mapUtils/getComponentStyle';
 const MapBuilderComponent = ({
   field,
   component,
+  mapScale,
   activeComponentId,
   setActiveComponentId,
   activeLayerId,
@@ -16,6 +17,7 @@ const MapBuilderComponent = ({
 }: {
   field: FieldApi;
   component: Component;
+  mapScale: number;
   activeComponentId: number | null;
   setActiveComponentId: (id: number | null) => void;
   activeLayerId: number;
@@ -37,7 +39,7 @@ const MapBuilderComponent = ({
   });
 
   const tiles = getOccupiedTiles(component);
-  const style = getComponentStyle(component);
+  const style = getComponentStyle(component, mapScale);
 
   return (
     <div
@@ -70,7 +72,7 @@ const MapBuilderComponent = ({
       {component.subComponents &&
         component.subComponents.length > 0 &&
         component.subComponents.map((component) => (
-          <div style={getComponentStyle(component)} />
+          <div style={getComponentStyle(component, mapScale)} />
         ))}
       {activeLayerId === layerId && activeComponentId === component.id && (
         <div

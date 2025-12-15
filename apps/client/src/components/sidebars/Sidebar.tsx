@@ -65,7 +65,7 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
             />
           )
         )}
-        <Divider className="!my-0" />
+        <Divider className="!my-0 opacity-50" />
         {!isLoading && cartLength > 0 && (
           <LinkSidebar
             title={activeCharacter?.firstName + "'s cart"}
@@ -126,7 +126,7 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
                       }
                     />
                   ))}
-              <Divider className="!my-0" />
+              <Divider className="!my-0 opacity-50" />
             </>
           ))}
 

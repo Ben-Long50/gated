@@ -11,6 +11,7 @@ const MapGrid = ({
   height,
   baseColor,
   layers,
+  mapScale,
   locations,
   gridDisplay,
 }: {
@@ -18,6 +19,7 @@ const MapGrid = ({
   height: number;
   baseColor: string;
   layers: Layer[];
+  mapScale: number;
   locations: Location[];
   gridDisplay: boolean;
 }) => {
@@ -33,10 +35,10 @@ const MapGrid = ({
         className={`timing relative grid overflow-hidden`}
         style={{
           backgroundColor: baseColor,
-          width: width * 48,
-          height: height * 48,
-          gridTemplateColumns: `repeat(${width}, 48px)`,
-          gridTemplateRows: `repeat(${height}, 48px)`,
+          width: width * 48 * mapScale,
+          height: height * 48 * mapScale,
+          gridTemplateColumns: `repeat(${width}, ${48 * mapScale}px)`,
+          gridTemplateRows: `repeat(${height}, ${48 * mapScale}px)`,
         }}
       >
         {Array.from({ length: width * height }).map((_, index) => {
@@ -57,6 +59,7 @@ const MapGrid = ({
               height={height}
               characterLocations={characterLocations}
               gridDisplay={gridDisplay}
+              mapScale={mapScale}
             />
           );
         })}
@@ -68,8 +71,8 @@ const MapGrid = ({
                 id={`layer ${layer.id}`}
                 className={`layout absolute inset-px grid overflow-hidden rounded`}
                 style={{
-                  gridTemplateColumns: `repeat(${width}, 1fr)`,
-                  gridTemplateRows: `repeat(${height}, 1fr)`,
+                  gridTemplateColumns: `repeat(${width}, ${48 * mapScale}px)`,
+                  gridTemplateRows: `repeat(${height}, ${48 * mapScale}px)`,
                 }}
               >
                 {layer.components.map((component, index) => {
@@ -78,6 +81,7 @@ const MapGrid = ({
                       key={index}
                       component={component}
                       layerId={layer.id}
+                      mapScale={mapScale}
                     />
                   );
                 })}

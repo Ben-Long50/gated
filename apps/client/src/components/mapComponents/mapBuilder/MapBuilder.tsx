@@ -27,6 +27,7 @@ import {
 } from '@dnd-kit/core';
 import MapBuilderGrid from './MapBuilderGrid';
 import getOccupiedTiles from '../mapUtils/getOccupiedTiles';
+import MapHeader from '../map/MapHeader';
 
 const MapBuilder = () => {
   const { mobile } = useContext(LayoutContext);
@@ -39,6 +40,7 @@ const MapBuilder = () => {
   const [tempComponent, setTempComponent] = useState<Component | null>(null);
   const [dragging, setDragging] = useState(false);
   const [gridDisplay, setGridDisplay] = useState(true);
+  const [mapScale, setMapScale] = useState(1);
 
   const { data: map, isLoading } = useCampaignMapQuery(Number(mapId));
 
@@ -326,8 +328,9 @@ const MapBuilder = () => {
           height: 1,
           imageColStart: col,
           imageRowStart: row,
-          mapColStart: 0,
-          mapRowStart: 0,
+          mapColStart: 1,
+          mapRowStart: 1,
+          subComponents: [],
         });
       } else if (
         tempComponent &&
@@ -519,24 +522,14 @@ const MapBuilder = () => {
         className={`timing flex h-full w-full flex-col items-center gap-8 pr-16`}
       >
         {!mobile && (
-          <div className="flex w-full max-w-4xl items-center justify-center gap-8">
-            <button
-              className="bg-tertiary group my-auto flex justify-self-start rounded p-1.5 shadow-md shadow-black"
-              aria-label="Open save modal"
-              type="button"
-              onClick={() => setGridDisplay((prev) => !prev)}
-            >
-              <Icon
-                path={mdiGrid}
-                className={`${gridDisplay ? 'text-accent' : 'text-tertiary'} group-hover:text-accent timing size-8`}
-              />
-            </button>
-            <h1 className="text-center">
-              {map ? `Edit ${map?.name}` : 'Create Map'}
-            </h1>
-          </div>
+          <MapHeader
+            mapName="Create Map"
+            gridDisplay={gridDisplay}
+            setGridDisplay={setGridDisplay}
+            mapScale={mapScale}
+            setMapScale={setMapScale}
+          />
         )}
-
         <mapForm.Subscribe
           selector={(state) => [
             state.values.baseColor,
@@ -559,6 +552,8 @@ const MapBuilder = () => {
                     height={height}
                     baseColor={baseColor}
                     layers={field.state.value}
+                    gridDisplay={gridDisplay}
+                    mapScale={mapScale}
                     dragging={dragging}
                     findConflict={findConflict}
                     activeLayerId={activeLayerId}
@@ -569,7 +564,6 @@ const MapBuilder = () => {
                     setTempComponent={setTempComponent}
                     handleAddComponent={handleAddComponent}
                     handleDeleteComponent={handleDeleteComponent}
-                    gridDisplay={gridDisplay}
                   />
                 </DndContext>
               )}

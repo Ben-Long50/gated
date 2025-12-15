@@ -1,4 +1,4 @@
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useMemo } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import { Layer, Location } from 'src/types/map';
 import useCombatStore from 'src/stores/combatStore';
@@ -12,6 +12,7 @@ import { EncounterContext } from 'src/contexts/EncounterContext';
 import DragScrollContainer from '../mapComponents/DragScrollContainer';
 import getCoords from '../mapComponents/mapUtils/getCoords';
 import MapComponent from '../mapComponents/map/MapComponent';
+import useCharacter from 'src/hooks/useCharacter';
 
 const EncounterGrid = ({
   width,
@@ -19,6 +20,7 @@ const EncounterGrid = ({
   baseColor,
   layers,
   locations,
+  mapScale,
   gridDisplay,
   setActionSidebar,
 }: {
@@ -27,6 +29,7 @@ const EncounterGrid = ({
   baseColor: string;
   layers: Layer[];
   locations: Location[];
+  mapScale: number;
   gridDisplay: boolean;
   setActionSidebar: (value: boolean) => void;
 }) => {
@@ -39,7 +42,39 @@ const EncounterGrid = ({
     'action',
   );
 
+  const { filteredCharacter: character } = useCharacter(activeCharacter?.id);
+
   const target = useCombatStore((state) => state.target);
+  const tempRange = useCombatStore((state) => state.range);
+  const tempRangeColor = useCombatStore((state) => state.rangeColor);
+  const item = useStore(actionForm.store, (state) => state.values.item);
+  const action = useStore(actionForm.store, (state) => state.values.action);
+  const actionType = useStore(
+    actionForm.store,
+    (state) => state.values.actionType,
+  );
+
+  let rangeColor = 'transparent';
+
+  switch (actionType) {
+    case 'attack':
+      rangeColor = statColorMap.DMG;
+      break;
+    case 'movement':
+      rangeColor = statColorMap.SPD;
+      break;
+    default:
+      tempRangeColor || 'transparent';
+      break;
+  }
+
+  const range = tempRange
+    ? tempRange
+    : action?.actionSubtypes?.includes('movement')
+      ? action?.modifiers?.speed
+        ? character?.stats.speed + action?.modifiers?.speed
+        : character?.stats.speed
+      : item?.stats.range;
 
   const actionTarget = useStore(
     actionForm.store,
@@ -136,10 +171,10 @@ const EncounterGrid = ({
           className={`timing relative grid overflow-hidden`}
           style={{
             backgroundColor: baseColor,
-            width: width * 48,
-            height: height * 48,
-            gridTemplateColumns: `repeat(${width}, 48px)`,
-            gridTemplateRows: `repeat(${height}, 48px)`,
+            width: width * 48 * mapScale,
+            height: height * 48 * mapScale,
+            gridTemplateColumns: `repeat(${width}, ${48 * mapScale}px)`,
+            gridTemplateRows: `repeat(${height}, ${48 * mapScale}px)`,
           }}
         >
           {arrowActive && arrowTarget && (
@@ -173,8 +208,11 @@ const EncounterGrid = ({
                 col={col}
                 height={height}
                 gridDisplay={gridDisplay}
+                mapScale={mapScale}
                 characterLocations={characterLocations}
                 activeCoordinates={activeCoordinates}
+                range={range}
+                rangeColor={rangeColor}
               />
             );
           })}
@@ -186,8 +224,8 @@ const EncounterGrid = ({
                   id={`layer ${layer.id}`}
                   className={`layout absolute inset-px grid overflow-hidden rounded`}
                   style={{
-                    gridTemplateColumns: `repeat(${width}, 1fr)`,
-                    gridTemplateRows: `repeat(${height}, 1fr)`,
+                    gridTemplateColumns: `repeat(${width}, ${48 * mapScale}px)`,
+                    gridTemplateRows: `repeat(${height}, ${48 * mapScale}px)`,
                   }}
                 >
                   {layer.components.map((component, index) => {
@@ -196,6 +234,7 @@ const EncounterGrid = ({
                         key={index}
                         component={component}
                         layerId={layer.id}
+                        mapScale={mapScale}
                       />
                     );
                   })}
