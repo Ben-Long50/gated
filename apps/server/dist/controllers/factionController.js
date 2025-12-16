@@ -39,7 +39,7 @@ const factionController = {
                     });
                     return;
                 }
-                const campaign = await campaignServices.getCampaignById(req.params.campaignId);
+                const campaign = await campaignServices.getCampaignById(Number(req.params.campaignId));
                 if (req.user.id !== (campaign === null || campaign === void 0 ? void 0 : campaign.ownerId)) {
                     res.status(401).json({
                         error: 'You can only update faction information if you are the game master of this campaign',
@@ -66,7 +66,7 @@ const factionController = {
                 });
                 return;
             }
-            const campaign = await campaignServices.getCampaignById(req.params.campaignId);
+            const campaign = await campaignServices.getCampaignById(Number(req.params.campaignId));
             if (req.user.id !== (campaign === null || campaign === void 0 ? void 0 : campaign.ownerId)) {
                 res.status(401).json({
                     error: 'You can only delete this faction if you are the game master of this campaign',

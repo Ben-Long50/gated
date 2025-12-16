@@ -1,9 +1,32 @@
 import { NextFunction, Request, Response } from 'express';
 import prisma from '../config/database.js';
+import campaignServices from '../services/campaignServices.js';
 
 const campaignAuthentication = {
-  //Only allows access to the campaign data if the user is a part of the campaign in any way
+  validateGameMaster: async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    if (!req.user) {
+      res.status(401).json({ error: 'No user found' });
+      return;
+    }
 
+    const campaign = await campaignServices.getCampaignById(
+      Number(req.params.campaignId),
+    );
+
+    if (req.user.id !== campaign.ownerId) {
+      res
+        .status(403)
+        .json({ error: 'Only the Game Master can perform this function' });
+    }
+
+    return next();
+  },
+
+  //Only allows access to the campaign data if the user is a part of the campaign in any way
   filterCampaigns: async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
       res.status(401).json({ error: 'No user found' });

@@ -44,7 +44,7 @@ const campaignController = {
   getCampaignById: async (req: Request, res: Response) => {
     try {
       const campaign = await campaignServices.getCampaignById(
-        req.params.campaignId,
+        Number(req.params.campaignId),
       );
       res.status(200).json(campaign);
     } catch (error: any) {

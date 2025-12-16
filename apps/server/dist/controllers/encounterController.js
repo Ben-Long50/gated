@@ -1,4 +1,5 @@
 import encounterServices from '../services/encounterServices.js';
+import parseRequestBody from '../utils/parseRequestBody.js';
 const encounterController = {
     getEncounters: async (req, res) => {
         try {
@@ -48,13 +49,141 @@ const encounterController = {
             res.status(500).json({ error: error.message });
         }
     },
+    activateEncounter: async (req, res) => {
+        try {
+            if (!req.user) {
+                throw new Error('Could not find authenticated user');
+            }
+            await encounterServices.activateEncounter(Number(req.params.encounterId));
+            res.status(200).json({ message: 'Successfully activated encounter' });
+        }
+        catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
+    advancePhase: async (req, res) => {
+        try {
+            if (!req.user) {
+                throw new Error('Could not find authenticated user');
+            }
+            await encounterServices.advancePhase(Number(req.params.encounterId));
+            res
+                .status(200)
+                .json({ message: 'Successfully advanced encounter phase' });
+        }
+        catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
     advanceTurn: async (req, res) => {
         try {
             if (!req.user) {
                 throw new Error('Could not find authenticated user');
             }
             await encounterServices.advanceTurn(Number(req.params.encounterId));
-            res.status(200).json({ message: 'Successfully advanced the turn' });
+            res.status(200).json({ message: 'Successfully advanced encounter turn' });
+        }
+        catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
+    rollInitiative: async (req, res) => {
+        try {
+            if (!req.user) {
+                throw new Error('Could not find authenticated user');
+            }
+            await encounterServices.rollInitiative(Number(req.params.encounterId));
+            res.status(200).json({ message: 'Successfully rolled initiative' });
+        }
+        catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
+    rollAction: async (req, res) => {
+        try {
+            if (!req.user) {
+                throw new Error('Could not find authenticated user');
+            }
+            await encounterServices.rollAction(Number(req.params.campaignId), Number(req.params.encounterId), req.body);
+            res.status(200).json({ message: 'Successfully rolled action' });
+        }
+        catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
+    rollReaction: async (req, res) => {
+        try {
+            if (!req.user) {
+                throw new Error('Could not find authenticated user');
+            }
+            await encounterServices.rollReaction(Number(req.params.campaignId), Number(req.params.encounterId), req.body);
+            res.status(200).json({ message: 'Successfully rolled reaction' });
+        }
+        catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
+    scheduleReaction: async (req, res) => {
+        try {
+            if (!req.user) {
+                throw new Error('Could not find authenticated user');
+            }
+            const parsedBody = parseRequestBody(req.body);
+            await encounterServices.scheduleReaction(Number(req.params.encounterId), parsedBody.characterId);
+            res.status(200).json({ message: 'Successfully scheduled reaction' });
+        }
+        catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
+    passReaction: async (req, res) => {
+        try {
+            if (!req.user) {
+                throw new Error('Could not find authenticated user');
+            }
+            const parsedBody = parseRequestBody(req.body);
+            await encounterServices.passReaction(Number(req.params.encounterId), parsedBody.characterId);
+            res.status(200).json({ message: 'Successfully passed reaction' });
+        }
+        catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
+    finishReaction: async (req, res) => {
+        try {
+            if (!req.user) {
+                throw new Error('Could not find authenticated user');
+            }
+            const parsedBody = parseRequestBody(req.body);
+            await encounterServices.finishReaction(Number(req.params.encounterId), parsedBody.characterId);
+            res.status(200).json({ message: 'Successfully finished reaction' });
+        }
+        catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
+    passAllReactions: async (req, res) => {
+        try {
+            if (!req.user) {
+                throw new Error('Could not find authenticated user');
+            }
+            await encounterServices.passAllReactions(Number(req.params.encounterId));
+            res.status(200).json({ message: 'Successfully passed all reactions' });
+        }
+        catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
+    confirmActionQueueResults: async (req, res) => {
+        try {
+            if (!req.user) {
+                throw new Error('Could not find authenticated user');
+            }
+            const parsedBody = parseRequestBody(req.body);
+            await encounterServices.confirmActionQueueResults(Number(req.params.encounterId), parsedBody);
+            res
+                .status(200)
+                .json({ message: 'Successfully confirmed action queue results' });
         }
         catch (error) {
             res.status(500).json({ error: error.message });
@@ -68,7 +197,6 @@ const encounterController = {
                 });
                 return;
             }
-            console.log(req.body);
             await encounterServices.createOrUpdateEncounter(Number(req.params.campaignId), Number(req.params.mapId), req.body);
             res.status(200).json({ message: 'Successfully created encounter' });
         }

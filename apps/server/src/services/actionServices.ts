@@ -18,10 +18,10 @@ const actionServices = {
     }
   },
 
-  getActionById: async (actionId: string) => {
+  getActionById: async (actionId: number) => {
     try {
       const action = await prisma.action.findUnique({
-        where: { id: Number(actionId) },
+        where: { id: actionId },
         include: { keywordModifiers: { include: { keyword: true } } },
       });
       return action;
@@ -192,7 +192,7 @@ const actionServices = {
     }
   },
 
-  deleteAction: async (actionId: string) => {
+  deleteAction: async (actionId: number) => {
     try {
       await prisma.action.delete({
         where: {

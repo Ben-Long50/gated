@@ -49,7 +49,7 @@ const factionController = {
         }
 
         const campaign = await campaignServices.getCampaignById(
-          req.params.campaignId,
+          Number(req.params.campaignId),
         );
 
         if (req.user.id !== campaign?.ownerId) {
@@ -85,7 +85,7 @@ const factionController = {
       }
 
       const campaign = await campaignServices.getCampaignById(
-        req.params.campaignId,
+        Number(req.params.campaignId),
       );
 
       if (req.user.id !== campaign?.ownerId) {

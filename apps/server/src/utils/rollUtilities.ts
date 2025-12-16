@@ -33,7 +33,10 @@ export const calculateRoll = (
             roll.skill as SkillName
           ].points;
         return {
-          diceCount: attributePoints + skillPoints,
+          diceCount:
+            attributePoints + skillPoints > 0
+              ? attributePoints + skillPoints
+              : 1,
           roll,
         };
       }) || [];
@@ -180,8 +183,6 @@ export const calculateCosts = async (character, item, action) => {
         available: item.stats[stat],
         required: value,
       };
-
-      console.log(costInfo);
 
       if (costInfo.required > costInfo.available) {
         alert(`Your item does not have enough ${stat} to complete this action`);

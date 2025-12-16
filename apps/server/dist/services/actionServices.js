@@ -28,7 +28,7 @@ const actionServices = {
     getActionById: async (actionId) => {
         try {
             const action = await prisma.action.findUnique({
-                where: { id: Number(actionId) },
+                where: { id: actionId },
                 include: { keywordModifiers: { include: { keyword: true } } },
             });
             return action;

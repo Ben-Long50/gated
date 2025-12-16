@@ -93,10 +93,10 @@ const campaignServices = {
     }
   },
 
-  getCampaignById: async (campaignId: string) => {
+  getCampaignById: async (campaignId: number) => {
     try {
       const campaign = await prisma.campaign.findUnique({
-        where: { id: Number(campaignId) },
+        where: { id: campaignId },
         include: {
           sessions: true,
           players: { orderBy: { firstName: 'desc' } },

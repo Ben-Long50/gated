@@ -11,7 +11,7 @@ const actionController = {
     },
     getActionById: async (req, res) => {
         try {
-            const action = await actionServices.getActionById(req.params.actionId);
+            const action = await actionServices.getActionById(Number(req.params.actionId));
             res.status(200).json(action);
         }
         catch (error) {
@@ -38,7 +38,7 @@ const actionController = {
     },
     deleteAction: async (req, res) => {
         try {
-            await actionServices.deleteAction(req.params.actionId);
+            await actionServices.deleteAction(Number(req.params.actionId));
             res.status(200).json({ message: 'Successfully deleted action' });
         }
         catch (error) {

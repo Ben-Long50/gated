@@ -7,15 +7,15 @@ export const calculateRoll = (attributes, action, modifiers, extraDice) => {
     if (!action.roll) {
         return;
     }
-    console.log(attributes);
     const calculateDiceCount = (attributes, action, modifiers, extraDice) => {
         var _a;
-        console.log(action);
         const calculatedRolls = ((_a = action.roll) === null || _a === void 0 ? void 0 : _a.map((roll) => {
             const attributePoints = attributes[roll.attribute].points;
             const skillPoints = attributes[roll.attribute].skills[roll.skill].points;
             return {
-                diceCount: attributePoints + skillPoints,
+                diceCount: attributePoints + skillPoints > 0
+                    ? attributePoints + skillPoints
+                    : 1,
                 roll,
             };
         })) || [];
@@ -121,7 +121,6 @@ export const calculateCosts = async (character, item, action) => {
                 available: item.stats[stat],
                 required: value,
             };
-            console.log(costInfo);
             if (costInfo.required > costInfo.available) {
                 alert(`Your item does not have enough ${stat} to complete this action`);
             }

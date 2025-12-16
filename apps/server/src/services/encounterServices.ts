@@ -6,7 +6,11 @@ import {
   calculateActionQueueSuccesses,
   calculateCosts,
   calculateDamage,
+  calculateRoll,
 } from '../utils/rollUtilities.js';
+import { getIO } from '../sockets/socket.js';
+import characterServices from './characterServices.js';
+import actionServices from './actionServices.js';
 
 const encounterServices = {
   getEncounters: async (campaignId: number) => {
@@ -171,18 +175,30 @@ const encounterServices = {
 
   activateEncounter: async (encounterId: number) => {
     try {
+      const io = getIO();
+
       const encounter = await prisma.encounter.findUnique({
         where: { id: encounterId },
       });
+
+      if (!encounter) {
+        throw new Error('Failed to find encounter');
+      }
 
       await prisma.encounter.update({
         where: {
           id: encounterId,
         },
         data: {
+          combatPhase:
+            encounter.combatPhase === 'pending'
+              ? 'initiative'
+              : encounter.combatPhase,
           active: encounter ? !encounter?.active : true,
         },
       });
+
+      io.to(`campaign ${encounter.campaignId}`).emit('encounter', encounterId);
     } catch (error) {
       console.error(error);
       throw new Error('Failed to activate encounter');
@@ -191,14 +207,17 @@ const encounterServices = {
 
   advancePhase: async (encounterId: number) => {
     try {
-      const encounter = await prisma.encounter.findUnique({
-        where: { id: encounterId },
-        select: { combatPhase: true, turn: true, round: true },
-      });
+      const io = getIO();
+
+      const encounter = await encounterServices.getEncounterById(encounterId);
+
+      if (!encounter) {
+        throw new Error('Failed to find encounter');
+      }
 
       let nextPhase = null as CombatPhase | null;
 
-      switch (encounter?.combatPhase) {
+      switch (encounter.combatPhase) {
         case 'pending':
           nextPhase = 'initiative';
           break;
@@ -216,8 +235,8 @@ const encounterServices = {
           break;
       }
 
-      if (!nextPhase || !encounter) {
-        return;
+      if (!nextPhase) {
+        throw new Error('Failed to advance encounter phase');
       }
 
       const phaseHistoryData = {
@@ -234,14 +253,19 @@ const encounterServices = {
           phaseHistory: { create: phaseHistoryData },
         },
       });
+
+      io.to(`campaign ${encounter.campaignId}`).emit('encounter', encounterId);
+      io.to(`campaign ${encounter.campaignId}`).emit('resetRolls');
     } catch (error) {
       console.error(error);
-      throw new Error('Failed to advance phase');
+      throw new Error('Failed to advance encounter phase');
     }
   },
 
   advanceTurn: async (encounterId: number) => {
     try {
+      const io = getIO();
+
       const encounter = await encounterServices.getEncounterById(encounterId);
 
       const newRound = encounter.turnPosition + 1 >= encounter.turnOrder.length;
@@ -279,32 +303,345 @@ const encounterServices = {
         (await itemServices.setAllCharacterItemsAvailable(nextCharacterId)) ||
         [];
 
-      return itemIds;
+      if (itemIds.length > 0) {
+        for (const itemId of itemIds) {
+          io.to(`campaign ${encounter.campaignId}`).emit('item', itemId);
+        }
+      }
+      console.log(encounter.campaignId);
+
+      io.to(`campaign ${encounter.campaignId}`).emit('encounter', encounterId);
+      io.to(`campaign ${encounter.campaignId}`).emit('resetRolls');
     } catch (error) {
       console.error(error);
       throw new Error('Failed to advance turn');
     }
   },
 
-  setCombatPhase: async (encounterId: number, phase: $Enums.CombatPhase) => {
+  rollInitiative: async (encounterId: number) => {
     try {
-      await prisma.encounter.update({
-        where: {
-          id: encounterId,
-        },
-        data: {
-          combatPhase: phase,
-        },
-      });
+      const io = getIO();
+
+      const encounter = await encounterServices.getEncounterById(encounterId);
+
+      const rolls = new Map();
+
+      for (const id of encounter.turnOrder) {
+        const character = await characterServices.getCharacterById(id);
+
+        const violenceRolls = [
+          { attribute: 'violence', skill: 'assault' },
+          { attribute: 'violence', skill: 'shooting' },
+          { attribute: 'violence', skill: 'subterfuge' },
+          { attribute: 'violence', skill: 'threshold' },
+        ];
+
+        const rollInitiative = async () => {
+          const rollResults = calculateRoll(
+            character?.attributes,
+            { roll: violenceRolls },
+            [],
+          ) || { result: [], successes: 0 };
+
+          rolls.set(character?.id, {
+            characterId: character?.id,
+            name: character?.firstName,
+            playerCharacter: character?.playerCharacter,
+            diceArray: rollResults.result,
+            successes: rollResults.successes,
+          });
+        };
+        rollInitiative();
+      }
+
+      const rollsArray = Array.from(rolls.entries());
+
+      io.to(`encounter ${encounterId}`).emit('initiativeRoll', rollsArray);
     } catch (error) {
       console.error(error);
-      throw new Error('Failed to advance turn');
+      throw new Error('Failed to roll initiative');
+    }
+  },
+
+  rollAction: async (
+    campaignId: number,
+    encounterId: number,
+    actionData: {
+      activeCharacterId: number;
+      targetCharacterId?: number;
+      actionId: number;
+      modifiers: string[];
+      extraDice: number;
+      itemId?: number;
+    },
+  ) => {
+    try {
+      const io = getIO();
+      const activeCharacterPromise = characterServices.getCharacterById(
+        actionData.activeCharacterId,
+      );
+
+      const actionPromise = actionServices.getActionById(actionData.actionId);
+
+      const targetCharacterPromise = actionData.targetCharacterId
+        ? characterServices.getCharacterById(actionData.targetCharacterId)
+        : Promise.resolve(null);
+
+      const itemPromise = actionData.itemId
+        ? itemServices.getItemById(actionData.itemId)
+        : Promise.resolve(null);
+
+      const [activeCharacter, targetCharacter, action, item] =
+        await Promise.all([
+          activeCharacterPromise,
+          targetCharacterPromise,
+          actionPromise,
+          itemPromise,
+        ]);
+
+      const rollResults =
+        //@ts-ignore
+        action && action.roll.length > 0
+          ? calculateRoll(
+              activeCharacter?.attributes,
+              //@ts-ignore
+              { name: action.name, roll: action.roll },
+              actionData.modifiers,
+              actionData.extraDice,
+            ) || { result: [], successes: 0 }
+          : null;
+
+      const rolls = new Map();
+
+      const { damage } =
+        rollResults && item
+          ? //@ts-ignore
+            calculateDamage(item, action, rollResults.successes)
+          : { damage: null };
+
+      if (rollResults) {
+        rolls.set(activeCharacter?.id, {
+          characterId: activeCharacter?.id,
+          name: `${activeCharacter?.firstName} ${activeCharacter?.lastName}`,
+          playerCharacter: activeCharacter?.playerCharacter,
+          diceArray: rollResults.result,
+          successes: rollResults.successes,
+          modifiers: actionData.modifiers,
+        });
+      }
+
+      const rollsArray = rollResults ? Array.from(rolls.entries()) : null;
+
+      await calculateCosts(activeCharacter, item, action);
+
+      const historyData = {
+        characterId: activeCharacter?.id,
+        actionId: action?.id,
+      } as {
+        characterId: number;
+        targetId?: number;
+        actionId: number;
+        itemId?: number;
+        rollResult?: {
+          result: number[];
+          successes: number;
+          modifiers: string[];
+          damage: number;
+        };
+      };
+
+      if (targetCharacter) {
+        historyData.targetId = targetCharacter.id;
+      }
+      if (item) {
+        historyData.itemId = item.id;
+      }
+      if (rollResults) {
+        historyData.rollResult = {
+          result: rollResults.result,
+          successes: rollResults.successes,
+          modifiers: actionData.modifiers,
+          damage: damage || 0,
+        };
+      }
+
+      const phaseAction = await encounterServices.createEncounterHistory(
+        campaignId,
+        encounterId,
+        historyData,
+      );
+
+      await encounterServices.advancePhase(encounterId);
+
+      await encounterServices.setPhaseAction(encounterId, phaseAction);
+
+      if (rollResults) {
+        io.to(`encounter ${encounterId}`).emit('actionRoll', {
+          encounterId,
+          rollsArray,
+        });
+      } else {
+        io.to(`encounter ${encounterId}`).emit('actionRoll', {
+          encounterId,
+        });
+      }
+
+      if (activeCharacter) {
+        io.to(String(campaignId)).emit('character', activeCharacter.id);
+      }
+
+      if (item) {
+        await itemServices.setItemNotAvailable(item.id);
+        io.to(String(campaignId)).emit('item', item.id);
+      }
+
+      if (targetCharacter) {
+        io.to(String(campaignId)).emit('character', targetCharacter.id);
+      }
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to roll action');
+    }
+  },
+
+  rollReaction: async (
+    campaignId: number,
+    encounterId: number,
+    reactionData: {
+      reactiveCharacterId: number;
+      targetCharacterId?: number;
+      reactionId: number;
+      modifiers: string[];
+      extraDice: number;
+      itemId?: number;
+    },
+  ) => {
+    try {
+      const io = getIO();
+
+      const reactiveCharacterPromise = characterServices.getCharacterById(
+        reactionData.reactiveCharacterId,
+      );
+
+      const reactionPromise = actionServices.getActionById(
+        reactionData.reactionId,
+      );
+
+      const targetCharacterPromise = reactionData.targetCharacterId
+        ? characterServices.getCharacterById(reactionData.targetCharacterId)
+        : Promise.resolve(null);
+
+      const itemPromise = reactionData.itemId
+        ? itemServices.getItemById(reactionData.itemId)
+        : Promise.resolve(null);
+
+      const [reactiveCharacter, targetCharacter, reaction, item] =
+        await Promise.all([
+          reactiveCharacterPromise,
+          targetCharacterPromise,
+          reactionPromise,
+          itemPromise,
+        ]);
+
+      const rollResults =
+        //@ts-ignore
+        reaction && reaction.roll.length > 0
+          ? calculateRoll(
+              reactiveCharacter?.attributes,
+              //@ts-ignore
+              { name: reaction.name, roll: reaction.roll },
+              reactionData.modifiers,
+              reactionData.extraDice,
+            ) || { result: [], successes: 0 }
+          : null;
+
+      const rolls = new Map();
+
+      if (rollResults) {
+        rolls.set(reactiveCharacter?.id, {
+          characterId: reactiveCharacter?.id,
+          name: `${reactiveCharacter?.firstName} ${reactiveCharacter?.lastName}`,
+          playerCharacter: reactiveCharacter?.playerCharacter,
+          diceArray: rollResults.result,
+          successes: rollResults.successes,
+          modifiers: reactionData.modifiers,
+        });
+      }
+
+      const rollsArray = rollResults ? Array.from(rolls.entries()) : null;
+
+      await calculateCosts(reactiveCharacter, item, reaction);
+
+      const historyData = {
+        characterId: reactiveCharacter?.id,
+        actionId: reaction?.id,
+      } as {
+        characterId: number;
+        targetId?: number;
+        actionId: number;
+        itemId?: number;
+        rollResult?: {
+          result: number[];
+          successes: number;
+          modifiers: string[];
+          damage?: number;
+        };
+      };
+      if (targetCharacter) {
+        historyData.targetId = targetCharacter.id;
+      }
+      if (item) {
+        historyData.itemId = item.id;
+      }
+      if (rollResults) {
+        historyData.rollResult = {
+          result: rollResults.result,
+          successes: rollResults.successes,
+          modifiers: reactionData.modifiers,
+        };
+      }
+
+      const phaseReaction = await encounterServices.createEncounterHistory(
+        campaignId,
+        encounterId,
+        historyData,
+      );
+
+      await encounterServices.setPhaseReaction(encounterId, phaseReaction);
+
+      if (rollResults) {
+        io.to(`encounter ${encounterId}`).emit('reactionRoll', {
+          encounterId,
+          rollsArray,
+        });
+      } else {
+        io.to(`encounter ${encounterId}`).emit('reactionRoll', {
+          encounterId,
+        });
+      }
+
+      if (reactiveCharacter) {
+        io.to(String(campaignId)).emit('character', reactiveCharacter.id);
+      }
+
+      if (item) {
+        io.to(String(campaignId)).emit('item', item.id);
+      }
+
+      if (targetCharacter) {
+        io.to(String(campaignId)).emit('character', targetCharacter.id);
+      }
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to roll reaction');
     }
   },
 
   scheduleReaction: async (encounterId: number, characterId: number) => {
     try {
-      await prisma.encounter.update({
+      const io = getIO();
+
+      const encounter = await prisma.encounter.update({
         where: {
           id: encounterId,
         },
@@ -312,6 +649,8 @@ const encounterServices = {
           reactions: { push: characterId },
         },
       });
+
+      io.to(`campaign ${encounter.campaignId}`).emit('encounter', encounterId);
     } catch (error) {
       console.error(error);
       throw new Error('Failed to advance turn');
@@ -320,7 +659,9 @@ const encounterServices = {
 
   passReaction: async (encounterId: number, characterId: number) => {
     try {
-      await prisma.encounter.update({
+      const io = getIO();
+
+      const encounter = await prisma.encounter.update({
         where: {
           id: encounterId,
         },
@@ -328,6 +669,8 @@ const encounterServices = {
           passes: { push: characterId },
         },
       });
+
+      io.to(`campaign ${encounter.campaignId}`).emit('encounter', encounterId);
     } catch (error) {
       console.error(error);
       throw new Error('Failed to advance turn');
@@ -336,12 +679,14 @@ const encounterServices = {
 
   finishReaction: async (encounterId: number, characterId: number) => {
     try {
+      const io = getIO();
+
       const encounter = await prisma.encounter.findUnique({
         where: { id: encounterId },
-        select: { reactions: true, passes: true },
+        select: { campaignId: true, reactions: true, passes: true },
       });
 
-      if (!encounter) throw new Error('Encounter not found');
+      if (!encounter) throw new Error('Failed to find encounter');
 
       const updatedReactions =
         encounter.reactions.filter((id) => id !== characterId) || [];
@@ -359,6 +704,8 @@ const encounterServices = {
           passes: updatedPasses,
         },
       });
+
+      io.to(`campaign ${encounter.campaignId}`).emit('encounter', encounterId);
     } catch (error) {
       console.error(error);
       throw new Error('Failed to advance turn');
@@ -367,10 +714,16 @@ const encounterServices = {
 
   passAllReactions: async (encounterId: number) => {
     try {
+      const io = getIO();
+
       const encounter = await prisma.encounter.findUnique({
         where: { id: encounterId },
-        select: { turnOrder: true, turnPosition: true },
+        select: { campaignId: true, turnOrder: true, turnPosition: true },
       });
+
+      if (!encounter) {
+        throw new Error('Failed to find encounter');
+      }
 
       const reactiveIds = encounter?.turnOrder.filter(
         (_, index) => index !== encounter.turnPosition,
@@ -385,6 +738,9 @@ const encounterServices = {
           passes: reactiveIds,
         },
       });
+
+      io.to(`campaign ${encounter.campaignId}`).emit('encounter', encounterId);
+      io.to(`campaign ${encounter.campaignId}`).emit('resetRolls');
     } catch (error) {
       console.error(error);
       throw new Error('Failed to advance turn');
@@ -396,9 +752,12 @@ const encounterServices = {
     blockData: { damage: number; blockedDamage: number; armorIds: number[] }[],
   ) => {
     try {
+      const io = getIO();
+
       const encounter = await prisma.encounter.findUnique({
         where: { id: encounterId },
         select: {
+          campaignId: true,
           phaseHistory: {
             take: 1,
             orderBy: { createdAt: 'desc' },
@@ -481,6 +840,14 @@ const encounterServices = {
               },
             });
           }
+
+          const armorIds = Array.from(armorCosts.keys()) || [];
+
+          if (armorIds.length > 0) {
+            for (const itemId of armorIds) {
+              io.to(`campaign ${encounter.campaignId}`).emit('item', itemId);
+            }
+          }
         }
 
         const finalDamage =
@@ -489,14 +856,13 @@ const encounterServices = {
         if (phaseHistory.action.target) {
           //@ts-ignore
           await applyDamage(phaseHistory.action.target, finalDamage);
-          return {
-            targetId: phaseHistory.action.target.id,
-            armorIds: Array.from(armorCosts.keys()) || [],
-          };
+
+          io.to(`campaign ${encounter.campaignId}`).emit(
+            'character',
+            phaseHistory.action.target.id,
+          );
         }
       }
-
-      return { targetId: null, armorIds: [] };
     } catch (error) {
       console.error(error);
       throw new Error('Failed to confirm action queue results');

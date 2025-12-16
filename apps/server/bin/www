@@ -8,6 +8,7 @@ import debug from 'debug';
 import http from 'http';
 import app from '../dist/app.js';
 import { Server } from 'socket.io';
+import { registerIO } from '../dist/sockets/socket.js';
 import { setupSocketIO } from '../dist/sockets/index.js';
 
 const debugLogger = debug('Electric_Death_Online:server');
@@ -38,6 +39,7 @@ const io = new Server(server, {
   pingTimeout: 60 * 1000,
 });
 
+registerIO(io);
 setupSocketIO(io);
 
 /**
