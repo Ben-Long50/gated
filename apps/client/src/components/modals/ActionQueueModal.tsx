@@ -7,7 +7,6 @@ import PhaseActionCard from '../encounterComponents/PhaseActionCard';
 import { calculateDamage } from 'src/utils/calculateDamage';
 import DamageIcon from '../icons/DamageIcon';
 import ArrowHeader4 from '../ArrowHeader4';
-import { socket } from 'src/socket';
 import ItemCardExpanding from '../encounterComponents/ItemCardExpanding';
 import useCharacterQuery from 'src/hooks/useCharacterQuery/useCharacterQuery';
 import BlockIcon from '../icons/BlockIcon';
@@ -18,8 +17,8 @@ import { useForm } from '@tanstack/react-form';
 import { useContext, useState } from 'react';
 import ExpandingList from '../ExpandingList';
 import { EncounterContext } from 'src/contexts/EncounterContext';
-import useCombatStore from 'src/stores/combatStore';
 import { Item } from 'src/types/item';
+import useConfirmActionQueueMutation from 'src/hooks/encounter hooks/useConfirmActionQueueMutation/useConfirmActionQueueMutation';
 
 const ActionQueueModal = () => {
   const { combat, encounterPermissions, resetRolls } =
@@ -29,6 +28,11 @@ const ActionQueueModal = () => {
   const { campaignId, encounterId } = useParams();
   const [listExpanded, setListExpanded] = useState(false);
   const [blockDataIndex, setBlockDataIndex] = useState(0);
+
+  const confirmActionQueue = useConfirmActionQueueMutation(
+    Number(campaignId),
+    Number(encounterId),
+  );
 
   const phaseAction = combat.phaseHistory[0].action || null;
   const phaseReactions = combat.phaseHistory[0].reactions || null;
@@ -40,8 +44,6 @@ const ActionQueueModal = () => {
       return sum;
     }
   }, 0);
-
-  const setTarget = useCombatStore((state) => state.setTarget);
 
   const { data: target } = useCharacterQuery(phaseAction?.targetId);
 
@@ -356,25 +358,8 @@ const ActionQueueModal = () => {
           type="button"
           onClick={() => {
             const blockData = blockForm.getFieldValue('blockData');
-
-            socket.emit('confirmActionQueueResults', {
-              campaignId: Number(campaignId),
-              encounterId: Number(encounterId),
-              blockData,
-            });
-
-            socket.emit('advancePhase', {
-              campaignId: Number(campaignId),
-              encounterId: Number(encounterId),
-            });
-
-            socket.emit('resetBoard', {
-              encounterId: Number(encounterId),
-            });
+            confirmActionQueue.mutate(blockData);
             resetRolls();
-            setTarget(null);
-
-            navigate('..');
           }}
         >
           Confirm Action Queue Results

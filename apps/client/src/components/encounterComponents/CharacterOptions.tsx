@@ -19,6 +19,10 @@ import useCharacterQueries from 'src/hooks/useCharactersQuery/useCharacterQuerie
 import useCombatStore from 'src/stores/combatStore';
 import optimisticUpdateEncounter from 'src/utils/optimisticUpdateEncounter';
 import { EncounterContext } from 'src/contexts/EncounterContext';
+import usePassAllReactionsMutation from 'src/hooks/encounter hooks/usePassAllReactionsMutation/usePassAllReactionsMutation';
+import useScheduleReactionMutation from 'src/hooks/encounter hooks/useScheduleReactionMutation/useScheduleReactionMutation';
+import usePassReactionMutation from 'src/hooks/encounter hooks/usePassReactionMutation/usePassReactionMutation';
+import useFinishReactionMutation from 'src/hooks/encounter hooks/useFinishReactionMutation/useFinishReactionMutation';
 
 const CharacterOptions = ({
   setActionSidebar,
@@ -53,6 +57,23 @@ const CharacterOptions = ({
   const { filteredCharacter: character } = useCharacter(controlledCharacterId);
 
   const { characters } = useCharacterQueries(combat.turnOrder);
+
+  const passAllReactions = usePassAllReactionsMutation(
+    Number(campaignId),
+    Number(encounterId),
+  );
+  const scheduleReaction = useScheduleReactionMutation(
+    Number(campaignId),
+    Number(encounterId),
+  );
+  const passReaction = usePassReactionMutation(
+    Number(campaignId),
+    Number(encounterId),
+  );
+  const finishReaction = useFinishReactionMutation(
+    Number(campaignId),
+    Number(encounterId),
+  );
 
   const setItem = useCombatStore((state) => state.setItem);
   const setTarget = useCombatStore((state) => state.setTarget);
@@ -192,10 +213,7 @@ const CharacterOptions = ({
                     ),
                   });
 
-                  socket.emit('passAllReactions', {
-                    campaignId: Number(campaignId),
-                    encounterId: Number(encounterId),
-                  });
+                  passAllReactions.mutate();
                 }}
               >
                 Pass All Reactions
@@ -211,13 +229,7 @@ const CharacterOptions = ({
                   className="w-full"
                   type="button"
                   ariaLabel="Make reaction"
-                  onClick={() =>
-                    socket.emit('scheduleReaction', {
-                      campaignId: Number(campaignId),
-                      encounterId: Number(encounterId),
-                      characterId: controlledCharacterId,
-                    })
-                  }
+                  onClick={() => scheduleReaction.mutate(controlledCharacterId)}
                 >
                   Make Reaction
                 </BtnRect>
@@ -225,13 +237,7 @@ const CharacterOptions = ({
                   className="w-full"
                   type="button"
                   ariaLabel="Pass"
-                  onClick={() =>
-                    socket.emit('passReaction', {
-                      campaignId: Number(campaignId),
-                      encounterId: Number(encounterId),
-                      characterId: controlledCharacterId,
-                    })
-                  }
+                  onClick={() => passReaction.mutate(controlledCharacterId)}
                 >
                   Pass
                 </BtnRect>
@@ -242,13 +248,7 @@ const CharacterOptions = ({
               className="w-full"
               ariaLabel="Pass Reaction"
               type="button"
-              onClick={() => {
-                socket.emit('finishReaction', {
-                  campaignId: Number(campaignId),
-                  encounterId: Number(encounterId),
-                  characterId: controlledCharacterId,
-                });
-              }}
+              onClick={() => finishReaction.mutate(controlledCharacterId)}
             >
               Pass Reaction
             </BtnRect>

@@ -76,11 +76,7 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
       setTarget(null);
     });
 
-    socket.on('actionRoll', async ({ encounterId, rollsArray, targetId }) => {
-      if (targetId) {
-        setTarget(targetId);
-      }
-
+    socket.on('actionRoll', async ({ encounterId, rollsArray }) => {
       if (rollsArray) {
         const rolls = new Map(rollsArray) as Map<number, any>;
 

@@ -1,17 +1,21 @@
 import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../../handleResponse';
 
-const advanceTurn = async (encounterId: number, turn: number) => {
+const confirmActionQueue = async (
+  campaignId: number,
+  encounterId: number,
+  blockData: { damage: number; blockedDamage: number; armorIds: number[] }[],
+) => {
   try {
     const response = await fetch(
-      `${apiUrl}/encounters/${encounterId}/advanceTurn`,
+      `${apiUrl}/campaigns/${campaignId}/encounters/${encounterId}/confirmActionQueue`,
       {
         method: 'PATCH',
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ turn }),
+        body: JSON.stringify(blockData),
       },
     );
     const data = await handleResponse(response);
@@ -24,4 +28,4 @@ const advanceTurn = async (encounterId: number, turn: number) => {
   }
 };
 
-export default advanceTurn;
+export default confirmActionQueue;

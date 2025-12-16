@@ -14,7 +14,7 @@ import Loading from 'src/components/Loading';
 import { useNavigate, useParams } from 'react-router-dom';
 import useRoll from 'src/hooks/useRoll';
 import useCombatStore from 'src/stores/combatStore';
-import useCombatQueries from 'src/hooks/combat hooks/useCombatQueries/useCombatQueries';
+import useCombatQueries from 'src/hooks/encounter hooks/useCombatQueries/useCombatQueries';
 
 export const CampaignContext = createContext({
   socket,

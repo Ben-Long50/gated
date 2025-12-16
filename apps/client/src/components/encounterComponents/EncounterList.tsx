@@ -6,18 +6,21 @@ import ItemCardSmall from '../ItemCardSmall';
 import BtnRect from '../buttons/BtnRect';
 import Divider from '../Divider';
 import CloudinaryImage from '../CloudinaryImage';
-import useCombatQueries from 'src/hooks/combat hooks/useCombatQueries/useCombatQueries';
+import useCombatQueries from 'src/hooks/encounter hooks/useCombatQueries/useCombatQueries';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import CharacterCardSmall from '../CharacterCardSmall';
 import ArrowHeader3 from '../ArrowHeader3';
 import { socket } from 'src/socket';
 import { CampaignContext } from 'src/contexts/CampaignContext';
+import useActivateEncounterMutation from 'src/hooks/encounter hooks/useActivateEncounterMutation/useActivateEncounterMutation';
 
 const EncounterList = () => {
   const { mapId, campaignId } = useParams();
   const { gameMaster } = useContext(CampaignContext);
   const location = useLocation();
   const parts = location.pathname.split('/');
+
+  const activateEncounter = useActivateEncounterMutation(Number(campaignId));
 
   const containerRef = useRef(null);
 
@@ -121,10 +124,7 @@ const EncounterList = () => {
                       ariaLabel="Begin encounter"
                       onClick={(e) => {
                         e.stopPropagation();
-                        socket.emit('activateEncounter', {
-                          campaignId: Number(campaignId),
-                          encounterId: encounter.id,
-                        });
+                        activateEncounter.mutate(encounter.id);
                       }}
                     >
                       Begin Encounter

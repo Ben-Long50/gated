@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import { Action } from 'src/types/action';
 import { Item } from 'src/types/item';
-import useCombatQuery from './combat hooks/useCombatQueries/useCombatQuery';
+import useCombatQuery from './encounter hooks/useCombatQueries/useCombatQuery';
 import { AuthContext } from 'src/contexts/AuthContext';
 import useCharacter from './useCharacter';
 import useResetCharacterStatMutation from './character stat hooks/useResetCharacterStatMutation/useCharacterStatMutation';
@@ -15,6 +15,10 @@ import useCharacterStatHandlers from './character stat hooks/useCharacterStatMut
 import useUpdateCharacterLocationMutation from './useUpdateCharacterLocationMutation/useUpdateCharacterLocationMutation';
 import useCombatStore from 'src/stores/combatStore';
 import calculateCosts from 'src/utils/calculateCosts';
+import useAdvanceTurnMutation from './encounter hooks/useAdvanceTurnMutation/useAdvanceTurnMutation';
+import useRollActionMutation from './encounter hooks/useRollActionMutation/useRollActionMutation';
+import useRollReactionMutation from './encounter hooks/useRollReactionMutation/useRollReactionMutation';
+import rollReaction from './encounter hooks/useRollReactionMutation/rollReaction';
 
 const useCombat = () => {
   const { user } = useContext(AuthContext);
@@ -23,6 +27,19 @@ const useCombat = () => {
   const queryClient = useQueryClient();
 
   const { data: combat, isLoading } = useCombatQuery(Number(encounterId));
+
+  const advanceTurn = useAdvanceTurnMutation(
+    Number(campaignId),
+    Number(encounterId),
+  );
+  const rollAction = useRollActionMutation(
+    Number(campaignId),
+    Number(encounterId),
+  );
+  const rollReaction = useRollReactionMutation(
+    Number(campaignId),
+    Number(encounterId),
+  );
 
   const { filteredCharacter: activeCharacter } = useCharacter(
     combat?.turnOrder[combat?.turnPosition],
@@ -90,10 +107,7 @@ const useCombat = () => {
           currentHands: nextCharacter?.stats.hands || 0,
         },
       }),
-        socket.emit('advanceTurn', {
-          campaignId: Number(campaignId),
-          encounterId: Number(encounterId),
-        }));
+        advanceTurn.mutate());
     } else {
       const nextCharacter = queryClient.getQueryData([
         'character',
@@ -108,10 +122,7 @@ const useCombat = () => {
           currentHands: nextCharacter?.stats.hands || 0,
         },
       }),
-        socket.emit('advanceTurn', {
-          campaignId: Number(campaignId),
-          encounterId: Number(encounterId),
-        }));
+        advanceTurn.mutate());
     }
   };
 
@@ -129,8 +140,6 @@ const useCombat = () => {
     },
     onSubmit: async ({ value }) => {
       const data = {
-        campaignId: Number(campaignId),
-        encounterId: Number(encounterId),
         activeCharacterId: activeCharacter.id,
         actionId: value.action.id,
       };
@@ -166,7 +175,7 @@ const useCombat = () => {
         });
       }
 
-      socket.emit('actionRoll', data);
+      rollAction.mutate(data);
 
       actionForm.reset();
       setItem(null);
@@ -204,8 +213,6 @@ const useCombat = () => {
       }
 
       const data = {
-        campaignId: Number(campaignId),
-        encounterId: Number(encounterId),
         reactiveCharacterId: activeCharacter.id,
         reactionId: value.reaction.id,
       };
@@ -226,7 +233,7 @@ const useCombat = () => {
         data.extraDice = value.extraDice;
       }
 
-      socket.emit('reactionRoll', data);
+      rollReaction.mutate(data);
 
       reactionForm.reset();
       setItem(null);

@@ -10,9 +10,10 @@ import { CampaignContext } from 'src/contexts/CampaignContext';
 import Icon from '@mdi/react';
 import { mdiCrown } from '@mdi/js';
 import { socket } from 'src/socket';
-import useCreateCombatMutation from 'src/hooks/combat hooks/useCreateCombatMutation/useCreateCombatMutation';
+import useCreateCombatMutation from 'src/hooks/encounter hooks/useCreateCombatMutation/useCreateCombatMutation';
 import { EncounterContext } from 'src/contexts/EncounterContext';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
+import useRollInitiativeMutation from 'src/hooks/encounter hooks/useRollInitiativeMutation/useRollInitiativeMutation';
 
 const InitiativeModal = () => {
   const { gameMaster } = useContext(CampaignContext);
@@ -25,6 +26,10 @@ const InitiativeModal = () => {
 
   const startCombat = useCreateCombatMutation(Number(campaignId));
 
+  const rollInitiative = useRollInitiativeMutation(
+    Number(campaignId),
+    Number(encounterId),
+  );
   // const rollAllInitiative = async () => {
   //   setRollingInitiative(true);
   //   const rollAll = async (ids?: []) => {
@@ -140,7 +145,7 @@ const InitiativeModal = () => {
             type="button"
             onClick={() => {
               if (!rolling) {
-                socket.emit('rollInitiative', Number(encounterId));
+                rollInitiative.mutate();
               }
             }}
           >

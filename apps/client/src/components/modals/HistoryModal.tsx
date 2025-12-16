@@ -3,7 +3,7 @@ import BtnRect from '../buttons/BtnRect';
 import { useNavigate, useParams } from 'react-router-dom';
 import Loading from '../Loading';
 import PhaseActionCard from '../encounterComponents/PhaseActionCard';
-import useEncounterHistoryQuery from 'src/hooks/combat hooks/useEncounterHistoryQuery/useEncounterHistoryQuery';
+import useEncounterHistoryQuery from 'src/hooks/encounter hooks/useEncounterHistoryQuery/useEncounterHistoryQuery';
 import Divider from '../Divider';
 
 const HistoryModal = () => {

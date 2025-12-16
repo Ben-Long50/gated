@@ -1,5 +1,5 @@
 import CharacterCard from './CharacterCard';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import Loading from './Loading';
 import { Character } from 'src/types/character';
 import useCampaignQuery from '../hooks/useCampaignQuery/useCampaignQuery';
@@ -17,6 +17,9 @@ import ArrowHeader2 from './ArrowHeader2';
 const CampaignCharacterList = () => {
   const { accentPrimary } = useContext(ThemeContext);
   const { campaignId } = useParams();
+  const [searchParams] = useSearchParams();
+
+  const characterType = searchParams.get('list');
 
   const { data: campaign, isLoading: campaignLoading } = useCampaignQuery(
     Number(campaignId),
@@ -80,22 +83,24 @@ const CampaignCharacterList = () => {
         </div>
       </ThemeContainer>
       <div className="grid w-full grid-flow-row gap-8">
-        {playerCharacters.length > 0 && (
-          <>
-            <ArrowHeader1 title="Player Characters" />
-            {playerCharacters?.map((character: Character) => (
-              <CharacterCard key={character.id} id={character.id} />
-            ))}
-          </>
-        )}
-        {nonPlayerCharacters.length > 0 && (
-          <>
-            <ArrowHeader1 title="Non-player Characters" />
-            {nonPlayerCharacters?.map((character: Character) => (
-              <CharacterCard key={character.id} id={character.id} />
-            ))}
-          </>
-        )}
+        {playerCharacters.length > 0 &&
+          characterType !== 'nonPlayerCharacters' && (
+            <>
+              <ArrowHeader1 title="Player Characters" />
+              {playerCharacters?.map((character: Character) => (
+                <CharacterCard key={character.id} id={character.id} />
+              ))}
+            </>
+          )}
+        {nonPlayerCharacters.length > 0 &&
+          characterType !== 'playerCharacters' && (
+            <>
+              <ArrowHeader1 title="Non-player Characters" />
+              {nonPlayerCharacters?.map((character: Character) => (
+                <CharacterCard key={character.id} id={character.id} />
+              ))}
+            </>
+          )}
       </div>
     </div>
   );

@@ -13,7 +13,7 @@ import ActionIcon from '../icons/ActionIcon';
 import Divider from '../Divider';
 import ReactionIcon from '../icons/ReactionIcon';
 import ReactionSidebar from './ReactionSidebar';
-import useEncounterHistoryQuery from 'src/hooks/combat hooks/useEncounterHistoryQuery/useEncounterHistoryQuery';
+import useEncounterHistoryQuery from 'src/hooks/encounter hooks/useEncounterHistoryQuery/useEncounterHistoryQuery';
 import ArrowHeader3 from '../ArrowHeader3';
 import HistoryCard from './HistoryCard';
 import HistoryIcon from '../icons/HistoryIcon';

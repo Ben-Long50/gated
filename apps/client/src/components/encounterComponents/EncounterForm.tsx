@@ -1,5 +1,5 @@
 import useMaps from 'src/hooks/useMaps';
-import useCreateCombatMutation from 'src/hooks/combat hooks/useCreateCombatMutation/useCreateCombatMutation';
+import useCreateCombatMutation from 'src/hooks/encounter hooks/useCreateCombatMutation/useCreateCombatMutation';
 import { Outlet, useParams } from 'react-router-dom';
 import { useForm } from '@tanstack/react-form';
 import Loading from '../Loading';
