@@ -399,14 +399,14 @@ const encounterServices = {
                 });
             }
             if (activeCharacter) {
-                io.to(String(campaignId)).emit('character', activeCharacter.id);
+                io.to(`campaign ${campaignId}`).emit('character', activeCharacter.id);
             }
             if (item) {
                 await itemServices.setItemNotAvailable(item.id);
-                io.to(String(campaignId)).emit('item', item.id);
+                io.to(`campaign ${campaignId}`).emit('item', item.id);
             }
             if (targetCharacter) {
-                io.to(String(campaignId)).emit('character', targetCharacter.id);
+                io.to(`campaign ${campaignId}`).emit('character', targetCharacter.id);
             }
         }
         catch (error) {
@@ -482,13 +482,13 @@ const encounterServices = {
                 });
             }
             if (reactiveCharacter) {
-                io.to(String(campaignId)).emit('character', reactiveCharacter.id);
+                io.to(`campaign ${campaignId}`).emit('character', reactiveCharacter.id);
             }
             if (item) {
-                io.to(String(campaignId)).emit('item', item.id);
+                io.to(`campaign ${campaignId}`).emit('item', item.id);
             }
             if (targetCharacter) {
-                io.to(String(campaignId)).emit('character', targetCharacter.id);
+                io.to(`campaign ${campaignId}`).emit('character', targetCharacter.id);
             }
         }
         catch (error) {
@@ -677,6 +677,7 @@ const encounterServices = {
                     io.to(`campaign ${encounter.campaignId}`).emit('character', phaseHistory.action.target.id);
                 }
             }
+            io.to(`encounter ${encounterId}`).emit('resetBoard');
         }
         catch (error) {
             console.error(error);

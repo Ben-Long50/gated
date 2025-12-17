@@ -19,7 +19,7 @@ export function setupSocketIO(io: Server) {
     });
 
     socket.on('startCampaign', (campaignId) => {
-      socket.join(campaignId);
+      socket.join(`campaign ${campaignId}`);
       console.log(`Started campaign ${campaignId}`);
 
       io.emit('campaign', campaignId);

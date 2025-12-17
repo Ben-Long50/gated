@@ -179,8 +179,8 @@ const encounterController = {
             if (!req.user) {
                 throw new Error('Could not find authenticated user');
             }
-            const parsedBody = parseRequestBody(req.body);
-            await encounterServices.confirmActionQueueResults(Number(req.params.encounterId), parsedBody);
+            await encounterServices.confirmActionQueueResults(Number(req.params.encounterId), req.body);
+            await encounterServices.advancePhase(Number(req.params.encounterId));
             res
                 .status(200)
                 .json({ message: 'Successfully confirmed action queue results' });

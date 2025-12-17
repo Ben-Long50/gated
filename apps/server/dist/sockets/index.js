@@ -12,7 +12,7 @@ export function setupSocketIO(io) {
             console.log(`Registered player ${username}`);
         });
         socket.on('startCampaign', (campaignId) => {
-            socket.join(campaignId);
+            socket.join(`campaign ${campaignId}`);
             console.log(`Started campaign ${campaignId}`);
             io.emit('campaign', campaignId);
             console.log('Broadcasted campaign startup to all players');

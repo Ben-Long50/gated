@@ -236,12 +236,12 @@ const encounterController = {
         throw new Error('Could not find authenticated user');
       }
 
-      const parsedBody = parseRequestBody(req.body);
-
       await encounterServices.confirmActionQueueResults(
         Number(req.params.encounterId),
-        parsedBody,
+        req.body,
       );
+
+      await encounterServices.advancePhase(Number(req.params.encounterId));
 
       res
         .status(200)
