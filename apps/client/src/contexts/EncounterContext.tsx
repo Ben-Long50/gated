@@ -10,7 +10,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import { AuthContext } from './AuthContext';
 import Loading from 'src/components/Loading';
 import { useNavigate, useParams } from 'react-router-dom';
-import useRoll from 'src/hooks/useRoll';
 import useCombatStore from 'src/stores/combatStore';
 import useCombat from 'src/hooks/useCombat';
 import useNavigationStore from 'src/stores/navbarStore';
@@ -37,10 +36,12 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
     reactionForm,
     resetForms,
     isLoading: combatLoading,
+    isPending: combatPending,
+    rollHookValues,
   } = useCombat();
 
   const { rolls, rolling, animateRoll, resetRolls, rollComplete, rollCounter } =
-    useRoll();
+    rollHookValues;
 
   const setEncounterLayout = useNavigationStore(
     (state) => state.setEncounterLayout,
@@ -132,6 +133,8 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
     <EncounterContext.Provider
       value={{
         combat,
+        combatLoading,
+        combatPending,
         joinedPlayers,
         encounterPermissions,
         controlledCharacterId,

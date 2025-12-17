@@ -167,14 +167,14 @@ const CharacterOptions = ({
         >
           {encounterPermissions &&
             controlledCharacterId === activeCharacter?.id &&
-            combat.phaseHistory[0]?.action && (
+            combat.combatPhase === 'reaction' && (
               <BtnRect
                 className="w-full"
                 ariaLabel="Close"
                 type="button"
                 onClick={() => navigate('actionQueue')}
               >
-                Action Queue Results
+                Action Queue
               </BtnRect>
             )}
           {controlledCharacterId === activeCharacter?.id &&

@@ -10,7 +10,6 @@ import useCharacter from './useCharacter';
 import useResetCharacterStatMutation from './character stat hooks/useResetCharacterStatMutation/useCharacterStatMutation';
 import { useQueryClient } from '@tanstack/react-query';
 import { Character } from 'src/types/character';
-import { socket } from 'src/socket';
 import useCharacterStatHandlers from './character stat hooks/useCharacterStatMutation/useCharacterStatHandlers';
 import useUpdateCharacterLocationMutation from './useUpdateCharacterLocationMutation/useUpdateCharacterLocationMutation';
 import useCombatStore from 'src/stores/combatStore';
@@ -18,7 +17,8 @@ import calculateCosts from 'src/utils/calculateCosts';
 import useAdvanceTurnMutation from './encounter hooks/useAdvanceTurnMutation/useAdvanceTurnMutation';
 import useRollActionMutation from './encounter hooks/useRollActionMutation/useRollActionMutation';
 import useRollReactionMutation from './encounter hooks/useRollReactionMutation/useRollReactionMutation';
-import rollReaction from './encounter hooks/useRollReactionMutation/rollReaction';
+import useRoll from './useRoll';
+import calculateDiceCount from 'src/utils/calculateDiceCount';
 
 const useCombat = () => {
   const { user } = useContext(AuthContext);
@@ -26,7 +26,21 @@ const useCombat = () => {
   const { campaignId, mapId, encounterId } = useParams();
   const queryClient = useQueryClient();
 
-  const { data: combat, isLoading } = useCombatQuery(Number(encounterId));
+  const {
+    rolls,
+    setRolls,
+    rolling,
+    animateRoll,
+    resetRolls,
+    rollComplete,
+    rollCounter,
+  } = useRoll();
+
+  const {
+    data: combat,
+    isLoading,
+    isPending,
+  } = useCombatQuery(Number(encounterId));
 
   const advanceTurn = useAdvanceTurnMutation(
     Number(campaignId),
@@ -177,6 +191,24 @@ const useCombat = () => {
 
       rollAction.mutate(data);
 
+      if (value.action) {
+        const { diceCount } = calculateDiceCount(
+          activeCharacter?.attributes,
+          value.action,
+          value.modifiers,
+          value.extraDice,
+        );
+
+        const loadingRollMap = new Map();
+
+        loadingRollMap.set(activeCharacter?.id, {
+          diceArray: Array.from({ length: diceCount as number }).map((_) => 1),
+          modifiers: ['loading'],
+        });
+
+        setRolls(loadingRollMap);
+      }
+
       actionForm.reset();
       setItem(null);
     },
@@ -273,6 +305,15 @@ const useCombat = () => {
     reactionForm,
     resetForms,
     isLoading,
+    isPending,
+    rollHookValues: {
+      rolls,
+      rolling,
+      animateRoll,
+      resetRolls,
+      rollComplete,
+      rollCounter,
+    },
   };
 };
 

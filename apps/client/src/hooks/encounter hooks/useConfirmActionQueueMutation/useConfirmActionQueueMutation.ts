@@ -1,15 +1,14 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import confirmActionQueue from './confirmActionQueue';
-import useAdvanceTurnMutation from '../useAdvanceTurnMutation/useAdvanceTurnMutation';
-import { socket } from 'src/socket';
 import useCombatStore from 'src/stores/combatStore';
 import { useNavigate } from 'react-router-dom';
+import { Encounter } from 'src/types/encounter';
 
 const useConfirmActionQueueMutation = (
   campaignId: number,
   encounterId: number,
 ) => {
-  const advanceTurn = useAdvanceTurnMutation(campaignId, encounterId);
+  const queryClient = useQueryClient();
   const setTarget = useCombatStore((state) => state.setTarget);
   const navigate = useNavigate();
 
@@ -23,13 +22,26 @@ const useConfirmActionQueueMutation = (
     ) => {
       return confirmActionQueue(campaignId, encounterId, blockData);
     },
-    onSuccess: () => {
-      advanceTurn.mutate();
-      socket.emit('resetBoard', {
-        encounterId: Number(encounterId),
-      });
+    onMutate: () => {
+      const prevEncounter: Encounter | undefined = queryClient.getQueryData([
+        'encounter',
+        encounterId,
+      ]);
+
+      queryClient.setQueryData(
+        ['encounter', encounterId],
+        (prev: Encounter) => ({
+          ...prev,
+          reactions: [],
+          passes: [],
+          combatPhase: 'action',
+        }),
+      );
+
       setTarget(null);
       navigate('..');
+
+      return prevEncounter;
     },
     throwOnError: false,
   });

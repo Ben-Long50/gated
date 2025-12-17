@@ -66,6 +66,7 @@ const useRoll = () => {
 
   return {
     rolls,
+    setRolls,
     rolling,
     animateRoll,
     resetRolls,

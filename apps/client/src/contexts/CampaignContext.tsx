@@ -116,6 +116,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       const campaign = campaigns.find(
         (campaign) => campaign?.id === campaignId,
       );
+
       const gameMaster = campaign?.ownerId === user.id;
 
       if (!activeCampaignRef.current.includes(campaignId)) {

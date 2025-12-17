@@ -19,9 +19,10 @@ import ExpandingList from '../ExpandingList';
 import { EncounterContext } from 'src/contexts/EncounterContext';
 import { Item } from 'src/types/item';
 import useConfirmActionQueueMutation from 'src/hooks/encounter hooks/useConfirmActionQueueMutation/useConfirmActionQueueMutation';
+import Loading from '../Loading';
 
 const ActionQueueModal = () => {
-  const { combat, encounterPermissions, resetRolls } =
+  const { combat, combatPending, encounterPermissions, resetRolls } =
     useContext(EncounterContext);
 
   const navigate = useNavigate();
@@ -103,7 +104,7 @@ const ActionQueueModal = () => {
         rolled or passed, the calculated damage will be applied to the target
         character. The Action Queue resets for each gameplay action taken.
       </p>
-
+      {combatPending && <Loading />}
       {phaseAction ? (
         <>
           <ArrowHeader3 title="Pending Action" className="self-start" />
