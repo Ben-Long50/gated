@@ -9,7 +9,6 @@ import CharacterInitiativeRoll from '../encounterComponents/CharacterInitiativeR
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import Icon from '@mdi/react';
 import { mdiCrown } from '@mdi/js';
-import { socket } from 'src/socket';
 import useCreateCombatMutation from 'src/hooks/encounter hooks/useCreateCombatMutation/useCreateCombatMutation';
 import { EncounterContext } from 'src/contexts/EncounterContext';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';

@@ -37,6 +37,8 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
     resetForms,
     isLoading: combatLoading,
     isPending: combatPending,
+    isFetching,
+    setIsFetching,
     rollHookValues,
   } = useCombat();
 
@@ -135,6 +137,8 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
         combat,
         combatLoading,
         combatPending,
+        isFetching,
+        setIsFetching,
         joinedPlayers,
         encounterPermissions,
         controlledCharacterId,

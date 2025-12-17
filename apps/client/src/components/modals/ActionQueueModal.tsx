@@ -22,8 +22,13 @@ import useConfirmActionQueueMutation from 'src/hooks/encounter hooks/useConfirmA
 import Loading from '../Loading';
 
 const ActionQueueModal = () => {
-  const { combat, combatPending, encounterPermissions, resetRolls } =
-    useContext(EncounterContext);
+  const {
+    combat,
+    isFetching,
+    setIsFetching,
+    encounterPermissions,
+    resetRolls,
+  } = useContext(EncounterContext);
 
   const navigate = useNavigate();
   const { campaignId, encounterId } = useParams();
@@ -104,7 +109,7 @@ const ActionQueueModal = () => {
         rolled or passed, the calculated damage will be applied to the target
         character. The Action Queue resets for each gameplay action taken.
       </p>
-      {combatPending && <Loading />}
+      {isFetching && <Loading />}
       {phaseAction ? (
         <>
           <ArrowHeader3 title="Pending Action" className="self-start" />
@@ -357,13 +362,15 @@ const ActionQueueModal = () => {
           className="w-full"
           ariaLabel="Confirm action queue results"
           type="button"
+          active={!isFetching}
           onClick={() => {
+            setIsFetching(true);
             const blockData = blockForm.getFieldValue('blockData');
             confirmActionQueue.mutate(blockData);
             resetRolls();
           }}
         >
-          Confirm Action Queue Results
+          Confirm Action Queue
         </BtnRect>
       ) : (
         <BtnRect

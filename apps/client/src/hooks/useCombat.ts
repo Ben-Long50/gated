@@ -26,6 +26,8 @@ const useCombat = () => {
   const { campaignId, mapId, encounterId } = useParams();
   const queryClient = useQueryClient();
 
+  const [isFetching, setIsFetching] = useState(false);
+
   const {
     rolls,
     setRolls,
@@ -40,7 +42,16 @@ const useCombat = () => {
     data: combat,
     isLoading,
     isPending,
+    isFetching: encounterFetching,
   } = useCombatQuery(Number(encounterId));
+
+  useEffect(() => {
+    if (isFetching && !encounterFetching) {
+      console.log(isFetching);
+
+      setIsFetching(false);
+    }
+  }, [encounterFetching]);
 
   const advanceTurn = useAdvanceTurnMutation(
     Number(campaignId),
@@ -153,6 +164,8 @@ const useCombat = () => {
       extraDice: null as number | null,
     },
     onSubmit: async ({ value }) => {
+      setIsFetching(true);
+
       const data = {
         activeCharacterId: activeCharacter.id,
         actionId: value.action.id,
@@ -239,13 +252,15 @@ const useCombat = () => {
     },
 
     onSubmit: async ({ value }) => {
+      setIsFetching(true);
+
       if (controlledCharacter?.stats.currentReactions === 0) {
         alert('You do not have any more reactions this turn');
         return;
       }
 
       const data = {
-        reactiveCharacterId: activeCharacter.id,
+        reactiveCharacterId: controlledCharacter.id,
         reactionId: value.reaction.id,
       };
 
@@ -266,6 +281,24 @@ const useCombat = () => {
       }
 
       rollReaction.mutate(data);
+
+      if (value.reaction) {
+        const { diceCount } = calculateDiceCount(
+          activeCharacter?.attributes,
+          value.reaction,
+          value.modifiers,
+          value.extraDice,
+        );
+
+        const loadingRollMap = new Map();
+
+        loadingRollMap.set(activeCharacter?.id, {
+          diceArray: Array.from({ length: diceCount as number }).map((_) => 1),
+          modifiers: ['loading'],
+        });
+
+        setRolls(loadingRollMap);
+      }
 
       reactionForm.reset();
       setItem(null);
@@ -306,6 +339,8 @@ const useCombat = () => {
     resetForms,
     isLoading,
     isPending,
+    isFetching,
+    setIsFetching,
     rollHookValues: {
       rolls,
       rolling,

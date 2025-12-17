@@ -2,7 +2,7 @@ import CharacterPictureRound from '../CharacterPictureRound';
 import useCharacter from 'src/hooks/useCharacter';
 import Loading from '../Loading';
 import { ThemeContext } from 'src/contexts/ThemeContext';
-import { useContext, useMemo } from 'react';
+import { useContext } from 'react';
 import Die from './Die';
 import useCombatStore from 'src/stores/combatStore';
 import RangeIcon from '../icons/RangeIcon';
@@ -121,12 +121,12 @@ const CharacterEncounterToken = ({
           />
           {roll && combat.combatPhase !== 'initiative' && (
             <div
-              className="absolute right-1/2 top-1/2 grid shrink-0 grid-cols-[repeat(3,_44px)] justify-center gap-2"
+              className={`${location.row > height / 2 ? 'bottom-1/2' : 'top-1/2'} absolute right-1/2 grid shrink-0 grid-cols-[repeat(3,_44px)] justify-center gap-2`}
               style={{
                 transform:
                   location.row > height / 2
-                    ? 'translateY(-50%) translateY(-100%)  translateX(50%)'
-                    : 'translateY(-50%) translateY(100%)  translateX(50%)',
+                    ? 'translateY(-36px) translateX(50%)'
+                    : 'translateY(36px) translateX(50%)',
               }}
             >
               {roll?.diceArray.map((number: number, index: number) => (

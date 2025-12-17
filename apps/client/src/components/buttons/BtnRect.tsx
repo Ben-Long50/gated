@@ -6,12 +6,14 @@ const BtnRect = ({
   className,
   ariaLabel,
   type,
+  active = true,
   onClick,
   children,
 }: {
   className?: string;
   ariaLabel: string;
   type: 'submit' | 'reset' | 'button' | undefined;
+  active?: boolean;
   onClick?: (e: MouseEvent) => void;
   children: ReactNode;
 }) => {
@@ -26,13 +28,18 @@ const BtnRect = ({
     >
       <button
         aria-label={ariaLabel}
-        className={`timing bg-primar w-full whitespace-nowrap rounded-bl rounded-tr px-4 py-2 text-lg text-zinc-950 clip-4`}
+        className={`${!active && 'pointer-events-none opacity-50'} timing bg-primary w-full whitespace-nowrap rounded-bl rounded-tr px-4 py-2 text-lg text-zinc-950 clip-4`}
         style={{
           backgroundColor: !hover && accentPrimary,
           color: hover && accentPrimary,
         }}
         type={type}
-        onClick={onClick}
+        onClick={(e) => {
+          e.stopPropagation();
+          if (active && onClick) {
+            onClick(e);
+          }
+        }}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
       >

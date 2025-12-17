@@ -17,7 +17,6 @@ import { socket } from 'src/socket';
 import InputSelectField from '../InputSelectField';
 import useCharacterQueries from 'src/hooks/useCharactersQuery/useCharacterQueries';
 import useCombatStore from 'src/stores/combatStore';
-import optimisticUpdateEncounter from 'src/utils/optimisticUpdateEncounter';
 import { EncounterContext } from 'src/contexts/EncounterContext';
 import usePassAllReactionsMutation from 'src/hooks/encounter hooks/usePassAllReactionsMutation/usePassAllReactionsMutation';
 import useScheduleReactionMutation from 'src/hooks/encounter hooks/useScheduleReactionMutation/useScheduleReactionMutation';
@@ -38,6 +37,8 @@ const CharacterOptions = ({
   const { gameMaster } = useContext(CampaignContext);
   const {
     combat,
+    isFetching,
+    setIsFetching,
     encounterPermissions,
     activeCharacter,
     controlledCharacterId,
@@ -183,7 +184,9 @@ const CharacterOptions = ({
                 className="w-full"
                 ariaLabel="Pass turn"
                 type="button"
+                active={!isFetching}
                 onClick={() => {
+                  setIsFetching(true);
                   resetRolls();
                   resetForms();
                   setTarget(null);
@@ -205,14 +208,9 @@ const CharacterOptions = ({
                 className="w-full"
                 ariaLabel="Pass All Reactions"
                 type="button"
+                active={!isFetching}
                 onClick={() => {
-                  optimisticUpdateEncounter(Number(encounterId), {
-                    reactions: [],
-                    passes: combat.turnOrder.filter(
-                      (id) => id !== activeCharacter.id,
-                    ),
-                  });
-
+                  setIsFetching(true);
                   passAllReactions.mutate();
                 }}
               >
@@ -229,7 +227,11 @@ const CharacterOptions = ({
                   className="w-full"
                   type="button"
                   ariaLabel="Make reaction"
-                  onClick={() => scheduleReaction.mutate(controlledCharacterId)}
+                  active={!isFetching}
+                  onClick={() => {
+                    setIsFetching(true);
+                    scheduleReaction.mutate(controlledCharacterId);
+                  }}
                 >
                   Make Reaction
                 </BtnRect>
@@ -237,7 +239,11 @@ const CharacterOptions = ({
                   className="w-full"
                   type="button"
                   ariaLabel="Pass"
-                  onClick={() => passReaction.mutate(controlledCharacterId)}
+                  active={!isFetching}
+                  onClick={() => {
+                    setIsFetching(true);
+                    passReaction.mutate(controlledCharacterId);
+                  }}
                 >
                   Pass
                 </BtnRect>
@@ -248,7 +254,11 @@ const CharacterOptions = ({
               className="w-full"
               ariaLabel="Pass Reaction"
               type="button"
-              onClick={() => finishReaction.mutate(controlledCharacterId)}
+              active={!isFetching}
+              onClick={() => {
+                setIsFetching(true);
+                finishReaction.mutate(controlledCharacterId);
+              }}
             >
               Pass Reaction
             </BtnRect>
