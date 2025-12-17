@@ -240,7 +240,7 @@ const encounterServices = {
                 },
             });
             io.to(`campaign ${encounter.campaignId}`).emit('encounter', encounterId);
-            io.to(`campaign ${encounter.campaignId}`).emit('resetRolls');
+            io.to(`encounter ${encounterId}`).emit('resetBoard');
         }
         catch (error) {
             console.error(error);
@@ -283,9 +283,8 @@ const encounterServices = {
                     io.to(`campaign ${encounter.campaignId}`).emit('item', itemId);
                 }
             }
-            console.log(encounter.campaignId);
             io.to(`campaign ${encounter.campaignId}`).emit('encounter', encounterId);
-            io.to(`campaign ${encounter.campaignId}`).emit('resetRolls');
+            io.to(`encounter ${encounterId}`).emit('resetBoard');
         }
         catch (error) {
             console.error(error);
@@ -405,9 +404,6 @@ const encounterServices = {
                 await itemServices.setItemNotAvailable(item.id);
                 io.to(`campaign ${campaignId}`).emit('item', item.id);
             }
-            if (targetCharacter) {
-                io.to(`campaign ${campaignId}`).emit('character', targetCharacter.id);
-            }
         }
         catch (error) {
             console.error(error);
@@ -486,9 +482,6 @@ const encounterServices = {
             }
             if (item) {
                 io.to(`campaign ${campaignId}`).emit('item', item.id);
-            }
-            if (targetCharacter) {
-                io.to(`campaign ${campaignId}`).emit('character', targetCharacter.id);
             }
         }
         catch (error) {
@@ -582,7 +575,7 @@ const encounterServices = {
                 },
             });
             io.to(`campaign ${encounter.campaignId}`).emit('encounter', encounterId);
-            io.to(`campaign ${encounter.campaignId}`).emit('resetRolls');
+            io.to(`encounter ${encounterId}`).emit('resetBoard');
         }
         catch (error) {
             console.error(error);
