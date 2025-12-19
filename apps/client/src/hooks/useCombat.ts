@@ -114,41 +114,35 @@ const useCombat = () => {
 
   const handleAdvanceTurn = () => {
     if (!encounterPermissions) return;
-    const currentIndex = combat.turnOrder.findIndex(
-      (characterId) => characterId === activeCharacter?.id,
-    );
 
-    if (currentIndex === combat.turnOrder.length - 1) {
-      const nextCharacter = queryClient.getQueryData([
-        'character',
-        combat.turnOrder[0],
-      ]) as Character;
+    const newRound = combat.turnPosition + 1 >= combat.turnOrder.length;
 
-      (resetCharacterStat.mutate({
-        characterId: combat.turnOrder[0],
+    const nextCharacterId = newRound
+      ? combat.turnOrder[0]
+      : combat.turnOrder[combat.turnPosition + 1];
+
+    const nextCharacter: Character | undefined = queryClient.getQueryData([
+      'character',
+      nextCharacterId,
+    ]);
+
+    if (
+      nextCharacter?.stats.actions !== nextCharacter?.stats.currentActions ||
+      nextCharacter?.stats.reactions !==
+        nextCharacter?.stats.currentReactions ||
+      nextCharacter?.stats.hands !== nextCharacter?.stats.currentHands
+    ) {
+      resetCharacterStat.mutate({
+        characterId: nextCharacterId,
         value: {
           currentActions: nextCharacter?.stats.actions || 0,
           currentReactions: nextCharacter?.stats.reactions || 0,
           currentHands: nextCharacter?.stats.hands || 0,
         },
-      }),
-        advanceTurn.mutate());
-    } else {
-      const nextCharacter = queryClient.getQueryData([
-        'character',
-        combat.turnOrder[currentIndex + 1],
-      ]) as Character;
-
-      (resetCharacterStat.mutate({
-        characterId: combat.turnOrder[currentIndex + 1],
-        value: {
-          currentActions: nextCharacter?.stats.actions || 0,
-          currentReactions: nextCharacter?.stats.reactions || 0,
-          currentHands: nextCharacter?.stats.hands || 0,
-        },
-      }),
-        advanceTurn.mutate());
+      });
     }
+
+    advanceTurn.mutate();
   };
 
   const actionForm = useForm({

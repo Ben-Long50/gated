@@ -81,13 +81,9 @@ const EncounterGrid = ({
     (state) => state.values.target,
   );
 
-  const arrowActive = useMemo(() => {
-    return activeCharacter?.id;
-  }, [activeCharacter]);
+  const arrowActive = activeCharacter?.id;
 
-  const arrowTarget = useMemo(() => {
-    return actionTarget?.id || target;
-  }, [actionTarget]);
+  const arrowTarget = actionTarget?.id || target;
 
   const activeCoordinates = useMemo(() => {
     if (activeCharacter?.id) {

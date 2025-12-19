@@ -13,6 +13,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import useCombatStore from 'src/stores/combatStore';
 import useCombat from 'src/hooks/useCombat';
 import useNavigationStore from 'src/stores/navbarStore';
+import { Encounter } from 'src/types/encounter';
+import useAdvancePhaseMutation from 'src/hooks/encounter hooks/useAdvancePhaseMutation/useAdvancePhaseMutation';
 
 export const EncounterContext = createContext({
   socket,
@@ -20,10 +22,15 @@ export const EncounterContext = createContext({
 
 export const EncounterProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useContext(AuthContext);
-  const { encounterId } = useParams();
+  const { campaignId, encounterId } = useParams();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [joinedPlayers, setJoinedPlayers] = useState<string[]>([]);
+
+  const advancePhase = useAdvancePhaseMutation(
+    Number(campaignId),
+    Number(encounterId),
+  );
 
   const {
     combat,
@@ -86,9 +93,8 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
         await animateRoll(rolls);
       }
 
-      queryClient.invalidateQueries({
-        queryKey: ['encounter', encounterId],
-      });
+      advancePhase.mutate();
+
       queryClient.invalidateQueries({
         queryKey: ['encounterHistory', encounterId],
       });
@@ -107,6 +113,17 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
           queryKey: ['encounterHistory', encounterId],
         });
       }, 3000);
+    });
+
+    socket.on('updateEncounter', (updatedEncounter) => {
+      console.log(updatedEncounter);
+
+      queryClient.setQueryData(
+        ['encounter', updatedEncounter.id],
+        updatedEncounter,
+      );
+
+      setIsFetching(false);
     });
 
     socket.on('navigateToEncounter', ({ encounterId, mapId, campaignId }) => {

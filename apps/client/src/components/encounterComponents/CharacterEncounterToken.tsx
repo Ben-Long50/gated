@@ -84,7 +84,7 @@ const CharacterEncounterToken = ({
                   encounterId: Number(encounterId),
                   characterId: null,
                 });
-              } else {
+              } else if (combat.combatPhase === 'action') {
                 const inRange = activeCoordinates
                   ? isInRange(
                       activeCoordinates,

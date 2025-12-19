@@ -72,6 +72,10 @@ const Encounter = () => {
   );
 
   useEffect(() => {
+    if (combat && combat.combatPhase === 'pending') {
+      navigate('..');
+    }
+
     if (combat && combat.combatPhase === 'initiative') {
       navigate('initiative');
     }

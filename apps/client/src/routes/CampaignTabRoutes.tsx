@@ -27,7 +27,7 @@ import Encounter from 'src/components/encounterComponents/Encounter';
 import ActionListModal from 'src/components/modals/ActionListModal';
 import EncounterForm from 'src/components/encounterComponents/EncounterForm';
 import EncounterList from 'src/components/encounterComponents/EncounterList';
-import ActionQueueModal from 'src/components/modals/ActionQueueModal';
+import ActionQueueModal from 'src/components/encounterComponents/ActionQueueModal';
 import HistoryModal from 'src/components/modals/HistoryModal';
 import { EncounterProvider } from 'src/contexts/EncounterContext';
 import EncounterFormMap from 'src/components/encounterComponents/EncounterFormMap';
