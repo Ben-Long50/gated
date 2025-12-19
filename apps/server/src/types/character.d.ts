@@ -1,3 +1,5 @@
+import { Picture } from './picture';
+
 export interface Character {
   playerCharacter: boolean;
   campaignId: number;
@@ -21,8 +23,25 @@ export interface Character {
 }
 
 interface CharacterStats {
+  maxHealth: number;
+  maxSanity: number;
   currentHealth: number;
   currentSanity: number;
+  actions: number;
+  reactions: number;
+  currentActions: number;
+  currentReactions: number;
+  hands: number;
+  currentHands: number;
+  maxCyber?: number;
+  cyber?: number;
+  maxEquip?: number;
+  weight?: number;
   injuries: number;
   insanities: number;
 }
+
+export type CharacterWithTypedStats = Omit<Character, 'stats'> & {
+  picture: Picture;
+  stats: CharacterStats;
+};

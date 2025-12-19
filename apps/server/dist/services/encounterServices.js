@@ -67,8 +67,11 @@ const encounterServices = {
             const encounter = await prisma.encounter.findUnique({
                 where: { id: Number(encounterId) },
                 include: {
-                    characters: { select: { id: true } },
+                    campaign: { select: { ownerId: true } },
+                    characters: { select: { id: true, userId: true } },
                     history: {
+                        take: 10,
+                        orderBy: { createdAt: 'desc' },
                         include: {
                             character: true,
                             target: true,
@@ -191,7 +194,8 @@ const encounterServices = {
                     active: encounter ? !(encounter === null || encounter === void 0 ? void 0 : encounter.active) : true,
                 },
             });
-            io.to(`campaign ${encounter.campaignId}`).emit('encounter', encounterId);
+            const updatedEncounter = await encounterServices.getEncounterById(encounterId);
+            io.to(`encounter ${encounterId}`).emit('updateEncounter', updatedEncounter);
         }
         catch (error) {
             console.error(error);
@@ -230,16 +234,29 @@ const encounterServices = {
                 turn: encounter.turn + 1,
                 round: encounter.round,
             };
-            await prisma.encounter.update({
-                where: { id: encounterId },
-                data: {
-                    combatPhase: nextPhase,
-                    reactions: [],
-                    passes: [],
-                    phaseHistory: { create: phaseHistoryData },
-                },
-            });
-            io.to(`campaign ${encounter.campaignId}`).emit('encounter', encounterId);
+            if (nextPhase === 'action') {
+                await prisma.encounter.update({
+                    where: { id: encounterId },
+                    data: {
+                        combatPhase: nextPhase,
+                        reactions: [],
+                        passes: [],
+                        phaseHistory: { create: phaseHistoryData },
+                    },
+                });
+            }
+            else {
+                await prisma.encounter.update({
+                    where: { id: encounterId },
+                    data: {
+                        combatPhase: nextPhase,
+                        reactions: [],
+                        passes: [],
+                    },
+                });
+            }
+            const updatedEncounter = await encounterServices.getEncounterById(encounterId);
+            io.to(`encounter ${encounterId}`).emit('updateEncounter', updatedEncounter);
             io.to(`encounter ${encounterId}`).emit('resetBoard');
         }
         catch (error) {
@@ -247,14 +264,14 @@ const encounterServices = {
             throw new Error('Failed to advance encounter phase');
         }
     },
-    advanceTurn: async (encounterId) => {
+    advanceTurn: async (encounter, encounterId) => {
         try {
             const io = getIO();
-            const encounter = await encounterServices.getEncounterById(encounterId);
             const newRound = encounter.turnPosition + 1 >= encounter.turnOrder.length;
             const nextCharacterId = newRound
                 ? encounter.turnOrder[0]
                 : encounter.turnOrder[encounter.turnPosition + 1];
+            const character = (await characterServices.getCharacterById(nextCharacterId));
             const data = {
                 turn: encounter.turn + 1,
                 turnPosition: newRound ? 0 : encounter.turnPosition + 1,
@@ -270,21 +287,32 @@ const encounterServices = {
                 data.round = encounter.round + 1;
                 phaseHistoryData.round = encounter.round + 1;
             }
-            await prisma.encounter.update({
-                where: {
-                    id: encounterId,
-                },
-                data: Object.assign({ phaseHistory: { create: phaseHistoryData } }, data),
+            const { itemIds } = await prisma.$transaction(async (tx) => {
+                await tx.encounter.update({
+                    where: {
+                        id: encounterId,
+                    },
+                    data: Object.assign({ phaseHistory: { create: phaseHistoryData } }, data),
+                });
+                const itemIds = character.characterInventory.items.map((item) => item.id);
+                await tx.item.updateMany({
+                    where: { id: { in: itemIds } },
+                    data: { available: true },
+                });
+                return { itemIds };
             });
-            const itemIds = (await itemServices.setAllCharacterItemsAvailable(nextCharacterId)) ||
-                [];
+            const updatedEncounter = await encounterServices.getEncounterById(encounterId);
+            if (nextCharacterId) {
+                io.to(`campaign ${encounter.campaignId}`).emit('character', nextCharacterId);
+            }
             if (itemIds.length > 0) {
                 for (const itemId of itemIds) {
                     io.to(`campaign ${encounter.campaignId}`).emit('item', itemId);
                 }
             }
-            io.to(`campaign ${encounter.campaignId}`).emit('encounter', encounterId);
+            io.to(`encounter ${encounterId}`).emit('updateEncounter', updatedEncounter);
             io.to(`encounter ${encounterId}`).emit('resetBoard');
+            console.log('emitters', performance.now());
         }
         catch (error) {
             console.error(error);
@@ -384,8 +412,6 @@ const encounterServices = {
                 };
             }
             const phaseAction = await encounterServices.createEncounterHistory(campaignId, encounterId, historyData);
-            await encounterServices.advancePhase(encounterId);
-            await encounterServices.setPhaseAction(encounterId, phaseAction);
             if (rollResults) {
                 io.to(`encounter ${encounterId}`).emit('actionRoll', {
                     encounterId,
@@ -404,6 +430,7 @@ const encounterServices = {
                 await itemServices.setItemNotAvailable(item.id);
                 io.to(`campaign ${campaignId}`).emit('item', item.id);
             }
+            return phaseAction;
         }
         catch (error) {
             console.error(error);
@@ -465,7 +492,6 @@ const encounterServices = {
                 };
             }
             const phaseReaction = await encounterServices.createEncounterHistory(campaignId, encounterId, historyData);
-            await encounterServices.setPhaseReaction(encounterId, phaseReaction);
             if (rollResults) {
                 io.to(`encounter ${encounterId}`).emit('reactionRoll', {
                     encounterId,
@@ -483,6 +509,7 @@ const encounterServices = {
             if (item) {
                 io.to(`campaign ${campaignId}`).emit('item', item.id);
             }
+            return phaseReaction;
         }
         catch (error) {
             console.error(error);
@@ -492,15 +519,41 @@ const encounterServices = {
     scheduleReaction: async (encounterId, characterId) => {
         try {
             const io = getIO();
-            const encounter = await prisma.encounter.update({
+            const updaptedEncounter = await prisma.encounter.update({
                 where: {
                     id: encounterId,
                 },
                 data: {
                     reactions: { push: characterId },
                 },
+                include: {
+                    characters: true,
+                    map: { select: { picture: true, name: true } },
+                    phaseHistory: {
+                        take: 1,
+                        orderBy: { createdAt: 'desc' },
+                        include: {
+                            action: {
+                                include: {
+                                    character: true,
+                                    target: true,
+                                    action: true,
+                                    item: true,
+                                },
+                            },
+                            reactions: {
+                                include: {
+                                    character: true,
+                                    target: true,
+                                    action: true,
+                                    item: true,
+                                },
+                            },
+                        },
+                    },
+                },
             });
-            io.to(`campaign ${encounter.campaignId}`).emit('encounter', encounterId);
+            io.to(`encounter ${encounterId}`).emit('updateEncounter', updaptedEncounter);
         }
         catch (error) {
             console.error(error);
@@ -510,7 +563,7 @@ const encounterServices = {
     passReaction: async (encounterId, characterId) => {
         try {
             const io = getIO();
-            const encounter = await prisma.encounter.update({
+            await prisma.encounter.update({
                 where: {
                     id: encounterId,
                 },
@@ -518,7 +571,8 @@ const encounterServices = {
                     passes: { push: characterId },
                 },
             });
-            io.to(`campaign ${encounter.campaignId}`).emit('encounter', encounterId);
+            const updatedEncounter = await encounterServices.getEncounterById(encounterId);
+            io.to(`encounter ${encounterId}`).emit('updateEncounter', updatedEncounter);
         }
         catch (error) {
             console.error(error);
@@ -547,7 +601,8 @@ const encounterServices = {
                     passes: updatedPasses,
                 },
             });
-            io.to(`campaign ${encounter.campaignId}`).emit('encounter', encounterId);
+            const updatedEncounter = await encounterServices.getEncounterById(encounterId);
+            io.to(`encounter ${encounterId}`).emit('updateEncounter', updatedEncounter);
         }
         catch (error) {
             console.error(error);
@@ -574,7 +629,8 @@ const encounterServices = {
                     passes: reactiveIds,
                 },
             });
-            io.to(`campaign ${encounter.campaignId}`).emit('encounter', encounterId);
+            const updatedEncounter = await encounterServices.getEncounterById(encounterId);
+            io.to(`encounter ${encounterId}`).emit('updateEncounter', updatedEncounter);
             io.to(`encounter ${encounterId}`).emit('resetBoard');
         }
         catch (error) {

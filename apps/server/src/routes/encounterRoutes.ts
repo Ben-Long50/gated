@@ -40,6 +40,7 @@ router.patch(
 router.patch(
   '/campaigns/:campaignId/encounters/:encounterId/advancePhase',
   authentication.authenticate,
+  encounterMiddleware.getEncounter,
   encounterMiddleware.validateEncounterPermissions,
   encounterController.advancePhase,
 );
@@ -47,6 +48,7 @@ router.patch(
 router.patch(
   '/campaigns/:campaignId/encounters/:encounterId/advanceTurn',
   authentication.authenticate,
+  encounterMiddleware.getEncounter,
   encounterMiddleware.validateEncounterPermissions,
   encounterController.advanceTurn,
 );
@@ -61,6 +63,7 @@ router.patch(
 router.patch(
   '/campaigns/:campaignId/encounters/:encounterId/rollAction',
   authentication.authenticate,
+  encounterMiddleware.getEncounter,
   encounterMiddleware.validateEncounterPermissions,
   encounterController.rollAction,
 );
@@ -68,6 +71,7 @@ router.patch(
 router.patch(
   '/campaigns/:campaignId/encounters/:encounterId/rollReaction',
   authentication.authenticate,
+  encounterMiddleware.getEncounter,
   encounterMiddleware.validateReactionPermissions,
   encounterController.rollReaction,
 );
@@ -100,6 +104,7 @@ router.patch(
 router.patch(
   '/campaigns/:campaignId/encounters/:encounterId/confirmActionQueue',
   authentication.authenticate,
+  encounterMiddleware.getEncounter,
   encounterMiddleware.validateEncounterPermissions,
   encounterController.confirmActionQueueResults,
 );

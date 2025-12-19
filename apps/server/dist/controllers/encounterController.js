@@ -77,10 +77,10 @@ const encounterController = {
     },
     advanceTurn: async (req, res) => {
         try {
-            if (!req.user) {
+            if (!req.user || !req.encounter) {
                 throw new Error('Could not find authenticated user');
             }
-            await encounterServices.advanceTurn(Number(req.params.encounterId));
+            await encounterServices.advanceTurn(req.encounter, Number(req.params.encounterId));
             res.status(200).json({ message: 'Successfully advanced encounter turn' });
         }
         catch (error) {
@@ -104,7 +104,8 @@ const encounterController = {
             if (!req.user) {
                 throw new Error('Could not find authenticated user');
             }
-            await encounterServices.rollAction(Number(req.params.campaignId), Number(req.params.encounterId), req.body);
+            const action = await encounterServices.rollAction(Number(req.params.campaignId), Number(req.params.encounterId), req.body);
+            await encounterServices.setPhaseAction(Number(req.params.encounterId), action);
             res.status(200).json({ message: 'Successfully rolled action' });
         }
         catch (error) {
@@ -116,7 +117,8 @@ const encounterController = {
             if (!req.user) {
                 throw new Error('Could not find authenticated user');
             }
-            await encounterServices.rollReaction(Number(req.params.campaignId), Number(req.params.encounterId), req.body);
+            const reaction = await encounterServices.rollReaction(Number(req.params.campaignId), Number(req.params.encounterId), req.body);
+            await encounterServices.setPhaseReaction(Number(req.params.encounterId), reaction);
             res.status(200).json({ message: 'Successfully rolled reaction' });
         }
         catch (error) {

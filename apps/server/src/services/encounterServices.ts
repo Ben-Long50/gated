@@ -1,4 +1,4 @@
-import { $Enums, CombatPhase, History } from '@prisma/client';
+import { $Enums, CombatPhase, Encounter, History } from '@prisma/client';
 import prisma from '../config/database.js';
 import itemServices from './itemServices.js';
 import {
@@ -65,8 +65,11 @@ const encounterServices = {
       const encounter = await prisma.encounter.findUnique({
         where: { id: Number(encounterId) },
         include: {
-          characters: { select: { id: true } },
+          campaign: { select: { ownerId: true } },
+          characters: { select: { id: true, userId: true } },
           history: {
+            take: 10,
+            orderBy: { createdAt: 'desc' },
             include: {
               character: true,
               target: true,
@@ -198,7 +201,13 @@ const encounterServices = {
         },
       });
 
-      io.to(`campaign ${encounter.campaignId}`).emit('encounter', encounterId);
+      const updatedEncounter =
+        await encounterServices.getEncounterById(encounterId);
+
+      io.to(`encounter ${encounterId}`).emit(
+        'updateEncounter',
+        updatedEncounter,
+      );
     } catch (error) {
       console.error(error);
       throw new Error('Failed to activate encounter');
@@ -244,17 +253,35 @@ const encounterServices = {
         round: encounter.round,
       } as any;
 
-      await prisma.encounter.update({
-        where: { id: encounterId },
-        data: {
-          combatPhase: nextPhase,
-          reactions: [],
-          passes: [],
-          phaseHistory: { create: phaseHistoryData },
-        },
-      });
+      if (nextPhase === 'action') {
+        await prisma.encounter.update({
+          where: { id: encounterId },
+          data: {
+            combatPhase: nextPhase,
+            reactions: [],
+            passes: [],
+            phaseHistory: { create: phaseHistoryData },
+          },
+        });
+      } else {
+        await prisma.encounter.update({
+          where: { id: encounterId },
+          data: {
+            combatPhase: nextPhase,
+            reactions: [],
+            passes: [],
+          },
+        });
+      }
 
-      io.to(`campaign ${encounter.campaignId}`).emit('encounter', encounterId);
+      const updatedEncounter =
+        await encounterServices.getEncounterById(encounterId);
+
+      io.to(`encounter ${encounterId}`).emit(
+        'updateEncounter',
+        updatedEncounter,
+      );
+
       io.to(`encounter ${encounterId}`).emit('resetBoard');
     } catch (error) {
       console.error(error);
@@ -262,17 +289,19 @@ const encounterServices = {
     }
   },
 
-  advanceTurn: async (encounterId: number) => {
+  advanceTurn: async (encounter: Encounter, encounterId: number) => {
     try {
       const io = getIO();
-
-      const encounter = await encounterServices.getEncounterById(encounterId);
 
       const newRound = encounter.turnPosition + 1 >= encounter.turnOrder.length;
 
       const nextCharacterId = newRound
         ? encounter.turnOrder[0]
         : encounter.turnOrder[encounter.turnPosition + 1];
+
+      const character = (await characterServices.getCharacterById(
+        nextCharacterId,
+      )) as any;
 
       const data = {
         turn: encounter.turn + 1,
@@ -292,16 +321,35 @@ const encounterServices = {
         phaseHistoryData.round = encounter.round + 1;
       }
 
-      await prisma.encounter.update({
-        where: {
-          id: encounterId,
-        },
-        data: { phaseHistory: { create: phaseHistoryData }, ...data },
+      const { itemIds } = await prisma.$transaction(async (tx) => {
+        await tx.encounter.update({
+          where: {
+            id: encounterId,
+          },
+          data: { phaseHistory: { create: phaseHistoryData }, ...data },
+        });
+
+        const itemIds = character.characterInventory.items.map(
+          (item: { id: number }) => item.id,
+        );
+
+        await tx.item.updateMany({
+          where: { id: { in: itemIds } },
+          data: { available: true },
+        });
+
+        return { itemIds };
       });
 
-      const itemIds =
-        (await itemServices.setAllCharacterItemsAvailable(nextCharacterId)) ||
-        [];
+      const updatedEncounter =
+        await encounterServices.getEncounterById(encounterId);
+
+      if (nextCharacterId) {
+        io.to(`campaign ${encounter.campaignId}`).emit(
+          'character',
+          nextCharacterId,
+        );
+      }
 
       if (itemIds.length > 0) {
         for (const itemId of itemIds) {
@@ -309,8 +357,14 @@ const encounterServices = {
         }
       }
 
-      io.to(`campaign ${encounter.campaignId}`).emit('encounter', encounterId);
+      io.to(`encounter ${encounterId}`).emit(
+        'updateEncounter',
+        updatedEncounter,
+      );
+
       io.to(`encounter ${encounterId}`).emit('resetBoard');
+
+      console.log('emitters', performance.now());
     } catch (error) {
       console.error(error);
       throw new Error('Failed to advance turn');
@@ -470,10 +524,6 @@ const encounterServices = {
         historyData,
       );
 
-      await encounterServices.advancePhase(encounterId);
-
-      await encounterServices.setPhaseAction(encounterId, phaseAction);
-
       if (rollResults) {
         io.to(`encounter ${encounterId}`).emit('actionRoll', {
           encounterId,
@@ -493,6 +543,8 @@ const encounterServices = {
         await itemServices.setItemNotAvailable(item.id);
         io.to(`campaign ${campaignId}`).emit('item', item.id);
       }
+
+      return phaseAction;
     } catch (error) {
       console.error(error);
       throw new Error('Failed to roll action');
@@ -602,8 +654,6 @@ const encounterServices = {
         historyData,
       );
 
-      await encounterServices.setPhaseReaction(encounterId, phaseReaction);
-
       if (rollResults) {
         io.to(`encounter ${encounterId}`).emit('reactionRoll', {
           encounterId,
@@ -622,6 +672,8 @@ const encounterServices = {
       if (item) {
         io.to(`campaign ${campaignId}`).emit('item', item.id);
       }
+
+      return phaseReaction;
     } catch (error) {
       console.error(error);
       throw new Error('Failed to roll reaction');
@@ -632,16 +684,45 @@ const encounterServices = {
     try {
       const io = getIO();
 
-      const encounter = await prisma.encounter.update({
+      const updaptedEncounter = await prisma.encounter.update({
         where: {
           id: encounterId,
         },
         data: {
           reactions: { push: characterId },
         },
+        include: {
+          characters: true,
+          map: { select: { picture: true, name: true } },
+          phaseHistory: {
+            take: 1,
+            orderBy: { createdAt: 'desc' },
+            include: {
+              action: {
+                include: {
+                  character: true,
+                  target: true,
+                  action: true,
+                  item: true,
+                },
+              },
+              reactions: {
+                include: {
+                  character: true,
+                  target: true,
+                  action: true,
+                  item: true,
+                },
+              },
+            },
+          },
+        },
       });
 
-      io.to(`campaign ${encounter.campaignId}`).emit('encounter', encounterId);
+      io.to(`encounter ${encounterId}`).emit(
+        'updateEncounter',
+        updaptedEncounter,
+      );
     } catch (error) {
       console.error(error);
       throw new Error('Failed to advance turn');
@@ -652,7 +733,7 @@ const encounterServices = {
     try {
       const io = getIO();
 
-      const encounter = await prisma.encounter.update({
+      await prisma.encounter.update({
         where: {
           id: encounterId,
         },
@@ -661,7 +742,13 @@ const encounterServices = {
         },
       });
 
-      io.to(`campaign ${encounter.campaignId}`).emit('encounter', encounterId);
+      const updatedEncounter =
+        await encounterServices.getEncounterById(encounterId);
+
+      io.to(`encounter ${encounterId}`).emit(
+        'updateEncounter',
+        updatedEncounter,
+      );
     } catch (error) {
       console.error(error);
       throw new Error('Failed to advance turn');
@@ -696,7 +783,13 @@ const encounterServices = {
         },
       });
 
-      io.to(`campaign ${encounter.campaignId}`).emit('encounter', encounterId);
+      const updatedEncounter =
+        await encounterServices.getEncounterById(encounterId);
+
+      io.to(`encounter ${encounterId}`).emit(
+        'updateEncounter',
+        updatedEncounter,
+      );
     } catch (error) {
       console.error(error);
       throw new Error('Failed to advance turn');
@@ -730,7 +823,13 @@ const encounterServices = {
         },
       });
 
-      io.to(`campaign ${encounter.campaignId}`).emit('encounter', encounterId);
+      const updatedEncounter =
+        await encounterServices.getEncounterById(encounterId);
+
+      io.to(`encounter ${encounterId}`).emit(
+        'updateEncounter',
+        updatedEncounter,
+      );
       io.to(`encounter ${encounterId}`).emit('resetBoard');
     } catch (error) {
       console.error(error);

@@ -1,31 +1,47 @@
 import { NextFunction, Request, Response } from 'express';
 import encounterServices from '../services/encounterServices.js';
-import characterServices from '../services/characterServices.js';
-import campaignServices from '../services/campaignServices.js';
+import { Prisma } from '@prisma/client';
+
+type EncounterWithCharacters = Prisma.EncounterGetPayload<{
+  include: {
+    campaign: { select: { ownerId: true } };
+    characters: { select: { id: true; userId: true } };
+  };
+}>;
 
 const encounterMiddleware = {
-  validateEncounterPermissions: async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
+  getEncounter: async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
       res.status(401).json({ error: 'No user found' });
       return;
     }
 
-    const campaign = await campaignServices.getCampaignById(
-      Number(req.params.campaignId),
-    );
-
     const encounter = await encounterServices.getEncounterById(
       Number(req.params.encounterId),
     );
 
+    req.encounter = encounter;
+
+    next();
+  },
+
+  validateEncounterPermissions: async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    if (!req.user || !req.encounter) {
+      res.status(401).json({ error: 'No user found' });
+      return;
+    }
+
+    const encounter = req.encounter as EncounterWithCharacters;
+
     const activeCharacterId = encounter.turnOrder[encounter.turnPosition];
 
-    const activeCharacter =
-      await characterServices.getCharacterById(activeCharacterId);
+    const activeCharacter = encounter.characters.find(
+      (character) => character.id === activeCharacterId,
+    );
 
     if (!activeCharacter) {
       res.status(500).json({ error: 'Failed to find active character' });
@@ -34,7 +50,7 @@ const encounterMiddleware = {
 
     if (
       req.user.id !== activeCharacter.userId &&
-      req.user.id !== campaign.ownerId
+      req.user.id !== encounter.campaign.ownerId
     ) {
       res.status(403).json({
         error:
@@ -55,28 +71,17 @@ const encounterMiddleware = {
       return;
     }
 
-    const campaign = await campaignServices.getCampaignById(
-      Number(req.params.campaignId),
+    const encounter = req.encounter as EncounterWithCharacters;
+
+    const reactiveCharacters = encounter.characters.filter((character) =>
+      encounter.reactions.includes(character.id),
     );
-
-    const encounter = await encounterServices.getEncounterById(
-      Number(req.params.encounterId),
-    );
-
-    const reactiveCharacterIds = encounter.reactions;
-
-    const reactiveCharacterPromises = [];
-
-    for (const id of reactiveCharacterIds) {
-      reactiveCharacterPromises.push(characterServices.getCharacterById(id));
-    }
-    const reactiveCharacters = await Promise.all(reactiveCharacterPromises);
 
     const permissions = reactiveCharacters.some(
       (character) => req.user && req.user.id === character?.userId,
     );
 
-    if (req.user.id !== campaign.ownerId && !permissions) {
+    if (req.user.id !== encounter.campaign.ownerId && !permissions) {
       res.status(500).json({
         error:
           'Only the Game Master or users with characters in a reaction state may roll a reaction',

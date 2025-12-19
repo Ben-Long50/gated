@@ -1,4 +1,4 @@
-import { Notification, User } from '@prisma/client';
+import { Encounter, Notification, User } from '@prisma/client';
 
 declare global {
   namespace Express {
@@ -19,6 +19,7 @@ declare global {
   namespace Express {
     interface Request {
       token?: string;
+      encounter?: Encounter;
     }
   }
 }
