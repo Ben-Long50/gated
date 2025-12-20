@@ -207,28 +207,6 @@ const Campaign = () => {
           </ThemeContainer>
           <Divider className="col-span-2" />
           <CampaignCharacterList />
-          {/* {[...playerCharacters, ...nonPlayerCharacters].length > 0 && (
-            <>
-              <div className="col-span-2 flex flex-col items-start gap-8">
-                {playerCharacters?.length > 0 && (
-                  <>
-                    <ArrowHeader2 title="Player Characters" />
-                    {playerCharacters?.map((character: Character, index) => (
-                      <CharacterCard key={index} id={character.id} />
-                    ))}
-                  </>
-                )}
-                {nonPlayerCharacters?.length > 0 && (
-                  <>
-                    <ArrowHeader2 title="Non-player Characters" />
-                    {nonPlayerCharacters?.map((character: Character, index) => (
-                      <CharacterCard key={index} id={character.id} />
-                    ))}
-                  </>
-                )}
-              </div>
-            </>
-          )} */}
           {campaign.ownerId === user?.id && (
             <>
               <Divider />

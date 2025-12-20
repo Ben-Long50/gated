@@ -5,14 +5,14 @@ import { ThemeContext } from '../../contexts/ThemeContext';
 const BtnRect = ({
   className,
   ariaLabel,
-  type,
+  type = 'button',
   active = true,
   onClick,
   children,
 }: {
   className?: string;
   ariaLabel: string;
-  type: 'submit' | 'reset' | 'button' | undefined;
+  type?: 'submit' | 'reset' | 'button' | undefined;
   active?: boolean;
   onClick?: (e: MouseEvent) => void;
   children: ReactNode;
@@ -34,12 +34,16 @@ const BtnRect = ({
           color: hover && accentPrimary,
         }}
         type={type}
-        onClick={(e) => {
-          e.stopPropagation();
-          if (active && onClick) {
-            onClick(e);
-          }
-        }}
+        onClick={
+          onClick
+            ? (e) => {
+                e.stopPropagation();
+                if (active && onClick) {
+                  onClick(e);
+                }
+              }
+            : undefined
+        }
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
       >

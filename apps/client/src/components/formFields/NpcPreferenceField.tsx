@@ -16,6 +16,8 @@ const NpcPreferenceField = ({ form }: { form: FormApi }) => {
     navigate('npcPreferences');
   };
 
+  const npcTypes = ['shop', 'template'];
+
   return (
     <form.Subscribe selector={(state) => state.values.playerCharacter}>
       {(playerCharacter) =>
@@ -28,12 +30,39 @@ const NpcPreferenceField = ({ form }: { form: FormApi }) => {
               {(field) =>
                 field.state.value &&
                 field.state.value.map((_, i) => (
-                  <form.Field key={i} name={`npcTypes[${i}]`}>
+                  <form.Field
+                    key={i}
+                    name={`npcTypes[${i}]`}
+                    listeners={{
+                      onChange: ({ value }) => {
+                        const npcTypesField = field.state.value.filter(
+                          (type: string | null) => type,
+                        );
+
+                        const lastValue =
+                          npcTypesField[npcTypesField.length - 1];
+
+                        if (
+                          value &&
+                          lastValue &&
+                          npcTypesField.length < npcTypes.length
+                        ) {
+                          field.handleChange([...npcTypesField, '']);
+                        } else if (npcTypesField.length === 0) {
+                          field.handleChange(['']);
+                        } else {
+                          field.handleChange([...npcTypesField]);
+                        }
+                      },
+                    }}
+                  >
                     {(subField) => (
                       <InputSelectField
                         field={subField}
                         label="Npc Type"
-                        options={['shop']}
+                        options={npcTypes.filter(
+                          (type) => !field.state.value.includes(type),
+                        )}
                       />
                     )}
                   </form.Field>

@@ -91,9 +91,9 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
         const rolls = new Map(rollsArray) as Map<number, any>;
 
         await animateRoll(rolls);
-      }
 
-      advancePhase.mutate();
+        advancePhase.mutate();
+      }
 
       queryClient.invalidateQueries({
         queryKey: ['encounterHistory', encounterId],

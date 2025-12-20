@@ -1,4 +1,4 @@
-import { ReactNode, useContext, useMemo, useRef } from 'react';
+import { Fragment, ReactNode, useContext, useMemo, useRef } from 'react';
 import LinkSidebar from './LinkSidebar';
 import { LayoutContext } from '../../contexts/LayoutContext';
 import { mdiCartOutline } from '@mdi/js';
@@ -88,9 +88,8 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
         )}
         {activeCampaigns.length > 0 &&
           activeCampaigns.map((campaign, index) => (
-            <>
+            <Fragment key={index}>
               <LinkSidebar
-                key={index}
                 title={campaign?.name}
                 icon={
                   <div className="liveCampaign z-10 size-12 shrink-0 rounded-full">
@@ -127,7 +126,7 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
                     />
                   ))}
               <Divider className="!my-0 opacity-50" />
-            </>
+            </Fragment>
           ))}
 
         {children}

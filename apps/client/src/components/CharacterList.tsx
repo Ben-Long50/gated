@@ -1,5 +1,4 @@
 import { useContext } from 'react';
-import { AuthContext } from '../contexts/AuthContext';
 import CharacterCard from './CharacterCard';
 import BtnRect from './buttons/BtnRect';
 import { Link } from 'react-router-dom';
@@ -119,7 +118,10 @@ const CharacterList = () => {
         </form>
       </ThemeContainer>
       {activeCharacter && (
-        <CharacterCard key={activeCharacter.id} id={activeCharacter.id} />
+        <CharacterCard
+          key={activeCharacter.id}
+          characterId={activeCharacter.id}
+        />
       )}
       {!characters || characters?.length === 0 ? (
         <div className="flex w-full flex-col items-center justify-center gap-8">
@@ -133,7 +135,7 @@ const CharacterList = () => {
       ) : (
         <div className="grid w-full grid-flow-row gap-10">
           {characters?.map((character: Character) => (
-            <CharacterCard key={character.id} id={character.id} />
+            <CharacterCard key={character.id} characterId={character.id} />
           ))}
         </div>
       )}

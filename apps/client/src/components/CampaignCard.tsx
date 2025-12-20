@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import ThemeContainer from './ThemeContainer';
 import { ThemeContext } from '../contexts/ThemeContext';
 import BtnRect from './buttons/BtnRect';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Campaign } from 'src/types/campaign';
 import LocationIcon from './icons/LocationIcon';
 import AccountPicture from './AccountPicture';
@@ -11,6 +11,7 @@ import ArrowHeader2 from './ArrowHeader2';
 
 const CampaignCard = ({ campaign }: { campaign: Campaign }) => {
   const { accentPrimary } = useContext(ThemeContext);
+  const navigate = useNavigate();
 
   return (
     <ThemeContainer
@@ -59,14 +60,8 @@ const CampaignCard = ({ campaign }: { campaign: Campaign }) => {
                   <p className="font-semibold">{campaign.owner.username}</p>
                 </div>
               </div>
-              <Link
-                className="ml-auto mt-auto self-end"
-                to={`/glam/campaigns/${campaign.id}`}
-              >
-                <BtnRect
-                  ariaLabel="navigate to campaign information"
-                  type="button"
-                >
+              <Link className="ml-auto mt-auto self-end" to={`${campaign.id}`}>
+                <BtnRect ariaLabel="navigate to campaign information ml-auto mt-auto self-end">
                   Campaign Info
                 </BtnRect>
               </Link>

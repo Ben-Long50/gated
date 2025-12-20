@@ -57,20 +57,15 @@ const useUpdateCharacterLocationMutation = (mapId: number) => {
       return { prevLocationData };
     },
 
-    onSuccess: (data, value, context) => {
-      socket.emit('location', {
-        locationId: data.location.id,
-        campaignId: context.prevLocationData?.character.campaignId,
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['map', mapId],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['character', value.characterId],
-      });
-      return queryClient.invalidateQueries({
-        queryKey: ['location', data.location.id],
-      });
+    onSuccess: (_, value, context) => {
+      if (mapId !== context.prevLocationData?.mapId) {
+        queryClient.invalidateQueries({
+          queryKey: ['map', mapId],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ['character', value.characterId],
+        });
+      }
     },
     throwOnError: false,
   });

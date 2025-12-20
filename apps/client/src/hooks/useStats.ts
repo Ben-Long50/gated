@@ -10,6 +10,7 @@ const useStats = (
   actions: Action[],
   attributeTree: AttributeTree,
   perks?: Perk[],
+  stats?: CharacterStats,
 ) => {
   const armorWeight = useMemo(
     () =>
@@ -84,8 +85,8 @@ const useStats = (
       evasion: 1,
       weight: 0 + nonArmorWeight + armorWeight,
       cyber: 0 + equippedCyber,
-      permanentInjuries: 5,
-      permanentInsanities: 5,
+      permanentInjuries: stats?.permanentInjuries || 5,
+      permanentInsanities: stats?.permanentInsanities || 5,
       actions: 3,
       reactions: 1,
       hands: 2,

@@ -107,6 +107,8 @@ const CharacterUpdateForm = () => {
         currentSanity: character?.stats.currentSanity ?? '',
         injuries: character?.stats.injuries ?? '',
         insanities: character?.stats.insanities ?? '',
+        permanentInjuries: character?.stats.permanentInjuries ?? 5,
+        permanentInsanities: character?.stats.permanentInsanities ?? 5,
       },
       picture: character?.picture ?? '',
       publicId: character?.picture.publicId || '',
@@ -124,9 +126,13 @@ const CharacterUpdateForm = () => {
         ? value.npcTypes.filter((type) => type)
         : null;
 
+      const filteredValue = Object.fromEntries(
+        Object.entries(value).filter(([key, value]) => value),
+      );
+
       const formData = new FormData();
 
-      Object.entries(value).forEach(([key, val]) => {
+      Object.entries(filteredValue).forEach(([key, val]) => {
         if (key === 'perks') {
           const perkIds = val.map((perk: Perk) => perk.id) || [];
           formData.append(key, JSON.stringify(perkIds));
@@ -398,108 +404,173 @@ const CharacterUpdateForm = () => {
                 >
                   <EquipIcon className="text-secondary size-8" />
                 </StatBar>
-                <characterUpdateForm.Field
-                  name="stats.injuries"
-                  validators={{
-                    onChange: ({ value }) => {
-                      if (value > character?.stats.permanentInjuries) {
-                        return 'Cannot exceed max injuries';
-                      } else if (value < 0) {
-                        return 'Injuries cannot be lower than 0';
-                      }
-                      return undefined;
-                    },
-                  }}
+                <div className="col-span-4 flex w-full items-center gap-8">
+                  <characterUpdateForm.Field
+                    name="stats.permanentInjuries"
+                    validators={{
+                      onChange: ({ value }) => {
+                        if (value > 5) {
+                          return 'Cannot exceed 5 injuries';
+                        } else if (value < 0) {
+                          return 'Injuries cannot be lower than 0';
+                        }
+                        return undefined;
+                      },
+                    }}
+                  >
+                    {(field) => (
+                      <InputField
+                        className="w-full"
+                        type="number"
+                        label="Max Injuries"
+                        field={field}
+                      />
+                    )}
+                  </characterUpdateForm.Field>
+                  <characterUpdateForm.Field
+                    name="stats.permanentInsanities"
+                    validators={{
+                      onChange: ({ value }) => {
+                        if (value > 5) {
+                          return 'Cannot exceed 5 insanities';
+                        } else if (value < 0) {
+                          return 'Insanities cannot be lower than 0';
+                        }
+                        return undefined;
+                      },
+                    }}
+                  >
+                    {(field) => (
+                      <InputField
+                        className="w-full"
+                        type="number"
+                        label="Max Insanities"
+                        field={field}
+                      />
+                    )}
+                  </characterUpdateForm.Field>
+                </div>
+                <characterUpdateForm.Subscribe
+                  selector={(state) => [
+                    state.values.stats.permanentInjuries,
+                    state.values.stats.permanentInsanities,
+                  ]}
                 >
-                  {(field) => (
+                  {([permanentInjuries, permanentInsanities]) => (
                     <>
-                      {!mobile && <h4>Injuries</h4>}
-                      <div
-                        className={`${mobile ? 'col-span-4 gap-0' : 'col-span-3 gap-2'} flex grow items-center justify-self-end`}
+                      <characterUpdateForm.Field
+                        name="stats.injuries"
+                        validators={{
+                          onChange: ({ value }) => {
+                            if (value > permanentInjuries) {
+                              return 'Cannot exceed max injuries';
+                            } else if (value < 0) {
+                              return 'Injuries cannot be lower than 0';
+                            }
+                            return undefined;
+                          },
+                        }}
                       >
-                        {Array.from({
-                          length: character?.stats.permanentInjuries,
-                        }).map((_, index) => (
-                          <button
-                            key={index}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              if (field.state.value === 1 && index === 0) {
-                                field.handleChange(index);
-                              } else {
-                                field.handleChange(index + 1);
-                              }
-                            }}
-                          >
-                            {index < field.state.value ? (
-                              <InjuryIcon
-                                key={index}
-                                className="text-secondary size-7 shrink-0 sm:size-8"
-                              />
-                            ) : (
-                              <Icon
-                                path={mdiCircleOutline}
-                                key={index}
-                                className="text-tertiary size-7 shrink-0 p-1 sm:size-8"
-                              />
-                            )}
-                          </button>
-                        ))}
-                      </div>
+                        {(field) => (
+                          <>
+                            {!mobile && <h4>Injuries</h4>}
+                            <div
+                              className={`${mobile ? 'col-span-4 gap-0' : 'col-span-3 gap-2'} flex grow items-center justify-self-end`}
+                            >
+                              {Array.from({
+                                length: permanentInjuries,
+                              }).map((_, index) => (
+                                <button
+                                  type="button"
+                                  key={index}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    if (
+                                      field.state.value === 1 &&
+                                      index === 0
+                                    ) {
+                                      field.handleChange(index);
+                                    } else {
+                                      field.handleChange(index + 1);
+                                    }
+                                  }}
+                                >
+                                  {index < field.state.value ? (
+                                    <InjuryIcon
+                                      key={index}
+                                      className="text-secondary size-7 shrink-0 sm:size-8"
+                                    />
+                                  ) : (
+                                    <Icon
+                                      path={mdiCircleOutline}
+                                      key={index}
+                                      className="text-tertiary size-7 shrink-0 p-1 sm:size-8"
+                                    />
+                                  )}
+                                </button>
+                              ))}
+                            </div>
+                          </>
+                        )}
+                      </characterUpdateForm.Field>
+                      <characterUpdateForm.Field
+                        name="stats.insanities"
+                        validators={{
+                          onChange: ({ value }) => {
+                            if (value > permanentInsanities) {
+                              return 'Cannot exceed max insanities';
+                            } else if (value < 0) {
+                              return 'Insanities cannot be lower than 0';
+                            }
+                            return undefined;
+                          },
+                        }}
+                      >
+                        {(field) => (
+                          <>
+                            {!mobile && <h4>Insanities</h4>}
+                            <div
+                              className={`${mobile ? 'col-span-4 gap-0' : 'col-span-3 gap-2'} flex grow items-center justify-self-end`}
+                            >
+                              {Array.from({
+                                length: permanentInsanities,
+                              }).map((_, index) => (
+                                <button
+                                  type="button"
+                                  key={index}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    if (
+                                      field.state.value === 1 &&
+                                      index === 0
+                                    ) {
+                                      field.handleChange(index);
+                                    } else {
+                                      field.handleChange(index + 1);
+                                    }
+                                  }}
+                                >
+                                  {index < field.state.value ? (
+                                    <InsanityIcon
+                                      key={index}
+                                      className="text-secondary size-7 shrink-0 sm:size-8"
+                                    />
+                                  ) : (
+                                    <Icon
+                                      path={mdiCircleOutline}
+                                      key={index}
+                                      className="text-tertiary size-7 shrink-0 p-1 sm:size-8"
+                                    />
+                                  )}
+                                </button>
+                              ))}
+                            </div>
+                          </>
+                        )}
+                      </characterUpdateForm.Field>
                     </>
                   )}
-                </characterUpdateForm.Field>
-                <characterUpdateForm.Field
-                  name="stats.insanities"
-                  validators={{
-                    onChange: ({ value }) => {
-                      if (value > character?.stats.permanentInsanities) {
-                        return 'Cannot exceed max insanities';
-                      } else if (value < 0) {
-                        return 'Insanities cannot be lower than 0';
-                      }
-                      return undefined;
-                    },
-                  }}
-                >
-                  {(field) => (
-                    <>
-                      {!mobile && <h4>Insanities</h4>}
-                      <div
-                        className={`${mobile ? 'col-span-4 gap-0' : 'col-span-3 gap-2'} flex grow items-center justify-self-end`}
-                      >
-                        {Array.from({
-                          length: character?.stats.permanentInsanities,
-                        }).map((_, index) => (
-                          <button
-                            key={index}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              if (field.state.value === 1 && index === 0) {
-                                field.handleChange(index);
-                              } else {
-                                field.handleChange(index + 1);
-                              }
-                            }}
-                          >
-                            {index < field.state.value ? (
-                              <InsanityIcon
-                                key={index}
-                                className="text-secondary size-7 shrink-0 sm:size-8"
-                              />
-                            ) : (
-                              <Icon
-                                path={mdiCircleOutline}
-                                key={index}
-                                className="text-tertiary size-7 shrink-0 p-1 sm:size-8"
-                              />
-                            )}
-                          </button>
-                        ))}
-                      </div>
-                    </>
-                  )}
-                </characterUpdateForm.Field>
+                </characterUpdateForm.Subscribe>
               </div>
             </>
           )}

@@ -44,6 +44,10 @@ const CharacterSheet = () => {
     isPending,
   } = useCharacter(Number(characterId));
 
+  const characterName = character?.lastName
+    ? character?.firstName + ' ' + character?.lastName
+    : character?.firstName;
+
   const height =
     typeof character?.height === 'number'
       ? `${Math.floor(character?.height / 12)}' ${character?.height % 12}"`
@@ -71,9 +75,7 @@ const CharacterSheet = () => {
             borderColor={accentPrimary}
           >
             <div className="flex h-full w-full items-center justify-between gap-4 p-4">
-              <ArrowHeader1
-                title={character?.firstName + ' ' + character?.lastName}
-              />
+              <ArrowHeader1 title={characterName} />
               <h1 className="!text-accent">{character?.level}</h1>
             </div>
           </ThemeContainer>
@@ -121,12 +123,9 @@ const CharacterSheet = () => {
         >
           <div className="scrollbar-secondary-2 flex h-full flex-col gap-4 overflow-y-auto p-4">
             <div className="flex w-full items-center justify-between">
-              <ArrowHeader3
-                title={
-                  character?.firstName + ' ' + character?.lastName + "'s Info"
-                }
-              />
+              <ArrowHeader3 title={characterName + "'s Info"} />
               <button
+                type="button"
                 className="text-tertiary hover:underline"
                 onClick={() => setInfoVisibility(!infoVisibility)}
               >
@@ -264,7 +263,7 @@ const CharacterSheet = () => {
             <div className="flex items-center justify-center gap-8 max-sm:flex-wrap">
               <div className="flex flex-col items-center gap-2">
                 <h3 className="text-primary whitespace-nowrap text-xl font-semibold tracking-widest">
-                  Permanent Injuries
+                  Injuries
                 </h3>
                 <div className="flex items-center gap-2">
                   {Array.from({
@@ -285,7 +284,7 @@ const CharacterSheet = () => {
               </div>
               <div className="flex flex-col items-center gap-2">
                 <h3 className="text-primary whitespace-nowrap text-xl font-semibold tracking-widest">
-                  Permanent Insanities
+                  Insanities
                 </h3>
                 <div className="flex items-center gap-2">
                   {Array.from({

@@ -337,15 +337,14 @@ const ItemPage = ({
 
       {((parts.includes('codex') && user?.role === 'ADMIN') ||
         (parts.includes('codex') && user?.role === 'SUPERADMIN')) && (
-        <Link className="w-full self-end sm:max-w-1/3" to="update">
-          <BtnRect
-            ariaLabel="Navigat to edit weapon form"
-            type="button"
-            className="text-accent hover:underline"
-          >
-            {'Edit ' + item.name}
-          </BtnRect>
-        </Link>
+        <BtnRect
+          ariaLabel="Navigat to edit weapon form"
+          type="button"
+          className="text-accent w-full self-end hover:underline sm:max-w-1/3"
+          onClick={() => navigate('update')}
+        >
+          {'Edit ' + item.name}
+        </BtnRect>
       )}
       {(parts.includes('inventory') || parts.includes('equipment')) && (
         <Link

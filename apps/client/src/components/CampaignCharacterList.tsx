@@ -88,7 +88,7 @@ const CampaignCharacterList = () => {
             <>
               <ArrowHeader1 title="Player Characters" />
               {playerCharacters?.map((character: Character) => (
-                <CharacterCard key={character.id} id={character.id} />
+                <CharacterCard key={character.id} characterId={character.id} />
               ))}
             </>
           )}
@@ -97,7 +97,7 @@ const CampaignCharacterList = () => {
             <>
               <ArrowHeader1 title="Non-player Characters" />
               {nonPlayerCharacters?.map((character: Character) => (
-                <CharacterCard key={character.id} id={character.id} />
+                <CharacterCard key={character.id} characterId={character.id} />
               ))}
             </>
           )}

@@ -32,6 +32,7 @@ const useCharacter = (characterId: number) => {
     actions,
     character?.attributes,
     character?.perks,
+    character?.stats,
   );
 
   const filterByPreferences = (character: Character) => {

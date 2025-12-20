@@ -20,14 +20,22 @@ import { useInView } from 'react-intersection-observer';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
 import CharacterRadialMenu from './radialMenus/characterRadialMenu/CharacterRadialMenu';
 import LocationIcon from './icons/LocationIcon';
+import BtnRect from './buttons/BtnRect';
+import useCreateTemplateCharacterMutation from 'src/hooks/useCreateTemplateCharacterMutation/useCreateTemplateCharacterMutation';
+import useDeleteCharacterMutation from 'src/hooks/useDeleteCharacterMutation/useDeleteCharacterMutation';
 
-const CharacterCard = ({ id }: { id: number }) => {
+const CharacterCard = ({ characterId }: { characterId: number }) => {
   const { accentPrimary } = useContext(ThemeContext);
   const { mobile } = useContext(LayoutContext);
   const { conditionId } = useParams();
   const [cardWidth, setCardWidth] = useState(0);
 
-  const { filteredCharacter: character, isLoading } = useCharacter(id);
+  const { filteredCharacter: character, isLoading } = useCharacter(characterId);
+
+  const createTemplateCharacter =
+    useCreateTemplateCharacterMutation(characterId);
+
+  const deleteCharacter = useDeleteCharacterMutation(characterId);
 
   const menuOpen = useRadialMenuStore((state) => state.menuOpen);
   const setMenuOpen = useRadialMenuStore((state) => state.setMenuOpen);
@@ -39,11 +47,15 @@ const CharacterCard = ({ id }: { id: number }) => {
     threshold: 0.1,
   });
 
+  const characterName = character?.lastName
+    ? character?.firstName + ' ' + character?.lastName
+    : character?.firstName;
+
   const containerRef = useRef(null);
 
   const handleMenu = (e: MouseEvent) => {
     if (!containerRef.current) return;
-    setMenu('character', 'large', id);
+    setMenu('character', 'large', characterId);
 
     const rect = containerRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -123,17 +135,49 @@ const CharacterCard = ({ id }: { id: number }) => {
             </div>
             <div className="relative col-span-2 col-start-2 row-start-1 flex h-full w-full flex-col justify-between gap-4 p-4 md:gap-6 md:p-6">
               <div className="flex w-full items-center justify-between gap-4">
-                <ArrowHeader2
-                  title={character?.firstName + ' ' + character?.lastName}
-                />
-                {character?.npcTypes?.length > 0 && (
-                  <h4 className="text-tertiary">
-                    (
-                    {character.npcTypes
-                      .map((type) => capitalCase(type))
-                      .join(', ')}
-                    )
-                  </h4>
+                <ArrowHeader2 title={characterName} />
+                {character?.npcTypes && character?.npcTypes?.length > 0 && (
+                  <>
+                    <h4 className="text-tertiary">
+                      (
+                      {character.npcTypes
+                        .map((type) => capitalCase(type))
+                        .join(', ')}
+                      )
+                    </h4>
+                    {character?.npcTypes.includes('template') && (
+                      <>
+                        <BtnRect
+                          ariaLabel="Create template character"
+                          type="button"
+                          onClick={() => createTemplateCharacter.mutate()}
+                        >
+                          {createTemplateCharacter.isPending ? (
+                            <Loading
+                              className="group-hover:text-accent dark:text-gray-900"
+                              size={1.15}
+                            />
+                          ) : (
+                            'Create Copy'
+                          )}
+                        </BtnRect>
+                        <BtnRect
+                          ariaLabel="Create template character"
+                          type="button"
+                          onClick={() => deleteCharacter.mutate()}
+                        >
+                          {deleteCharacter.isPending ? (
+                            <Loading
+                              className="group-hover:text-accent dark:text-gray-900"
+                              size={1.15}
+                            />
+                          ) : (
+                            'Delete'
+                          )}
+                        </BtnRect>
+                      </>
+                    )}
+                  </>
                 )}
                 {!mobile && (
                   <div className="flex grow flex-wrap items-center justify-start gap-1">
@@ -252,7 +296,8 @@ const CharacterCard = ({ id }: { id: number }) => {
                     <div className="flex items-center justify-center gap-2">
                       <InjuryIcon className="text-secondary size-8" />
                       <p className="text-secondary text-xl sm:pt-1 sm:text-2xl">
-                        {character?.stats.injuries || 0}
+                        {character?.stats.injuries || 0} /{' '}
+                        {character?.stats.permanentInjuries}
                       </p>
                     </div>
                   </div>
@@ -265,7 +310,8 @@ const CharacterCard = ({ id }: { id: number }) => {
                     <div className="flex items-center justify-center gap-2">
                       <InsanityIcon className="text-secondary size-8" />
                       <p className="text-secondary text-xl sm:pt-1 sm:text-2xl">
-                        {character?.stats.insanities || 0}
+                        {character?.stats.insanities || 0} /{' '}
+                        {character?.stats.permanentInsanities}
                       </p>
                     </div>
                   </div>

@@ -145,6 +145,10 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       });
     });
 
+    socket.on('updateLocation', (location) => {
+      queryClient.setQueryData(['location', location.id], location);
+    });
+
     socket.on('location', (locationId) => {
       queryClient.invalidateQueries({
         queryKey: ['location', locationId],

@@ -29,9 +29,13 @@ import { Perk } from 'src/types/perk';
 import NpcPreferenceField from './formFields/NpcPreferenceField';
 import PictureField from './formFields/PictureField';
 import AttributeField from './formFields/AttributeField';
+import InjuryIcon from './icons/InjuryIcon';
+import InsanityIcon from './icons/InsanityIcon';
+import Icon from '@mdi/react';
+import { mdiAlertOutline, mdiCircleOutline } from '@mdi/js';
 
 const CharacterForm = () => {
-  const { layoutSize } = useContext(LayoutContext);
+  const { layoutSize, mobile } = useContext(LayoutContext);
 
   const [formMessage, setFormMessage] = useState('');
 
@@ -45,7 +49,7 @@ const CharacterForm = () => {
 
   const characterForm = useForm({
     defaultValues: {
-      playerCharacter: '' as string | boolean,
+      playerCharacter: true as string | boolean,
       npcTypes: null as null | string[],
       campaignId: null,
       preferences: {
@@ -75,6 +79,8 @@ const CharacterForm = () => {
       stats: {
         currentHealth: 0,
         currentSanity: 0,
+        permanentInjuries: 5,
+        permanentInsanities: 5,
       },
       attributes: emptyAttributeTree,
       perks: [] as Perk[],
@@ -91,9 +97,13 @@ const CharacterForm = () => {
         currentSanity: 5 + value.attributes.esoterica.skills.mysticism.points,
       };
 
+      const filteredValue = Object.fromEntries(
+        Object.entries(value).filter(([key, value]) => value),
+      );
+
       const formData = new FormData();
 
-      Object.entries(value).forEach(([key, value]) => {
+      Object.entries(filteredValue).forEach(([key, value]) => {
         if (key === 'perks') {
           const perkIds = value?.map((perk: Perk) => perk.id) || [];
           formData.append(key, JSON.stringify(perkIds));
@@ -308,7 +318,54 @@ const CharacterForm = () => {
                 >
                   <EquipIcon className="text-secondary size-8" />
                 </StatBar>
+                <div className="col-span-4 flex w-full items-center gap-8">
+                  <characterForm.Field
+                    name="stats.permanentInjuries"
+                    validators={{
+                      onChange: ({ value }) => {
+                        if (value > 5) {
+                          return 'Cannot exceed 5 injuries';
+                        } else if (value < 0) {
+                          return 'Injuries cannot be lower than 0';
+                        }
+                        return undefined;
+                      },
+                    }}
+                  >
+                    {(field) => (
+                      <InputField
+                        className="w-full"
+                        type="number"
+                        label="Max Injuries"
+                        field={field}
+                      />
+                    )}
+                  </characterForm.Field>
+                  <characterForm.Field
+                    name="stats.permanentInsanities"
+                    validators={{
+                      onChange: ({ value }) => {
+                        if (value > 5) {
+                          return 'Cannot exceed 5 insanities';
+                        } else if (value < 0) {
+                          return 'Insanities cannot be lower than 0';
+                        }
+                        return undefined;
+                      },
+                    }}
+                  >
+                    {(field) => (
+                      <InputField
+                        className="w-full"
+                        type="number"
+                        label="Max Insanities"
+                        field={field}
+                      />
+                    )}
+                  </characterForm.Field>
+                </div>
               </div>
+
               <div className="flex flex-wrap justify-around gap-6">
                 <div className="flex flex-col items-center gap-2" key={'speed'}>
                   {layoutSize !== 'xsmall' && (
@@ -369,6 +426,7 @@ const CharacterForm = () => {
             </>
           )}
         </characterForm.Subscribe>
+
         <Divider />
         <ArrowHeader2 title="Attributes and skills" />
         <div className="flex w-full flex-col gap-3 border-l-2 border-gray-400 border-opacity-50 pl-4">
@@ -380,11 +438,11 @@ const CharacterForm = () => {
             the "Character Information" section above):
           </p>
           <ul className="text-tertiary flex flex-col gap-1">
-            <li className="text-secondary">Chromebits — 1 point of Cyber</li>
-            <li className="text-secondary">Mysticism — 1 point of Sanity</li>
+            <li className="text-secondary">Chromebits — 2 point of Cyber</li>
+            <li className="text-secondary">Mysticism — 2 point of Sanity</li>
             <li className="text-secondary">Assault — 1 point of Speed</li>
             <li className="text-secondary">
-              Threshold — 1 point of Health and 1 point of Equip
+              Threshold — 2 point of Health and 2 point of Equip
             </li>
           </ul>
           <characterForm.Subscribe

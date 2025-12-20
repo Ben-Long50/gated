@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import deleteItem from './deleteCampaign';
+import deleteCampaign from './deleteCampaign';
 
 const useDeleteCampaignMutation = (
   campaignId: number,
@@ -10,10 +10,11 @@ const useDeleteCampaignMutation = (
   const navigate = useNavigate();
   return useMutation({
     mutationFn: () => {
-      return deleteItem(campaignId);
+      return deleteCampaign(campaignId);
     },
     onSuccess: () => {
       navigate('/glam/campaigns');
+      queryClient.removeQueries({ queryKey: ['campaign', campaignId] });
       return queryClient.invalidateQueries({
         queryKey: ['campaigns'],
         exact: false,

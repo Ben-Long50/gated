@@ -46,7 +46,7 @@ const ItemCard = ({
   className,
   style,
   mode,
-  menu,
+  menu = true,
   cardType,
   toggleFormLink,
   ownerId,
@@ -135,6 +135,7 @@ const ItemCard = ({
             ref={containerRef}
             className={`timing relative flex w-full cursor-pointer flex-col gap-8 p-4`}
             onClick={(e) => {
+              console.log('menu');
               e.stopPropagation();
               handleMenu(e);
             }}
