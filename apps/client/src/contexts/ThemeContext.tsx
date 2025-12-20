@@ -37,6 +37,7 @@ const ThemeProvider = ({ children }: { children: ReactNode }) => {
     const fetchFolders = async () => {
       const response = await fetch('/assets/tiles.json');
       const data = await response.json();
+
       await preloadAllSpriteSheets(data);
     };
 

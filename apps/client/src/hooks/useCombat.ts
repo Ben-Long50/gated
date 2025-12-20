@@ -126,6 +126,29 @@ const useCombat = () => {
       nextCharacterId,
     ]);
 
+    for (const characterId of combat?.turnOrder) {
+      const character: Character | undefined = queryClient.getQueryData([
+        'character',
+        characterId,
+      ]);
+
+      if (!character) {
+        continue;
+      }
+
+      if (
+        characterId !== nextCharacterId &&
+        character.stats.hands !== character.stats.currentHands
+      ) {
+        resetCharacterStat.mutate({
+          characterId: character.id,
+          value: {
+            currentHands: character.stats.hands || 0,
+          },
+        });
+      }
+    }
+
     if (
       nextCharacter?.stats.actions !== nextCharacter?.stats.currentActions ||
       nextCharacter?.stats.reactions !==
@@ -278,7 +301,7 @@ const useCombat = () => {
 
       if (value.reaction) {
         const { diceCount } = calculateDiceCount(
-          activeCharacter?.attributes,
+          controlledCharacter?.attributes,
           value.reaction,
           value.modifiers,
           value.extraDice,
@@ -286,7 +309,7 @@ const useCombat = () => {
 
         const loadingRollMap = new Map();
 
-        loadingRollMap.set(activeCharacter?.id, {
+        loadingRollMap.set(controlledCharacter?.id, {
           diceArray: Array.from({ length: diceCount as number }).map((_) => 1),
           modifiers: ['loading'],
         });

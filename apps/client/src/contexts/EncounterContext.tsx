@@ -116,8 +116,6 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
     });
 
     socket.on('updateEncounter', (updatedEncounter) => {
-      console.log(updatedEncounter);
-
       queryClient.setQueryData(
         ['encounter', updatedEncounter.id],
         updatedEncounter,

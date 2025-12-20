@@ -19,7 +19,13 @@ async function preloadSpriteSheet(url: string) {
   return size;
 }
 
-type SpriteManifest = Record<string, { files?: string[] }>;
+type SpriteManifest = Record<
+  string,
+  {
+    files?: string[];
+    children?: SpriteManifest;
+  }
+>;
 
 function getAllFilesFromManifest(
   manifest: SpriteManifest,
@@ -27,16 +33,17 @@ function getAllFilesFromManifest(
 ): string[] {
   const files: string[] = [];
 
-  for (const key in manifest) {
-    const entry = manifest[key];
-    if (entry.files) {
-      entry.files.forEach((file) => {
+  Object.entries(manifest).forEach(([key, value]) => {
+    if (key === 'files') {
+      for (const file of value) {
         if (file.endsWith('.png')) {
-          files.push(`${baseUrl}/${key}/${file}`);
+          files.push(`${baseUrl}/${file}`);
         }
-      });
+      }
+    } else {
+      files.push(...getAllFilesFromManifest(value, `${baseUrl}/${key}`));
     }
-  }
+  });
 
   return files;
 }

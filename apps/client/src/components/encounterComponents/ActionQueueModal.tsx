@@ -44,7 +44,7 @@ const ActionQueueModal = () => {
   const phaseReactions = combat.phaseHistory[0].reactions || null;
 
   const reducedSuccesses = phaseReactions.reduce((sum: number, reaction) => {
-    if (reaction.name === 'Parry') {
+    if (reaction.action.name === 'Parry') {
       return sum + reaction.rollResult.successes;
     } else {
       return sum;
@@ -147,6 +147,22 @@ const ActionQueueModal = () => {
                   <h2 className="flex size-6 items-center justify-center">
                     {phaseAction.rollResult.successes}
                   </h2>
+                </div>
+              )}
+              {!!reducedSuccesses && (
+                <div className="mx-2 flex flex-col gap-4 border-x-2 border-gray-400 border-opacity-50 px-4">
+                  <div className="flex w-full items-center justify-between">
+                    <h4 className="text-tertiary">Parry Successes</h4>
+                    <h4 className="text-tertiary flex size-4 items-center justify-center">
+                      {reducedSuccesses}
+                    </h4>
+                  </div>
+                  <div className="flex w-full items-center justify-between">
+                    <h4 className="text-tertiary">Resulting Successes</h4>
+                    <h4 className="text-tertiary flex size-4 items-center justify-center">
+                      {phaseAction.rollResult.successes - reducedSuccesses}
+                    </h4>
+                  </div>
                 </div>
               )}
               {!!instances && (

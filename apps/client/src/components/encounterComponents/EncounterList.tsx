@@ -13,6 +13,7 @@ import ArrowHeader3 from '../ArrowHeader3';
 import { socket } from 'src/socket';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import useActivateEncounterMutation from 'src/hooks/encounter hooks/useActivateEncounterMutation/useActivateEncounterMutation';
+import ArrowHeader2 from '../ArrowHeader2';
 
 const EncounterList = () => {
   const { mapId, campaignId } = useParams();
@@ -73,22 +74,14 @@ const EncounterList = () => {
           {encounters.map((encounter) => {
             return (
               <Fragment key={encounter.id}>
-                <ItemCardSmall
-                  heading={
-                    <div className="mr-4 flex w-full items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <h2>{encounter.name}</h2>
-                      </div>
-                      <div className="flex items-center gap-4"></div>
-                    </div>
-                  }
-                >
+                <div className="bg-primary flex flex-col gap-4 rounded-lg p-8 shadow-lg shadow-black">
+                  <ArrowHeader2 title={encounter.name} />
                   <Divider />
                   <div className="grid grid-cols-2 gap-8">
                     <div className="col-span-2 flex w-full flex-col items-start gap-4">
                       <ArrowHeader3 title={encounter.map.name} />
                       <CloudinaryImage
-                        className="border-accent overflow-hidden rounded border"
+                        className="border-accent max-h-80 overflow-hidden rounded border"
                         publicId={encounter.map.picture.publicId}
                       />
                     </div>
@@ -130,7 +123,7 @@ const EncounterList = () => {
                       Begin Encounter
                     </BtnRect>
                   )}
-                </ItemCardSmall>
+                </div>
                 {encounter.map.id === Number(mapId) && (
                   <Outlet context={{ name: encounter.map.name }} />
                 )}
