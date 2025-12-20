@@ -71,6 +71,12 @@ router.post(
   characterController.updateCharacterLocation,
 );
 
+router.post(
+  '/characters/:characterId/createTemplate',
+  authentication.authenticate,
+  characterController.createTemplateCharacter,
+);
+
 router.put(
   '/characters/:characterId',
   authentication.authenticate,

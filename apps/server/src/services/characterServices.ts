@@ -194,18 +194,28 @@ const characterServices = {
     }
   },
 
-  createCharacter: async (formData: Character, userId: number) => {
+  createCharacter: async (
+    formData: Character,
+    userId: number,
+    template?: boolean,
+  ) => {
     try {
+      const startingStats = {
+        currentHealth: formData.stats?.currentHealth,
+        currentSanity: formData.stats?.currentSanity,
+        currentActions: 3,
+        currentReactions: 1,
+        currentHands: 2,
+        injuries: 0,
+        insanities: 0,
+      };
+
       const data = {
         ...formData,
         userId,
         stats: {
-          currentHealth: formData.stats?.currentHealth,
-          currentSanity: formData.stats?.currentSanity,
-          currentActions: 3,
-          currentReactions: 1,
-          injuries: 0,
-          insanities: 0,
+          ...formData.stats,
+          ...startingStats,
         },
         perks: {
           connect: formData.perks?.map((id: number) => ({ id })) || [],
@@ -217,7 +227,95 @@ const characterServices = {
       });
 
       await characterServices.createCharacterCart(newCharacter.id);
-      await characterServices.createCharacterInventory(newCharacter.id);
+      const characterInventory =
+        await characterServices.createCharacterInventory(newCharacter.id);
+
+      if (!template) {
+        const unarmed = await prisma.item.findFirst({
+          where: { name: 'Unarmed', baseItemId: null },
+        });
+
+        if (!unarmed) {
+          throw new Error('Failed to find base Unarmed item');
+        }
+
+        await itemServices.createCharacterItemCopy(
+          userId,
+          characterInventory.id,
+          [{ itemId: unarmed.id, price: null, quantity: 2 }],
+        );
+      }
+
+      return newCharacter;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to create character');
+    }
+  },
+
+  createTemplateCharacter: async (characterId: number, userId: number) => {
+    try {
+      const templateCharacter =
+        await characterServices.getCharacterById(characterId);
+
+      if (!templateCharacter) {
+        throw new Error('Failed to find template character');
+      }
+
+      if (templateCharacter.userId !== userId) {
+        throw new Error(
+          "Only the template character's owner may make copies of it",
+        );
+      }
+
+      const {
+        id,
+        createdAt,
+        user,
+        userId: prevUserId,
+        profits,
+        location,
+        locationId,
+        active,
+        sessions,
+        conditions,
+        characterCart,
+        characterInventory,
+        Note,
+        affiliations,
+        activeHistory,
+        targetHistory,
+        encounters,
+        campaign,
+        npcTypes,
+        ...data
+      } = templateCharacter;
+
+      const newCharacter = await characterServices.createCharacter(
+        data,
+        userId,
+        true,
+      );
+
+      const createdCharacter = await characterServices.getCharacterById(
+        newCharacter.id,
+      );
+
+      console.log(createdCharacter);
+
+      if (characterInventory && createdCharacter?.characterInventory) {
+        const itemList = characterInventory.items.map((item) => ({
+          itemId: item.id,
+          price: null,
+          quantity: 1,
+        }));
+
+        await itemServices.createCharacterItemCopy(
+          userId,
+          createdCharacter.characterInventory?.id,
+          itemList,
+        );
+      }
 
       return newCharacter;
     } catch (error) {
@@ -241,11 +339,13 @@ const characterServices = {
 
   createCharacterInventory: async (characterId: number) => {
     try {
-      await prisma.characterInventory.create({
+      const characterInventory = await prisma.characterInventory.create({
         data: {
           character: { connect: { id: characterId } },
         },
       });
+
+      return characterInventory;
     } catch (error) {
       console.error(error);
       throw new Error('Failed to create character inventory');
@@ -433,7 +533,7 @@ const characterServices = {
         },
       });
 
-      return location;
+      return location.id;
     } catch (error) {
       console.error(error);
       throw new Error('Failed to update character location');

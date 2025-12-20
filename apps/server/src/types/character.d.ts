@@ -2,20 +2,20 @@ import { Picture } from './picture';
 
 export interface Character {
   playerCharacter: boolean;
-  campaignId: number;
+  campaignId: number | null;
   perks: number[];
   stats: CharacterStats;
   firstName: string;
   lastName: string;
-  imageUrl: string;
-  publicId: string;
+  imageUrl?: string;
+  publicId?: string;
   height: number;
   weight: number;
   age: number;
   sex: 'male' | 'female';
   level: number;
   picture: { imageUrl: string; publicId: string };
-  profits: number;
+  profits?: number;
   backstory: { html: string; nodes: object };
   firstTaste: { html: string; nodes: object };
   badMedicine: { html: string; nodes: object };

@@ -132,16 +132,26 @@ const encounterController = {
         throw new Error('Could not find authenticated user');
       }
 
+      console.log('end middleware', performance.now());
+
+      const encounterId = Number(req.params.encounterId);
+
       const action = await encounterServices.rollAction(
         Number(req.params.campaignId),
-        Number(req.params.encounterId),
+        encounterId,
         req.body,
       );
 
-      await encounterServices.setPhaseAction(
-        Number(req.params.encounterId),
-        action,
-      );
+      console.log('end  roll action', performance.now());
+
+      await encounterServices.setPhaseAction(encounterId, action);
+
+      console.log('end set phase action', performance.now());
+
+      if (!action.rollResult) {
+        await encounterServices.advancePhase(encounterId);
+        console.log('end advance phase', performance.now());
+      }
 
       res.status(200).json({ message: 'Successfully rolled action' });
     } catch (error: any) {

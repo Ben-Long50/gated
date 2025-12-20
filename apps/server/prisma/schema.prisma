@@ -222,21 +222,9 @@ model Session {
   picture       Json?
   notes         Note[]
   characters    Character[]
-  scenes        Scene[]
 
   @@unique([sessionNumber, campaignId])
   @@unique([name, campaignId])
-}
-
-model Scene {
-  id          Int         @id @default(autoincrement())
-  createdAt   DateTime    @default(now())
-  sceneNumber Int         @unique
-  name        String
-  session     Session     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  sessionId   Int
-  briefing    Json?
-  characters  Character[]
 }
 
 model Notification {
@@ -310,7 +298,6 @@ model Character {
   campaign           Campaign?                     @relation(fields: [campaignId], references: [id])
   campaignId         Int?
   sessions           Session[]
-  scenes             Scene[]
   gang               Gang?                         @relation(fields: [gangId], references: [id])
   gangId             Int?
   conditions         CharacterConditionReference[]
@@ -322,7 +309,6 @@ model Character {
   activeHistory      History[]                     @relation("activeCharacter")
   targetHistory      History[]                     @relation("targetCharacter")
   encounters         Encounter[]
-  encounterPosition  Int?
 
   @@index([userId])
 }
@@ -568,6 +554,7 @@ model Error {
 
 enum NpcTypes {
   shop
+  template
 }
 
 enum UserRole {

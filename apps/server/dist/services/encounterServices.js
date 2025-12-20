@@ -163,13 +163,14 @@ const encounterServices = {
                 where: {
                     encounterId,
                 },
+                take: 10,
+                orderBy: { createdAt: 'desc' },
                 include: {
                     character: true,
                     target: true,
                     action: true,
                     item: true,
                 },
-                orderBy: { createdAt: 'desc' },
             });
             return history;
         }
@@ -439,9 +440,9 @@ const encounterServices = {
                     encounterId,
                 });
             }
-            if (activeCharacter) {
-                io.to(`campaign ${campaignId}`).emit('character', activeCharacter.id);
-            }
+            // if (activeCharacter) {
+            //   io.to(`campaign ${campaignId}`).emit('character', activeCharacter.id);
+            // }
             if (item) {
                 await itemServices.setItemNotAvailable(item.id);
                 io.to(`campaign ${campaignId}`).emit('item', item.id);

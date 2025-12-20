@@ -1,3 +1,14 @@
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 import prisma from '../config/database.js';
 import { includeCharacterCart, includeCharacterInventory, unequipLinked, } from '../utils/linkQueryStructures.js';
 import itemServices from './itemServices.js';
@@ -174,24 +185,64 @@ const characterServices = {
             throw new Error('Failed to toggle equipment');
         }
     },
-    createCharacter: async (formData, userId) => {
+    createCharacter: async (formData, userId, template) => {
         var _a, _b, _c;
         try {
-            const data = Object.assign(Object.assign({}, formData), { userId, stats: {
-                    currentHealth: (_a = formData.stats) === null || _a === void 0 ? void 0 : _a.currentHealth,
-                    currentSanity: (_b = formData.stats) === null || _b === void 0 ? void 0 : _b.currentSanity,
-                    currentActions: 3,
-                    currentReactions: 1,
-                    injuries: 0,
-                    insanities: 0,
-                }, perks: {
+            const startingStats = {
+                currentHealth: (_a = formData.stats) === null || _a === void 0 ? void 0 : _a.currentHealth,
+                currentSanity: (_b = formData.stats) === null || _b === void 0 ? void 0 : _b.currentSanity,
+                currentActions: 3,
+                currentReactions: 1,
+                currentHands: 2,
+                injuries: 0,
+                insanities: 0,
+            };
+            const data = Object.assign(Object.assign({}, formData), { userId, stats: Object.assign(Object.assign({}, formData.stats), startingStats), perks: {
                     connect: ((_c = formData.perks) === null || _c === void 0 ? void 0 : _c.map((id) => ({ id }))) || [],
                 } });
             const newCharacter = await prisma.character.create({
                 data,
             });
             await characterServices.createCharacterCart(newCharacter.id);
-            await characterServices.createCharacterInventory(newCharacter.id);
+            const characterInventory = await characterServices.createCharacterInventory(newCharacter.id);
+            if (!template) {
+                const unarmed = await prisma.item.findFirst({
+                    where: { name: 'Unarmed', baseItemId: null },
+                });
+                if (!unarmed) {
+                    throw new Error('Failed to find base Unarmed item');
+                }
+                await itemServices.createCharacterItemCopy(userId, characterInventory.id, [{ itemId: unarmed.id, price: null, quantity: 2 }]);
+            }
+            return newCharacter;
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to create character');
+        }
+    },
+    createTemplateCharacter: async (characterId, userId) => {
+        var _a;
+        try {
+            const templateCharacter = await characterServices.getCharacterById(characterId);
+            if (!templateCharacter) {
+                throw new Error('Failed to find template character');
+            }
+            if (templateCharacter.userId !== userId) {
+                throw new Error("Only the template character's owner may make copies of it");
+            }
+            const { id, createdAt, user, userId: prevUserId, profits, location, locationId, active, sessions, conditions, characterCart, characterInventory, Note, affiliations, activeHistory, targetHistory, encounters, campaign, npcTypes } = templateCharacter, data = __rest(templateCharacter, ["id", "createdAt", "user", "userId", "profits", "location", "locationId", "active", "sessions", "conditions", "characterCart", "characterInventory", "Note", "affiliations", "activeHistory", "targetHistory", "encounters", "campaign", "npcTypes"]);
+            const newCharacter = await characterServices.createCharacter(data, userId, true);
+            const createdCharacter = await characterServices.getCharacterById(newCharacter.id);
+            console.log(createdCharacter);
+            if (characterInventory && (createdCharacter === null || createdCharacter === void 0 ? void 0 : createdCharacter.characterInventory)) {
+                const itemList = characterInventory.items.map((item) => ({
+                    itemId: item.id,
+                    price: null,
+                    quantity: 1,
+                }));
+                await itemServices.createCharacterItemCopy(userId, (_a = createdCharacter.characterInventory) === null || _a === void 0 ? void 0 : _a.id, itemList);
+            }
             return newCharacter;
         }
         catch (error) {
@@ -214,11 +265,12 @@ const characterServices = {
     },
     createCharacterInventory: async (characterId) => {
         try {
-            await prisma.characterInventory.create({
+            const characterInventory = await prisma.characterInventory.create({
                 data: {
                     character: { connect: { id: characterId } },
                 },
             });
+            return characterInventory;
         }
         catch (error) {
             console.error(error);
@@ -364,7 +416,7 @@ const characterServices = {
                     col: formData.col,
                 },
             });
-            return location;
+            return location.id;
         }
         catch (error) {
             console.error(error);

@@ -198,6 +198,7 @@ const campaignServices = {
     ownerId: number,
   ) => {
     let currentPending = [] as User[];
+    console.log(formData);
 
     if (formData.id) {
       const campaign = await prisma.campaign.findUnique({
@@ -349,6 +350,31 @@ const campaignServices = {
     } catch (error) {
       console.error(error);
       throw new Error('Failed to fetch map');
+    }
+  },
+
+  getLocationById: async (locationId: number) => {
+    try {
+      const location = await prisma.location.findUnique({
+        where: { id: locationId },
+        include: {
+          character: {
+            select: {
+              firstName: true,
+              lastName: true,
+              id: true,
+              userId: true,
+              campaignId: true,
+              picture: true,
+            },
+          },
+        },
+      });
+
+      return location;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to fetch locations');
     }
   },
 

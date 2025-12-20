@@ -4,6 +4,8 @@ import { uploadToCloudinary } from '../utils/cloudinary.js';
 import upload from '../utils/multer.js';
 import parseRequestBody from '../utils/parseRequestBody.js';
 import cartServices from '../services/cartServices.js';
+import { getIO } from '../sockets/socket.js';
+import campaignServices from '../services/campaignServices.js';
 
 const characterController = {
   getCharacters: async (req: Request, res: Response) => {
@@ -137,6 +139,25 @@ const characterController = {
     },
   ],
 
+  createTemplateCharacter: async (req: Request, res: Response) => {
+    try {
+      if (!req.user) {
+        throw new Error('Could not find authenticated user');
+      }
+
+      const character = await characterServices.createTemplateCharacter(
+        Number(req.params.characterId),
+        req.user.id,
+      );
+
+      res.status(200).json(character);
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  },
+
   updateCharacter: [
     upload.single('picture'),
     uploadToCloudinary,
@@ -184,13 +205,22 @@ const characterController = {
 
   updateCharacterLocation: async (req: Request, res: Response) => {
     try {
+      const io = getIO();
+
       if (!req.user) {
         throw new Error('Could not find authenticated user');
       }
 
-      const location = await characterServices.createOrUpdateLocation(
+      const locationId = await characterServices.createOrUpdateLocation(
         Number(req.params.characterId),
         req.body,
+      );
+
+      const location = await campaignServices.getLocationById(locationId);
+
+      io.to(`campaign ${location?.character?.campaignId}`).emit(
+        'updateLocation',
+        location,
       );
 
       res.status(200).json({

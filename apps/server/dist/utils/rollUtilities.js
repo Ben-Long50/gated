@@ -51,7 +51,7 @@ export const calculateRoll = (attributes, action, modifiers, extraDice) => {
     return { result, successes };
 };
 export const calculateActionQueueSuccesses = (phaseHistory) => {
-    let actionSuccesses = phaseHistory.action.rollResult.successes;
+    const actionSuccesses = phaseHistory.action.rollResult.successes;
     const parries = phaseHistory.reactions.filter((reaction) => reaction.name === 'Parry') ||
         [];
     const parrySuccesses = parries.length > 0
