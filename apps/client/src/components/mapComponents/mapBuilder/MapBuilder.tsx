@@ -28,6 +28,9 @@ import {
 import MapBuilderGrid from './MapBuilderGrid';
 import getOccupiedTiles from '../mapUtils/getOccupiedTiles';
 import MapHeader from '../map/MapHeader';
+import TilePicker from './TilePicker';
+import ArrowHeader4 from 'src/components/ArrowHeader4';
+import { capitalCase } from 'change-case';
 
 const MapBuilder = () => {
   const { mobile } = useContext(LayoutContext);
@@ -57,6 +60,8 @@ const MapBuilder = () => {
       ? JSON.parse(localStorage.getItem('mapDraft'))
       : null,
   );
+
+  const pngName = path[path.length - 1].split('.')[0];
 
   const isPng = path[path.length - 1].endsWith('.png');
   const pngPath = isPng ? path.join('/') : null;
@@ -758,6 +763,16 @@ const MapBuilder = () => {
           </MapBuilderSidebar>
         )}
       </mapForm.Field>
+      {pngPath && (
+        <div className="bg-primary timing absolute bottom-4 left-4 flex origin-bottom-left scale-50 flex-col items-start gap-4 rounded-md p-4 shadow-md shadow-black hover:scale-100">
+          <ArrowHeader4 className="text-primary" title={capitalCase(pngName)} />
+          <TilePicker
+            pngPath={pngPath}
+            tempComponent={tempComponent}
+            handleTileSelect={handleTileSelect}
+          />
+        </div>
+      )}
     </>
   );
 };

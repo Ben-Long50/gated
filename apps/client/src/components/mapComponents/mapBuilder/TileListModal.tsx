@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import Modal from '../../modals/Modal';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import BtnRect from '../../buttons/BtnRect';
@@ -7,20 +7,17 @@ import Icon from '@mdi/react';
 import { mdiArrowULeftBottom, mdiCancel, mdiFolderOutline } from '@mdi/js';
 import Divider from '../../Divider';
 import ArrowHeader3 from '../../ArrowHeader3';
-import getCoords from '../mapUtils/getCoords';
 import BtnAuth from 'src/components/buttons/BtnAuth';
 import useMaps from 'src/hooks/useMaps';
 import CloudinaryImage from 'src/components/CloudinaryImage';
+import TilePicker from './TilePicker';
 
 const TileListModal = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [grid, setGrid] = useState({ rows: 0, cols: 0 });
-  const [selection, setSelection] = useState<'tiles' | 'components'>('tiles');
+  const [tab, setTab] = useState<'tiles' | 'components'>('tiles');
 
   const navigate = useNavigate();
   const { maps: components } = useMaps(false, 'component');
-
-  const pngRef = useRef<HTMLDivElement | null>(null);
 
   const {
     folders,
@@ -35,43 +32,21 @@ const TileListModal = () => {
     setTempComponent,
   } = useOutletContext() || {};
 
-  useEffect(() => {
-    if (!pngPath) return;
-
-    const div = pngRef.current;
-    if (!div) return;
-
-    const img = new Image();
-    img.src = pngPath;
-    img.onload = () => {
-      const naturalW = img.width;
-      const naturalH = img.height;
-
-      setGrid({
-        rows: Math.ceil(naturalH / 48),
-        cols: Math.ceil(naturalW / 48),
-      });
-    };
-  }, [pngPath]);
-
   return (
     <Modal className="relative h-full">
       <h1>Tile Explorer</h1>
       <div className="grid w-full grid-flow-col gap-8">
-        <BtnAuth
-          active={selection === 'tiles'}
-          onClick={() => setSelection('tiles')}
-        >
+        <BtnAuth active={tab === 'tiles'} onClick={() => setTab('tiles')}>
           Tiles
         </BtnAuth>
         <BtnAuth
-          active={selection === 'components'}
-          onClick={() => setSelection('components')}
+          active={tab === 'components'}
+          onClick={() => setTab('components')}
         >
           Components
         </BtnAuth>
       </div>
-      {selection === 'tiles' && (
+      {tab === 'tiles' && (
         <div className="flex w-full flex-col items-center gap-4 sm:flex-row">
           <button
             className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
@@ -122,48 +97,14 @@ const TileListModal = () => {
         </div>
       )}
       <Divider className="!my-0" />
-      {selection === 'tiles' && (
+      {tab === 'tiles' && (
         <div className="scrollbar-primary flex h-full w-full items-start justify-center overflow-y-auto">
           {isPng ? (
-            <div
-              ref={pngRef}
-              className="relative grid justify-center"
-              style={{
-                height: `${grid.rows * 48}px`,
-                width: `${grid.cols * 48}px`,
-                backgroundImage: `url(${pngPath})`,
-                backgroundSize: 'cover',
-                gridTemplateColumns: `repeat(${grid.cols}, 1fr)`,
-                gridTemplateRows: `repeat(${grid.rows}, 1fr)`,
-              }}
-            >
-              {Array.from({ length: grid.rows * grid.cols }).map((_, index) => {
-                const { row, col } = getCoords(grid.cols, index);
-
-                const inCol = tempComponent
-                  ? col >= tempComponent.imageColStart &&
-                    col < tempComponent.width + tempComponent.imageColStart
-                  : false;
-
-                const inRow = tempComponent
-                  ? row >= tempComponent.imageRowStart &&
-                    row < tempComponent.height + tempComponent.imageRowStart
-                  : false;
-
-                const selected = inCol && inRow;
-
-                return (
-                  <div
-                    key={index}
-                    className={`${selected ? 'bg-yellow-300/50 hover:bg-yellow-300/80' : 'hover:bg-gray-400/50'} size-full ring-1 ring-inset ring-gray-400/50`}
-                    style={{ gridRow: row, gridColumn: col }}
-                    onClick={() => {
-                      handleTileSelect(row, col);
-                    }}
-                  />
-                );
-              })}
-            </div>
+            <TilePicker
+              pngPath={pngPath}
+              tempComponent={tempComponent}
+              handleTileSelect={handleTileSelect}
+            />
           ) : (
             <div className="scrollbar-primary mb-auto grid w-full grid-cols-1 gap-4 overflow-y-auto rounded pb-2 sm:grid-cols-2">
               {Object.entries(currentFolder).map(([key, value], index) =>
@@ -222,7 +163,7 @@ const TileListModal = () => {
           )}
         </div>
       )}
-      {selection === 'components' && (
+      {tab === 'components' && (
         <div className="scrollbar-primary grid h-full w-full grid-cols-3 gap-4 overflow-y-auto">
           {components?.map((component) => (
             <button
