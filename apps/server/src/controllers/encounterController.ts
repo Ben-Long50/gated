@@ -245,12 +245,12 @@ const encounterController = {
 
   confirmActionQueueResults: async (req: Request, res: Response) => {
     try {
-      if (!req.user) {
+      if (!req.user || !req.encounter) {
         throw new Error('Could not find authenticated user');
       }
 
       await encounterServices.confirmActionQueueResults(
-        Number(req.params.encounterId),
+        req.encounter,
         req.body,
       );
 

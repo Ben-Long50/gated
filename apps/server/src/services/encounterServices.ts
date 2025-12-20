@@ -84,7 +84,9 @@ const encounterServices = {
               action: {
                 include: {
                   character: true,
-                  target: true,
+                  target: {
+                    include: { conditions: { include: { condition: true } } },
+                  },
                   action: true,
                   item: true,
                 },
@@ -92,7 +94,9 @@ const encounterServices = {
               reactions: {
                 include: {
                   character: true,
-                  target: true,
+                  target: {
+                    include: { conditions: { include: { condition: true } } },
+                  },
                   action: true,
                   item: true,
                 },
@@ -282,7 +286,9 @@ const encounterServices = {
         updatedEncounter,
       );
 
-      io.to(`encounter ${encounterId}`).emit('resetBoard');
+      if (nextPhase === 'action') {
+        io.to(`encounter ${encounterId}`).emit('resetBoard');
+      }
     } catch (error) {
       console.error(error);
       throw new Error('Failed to advance encounter phase');
@@ -299,9 +305,21 @@ const encounterServices = {
         ? encounter.turnOrder[0]
         : encounter.turnOrder[encounter.turnPosition + 1];
 
-      const character = (await characterServices.getCharacterById(
-        nextCharacterId,
-      )) as any;
+      const usedItems = await prisma.item.findMany({
+        where: {
+          available: false,
+          characterInventory: {
+            characterId: {
+              in: encounter.turnOrder,
+            },
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      const usedItemIds = usedItems.map((item) => item.id);
 
       const data = {
         turn: encounter.turn + 1,
@@ -321,7 +339,7 @@ const encounterServices = {
         phaseHistoryData.round = encounter.round + 1;
       }
 
-      const { itemIds } = await prisma.$transaction(async (tx) => {
+      await prisma.$transaction(async (tx) => {
         await tx.encounter.update({
           where: {
             id: encounterId,
@@ -329,16 +347,10 @@ const encounterServices = {
           data: { phaseHistory: { create: phaseHistoryData }, ...data },
         });
 
-        const itemIds = character.characterInventory.items.map(
-          (item: { id: number }) => item.id,
-        );
-
         await tx.item.updateMany({
-          where: { id: { in: itemIds } },
+          where: { id: { in: usedItemIds } },
           data: { available: true },
         });
-
-        return { itemIds };
       });
 
       const updatedEncounter =
@@ -351,8 +363,8 @@ const encounterServices = {
         );
       }
 
-      if (itemIds.length > 0) {
-        for (const itemId of itemIds) {
+      if (usedItemIds.length > 0) {
+        for (const itemId of usedItemIds) {
           io.to(`campaign ${encounter.campaignId}`).emit('item', itemId);
         }
       }
@@ -363,8 +375,6 @@ const encounterServices = {
       );
 
       io.to(`encounter ${encounterId}`).emit('resetBoard');
-
-      console.log('emitters', performance.now());
     } catch (error) {
       console.error(error);
       throw new Error('Failed to advance turn');
@@ -838,46 +848,11 @@ const encounterServices = {
   },
 
   confirmActionQueueResults: async (
-    encounterId: number,
+    encounter: Encounter,
     blockData: { damage: number; blockedDamage: number; armorIds: number[] }[],
   ) => {
     try {
       const io = getIO();
-
-      const encounter = await prisma.encounter.findUnique({
-        where: { id: encounterId },
-        select: {
-          campaignId: true,
-          phaseHistory: {
-            take: 1,
-            orderBy: { createdAt: 'desc' },
-            select: {
-              action: {
-                include: {
-                  item: true,
-                  character: { include: { conditions: true, perks: true } },
-                  action: true,
-                  target: {
-                    include: {
-                      conditions: { include: { condition: true } },
-                      perks: true,
-                      characterInventory: { include: { items: true } },
-                    },
-                  },
-                },
-              },
-              reactions: {
-                include: {
-                  item: true,
-                  character: { include: { conditions: true, perks: true } },
-                  action: true,
-                  target: { include: { conditions: true, perks: true } },
-                },
-              },
-            },
-          },
-        },
-      });
 
       const phaseHistory = encounter?.phaseHistory[0];
 
@@ -954,7 +929,7 @@ const encounterServices = {
         }
       }
 
-      io.to(`encounter ${encounterId}`).emit('resetBoard');
+      io.to(`encounter ${encounter.id}`).emit('resetBoard');
     } catch (error) {
       console.error(error);
       throw new Error('Failed to confirm action queue results');

@@ -86,7 +86,9 @@ const encounterServices = {
                             action: {
                                 include: {
                                     character: true,
-                                    target: true,
+                                    target: {
+                                        include: { conditions: { include: { condition: true } } },
+                                    },
                                     action: true,
                                     item: true,
                                 },
@@ -94,7 +96,9 @@ const encounterServices = {
                             reactions: {
                                 include: {
                                     character: true,
-                                    target: true,
+                                    target: {
+                                        include: { conditions: { include: { condition: true } } },
+                                    },
                                     action: true,
                                     item: true,
                                 },
@@ -257,7 +261,9 @@ const encounterServices = {
             }
             const updatedEncounter = await encounterServices.getEncounterById(encounterId);
             io.to(`encounter ${encounterId}`).emit('updateEncounter', updatedEncounter);
-            io.to(`encounter ${encounterId}`).emit('resetBoard');
+            if (nextPhase === 'action') {
+                io.to(`encounter ${encounterId}`).emit('resetBoard');
+            }
         }
         catch (error) {
             console.error(error);
@@ -271,7 +277,20 @@ const encounterServices = {
             const nextCharacterId = newRound
                 ? encounter.turnOrder[0]
                 : encounter.turnOrder[encounter.turnPosition + 1];
-            const character = (await characterServices.getCharacterById(nextCharacterId));
+            const usedItems = await prisma.item.findMany({
+                where: {
+                    available: false,
+                    characterInventory: {
+                        characterId: {
+                            in: encounter.turnOrder,
+                        },
+                    },
+                },
+                select: {
+                    id: true,
+                },
+            });
+            const usedItemIds = usedItems.map((item) => item.id);
             const data = {
                 turn: encounter.turn + 1,
                 turnPosition: newRound ? 0 : encounter.turnPosition + 1,
@@ -287,32 +306,29 @@ const encounterServices = {
                 data.round = encounter.round + 1;
                 phaseHistoryData.round = encounter.round + 1;
             }
-            const { itemIds } = await prisma.$transaction(async (tx) => {
+            await prisma.$transaction(async (tx) => {
                 await tx.encounter.update({
                     where: {
                         id: encounterId,
                     },
                     data: Object.assign({ phaseHistory: { create: phaseHistoryData } }, data),
                 });
-                const itemIds = character.characterInventory.items.map((item) => item.id);
                 await tx.item.updateMany({
-                    where: { id: { in: itemIds } },
+                    where: { id: { in: usedItemIds } },
                     data: { available: true },
                 });
-                return { itemIds };
             });
             const updatedEncounter = await encounterServices.getEncounterById(encounterId);
             if (nextCharacterId) {
                 io.to(`campaign ${encounter.campaignId}`).emit('character', nextCharacterId);
             }
-            if (itemIds.length > 0) {
-                for (const itemId of itemIds) {
+            if (usedItemIds.length > 0) {
+                for (const itemId of usedItemIds) {
                     io.to(`campaign ${encounter.campaignId}`).emit('item', itemId);
                 }
             }
             io.to(`encounter ${encounterId}`).emit('updateEncounter', updatedEncounter);
             io.to(`encounter ${encounterId}`).emit('resetBoard');
-            console.log('emitters', performance.now());
         }
         catch (error) {
             console.error(error);
@@ -638,44 +654,10 @@ const encounterServices = {
             throw new Error('Failed to advance turn');
         }
     },
-    confirmActionQueueResults: async (encounterId, blockData) => {
+    confirmActionQueueResults: async (encounter, blockData) => {
         var _a;
         try {
             const io = getIO();
-            const encounter = await prisma.encounter.findUnique({
-                where: { id: encounterId },
-                select: {
-                    campaignId: true,
-                    phaseHistory: {
-                        take: 1,
-                        orderBy: { createdAt: 'desc' },
-                        select: {
-                            action: {
-                                include: {
-                                    item: true,
-                                    character: { include: { conditions: true, perks: true } },
-                                    action: true,
-                                    target: {
-                                        include: {
-                                            conditions: { include: { condition: true } },
-                                            perks: true,
-                                            characterInventory: { include: { items: true } },
-                                        },
-                                    },
-                                },
-                            },
-                            reactions: {
-                                include: {
-                                    item: true,
-                                    character: { include: { conditions: true, perks: true } },
-                                    action: true,
-                                    target: { include: { conditions: true, perks: true } },
-                                },
-                            },
-                        },
-                    },
-                },
-            });
             const phaseHistory = encounter === null || encounter === void 0 ? void 0 : encounter.phaseHistory[0];
             if (!phaseHistory) {
                 throw new Error('Failed to find phase history');
@@ -726,7 +708,7 @@ const encounterServices = {
                     io.to(`campaign ${encounter.campaignId}`).emit('character', phaseHistory.action.target.id);
                 }
             }
-            io.to(`encounter ${encounterId}`).emit('resetBoard');
+            io.to(`encounter ${encounter.id}`).emit('resetBoard');
         }
         catch (error) {
             console.error(error);

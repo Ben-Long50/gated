@@ -51,7 +51,7 @@ export const calculateRoll = (attributes, action, modifiers, extraDice) => {
     return { result, successes };
 };
 export const calculateActionQueueSuccesses = (phaseHistory) => {
-    const actionSuccesses = phaseHistory.action.rollResult.successes;
+    let actionSuccesses = phaseHistory.action.rollResult.successes;
     const parries = phaseHistory.reactions.filter((reaction) => reaction.name === 'Parry') ||
         [];
     const parrySuccesses = parries.length > 0
@@ -75,11 +75,12 @@ export const calculateDamage = (item, action, successes) => {
         }
     }
     else if (action && action.name === 'Haymaker' && successes > 0) {
-        damage = item.keywords
-            ? item.keywords.some((keyword) => keyword.keyword.name === '2H')
-                ? item.stats.damage + 3
-                : item.stats.damage + 2
-            : item.stats.damage;
+        damage =
+            item.keywords.length > 0
+                ? item.keywords.some((keyword) => keyword.keyword.name === '2H')
+                    ? item.stats.damage + 3
+                    : item.stats.damage + 2
+                : item.stats.damage;
         instances = 1;
     }
     else if (successes > 0) {
@@ -139,8 +140,10 @@ export const applyDamage = async (targetCharacter, damage) => {
     if (!targetCharacter) {
         throw new Error('Target character not found');
     }
+    console.log(targetCharacter);
     if (((_a = targetCharacter.stats) === null || _a === void 0 ? void 0 : _a.currentHealth) - damage <= 0) {
-        if (!!targetCharacter.conditions.some((condition) => condition.condition.name === 'Wounded')) {
+        const isWounded = targetCharacter.conditions.some((condition) => condition.condition.name === 'Wounded');
+        if (isWounded) {
             await characterStatServices.editCharacterStat(targetCharacter.id, {
                 injuries: 1,
                 currentHealth: targetCharacter.stats.currentHealth * -1,

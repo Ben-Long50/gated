@@ -126,11 +126,12 @@ export const calculateDamage = (
       instances = maxSuccesses;
     }
   } else if (action && action.name === 'Haymaker' && successes > 0) {
-    damage = item.keywords
-      ? item.keywords.some((keyword) => keyword.keyword.name === '2H')
-        ? item.stats.damage + 3
-        : item.stats.damage + 2
-      : item.stats.damage;
+    damage =
+      item.keywords.length > 0
+        ? item.keywords.some((keyword) => keyword.keyword.name === '2H')
+          ? item.stats.damage + 3
+          : item.stats.damage + 2
+        : item.stats.damage;
     instances = 1;
   } else if (successes > 0) {
     damage = item.stats.damage;
@@ -211,12 +212,14 @@ export const applyDamage = async (
     throw new Error('Target character not found');
   }
 
+  console.log(targetCharacter);
+
   if (targetCharacter.stats?.currentHealth - damage <= 0) {
-    if (
-      !!targetCharacter.conditions.some(
-        (condition) => condition.condition.name === 'Wounded',
-      )
-    ) {
+    const isWounded = targetCharacter.conditions.some(
+      (condition) => condition.condition.name === 'Wounded',
+    );
+
+    if (isWounded) {
       await characterStatServices.editCharacterStat(targetCharacter.id, {
         injuries: 1,
         currentHealth: targetCharacter.stats.currentHealth * -1,

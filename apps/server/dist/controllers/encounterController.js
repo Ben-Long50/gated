@@ -178,10 +178,10 @@ const encounterController = {
     },
     confirmActionQueueResults: async (req, res) => {
         try {
-            if (!req.user) {
+            if (!req.user || !req.encounter) {
                 throw new Error('Could not find authenticated user');
             }
-            await encounterServices.confirmActionQueueResults(Number(req.params.encounterId), req.body);
+            await encounterServices.confirmActionQueueResults(req.encounter, req.body);
             await encounterServices.advancePhase(Number(req.params.encounterId));
             res
                 .status(200)
