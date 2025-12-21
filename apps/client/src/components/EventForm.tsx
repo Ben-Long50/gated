@@ -13,13 +13,15 @@ import { useContext, useRef, useState } from 'react';
 import { AuthContext } from 'src/contexts/AuthContext';
 import useCharacters from 'src/hooks/useCharacters';
 import TimeField from './formFields/TimeField';
+import useCharactersQuery from 'src/hooks/useCharactersQuery/useCharactersQuery';
 
 const EventForm = () => {
   const { campaignId, month, day } = useParams();
   const [timeType, setTimeType] = useState<'allDay' | 'setTime'>('allDay');
   const navigate = useNavigate();
 
-  const { activeCharacter } = useCharacters();
+  const { data: characterIds, isLoading: idsLoading } = useCharactersQuery();
+  const { activeCharacter } = useCharacters(characterIds);
 
   const createEvent = useCreateEventMutation(Number(campaignId));
 

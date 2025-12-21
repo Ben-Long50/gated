@@ -6,10 +6,12 @@ import EquipmentIcon from '../../components/icons/EquipmentIcon';
 import LinkSublistSidebar from './LinkSublistSidebar';
 import AffiliationIcon from '../icons/AffiliationIcon';
 import HangarIcon from '../icons/HangarIcon';
+import useCharactersQuery from 'src/hooks/useCharactersQuery/useCharactersQuery';
 import useCharacters from 'src/hooks/useCharacters';
 
 const CharacterLinks = () => {
-  const { activeCharacter } = useCharacters();
+  const { data: characterIds, isLoading: idsLoading } = useCharactersQuery();
+  const { activeCharacter, isLoading } = useCharacters(characterIds);
 
   return (
     <>

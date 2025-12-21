@@ -10,6 +10,7 @@ import { ThemeContext } from 'src/contexts/ThemeContext';
 import useNavigationStore from 'src/stores/navbarStore';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import Divider from '../Divider';
+import useCharactersQuery from 'src/hooks/useCharactersQuery/useCharactersQuery';
 
 const Sidebar = ({ children }: { children: ReactNode }) => {
   const { mobile } = useContext(LayoutContext);
@@ -18,7 +19,8 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
 
   const sidebarRef = useRef<null | HTMLElement>(null);
 
-  const { activeCharacter, isLoading } = useCharacters();
+  const { data: characterIds, isLoading: idsLoading } = useCharactersQuery();
+  const { activeCharacter, isLoading } = useCharacters(characterIds);
 
   const sidebar = useNavigationStore((state) => state.sidebar);
   const setSidebar = useNavigationStore((state) => state.setSidebar);

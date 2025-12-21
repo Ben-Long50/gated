@@ -47,7 +47,7 @@ const useCharacters = (
         return characterName?.toLowerCase().includes(query.toLowerCase());
       }) ?? []);
 
-  const activeCharacter = filteredCharacters?.find(
+  const activeCharacter = characters?.find(
     (character) => character?.active === true,
   );
 

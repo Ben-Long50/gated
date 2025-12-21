@@ -3,11 +3,13 @@ import Items from './Items';
 import { useLocation, useParams } from 'react-router-dom';
 import useInventory from 'src/hooks/useInventory';
 import useCharacters from 'src/hooks/useCharacters';
+import useCharactersQuery from 'src/hooks/useCharactersQuery/useCharactersQuery';
 
 const Inventory = () => {
   const { category } = useParams();
 
-  const { activeCharacter, isLoading } = useCharacters();
+  const { data: characterIds, isLoading: idsLoading } = useCharactersQuery();
+  const { activeCharacter, isLoading } = useCharacters(characterIds);
 
   const { inventory } = useInventory(activeCharacter?.characterInventory);
 

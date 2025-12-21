@@ -17,12 +17,10 @@ import Icon from '@mdi/react';
 import { mdiSync } from '@mdi/js';
 import { Campaign } from 'src/types/campaign';
 import useCharactersQuery from 'src/hooks/useCharactersQuery/useCharactersQuery';
-import { useSearchParams, useLocation } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 
 const CharacterList = () => {
   const { accentPrimary } = useContext(ThemeContext);
-
-  const { pathname } = useLocation();
   const [searchParams] = useSearchParams();
 
   const characterType = searchParams.get('characterType');

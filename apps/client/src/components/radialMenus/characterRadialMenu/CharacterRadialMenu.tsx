@@ -15,6 +15,7 @@ import useRadialMenuStore from 'src/stores/radialMenuStore';
 import ProfitRadialMenu from './ProfitRadialMenu';
 import RadialMenu from '../RadialMenu';
 import AffiliationRadialMenu from './AffiliationRadialMenu';
+import useCharactersQuery from 'src/hooks/useCharactersQuery/useCharactersQuery';
 
 const CharacterRadialMenu = ({
   character,
@@ -28,7 +29,8 @@ const CharacterRadialMenu = ({
   const parts = location.pathname.split('/');
   const navigate = useNavigate();
 
-  const { activeCharacter } = useCharacters();
+  const { data: characterIds, isLoading: idsLoading } = useCharactersQuery();
+  const { activeCharacter } = useCharacters(characterIds);
 
   const setBackgroundPath = useModalStore((state) => state.setBackgroundPath);
 

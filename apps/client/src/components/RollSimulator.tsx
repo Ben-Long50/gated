@@ -25,6 +25,7 @@ import ArrowHeader2 from './ArrowHeader2';
 import useCharacters from 'src/hooks/useCharacters';
 import { capitalCase } from 'change-case';
 import useModalStore from 'src/stores/modalStore';
+import useCharactersQuery from 'src/hooks/useCharactersQuery/useCharactersQuery';
 
 const RollSimulator = () => {
   const { user } = useContext(AuthContext);
@@ -39,7 +40,9 @@ const RollSimulator = () => {
     Number(campaignId),
   );
 
-  const { activeCharacter, isLoading: charactersLoading } = useCharacters();
+  const { data: characterIds, isLoading: idsLoading } = useCharactersQuery();
+  const { activeCharacter, isLoading: charactersLoading } =
+    useCharacters(characterIds);
 
   const { filteredActions: actions } = useActions();
 
