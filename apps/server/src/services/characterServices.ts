@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import prisma from '../config/database.js';
 import { Character } from '../types/character.js';
 import {

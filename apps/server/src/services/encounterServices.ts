@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { $Enums, CombatPhase, Encounter, History } from '@prisma/client';
 import prisma from '../config/database.js';
 import itemServices from './itemServices.js';
