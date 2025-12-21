@@ -29,10 +29,6 @@ import { Perk } from 'src/types/perk';
 import NpcPreferenceField from './formFields/NpcPreferenceField';
 import PictureField from './formFields/PictureField';
 import AttributeField from './formFields/AttributeField';
-import InjuryIcon from './icons/InjuryIcon';
-import InsanityIcon from './icons/InsanityIcon';
-import Icon from '@mdi/react';
-import { mdiAlertOutline, mdiCircleOutline } from '@mdi/js';
 
 const CharacterForm = () => {
   const { layoutSize, mobile } = useContext(LayoutContext);
@@ -95,6 +91,8 @@ const CharacterForm = () => {
         currentHealth:
           10 + value.attributes.violence.skills.threshold.points * 2,
         currentSanity: 5 + value.attributes.esoterica.skills.mysticism.points,
+        permanentInjuries: value.stats.permanentInjuries,
+        permanentInsanities: value.stats.permanentInsanities,
       };
 
       const filteredValue = Object.fromEntries(
@@ -118,6 +116,10 @@ const CharacterForm = () => {
   });
 
   const perks = useStore(characterForm.store, (state) => state.values.perks);
+  const formStats = useStore(
+    characterForm.store,
+    (state) => state.values.stats,
+  );
 
   const { stats } = useStats(
     {
@@ -126,6 +128,7 @@ const CharacterForm = () => {
     [],
     emptyAttributeTree,
     perks,
+    formStats,
   );
 
   return (

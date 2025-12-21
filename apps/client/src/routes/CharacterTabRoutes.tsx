@@ -5,6 +5,7 @@ import NpcPreferenceModal from 'src/components/modals/NpcPreferenceModal';
 import PerkLinkModal from 'src/components/modals/PerkLinkModal';
 import CharacterRoutes from './CharacterRoutes';
 import DescriptionModal from 'src/components/modals/DescriptionModal';
+import { useLocation } from 'react-router-dom';
 
 const CharacterTabRoutes = () => {
   return (

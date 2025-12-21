@@ -16,9 +16,28 @@ import InputField from './InputField';
 import Icon from '@mdi/react';
 import { mdiSync } from '@mdi/js';
 import { Campaign } from 'src/types/campaign';
+import useCharactersQuery from 'src/hooks/useCharactersQuery/useCharactersQuery';
+import { useSearchParams, useLocation } from 'react-router-dom';
 
 const CharacterList = () => {
   const { accentPrimary } = useContext(ThemeContext);
+
+  const { pathname } = useLocation();
+  const [searchParams] = useSearchParams();
+
+  const characterType = searchParams.get('characterType');
+  const includedNpcTypes = searchParams.getAll('includedNpcType');
+  const excludedNpcTypes = searchParams.getAll('excludedNpcType');
+
+  let playerCharacter = null;
+
+  if (characterType === 'playerCharacter') {
+    playerCharacter = true;
+  } else if (characterType === 'nonPlayerCharacter') {
+    playerCharacter = false;
+  }
+
+  const { data: characterIds, isLoading: idsLoading } = useCharactersQuery();
 
   const {
     characters,
@@ -26,7 +45,12 @@ const CharacterList = () => {
     filterByCampaign,
     filterByQuery,
     isLoading,
-  } = useCharacters();
+  } = useCharacters(
+    characterIds,
+    playerCharacter,
+    includedNpcTypes,
+    excludedNpcTypes,
+  );
 
   const { data: campaigns } = useCampaignsQuery();
 
@@ -46,7 +70,7 @@ const CharacterList = () => {
     },
   });
 
-  if (isLoading) {
+  if (isLoading || idsLoading) {
     return <Loading />;
   }
 

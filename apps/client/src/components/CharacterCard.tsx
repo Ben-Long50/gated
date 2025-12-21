@@ -22,7 +22,6 @@ import CharacterRadialMenu from './radialMenus/characterRadialMenu/CharacterRadi
 import LocationIcon from './icons/LocationIcon';
 import BtnRect from './buttons/BtnRect';
 import useCreateTemplateCharacterMutation from 'src/hooks/useCreateTemplateCharacterMutation/useCreateTemplateCharacterMutation';
-import useDeleteCharacterMutation from 'src/hooks/useDeleteCharacterMutation/useDeleteCharacterMutation';
 
 const CharacterCard = ({ characterId }: { characterId: number }) => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -34,8 +33,6 @@ const CharacterCard = ({ characterId }: { characterId: number }) => {
 
   const createTemplateCharacter =
     useCreateTemplateCharacterMutation(characterId);
-
-  const deleteCharacter = useDeleteCharacterMutation(characterId);
 
   const menuOpen = useRadialMenuStore((state) => state.menuOpen);
   const setMenuOpen = useRadialMenuStore((state) => state.setMenuOpen);
@@ -137,47 +134,13 @@ const CharacterCard = ({ characterId }: { characterId: number }) => {
               <div className="flex w-full items-center justify-between gap-4">
                 <ArrowHeader2 title={characterName} />
                 {character?.npcTypes && character?.npcTypes?.length > 0 && (
-                  <>
-                    <h4 className="text-tertiary">
-                      (
-                      {character.npcTypes
-                        .map((type) => capitalCase(type))
-                        .join(', ')}
-                      )
-                    </h4>
-                    {character?.npcTypes.includes('template') && (
-                      <>
-                        <BtnRect
-                          ariaLabel="Create template character"
-                          type="button"
-                          onClick={() => createTemplateCharacter.mutate()}
-                        >
-                          {createTemplateCharacter.isPending ? (
-                            <Loading
-                              className="group-hover:text-accent dark:text-gray-900"
-                              size={1.15}
-                            />
-                          ) : (
-                            'Create Copy'
-                          )}
-                        </BtnRect>
-                        <BtnRect
-                          ariaLabel="Create template character"
-                          type="button"
-                          onClick={() => deleteCharacter.mutate()}
-                        >
-                          {deleteCharacter.isPending ? (
-                            <Loading
-                              className="group-hover:text-accent dark:text-gray-900"
-                              size={1.15}
-                            />
-                          ) : (
-                            'Delete'
-                          )}
-                        </BtnRect>
-                      </>
-                    )}
-                  </>
+                  <h4 className="text-tertiary">
+                    (
+                    {character.npcTypes
+                      .map((type) => capitalCase(type))
+                      .join(', ')}
+                    )
+                  </h4>
                 )}
                 {!mobile && (
                   <div className="flex grow flex-wrap items-center justify-start gap-1">
@@ -317,6 +280,22 @@ const CharacterCard = ({ characterId }: { characterId: number }) => {
                   </div>
                 </div>
               </div>
+              {character?.npcTypes.includes('template') && (
+                <BtnRect
+                  ariaLabel="Create template character"
+                  type="button"
+                  onClick={() => createTemplateCharacter.mutate()}
+                >
+                  {createTemplateCharacter.isPending ? (
+                    <Loading
+                      className="group-hover:text-accent dark:text-gray-900"
+                      size={1.15}
+                    />
+                  ) : (
+                    'Create Copy'
+                  )}
+                </BtnRect>
+              )}
             </div>
           </div>
         </ThemeContainer>

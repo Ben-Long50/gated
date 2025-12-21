@@ -19,7 +19,22 @@ const CharacterLinks = () => {
         }
         title="Characters"
       >
-        <SubLinkSidebar title="All Characters" path="characters" />
+        <SubLinkSidebar
+          title="All Characters"
+          path="characters?excludedNpcType=template"
+        />
+        <SubLinkSidebar
+          title="Player Characters"
+          path="characters?characterType=playerCharacter"
+        />
+        <SubLinkSidebar
+          title="Non-Player Characters"
+          path="characters?characterType=nonPlayerCharacter&excludedNpcType=template"
+        />
+        <SubLinkSidebar
+          title="Template Characters"
+          path="characters?characterType=nonPlayerCharacter&includedNpcType=template"
+        />
         <SubLinkSidebar title="Create New Character" path="characters/create" />
       </LinkListSidebar>
       <LinkListSidebar
