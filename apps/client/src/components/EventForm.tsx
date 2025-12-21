@@ -20,9 +20,6 @@ const EventForm = () => {
   const [timeType, setTimeType] = useState<'allDay' | 'setTime'>('allDay');
   const navigate = useNavigate();
 
-  const { data: characterIds, isLoading: idsLoading } = useCharactersQuery();
-  const { activeCharacter } = useCharacters(characterIds);
-
   const createEvent = useCreateEventMutation(Number(campaignId));
 
   const eventForm = useForm({

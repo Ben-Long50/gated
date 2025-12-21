@@ -6,13 +6,8 @@ import EquipmentIcon from '../../components/icons/EquipmentIcon';
 import LinkSublistSidebar from './LinkSublistSidebar';
 import AffiliationIcon from '../icons/AffiliationIcon';
 import HangarIcon from '../icons/HangarIcon';
-import useCharactersQuery from 'src/hooks/useCharactersQuery/useCharactersQuery';
-import useCharacters from 'src/hooks/useCharacters';
 
 const CharacterLinks = () => {
-  const { data: characterIds, isLoading: idsLoading } = useCharactersQuery();
-  const { activeCharacter, isLoading } = useCharacters(characterIds);
-
   return (
     <>
       <LinkListSidebar
@@ -39,7 +34,7 @@ const CharacterLinks = () => {
         />
         <SubLinkSidebar title="Create New Character" path="characters/create" />
       </LinkListSidebar>
-      <LinkListSidebar
+      {/* <LinkListSidebar
         icon={
           <EquipmentIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
         }
@@ -154,7 +149,7 @@ const CharacterLinks = () => {
           title="Create Affiliation"
           path={`characters/${activeCharacter?.id}/affiliations/create`}
         />
-      </LinkListSidebar>
+      </LinkListSidebar> */}
     </>
   );
 };

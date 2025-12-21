@@ -4,7 +4,6 @@ import BtnRect from './buttons/BtnRect';
 import { Link } from 'react-router-dom';
 import Loading from './Loading';
 import ThemeContainer from './ThemeContainer';
-import useSetActiveCharacterMutation from '../hooks/useSetActiveCharacterMutation/useSetActiveCharacterMutation';
 import { useForm } from '@tanstack/react-form';
 import { Character } from 'src/types/character';
 import { ThemeContext } from '../contexts/ThemeContext';
@@ -37,35 +36,22 @@ const CharacterList = () => {
 
   const { data: characterIds, isLoading: idsLoading } = useCharactersQuery();
 
-  const {
-    characters,
-    activeCharacter,
-    filterByCampaign,
-    filterByQuery,
-    isLoading,
-  } = useCharacters(
-    characterIds,
-    playerCharacter,
-    includedNpcTypes,
-    excludedNpcTypes,
-  );
+  const { characters, filterByCampaign, filterByQuery, isLoading } =
+    useCharacters(
+      characterIds,
+      playerCharacter,
+      includedNpcTypes,
+      excludedNpcTypes,
+    );
 
   const { data: campaigns } = useCampaignsQuery();
 
-  const setActiveCharacter = useSetActiveCharacterMutation(activeCharacter?.id);
-
-  const activeForm = useForm({
+  const searchForm = useForm({
     defaultValues: {
-      character:
-        activeCharacter ||
-        ({ id: 0, firstName: '', lastName: '' } as Character),
       campaign: null as Campaign | null,
       query: '' as string,
     },
-    onSubmit: ({ value }) => {
-      setActiveCharacter.mutate(value.character.id);
-      activeForm.reset();
-    },
+    onSubmit: ({ value }) => {},
   });
 
   if (isLoading || idsLoading) {
@@ -83,25 +69,8 @@ const CharacterList = () => {
         <form className="flex w-full flex-col gap-4 p-4">
           <div className="grid w-full items-center gap-4 max-sm:grid-flow-row sm:grid-flow-col sm:gap-8">
             <ArrowHeader2 title="Character Options" />
-            <div className="flex w-full items-center justify-end gap-4">
-              {setActiveCharacter.isPending && (
-                <Loading size={2} className="text-secondary" />
-              )}
-              <activeForm.Field name="character">
-                {(field) => (
-                  <InputSelectField
-                    field={field}
-                    label="Active Character"
-                    options={characters}
-                    onChange={() => {
-                      activeForm.handleSubmit();
-                    }}
-                  />
-                )}
-              </activeForm.Field>
-            </div>
           </div>
-          <activeForm.Field name="campaign">
+          <searchForm.Field name="campaign">
             {(field) => (
               <InputSelectField
                 field={field}
@@ -110,9 +79,9 @@ const CharacterList = () => {
                 onChange={() => filterByCampaign(field.state.value.id)}
               />
             )}
-          </activeForm.Field>
+          </searchForm.Field>
           <div className="flex w-full items-center gap-4">
-            <activeForm.Field name="query">
+            <searchForm.Field name="query">
               {(field) => (
                 <InputField
                   field={field}
@@ -121,12 +90,12 @@ const CharacterList = () => {
                   onChange={() => filterByQuery(field.state.value)}
                 />
               )}
-            </activeForm.Field>
+            </searchForm.Field>
             <button
               className="text-accent bg-tertiary shadow-color group grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
               onClick={(e) => {
                 e.preventDefault();
-                activeForm.reset();
+                searchForm.reset();
                 filterByCampaign(null);
                 filterByQuery('');
               }}
@@ -139,12 +108,7 @@ const CharacterList = () => {
           </div>
         </form>
       </ThemeContainer>
-      {activeCharacter && (
-        <CharacterCard
-          key={activeCharacter.id}
-          characterId={activeCharacter.id}
-        />
-      )}
+
       {!characters || characters?.length === 0 ? (
         <div className="flex w-full flex-col items-center justify-center gap-8">
           <h1 className="text-center">No Characters Found</h1>

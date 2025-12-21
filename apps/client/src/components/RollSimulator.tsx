@@ -25,7 +25,6 @@ import ArrowHeader2 from './ArrowHeader2';
 import useCharacters from 'src/hooks/useCharacters';
 import { capitalCase } from 'change-case';
 import useModalStore from 'src/stores/modalStore';
-import useCharactersQuery from 'src/hooks/useCharactersQuery/useCharactersQuery';
 
 const RollSimulator = () => {
   const { user } = useContext(AuthContext);
@@ -40,18 +39,10 @@ const RollSimulator = () => {
     Number(campaignId),
   );
 
-  const { data: characterIds, isLoading: idsLoading } = useCharactersQuery();
-  const { activeCharacter, isLoading: charactersLoading } =
-    useCharacters(characterIds);
-
   const { filteredActions: actions } = useActions();
 
   const { diceArray, setDiceArray, rolling, calculateSuccesses, successes } =
     useRoll();
-
-  const resetDice = () => {
-    setDiceArray([]);
-  };
 
   const setBackgroundPath = useModalStore((state) => state.setBackgroundPath);
 
@@ -62,7 +53,7 @@ const RollSimulator = () => {
 
   const rollForm = useForm({
     defaultValues: {
-      activeCharacter: user?.id === campaign?.ownerId ? '' : activeCharacter,
+      activeCharacter: null,
       action: '',
       rollType: 'recommended' as 'recommended' | 'custom',
       attribute: '' as AttributeName,
@@ -72,8 +63,8 @@ const RollSimulator = () => {
     },
     onSubmit: ({ value }) => {
       const diceCount =
-        (activeCharacter.attributes[value.attribute]?.points || 0) +
-        (activeCharacter.attributes[value.attribute]?.skills[value.skill]
+        (value.activeCharacter.attributes[value.attribute]?.points || 0) +
+        (value.activeCharacter.attributes[value.attribute]?.skills[value.skill]
           ?.points || 0) +
         value.diceCount +
         (value.modifiers.includes('push') ? 2 : 0);
@@ -84,7 +75,7 @@ const RollSimulator = () => {
 
   const { emptyAttributeTree } = useAttributeTree();
 
-  if (campaignLoading || charactersLoading) return <Loading />;
+  if (campaignLoading) return <Loading />;
 
   return (
     <div className="flex w-full max-w-5xl flex-col items-center gap-8">
@@ -109,13 +100,11 @@ const RollSimulator = () => {
           >
             {(field) => (
               <div className="flex w-full flex-col gap-8">
-                {user?.id === campaign?.ownerId && (
-                  <InputSelectField
-                    field={field}
-                    options={campaign?.characters || []}
-                    label="Character to Roll"
-                  />
-                )}
+                <InputSelectField
+                  field={field}
+                  options={campaign?.characters || []}
+                  label="Character to Roll"
+                />
                 {field.state.value && (
                   <div className="flex w-full items-center justify-start gap-4">
                     <CharacterPictureRound character={field.state.value} />

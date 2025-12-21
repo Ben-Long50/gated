@@ -10,12 +10,10 @@ import ProfitsIcon from '../../icons/ProfitsIcon';
 import AffiliationIcon from '../../icons/AffiliationIcon';
 import ShopIcon from '../../icons/ShopIcon';
 import useModalStore from 'src/stores/modalStore';
-import useCharacters from 'src/hooks/useCharacters';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
 import ProfitRadialMenu from './ProfitRadialMenu';
 import RadialMenu from '../RadialMenu';
 import AffiliationRadialMenu from './AffiliationRadialMenu';
-import useCharactersQuery from 'src/hooks/useCharactersQuery/useCharactersQuery';
 
 const CharacterRadialMenu = ({
   character,
@@ -28,9 +26,6 @@ const CharacterRadialMenu = ({
   const location = useLocation();
   const parts = location.pathname.split('/');
   const navigate = useNavigate();
-
-  const { data: characterIds, isLoading: idsLoading } = useCharactersQuery();
-  const { activeCharacter } = useCharacters(characterIds);
 
   const setBackgroundPath = useModalStore((state) => state.setBackgroundPath);
 
@@ -54,7 +49,7 @@ const CharacterRadialMenu = ({
   const openShopModal = () => {
     setBackgroundPath(location.pathname);
     if (character.npcTypes?.includes('shop') && character.userId !== user?.id) {
-      navigate(`characters/${activeCharacter?.id}/shop/${character.id}/all`);
+      navigate(`characters/${character?.id}/shop/${character.id}/all`);
     } else {
       navigate(`${path}/shop/global/weapons`);
     }

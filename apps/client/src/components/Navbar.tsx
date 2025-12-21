@@ -124,7 +124,7 @@ const Navbar = ({
           </BtnNavbar>
         </Link>
         <Divider />
-        <Link className="w-full p-2" to="characters">
+        <Link className="w-full p-2" to="characters?excludedNpcType=template">
           <BtnNavbar
             className="bg-primary text-left"
             onClick={() => {
@@ -156,7 +156,7 @@ const Navbar = ({
         <Link to="codex">
           <BtnNavbar className="bg-primary">Codex</BtnNavbar>
         </Link>
-        <Link to="characters">
+        <Link to="characters?excludedNpcType=template">
           <BtnNavbar className="bg-primary">Characters</BtnNavbar>
         </Link>
         <Link className="relative" to={`account/${user?.id}/notifications`}>

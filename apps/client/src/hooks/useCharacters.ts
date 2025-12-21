@@ -3,7 +3,7 @@ import { Character } from 'src/types/character';
 import useCharacterQueries from './useCharactersQuery/useCharacterQueries';
 
 const useCharacters = (
-  characterIds: number[],
+  characterIds: Partial<Character>[],
   playerCharacter?: boolean,
   includedNpcTypes?: string[],
   excludedNpcTypes?: string[],
@@ -47,14 +47,6 @@ const useCharacters = (
         return characterName?.toLowerCase().includes(query.toLowerCase());
       }) ?? []);
 
-  const activeCharacter = characters?.find(
-    (character) => character?.active === true,
-  );
-
-  const inactiveCharacters = filteredCharacters?.filter(
-    (character) => character?.active === false,
-  );
-
   const filterByQuery = (query: string) => {
     setQuery(query);
   };
@@ -68,8 +60,7 @@ const useCharacters = (
   };
 
   return {
-    characters: inactiveCharacters,
-    activeCharacter,
+    characters: filteredCharacters,
     filterByQuery,
     filterByCampaign,
     resetList,

@@ -5,12 +5,10 @@ import { mdiCartOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import CharacterIcon from '../icons/CharacterIcon';
 import CharacterPictureRound from '../CharacterPictureRound';
-import useCharacters from 'src/hooks/useCharacters';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import useNavigationStore from 'src/stores/navbarStore';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import Divider from '../Divider';
-import useCharactersQuery from 'src/hooks/useCharactersQuery/useCharactersQuery';
 
 const Sidebar = ({ children }: { children: ReactNode }) => {
   const { mobile } = useContext(LayoutContext);
@@ -19,19 +17,16 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
 
   const sidebarRef = useRef<null | HTMLElement>(null);
 
-  const { data: characterIds, isLoading: idsLoading } = useCharactersQuery();
-  const { activeCharacter, isLoading } = useCharacters(characterIds);
-
   const sidebar = useNavigationStore((state) => state.sidebar);
   const setSidebar = useNavigationStore((state) => state.setSidebar);
   const navbarHeight = useNavigationStore((state) => state.navbarHeight);
 
-  const cartLength = useMemo(() => {
-    return Object.values(activeCharacter?.characterCart || {})
-      .filter(Array.isArray)
-      .flat()
-      .reduce((sum, item) => sum + item.quantity, 0);
-  }, [activeCharacter]);
+  // const cartLength = useMemo(() => {
+  //   return Object.values(activeCharacter?.characterCart || {})
+  //     .filter(Array.isArray)
+  //     .flat()
+  //     .reduce((sum, item) => sum + item.quantity, 0);
+  // }, [activeCharacter]);
 
   const sidebarStyle = sidebar ? 'w-full max-w-96' : 'min-w-0 max-w-[68px]';
 
@@ -56,19 +51,7 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
       }}
     >
       <div className="scrollbar-secondary flex grow flex-col gap-4 overflow-y-auto overflow-x-hidden px-2 py-4">
-        {isLoading ? (
-          <CharacterIcon className="text-secondary size-12 p-1" />
-        ) : (
-          activeCharacter && (
-            <LinkSidebar
-              title={activeCharacter.firstName + ' ' + activeCharacter.lastName}
-              icon={<CharacterPictureRound character={activeCharacter} />}
-              path={`/glam/characters/${activeCharacter.id}`}
-            />
-          )
-        )}
-        <Divider className="!my-0 opacity-50" />
-        {!isLoading && cartLength > 0 && (
+        {/* {!isLoading && cartLength > 0 && (
           <LinkSidebar
             title={activeCharacter?.firstName + "'s cart"}
             icon={
@@ -87,7 +70,7 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
             }
             path={`/glam/characters/${activeCharacter?.id}/cart`}
           />
-        )}
+        )} */}
         {activeCampaigns.length > 0 &&
           activeCampaigns.map((campaign, index) => (
             <Fragment key={index}>

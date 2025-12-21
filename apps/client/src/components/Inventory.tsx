@@ -8,10 +8,7 @@ import useCharactersQuery from 'src/hooks/useCharactersQuery/useCharactersQuery'
 const Inventory = () => {
   const { category } = useParams();
 
-  const { data: characterIds, isLoading: idsLoading } = useCharactersQuery();
-  const { activeCharacter, isLoading } = useCharacters(characterIds);
-
-  const { inventory } = useInventory(activeCharacter?.characterInventory);
+  // const { inventory } = useInventory(activeCharacter?.characterInventory);
 
   if (isLoading) return <Loading />;
 
