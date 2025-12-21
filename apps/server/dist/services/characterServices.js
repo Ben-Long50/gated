@@ -231,10 +231,9 @@ const characterServices = {
             if (templateCharacter.userId !== userId) {
                 throw new Error("Only the template character's owner may make copies of it");
             }
-            const { id, createdAt, user, userId: prevUserId, profits, location, locationId, active, sessions, conditions, characterCart, characterInventory, Note, affiliations, activeHistory, targetHistory, encounters, campaign, npcTypes } = templateCharacter, data = __rest(templateCharacter, ["id", "createdAt", "user", "userId", "profits", "location", "locationId", "active", "sessions", "conditions", "characterCart", "characterInventory", "Note", "affiliations", "activeHistory", "targetHistory", "encounters", "campaign", "npcTypes"]);
-            const newCharacter = await characterServices.createCharacter(data, userId, true);
+            const { id, createdAt, user, userId: prevUserId, profits, location, locationId, active, sessions, conditions, characterCart, characterInventory, Note, affiliations, activeHistory, targetHistory, encounters, campaign, npcTypes, perks } = templateCharacter, data = __rest(templateCharacter, ["id", "createdAt", "user", "userId", "profits", "location", "locationId", "active", "sessions", "conditions", "characterCart", "characterInventory", "Note", "affiliations", "activeHistory", "targetHistory", "encounters", "campaign", "npcTypes", "perks"]);
+            const newCharacter = await characterServices.createCharacter(Object.assign(Object.assign({}, data), { perks: perks.map((perk) => perk.id) }), userId, true);
             const createdCharacter = await characterServices.getCharacterById(newCharacter.id);
-            console.log(createdCharacter);
             if (characterInventory && (createdCharacter === null || createdCharacter === void 0 ? void 0 : createdCharacter.characterInventory)) {
                 const itemList = characterInventory.items.map((item) => ({
                     itemId: item.id,

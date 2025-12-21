@@ -546,10 +546,6 @@ const encounterServices = {
         });
       }
 
-      // if (activeCharacter) {
-      //   io.to(`campaign ${campaignId}`).emit('character', activeCharacter.id);
-      // }
-
       if (item) {
         await itemServices.setItemNotAvailable(item.id);
         io.to(`campaign ${campaignId}`).emit('item', item.id);

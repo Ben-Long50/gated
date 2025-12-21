@@ -288,11 +288,12 @@ const characterServices = {
         encounters,
         campaign,
         npcTypes,
+        perks,
         ...data
       } = templateCharacter;
 
       const newCharacter = await characterServices.createCharacter(
-        data,
+        { ...data, perks: perks.map((perk) => perk.id) },
         userId,
         true,
       );
@@ -300,8 +301,6 @@ const characterServices = {
       const createdCharacter = await characterServices.getCharacterById(
         newCharacter.id,
       );
-
-      console.log(createdCharacter);
 
       if (characterInventory && createdCharacter?.characterInventory) {
         const itemList = characterInventory.items.map((item) => ({
