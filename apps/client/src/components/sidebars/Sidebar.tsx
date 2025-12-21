@@ -1,19 +1,26 @@
-import { Fragment, ReactNode, useContext, useMemo, useRef } from 'react';
+import { Fragment, ReactNode, useContext, useRef } from 'react';
 import LinkSidebar from './LinkSidebar';
 import { LayoutContext } from '../../contexts/LayoutContext';
 import { mdiCartOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import CharacterIcon from '../icons/CharacterIcon';
 import CharacterPictureRound from '../CharacterPictureRound';
+import { AuthContext } from 'src/contexts/AuthContext';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import useNavigationStore from 'src/stores/navbarStore';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import Divider from '../Divider';
+import useCampaignCharacters from 'src/hooks/useCampaignCharacters';
+import { Link, useParams } from 'react-router-dom';
+import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
+import Loading from '../Loading';
 
 const Sidebar = ({ children }: { children: ReactNode }) => {
+  const { user } = useContext(AuthContext);
   const { mobile } = useContext(LayoutContext);
   const { accentPrimary } = useContext(ThemeContext);
   const { activeCampaigns, activeEncounters } = useContext(CampaignContext);
+
+  const { campaignId } = useParams();
 
   const sidebarRef = useRef<null | HTMLElement>(null);
 
@@ -21,12 +28,15 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
   const setSidebar = useNavigationStore((state) => state.setSidebar);
   const navbarHeight = useNavigationStore((state) => state.navbarHeight);
 
-  // const cartLength = useMemo(() => {
-  //   return Object.values(activeCharacter?.characterCart || {})
-  //     .filter(Array.isArray)
-  //     .flat()
-  //     .reduce((sum, item) => sum + item.quantity, 0);
-  // }, [activeCharacter]);
+  const { data: campaign } = useCampaignQuery(Number(campaignId));
+
+  const { playerCharacters, isLoading: charactersLoading } =
+    useCampaignCharacters(
+      campaign?.characters.map((character) => character.id) || [],
+    );
+
+  const userCharacters =
+    playerCharacters?.filter((character) => character.userId === user.id) || [];
 
   const sidebarStyle = sidebar ? 'w-full max-w-96' : 'min-w-0 max-w-[68px]';
 
@@ -51,26 +61,56 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
       }}
     >
       <div className="scrollbar-secondary flex grow flex-col gap-4 overflow-y-auto overflow-x-hidden px-2 py-4">
-        {/* {!isLoading && cartLength > 0 && (
-          <LinkSidebar
-            title={activeCharacter?.firstName + "'s cart"}
-            icon={
-              <div className="relative">
-                <Icon
-                  className="bg-secondary group-hover:text-accent timing size-12 shrink-0 p-2"
-                  path={mdiCartOutline}
-                />
-                <p
-                  className="shadow-color absolute right-0 top-0 flex h-6 min-w-6 items-center justify-center rounded-full pt-0.5 text-center text-base font-semibold shadow-md dark:text-gray-950"
-                  style={{ backgroundColor: accentPrimary }}
-                >
-                  {cartLength}
-                </p>
-              </div>
-            }
-            path={`/glam/characters/${activeCharacter?.id}/cart`}
-          />
-        )} */}
+        {charactersLoading ? (
+          <Loading size={1.5} />
+        ) : (
+          userCharacters.length > 0 && (
+            <>
+              {userCharacters.map((character) => {
+                const characterName = character?.lastName
+                  ? character?.firstName + ' ' + character?.lastName
+                  : character?.firstName;
+
+                const cartLength = Object.values(character?.characterCart || {})
+                  .filter(Array.isArray)
+                  .flat()
+                  .reduce((sum, item) => sum + item.quantity, 0);
+                console.log(cartLength);
+
+                return (
+                  <div className="flex w-full flex-col items-start justify-between gap-4">
+                    <LinkSidebar
+                      icon={<CharacterPictureRound character={character} />}
+                      title={characterName}
+                      path={`/glam/campaigns/${campaign?.id}/characters/${character?.id}`}
+                    />
+                    {cartLength > 0 && (
+                      <LinkSidebar
+                        icon={
+                          <div className="relative">
+                            <Icon
+                              className="bg-secondary group-hover:text-accent timing size-12 shrink-0 p-2"
+                              path={mdiCartOutline}
+                            />
+                            <p
+                              className="shadow-color absolute right-0 top-0 flex h-6 min-w-6 items-center justify-center rounded-full pt-0.5 text-center text-base font-semibold shadow-md dark:text-gray-950"
+                              style={{ backgroundColor: accentPrimary }}
+                            >
+                              {cartLength}
+                            </p>
+                          </div>
+                        }
+                        title={`${character?.firstName}'s Cart`}
+                        path={`/glam/campaigns/${campaign?.id}/characters/${character?.id}/cart`}
+                      />
+                    )}
+                  </div>
+                );
+              })}
+              <Divider className="!my-0 opacity-50" />
+            </>
+          )
+        )}
         {activeCampaigns.length > 0 &&
           activeCampaigns.map((campaign, index) => (
             <Fragment key={index}>

@@ -40,7 +40,7 @@ const LinkSidebar = ({
         <button
           className={`${!sidebar && 'invisible -translate-x-full opacity-0'} timing overflow-hidden pl-4 text-left text-inherit`}
         >
-          <div className="timing group-hover:text-accent max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-xl tracking-wide text-inherit">
+          <div className="timing group-hover:text-accent max-w-full truncate whitespace-nowrap text-xl tracking-wide text-inherit">
             {title}
           </div>
         </button>
