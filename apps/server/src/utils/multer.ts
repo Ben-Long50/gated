@@ -17,7 +17,7 @@ const upload = multer({
     if (!file) {
       return cb(null, true);
     }
-    const filetypes = /jpeg|jpg|png/;
+    const filetypes = /jpeg|jpg|png|webp/;
     const extname = filetypes.test(
       path.extname(file.originalname).toLowerCase(),
     );
