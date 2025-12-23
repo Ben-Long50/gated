@@ -52,6 +52,7 @@ const campaignServices = {
                             lastName: true,
                             picture: true,
                         },
+                        orderBy: { firstName: 'asc' },
                     },
                     events: {
                         include: {
