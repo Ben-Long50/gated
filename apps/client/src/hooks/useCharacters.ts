@@ -3,14 +3,12 @@ import { Character } from 'src/types/character';
 import useCharacterQueries from './useCharactersQuery/useCharacterQueries';
 
 const useCharacters = (
-  characterIds: Partial<Character>[],
-  playerCharacter?: boolean,
-  includedNpcTypes?: string[],
-  excludedNpcTypes?: string[],
+  characterIds: number[],
+  playerCharacter: boolean | null,
+  npcTypes?: string[],
 ) => {
-  const { characters, isLoading: charactersLoading } = useCharacterQueries(
-    characterIds?.map((character) => character.id) || [],
-  );
+  const { characters, isLoading: charactersLoading } =
+    useCharacterQueries(characterIds);
 
   const [query, setQuery] = useState('');
   const [campaignId, setCampaignId] = useState<number | null>(null);
@@ -21,17 +19,18 @@ const useCharacters = (
     const matchesType =
       playerCharacter === null || character.playerCharacter === playerCharacter;
 
-    const matchesInclude =
-      includedNpcTypes &&
-      (includedNpcTypes.length === 0 ||
-        includedNpcTypes.some((type) => character.npcTypes.includes(type)));
+    if (!npcTypes || npcTypes.length === 0) {
+      return (
+        matchesType &&
+        (character.npcTypes === null || character.npcTypes.length === 0)
+      );
+    }
 
-    const matchesExclude =
-      excludedNpcTypes &&
-      (excludedNpcTypes.length === 0 ||
-        excludedNpcTypes.some((type) => !character.npcTypes.includes(type)));
+    const matchesInclude = npcTypes.some((type) =>
+      character.npcTypes?.includes(type),
+    );
 
-    return matchesType && matchesInclude && matchesExclude;
+    return matchesType && matchesInclude;
   });
 
   const filteredCharacters = campaignId

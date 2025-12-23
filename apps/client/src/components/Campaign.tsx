@@ -10,9 +10,6 @@ import { format } from 'date-fns';
 import LocationIcon from './icons/LocationIcon';
 import { Session } from 'src/types/campaign';
 import { User } from 'src/types/user';
-import ArrowHeader2 from './ArrowHeader2';
-import { Character } from 'src/types/character';
-import CharacterCard from './CharacterCard';
 import Divider from './Divider';
 import BtnAuth from './buttons/BtnAuth';
 import AccountPicture from './AccountPicture';
@@ -24,9 +21,8 @@ import ArrowHeader3 from './ArrowHeader3';
 import CoverPicture from './CoverPicture';
 import { capitalCase } from 'change-case';
 import { LayoutContext } from 'src/contexts/LayoutContext';
-import useCharacterQueries from 'src/hooks/useCharactersQuery/useCharacterQueries';
 import Calendar from './Calendar';
-import CampaignCharacterList from './CampaignCharacterList';
+import CharacterList from './CharacterList';
 
 const Campaign = () => {
   const { user } = useContext(AuthContext);
@@ -39,19 +35,11 @@ const Campaign = () => {
     Number(campaignId),
   );
 
-  const {
-    playerCharacters,
-    nonPlayerCharacters,
-    isLoading: charactersLoading,
-  } = useCharacterQueries(
-    campaign?.characters.map((character) => character.id) || [],
-  );
-
   const joinCampaign = useJoinCampaignMutation(Number(campaignId));
 
   const pendingIds = campaign?.pendingPlayers.map((player: User) => player.id);
 
-  const isLoading = campaignLoading || charactersLoading;
+  const isLoading = campaignLoading;
 
   if (isLoading) return <Loading />;
 
@@ -206,7 +194,9 @@ const Campaign = () => {
             </div>
           </ThemeContainer>
           <Divider className="col-span-2" />
-          <CampaignCharacterList />
+          <CharacterList
+            characterIds={campaign.characters.map((character) => character.id)}
+          />
           {campaign.ownerId === user?.id && (
             <>
               <Divider />

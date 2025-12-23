@@ -75,7 +75,6 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
                   .filter(Array.isArray)
                   .flat()
                   .reduce((sum, item) => sum + item.quantity, 0);
-                console.log(cartLength);
 
                 return (
                   <div className="flex w-full flex-col items-start justify-between gap-4">

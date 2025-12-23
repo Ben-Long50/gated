@@ -7,6 +7,7 @@ import ThemeContainer from './ThemeContainer';
 import { useForm } from '@tanstack/react-form';
 import { Character } from 'src/types/character';
 import { ThemeContext } from '../contexts/ThemeContext';
+import { AuthContext } from '../contexts/AuthContext';
 import ArrowHeader2 from './ArrowHeader2';
 import InputSelectField from './InputSelectField';
 import useCampaignsQuery from 'src/hooks/useCampaignsQuery/useCampaignsQuery';
@@ -15,36 +16,36 @@ import InputField from './InputField';
 import Icon from '@mdi/react';
 import { mdiSync } from '@mdi/js';
 import { Campaign } from 'src/types/campaign';
-import useCharactersQuery from 'src/hooks/useCharactersQuery/useCharactersQuery';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useParams } from 'react-router-dom';
 
-const CharacterList = () => {
+const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
+  const { user } = useContext(AuthContext);
   const { accentPrimary } = useContext(ThemeContext);
+  const { campaignId } = useParams();
   const [searchParams] = useSearchParams();
 
   const characterType = searchParams.get('characterType');
-  const includedNpcTypes = searchParams.getAll('includedNpcType');
-  const excludedNpcTypes = searchParams.getAll('excludedNpcType');
+  const npcTypes = searchParams.getAll('npcType');
 
   let playerCharacter = null;
 
-  if (characterType === 'playerCharacter') {
+  if (characterType && characterType === 'playerCharacter') {
     playerCharacter = true;
-  } else if (characterType === 'nonPlayerCharacter') {
+  } else if (characterType && characterType === 'nonPlayerCharacter') {
     playerCharacter = false;
   }
 
-  const { data: characterIds, isLoading: idsLoading } = useCharactersQuery();
+  const characterIdList =
+    characterIds || user.characters.map((character) => character.id);
 
   const { characters, filterByCampaign, filterByQuery, isLoading } =
-    useCharacters(
-      characterIds,
-      playerCharacter,
-      includedNpcTypes,
-      excludedNpcTypes,
-    );
+    useCharacters(characterIdList, playerCharacter, npcTypes);
 
   const { data: campaigns } = useCampaignsQuery();
+
+  const availableCampaigns = campaignId
+    ? campaigns?.filter((campaign) => campaign.id === Number(campaignId))
+    : campaigns || [];
 
   const searchForm = useForm({
     defaultValues: {
@@ -54,7 +55,7 @@ const CharacterList = () => {
     onSubmit: ({ value }) => {},
   });
 
-  if (isLoading || idsLoading) {
+  if (isLoading) {
     return <Loading />;
   }
 
@@ -70,16 +71,18 @@ const CharacterList = () => {
           <div className="grid w-full items-center gap-4 max-sm:grid-flow-row sm:grid-flow-col sm:gap-8">
             <ArrowHeader2 title="Character Options" />
           </div>
-          <searchForm.Field name="campaign">
-            {(field) => (
-              <InputSelectField
-                field={field}
-                label="Filter By Campaign"
-                options={campaigns || []}
-                onChange={() => filterByCampaign(field.state.value.id)}
-              />
-            )}
-          </searchForm.Field>
+          {availableCampaigns?.length > 1 && (
+            <searchForm.Field name="campaign">
+              {(field) => (
+                <InputSelectField
+                  field={field}
+                  label="Filter By Campaign"
+                  options={availableCampaigns}
+                  onChange={() => filterByCampaign(field.state.value.id)}
+                />
+              )}
+            </searchForm.Field>
+          )}
           <div className="flex w-full items-center gap-4">
             <searchForm.Field name="query">
               {(field) => (
@@ -108,7 +111,6 @@ const CharacterList = () => {
           </div>
         </form>
       </ThemeContainer>
-
       {!characters || characters?.length === 0 ? (
         <div className="flex w-full flex-col items-center justify-center gap-8">
           <h1 className="text-center">No Characters Found</h1>
@@ -120,9 +122,11 @@ const CharacterList = () => {
         </div>
       ) : (
         <div className="grid w-full grid-flow-row gap-10">
-          {characters?.map((character: Character) => (
-            <CharacterCard key={character.id} characterId={character.id} />
-          ))}
+          {characters
+            ?.filter((character) => character !== undefined)
+            .map((character: Character) => (
+              <CharacterCard key={character.id} characterId={character.id} />
+            ))}
         </div>
       )}
     </div>
