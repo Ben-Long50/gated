@@ -12,8 +12,7 @@ const useCreateCharacterMutation = (
     onSuccess: () => {
       setFormMessage('Successfully created character');
       return queryClient.invalidateQueries({
-        queryKey: ['characters'],
-        exact: false,
+        queryKey: ['user', user.id],
       });
     },
     onError: (error) => {

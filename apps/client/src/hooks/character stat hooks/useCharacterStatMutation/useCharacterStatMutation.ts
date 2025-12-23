@@ -40,6 +40,8 @@ const useCharacterStatMutation = () => {
 
           updateBuffer.current = new Map();
 
+          console.log(finalValue);
+
           await editCharacterStat(data.characterId, data.stat, finalValue);
 
           resolve(finalValue);
@@ -60,6 +62,27 @@ const useCharacterStatMutation = () => {
 
       if (adjustedValue < 0) {
         adjustedValue = 0;
+      }
+
+      switch (data.stat) {
+        case 'currentHealth':
+          if (
+            prevCharacterData?.stats.maxHealth &&
+            adjustedValue > prevCharacterData?.stats.maxHealth
+          ) {
+            adjustedValue = prevCharacterData?.stats.maxHealth;
+          }
+          break;
+        case 'currentSanity':
+          if (
+            prevCharacterData?.stats.maxSanity &&
+            adjustedValue > prevCharacterData?.stats.maxSanity
+          ) {
+            adjustedValue = prevCharacterData?.stats.maxSanity;
+          }
+          break;
+        default:
+          break;
       }
 
       queryClient.setQueryData(

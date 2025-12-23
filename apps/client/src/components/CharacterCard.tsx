@@ -22,6 +22,7 @@ import CharacterRadialMenu from './radialMenus/characterRadialMenu/CharacterRadi
 import LocationIcon from './icons/LocationIcon';
 import BtnRect from './buttons/BtnRect';
 import useCreateTemplateCharacterMutation from 'src/hooks/useCreateTemplateCharacterMutation/useCreateTemplateCharacterMutation';
+import useDeleteCharacterMutation from 'src/hooks/useDeleteCharacterMutation/useDeleteCharacterMutation';
 
 const CharacterCard = ({ characterId }: { characterId: number }) => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -33,6 +34,8 @@ const CharacterCard = ({ characterId }: { characterId: number }) => {
 
   const createTemplateCharacter =
     useCreateTemplateCharacterMutation(characterId);
+
+  const deleteCharacter = useDeleteCharacterMutation(characterId);
 
   const menuOpen = useRadialMenuStore((state) => state.menuOpen);
   const setMenuOpen = useRadialMenuStore((state) => state.setMenuOpen);
@@ -280,8 +283,26 @@ const CharacterCard = ({ characterId }: { characterId: number }) => {
                   </div>
                 </div>
               </div>
+              {
+                <BtnRect
+                  className="group"
+                  ariaLabel="Create template character"
+                  type="button"
+                  onClick={() => deleteCharacter.mutate()}
+                >
+                  {deleteCharacter.isPending ? (
+                    <Loading
+                      className="group-hover:text-accent dark:text-gray-900"
+                      size={1.15}
+                    />
+                  ) : (
+                    'Delete Character'
+                  )}
+                </BtnRect>
+              }
               {character?.npcTypes.includes('template') && (
                 <BtnRect
+                  className="group"
                   ariaLabel="Create template character"
                   type="button"
                   onClick={() => createTemplateCharacter.mutate()}

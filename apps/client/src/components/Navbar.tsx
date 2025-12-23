@@ -124,7 +124,7 @@ const Navbar = ({
           </BtnNavbar>
         </Link>
         <Divider />
-        <Link className="w-full p-2" to="characters?excludedNpcType=template">
+        <Link className="w-full p-2" to="characters">
           <BtnNavbar
             className="bg-primary text-left"
             onClick={() => {

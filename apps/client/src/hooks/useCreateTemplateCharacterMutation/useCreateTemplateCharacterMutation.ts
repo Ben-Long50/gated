@@ -9,8 +9,7 @@ const useCreateTemplateCharacterMutation = (characterId: number) => {
     },
     onSuccess: () => {
       return queryClient.invalidateQueries({
-        queryKey: ['characters'],
-        exact: false,
+        queryKey: ['user', user.id],
       });
     },
     throwOnError: false,
