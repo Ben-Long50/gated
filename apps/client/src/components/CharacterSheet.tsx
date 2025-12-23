@@ -2,7 +2,12 @@ import { Fragment, useContext, useRef, useState } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import ThemeContainer from './ThemeContainer';
 import { ThemeContext } from '../contexts/ThemeContext';
-import { mdiCircleOutline, mdiTriangleDown } from '@mdi/js';
+import {
+  mdiAlphaTCircleOutline,
+  mdiCircleOutline,
+  mdiStorefrontOutline,
+  mdiTriangleDown,
+} from '@mdi/js';
 import Icon from '@mdi/react';
 import PerkCard from './PerkCard';
 import AttributeCard from './AttributeCard';
@@ -75,7 +80,24 @@ const CharacterSheet = () => {
             borderColor={accentPrimary}
           >
             <div className="flex h-full w-full items-center justify-between gap-4 p-4">
-              <ArrowHeader1 title={characterName} />
+              <div className="flex items-center justify-start gap-4">
+                <ArrowHeader1 title={characterName} />
+                {character?.npcTypes?.includes('shop') && (
+                  <Icon
+                    className="text-primary"
+                    path={mdiStorefrontOutline}
+                    size={1.5}
+                  />
+                )}
+                {character?.npcTypes?.includes('template') && (
+                  <Icon
+                    className="text-primary"
+                    path={mdiAlphaTCircleOutline}
+                    size={1.5}
+                  />
+                )}
+              </div>
+
               <h1 className="!text-accent">{character?.level}</h1>
             </div>
           </ThemeContainer>

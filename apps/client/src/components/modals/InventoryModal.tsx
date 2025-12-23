@@ -5,13 +5,13 @@ import { mdiCheckCircle } from '@mdi/js';
 import Modal from './Modal';
 import ItemMenu from '../ItemMenu';
 import useToggleEquipmentMutation from '../../hooks/useEquipmentToggleMutation/useEquipmentToggleMutation';
-import { AuthContext } from '../../contexts/AuthContext';
-import { useOutletContext, useParams } from 'react-router-dom';
+import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import useCharacter from 'src/hooks/useCharacter';
 
 const InventoryModal = () => {
   const { rarityColorMap } = useContext(ThemeContext);
   const { characterId } = useParams();
+  const navigate = useNavigate();
 
   const { activeItem, toggleActive } = useOutletContext() || {};
 
@@ -46,6 +46,10 @@ const InventoryModal = () => {
                   });
                 }
               }}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                navigate(`../../inventory/items/${item.id}`);
+              }}
             >
               {item.equipped === true && (
                 <div className="absolute inset-0 flex items-center justify-center bg-slate-950 bg-opacity-65">
@@ -58,7 +62,7 @@ const InventoryModal = () => {
               )}
               {item.picture?.imageUrl ? (
                 <img
-                  className="aspect-square"
+                  className="aspect-square size-full"
                   src={item.picture?.imageUrl}
                   alt={item.name}
                 />

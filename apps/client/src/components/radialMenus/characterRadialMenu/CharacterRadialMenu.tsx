@@ -1,6 +1,6 @@
 import { Character } from 'src/types/character';
 import ConditionIcon from '../../icons/ConditionIcon';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import EquipmentIcon from '../../icons/EquipmentIcon';
 import CharacterIcon from '../../icons/CharacterIcon';
 import { useContext } from 'react';
@@ -14,6 +14,7 @@ import useRadialMenuStore from 'src/stores/radialMenuStore';
 import ProfitRadialMenu from './ProfitRadialMenu';
 import RadialMenu from '../RadialMenu';
 import AffiliationRadialMenu from './AffiliationRadialMenu';
+import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 
 const CharacterRadialMenu = ({
   character,
@@ -23,9 +24,20 @@ const CharacterRadialMenu = ({
   containerRef: ReactNode;
 }) => {
   const { user } = useContext(AuthContext);
+  const { campaignId } = useParams();
   const location = useLocation();
   const parts = location.pathname.split('/');
   const navigate = useNavigate();
+
+  const { data: campaign } = useCampaignQuery(Number(campaignId));
+
+  const userCharacter = campaignId
+    ? campaign?.characters.find((character) =>
+        user.characters
+          ?.map((character) => character.id)
+          .includes(character.id),
+      )
+    : null;
 
   const setBackgroundPath = useModalStore((state) => state.setBackgroundPath);
 
@@ -49,7 +61,7 @@ const CharacterRadialMenu = ({
   const openShopModal = () => {
     setBackgroundPath(location.pathname);
     if (character.npcTypes?.includes('shop') && character.userId !== user?.id) {
-      navigate(`characters/${character?.id}/shop/${character.id}/all`);
+      navigate(`characters/${userCharacter?.id}/shop/${character.id}/all`);
     } else {
       navigate(`${path}/shop/global/weapons`);
     }

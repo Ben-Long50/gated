@@ -60,7 +60,10 @@ const CampaignCard = ({ campaign }: { campaign: Campaign }) => {
                   <p className="font-semibold">{campaign.owner.username}</p>
                 </div>
               </div>
-              <Link className="ml-auto mt-auto self-end" to={`${campaign.id}`}>
+              <Link
+                className="ml-auto mt-auto self-end"
+                to={`${campaign.id}?npcType=shop`}
+              >
                 <BtnRect ariaLabel="navigate to campaign information ml-auto mt-auto self-end">
                   Campaign Info
                 </BtnRect>

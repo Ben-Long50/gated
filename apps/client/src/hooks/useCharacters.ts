@@ -26,11 +26,14 @@ const useCharacters = (
       );
     }
 
-    const matchesInclude = npcTypes.some((type) =>
-      character.npcTypes?.includes(type),
-    );
-
-    return matchesType && matchesInclude;
+    if (character.playerCharacter) {
+      return matchesType;
+    } else if (!character.playerCharacter) {
+      const matchesInclude = npcTypes.some((type) =>
+        character.npcTypes?.includes(type),
+      );
+      return matchesType && matchesInclude;
+    }
   });
 
   const filteredCharacters = campaignId

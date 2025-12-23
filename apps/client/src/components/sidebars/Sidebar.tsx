@@ -77,7 +77,10 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
                   .reduce((sum, item) => sum + item.quantity, 0);
 
                 return (
-                  <div className="flex w-full flex-col items-start justify-between gap-4">
+                  <div
+                    key={character.id}
+                    className="flex w-full flex-col items-start justify-between gap-4"
+                  >
                     <LinkSidebar
                       icon={<CharacterPictureRound character={character} />}
                       title={characterName}
@@ -124,7 +127,7 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
                     />
                   </div>
                 }
-                path={`/glam/campaigns/${campaign?.id}`}
+                path={`/glam/campaigns/${campaign?.id}?npcType=shop`}
               />
               {activeEncounters.length > 0 &&
                 activeEncounters

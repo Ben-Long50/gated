@@ -28,10 +28,13 @@ const MapSidebar = ({
   const { data: campaign } = useCampaignQuery(Number(campaignId));
   const deleteLocation = useDeleteCharacterLocationMutation(Number(mapId));
 
-  const campaignCharacterIds =
-    campaign?.characters
-      .map((character) => character.id)
-      .filter((id) => !locatedCharacterIds.includes(id)) || [];
+  const campaignCharacterIds = campaign?.characters
+    .filter(
+      (character) =>
+        !locatedCharacterIds.includes(character.id) &&
+        !character.npcTypes?.includes('template'),
+    )
+    .map((character) => character.id);
 
   const navbarHeight = useNavigationStore((state) => state.navbarHeight);
 

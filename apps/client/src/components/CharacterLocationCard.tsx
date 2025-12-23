@@ -26,6 +26,10 @@ const CharacterLocationCard = ({
   const setMenu = useRadialMenuStore((state) => state.setMenu);
   const setCoordinates = useRadialMenuStore((state) => state.setCoordinates);
 
+  const characterName = character?.lastName
+    ? character?.firstName + ' ' + character?.lastName
+    : character?.firstName;
+
   const { setNodeRef, listeners, attributes } = useDraggable({
     id: characterId,
     data: {
@@ -74,7 +78,7 @@ const CharacterLocationCard = ({
         <div className="flex flex-col overflow-hidden">
           <ArrowHeader4
             className={`${locationList ? 'visible h-8 translate-x-0 opacity-100' : 'invisible h-0 -translate-x-full opacity-0'} text-primary timing w-full truncate`}
-            title={`${character?.firstName} ${character?.lastName}`}
+            title={characterName}
           />
           <div className="flex items-center gap-4">
             <LocationIcon className="text-accent size-5" />

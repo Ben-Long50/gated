@@ -39,7 +39,7 @@ const EquipmentList = ({
                     <img
                       src={item.picture?.imageUrl}
                       alt={item.name}
-                      className="group-hover:opacity-80"
+                      className="size-full group-hover:opacity-80"
                     />
                   ) : (
                     <div className="bg-tertiary h-full w-full p-1 group-hover:opacity-80">

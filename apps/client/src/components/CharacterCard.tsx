@@ -23,6 +23,8 @@ import LocationIcon from './icons/LocationIcon';
 import BtnRect from './buttons/BtnRect';
 import useCreateTemplateCharacterMutation from 'src/hooks/useCreateTemplateCharacterMutation/useCreateTemplateCharacterMutation';
 import useDeleteCharacterMutation from 'src/hooks/useDeleteCharacterMutation/useDeleteCharacterMutation';
+import Icon from '@mdi/react';
+import { mdiAlphaTCircleOutline, mdiStorefrontOutline } from '@mdi/js';
 
 const CharacterCard = ({ characterId }: { characterId: number }) => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -136,14 +138,19 @@ const CharacterCard = ({ characterId }: { characterId: number }) => {
             <div className="relative col-span-2 col-start-2 row-start-1 flex h-full w-full flex-col justify-between gap-4 p-4 md:gap-6 md:p-6">
               <div className="flex w-full items-center justify-between gap-4">
                 <ArrowHeader2 title={characterName} />
-                {character?.npcTypes && character?.npcTypes?.length > 0 && (
-                  <h4 className="text-tertiary">
-                    (
-                    {character.npcTypes
-                      .map((type) => capitalCase(type))
-                      .join(', ')}
-                    )
-                  </h4>
+                {character?.npcTypes?.includes('shop') && (
+                  <Icon
+                    className="text-primary"
+                    path={mdiStorefrontOutline}
+                    size={1.25}
+                  />
+                )}
+                {character?.npcTypes?.includes('template') && (
+                  <Icon
+                    className="text-primary"
+                    path={mdiAlphaTCircleOutline}
+                    size={1.25}
+                  />
                 )}
                 {!mobile && (
                   <div className="flex grow flex-wrap items-center justify-start gap-1">
