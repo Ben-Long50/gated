@@ -1,11 +1,14 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import deleteCharacter from './deleteCharacter';
 import { useContext } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
+import { socket } from 'src/socket';
 
 const useDeleteCharacterMutation = (characterId?: string) => {
   const { user } = useContext(AuthContext);
+  const { campaignId } = useParams();
+
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   return useMutation({
@@ -13,10 +16,16 @@ const useDeleteCharacterMutation = (characterId?: string) => {
       return deleteCharacter(characterId);
     },
     onSuccess: () => {
+      if (campaignId) {
+        queryClient.invalidateQueries({
+          queryKey: ['campaign', Number(campaignId)],
+        });
+        socket.emit('campaign', Number(campaignId));
+      }
       queryClient.invalidateQueries({
         queryKey: ['user', user.id],
       });
-      navigate('/glam/characters');
+      navigate('..');
     },
     onError: () => {
       console.error('Error creating character');

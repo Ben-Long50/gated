@@ -54,6 +54,7 @@ const MapBuilder = () => {
   const [activeComponentId, setActiveComponentId] = useState<number | null>(
     null,
   );
+  const [quickTilePicker, setQuickTilePicker] = useState(false);
 
   const [mapDraft, setMapDraft] = useState(() =>
     localStorage.getItem('mapDraft')
@@ -585,6 +586,8 @@ const MapBuilder = () => {
             setActiveLayerId={setActiveLayerId}
             setPreviewLayerId={setPreviewLayerId}
             setActiveComponentId={setActiveComponentId}
+            quickTilePicker={quickTilePicker}
+            setQuickTilePicker={setQuickTilePicker}
             handleAddLayer={handleAddLayer}
             handleDeleteLayer={handleDeleteLayer}
             handleEditLayerName={handleEditLayerName}
@@ -763,7 +766,7 @@ const MapBuilder = () => {
           </MapBuilderSidebar>
         )}
       </mapForm.Field>
-      {pngPath && (
+      {pngPath && quickTilePicker && (
         <div className="bg-primary timing absolute bottom-4 left-4 flex origin-bottom-left scale-50 flex-col items-start gap-4 rounded-md p-4 shadow-md shadow-black hover:scale-100">
           <ArrowHeader4 className="text-primary" title={capitalCase(pngName)} />
           <TilePicker

@@ -27,10 +27,9 @@ const EncounterFormMap = () => {
   }
 
   return (
-    <>
-      <Map />
+    <div className="flex h-full flex-col items-center gap-8">
       <ThemeContainer
-        className="absolute bottom-0 w-full"
+        className="w-full max-w-5xl"
         chamfer="medium"
         borderColor={accentPrimary}
       >
@@ -59,7 +58,8 @@ const EncounterFormMap = () => {
           </BtnRect>
         </div>
       </ThemeContainer>
-    </>
+      <Map />
+    </div>
   );
 };
 

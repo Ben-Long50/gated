@@ -15,6 +15,8 @@ const MapBuilderSidebar = ({
   setActiveLayerId,
   setPreviewLayerId,
   setActiveComponentId,
+  quickTilePicker,
+  setQuickTilePicker,
   handleAddLayer,
   handleDeleteLayer,
   handleEditLayerName,
@@ -30,6 +32,8 @@ const MapBuilderSidebar = ({
   setActiveLayerId: (id: number) => void;
   setPreviewLayerId: (id: number) => void;
   setActiveComponentId: (id: number | null) => void;
+  quickTilePicker: boolean;
+  setQuickTilePicker: (mode: boolean) => void;
   handleAddLayer: () => void;
   handleDeleteLayer: (id: number) => void;
   handleEditLayerName: (id: number, newName: string) => void;
@@ -106,6 +110,20 @@ const MapBuilderSidebar = ({
             handleDeleteComponent={handleDeleteComponent}
           />
         )}
+        <div className="mb-4 flex items-center justify-between">
+          <p>Quick Tile Picker</p>
+          <input
+            type="checkbox"
+            className="size-6"
+            onChange={(e) => {
+              if (e.target.checked) {
+                setQuickTilePicker(true);
+              } else {
+                setQuickTilePicker(false);
+              }
+            }}
+          />
+        </div>
         {children}
       </div>
     </div>

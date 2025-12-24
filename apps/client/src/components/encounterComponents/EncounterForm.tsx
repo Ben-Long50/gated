@@ -33,7 +33,7 @@ const EncounterForm = () => {
   }
 
   return (
-    <div className="flex max-h-full w-full max-w-7xl flex-col items-center gap-8">
+    <div className="flex max-h-full w-full flex-col items-center gap-8">
       <h1>Create Encounter</h1>
       <Outlet context={{ maps, form: encounterForm, createEncounter }} />
     </div>

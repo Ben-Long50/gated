@@ -40,7 +40,8 @@ const MapSidebar = ({
 
   return (
     <div
-      className={`${layerSidebar ? 'w-96' : 'w-[72px]'} bg-primary scrollbar-primary-2 timing absolute right-0 top-0 z-10 flex h-full flex-col gap-2 overflow-x-hidden p-3 shadow-md shadow-black`}
+      className={`${layerSidebar ? 'w-96' : 'w-[72px]'} bg-primary scrollbar-primary-2 timing fixed bottom-0 right-0 z-10 flex h-full flex-col gap-2 overflow-x-hidden p-3 shadow-md shadow-black`}
+      style={{ top: navbarHeight }}
       onMouseEnter={() => setLayerSidebar(true)}
       onMouseLeave={() => {
         setLayerSidebar(false);
