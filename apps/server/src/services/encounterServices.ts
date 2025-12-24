@@ -22,7 +22,7 @@ const encounterServices = {
           campaignId,
         },
         include: {
-          characters: { select: { id: true } },
+          characters: { select: { id: true, userId: true } },
           history: {
             include: {
               character: true,
@@ -551,6 +551,8 @@ const encounterServices = {
         await itemServices.setItemNotAvailable(item.id);
         io.to(`campaign ${campaignId}`).emit('item', item.id);
       }
+
+      io.to(`campaign ${campaignId}`).emit('character', activeCharacter.id);
 
       return phaseAction;
     } catch (error) {
