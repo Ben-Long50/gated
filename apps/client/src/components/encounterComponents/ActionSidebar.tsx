@@ -28,13 +28,13 @@ import { EncounterContext } from 'src/contexts/EncounterContext';
 const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
   const { activeCharacter, actionForm } = useContext(EncounterContext);
 
-  const { filteredCharacter: character } = useCharacter(activeCharacter.id);
+  const { filteredCharacter: character } = useCharacter(activeCharacter?.id);
   const navigate = useNavigate();
   const location = useLocation();
   const parts = location.pathname.split('/');
   const queryClient = useQueryClient();
 
-  const characterActions = character?.characterInventory.actions;
+  const characterActions = character?.characterInventory?.actions;
 
   const subcategory = useStore(
     actionForm.store,

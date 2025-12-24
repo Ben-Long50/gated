@@ -71,31 +71,32 @@ const useCombat = () => {
   );
 
   const [controlledCharacterId, setControlledCharacterId] = useState<
-    number | undefined
-  >(undefined);
-
-  useEffect(() => {
-    if (combat?.characters) {
-      setControlledCharacterId(
-        gameMaster
-          ? activeCharacter?.id
-          : combat?.characters.find(
-              (character: Character) =>
-                character.userId === user.id && character.playerCharacter,
-            )?.id,
-      );
-    }
-  }, [combat?.characters, user]);
+    number | null
+  >(null);
 
   const { filteredCharacter: controlledCharacter } = useCharacter(
     controlledCharacterId,
   );
+  console.log(combat);
 
   useEffect(() => {
+    if (!combat?.characters) return;
+
+    let nextControlledCharacter: Character | undefined;
+
     if (gameMaster) {
-      setControlledCharacterId(combat?.turnOrder[combat?.turnPosition]);
+      nextControlledCharacter = activeCharacter;
+    } else {
+      nextControlledCharacter = combat.characters.find(
+        (character: Character) =>
+          character.userId === user.id && character.playerCharacter,
+      );
     }
-  }, [combat?.turnPosition]);
+
+    if (nextControlledCharacter?.id != null) {
+      setControlledCharacterId(nextControlledCharacter.id);
+    }
+  }, [combat, activeCharacter, gameMaster, user.id]);
 
   const setItem = useCombatStore((state) => state.setItem);
 

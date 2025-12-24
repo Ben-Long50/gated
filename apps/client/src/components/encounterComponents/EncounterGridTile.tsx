@@ -44,7 +44,7 @@ const EncounterGridTile = ({
   return (
     <div
       ref={setNodeRef}
-      className={`${gridDisplay && 'border'} relative z-10 flex size-full items-center justify-center`}
+      className={`${gridDisplay && 'border'} relative flex size-full items-center justify-center`}
       style={{
         borderColor: `${accentPrimary}80`,
         gridRow: row,

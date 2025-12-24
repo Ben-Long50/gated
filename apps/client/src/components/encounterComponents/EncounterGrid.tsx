@@ -190,28 +190,7 @@ const EncounterGrid = ({
               tailShape="circle"
             />
           )}
-          {Array.from({ length: width * height }).map((_, index) => {
-            const { row, col } = getCoords(width, index);
 
-            const key = `${row},${col}`;
-
-            const characterLocations = locationMap.get(key) ?? [];
-
-            return (
-              <EncounterGridTile
-                key={index}
-                row={row}
-                col={col}
-                height={height}
-                gridDisplay={gridDisplay}
-                mapScale={mapScale}
-                characterLocations={characterLocations}
-                activeCoordinates={activeCoordinates}
-                range={range}
-                rangeColor={rangeColor}
-              />
-            );
-          })}
           {layers.map((layer, index) => {
             if (!layer.hidden) {
               return (
@@ -239,6 +218,28 @@ const EncounterGrid = ({
             } else {
               return;
             }
+          })}
+          {Array.from({ length: width * height }).map((_, index) => {
+            const { row, col } = getCoords(width, index);
+
+            const key = `${row},${col}`;
+
+            const characterLocations = locationMap.get(key) ?? [];
+
+            return (
+              <EncounterGridTile
+                key={index}
+                row={row}
+                col={col}
+                height={height}
+                gridDisplay={gridDisplay}
+                mapScale={mapScale}
+                characterLocations={characterLocations}
+                activeCoordinates={activeCoordinates}
+                range={range}
+                rangeColor={rangeColor}
+              />
+            );
           })}
         </div>
       </DragScrollContainer>
