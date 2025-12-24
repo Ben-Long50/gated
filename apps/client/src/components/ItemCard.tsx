@@ -283,10 +283,10 @@ const ItemCard = ({
             </div>
             {(parts.includes('equipment') ||
               parts.includes('deployments') ||
-              parts.includes('maps')) && (
-              <div className="z-10">
-                {(gameMaster || ownerId === user?.id) &&
-                  (item.itemTypes.includes('weapon') ? (
+              parts.includes('maps')) &&
+              (gameMaster || ownerId === user?.id) && (
+                <div className="z-10">
+                  {item.itemTypes.includes('weapon') ? (
                     <WeaponControls
                       weaponId={item.id}
                       stats={itemStats}
@@ -324,9 +324,9 @@ const ItemCard = ({
                         cardType={cardType}
                       />
                     )
-                  ))}
-              </div>
-            )}
+                  )}
+                </div>
+              )}
           </div>
         </ThemeContainer>
       )}

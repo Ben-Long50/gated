@@ -25,8 +25,10 @@ import useCreateTemplateCharacterMutation from 'src/hooks/useCreateTemplateChara
 import useDeleteCharacterMutation from 'src/hooks/useDeleteCharacterMutation/useDeleteCharacterMutation';
 import Icon from '@mdi/react';
 import { mdiAlphaTCircleOutline, mdiStorefrontOutline } from '@mdi/js';
+import { CampaignContext } from 'src/contexts/CampaignContext';
 
 const CharacterCard = ({ characterId }: { characterId: number }) => {
+  const { gameMaster } = useContext(CampaignContext);
   const { accentPrimary } = useContext(ThemeContext);
   const { mobile } = useContext(LayoutContext);
   const { conditionId } = useParams();
@@ -290,7 +292,7 @@ const CharacterCard = ({ characterId }: { characterId: number }) => {
                   </div>
                 </div>
               </div>
-              {
+              {gameMaster && (
                 <BtnRect
                   className="group"
                   ariaLabel="Create template character"
@@ -306,7 +308,7 @@ const CharacterCard = ({ characterId }: { characterId: number }) => {
                     'Delete Character'
                   )}
                 </BtnRect>
-              }
+              )}
               {character?.npcTypes.includes('template') && (
                 <BtnRect
                   className="group"

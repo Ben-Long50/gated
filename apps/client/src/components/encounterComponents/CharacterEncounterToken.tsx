@@ -9,7 +9,7 @@ import RangeIcon from '../icons/RangeIcon';
 import { useDraggable } from '@dnd-kit/core';
 import { EncounterContext } from 'src/contexts/EncounterContext';
 import { socket } from 'src/socket';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Location } from 'src/types/map';
 import isInRange from './encounterUtils/isInRange';
 
@@ -29,6 +29,7 @@ const CharacterEncounterToken = ({
   const { statColorMap } = useContext(ThemeContext);
   const { combat, activeCharacter, encounterPermissions, rolls, actionForm } =
     useContext(EncounterContext);
+  const navigate = useNavigate();
   const { encounterId } = useParams();
 
   const { filteredCharacter: character, isLoading } = useCharacter(
@@ -103,6 +104,9 @@ const CharacterEncounterToken = ({
                 field.handleChange(character);
               }
             }
+          }}
+          onDoubleClick={() => {
+            navigate(`characters/${location.characterId}`);
           }}
           onMouseEnter={() => {
             if (activeCharacter.id === character?.id) {

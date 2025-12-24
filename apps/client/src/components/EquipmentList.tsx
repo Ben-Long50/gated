@@ -2,6 +2,7 @@ import { ReactNode, useContext } from 'react';
 import { ThemeContext } from '../contexts/ThemeContext';
 import ItemMenu from './ItemMenu';
 import { SortedInventory } from 'src/types/character';
+import { LayoutContext } from 'src/contexts/LayoutContext';
 
 const EquipmentList = ({
   equipment,
@@ -18,6 +19,7 @@ const EquipmentList = ({
   toggleModal: () => void;
   children?: ReactNode;
 }) => {
+  const { mobile } = useContext(LayoutContext);
   const { rarityColorMap } = useContext(ThemeContext);
 
   return (
