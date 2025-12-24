@@ -281,11 +281,11 @@ const CharacterForm = () => {
                   title="Sanity"
                   current={
                     stats.maxSanity +
-                      attributes.esoterica.skills.mysticism.points || 0
+                      attributes.esoterica.skills.mysticism.points * 2 || 0
                   }
                   total={
                     stats.maxSanity +
-                    attributes.esoterica.skills.mysticism.points
+                    attributes.esoterica.skills.mysticism.points * 2
                   }
                   color="rgb(96 165 250)"
                   cardWidth={cardRef.current?.offsetWidth}
@@ -296,11 +296,11 @@ const CharacterForm = () => {
                   title="Cyber"
                   current={
                     stats.maxCyber +
-                      attributes.cybernetica.skills.chromebits.points || 0
+                      attributes.cybernetica.skills.chromebits.points * 2 || 0
                   }
                   total={
                     stats.maxCyber +
-                    attributes.cybernetica.skills.chromebits.points
+                    attributes.cybernetica.skills.chromebits.points * 2
                   }
                   color="rgb(52 211 153)"
                   cardWidth={cardRef.current?.offsetWidth}
@@ -311,10 +311,11 @@ const CharacterForm = () => {
                   title="Equip"
                   current={
                     stats.maxEquip +
-                      attributes.violence.skills.threshold.points || 0
+                      attributes.violence.skills.threshold.points * 2 || 0
                   }
                   total={
-                    stats.maxEquip + attributes.violence.skills.threshold.points
+                    stats.maxEquip +
+                    attributes.violence.skills.threshold.points * 2
                   }
                   color="rgb(251 191 36)"
                   cardWidth={cardRef.current?.offsetWidth}

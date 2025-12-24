@@ -364,7 +364,8 @@ const CharacterUpdateForm = () => {
                           character?.stats.maxSanity +
                           (attributes.esoterica.skills.mysticism.points -
                             character?.attributes.esoterica.skills.mysticism
-                              .points)
+                              .points) *
+                            2
                         }
                         color={statColorMap['Sanity']}
                         cardWidth={cardRef.current?.offsetWidth}
@@ -383,8 +384,10 @@ const CharacterUpdateForm = () => {
                   current={character?.stats.cyber || 0}
                   total={
                     character?.stats.maxCyber +
-                    attributes.cybernetica.skills.chromebits.points -
-                    character?.attributes.cybernetica.skills.chromebits.points
+                    (attributes.cybernetica.skills.chromebits.points -
+                      character?.attributes.cybernetica.skills.chromebits
+                        .points) *
+                      2
                   }
                   color="rgb(52 211 153)"
                   cardWidth={cardRef.current?.offsetWidth}
@@ -396,8 +399,9 @@ const CharacterUpdateForm = () => {
                   current={character?.stats.weight || 0}
                   total={
                     character?.stats.maxEquip +
-                    attributes.violence.skills.threshold.points -
-                    character?.attributes.violence.skills.threshold.points
+                    (attributes.violence.skills.threshold.points -
+                      character?.attributes.violence.skills.threshold.points) *
+                      2
                   }
                   color="rgb(251 191 36)"
                   cardWidth={cardRef.current?.offsetWidth}
