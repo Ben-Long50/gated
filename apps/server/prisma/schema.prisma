@@ -165,19 +165,19 @@ model History {
   createdAt              DateTime      @default(now())
   campaign               Campaign      @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   campaignId             Int
-  encounter              Encounter?    @relation(name: "history", fields: [encounterId], references: [id])
+  encounter              Encounter?    @relation(name: "history", fields: [encounterId], references: [id], onDelete: Cascade)
   encounterId            Int?
-  phaseHistoryAction     PhaseHistory? @relation(name: "phaseAction", fields: [phaseHistoryActionId], references: [id])
+  phaseHistoryAction     PhaseHistory? @relation(name: "phaseAction", fields: [phaseHistoryActionId], references: [id], onDelete: Cascade)
   phaseHistoryActionId   Int?          @unique
-  phaseHistoryReaction   PhaseHistory? @relation(name: "phaseReactions", fields: [phaseHistoryReactionId], references: [id])
+  phaseHistoryReaction   PhaseHistory? @relation(name: "phaseReactions", fields: [phaseHistoryReactionId], references: [id], onDelete: Cascade)
   phaseHistoryReactionId Int?
-  character              Character     @relation("activeCharacter", fields: [characterId], references: [id])
+  character              Character     @relation("activeCharacter", fields: [characterId], references: [id], onDelete: Cascade)
   characterId            Int
-  target                 Character?    @relation("targetCharacter", fields: [targetId], references: [id])
+  target                 Character?    @relation("targetCharacter", fields: [targetId], references: [id], onDelete: Cascade)
   targetId               Int?
-  action                 Action        @relation(fields: [actionId], references: [id])
+  action                 Action        @relation(fields: [actionId], references: [id], onDelete: Cascade)
   actionId               Int
-  item                   Item?         @relation(fields: [itemId], references: [id])
+  item                   Item?         @relation(fields: [itemId], references: [id], onDelete: Cascade)
   itemId                 Int?
   rollResult             Json?
 }
