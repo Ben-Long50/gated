@@ -61,7 +61,7 @@ const campaignServices = {
                     },
                     affiliations: { select: { id: true } },
                     owner: true,
-                    encounters: { select: { id: true, mapId: true } },
+                    encounters: { select: { id: true, mapId: true, combatPhase: true } },
                 },
             });
             if (campaigns.length === 0) {

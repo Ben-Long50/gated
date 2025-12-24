@@ -208,13 +208,12 @@ const encounterServices = {
         },
       });
 
-      const updatedEncounter =
-        await encounterServices.getEncounterById(encounterId);
-
-      io.to(`encounter ${encounterId}`).emit(
-        'updateEncounter',
-        updatedEncounter,
+      io.to(`campaign ${encounter.campaignId}`).emit(
+        'campaign',
+        encounter.campaignId,
       );
+
+      io.to(`campaign ${encounter.campaignId}`).emit('encounter', encounterId);
     } catch (error) {
       console.error(error);
       throw new Error('Failed to activate encounter');
