@@ -17,9 +17,10 @@ const Die = ({
   size: number;
   modifiers: string[];
 }) => {
-  const lucky = modifiers.includes('lucky') && !modifiers.includes('unlucky');
-  const unlucky = modifiers.includes('unlucky') && !modifiers.includes('lucky');
-  const loading = modifiers.includes('loading');
+  const lucky = modifiers?.includes('lucky') && !modifiers?.includes('unlucky');
+  const unlucky =
+    modifiers?.includes('unlucky') && !modifiers?.includes('lucky');
+  const loading = modifiers?.includes('loading');
 
   let die;
 
@@ -27,7 +28,7 @@ const Die = ({
     case 1:
       die = (
         <Die1Icon
-          className={`${loading && 'opacity-50'} ${modifiers.includes('dooming') ? 'fill-red-500' : 'fill-zinc-600 dark:fill-gray-200'} h-full w-full`}
+          className={`${loading && 'opacity-50'} ${modifiers?.includes('dooming') ? 'fill-red-500' : 'fill-zinc-600 dark:fill-gray-200'} h-full w-full`}
         />
       );
       break;
@@ -62,7 +63,7 @@ const Die = ({
     case 6:
       die = (
         <Die6Icon
-          className={`${loading && 'opacity-50'} ${modifiers.includes('booming') ? 'fill-yellow-400' : !modifiers.includes('booming') ? 'fill-green-500' : 'fill-zinc-600 dark:fill-gray-200'} h-full w-full`}
+          className={`${loading && 'opacity-50'} ${modifiers?.includes('booming') ? 'fill-yellow-400' : !modifiers?.includes('booming') ? 'fill-green-500' : 'fill-zinc-600 dark:fill-gray-200'} h-full w-full`}
         />
       );
       break;

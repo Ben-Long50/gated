@@ -1,4 +1,5 @@
 import { Character } from './character';
+import { Encounter } from './encounter';
 import { Affiliation, Faction } from './faction';
 import { Picture } from './picture';
 import { User } from './user';
@@ -20,6 +21,7 @@ interface Campaign {
   characters: Character[];
   sessions: Session[];
   affiliations: Affiliation[];
+  encounters: Partial<Encounter>[];
 }
 
 interface Session {

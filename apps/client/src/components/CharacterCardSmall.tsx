@@ -40,6 +40,10 @@ const CharacterCardSmall = ({
 
   const setCharacterId = useMapStore((state) => state.setCharacterId);
 
+  const characterName = character?.lastName
+    ? character?.firstName + ' ' + character?.lastName
+    : character?.firstName;
+
   const handleMenu = (e: MouseEvent) => {
     if (!containerRef.current) return;
     setMenu('character', 'large', characterId);
@@ -86,7 +90,7 @@ const CharacterCardSmall = ({
       <CharacterRadialMenu character={character} containerRef={containerRef} />
       <ArrowHeader4
         className={`${characterList ? 'visible h-8 translate-x-0 opacity-100' : 'invisible h-0 -translate-x-full opacity-0'} ${active ? 'text-accent' : 'text-primary'} timing w-full`}
-        title={`${character?.firstName} ${character?.lastName}`}
+        title={characterName}
       />
       <div className={`relative flex items-center`}>
         <CharacterPictureRound

@@ -182,7 +182,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       socket.off('item');
       socket.off('affiliation');
     };
-  }, [activeCampaigns]);
+  }, [activeCampaigns, activeEncounters]);
 
   if (isLoading) return <Loading />;
 

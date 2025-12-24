@@ -71,6 +71,8 @@ const Encounter = () => {
     [combat?.phaseHistory],
   );
 
+  console.log(controlledCharacterId);
+
   useEffect(() => {
     if (combat && combat.combatPhase === 'pending') {
       navigate('..');

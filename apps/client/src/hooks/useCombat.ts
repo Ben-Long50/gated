@@ -85,7 +85,7 @@ const useCombat = () => {
             )?.id,
       );
     }
-  }, [combat?.characters]);
+  }, [combat?.characters, user]);
 
   const { filteredCharacter: controlledCharacter } = useCharacter(
     controlledCharacterId,

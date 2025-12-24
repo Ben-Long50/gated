@@ -13,6 +13,7 @@ import useCreateCombatMutation from 'src/hooks/encounter hooks/useCreateCombatMu
 import { EncounterContext } from 'src/contexts/EncounterContext';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import useRollInitiativeMutation from 'src/hooks/encounter hooks/useRollInitiativeMutation/useRollInitiativeMutation';
+import { socket } from 'src/socket';
 
 const InitiativeModal = () => {
   const { gameMaster } = useContext(CampaignContext);
@@ -172,7 +173,7 @@ const InitiativeModal = () => {
                   combatPhase: 'action',
                   turnPosition: 0,
                 });
-                resetRolls();
+                socket.emit('resetBoard', { encounterId: Number(encounterId) });
               }}
             >
               Start Combat

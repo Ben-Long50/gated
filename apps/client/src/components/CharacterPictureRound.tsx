@@ -59,7 +59,7 @@ const CharacterPictureRound = ({
           <InsanityIcon className="absolute inset-0 size-full fill-black stroke-blue-600 stroke-2 p-0.5" />
         )}
       </div>
-      {character.npcTypes?.includes('template') && (
+      {character?.npcTypes && character?.npcTypes.includes('template') && (
         <Icon
           className="text-primary absolute -right-1 -top-1"
           path={mdiAlphaTCircleOutline}
