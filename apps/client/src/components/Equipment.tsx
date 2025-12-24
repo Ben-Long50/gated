@@ -258,16 +258,20 @@ const Equipment = () => {
                   {character?.stats.insanities || 0}
                 </p>
               </div>
-              {character?.actions && character?.actions.length > 0 && (
-                <>
-                  <Divider />
-                  <ArrowHeader3 title="Unique Actions" />
-                  {character?.actions.map((action: Action) => (
-                    <ActionCard key={action?.id} action={action} />
-                  ))}
-                </>
-              )}
             </div>
+            {character?.actions && character?.actions.length > 0 && (
+              <>
+                <Divider />
+                <ArrowHeader3 title="Unique Actions" />
+                <div className="grid grid-cols-2 gap-8">
+                  {character?.actions
+                    .filter((action) => action != null)
+                    .map((action: Action) => (
+                      <ActionCard key={action?.id} action={action} />
+                    ))}
+                </div>
+              </>
+            )}
           </div>
         </ThemeContainer>
         <div ref={activeRef} className="col-span-2 flex w-full flex-col gap-8">
