@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import encounterServices from '../services/encounterServices.js';
-import parseRequestBody from '../utils/parseRequestBody.js';
 
 const encounterController = {
   getEncounters: async (req: Request, res: Response) => {
@@ -188,11 +187,9 @@ const encounterController = {
         throw new Error('Could not find authenticated user');
       }
 
-      const parsedBody = parseRequestBody(req.body);
-
       await encounterServices.scheduleReaction(
         Number(req.params.encounterId),
-        parsedBody.characterId,
+        req.body.characterId,
       );
 
       res.status(200).json({ message: 'Successfully scheduled reaction' });
@@ -207,11 +204,9 @@ const encounterController = {
         throw new Error('Could not find authenticated user');
       }
 
-      const parsedBody = parseRequestBody(req.body);
-
       await encounterServices.passReaction(
         Number(req.params.encounterId),
-        parsedBody.characterId,
+        req.body.characterId,
       );
 
       res.status(200).json({ message: 'Successfully passed reaction' });
@@ -226,11 +221,9 @@ const encounterController = {
         throw new Error('Could not find authenticated user');
       }
 
-      const parsedBody = parseRequestBody(req.body);
-
       await encounterServices.finishReaction(
         Number(req.params.encounterId),
-        parsedBody.characterId,
+        req.body.characterId,
       );
 
       res.status(200).json({ message: 'Successfully finished reaction' });

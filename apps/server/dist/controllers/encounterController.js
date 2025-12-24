@@ -1,5 +1,4 @@
 import encounterServices from '../services/encounterServices.js';
-import parseRequestBody from '../utils/parseRequestBody.js';
 const encounterController = {
     getEncounters: async (req, res) => {
         try {
@@ -138,8 +137,7 @@ const encounterController = {
             if (!req.user) {
                 throw new Error('Could not find authenticated user');
             }
-            const parsedBody = parseRequestBody(req.body);
-            await encounterServices.scheduleReaction(Number(req.params.encounterId), parsedBody.characterId);
+            await encounterServices.scheduleReaction(Number(req.params.encounterId), req.body.characterId);
             res.status(200).json({ message: 'Successfully scheduled reaction' });
         }
         catch (error) {
@@ -151,8 +149,7 @@ const encounterController = {
             if (!req.user) {
                 throw new Error('Could not find authenticated user');
             }
-            const parsedBody = parseRequestBody(req.body);
-            await encounterServices.passReaction(Number(req.params.encounterId), parsedBody.characterId);
+            await encounterServices.passReaction(Number(req.params.encounterId), req.body.characterId);
             res.status(200).json({ message: 'Successfully passed reaction' });
         }
         catch (error) {
@@ -164,8 +161,7 @@ const encounterController = {
             if (!req.user) {
                 throw new Error('Could not find authenticated user');
             }
-            const parsedBody = parseRequestBody(req.body);
-            await encounterServices.finishReaction(Number(req.params.encounterId), parsedBody.characterId);
+            await encounterServices.finishReaction(Number(req.params.encounterId), req.body.characterId);
             res.status(200).json({ message: 'Successfully finished reaction' });
         }
         catch (error) {
