@@ -27,13 +27,17 @@ const useCharacter = (characterId: number) => {
     isPending: inventoryPending,
   } = useInventory(character?.characterInventory);
 
-  const { stats } = useStats(
-    equipment,
-    actions,
-    character?.attributes,
-    character?.perks,
-    character?.stats,
-  );
+  // const { stats } = useStats(
+  //   equipment,
+  //   actions,
+  //   character?.attributes,
+  //   character?.perks,
+  //   character?.stats,
+  // );
+
+  const stats = character?.stats;
+
+  console.log(stats);
 
   const filterByPreferences = (character: Character) => {
     const characterOwner =

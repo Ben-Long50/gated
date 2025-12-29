@@ -111,8 +111,9 @@ const EncounterList = () => {
                     </div>
                   </div>
                   <Divider />
-                  {gameMaster && !encounter.active && (
+                  {gameMaster && (
                     <BtnRect
+                      className="group"
                       type="button"
                       ariaLabel="Begin encounter"
                       onClick={(e) => {
@@ -120,7 +121,14 @@ const EncounterList = () => {
                         activateEncounter.mutate(encounter.id);
                       }}
                     >
-                      Begin Encounter
+                      {activateEncounter.isPending ? (
+                        <Loading
+                          className="group-hover:text-accent"
+                          size={1.15}
+                        />
+                      ) : (
+                        'Begin Encounter'
+                      )}
                     </BtnRect>
                   )}
                 </div>

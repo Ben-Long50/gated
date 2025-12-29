@@ -89,11 +89,10 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
     socket.on('actionRoll', async ({ encounterId, rollsArray }) => {
       if (rollsArray) {
         const rolls = new Map(rollsArray) as Map<number, any>;
-
         await animateRoll(rolls);
-
-        advancePhase.mutate();
       }
+
+      advancePhase.mutate();
 
       queryClient.invalidateQueries({
         queryKey: ['encounterHistory', encounterId],

@@ -56,14 +56,16 @@ export interface History {
   phaseHistoryActionId: number;
   phaseHistoryReaction: PhaseHistory;
   phaseHistoryReactionId: number;
-  character: Character;
+  characterSnapshot: Character;
   characterId: number;
-  target?: Character;
+  targetSnapshot?: Character;
   targetId?: number;
-  action: Action;
+  actionSnapshot: Action;
   actionId: number;
-  item?: Item;
+  itemSnapshot?: Item;
   itemId?: number;
+  armorSnapshots?: Item[];
+  armorIds?: number[];
   rollResult: RollResult;
 }
 

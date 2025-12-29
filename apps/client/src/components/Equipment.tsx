@@ -244,7 +244,8 @@ const Equipment = () => {
                   </h3>
                 </div>
                 <p className="text-secondary min-w-6 text-center text-xl sm:pt-1 sm:text-2xl">
-                  {character?.stats.injuries || 0}
+                  {character?.stats.injuries || 0} /{' '}
+                  {character?.stats.permanentInjuries}
                 </p>
               </div>
               <div className="bg-secondary flex items-center justify-between gap-2 rounded-md p-2 shadow-md shadow-black">
@@ -255,7 +256,8 @@ const Equipment = () => {
                   </h3>
                 </div>
                 <p className="text-secondary min-w-6 text-center text-xl sm:pt-1 sm:text-2xl">
-                  {character?.stats.insanities || 0}
+                  {character?.stats.insanities || 0} /{' '}
+                  {character?.stats.permanentInsanities}
                 </p>
               </div>
             </div>
@@ -263,8 +265,11 @@ const Equipment = () => {
               <>
                 <Divider />
                 <ArrowHeader3 title="Unique Actions" />
-                <div className="grid grid-cols-2 gap-8">
+                <div className="grid grid-cols-2 gap-4">
                   {character?.actions
+                    .sort((a, b) =>
+                      a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
+                    )
                     .filter((action) => action != null)
                     .map((action: Action) => (
                       <ActionCard key={action?.id} action={action} />

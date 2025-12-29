@@ -77,7 +77,6 @@ const useCombat = () => {
   const { filteredCharacter: controlledCharacter } = useCharacter(
     controlledCharacterId,
   );
-  console.log(combat);
 
   useEffect(() => {
     if (!combat?.characters) return;

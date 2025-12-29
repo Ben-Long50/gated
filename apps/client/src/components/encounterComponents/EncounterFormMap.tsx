@@ -46,12 +46,13 @@ const EncounterFormMap = () => {
             {(field) => <InputField field={field} label="Encounter Name" />}
           </form.Field>
           <BtnRect
+            className="group"
             type="button"
             ariaLabel="Create encounter"
             onClick={() => form.handleSubmit()}
           >
             {createEncounter.isPending ? (
-              <Loading size={1.15} />
+              <Loading className="group-hover:text-accent" size={1.15} />
             ) : (
               'Create Encounter'
             )}

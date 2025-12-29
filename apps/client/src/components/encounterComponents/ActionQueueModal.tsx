@@ -67,8 +67,8 @@ const ActionQueueModal = () => {
 
   const { damage, instances } = phaseAction?.rollResult
     ? calculateDamage(
-        phaseAction?.item,
-        phaseAction?.action,
+        phaseAction?.itemSnapshot,
+        phaseAction?.actionSnapshot,
         phaseAction?.rollResult.successes - reducedSuccesses,
       )
     : { damage: null, instances: null };

@@ -14,6 +14,7 @@ import { EncounterContext } from 'src/contexts/EncounterContext';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import useRollInitiativeMutation from 'src/hooks/encounter hooks/useRollInitiativeMutation/useRollInitiativeMutation';
 import { socket } from 'src/socket';
+import useAdvancePhaseMutation from 'src/hooks/encounter hooks/useAdvancePhaseMutation/useAdvancePhaseMutation';
 
 const InitiativeModal = () => {
   const { gameMaster } = useContext(CampaignContext);
@@ -25,6 +26,10 @@ const InitiativeModal = () => {
   const { data: campaign } = useCampaignQuery(Number(campaignId));
 
   const startCombat = useCreateCombatMutation(Number(campaignId));
+  const advancePhase = useAdvancePhaseMutation(
+    Number(campaignId),
+    Number(encounterId),
+  );
 
   const rollInitiative = useRollInitiativeMutation(
     Number(campaignId),
@@ -170,9 +175,9 @@ const InitiativeModal = () => {
                   id: Number(encounterId),
                   mapId: Number(mapId),
                   turnOrder: Array.from(rolls.keys()),
-                  combatPhase: 'action',
                   turnPosition: 0,
                 });
+                advancePhase.mutate();
                 socket.emit('resetBoard', { encounterId: Number(encounterId) });
               }}
             >

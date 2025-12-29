@@ -40,8 +40,16 @@ const useToggleEquipmentMutation = () => {
         campaignId:
           context.prevItemData?.characterInventory?.character.campaignId,
       });
-      return queryClient.invalidateQueries({
+      socket.emit('character', {
+        characterId: mutationInfo.characterId,
+        campaignId:
+          context.prevItemData?.characterInventory?.character.campaignId,
+      });
+      queryClient.invalidateQueries({
         queryKey: ['item', mutationInfo.itemId],
+      });
+      return queryClient.invalidateQueries({
+        queryKey: ['character', mutationInfo.characterId],
       });
     },
     throwOnError: false,

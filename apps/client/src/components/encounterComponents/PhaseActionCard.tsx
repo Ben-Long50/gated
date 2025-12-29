@@ -7,61 +7,150 @@ import CharacterPictureRound from '../CharacterPictureRound';
 import ArrowHeader3 from '../ArrowHeader3';
 import ItemCardSmall from '../ItemCardSmall';
 import StatBars from '../StatBars';
+import BlockIcon from '../icons/BlockIcon';
+import { History } from 'src/types/encounter';
+import ArrowHeader4 from '../ArrowHeader4';
+import CharacterStatBars from '../CharacterStatBars';
 
 const PhaseActionCard = ({ phaseAction }: { phaseAction: History }) => {
+  const character = phaseAction.characterSnapshot;
+  const target = phaseAction.targetSnapshot;
+  const item = phaseAction.itemSnapshot;
+  const action = phaseAction.actionSnapshot;
+
+  const characterName = character?.lastName
+    ? character?.firstName + ' ' + character?.lastName
+    : character?.firstName;
+
+  const targetName = target?.lastName
+    ? target?.firstName + ' ' + target?.lastName
+    : target?.firstName;
+
   return (
-    <div className="bg-primary flex w-full flex-col gap-6 rounded-md p-4 shadow-md shadow-black">
+    <div className="bg-primary flex w-full flex-col gap-4 rounded-md p-4 shadow-md shadow-black">
       <div className="flex w-full items-center gap-8">
-        <CharacterCardSmall
-          className="flex-1"
-          characterId={phaseAction.characterId}
-          characterList={true}
-        />
+        <div className="flex w-full flex-col items-start gap-4">
+          <ArrowHeader4 className="text-primary" title={characterName} />
+          <div className={`relative flex w-full items-center`}>
+            <CharacterPictureRound character={character} />
+            {character?.conditions && character?.conditions.length > 0 && (
+              <div className="absolute left-0 top-0 z-10 size-3 rounded-full bg-red-600 shadow-md shadow-black"></div>
+            )}
+            <div
+              className={`timing visible ml-4 grid max-h-20 w-full translate-x-0 grid-cols-[auto_auto_1fr_auto] place-items-center gap-2 gap-y-0 opacity-100`}
+            >
+              <CharacterStatBars
+                characterId={character?.id}
+                size="small"
+                stats={{
+                  currentHealth: character?.stats.currentHealth,
+                  maxHealth: character?.stats.maxHealth,
+                  currentSanity: character?.stats.currentSanity,
+                  maxSanity: character?.stats.maxSanity,
+                }}
+                cardWidth={300}
+              />
+            </div>
+          </div>
+        </div>
 
         {phaseAction.targetId && (
           <>
-            <Icon path={mdiArrowRight} size={1.5} className="text-tertiary" />
-            <CharacterCardSmall
-              className="flex-1"
-              characterId={phaseAction.targetId}
-              characterList={true}
+            <Icon
+              path={mdiArrowRight}
+              size={1.5}
+              className="text-tertiary shrink-0"
             />
+            <div className="flex w-full flex-col items-start gap-4">
+              <ArrowHeader4 className="text-primary" title={targetName} />
+              <div className={`relative flex w-full items-center`}>
+                <CharacterPictureRound character={target} />
+                {target?.conditions && target?.conditions.length > 0 && (
+                  <div className="absolute left-0 top-0 z-10 size-3 rounded-full bg-red-600 shadow-md shadow-black"></div>
+                )}
+                <div
+                  className={`timing visible ml-4 grid max-h-20 w-full translate-x-0 grid-cols-[auto_auto_1fr_auto] place-items-center gap-2 gap-y-0 opacity-100`}
+                >
+                  <CharacterStatBars
+                    characterId={target?.id}
+                    size="small"
+                    stats={{
+                      currentHealth: target?.stats.currentHealth,
+                      maxHealth: target?.stats.maxHealth,
+                      currentSanity: target?.stats.currentSanity,
+                      maxSanity: target?.stats.maxSanity,
+                    }}
+                    cardWidth={300}
+                  />
+                </div>
+              </div>
+            </div>
           </>
         )}
       </div>
-      {phaseAction.item && (
+      {item && (
         <ItemCardSmall
           className="col-span-2"
           heading={
             <div className="flex items-center gap-4">
               <CharacterPictureRound
                 className="-my-2 size-10"
-                character={phaseAction.item}
+                character={item}
               />
-              <ArrowHeader3 title={phaseAction.item.name} />
+              <ArrowHeader3 title={item.name} />
             </div>
           }
         >
           <div
             className={`scrollbar-primary-2 grid w-full grid-cols-[auto_auto_1fr_auto] place-items-center gap-2 gap-y-2 overflow-y-auto border-x-2 border-gray-400 border-opacity-50 px-4`}
           >
-            <StatBars stats={phaseAction.item.stats} cardWidth={501} />
+            <StatBars stats={item.stats} cardWidth={501} />
           </div>
         </ItemCardSmall>
       )}
-      <ActionCard className="col-span-2" action={phaseAction.action} />
+      <ActionCard className="col-span-2" action={action} />
+      {phaseAction.armorSnapshots &&
+        phaseAction.armorSnapshots.map((armor) => (
+          <ItemCardSmall
+            className="col-span-2"
+            heading={
+              <div className="mr-4 flex w-full items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <CharacterPictureRound
+                    className="-my-2 size-10"
+                    character={armor}
+                  />
+                  <ArrowHeader3 title={armor.name} />
+                </div>
+                <div className="flex items-center gap-4">
+                  <BlockIcon className="text-primary size-9" />
+                  <h2>{armor.blocks}</h2>
+                </div>
+              </div>
+            }
+          >
+            <div
+              className={`scrollbar-primary-2 grid w-full grid-cols-[auto_auto_1fr_auto] place-items-center gap-2 gap-y-2 overflow-y-auto border-x-2 border-gray-400 border-opacity-50 px-4`}
+            >
+              <StatBars stats={armor.stats} cardWidth={501} />
+            </div>
+          </ItemCardSmall>
+        ))}
       {phaseAction.rollResult && (
-        <div className="col-span-2 flex w-full flex-wrap items-center justify-center gap-2">
-          {phaseAction?.rollResult?.result.map((number: number, index) => (
-            <Die
-              key={index}
-              size={64}
-              number={number}
-              rolling={phaseAction?.rolling}
-              rollComplete={false}
-              modifiers={phaseAction.rollResult.modifiers}
-            />
-          ))}
+        <div className="flex w-full items-center justify-between gap-8">
+          <ArrowHeader3 title="Roll" />
+          <div className="col-span-2 flex flex-wrap items-center justify-center gap-2">
+            {phaseAction?.rollResult?.result.map((number: number, index) => (
+              <Die
+                key={index}
+                size={36}
+                number={number}
+                rolling={phaseAction?.rolling}
+                rollComplete={false}
+                modifiers={phaseAction.rollResult.modifiers}
+              />
+            ))}
+          </div>
         </div>
       )}
     </div>

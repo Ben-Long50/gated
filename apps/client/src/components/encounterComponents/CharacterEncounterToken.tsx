@@ -27,8 +27,14 @@ const CharacterEncounterToken = ({
   mapScale: number;
 }) => {
   const { statColorMap } = useContext(ThemeContext);
-  const { combat, activeCharacter, encounterPermissions, rolls, actionForm } =
-    useContext(EncounterContext);
+  const {
+    combat,
+    combatLoading,
+    activeCharacter,
+    encounterPermissions,
+    rolls,
+    actionForm,
+  } = useContext(EncounterContext);
   const navigate = useNavigate();
   const { encounterId } = useParams();
 
@@ -53,7 +59,7 @@ const CharacterEncounterToken = ({
     disabled: activeCharacter?.id !== location.characterId,
   });
 
-  if (isLoading) return <Loading size={1.25} />;
+  if (isLoading || combatLoading) return <Loading size={1.25} />;
 
   return (
     <actionForm.Field name="target">
@@ -120,7 +126,7 @@ const CharacterEncounterToken = ({
           }}
         >
           <CharacterPictureRound
-            className={`${activeCharacter.id === character?.id && 'activeToken'} ${combat.reactions.includes(location.characterId) && 'reactiveToken'} group-hover:border-accent timing size-full border-2 border-white`}
+            className={`${activeCharacter.id === character?.id && 'activeToken'} ${combat?.reactions.includes(location.characterId) && 'reactiveToken'} group-hover:border-accent timing size-full border-2 border-white`}
             character={character}
           />
           {roll && combat.combatPhase !== 'initiative' && (

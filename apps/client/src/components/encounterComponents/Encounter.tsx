@@ -30,6 +30,7 @@ const Encounter = () => {
   const { mobile } = useContext(LayoutContext);
   const {
     combat,
+    combatLoading,
     joinedPlayers,
     encounterPermissions,
     activeCharacter,
@@ -62,7 +63,7 @@ const Encounter = () => {
 
   const phaseActionCount = useMemo(
     () =>
-      combat?.phaseHistory.length > 0
+      combat?.phaseHistory?.length > 0
         ? [
             combat.phaseHistory[0].action,
             ...combat.phaseHistory[0].reactions,
@@ -70,8 +71,6 @@ const Encounter = () => {
         : 0,
     [combat?.phaseHistory],
   );
-
-  console.log(controlledCharacterId);
 
   useEffect(() => {
     if (combat && combat.combatPhase === 'pending') {
@@ -87,7 +86,7 @@ const Encounter = () => {
     }
   }, [combat]);
 
-  if (mapLoading || historyLoading) return <Loading />;
+  if (mapLoading || historyLoading || combatLoading) return <Loading />;
 
   if (!map) return <h1>No Map Found</h1>;
 
@@ -136,22 +135,24 @@ const Encounter = () => {
             setHistoryList(false);
           }}
         >
-          {combat.turnOrder?.map((characterId: number, index: number) => (
-            <Fragment key={characterId}>
-              <CharacterCardSmall
-                expanding={true}
-                characterList={characterList}
-                characterId={characterId}
-                active={
-                  combat.turnOrder.findIndex((id) => id === characterId) ===
-                  combat.turnPosition
-                }
-              />
-              {index < combat.turnOrder.length - 1 && (
-                <Divider className="!my-0 opacity-50" />
-              )}
-            </Fragment>
-          ))}
+          <div className="scrollbar-primary-2 flex h-full flex-col overflow-y-auto overflow-x-hidden">
+            {combat?.turnOrder?.map((characterId: number, index: number) => (
+              <Fragment key={characterId}>
+                <CharacterCardSmall
+                  expanding={true}
+                  characterList={characterList}
+                  characterId={characterId}
+                  active={
+                    combat.turnOrder.findIndex((id) => id === characterId) ===
+                    combat.turnPosition
+                  }
+                />
+                {index < combat.turnOrder.length - 1 && (
+                  <Divider className="opacity-50" />
+                )}
+              </Fragment>
+            ))}
+          </div>
           <div className="mt-auto">
             <div
               className={`${!historyList ? 'max-h-12' : 'max-h-0'} timing h-full w-12 p-2`}
@@ -165,7 +166,7 @@ const Encounter = () => {
             <div
               className={`${historyList ? 'max-h-48 border-t-2 pt-4' : 'max-h-0'} timing border-accent scrollbar-secondary-2 flex h-full w-full flex-col overflow-y-auto overflow-x-hidden`}
             >
-              {history.length > 0 && (
+              {history?.length > 0 && (
                 <button
                   className="timing hover:bg-tertiary w-full rounded p-2 hover:shadow hover:shadow-black"
                   onClick={() => navigate('history')}

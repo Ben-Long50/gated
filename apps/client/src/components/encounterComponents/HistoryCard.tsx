@@ -1,14 +1,21 @@
 import { capitalCase } from 'change-case';
 import CharacterPictureRound from '../CharacterPictureRound';
 import Die from './Die';
-import DamageIcon from '../icons/DamageIcon';
 
 const HistoryCard = ({ history }: { history: any }) => {
   return (
     <div className="flex items-center justify-start gap-4">
-      <CharacterPictureRound character={history.character} />
-      <div className="flex flex-col gap-1">
-        <p className="text-tertiary whitespace-nowrap">{`${capitalCase(history.action.actionType)} - ${history.action.name}`}</p>
+      <CharacterPictureRound character={history.characterSnapshot} />
+      <div className="flex flex-col items-start gap-2 overflow-hidden">
+        <div className="flex w-full items-center gap-4">
+          {history.itemSnapshot && (
+            <CharacterPictureRound
+              character={history.itemSnapshot}
+              style={{ height: 32, width: 32 }}
+            />
+          )}
+          <p className="text-tertiary truncate">{`${capitalCase(history.actionSnapshot.actionType)} - ${history.actionSnapshot.name}`}</p>
+        </div>
         <div className="flex items-center justify-between gap-2">
           <div className="flex flex-wrap gap-1">
             {history.rollResult?.result.map((result, index: number) => (
@@ -21,16 +28,13 @@ const HistoryCard = ({ history }: { history: any }) => {
               />
             ))}
           </div>
-          {history.rollResult !== null && (
-            <div className="flex items-center gap-2">
-              <DamageIcon className="text-secondary size-6" />
-              <p>{history.rollResult.damage}</p>
-            </div>
-          )}
         </div>
       </div>
-      {history.target && (
-        <CharacterPictureRound className="ml-auto" character={history.target} />
+      {history.targetSnapshot && (
+        <CharacterPictureRound
+          className="ml-auto"
+          character={history.targetSnapshot}
+        />
       )}
     </div>
   );
