@@ -24,32 +24,8 @@ const encounterServices = {
         include: {
           characters: { select: { id: true, userId: true } },
           history: {
-            include: {
-              character: true,
-              target: true,
-              action: true,
-              item: true,
-            },
-          },
-          phaseHistory: {
-            include: {
-              action: {
-                include: {
-                  character: true,
-                  target: true,
-                  action: true,
-                  item: true,
-                },
-              },
-              reactions: {
-                include: {
-                  character: true,
-                  target: true,
-                  action: true,
-                  item: true,
-                },
-              },
-            },
+            take: 10,
+            orderBy: { createdAt: 'desc' },
           },
         },
         orderBy: { id: 'asc' },
@@ -72,38 +48,11 @@ const encounterServices = {
           history: {
             take: 10,
             orderBy: { createdAt: 'desc' },
-            include: {
-              character: true,
-              target: true,
-              action: true,
-              item: true,
-            },
           },
           phaseHistory: {
             take: 1,
             orderBy: { createdAt: 'desc' },
-            include: {
-              action: {
-                include: {
-                  character: true,
-                  target: {
-                    include: { conditions: { include: { condition: true } } },
-                  },
-                  action: true,
-                  item: true,
-                },
-              },
-              reactions: {
-                include: {
-                  character: true,
-                  target: {
-                    include: { conditions: { include: { condition: true } } },
-                  },
-                  action: true,
-                  item: true,
-                },
-              },
-            },
+            include: { action: true, reactions: true },
           },
         },
       });
@@ -126,29 +75,16 @@ const encounterServices = {
           id: { in: encounterIds },
         },
         include: {
-          characters: true,
+          characters: { select: { id: true, userId: true } },
+          history: {
+            take: 10,
+            orderBy: { createdAt: 'desc' },
+          },
           map: { select: { picture: true, name: true } },
           phaseHistory: {
             take: 1,
             orderBy: { createdAt: 'desc' },
-            include: {
-              action: {
-                include: {
-                  character: true,
-                  target: true,
-                  action: true,
-                  item: true,
-                },
-              },
-              reactions: {
-                include: {
-                  character: true,
-                  target: true,
-                  action: true,
-                  item: true,
-                },
-              },
-            },
+            include: { action: true, reactions: true },
           },
         },
       });
@@ -168,12 +104,6 @@ const encounterServices = {
         },
         take: 10,
         orderBy: { createdAt: 'desc' },
-        include: {
-          character: true,
-          target: true,
-          action: true,
-          item: true,
-        },
       });
 
       return history;
@@ -258,6 +188,8 @@ const encounterServices = {
         turn: encounter.turn + 1,
         round: encounter.round,
       } as any;
+
+      console.log(nextPhase);
 
       if (nextPhase === 'action') {
         await prisma.encounter.update({
@@ -500,13 +432,13 @@ const encounterServices = {
       await calculateCosts(activeCharacter, item, action);
 
       const historyData = {
-        characterId: activeCharacter?.id,
-        actionId: action?.id,
+        character: activeCharacter,
+        action: action,
       } as {
-        characterId: number;
-        targetId?: number;
-        actionId: number;
-        itemId?: number;
+        character: number;
+        target?: number;
+        action: number;
+        item?: number;
         rollResult?: {
           result: number[];
           successes: number;
@@ -516,10 +448,10 @@ const encounterServices = {
       };
 
       if (targetCharacter) {
-        historyData.targetId = targetCharacter.id;
+        historyData.target = targetCharacter;
       }
       if (item) {
-        historyData.itemId = item.id;
+        historyData.item = item;
       }
       if (rollResults) {
         historyData.rollResult = {
@@ -630,13 +562,13 @@ const encounterServices = {
       await calculateCosts(reactiveCharacter, item, reaction);
 
       const historyData = {
-        characterId: reactiveCharacter?.id,
-        actionId: reaction?.id,
+        character: reactiveCharacter,
+        action: reaction,
       } as {
-        characterId: number;
-        targetId?: number;
-        actionId: number;
-        itemId?: number;
+        character: number;
+        target?: number;
+        action: number;
+        item?: number;
         rollResult?: {
           result: number[];
           successes: number;
@@ -645,10 +577,10 @@ const encounterServices = {
         };
       };
       if (targetCharacter) {
-        historyData.targetId = targetCharacter.id;
+        historyData.target = targetCharacter;
       }
       if (item) {
-        historyData.itemId = item.id;
+        historyData.item = item;
       }
       if (rollResults) {
         historyData.rollResult = {
@@ -864,16 +796,14 @@ const encounterServices = {
       }
 
       if (phaseHistory.action?.rollResult) {
-        const successes = calculateActionQueueSuccesses(
-          encounter?.phaseHistory[0],
-        );
+        const successes = calculateActionQueueSuccesses(phaseHistory);
 
         const { damage } =
-          phaseHistory.action.item && phaseHistory.action.action
+          phaseHistory.action.itemSnapshot && phaseHistory.action.actionSnapshot
             ? calculateDamage(
                 //@ts-ignore
-                phaseHistory.action.item,
-                phaseHistory.action.action,
+                phaseHistory.action.itemSnapshot,
+                phaseHistory.action.actionSnapshot,
                 successes,
               )
             : { damage: 0 };
@@ -897,8 +827,11 @@ const encounterServices = {
             });
           }
 
+          const armors = [];
+
           for (const id of armorCosts.keys()) {
             const armor = await itemServices.getItemById(id);
+            armors.push({ ...armor, blocks: armorCosts.get(id) });
             await calculateCosts(undefined, armor, {
               costs: {
                 currentBlock: armorCosts.get(id),
@@ -913,18 +846,28 @@ const encounterServices = {
               io.to(`campaign ${encounter.campaignId}`).emit('item', itemId);
             }
           }
+
+          await prisma.history.update({
+            where: { id: phaseHistory.action.id },
+            data: {
+              armorSnapshots: armors,
+              armorIds,
+            },
+          });
         }
 
         const finalDamage =
           damage - blockedDamage > 0 ? damage - blockedDamage : 0;
 
-        if (phaseHistory.action.target) {
+        console.log(finalDamage);
+
+        if (phaseHistory.action.targetSnapshot) {
           //@ts-ignore
-          await applyDamage(phaseHistory.action.target, finalDamage);
+          await applyDamage(phaseHistory.action.targetSnapshot, finalDamage);
 
           io.to(`campaign ${encounter.campaignId}`).emit(
             'character',
-            phaseHistory.action.target.id,
+            phaseHistory.action.targetId,
           );
         }
       }
@@ -940,10 +883,10 @@ const encounterServices = {
     campaignId: number,
     encounterId: number,
     formData: {
-      characterId: number;
-      targetId?: number;
-      actionId: number;
-      itemId?: number;
+      character: number;
+      target?: number;
+      action: number;
+      item?: number;
       rollResult?: {
         result: number[];
         successes: number;
@@ -953,12 +896,31 @@ const encounterServices = {
     },
   ) => {
     try {
+      const data = {
+        campaignId,
+        encounterId,
+        characterSnapshot: formData.character,
+        characterId: formData.character.id,
+        actionSnapshot: formData.action,
+        actionId: formData.action.id,
+      };
+
+      if (formData.target) {
+        data.targetSnapshot = formData.target;
+        data.targetId = formData.target.id;
+      }
+
+      if (formData.item) {
+        data.itemSnapshot = formData.item;
+        data.itemId = formData.item.id;
+      }
+
+      if (formData.rollResult) {
+        data.rollResult = formData.rollResult;
+      }
+
       const history = await prisma.history.create({
-        data: {
-          campaignId,
-          encounterId,
-          ...formData,
-        },
+        data,
       });
 
       return history;

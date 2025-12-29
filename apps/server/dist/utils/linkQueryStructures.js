@@ -1,7 +1,5 @@
 export const includeCharacterInventory = {
-    items: {
-        select: { id: true, itemTypes: true },
-    },
+    items: true,
     actions: { orderBy: { name: 'asc' } },
 };
 export const includeCharacterCart = {

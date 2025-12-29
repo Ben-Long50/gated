@@ -171,14 +171,16 @@ model History {
   phaseHistoryActionId   Int?          @unique
   phaseHistoryReaction   PhaseHistory? @relation(name: "phaseReactions", fields: [phaseHistoryReactionId], references: [id], onDelete: Cascade)
   phaseHistoryReactionId Int?
-  character              Character     @relation("activeCharacter", fields: [characterId], references: [id], onDelete: Cascade)
+  characterSnapshot      Json
   characterId            Int
-  target                 Character?    @relation("targetCharacter", fields: [targetId], references: [id], onDelete: Cascade)
+  targetSnapshot         Json?
   targetId               Int?
-  action                 Action        @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  actionSnapshot         Json
   actionId               Int
-  item                   Item?         @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  itemSnapshot           Json?
   itemId                 Int?
+  armorSnapshots         Json?
+  armorIds               Int[]
   rollResult             Json?
 }
 
@@ -306,8 +308,6 @@ model Character {
   Note               Note[]
   affiliations       Affiliation[]
   events             Event[]
-  activeHistory      History[]                     @relation("activeCharacter")
-  targetHistory      History[]                     @relation("targetCharacter")
   encounters         Encounter[]
 
   @@index([userId])
@@ -421,7 +421,6 @@ model Action {
   derivedActions       Action[]            @relation("BaseRelation")
   itemLink             ItemLinkReference?  @relation(fields: [itemLinkId], references: [id], onDelete: Cascade)
   itemLinkId           Int?
-  history              History[]
 }
 
 model Item {
@@ -455,7 +454,6 @@ model Item {
   derivedItems         Item[]                   @relation("BaseRelation")
   location             Location?
   locationId           Int?
-  history              History[]
 
   @@index([itemTypes])
   @@index([characterInventoryId])

@@ -13,6 +13,7 @@ var __rest = (this && this.__rest) || function (s, e) {
 import prisma from '../config/database.js';
 import { includeCharacterCart, includeCharacterInventory, unequipLinked, } from '../utils/linkQueryStructures.js';
 import itemServices from './itemServices.js';
+import calculateCharacterStats from '../utils/characterStatUtils.js';
 const characterServices = {
     getCharacters: async (userId) => {
         try {
@@ -63,6 +64,7 @@ const characterServices = {
             if (characters.length === 0) {
                 throw new Error('You have not created any characters');
             }
+            characters.forEach((character) => (character.stats = calculateCharacterStats(character)));
             return characters;
         }
         catch (error) {
@@ -98,6 +100,7 @@ const characterServices = {
                     location: { include: { map: { select: { name: true } } } },
                 },
             });
+            character.stats = calculateCharacterStats(character);
             return character;
         }
         catch (error) {

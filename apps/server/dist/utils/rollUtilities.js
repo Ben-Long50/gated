@@ -140,7 +140,6 @@ export const applyDamage = async (targetCharacter, damage) => {
     if (!targetCharacter) {
         throw new Error('Target character not found');
     }
-    console.log(targetCharacter);
     if (((_a = targetCharacter.stats) === null || _a === void 0 ? void 0 : _a.currentHealth) - damage <= 0) {
         const isWounded = targetCharacter.conditions.some((condition) => condition.condition.name === 'Wounded');
         if (isWounded) {

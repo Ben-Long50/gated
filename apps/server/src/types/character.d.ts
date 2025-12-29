@@ -27,6 +27,7 @@ interface CharacterStats {
   maxSanity: number;
   currentHealth: number;
   currentSanity: number;
+  speed: number;
   actions: number;
   reactions: number;
   currentActions: number;

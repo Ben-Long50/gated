@@ -9,6 +9,7 @@ import {
 } from '../utils/linkQueryStructures.js';
 import { ItemType } from '@prisma/client';
 import itemServices from './itemServices.js';
+import calculateCharacterStats from '../utils/characterStatUtils.js';
 
 const characterServices = {
   getCharacters: async (userId: number) => {
@@ -64,6 +65,10 @@ const characterServices = {
         throw new Error('You have not created any characters');
       }
 
+      characters.forEach(
+        (character) => (character.stats = calculateCharacterStats(character)),
+      );
+
       return characters;
     } catch (error) {
       console.error(error);
@@ -99,6 +104,8 @@ const characterServices = {
           location: { include: { map: { select: { name: true } } } },
         },
       });
+
+      character.stats = calculateCharacterStats(character);
 
       return character;
     } catch (error) {
