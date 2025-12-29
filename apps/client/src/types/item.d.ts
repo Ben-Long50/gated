@@ -37,6 +37,7 @@ interface LinkReference {
 
 interface Stats {
   damage?: number;
+  sanityDamage?: number;
   salvo?: number;
   flurry?: number;
   range?: number;

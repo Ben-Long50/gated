@@ -25,6 +25,7 @@ import WyrmShellIcon from './icons/WyrmShellIcon';
 import InsanityIcon from './icons/InsanityIcon';
 import WyrmMoldSlotsIcon from './icons/WyrmMoldSlotsIcon';
 import { useLocation } from 'react-router-dom';
+import SanityDamageIcon from './icons/SanityDamageIcon';
 
 const StatBars = ({
   stats,
@@ -52,6 +53,16 @@ const StatBars = ({
           cardWidth={cardWidth}
         >
           <DamageIcon className="text-secondary size-8" />
+        </StatBar>
+      )}
+      {stats.sanityDamage !== undefined && (
+        <StatBar
+          title="SDMG"
+          current={stats.sanityDamage}
+          color={statColorMap['SDMG']}
+          cardWidth={cardWidth}
+        >
+          <SanityDamageIcon className="text-secondary size-8" />
         </StatBar>
       )}
       {stats.salvo !== undefined && (

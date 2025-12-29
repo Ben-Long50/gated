@@ -40,6 +40,11 @@ const StatFields = ({
                 <InputField type="number" label="Damage" field={field} />
               )}
             </form.Field>
+            <form.Field name="stats.sanityDamage">
+              {(field) => (
+                <InputField type="number" label="Sanity Damage" field={field} />
+              )}
+            </form.Field>
             <form.Field name="stats.salvo">
               {(field) => (
                 <InputField type="number" label="Salvo" field={field} />

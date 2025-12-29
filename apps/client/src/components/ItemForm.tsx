@@ -112,6 +112,7 @@ const ItemForm = () => {
       price: item?.price || '',
       stats: {
         damage: item?.stats?.damage || '',
+        sanityDamage: item?.stats?.sanityDamage || '',
         salvo: item?.stats?.salvo || '',
         flurry: item?.stats?.flurry || '',
         range: item?.stats?.range || '',

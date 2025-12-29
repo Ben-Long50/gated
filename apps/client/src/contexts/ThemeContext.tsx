@@ -69,6 +69,7 @@ const ThemeProvider = ({ children }: { children: ReactNode }) => {
     Cyber: 'rgb(52 211 153)',
     Equip: 'rgb(251 191 36)',
     DMG: 'rgb(252, 91, 50)',
+    SDMG: 'rgb(137, 39, 217)',
     SLV: 'rgb(219, 123, 33)',
     FLR: 'rgb(219, 123, 33)',
     RNG: 'rgb(33, 194, 219)',
