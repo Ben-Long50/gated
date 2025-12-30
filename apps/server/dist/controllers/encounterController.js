@@ -106,6 +106,7 @@ const encounterController = {
             const encounterId = Number(req.params.encounterId);
             const action = await encounterServices.rollAction(Number(req.params.campaignId), encounterId, req.body);
             await encounterServices.setPhaseAction(encounterId, action);
+            await encounterServices.advancePhase(encounterId);
             res.status(200).json({ message: 'Successfully rolled action' });
         }
         catch (error) {

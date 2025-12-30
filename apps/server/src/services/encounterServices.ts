@@ -24,7 +24,9 @@ const encounterServices = {
           campaignId,
         },
         include: {
-          characters: { select: { id: true, userId: true } },
+          characters: {
+            select: { id: true, userId: true, playerCharacter: true },
+          },
           history: {
             take: 10,
             orderBy: { createdAt: 'desc' },
@@ -46,7 +48,9 @@ const encounterServices = {
         where: { id: Number(encounterId) },
         include: {
           campaign: { select: { ownerId: true } },
-          characters: { select: { id: true, userId: true } },
+          characters: {
+            select: { id: true, userId: true, playerCharacter: true },
+          },
           history: {
             take: 10,
             orderBy: { createdAt: 'desc' },
@@ -77,7 +81,9 @@ const encounterServices = {
           id: { in: encounterIds },
         },
         include: {
-          characters: { select: { id: true, userId: true } },
+          characters: {
+            select: { id: true, userId: true, playerCharacter: true },
+          },
           history: {
             take: 10,
             orderBy: { createdAt: 'desc' },
@@ -477,7 +483,7 @@ const encounterServices = {
       }
 
       if (item) {
-        await itemServices.setItemNotAvailable(item.id);
+        // await itemServices.setItemNotAvailable(item.id);
         io.to(`campaign ${campaignId}`).emit('item', item.id);
       }
 

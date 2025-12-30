@@ -1,4 +1,5 @@
 import prisma from '../config/database.js';
+import characterServices from './characterServices.js';
 
 const characterStatServices = {
   editCharacterStat: async (
@@ -6,6 +7,11 @@ const characterStatServices = {
     adjustments: Record<string, number>,
   ) => {
     try {
+      const prevCharacter =
+        await characterServices.getCharacterById(characterId);
+
+      const characterStats = prevCharacter?.stats as Record<string, number>;
+
       const character = await prisma.character.findUnique({
         where: {
           id: characterId,
@@ -22,6 +28,40 @@ const characterStatServices = {
       let adjustedValues = Object.fromEntries(
         Object.entries(statsObject).map(([stat, value]) => {
           if (adjustments[stat]) {
+            if (value + adjustments[stat] < 0) {
+              return [stat, 0];
+            }
+            if (stat === 'currentHealth') {
+              if (value + adjustments[stat] > characterStats.maxHealth) {
+                return [stat, characterStats.maxHealth];
+              }
+            }
+            if (stat === 'currentSanity') {
+              if (value + adjustments[stat] > characterStats.maxSanity) {
+                return [stat, characterStats.maxSanity];
+              }
+            }
+            if (stat === 'injuries') {
+              if (
+                value + adjustments[stat] >
+                characterStats.permanentInjuries
+              ) {
+                return [stat, characterStats.permanentInjuries];
+              }
+            }
+            if (stat === 'insanities') {
+              if (
+                value + adjustments[stat] >
+                characterStats.permanentInsanities
+              ) {
+                return [stat, characterStats.permanentInsanities];
+              }
+            }
+            if (stat === 'currentHands') {
+              if (value + adjustments[stat] > characterStats.hands) {
+                return [stat, characterStats.hands];
+              }
+            }
             return [stat, value + adjustments[stat]];
           } else {
             return [stat, value];

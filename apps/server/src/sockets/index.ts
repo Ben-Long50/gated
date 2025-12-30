@@ -126,6 +126,12 @@ export function setupSocketIO(io: Server) {
       );
     });
 
+    socket.on('blockData', ({ encounterId, blockData }) => {
+      io.to(`encounter ${encounterId}`).emit('blockData', blockData);
+
+      console.log(`Broadcasted block data to encounter ${encounterId}`);
+    });
+
     socket.on('resetBoard', ({ encounterId }) => {
       io.to(`encounter ${encounterId}`).emit('resetBoard');
       console.log(`Broadcasted reset board to encounter ${encounterId}`);

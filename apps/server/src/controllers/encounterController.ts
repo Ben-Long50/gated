@@ -140,6 +140,7 @@ const encounterController = {
       );
 
       await encounterServices.setPhaseAction(encounterId, action);
+      await encounterServices.advancePhase(encounterId);
 
       res.status(200).json({ message: 'Successfully rolled action' });
     } catch (error: any) {
