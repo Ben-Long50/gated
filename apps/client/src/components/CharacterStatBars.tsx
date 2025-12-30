@@ -33,14 +33,14 @@ const CharacterStatBars = ({
           color={statColorMap['Health']}
           cardWidth={cardWidth}
           mutation={(value: number) => {
-            const finalValue = value + stats.currentHealth;
-            if (finalValue <= stats.maxHealth && finalValue >= 0) {
-              editCharacterStat.mutate({
-                characterId,
-                stat: 'currentHealth',
-                value,
-              });
-            }
+            // const finalValue = value + stats.currentHealth;
+            // if (finalValue <= stats.maxHealth && finalValue >= 0) {
+            editCharacterStat.mutate({
+              characterId,
+              stat: 'currentHealth',
+              value,
+            });
+            // }
           }}
           mode="adjustable"
           size={size}

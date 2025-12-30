@@ -19,6 +19,9 @@ import useRollActionMutation from './encounter hooks/useRollActionMutation/useRo
 import useRollReactionMutation from './encounter hooks/useRollReactionMutation/useRollReactionMutation';
 import useRoll from './useRoll';
 import calculateDiceCount from 'src/utils/calculateDiceCount';
+import { socket } from 'src/socket';
+import actionFuncs from 'src/utils/actionFuncs';
+import { camelCase } from 'change-case';
 
 const useCombat = () => {
   const { user } = useContext(AuthContext);
@@ -339,20 +342,65 @@ const useCombat = () => {
     },
   });
 
+  const blockPermissions =
+    gameMaster ||
+    controlledCharacterId ===
+      combat?.phaseHistory[0].action?.targetSnapshot?.id;
+
+  const phaseAction = combat?.phaseHistory[0].action || null;
+  const phaseReactions = combat?.phaseHistory[0].reactions || null;
+
+  const reducedSuccesses = phaseReactions?.reduce((sum: number, reaction) => {
+    if (reaction.actionSnapshot.name === 'Parry') {
+      return sum + reaction.rollResult.successes;
+    } else {
+      return sum;
+    }
+  }, 0);
+
+  const { damage, sanityDamage, instances } = phaseAction?.rollResult
+    ? actionFuncs[`${camelCase(phaseAction?.actionSnapshot.name)}`](
+        phaseAction?.itemSnapshot,
+        phaseAction?.rollResult.successes - reducedSuccesses,
+      )
+    : { damage: null, instances: null };
+
+  const blockForm = useForm({
+    defaultValues: {
+      blockData:
+        (damage || sanityDamage) && instances
+          ? Array.from({ length: instances }, () => ({
+              blockedDamage: 0,
+              blockedSanityDamage: 0,
+              armorIds: [] as number[],
+            }))
+          : [],
+    },
+    onSubmit: ({ value }) => {
+      socket.emit('blockData', {
+        encounterId: Number(encounterId),
+        blockData: value.blockData,
+      });
+    },
+  });
+
   const resetForms = () => {
     actionForm.reset();
     reactionForm.reset();
+    blockForm.reset();
   };
 
   return {
     combat,
     encounterPermissions,
+    blockPermissions,
     controlledCharacterId,
     setControlledCharacterId,
     activeCharacter,
     handleAdvanceTurn,
     actionForm,
     reactionForm,
+    blockForm,
     resetForms,
     isLoading,
     isPending,

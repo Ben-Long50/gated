@@ -12,7 +12,6 @@ import BlockIcon from '../icons/BlockIcon';
 import ArmorIcon from '../icons/ArmorIcon';
 import Icon from '@mdi/react';
 import { mdiChevronDown } from '@mdi/js';
-import { useForm } from '@tanstack/react-form';
 import { useContext, useState } from 'react';
 import ExpandingList from '../ExpandingList';
 import { EncounterContext } from 'src/contexts/EncounterContext';
@@ -29,7 +28,9 @@ const ActionQueueModal = () => {
     isFetching,
     setIsFetching,
     encounterPermissions,
+    blockPermissions,
     resetRolls,
+    blockForm,
   } = useContext(EncounterContext);
 
   const navigate = useNavigate();
@@ -56,13 +57,13 @@ const ActionQueueModal = () => {
   const { data: target, isLoading } = useCharacterQuery(phaseAction?.targetId);
 
   const armor = phaseAction?.targetId
-    ? target?.equipment.armors
+    ? target?.equipment?.armors
         .filter((armor) => armor.stats.armor && armor.stats.currentBlock > 0)
         .sort((a, b) => b.stats.armor - a.stats.armor)
     : [];
 
   const wardArmor = phaseAction?.targetId
-    ? target?.equipment.armors
+    ? target?.equipment?.armors
         .filter((armor) => armor.stats.ward && armor.stats.currentBlock > 0)
         .sort((a, b) => b.stats.ward - a.stats.ward)
     : [];
@@ -73,20 +74,6 @@ const ActionQueueModal = () => {
         phaseAction?.rollResult.successes - reducedSuccesses,
       )
     : { damage: null, instances: null };
-
-  const blockForm = useForm({
-    defaultValues: {
-      blockData:
-        (damage || sanityDamage) && instances
-          ? Array.from({ length: instances }, () => ({
-              blockedDamage: 0,
-              blockedSanityDamage: 0,
-              armorIds: [] as number[],
-            }))
-          : [],
-    },
-    onSubmit: ({ value }) => {},
-  });
 
   return (
     <Modal>
@@ -201,7 +188,7 @@ const ActionQueueModal = () => {
                 </div>
               )}
               <Divider className="opacity-50" />
-              {damage > 0 && armor && armor.length > 0 && (
+              {
                 <blockForm.Field name="blockData">
                   {(field) => (
                     <>
@@ -214,7 +201,7 @@ const ActionQueueModal = () => {
 
                               return (
                                 <div className="flex flex-col items-center justify-end gap-2">
-                                  {blockDataIndex === i && (
+                                  {blockDataIndex === i && blockPermissions && (
                                     <Icon
                                       path={mdiChevronDown}
                                       size={1}
@@ -222,8 +209,13 @@ const ActionQueueModal = () => {
                                     />
                                   )}
                                   <button
-                                    onClick={() => setBlockDataIndex(i)}
-                                    className={`${blocked ? 'border-green-500' : 'border-red-500'} group flex size-12 items-center justify-center rounded-full border-2`}
+                                    onClick={() => {
+                                      if (!blockPermissions) {
+                                        return;
+                                      }
+                                      setBlockDataIndex(i);
+                                    }}
+                                    className={`${!blockPermissions && 'pointer-events-none'} ${blocked ? 'border-green-500' : 'border-red-500'} group flex size-12 items-center justify-center rounded-full border-2`}
                                   >
                                     {blocked ? (
                                       <BlockIcon className="text-primary group-hover:text-accent size-8" />
@@ -248,99 +240,105 @@ const ActionQueueModal = () => {
                         className="flex flex-col items-center gap-4"
                         onClick={() => setListExpanded((prev) => !prev)}
                       >
-                        {field.state.value.map(
-                          (_, i) =>
-                            blockDataIndex === i && (
-                              <blockForm.Field name={`blockData[${i}]`}>
-                                {(subField) =>
-                                  armor.map((armor: Item) => {
-                                    const blocking =
-                                      subField.state.value.armorIds.includes(
-                                        armor.id,
+                        {armor ? (
+                          field.state.value.map(
+                            (_, i) =>
+                              blockDataIndex === i && (
+                                <blockForm.Field name={`blockData[${i}]`}>
+                                  {(subField) =>
+                                    armor.map((armor: Item) => {
+                                      const blocking =
+                                        subField.state.value.armorIds.includes(
+                                          armor.id,
+                                        );
+
+                                      const uses = field.state.value.reduce(
+                                        (sum, data) => {
+                                          if (
+                                            data.armorIds.includes(armor.id)
+                                          ) {
+                                            return sum + 1;
+                                          } else {
+                                            return sum;
+                                          }
+                                        },
+                                        0,
                                       );
 
-                                    const uses = field.state.value.reduce(
-                                      (sum, data) => {
-                                        if (data.armorIds.includes(armor.id)) {
-                                          return sum + 1;
-                                        } else {
-                                          return sum;
-                                        }
-                                      },
-                                      0,
-                                    );
+                                      const available = armor.stats.currentBlock
+                                        ? uses < armor.stats.currentBlock
+                                        : 0;
 
-                                    const available = armor.stats.currentBlock
-                                      ? uses < armor.stats.currentBlock
-                                      : 0;
+                                      return (
+                                        <div
+                                          className={`${!blocking && !available && 'opacity-50'} flex w-full items-center gap-8`}
+                                        >
+                                          <ItemCardExpanding
+                                            expanded={listExpanded}
+                                            itemId={armor.id}
+                                          />
+                                          <div className="flex items-center gap-4">
+                                            <button
+                                              className={`${!blockPermissions && 'pointer-events-none'} ${blocking && 'ring-2 ring-green-500'} ${!blocking && !available && 'pointer-events-none opacity-50'} bg-tertiary group rounded p-2 shadow-md shadow-black`}
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                if (!blockPermissions) {
+                                                  return;
+                                                }
 
-                                    return (
-                                      <div
-                                        className={`${!blocking && !available && 'opacity-50'} flex w-full items-center gap-8`}
-                                      >
-                                        <ItemCardExpanding
-                                          expanded={listExpanded}
-                                          itemId={armor.id}
-                                        />
-                                        <div className="flex items-center gap-4">
-                                          <button
-                                            className={`${blocking && 'ring-2 ring-green-500'} ${!blocking && !available && 'pointer-events-none opacity-50'} bg-tertiary group rounded p-2 shadow-md shadow-black`}
-                                            onClick={(e) => {
-                                              e.stopPropagation();
-                                              console.log(
-                                                subField.state.value.armorIds,
-                                                armor.id,
-                                              );
-
-                                              if (
-                                                subField.state.value.armorIds.includes(
-                                                  armor.id,
-                                                )
-                                              ) {
-                                                const newArmorIds =
-                                                  subField.state.value.armorIds.filter(
-                                                    (id) => id !== armor.id,
-                                                  );
-
-                                                subField.handleChange({
-                                                  ...subField.state.value,
-                                                  blockedDamage:
-                                                    subField.state.value
-                                                      .blockedDamage -
-                                                    armor.stats.armor,
-                                                  armorIds: newArmorIds,
-                                                });
-                                              } else {
-                                                subField.handleChange({
-                                                  ...subField.state.value,
-                                                  blockedDamage:
-                                                    subField.state.value
-                                                      .blockedDamage +
-                                                    armor.stats.armor,
-                                                  armorIds: [
-                                                    ...subField.state.value
-                                                      .armorIds,
+                                                if (
+                                                  subField.state.value.armorIds.includes(
                                                     armor.id,
-                                                  ],
-                                                });
-                                              }
-                                            }}
-                                          >
-                                            <BlockIcon className="text-primary hover:text-accent size-8" />
-                                          </button>
+                                                  )
+                                                ) {
+                                                  const newArmorIds =
+                                                    subField.state.value.armorIds.filter(
+                                                      (id) => id !== armor.id,
+                                                    );
+
+                                                  subField.handleChange({
+                                                    ...subField.state.value,
+                                                    blockedDamage:
+                                                      subField.state.value
+                                                        .blockedDamage -
+                                                      armor.stats.armor,
+                                                    armorIds: newArmorIds,
+                                                  });
+                                                } else {
+                                                  subField.handleChange({
+                                                    ...subField.state.value,
+                                                    blockedDamage:
+                                                      subField.state.value
+                                                        .blockedDamage +
+                                                      armor.stats.armor,
+                                                    armorIds: [
+                                                      ...subField.state.value
+                                                        .armorIds,
+                                                      armor.id,
+                                                    ],
+                                                  });
+                                                }
+                                                blockForm.handleSubmit();
+                                              }}
+                                            >
+                                              <BlockIcon className="text-primary hover:text-accent size-8" />
+                                            </button>
+                                          </div>
                                         </div>
-                                      </div>
-                                    );
-                                  })
-                                }
-                              </blockForm.Field>
-                            ),
+                                      );
+                                    })
+                                  }
+                                </blockForm.Field>
+                              ),
+                          )
+                        ) : (
+                          <h3 className="italic">Armor Unknown</h3>
                         )}
                       </ExpandingList>
                     </>
                   )}
                 </blockForm.Field>
-              )}
+              }
               {sanityDamage > 0 && wardArmor && wardArmor.length > 0 && (
                 <blockForm.Field name="blockData">
                   {(field) => (
@@ -363,8 +361,13 @@ const ActionQueueModal = () => {
                                     />
                                   )}
                                   <button
-                                    onClick={() => setBlockDataIndex(i)}
-                                    className={`${blocked ? 'border-purple-500' : 'border-red-500'} group flex size-12 items-center justify-center rounded-full border-2`}
+                                    onClick={() => {
+                                      if (!blockPermissions) {
+                                        return;
+                                      }
+                                      setBlockDataIndex(i);
+                                    }}
+                                    className={`${!blockPermissions && 'pointer-events-none'} ${blocked ? 'border-purple-500' : 'border-red-500'} group flex size-12 items-center justify-center rounded-full border-2`}
                                   >
                                     {blocked ? (
                                       <WardIcon className="text-primary group-hover:text-accent size-8" />
@@ -425,13 +428,12 @@ const ActionQueueModal = () => {
                                         />
                                         <div className="flex items-center gap-4">
                                           <button
-                                            className={`${blocking && 'ring-2 ring-green-500'} ${!blocking && !available && 'pointer-events-none opacity-50'} bg-tertiary group rounded p-2 shadow-md shadow-black`}
+                                            className={`${!blockPermissions && 'pointer-events-none'} ${blocking && 'ring-2 ring-green-500'} ${!blocking && !available && 'pointer-events-none opacity-50'} bg-tertiary group rounded p-2 shadow-md shadow-black`}
                                             onClick={(e) => {
                                               e.stopPropagation();
-                                              console.log(
-                                                subField.state.value.armorIds,
-                                                armor.id,
-                                              );
+                                              if (!blockPermissions) {
+                                                return;
+                                              }
 
                                               if (
                                                 subField.state.value.armorIds.includes(
@@ -465,6 +467,7 @@ const ActionQueueModal = () => {
                                                   ],
                                                 });
                                               }
+                                              blockForm.handleSubmit();
                                             }}
                                           >
                                             <WardIcon className="text-primary hover:text-accent size-8" />

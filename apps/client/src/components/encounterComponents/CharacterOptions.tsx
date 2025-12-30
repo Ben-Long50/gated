@@ -191,6 +191,7 @@ const CharacterOptions = ({
                   resetForms();
                   setTarget(null);
                   setRange(null, null);
+                  setItem(null);
                   handleAdvanceTurn();
                   socket.emit('resetBoard', {
                     encounterId: Number(encounterId),

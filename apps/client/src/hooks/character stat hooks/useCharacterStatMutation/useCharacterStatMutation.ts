@@ -40,8 +40,6 @@ const useCharacterStatMutation = () => {
 
           updateBuffer.current = new Map();
 
-          console.log(finalValue);
-
           await editCharacterStat(data.characterId, data.stat, finalValue);
 
           resolve(finalValue);

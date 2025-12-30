@@ -35,12 +35,14 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
   const {
     combat,
     encounterPermissions,
+    blockPermissions,
     controlledCharacterId,
     setControlledCharacterId,
     activeCharacter,
     handleAdvanceTurn,
     actionForm,
     reactionForm,
+    blockForm,
     resetForms,
     isLoading: combatLoading,
     isPending: combatPending,
@@ -92,8 +94,6 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
         await animateRoll(rolls);
       }
 
-      advancePhase.mutate();
-
       queryClient.invalidateQueries({
         queryKey: ['encounterHistory', encounterId],
       });
@@ -112,6 +112,10 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
           queryKey: ['encounterHistory', encounterId],
         });
       }, 3000);
+    });
+
+    socket.on('blockData', (blockData) => {
+      blockForm.setFieldValue('blockData', blockData);
     });
 
     socket.on('updateEncounter', (updatedEncounter) => {
@@ -155,12 +159,14 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
         setIsFetching,
         joinedPlayers,
         encounterPermissions,
+        blockPermissions,
         controlledCharacterId,
         setControlledCharacterId,
         activeCharacter,
         handleAdvanceTurn,
         actionForm,
         reactionForm,
+        blockForm,
         resetForms,
         rolls,
         rolling,
