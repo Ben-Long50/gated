@@ -58,13 +58,34 @@ const CharacterMenuRoutes = () => {
           <Route path=":category/:itemId" element={<ItemPageWrapper />} />
         </Route>
       </Route>
-      <Route path="update" element={<CharacterUpdateForm />}>
+      <Route
+        path="update"
+        element={
+          <Modal>
+            <CharacterUpdateForm />
+          </Modal>
+        }
+      >
         <Route path="perks" element={<PerkLinkModal />} />
         <Route path="npcPreferences" element={<NpcPreferenceModal />} />
       </Route>
       <Route path="cart" element={<Cart />} />
-      <Route path="resume" element={<Resume />} />
-      <Route path="resume/update" element={<ResumeForm />} />
+      <Route
+        path="resume"
+        element={
+          <Modal>
+            <Resume />
+          </Modal>
+        }
+      />
+      <Route
+        path="resume/update"
+        element={
+          <Modal>
+            <ResumeForm />
+          </Modal>
+        }
+      />
       <Route
         path="equipment"
         element={
@@ -103,7 +124,14 @@ const CharacterMenuRoutes = () => {
               element={<DescriptionModal />}
             />
           </Route>
-          <Route path=":itemId" element={<ItemPageWrapper />}>
+          <Route
+            path=":itemId"
+            element={
+              <Modal>
+                <ItemPageWrapper />
+              </Modal>
+            }
+          >
             <Route path="update" element={<ItemUpdateModal />} />
             <Route
               path="conditions/:conditionId"
@@ -111,7 +139,14 @@ const CharacterMenuRoutes = () => {
             />
             <Route path="traits/:traitId" element={<DescriptionModal />} />
           </Route>
-          <Route path=":itemId/upgrade" element={<ItemUpgradeForm />}>
+          <Route
+            path=":itemId/upgrade"
+            element={
+              <Modal>
+                <ItemUpgradeForm />
+              </Modal>
+            }
+          >
             <Route path="traits" element={<KeywordLinkModal />} />
             <Route path="tutorial" element={<ItemUpgradeTutorialModal />} />
           </Route>

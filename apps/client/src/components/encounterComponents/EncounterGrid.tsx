@@ -12,7 +12,6 @@ import { EncounterContext } from 'src/contexts/EncounterContext';
 import DragScrollContainer from '../mapComponents/DragScrollContainer';
 import getCoords from '../mapComponents/mapUtils/getCoords';
 import MapComponent from '../mapComponents/map/MapComponent';
-import useCharacter from 'src/hooks/useCharacter';
 import actionRanges from 'src/utils/actionRanges';
 import { camelCase } from 'change-case';
 
@@ -36,15 +35,12 @@ const EncounterGrid = ({
   setActionSidebar: (value: boolean) => void;
 }) => {
   const { statColorMap, accentPrimary } = useContext(ThemeContext);
-  const { combat, activeCharacter, actionForm, rolls } =
-    useContext(EncounterContext);
+  const { combat, activeCharacter, actionForm } = useContext(EncounterContext);
 
   const { filteredActions: actions, isLoading: actionsLoading } = useActions(
     undefined,
     'action',
   );
-
-  const { filteredCharacter: character } = useCharacter(activeCharacter?.id);
 
   const target = useCombatStore((state) => state.target);
   const tempRange = useCombatStore((state) => state.range);
@@ -162,7 +158,7 @@ const EncounterGrid = ({
     <DndContext onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
       <DragScrollContainer
         draggable={true}
-        className={`scrollbar-primary timing pointer-events-auto relative mx-auto mb-auto max-h-full max-w-full overflow-y-auto rounded border-2`}
+        className={`scrollbar-primary timing pointer-events-auto relative mx-auto max-h-full max-w-full overflow-y-auto rounded border-2`}
         style={{ borderColor: accentPrimary }}
       >
         <div

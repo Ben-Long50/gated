@@ -25,6 +25,7 @@ import useItemQuery from 'src/hooks/useItemQuery/useItemQuery';
 import ItemCardBorderless from '../ItemCardBorderless';
 import { EncounterContext } from 'src/contexts/EncounterContext';
 import MapHeader from '../mapComponents/map/MapHeader';
+import MapIcon from '../icons/MapIcon';
 
 const Encounter = () => {
   const { mobile } = useContext(LayoutContext);
@@ -48,6 +49,7 @@ const Encounter = () => {
   const [historyList, setHistoryList] = useState(false);
   const [itemId, setItemId] = useState<number | null>(null);
   const [mapScale, setMapScale] = useState(1);
+  const [mapInfo, setMapInfo] = useState(false);
 
   const { map, locations, mapLoading } = useMap(Number(mapId));
 
@@ -93,19 +95,30 @@ const Encounter = () => {
   return (
     <>
       <div
-        className={`flex h-full w-full max-w-85dvw flex-col items-center gap-4 sm:gap-8`}
+        className={`${mapInfo && 'pt-3'} flex h-full w-full flex-col items-center justify-center gap-4`}
       >
-        <div className="bg-primary shadow-primary absolute left-1.5 top-1.5 z-10 ml-[72px] mr-auto flex flex-col items-start justify-start rounded p-1.5">
-          {joinedPlayers?.map((player: any) => (
-            <div className="flex items-center gap-2" key={player.username}>
-              <p className="text-base">{player.username}</p>
-              {campaign?.ownerId === player.playerId && (
-                <Icon path={mdiCrown} color="gold" size={0.8} />
-              )}
-            </div>
-          ))}
+        <div className="absolute left-1 top-1 z-10 ml-[72px] mr-auto flex flex-col items-start justify-start gap-1">
+          <button
+            className="bg-secondary group flex w-full items-center gap-2 rounded p-1 shadow shadow-black"
+            onClick={() => setMapInfo((prev) => !prev)}
+          >
+            <MapIcon className="timing text-primary group-hover:text-accent size-5" />
+            <p className="group-hover:text-accent timing text-base">
+              Toggle Map Info
+            </p>
+          </button>
+          <div className="bg-primary flex flex-col items-start p-1.5">
+            {joinedPlayers?.map((player: any) => (
+              <div className="flex items-center gap-2" key={player.username}>
+                <p className="text-base">{player.username}</p>
+                {campaign?.ownerId === player.playerId && (
+                  <Icon path={mdiCrown} color="gold" size={0.8} />
+                )}
+              </div>
+            ))}
+          </div>
         </div>
-        {!mobile && (
+        {mapInfo && (
           <MapHeader
             mapName={map.name}
             gridDisplay={gridDisplay}
@@ -125,7 +138,7 @@ const Encounter = () => {
           setActionSidebar={setActionSidebar}
         />
         <div
-          className={`${characterList ? 'w-96' : 'w-[72px]'} scrollbar-secondary-2 bg-primary timing absolute left-0 top-0 z-10 flex h-full flex-col justify-start gap-3 overflow-y-auto p-3 shadow-md shadow-black`}
+          className={`${characterList ? 'w-96' : 'w-[72px]'} bg-primary timing absolute left-0 top-0 z-10 flex h-full flex-col justify-start gap-3 p-3 shadow-md shadow-black`}
           onMouseEnter={() => {
             setCharacterList(true);
             setHistoryList(true);
@@ -135,7 +148,9 @@ const Encounter = () => {
             setHistoryList(false);
           }}
         >
-          <div className="scrollbar-primary-2 flex h-full flex-col overflow-y-auto overflow-x-hidden">
+          <div
+            className={`${characterList ? 'scrollbar-primary-2 overflow-y-auto' : 'overflow-y-hidden'} flex h-full flex-col overflow-x-hidden`}
+          >
             {combat?.turnOrder?.map((characterId: number, index: number) => (
               <Fragment key={characterId}>
                 <CharacterCardSmall

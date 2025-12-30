@@ -188,7 +188,7 @@ const ActionQueueModal = () => {
                 </div>
               )}
               <Divider className="opacity-50" />
-              {
+              {damage > 0 && (
                 <blockForm.Field name="blockData">
                   {(field) => (
                     <>
@@ -338,8 +338,8 @@ const ActionQueueModal = () => {
                     </>
                   )}
                 </blockForm.Field>
-              }
-              {sanityDamage > 0 && wardArmor && wardArmor.length > 0 && (
+              )}
+              {sanityDamage > 0 && (
                 <blockForm.Field name="blockData">
                   {(field) => (
                     <>
