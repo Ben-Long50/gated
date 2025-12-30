@@ -49,8 +49,8 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
   );
 
   const filterActions = (item: Item) => {
-    const rangedActions = ['Single Shot', 'Salvo Fire'];
-    const meleeActions = ['Single Strike', 'Flurry', 'Haymaker'];
+    const rangedActions = ['Single Shot', 'Salvo'];
+    const meleeActions = ['Strike', 'Flurry', 'Haymaker'];
 
     const itemActions = item.itemLinkReference?.actions || [];
 

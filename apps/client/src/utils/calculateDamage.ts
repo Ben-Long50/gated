@@ -9,6 +9,7 @@ export const calculateDamage = (
   if (!action) return { damage: 0, instances: 0 };
 
   let damage = 0;
+  let sanityDamage = 0;
   let instances = 0;
   if (
     (action.name === 'Salvo Fire' || action.name === 'Flurry') &&
