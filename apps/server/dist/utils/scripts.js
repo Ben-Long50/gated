@@ -1,3 +1,4 @@
+// @ts-nocheck
 var __rest = (this && this.__rest) || function (s, e) {
     var t = {};
     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
@@ -10,6 +11,7 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 import prisma from '../config/database';
+import characterServices from '../services/characterServices';
 const updateCharacterStats = async () => {
     const characters = await prisma.character.findMany({});
     for (let character of characters) {
@@ -21,7 +23,7 @@ const updateCharacterStats = async () => {
         console.log(`Updated ${character.firstName}`);
     }
 };
-updateCharacterStats();
+// updateCharacterStats();
 const updateActionCosts = async () => {
     const actions = await prisma.action.findMany({});
     for (let action of actions) {
@@ -37,7 +39,7 @@ const updateActionCosts = async () => {
         console.log(`Updated ${action.name}`);
     }
 };
-updateActionCosts();
+// updateActionCosts();
 const updateCampaignDates = async () => {
     const campaigns = await prisma.campaign.findMany({});
     for (let campaign of campaigns) {
@@ -51,4 +53,30 @@ const updateCampaignDates = async () => {
         console.log(`Updated ${campaign.name}`);
     }
 };
-updateCampaignDates();
+// updateCampaignDates();
+const resetCharacterHealthAndSanity = async () => {
+    const characterIds = await prisma.character.findMany({
+        select: { id: true },
+    });
+    for (let id of characterIds) {
+        const character = await characterServices.getCharacterById(id.id);
+        const characterStats = character === null || character === void 0 ? void 0 : character.stats;
+        const stats = {
+            injuries: characterStats.injuries || 0,
+            insanities: characterStats.insanities || 0,
+            permanentInjuries: characterStats.permanentInjuries,
+            permanentInsanities: characterStats.permanentInsanities,
+            currentActions: 3,
+            currentReactions: 1,
+            currentHands: 2,
+            currentHealth: characterStats.maxHealth,
+            currentSanity: characterStats.maxSanity,
+        };
+        await prisma.character.update({
+            where: { id: id.id },
+            data: { stats },
+        });
+        console.log(`Updated ${character.firstName}`, stats);
+    }
+};
+resetCharacterHealthAndSanity();

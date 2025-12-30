@@ -135,23 +135,32 @@ export const calculateCosts = async (character, item, action) => {
         await itemStatServices.resetItemStats(item.id, itemCosts);
     }
 };
-export const applyDamage = async (targetCharacter, damage) => {
-    var _a;
+export const applyDamage = async (targetCharacter, damage, sanityDamage) => {
+    var _a, _b;
     if (!targetCharacter) {
         throw new Error('Target character not found');
     }
     if (((_a = targetCharacter.stats) === null || _a === void 0 ? void 0 : _a.currentHealth) - damage <= 0) {
         const isWounded = targetCharacter.conditions.some((condition) => condition.condition.name === 'Wounded');
         if (isWounded) {
-            await characterStatServices.editCharacterStat(targetCharacter.id, {
-                injuries: 1,
-                currentHealth: targetCharacter.stats.currentHealth * -1,
-            });
+            if (targetCharacter.stats.injuries + 1 >=
+                targetCharacter.stats.permanentInjuries) {
+                const deadForGood = await conditionServices.getConditionByName('Dead for Good');
+                await characterServices.createCharacterConditions(targetCharacter.id, [
+                    { conditionId: deadForGood === null || deadForGood === void 0 ? void 0 : deadForGood.id },
+                ]);
+            }
+            else {
+                await characterStatServices.editCharacterStat(targetCharacter.id, {
+                    injuries: 1,
+                    currentHealth: targetCharacter.stats.currentHealth * -1,
+                });
+            }
         }
         else {
             const wounded = await conditionServices.getConditionByName('Wounded');
             await characterStatServices.resetCharacterStat(targetCharacter.id, {
-                currentHealth: 10,
+                currentHealth: targetCharacter.stats.maxHealth,
             });
             await characterServices.createCharacterConditions(targetCharacter.id, [
                 { conditionId: wounded === null || wounded === void 0 ? void 0 : wounded.id },
@@ -161,6 +170,38 @@ export const applyDamage = async (targetCharacter, damage) => {
     else {
         await characterStatServices.editCharacterStat(targetCharacter.id, {
             currentHealth: damage * -1,
+        });
+    }
+    if (((_b = targetCharacter.stats) === null || _b === void 0 ? void 0 : _b.currentSanity) - sanityDamage <= 0) {
+        const isDeranged = targetCharacter.conditions.some((condition) => condition.condition.name === 'Deranged');
+        if (isDeranged) {
+            if (targetCharacter.stats.insanities + 1 >=
+                targetCharacter.stats.permanentInsanities) {
+                const insane = await conditionServices.getConditionByName('Insane');
+                await characterServices.createCharacterConditions(targetCharacter.id, [
+                    { conditionId: insane === null || insane === void 0 ? void 0 : insane.id },
+                ]);
+            }
+            else {
+                await characterStatServices.editCharacterStat(targetCharacter.id, {
+                    insanities: 1,
+                    currentSanity: targetCharacter.stats.currentSanity * -1,
+                });
+            }
+        }
+        else {
+            const deranged = await conditionServices.getConditionByName('Deranged');
+            await characterStatServices.resetCharacterStat(targetCharacter.id, {
+                currentSanity: targetCharacter.stats.maxSanity,
+            });
+            await characterServices.createCharacterConditions(targetCharacter.id, [
+                { conditionId: deranged === null || deranged === void 0 ? void 0 : deranged.id },
+            ]);
+        }
+    }
+    else {
+        await characterStatServices.editCharacterStat(targetCharacter.id, {
+            currentSanity: sanityDamage * -1,
         });
     }
 };

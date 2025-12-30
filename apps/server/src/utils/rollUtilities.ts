@@ -207,6 +207,7 @@ export const calculateCosts = async (character, item, action) => {
 export const applyDamage = async (
   targetCharacter: Character,
   damage: number,
+  sanityDamage: number,
 ) => {
   if (!targetCharacter) {
     throw new Error('Target character not found');
@@ -218,14 +219,25 @@ export const applyDamage = async (
     );
 
     if (isWounded) {
-      await characterStatServices.editCharacterStat(targetCharacter.id, {
-        injuries: 1,
-        currentHealth: targetCharacter.stats.currentHealth * -1,
-      });
+      if (
+        targetCharacter.stats.injuries + 1 >=
+        targetCharacter.stats.permanentInjuries
+      ) {
+        const deadForGood =
+          await conditionServices.getConditionByName('Dead for Good');
+        await characterServices.createCharacterConditions(targetCharacter.id, [
+          { conditionId: deadForGood?.id },
+        ]);
+      } else {
+        await characterStatServices.editCharacterStat(targetCharacter.id, {
+          injuries: 1,
+          currentHealth: targetCharacter.stats.currentHealth * -1,
+        });
+      }
     } else {
       const wounded = await conditionServices.getConditionByName('Wounded');
       await characterStatServices.resetCharacterStat(targetCharacter.id, {
-        currentHealth: 10,
+        currentHealth: targetCharacter.stats.maxHealth,
       });
       await characterServices.createCharacterConditions(targetCharacter.id, [
         { conditionId: wounded?.id },
@@ -234,6 +246,41 @@ export const applyDamage = async (
   } else {
     await characterStatServices.editCharacterStat(targetCharacter.id, {
       currentHealth: damage * -1,
+    });
+  }
+
+  if (targetCharacter.stats?.currentSanity - sanityDamage <= 0) {
+    const isDeranged = targetCharacter.conditions.some(
+      (condition) => condition.condition.name === 'Deranged',
+    );
+
+    if (isDeranged) {
+      if (
+        targetCharacter.stats.insanities + 1 >=
+        targetCharacter.stats.permanentInsanities
+      ) {
+        const insane = await conditionServices.getConditionByName('Insane');
+        await characterServices.createCharacterConditions(targetCharacter.id, [
+          { conditionId: insane?.id },
+        ]);
+      } else {
+        await characterStatServices.editCharacterStat(targetCharacter.id, {
+          insanities: 1,
+          currentSanity: targetCharacter.stats.currentSanity * -1,
+        });
+      }
+    } else {
+      const deranged = await conditionServices.getConditionByName('Deranged');
+      await characterStatServices.resetCharacterStat(targetCharacter.id, {
+        currentSanity: targetCharacter.stats.maxSanity,
+      });
+      await characterServices.createCharacterConditions(targetCharacter.id, [
+        { conditionId: deranged?.id },
+      ]);
+    }
+  } else {
+    await characterStatServices.editCharacterStat(targetCharacter.id, {
+      currentSanity: sanityDamage * -1,
     });
   }
 };

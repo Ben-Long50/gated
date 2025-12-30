@@ -12,10 +12,13 @@ var __rest = (this && this.__rest) || function (s, e) {
 };
 import prisma from '../config/database.js';
 import itemServices from './itemServices.js';
-import { applyDamage, calculateActionQueueSuccesses, calculateCosts, calculateDamage, calculateRoll, } from '../utils/rollUtilities.js';
+import { applyDamage, calculateCosts, calculateDamage, calculateRoll, } from '../utils/rollUtilities.js';
 import { getIO } from '../sockets/socket.js';
 import characterServices from './characterServices.js';
 import actionServices from './actionServices.js';
+import actionFuncs from '../utils/actionFuncs.js';
+import { camelCase } from 'change-case';
+import reactionFuncs from '../utils/reactionFuncs.js';
 const encounterServices = {
     getEncounters: async (campaignId) => {
         try {
@@ -318,17 +321,12 @@ const encounterServices = {
                 actionPromise,
                 itemPromise,
             ]);
-            const rollResults = 
-            //@ts-ignore
-            action && action.roll.length > 0
-                ? calculateRoll(activeCharacter === null || activeCharacter === void 0 ? void 0 : activeCharacter.attributes, 
-                //@ts-ignore
-                { name: action.name, roll: action.roll }, actionData.modifiers, actionData.extraDice) || { result: [], successes: 0 }
+            const rollResults = action && action.roll.length > 0
+                ? calculateRoll(activeCharacter === null || activeCharacter === void 0 ? void 0 : activeCharacter.attributes, { name: action.name, roll: action.roll }, actionData.modifiers, actionData.extraDice) || { result: [], successes: 0 }
                 : null;
             const rolls = new Map();
             const { damage } = rollResults && item
-                ? //@ts-ignore
-                    calculateDamage(item, action, rollResults.successes)
+                ? calculateDamage(item, action, rollResults.successes)
                 : { damage: null };
             if (rollResults) {
                 rolls.set(activeCharacter === null || activeCharacter === void 0 ? void 0 : activeCharacter.id, {
@@ -586,7 +584,7 @@ const encounterServices = {
         }
     },
     confirmActionQueueResults: async (encounter, blockData) => {
-        var _a;
+        var _a, _b;
         try {
             const io = getIO();
             const phaseHistory = encounter === null || encounter === void 0 ? void 0 : encounter.phaseHistory[0];
@@ -596,16 +594,48 @@ const encounterServices = {
             if (!encounter) {
                 throw new Error('Failed to find encounter');
             }
+            const itemIds = [];
+            function mergeActionResults(target, source) {
+                for (const key in source) {
+                    const srcVal = source[key];
+                    const tgtVal = target[key];
+                    if (typeof srcVal === 'number' && typeof tgtVal === 'number') {
+                        target[key] = tgtVal + srcVal;
+                    }
+                    else if (tgtVal === undefined) {
+                        target[key] = srcVal;
+                    }
+                    else {
+                        target[key] = srcVal;
+                    }
+                }
+            }
             if ((_a = phaseHistory.action) === null || _a === void 0 ? void 0 : _a.rollResult) {
-                const successes = calculateActionQueueSuccesses(phaseHistory);
-                const { damage } = phaseHistory.action.itemSnapshot && phaseHistory.action.actionSnapshot
-                    ? calculateDamage(
-                    //@ts-ignore
-                    phaseHistory.action.itemSnapshot, phaseHistory.action.actionSnapshot, successes)
-                    : { damage: 0 };
-                let blockedDamage = blockData.reduce((sum, data) => sum + data.blockedDamage, 0);
+                const actionQueueResults = {
+                    successes: ((_b = phaseHistory.action) === null || _b === void 0 ? void 0 : _b.rollResult.successes) || 0,
+                    reducedSuccesses: 0,
+                    damage: 0,
+                    sanityDamage: 0,
+                    instances: 0,
+                    blockedDamage: 0,
+                    blockedSanityDamage: 0,
+                };
+                const actionResults = await actionFuncs[`${camelCase(phaseHistory.action.actionSnapshot.name)}`](phaseHistory.action.itemSnapshot, phaseHistory.action.rollResult.successes);
+                if (phaseHistory.action.itemSnapshot) {
+                    itemIds.push(phaseHistory.action.itemId);
+                }
+                mergeActionResults(actionQueueResults, actionResults);
+                for (const reaction of phaseHistory.reactions) {
+                    const reactionResults = await reactionFuncs[`${camelCase(reaction.actionSnapshot.name)}`](reaction.itemSnapshot, reaction.rollResult.successes);
+                    if (reaction.itemSnapshot) {
+                        itemIds.push(reaction.itemId);
+                    }
+                    mergeActionResults(actionQueueResults, reactionResults);
+                }
                 const armorCosts = new Map();
                 if (blockData) {
+                    const data = actionFuncs.block(blockData);
+                    mergeActionResults(actionQueueResults, data);
                     for (const data of blockData) {
                         data.armorIds.forEach((id) => {
                             const currentValue = armorCosts.get(id);
@@ -626,13 +656,9 @@ const encounterServices = {
                                 currentBlock: armorCosts.get(id),
                             },
                         });
+                        itemIds.push(id);
                     }
                     const armorIds = Array.from(armorCosts.keys()) || [];
-                    if (armorIds.length > 0) {
-                        for (const itemId of armorIds) {
-                            io.to(`campaign ${encounter.campaignId}`).emit('item', itemId);
-                        }
-                    }
                     await prisma.history.update({
                         where: { id: phaseHistory.action.id },
                         data: {
@@ -641,12 +667,24 @@ const encounterServices = {
                         },
                     });
                 }
-                const finalDamage = damage - blockedDamage > 0 ? damage - blockedDamage : 0;
-                console.log(finalDamage);
+                const damageInstances = actionQueueResults.instances <
+                    actionQueueResults.successes - actionQueueResults.reducedSuccesses
+                    ? actionQueueResults.instances
+                    : actionQueueResults.successes -
+                        actionQueueResults.reducedSuccesses;
+                const finalDamage = damageInstances * actionQueueResults.damage -
+                    actionQueueResults.blockedDamage;
+                const finalSanityDamage = damageInstances * actionQueueResults.sanityDamage -
+                    actionQueueResults.blockedSanityDamage;
+                console.log(actionQueueResults);
                 if (phaseHistory.action.targetSnapshot) {
-                    //@ts-ignore
-                    await applyDamage(phaseHistory.action.targetSnapshot, finalDamage);
+                    await applyDamage(phaseHistory.action.targetSnapshot, finalDamage, finalSanityDamage);
                     io.to(`campaign ${encounter.campaignId}`).emit('character', phaseHistory.action.targetId);
+                }
+            }
+            if (itemIds.length > 0) {
+                for (const itemId of itemIds) {
+                    io.to(`campaign ${encounter.campaignId}`).emit('item', itemId);
                 }
             }
             io.to(`encounter ${encounter.id}`).emit('resetBoard');

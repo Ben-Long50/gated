@@ -193,6 +193,7 @@ model Faction {
   campaign     Campaign      @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   campaignId   Int
   affiliations Affiliation[]
+  gangs        Gang[]
 }
 
 model Affiliation {
@@ -263,12 +264,32 @@ model Note {
 model Gang {
   id           Int           @id @default(autoincrement())
   name         String
+  picture      Json?
+  background   Json?
   level        Int           @default(1)
-  characters   Character[]
+  gangPoints   Int           @default(0)
   profits      Int           @default(10)
   campaign     Campaign      @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   campaignId   Int
+  faction      Faction?      @relation(fields: [factionId], references: [id], onDelete: Cascade)
+  factionId    Int?
+  characters   Character[]
+  properties   Property[]
   affiliations Affiliation[]
+}
+
+model Property {
+  id             Int        @id @default(autoincrement())
+  updatedAt      DateTime   @default(now())
+  name           String
+  picture        Json?
+  description    String
+  gpPrice        Int
+  gang           Gang?      @relation(fields: [gangId], references: [id])
+  gangId         Int?
+  baseProperty   Property?  @relation(fields: [basePropertyId], references: [id])
+  basePropertyId Int?
+  properties     Property[]
 }
 
 model Character {

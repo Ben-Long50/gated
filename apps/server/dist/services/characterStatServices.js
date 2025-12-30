@@ -1,6 +1,6 @@
 import prisma from '../config/database.js';
 const characterStatServices = {
-    editCharacterStat: async (characterId, value) => {
+    editCharacterStat: async (characterId, adjustments) => {
         try {
             const character = await prisma.character.findUnique({
                 where: {
@@ -12,10 +12,14 @@ const characterStatServices = {
                 throw new Error('Character not found');
             }
             const statsObject = character.stats;
-            let adjustedValues = Object.fromEntries(Object.entries(value).map(([stat, value]) => [
-                stat,
-                statsObject[stat] + value,
-            ]));
+            let adjustedValues = Object.fromEntries(Object.entries(statsObject).map(([stat, value]) => {
+                if (adjustments[stat]) {
+                    return [stat, value + adjustments[stat]];
+                }
+                else {
+                    return [stat, value];
+                }
+            }));
             const newStats = Object.assign(Object.assign({}, statsObject), adjustedValues);
             await prisma.character.update({
                 where: {

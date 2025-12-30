@@ -1,5 +1,8 @@
+// @ts-nocheck
+
 import { InputJsonValue } from '@prisma/client/runtime/library';
 import prisma from '../config/database';
+import characterServices from '../services/characterServices';
 
 const updateCharacterStats = async () => {
   const characters = await prisma.character.findMany({});
@@ -20,7 +23,7 @@ const updateCharacterStats = async () => {
   }
 };
 
-updateCharacterStats();
+// updateCharacterStats();
 
 const updateActionCosts = async () => {
   const actions = await prisma.action.findMany({});
@@ -51,7 +54,7 @@ const updateActionCosts = async () => {
   }
 };
 
-updateActionCosts();
+// updateActionCosts();
 
 const updateCampaignDates = async () => {
   const campaigns = await prisma.campaign.findMany({});
@@ -69,4 +72,35 @@ const updateCampaignDates = async () => {
   }
 };
 
-updateCampaignDates();
+// updateCampaignDates();
+
+const resetCharacterHealthAndSanity = async () => {
+  const characterIds = await prisma.character.findMany({
+    select: { id: true },
+  });
+
+  for (let id of characterIds) {
+    const character = await characterServices.getCharacterById(id.id);
+    const characterStats = character?.stats;
+
+    const stats = {
+      injuries: characterStats.injuries || 0,
+      insanities: characterStats.insanities || 0,
+      permanentInjuries: characterStats.permanentInjuries,
+      permanentInsanities: characterStats.permanentInsanities,
+      currentActions: 3,
+      currentReactions: 1,
+      currentHands: 2,
+      currentHealth: characterStats.maxHealth,
+      currentSanity: characterStats.maxSanity,
+    };
+
+    await prisma.character.update({
+      where: { id: id.id },
+      data: { stats },
+    });
+    console.log(`Updated ${character.firstName}`, stats);
+  }
+};
+
+resetCharacterHealthAndSanity();

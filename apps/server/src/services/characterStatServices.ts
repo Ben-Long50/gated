@@ -1,7 +1,10 @@
 import prisma from '../config/database.js';
 
 const characterStatServices = {
-  editCharacterStat: async (characterId: number, value: object) => {
+  editCharacterStat: async (
+    characterId: number,
+    adjustments: Record<string, number>,
+  ) => {
     try {
       const character = await prisma.character.findUnique({
         where: {
@@ -17,10 +20,13 @@ const characterStatServices = {
       const statsObject = character.stats as Record<string, number>;
 
       let adjustedValues = Object.fromEntries(
-        Object.entries(value).map(([stat, value]) => [
-          stat,
-          statsObject[stat] + value,
-        ]),
+        Object.entries(statsObject).map(([stat, value]) => {
+          if (adjustments[stat]) {
+            return [stat, value + adjustments[stat]];
+          } else {
+            return [stat, value];
+          }
+        }),
       );
 
       const newStats = {
