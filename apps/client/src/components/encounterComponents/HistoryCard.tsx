@@ -1,6 +1,7 @@
 import { capitalCase } from 'change-case';
 import CharacterPictureRound from '../CharacterPictureRound';
 import Die from './Die';
+import parsePhaseAction from 'src/utils/parsePhaseAction';
 
 const HistoryCard = ({ history }: { history: any }) => {
   return (

@@ -3,7 +3,7 @@ const WardIcon = ({ className }: { className?: string }) => {
     <svg
       className={`${className ? className : 'text-secondary'} timing`}
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 100 100"
+      viewBox="15 15 70 70"
       x="0px"
       y="0px"
     >
