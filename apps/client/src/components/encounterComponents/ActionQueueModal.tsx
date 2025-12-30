@@ -4,7 +4,6 @@ import BtnRect from '../buttons/BtnRect';
 import { useNavigate, useParams } from 'react-router-dom';
 import ArrowHeader3 from '../ArrowHeader3';
 import PhaseActionCard from '../encounterComponents/PhaseActionCard';
-import { calculateDamage } from 'src/utils/calculateDamage';
 import DamageIcon from '../icons/DamageIcon';
 import ArrowHeader4 from '../ArrowHeader4';
 import ItemCardExpanding from '../encounterComponents/ItemCardExpanding';
@@ -80,7 +79,6 @@ const ActionQueueModal = () => {
       blockData:
         (damage || sanityDamage) && instances
           ? Array.from({ length: instances }, () => ({
-              damage: damage / instances,
               blockedDamage: 0,
               blockedSanityDamage: 0,
               armorIds: [] as number[],
@@ -176,12 +174,22 @@ const ActionQueueModal = () => {
                       {instances}
                     </h2>
                   </div>
-                  <div className="flex w-full items-center justify-between">
-                    <ArrowHeader3 title="Damage Per Instance" />
-                    <h2 className="flex size-6 items-center justify-center">
-                      {damage / instances}
-                    </h2>
-                  </div>
+                  {damage > 0 && (
+                    <div className="flex w-full items-center justify-between">
+                      <ArrowHeader3 title="Damage per Instance" />
+                      <h2 className="flex size-6 items-center justify-center">
+                        {damage}
+                      </h2>
+                    </div>
+                  )}
+                  {sanityDamage > 0 && (
+                    <div className="flex w-full items-center justify-between">
+                      <ArrowHeader3 title="Sanity Damage per Instance" />
+                      <h2 className="flex size-6 items-center justify-center">
+                        {sanityDamage}
+                      </h2>
+                    </div>
+                  )}
                 </>
               )}
               {phaseReactions && phaseReactions.length > 0 && (
@@ -202,8 +210,7 @@ const ActionQueueModal = () => {
                           <blockForm.Field key={i} name={`blockData[${i}]`}>
                             {(subField) => {
                               const blocked =
-                                subField.state.value.blockedDamage >=
-                                subField.state.value.damage;
+                                subField.state.value.blockedDamage >= damage;
 
                               return (
                                 <div className="flex flex-col items-center justify-end gap-2">
@@ -228,7 +235,7 @@ const ActionQueueModal = () => {
                                   </button>
                                   <p>
                                     {subField.state.value.blockedDamage} /{' '}
-                                    {subField.state.value.damage}
+                                    {damage}
                                   </p>
                                 </div>
                               );
@@ -344,7 +351,7 @@ const ActionQueueModal = () => {
                             {(subField) => {
                               const blocked =
                                 subField.state.value.blockedSanityDamage >=
-                                subField.state.value.sanityDamage;
+                                sanityDamage;
 
                               return (
                                 <div className="flex flex-col items-center justify-end gap-2">
@@ -369,7 +376,7 @@ const ActionQueueModal = () => {
                                   </button>
                                   <p>
                                     {subField.state.value.blockedSanityDamage} /{' '}
-                                    {subField.state.value.sanityDamage}
+                                    {sanityDamage}
                                   </p>
                                 </div>
                               );
