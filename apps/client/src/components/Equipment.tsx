@@ -237,25 +237,25 @@ const Equipment = () => {
                 </p>
               </div>
               <div className="bg-secondary flex items-center justify-between gap-2 rounded-md p-2 shadow-md shadow-black">
-                <div className="flex items-center justify-center gap-4">
+                <div className="flex items-center justify-center gap-4 overflow-hidden">
                   <InjuryIcon className="text-secondary size-8 shrink-0" />
-                  <h3 className="text-primary text-xl font-semibold tracking-widest">
+                  <h3 className="text-primary truncate text-xl font-semibold tracking-widest">
                     Injuries
                   </h3>
                 </div>
-                <p className="text-secondary min-w-6 text-center text-xl sm:pt-1 sm:text-2xl">
+                <p className="text-secondary min-w-6 whitespace-nowrap text-center text-xl sm:pt-1 sm:text-2xl">
                   {character?.stats.injuries || 0} /{' '}
                   {character?.stats.permanentInjuries}
                 </p>
               </div>
               <div className="bg-secondary flex items-center justify-between gap-2 rounded-md p-2 shadow-md shadow-black">
-                <div className="flex items-center justify-center gap-4">
+                <div className="flex items-center justify-center gap-4 overflow-hidden">
                   <InsanityIcon className="text-secondary size-8 shrink-0" />
-                  <h3 className="text-primary text-xl font-semibold tracking-widest">
+                  <h3 className="text-primary truncate text-xl font-semibold tracking-widest">
                     Insanities
                   </h3>
                 </div>
-                <p className="text-secondary min-w-6 text-center text-xl sm:pt-1 sm:text-2xl">
+                <p className="text-secondary min-w-6 whitespace-nowrap text-center text-xl sm:pt-1 sm:text-2xl">
                   {character?.stats.insanities || 0} /{' '}
                   {character?.stats.permanentInsanities}
                 </p>
