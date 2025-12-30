@@ -49,6 +49,12 @@ const actionFuncs = {
 
     return { damage, sanityDamage, instances };
   },
+  charge: (item: Item, successes: number) => {
+    return actionFuncs.strike(item, successes);
+  },
+  throw: (item: Item, successes: number) => {
+    return actionFuncs.strike(item, successes);
+  },
   singleShot: (item: Item, successes: number) => {
     let damage = item.stats.damage || 0;
     let sanityDamage = item.stats.sanityDamage || 0;

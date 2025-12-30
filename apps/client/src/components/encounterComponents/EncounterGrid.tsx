@@ -13,6 +13,8 @@ import DragScrollContainer from '../mapComponents/DragScrollContainer';
 import getCoords from '../mapComponents/mapUtils/getCoords';
 import MapComponent from '../mapComponents/map/MapComponent';
 import useCharacter from 'src/hooks/useCharacter';
+import actionRanges from 'src/utils/actionRanges';
+import { camelCase } from 'change-case';
 
 const EncounterGrid = ({
   width,
@@ -68,13 +70,13 @@ const EncounterGrid = ({
       break;
   }
 
-  const range = tempRange
-    ? tempRange
-    : action?.actionSubtypes?.includes('movement')
-      ? action?.modifiers?.speed
-        ? character?.stats.speed + action?.modifiers?.speed
-        : character?.stats.speed
-      : item?.stats.range;
+  const range = useMemo(() => {
+    return tempRange
+      ? tempRange
+      : action && actionRanges[`${camelCase(action.name)}`]
+        ? actionRanges[`${camelCase(action.name)}`](activeCharacter, item)
+        : 0;
+  }, [action, item, activeCharacter, tempRange]);
 
   const actionTarget = useStore(
     actionForm.store,

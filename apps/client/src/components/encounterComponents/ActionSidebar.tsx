@@ -50,7 +50,7 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
 
   const filterActions = (item: Item) => {
     const rangedActions = ['Single Shot', 'Salvo'];
-    const meleeActions = ['Strike', 'Flurry', 'Haymaker'];
+    const meleeActions = ['Strike', 'Flurry', 'Haymaker', 'Charge', 'Throw'];
 
     const itemActions = item.itemLinkReference?.actions || [];
 
@@ -60,16 +60,22 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
           rangedActions.includes(action.name),
         ),
         ...itemActions,
-      ];
+      ].sort((a, b) =>
+        a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
+      );
     } else if (item.keywords.some((data) => data.keyword.name === 'Melee')) {
       return [
         ...availableActions.filter((action) =>
           meleeActions.includes(action.name),
         ),
         ...itemActions,
-      ];
+      ].sort((a, b) =>
+        a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
+      );
     } else {
-      return [...itemActions];
+      return [...itemActions].sort((a, b) =>
+        a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
+      );
     }
   };
   const actionList = item ? filterActions(item) : availableActions;
