@@ -287,9 +287,9 @@ model Property {
   gpPrice        Int
   gang           Gang?      @relation(fields: [gangId], references: [id])
   gangId         Int?
-  baseProperty   Property?  @relation(fields: [basePropertyId], references: [id])
+  baseProperty   Property?  @relation("copyProperty", fields: [basePropertyId], references: [id])
   basePropertyId Int?
-  properties     Property[]
+  properties     Property[] @relation("copyProperty")
 }
 
 model Character {

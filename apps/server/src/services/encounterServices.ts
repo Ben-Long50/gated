@@ -5,7 +5,6 @@ import prisma from '../config/database.js';
 import itemServices from './itemServices.js';
 import {
   applyDamage,
-  calculateActionQueueSuccesses,
   calculateCosts,
   calculateDamage,
   calculateRoll,
@@ -782,7 +781,6 @@ const encounterServices = {
   confirmActionQueueResults: async (
     encounter: Encounter,
     blockData: {
-      damage: number;
       blockedDamage: number;
       blockedSanityDamage: number;
       armorIds: number[];
@@ -905,6 +903,7 @@ const encounterServices = {
         const finalDamage =
           damageInstances * actionQueueResults.damage -
           actionQueueResults.blockedDamage;
+
         const finalSanityDamage =
           damageInstances * actionQueueResults.sanityDamage -
           actionQueueResults.blockedSanityDamage;

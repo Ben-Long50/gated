@@ -101,7 +101,6 @@ const actionFuncs = {
   },
   block: (
     blockData: {
-      damage: number;
       blockedDamage: number;
       blockedSanityDamage: number;
       armorIds: number[];
