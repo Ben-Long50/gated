@@ -199,7 +199,6 @@ const campaignServices = {
     ownerId: number,
   ) => {
     let currentPending = [] as User[];
-    console.log(formData);
 
     if (formData.id) {
       const campaign = await prisma.campaign.findUnique({

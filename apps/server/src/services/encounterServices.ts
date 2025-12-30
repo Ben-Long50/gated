@@ -191,8 +191,6 @@ const encounterServices = {
         round: encounter.round,
       } as any;
 
-      console.log(nextPhase);
-
       if (nextPhase === 'action') {
         await prisma.encounter.update({
           where: { id: encounterId },
@@ -907,8 +905,6 @@ const encounterServices = {
         const finalSanityDamage =
           damageInstances * actionQueueResults.sanityDamage -
           actionQueueResults.blockedSanityDamage;
-
-        console.log(actionQueueResults);
 
         if (phaseHistory.action.targetSnapshot) {
           await applyDamage(
