@@ -24,6 +24,7 @@ import usePassReactionMutation from 'src/hooks/encounter hooks/usePassReactionMu
 import useFinishReactionMutation from 'src/hooks/encounter hooks/useFinishReactionMutation/useFinishReactionMutation';
 import { useForm } from '@tanstack/react-form';
 import useCharacterStatMutation from 'src/hooks/character stat hooks/useCharacterStatMutation/useCharacterStatMutation';
+import FootIcon from '../icons/FootIcon';
 
 const CharacterOptions = ({
   setActionSidebar,
@@ -158,6 +159,12 @@ const CharacterOptions = ({
                 <HandIcon className={`text-primary size-8 shrink-0`} />
                 <h2 className={`size-6 text-center`}>
                   {character?.stats.currentHands}
+                </h2>
+              </div>
+              <div className={`flex items-center gap-2`}>
+                <FootIcon className={`text-primary size-8 shrink-0`} />
+                <h2 className={`size-6 text-center`}>
+                  {character?.stats.currentFeet}
                 </h2>
               </div>
             </button>

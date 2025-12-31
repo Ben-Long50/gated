@@ -99,7 +99,7 @@ const useCombat = () => {
     if (nextControlledCharacter?.id != null) {
       setControlledCharacterId(nextControlledCharacter.id);
     }
-  }, [combat, activeCharacter, gameMaster, user.id]);
+  }, [combat?.turnPosition, activeCharacter, gameMaster, user.id]);
 
   const setItem = useCombatStore((state) => state.setItem);
 
@@ -146,26 +146,44 @@ const useCombat = () => {
       ) {
         resetCharacterStat.mutate({
           characterId: character.id,
-          value: {
-            currentHands: character.stats.hands || 0,
-          },
+          stat: 'currentHands',
+          value: character.stats.hands,
+        });
+        resetCharacterStat.mutate({
+          characterId: character.id,
+          stat: 'currentFeet',
+          value: character.stats.feet,
         });
       }
     }
 
     if (
-      nextCharacter?.stats.actions !== nextCharacter?.stats.currentActions ||
-      nextCharacter?.stats.reactions !==
-        nextCharacter?.stats.currentReactions ||
-      nextCharacter?.stats.hands !== nextCharacter?.stats.currentHands
+      nextCharacter &&
+      (nextCharacter?.stats.actions !== nextCharacter?.stats.currentActions ||
+        nextCharacter?.stats.reactions !==
+          nextCharacter?.stats.currentReactions ||
+        nextCharacter?.stats.hands !== nextCharacter?.stats.currentHands ||
+        nextCharacter?.stats.feet !== nextCharacter?.stats.currentFeet)
     ) {
       resetCharacterStat.mutate({
-        characterId: nextCharacterId,
-        value: {
-          currentActions: nextCharacter?.stats.actions || 0,
-          currentReactions: nextCharacter?.stats.reactions || 0,
-          currentHands: nextCharacter?.stats.hands || 0,
-        },
+        characterId: nextCharacter.id,
+        stat: 'currentActions',
+        value: nextCharacter.stats.actions,
+      });
+      resetCharacterStat.mutate({
+        characterId: nextCharacter.id,
+        stat: 'currentReactions',
+        value: nextCharacter.stats.reactions,
+      });
+      resetCharacterStat.mutate({
+        characterId: nextCharacter.id,
+        stat: 'currentHands',
+        value: nextCharacter.stats.hands,
+      });
+      resetCharacterStat.mutate({
+        characterId: nextCharacter.id,
+        stat: 'currentFeet',
+        value: nextCharacter.stats.feet,
       });
     }
 

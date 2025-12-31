@@ -5,7 +5,7 @@ const ReactionIcon = ({ className }: { className?: string }) => {
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 64 64"
     >
-      <g strokeWidth="1">
+      <g stroke="currentColor" strokeWidth="1">
         <path d="M25.5,32L15,22.8V27H1v10h14v4.2L25.5,32z M3,35v-6h14v-1.8l5.5,4.8L17,36.8V35H3z" />
         <path d="M41.2,15H37V1H27v14h-4.2L32,25.5L41.2,15z M29,17V3h6v14h1.8L32,22.5L27.2,17H29z" />
         <path d="M22.8,49H27v14h10V49h4.2L32,38.5L22.8,49z M35,47v14h-6V47h-1.8l4.8-5.5l4.8,5.5H35z" />
