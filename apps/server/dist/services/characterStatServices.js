@@ -68,11 +68,11 @@ const characterStatServices = {
             throw new Error(`Failed to update character stats`);
         }
     },
-    resetCharacterStat: async (characterId, value) => {
+    resetCharacterStat: async (characterId, adjustments) => {
         try {
             const character = await prisma.character.findUnique({
                 where: {
-                    id: Number(characterId),
+                    id: characterId,
                 },
                 select: { stats: true },
             });
@@ -80,7 +80,7 @@ const characterStatServices = {
                 throw new Error('Character not found');
             }
             const statsObject = character.stats;
-            const newStats = Object.assign(Object.assign({}, statsObject), value);
+            const newStats = Object.assign(Object.assign({}, statsObject), adjustments);
             await prisma.character.update({
                 where: {
                     id: Number(characterId),
@@ -92,7 +92,7 @@ const characterStatServices = {
         }
         catch (error) {
             console.error(error);
-            throw new Error(`Failed to update character stats ${value.toString()}`);
+            throw new Error(`Failed to update character stats ${adjustments.toString()}`);
         }
     },
     editProfits: async (characterId, value) => {

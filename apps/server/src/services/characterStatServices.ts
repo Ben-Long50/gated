@@ -88,11 +88,14 @@ const characterStatServices = {
     }
   },
 
-  resetCharacterStat: async (characterId: string, value: object) => {
+  resetCharacterStat: async (
+    characterId: number,
+    adjustments: Record<string, number>,
+  ) => {
     try {
       const character = await prisma.character.findUnique({
         where: {
-          id: Number(characterId),
+          id: characterId,
         },
         select: { stats: true },
       });
@@ -105,7 +108,7 @@ const characterStatServices = {
 
       const newStats = {
         ...statsObject,
-        ...value,
+        ...adjustments,
       };
 
       await prisma.character.update({
@@ -118,7 +121,9 @@ const characterStatServices = {
       });
     } catch (error) {
       console.error(error);
-      throw new Error(`Failed to update character stats ${value.toString()}`);
+      throw new Error(
+        `Failed to update character stats ${adjustments.toString()}`,
+      );
     }
   },
 

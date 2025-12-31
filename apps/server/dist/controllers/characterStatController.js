@@ -13,7 +13,7 @@ const characterStatController = {
     },
     resetCharacterStat: async (req, res) => {
         try {
-            await characterStatServices.resetCharacterStat(req.params.characterId, req.body.value);
+            await characterStatServices.resetCharacterStat(Number(req.params.characterId), req.body.value);
             res.status(200).json({
                 message: `Changed current stats ${req.body.value}`,
             });

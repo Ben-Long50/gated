@@ -10,6 +10,7 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 import prisma from '../config/database.js';
+import addVariableStats from '../utils/addVariableStats.js';
 const actionServices = {
     getActions: async () => {
         try {
@@ -58,6 +59,9 @@ const actionServices = {
                 keywordId: keyword.keywordId,
                 value: keyword.value,
             }))) || [];
+            const modifierStats = formData.modifiers
+                ? addVariableStats(Object.assign({}, formData.modifiers))
+                : null;
             const newAction = await prisma.action.upsert({
                 where: { id: Number(formData === null || formData === void 0 ? void 0 : formData.id) || 0 },
                 update: {
@@ -69,7 +73,7 @@ const actionServices = {
                     cooldown: formData.cooldown,
                     actionType: formData.actionType,
                     actionSubtypes: formData.actionSubtypes,
-                    modifiers: Object.assign({}, formData.modifiers),
+                    modifiers: Object.assign({}, modifierStats),
                     keywordModifiers: { createMany: { data: keywordModifierData } },
                 },
                 create: {
@@ -81,7 +85,7 @@ const actionServices = {
                     cooldown: formData.cooldown,
                     actionType: formData.actionType,
                     actionSubtypes: formData.actionSubtypes,
-                    modifiers: Object.assign({}, formData.modifiers),
+                    modifiers: Object.assign({}, modifierStats),
                     keywordModifiers: { createMany: { data: keywordModifierData } },
                 },
             });
@@ -115,6 +119,7 @@ const actionServices = {
         const actionIds = actionList === null || actionList === void 0 ? void 0 : actionList.map((action) => action.actionId);
         const actions = await prisma.action.findMany({
             where: { id: { in: actionIds } },
+            include: { keywordModifiers: { include: { keyword: true } } },
         });
         const newAction = await Promise.all(actionList.flatMap(({ actionId, quantity }) => {
             const actionDetails = actions.find((action) => action.id === actionId);
@@ -130,6 +135,14 @@ const actionServices = {
                         actionType: actionDetails.actionType,
                         actionSubtypes: actionDetails.actionSubtypes,
                         modifiers: Object.assign({}, actionDetails.modifiers),
+                        keywordModifiers: {
+                            create: actionDetails.keywordModifiers.map((modifier) => ({
+                                value: modifier.value,
+                                keyword: {
+                                    connect: { id: modifier.keywordId },
+                                },
+                            })),
+                        },
                         characterInventory: {
                             connect: { id: Number(inventoryId) },
                         },

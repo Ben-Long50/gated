@@ -10,6 +10,7 @@ import {
 import { ItemType } from '@prisma/client';
 import itemServices from './itemServices.js';
 import calculateCharacterStats from '../utils/characterStatUtils.js';
+import calculateItemStats from '../utils/itemStatUtils.js';
 
 const characterServices = {
   getCharacters: async (userId: number) => {
@@ -65,9 +66,12 @@ const characterServices = {
         throw new Error('You have not created any characters');
       }
 
-      characters.forEach(
-        (character) => (character.stats = calculateCharacterStats(character)),
-      );
+      characters.forEach((character) => {
+        character.stats = calculateCharacterStats(character);
+        character.characterInventory?.items = calculateItemStats(
+          character.characterInventory?.items,
+        );
+      });
 
       return characters;
     } catch (error) {

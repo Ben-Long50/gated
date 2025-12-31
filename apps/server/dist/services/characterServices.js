@@ -14,6 +14,7 @@ import prisma from '../config/database.js';
 import { includeCharacterCart, includeCharacterInventory, unequipLinked, } from '../utils/linkQueryStructures.js';
 import itemServices from './itemServices.js';
 import calculateCharacterStats from '../utils/characterStatUtils.js';
+import calculateItemStats from '../utils/itemStatUtils.js';
 const characterServices = {
     getCharacters: async (userId) => {
         try {
@@ -64,7 +65,11 @@ const characterServices = {
             if (characters.length === 0) {
                 throw new Error('You have not created any characters');
             }
-            characters.forEach((character) => (character.stats = calculateCharacterStats(character)));
+            characters.forEach((character) => {
+                var _a, _b;
+                character.stats = calculateCharacterStats(character);
+                (_a = character.characterInventory) === null || _a === void 0 ? void 0 : _a.items = calculateItemStats((_b = character.characterInventory) === null || _b === void 0 ? void 0 : _b.items);
+            });
             return characters;
         }
         catch (error) {

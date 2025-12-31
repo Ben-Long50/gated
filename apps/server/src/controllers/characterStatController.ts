@@ -19,7 +19,7 @@ const characterStatController = {
   resetCharacterStat: async (req: Request, res: Response) => {
     try {
       await characterStatServices.resetCharacterStat(
-        req.params.characterId,
+        Number(req.params.characterId),
         req.body.value,
       );
       res.status(200).json({

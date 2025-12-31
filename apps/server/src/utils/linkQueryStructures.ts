@@ -1,8 +1,16 @@
 import { Prisma } from '@prisma/client';
 
 export const includeCharacterInventory: Prisma.CharacterInventoryInclude = {
-  items: true,
-  actions: { orderBy: { name: 'asc' } },
+  items: {
+    include: {
+      itemLinkReference: { include: { actions: true, items: true } },
+      keywords: { include: { keyword: true } },
+    },
+  },
+  actions: {
+    orderBy: { name: 'asc' },
+    include: { keywordModifiers: { include: { keyword: true } } },
+  },
 };
 
 export const includeCharacterCart: Prisma.CharacterCartInclude = {

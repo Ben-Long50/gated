@@ -2,6 +2,7 @@ import { ActionType, Prisma } from '@prisma/client';
 import prisma from '../config/database.js';
 import { ActionCosts, ActionRoll } from '../types/action.js';
 import { Stats } from '../types/item.js';
+import addVariableStats from '../utils/addVariableStats.js';
 
 const actionServices = {
   getActions: async () => {
@@ -68,6 +69,10 @@ const actionServices = {
           }),
         ) || [];
 
+      const modifierStats = formData.modifiers
+        ? addVariableStats({ ...(formData.modifiers as Stats) })
+        : null;
+
       const newAction = await prisma.action.upsert({
         where: { id: Number(formData?.id) || 0 },
         update: {
@@ -79,7 +84,7 @@ const actionServices = {
           cooldown: formData.cooldown,
           actionType: formData.actionType,
           actionSubtypes: formData.actionSubtypes,
-          modifiers: { ...formData.modifiers },
+          modifiers: { ...modifierStats },
           keywordModifiers: { createMany: { data: keywordModifierData } },
         },
         create: {
@@ -91,7 +96,7 @@ const actionServices = {
           cooldown: formData.cooldown,
           actionType: formData.actionType,
           actionSubtypes: formData.actionSubtypes,
-          modifiers: { ...formData.modifiers },
+          modifiers: { ...modifierStats },
           keywordModifiers: { createMany: { data: keywordModifierData } },
         },
       });
@@ -143,6 +148,7 @@ const actionServices = {
 
     const actions = await prisma.action.findMany({
       where: { id: { in: actionIds } },
+      include: { keywordModifiers: { include: { keyword: true } } },
     });
 
     const newAction = await Promise.all(
@@ -162,6 +168,14 @@ const actionServices = {
                 actionType: actionDetails.actionType,
                 actionSubtypes: actionDetails.actionSubtypes,
                 modifiers: { ...(actionDetails.modifiers as Stats) },
+                keywordModifiers: {
+                  create: actionDetails.keywordModifiers.map((modifier) => ({
+                    value: modifier.value,
+                    keyword: {
+                      connect: { id: modifier.keywordId },
+                    },
+                  })),
+                },
                 characterInventory: {
                   connect: { id: Number(inventoryId) },
                 },
