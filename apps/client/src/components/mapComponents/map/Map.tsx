@@ -25,7 +25,7 @@ const Map = () => {
   const { mapId } = useParams();
   const [dragging, setDragging] = useState(false);
   const [draggingId, setDraggingId] = useState<number | null>(null);
-  const [gridDisplay, setGridDisplay] = useState(true);
+  const [gridDisplay, setGridDisplay] = useState(false);
   const [mapScale, setMapScale] = useState(1);
 
   const { map, locations, mapLoading, locationsLoading } = useMap(

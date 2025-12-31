@@ -15,8 +15,6 @@ import Icon from '@mdi/react';
 import {
   mdiCalendarCheckOutline,
   mdiCalendarRemoveOutline,
-  mdiCollapseAllOutline,
-  mdiExpandAllOutline,
   mdiLinkBoxVariantOutline,
 } from '@mdi/js';
 import { Action } from 'src/types/action';
@@ -29,7 +27,7 @@ import ArrowHeader3 from './ArrowHeader3';
 import ArrowHeader2 from './ArrowHeader2';
 import useItemQuery from '../hooks/useItemQuery/useItemQuery';
 import ItemCardSmall from './ItemCardSmall';
-import { Keyword, KeywordReference } from 'src/types/keyword';
+import { KeywordReference } from 'src/types/keyword';
 import { Item } from 'src/types/item';
 import useItemStats from 'src/hooks/useItemStats';
 import LinkedItemCard from './LinkedItemCard';

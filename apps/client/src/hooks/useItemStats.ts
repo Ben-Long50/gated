@@ -54,7 +54,7 @@ const useItemStats = (item: Item) => {
       if (combined[key]) {
         combined[key] = combined[key] + value;
       } else {
-        continue;
+        combined[key] = value;
       }
     }
 

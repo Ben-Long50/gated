@@ -35,6 +35,11 @@ const InitiativeModal = () => {
     Number(campaignId),
     Number(encounterId),
   );
+
+  const playerIds = new Set();
+
+  combat?.characters.forEach((character) => playerIds.add(character.userId));
+
   // const rollAllInitiative = async () => {
   //   setRollingInitiative(true);
   //   const rollAll = async (ids?: []) => {
@@ -131,6 +136,14 @@ const InitiativeModal = () => {
             )}
           </div>
         ))}
+        {playerIds && [...playerIds].length === joinedPlayers.length ? (
+          <p className="text-base">All Players Here</p>
+        ) : (
+          <div className="flex items-center gap-2">
+            <Loading size={0.7} />
+            <p className="text-base">Waiting for Players</p>
+          </div>
+        )}
       </div>
       <div className="flex w-full flex-col gap-2">
         {initiativeOrder?.map((characterId: number, index: number) => {

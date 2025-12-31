@@ -42,7 +42,7 @@ const MapBuilder = () => {
   const [path, setPath] = useState(['/assets', 'tiles']);
   const [tempComponent, setTempComponent] = useState<Component | null>(null);
   const [dragging, setDragging] = useState(false);
-  const [gridDisplay, setGridDisplay] = useState(true);
+  const [gridDisplay, setGridDisplay] = useState(false);
   const [mapScale, setMapScale] = useState(1);
 
   const { data: map, isLoading } = useCampaignMapQuery(Number(mapId));

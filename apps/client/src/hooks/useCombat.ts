@@ -343,10 +343,11 @@ const useCombat = () => {
     },
   });
 
-  const blockPermissions =
-    gameMaster ||
-    controlledCharacterId ===
-      combat?.phaseHistory[0].action?.targetSnapshot?.id;
+  const blockPermissions = combat?.phaseHistory[0]
+    ? gameMaster ||
+      controlledCharacterId ===
+        combat?.phaseHistory[0].action?.targetSnapshot?.id
+    : gameMaster;
 
   const actionQueueResults = parsePhaseAction(combat?.phaseHistory[0]);
 

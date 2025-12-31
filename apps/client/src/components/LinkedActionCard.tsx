@@ -67,8 +67,7 @@ const LinkedActionCard = ({
         className={`flex cursor-pointer flex-col items-start justify-start gap-4 p-4`}
         onClick={(e) => {
           e.stopPropagation();
-          onClick();
-          navigate(-1);
+          handleMenu(e);
         }}
       >
         {action.itemLink && (
