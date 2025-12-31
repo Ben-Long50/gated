@@ -25,7 +25,6 @@ const useDeleteCharacterMutation = (characterId?: string) => {
       queryClient.invalidateQueries({
         queryKey: ['user', user.id],
       });
-      navigate('..');
     },
     onError: () => {
       console.error('Error creating character');
