@@ -9,7 +9,7 @@ import ReactionIcon from '../icons/ReactionIcon';
 import CharacterStatBars from '../CharacterStatBars';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import ThemeContainer from '../ThemeContainer';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import HandIcon from '../icons/HandIcon';
@@ -22,6 +22,8 @@ import usePassAllReactionsMutation from 'src/hooks/encounter hooks/usePassAllRea
 import useScheduleReactionMutation from 'src/hooks/encounter hooks/useScheduleReactionMutation/useScheduleReactionMutation';
 import usePassReactionMutation from 'src/hooks/encounter hooks/usePassReactionMutation/usePassReactionMutation';
 import useFinishReactionMutation from 'src/hooks/encounter hooks/useFinishReactionMutation/useFinishReactionMutation';
+import { useForm } from '@tanstack/react-form';
+import useCharacterStatMutation from 'src/hooks/character stat hooks/useCharacterStatMutation/useCharacterStatMutation';
 
 const CharacterOptions = ({
   setActionSidebar,
@@ -120,7 +122,7 @@ const CharacterOptions = ({
         <div
           className={`${visible ? 'gap-4' : 'gap-0'} timing flex flex-col items-center justify-start overflow-hidden`}
         >
-          <div className="timing grid w-full grid-cols-[auto_auto_1fr_auto] items-center gap-4">
+          <div className="timing grid w-full grid-cols-[auto_.5fr_1fr_auto] items-center gap-4">
             <CharacterPictureRound key={character?.id} character={character} />
             {!mobile && <ArrowHeader3 title={characterName} />}
             <div className="grid w-full grow grid-cols-[auto_auto_1fr_auto] place-items-center gap-2 gap-y-0">
@@ -136,7 +138,10 @@ const CharacterOptions = ({
                 cardWidth={300}
               />
             </div>
-            <div className={`timing flex flex-row justify-end gap-2`}>
+            <button
+              className={`timing hover:bg-secondary hover:border-accent flex flex-row justify-end gap-2 rounded-md border-2 border-transparent p-3 hover:shadow-md hover:shadow-black`}
+              onClick={() => navigate('reset')}
+            >
               <div className={`flex items-center gap-2`}>
                 <ActionIcon className={`text-primary size-8 shrink-0`} />
                 <h2 className={`size-6 text-center`}>
@@ -155,7 +160,7 @@ const CharacterOptions = ({
                   {character?.stats.currentHands}
                 </h2>
               </div>
-            </div>
+            </button>
           </div>
           <EquippedItems
             className={`${visible ? 'max-h-40' : 'max-h-0'} timing overflow-hidden`}
@@ -275,6 +280,7 @@ const CharacterOptions = ({
           )}
         </div>
       </div>
+      <Outlet context={{ character }} />
     </ThemeContainer>
   );
 };

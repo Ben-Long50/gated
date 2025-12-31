@@ -1,4 +1,4 @@
-import useCharacterStatMutation from './useCharacterStatMutation';
+import useCharacterStatMutation from './useResetCharacterStatMutation';
 import useCharacter from 'src/hooks/useCharacter';
 
 const useCharacterStatHandlers = (characterId: number) => {

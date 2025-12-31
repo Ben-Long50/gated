@@ -1,7 +1,11 @@
 import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../../handleResponse';
 
-const resetCharacterStat = async (characterId: number, value: object) => {
+const resetCharacterStat = async (
+  characterId: number,
+  stat: string,
+  value: number,
+) => {
   try {
     const response = await fetch(
       `${apiUrl}/characters/${characterId}/stats/reset`,
@@ -12,6 +16,7 @@ const resetCharacterStat = async (characterId: number, value: object) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          stat,
           value,
         }),
       },

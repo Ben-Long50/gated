@@ -7,7 +7,7 @@ import { Item } from 'src/types/item';
 import useCombatQuery from './encounter hooks/useCombatQueries/useCombatQuery';
 import { AuthContext } from 'src/contexts/AuthContext';
 import useCharacter from './useCharacter';
-import useResetCharacterStatMutation from './character stat hooks/useResetCharacterStatMutation/useCharacterStatMutation';
+import useResetCharacterStatMutation from './character stat hooks/useResetCharacterStatMutation/useResetCharacterStatMutation';
 import { useQueryClient } from '@tanstack/react-query';
 import { Character } from 'src/types/character';
 import useCharacterStatHandlers from './character stat hooks/useCharacterStatMutation/useCharacterStatHandlers';

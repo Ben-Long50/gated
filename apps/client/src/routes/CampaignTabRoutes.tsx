@@ -32,6 +32,7 @@ import HistoryModal from 'src/components/modals/HistoryModal';
 import { EncounterProvider } from 'src/contexts/EncounterContext';
 import EncounterFormMap from 'src/components/encounterComponents/EncounterFormMap';
 import EncounterFormInfo from 'src/components/encounterComponents/EncounterFormInfo';
+import ResetModal from 'src/components/encounterComponents/ResetModal';
 
 const CampaignTabRoutes = () => {
   return (
@@ -98,6 +99,7 @@ const CampaignTabRoutes = () => {
             <Route path="history" element={<HistoryModal />} />
             <Route path="availableActions" element={<ActionListModal />} />
             <Route path="availableReactions" element={<ActionListModal />} />
+            <Route path="reset" element={<ResetModal />} />
           </Route>
         </Route>
         <Route path="encounters">

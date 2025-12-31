@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import deleteCharacter from './deleteCharacter';
 import { useContext } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
@@ -10,7 +10,7 @@ const useDeleteCharacterMutation = (characterId?: string) => {
   const { campaignId } = useParams();
 
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
+
   return useMutation({
     mutationFn: () => {
       return deleteCharacter(characterId);
