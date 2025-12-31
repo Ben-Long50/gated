@@ -105,13 +105,23 @@ const encounterServices = {
     },
     getEncounterHistory: async (encounterId) => {
         try {
-            const history = await prisma.history.findMany({
+            const encounter = await prisma.encounter.findUnique({
                 where: {
-                    encounterId,
+                    id: encounterId,
                 },
-                take: 10,
-                orderBy: { createdAt: 'desc' },
+                select: {
+                    phaseHistory: {
+                        take: 10,
+                        where: { action: { isNot: null } },
+                        orderBy: { createdAt: 'desc' },
+                        include: { action: true, reactions: true },
+                    },
+                },
             });
+            if (!encounter) {
+                throw new Error('Failed to find encounter');
+            }
+            const history = encounter === null || encounter === void 0 ? void 0 : encounter.phaseHistory;
             return history;
         }
         catch (error) {
@@ -669,9 +679,11 @@ const encounterServices = {
                         data: {
                             armorSnapshots: armors,
                             armorIds,
+                            blockData,
                         },
                     });
                 }
+                io.to(`encounter ${encounter.id}`).emit('encounterHistory', encounter.id);
                 const damageInstances = actionQueueResults.instances <
                     actionQueueResults.successes - actionQueueResults.reducedSuccesses
                     ? actionQueueResults.instances

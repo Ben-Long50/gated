@@ -182,6 +182,7 @@ model History {
   armorSnapshots         Json?
   armorIds               Int[]
   rollResult             Json?
+  blockData              Json?
 }
 
 model Faction {
