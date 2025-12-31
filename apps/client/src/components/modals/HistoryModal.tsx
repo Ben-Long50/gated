@@ -2,9 +2,9 @@ import Modal from './Modal';
 import BtnRect from '../buttons/BtnRect';
 import { useNavigate, useParams } from 'react-router-dom';
 import Loading from '../Loading';
-import PhaseActionCard from '../encounterComponents/PhaseActionCard';
 import useEncounterHistoryQuery from 'src/hooks/encounter hooks/useEncounterHistoryQuery/useEncounterHistoryQuery';
 import Divider from '../Divider';
+import PhaseHistoryCard from '../encounterComponents/PhaseHistoryCard';
 
 const HistoryModal = () => {
   const { encounterId } = useParams();
@@ -21,9 +21,15 @@ const HistoryModal = () => {
   return (
     <Modal>
       <h1>Action History</h1>
-      {history.map((entry) => {
-        return <PhaseActionCard phaseAction={entry} />;
-      })}
+      {!history || history.length === 0 ? (
+        <h2 className="italic">No Encounter History Available</h2>
+      ) : (
+        <div className="flex w-full flex-col gap-4">
+          {history.map((entry) => {
+            return <PhaseHistoryCard phaseHistory={entry} />;
+          })}
+        </div>
+      )}
       <Divider />
       <BtnRect
         className="w-full"

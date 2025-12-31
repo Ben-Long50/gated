@@ -1,9 +1,15 @@
 import { capitalCase } from 'change-case';
 import CharacterPictureRound from '../CharacterPictureRound';
 import Die from './Die';
-import parsePhaseAction from 'src/utils/parsePhaseAction';
+import { PhaseHistory } from 'src/types/encounter';
 
-const HistoryCard = ({ history }: { history: any }) => {
+const HistoryCard = ({ phaseHistory }: { phaseHistory: PhaseHistory }) => {
+  const history = phaseHistory.action;
+
+  if (!history) {
+    return <h3>N/A</h3>;
+  }
+
   return (
     <div className="flex items-center justify-start gap-4">
       <CharacterPictureRound character={history.characterSnapshot} />

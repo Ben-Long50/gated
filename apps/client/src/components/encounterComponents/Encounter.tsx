@@ -28,7 +28,6 @@ import MapHeader from '../mapComponents/map/MapHeader';
 import MapIcon from '../icons/MapIcon';
 
 const Encounter = () => {
-  const { mobile } = useContext(LayoutContext);
   const {
     combat,
     combatLoading,
@@ -181,7 +180,7 @@ const Encounter = () => {
             <div
               className={`${historyList ? 'max-h-48 border-t-2 pt-4' : 'max-h-0'} timing border-accent scrollbar-secondary-2 flex h-full w-full flex-col overflow-y-auto overflow-x-hidden`}
             >
-              {history?.length > 0 && (
+              {history && history.length > 0 && (
                 <button
                   className="timing hover:bg-tertiary w-full rounded p-2 hover:shadow hover:shadow-black"
                   onClick={() => navigate('history')}
@@ -192,7 +191,7 @@ const Encounter = () => {
                   Last Action"
                   />
 
-                  <HistoryCard history={history[0]} />
+                  <HistoryCard phaseHistory={history[0]} />
                 </button>
               )}
             </div>

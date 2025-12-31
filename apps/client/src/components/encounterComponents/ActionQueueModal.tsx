@@ -98,7 +98,7 @@ const ActionQueueModal = () => {
               <PhaseActionCard phaseAction={phaseAction} />
             </>
           ) : (
-            <h2>No Actions currently in Queue</h2>
+            <h2>No Actions Currently in Queue</h2>
           )}
           {phaseReactions.length > 0 && !isFetching && (
             <>
@@ -532,12 +532,12 @@ const ActionQueueModal = () => {
                     <h3 className="flex size-6 items-center justify-center">
                       {actionQueueResults.blockedDamage}
                     </h3>
-                    {actionQueueResults.blockedDamage >
-                      actionQueueResults.damage && (
+                    {actionQueueResults.armorPoints >
+                      actionQueueResults.blockedDamage && (
                       <h3 className="text-tertiary text-base">
                         (
-                        {actionQueueResults.blockedDamage -
-                          actionQueueResults.damage}
+                        {actionQueueResults.armorPoints -
+                          actionQueueResults.blockedDamage}
                         )
                       </h3>
                     )}
@@ -555,12 +555,12 @@ const ActionQueueModal = () => {
                     <h3 className="flex size-6 items-center justify-center">
                       {actionQueueResults.blockedSanityDamage}
                     </h3>
-                    {actionQueueResults.blockedSanityDamage >
-                      actionQueueResults.sanityDamage && (
+                    {actionQueueResults.wardPoints >
+                      actionQueueResults.blockedSanityDamage && (
                       <h3 className="text-tertiary text-base">
                         (
-                        {actionQueueResults.blockedSanityDamage -
-                          actionQueueResults.sanityDamage}
+                        {actionQueueResults.wardPoints -
+                          actionQueueResults.blockedSanityDamage}
                         )
                       </h3>
                     )}
@@ -605,7 +605,6 @@ const ActionQueueModal = () => {
               )}
             </div>
           )}
-
           {combat.passes.length >= combat.turnOrder.length - 1 &&
           encounterPermissions ? (
             <BtnRect

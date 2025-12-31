@@ -67,6 +67,11 @@ export interface History {
   armorSnapshots?: Item[];
   armorIds?: number[];
   rollResult: RollResult;
+  blockData?: {
+    blockedDamage: number;
+    blockedSanityDamage: number;
+    armorIds: number[];
+  }[];
 }
 
 type RollResult = {

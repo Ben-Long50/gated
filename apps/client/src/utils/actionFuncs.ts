@@ -84,23 +84,50 @@ const actionFuncs = {
   },
   block: (
     blockData: {
-      damage: number;
       blockedDamage: number;
       blockedSanityDamage: number;
       armorIds: number[];
     }[],
+    actionQueueResults: {
+      successes: number;
+      reducedSuccesses: number;
+      damage: number;
+      sanityDamage: number;
+      instances: number;
+      blockedDamage: number;
+      blockedSanityDamage: number;
+      resultingSuccesses: number;
+      resultingInstances: number;
+    },
   ) => {
-    const blockedDamage = blockData.reduce(
-      (sum, data) => sum + data.blockedDamage,
+    const blockedDamage = blockData.reduce((sum, data) => {
+      if (data.blockedDamage < actionQueueResults.damage) {
+        return sum + data.blockedDamage;
+      } else {
+        return sum + actionQueueResults.damage;
+      }
+    }, 0);
+
+    const armorPoints = blockData.reduce(
+      (sum, data) => (data.blockedDamage ? sum + data.blockedDamage : sum),
       0,
     );
 
-    const blockedSanityDamage = blockData.reduce(
-      (sum, data) => sum + data.blockedSanityDamage,
+    const wardPoints = blockData.reduce(
+      (sum, data) =>
+        data.blockedSanityDamage ? sum + data.blockedSanityDamage : sum,
       0,
     );
 
-    return { blockedDamage, blockedSanityDamage };
+    const blockedSanityDamage = blockData.reduce((sum, data) => {
+      if (data.blockedSanityDamage < actionQueueResults.sanityDamage) {
+        return sum + data.blockedSanityDamage;
+      } else {
+        return sum + actionQueueResults.sanityDamage;
+      }
+    }, 0);
+
+    return { blockedDamage, blockedSanityDamage, armorPoints, wardPoints };
   },
 };
 

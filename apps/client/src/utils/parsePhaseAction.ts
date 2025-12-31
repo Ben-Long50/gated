@@ -36,6 +36,8 @@ const parsePhaseAction = (
     blockedSanityDamage: 0,
     resultingSuccesses: 0,
     resultingInstances: 0,
+    armorPoints: 0,
+    wardPoints: 0,
   };
 
   if (!phaseHistory) {
@@ -65,7 +67,7 @@ const parsePhaseAction = (
     const armorCosts = new Map();
 
     if (blockData) {
-      const data = actionFuncs.block(blockData);
+      const data = actionFuncs.block(blockData, actionQueueResults);
       mergeActionResults(actionQueueResults, data);
 
       for (const data of blockData) {

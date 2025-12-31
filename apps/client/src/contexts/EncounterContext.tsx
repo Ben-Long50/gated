@@ -118,6 +118,12 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
       blockForm.setFieldValue('blockData', blockData);
     });
 
+    socket.on('encounterHistory', (encounterId) => {
+      queryClient.invalidateQueries({
+        queryKey: ['encounterHistory', encounterId],
+      });
+    });
+
     socket.on('updateEncounter', (updatedEncounter) => {
       queryClient.setQueryData(
         ['encounter', updatedEncounter.id],
