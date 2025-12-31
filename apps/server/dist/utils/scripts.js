@@ -69,6 +69,7 @@ const resetCharacterHealthAndSanity = async () => {
             currentActions: 3,
             currentReactions: 1,
             currentHands: 2,
+            currentFeet: 2,
             currentHealth: characterStats.maxHealth,
             currentSanity: characterStats.maxSanity,
         };

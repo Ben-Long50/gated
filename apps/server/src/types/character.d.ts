@@ -32,7 +32,10 @@ interface CharacterStats {
   reactions: number;
   currentActions: number;
   currentReactions: number;
+  currentHands: number;
   hands: number;
+  currentFeet: number;
+  feet: number;
   currentHands: number;
   maxCyber?: number;
   cyber?: number;

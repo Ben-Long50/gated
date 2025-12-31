@@ -55,6 +55,7 @@ const calculateCharacterStats = (character) => {
         actions: 3,
         reactions: 1,
         hands: 2,
+        feet: 2,
         chomebitsTn: attributeTree === null || attributeTree === void 0 ? void 0 : attributeTree.cybernetica.skills.chromebits.points,
         hardwiredTn: attributeTree === null || attributeTree === void 0 ? void 0 : attributeTree.cybernetica.skills.hardwired.points,
         motorizedTn: attributeTree === null || attributeTree === void 0 ? void 0 : attributeTree.cybernetica.skills.motorized.points,
