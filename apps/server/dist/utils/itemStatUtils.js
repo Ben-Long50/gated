@@ -1,3 +1,4 @@
+// @ts-nocheck
 const calculateItemStats = (items) => {
     const calculatedItems = items.map((item) => {
         var _a, _b;

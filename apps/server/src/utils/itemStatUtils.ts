@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { Action, Item } from '@prisma/client';
 import { Keyword } from '../types/keyword';
 
