@@ -46,7 +46,7 @@ const useEncounterArrows = () => {
       },
       end: {
         row,
-        col,
+        col: col + 2,
       },
       distance: 0,
       color: accentPrimary,
@@ -89,6 +89,7 @@ const useEncounterArrows = () => {
     };
 
     targetRef.current = targetData;
+    setTarget(key, targetData);
   };
 
   const handleDragEnd = () => {
@@ -117,7 +118,7 @@ const useEncounterArrows = () => {
   };
 
   return {
-    targetData: targetRef.current,
+    isDragging: isDraggingRef.current,
     handleDragStart,
     handleDragUpdate,
     handleDragEnd,

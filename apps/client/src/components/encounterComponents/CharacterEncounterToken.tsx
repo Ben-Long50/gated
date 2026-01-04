@@ -16,7 +16,6 @@ const CharacterEncounterToken = ({
   location,
   activeCoordinates,
   range,
-  rangeColor,
   height,
   mapScale,
   handleDragStart,
@@ -26,7 +25,6 @@ const CharacterEncounterToken = ({
   location: Location;
   activeCoordinates: { row: number; col: number } | null;
   range: number;
-  rangeColor: string;
   height: number;
   mapScale: number;
   handleDragStart?: (row: number, col: number, characterId?: number) => void;
@@ -48,8 +46,6 @@ const CharacterEncounterToken = ({
   const { filteredCharacter: character, isLoading } = useCharacter(
     location.characterId,
   );
-
-  const isActiveCharacter = activeCharacter?.id === location?.characterId;
 
   const roll = rolls.get(location.characterId) || null;
 
@@ -170,17 +166,6 @@ const CharacterEncounterToken = ({
               />
             </div>
           )}
-          {range && isActiveCharacter ? (
-            <div
-              className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2"
-              style={{
-                height: range * 2 * 48 * mapScale + (48 * mapScale) / 2,
-                width: range * 2 * 48 * mapScale + (48 * mapScale) / 2,
-                background: `radial-gradient(circle, transparent, 60%, ${rangeColor})`,
-                borderColor: rangeColor,
-              }}
-            />
-          ) : null}
         </div>
       )}
     </actionForm.Field>

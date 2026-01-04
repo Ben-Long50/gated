@@ -1,40 +1,16 @@
-import {
-  Fragment,
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import { Layer, Location } from 'src/types/map';
 import useCombatStore from 'src/stores/combatStore';
 import { useStore } from '@tanstack/react-form';
 import Xarrow from 'react-xarrows';
 import EncounterGridTile from './EncounterGridTile';
-import {
-  closestCenter,
-  DndContext,
-  DragEndEvent,
-  DragOverEvent,
-  DragStartEvent,
-  PointerSensor,
-  useDraggable,
-  useDroppable,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
-import useActions from 'src/hooks/useActions';
-import Loading from '../Loading';
 import { EncounterContext } from 'src/contexts/EncounterContext';
 import DragScrollContainer from '../mapComponents/DragScrollContainer';
 import getCoords from '../mapComponents/mapUtils/getCoords';
 import MapComponent from '../mapComponents/map/MapComponent';
 import actionRanges from 'src/utils/actionRanges';
 import { camelCase } from 'change-case';
-import { socket } from 'src/socket';
-import { AuthContext } from 'src/contexts/AuthContext';
 import CharacterEncounterToken from './CharacterEncounterToken';
 import useEncounterArrows from 'src/hooks/useEncounterArrows';
 
@@ -64,14 +40,12 @@ const EncounterGrid = ({
     useContext(EncounterContext);
 
   const {
-    targetData,
+    isDragging,
     handleDragStart,
     handleDragUpdate,
     handleDragEnd,
     handleRemoveTarget,
   } = useEncounterArrows();
-
-  const [hoveredTile, setHoveredTile] = useState({ row: 0, col: 0 });
 
   const tempRange = useCombatStore((state) => state.range);
   const tempRangeColor = useCombatStore((state) => state.rangeColor);
@@ -122,44 +96,6 @@ const EncounterGrid = ({
     }
   }, [activeCharacter, locations]);
 
-  const gridRef = useRef<HTMLDivElement | null>(null);
-  const lastTileRef = useRef<{ row: number; col: number } | null>(null);
-  const rafRef = useRef<number | null>(null);
-  const tileSizeRef = useRef(48 * mapScale);
-
-  useEffect(() => {
-    tileSizeRef.current = 48 * mapScale;
-  }, [mapScale]);
-
-  const handleMouseMove = (e: MouseEvent) => {
-    if (rafRef.current !== null) return;
-
-    rafRef.current = requestAnimationFrame(() => {
-      rafRef.current = null;
-
-      if (!gridRef.current) {
-        return;
-      }
-
-      const rect = gridRef.current.getBoundingClientRect();
-      if (!rect) return;
-
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-
-      const size = tileSizeRef.current;
-
-      const col = Math.ceil(x / size);
-      const row = Math.ceil(y / size);
-
-      const last = lastTileRef.current;
-      if (last && last.row === row && last.col === col) return;
-
-      lastTileRef.current = { row, col };
-      setHoveredTile({ row, col });
-    });
-  };
-
   useEffect(() => {
     const onMouseUp = () => handleDragEnd();
 
@@ -167,20 +103,15 @@ const EncounterGrid = ({
     return () => window.removeEventListener('mouseup', onMouseUp);
   }, []);
 
-  const targets = useMemo(() => {
-    return targetData
-      ? [...targetMap.values(), targetData]
-      : [...targetMap.values()];
-  }, [targetMap, targetData]);
+  const targets = [...targetMap.values()];
 
   return (
     <DragScrollContainer
       draggable={!measureMode}
-      className={`scrollbar-primary timing relative mx-auto max-w-full overflow-y-auto rounded border-2`}
+      className={`scrollbar-primary timing relative mx-auto my-auto max-h-full max-w-full overflow-auto rounded border-2`}
       style={{ borderColor: accentPrimary }}
     >
       <div
-        ref={gridRef}
         className={`timing pointer-events-auto relative grid overflow-hidden`}
         style={{
           backgroundColor: baseColor,
@@ -189,13 +120,78 @@ const EncounterGrid = ({
           gridTemplateColumns: `repeat(${width}, ${48 * mapScale}px)`,
           gridTemplateRows: `repeat(${height}, ${48 * mapScale}px)`,
         }}
-        onMouseMove={(e) => handleMouseMove(e)}
       >
+        {layers.map((layer, index) => {
+          if (!layer.hidden) {
+            return (
+              <div
+                key={index}
+                id={`layer ${layer.id}`}
+                className={`layout pointer-events-none absolute inset-px grid overflow-hidden rounded`}
+                style={{
+                  gridTemplateColumns: `repeat(${width}, ${48 * mapScale}px)`,
+                  gridTemplateRows: `repeat(${height}, ${48 * mapScale}px)`,
+                }}
+              >
+                {layer.components.map((component, index) => {
+                  return (
+                    <MapComponent
+                      key={index}
+                      component={component}
+                      layerId={layer.id}
+                      mapScale={mapScale}
+                    />
+                  );
+                })}
+              </div>
+            );
+          } else {
+            return;
+          }
+        })}
+        {Array.from({ length: width * height }).map((_, index) => {
+          const { row, col } = getCoords(width, index);
+
+          return (
+            <EncounterGridTile
+              key={index}
+              id={`row ${row}, col ${col}`}
+              row={row}
+              col={col}
+              height={height}
+              activeCoordinates={activeCoordinates}
+              range={range}
+              rangeColor={rangeColor}
+              gridDisplay={gridDisplay}
+              handleDragStart={measureMode ? handleDragStart : undefined}
+              handleDragUpdate={isDragging ? handleDragUpdate : undefined}
+              handleRemoveTarget={handleRemoveTarget}
+            />
+          );
+        })}
+        {locations.length > 0 &&
+          locations.map((location) => (
+            <CharacterEncounterToken
+              key={location.characterId}
+              location={location}
+              activeCoordinates={activeCoordinates}
+              range={range}
+              height={height}
+              mapScale={mapScale}
+              handleDragStart={measureMode ? handleDragStart : undefined}
+              handleDragUpdate={isDragging ? handleDragUpdate : undefined}
+              handleRemoveTarget={
+                targetMap.get(`character ${location.characterId}`)
+                  ? handleRemoveTarget
+                  : undefined
+              }
+            />
+          ))}
         {targets.map((targetData, index) => (
           <Xarrow
             key={index}
             zIndex={10}
-            animateDrawing={0.3}
+            animateDrawing={0}
             labels={
               <div
                 className="flex flex-col items-center rounded-md px-1"
@@ -225,93 +221,6 @@ const EncounterGrid = ({
             tailShape="circle"
           />
         ))}
-
-        {layers.map((layer, index) => {
-          if (!layer.hidden) {
-            return (
-              <div
-                key={index}
-                id={`layer ${layer.id}`}
-                className={`layout pointer-events-none absolute inset-px grid overflow-hidden rounded`}
-                style={{
-                  gridTemplateColumns: `repeat(${width}, ${48 * mapScale}px)`,
-                  gridTemplateRows: `repeat(${height}, ${48 * mapScale}px)`,
-                }}
-              >
-                {layer.components.map((component, index) => {
-                  return (
-                    <MapComponent
-                      key={index}
-                      component={component}
-                      layerId={layer.id}
-                      mapScale={mapScale}
-                    />
-                  );
-                })}
-              </div>
-            );
-          } else {
-            return;
-          }
-        })}
-        {hoveredTile && (
-          <EncounterGridTile
-            id="hoveredTile"
-            row={hoveredTile.row}
-            col={hoveredTile.col}
-            occupied={false}
-            height={height}
-            activeCoordinates={activeCoordinates}
-            range={range}
-            rangeColor={rangeColor}
-            handleDragStart={measureMode ? handleDragStart : undefined}
-            handleDragUpdate={measureMode ? handleDragUpdate : undefined}
-          />
-        )}
-        {targets.map((targetData, index) => (
-          <Fragment key={index}>
-            <EncounterGridTile
-              id={`row ${targetData.start.row}, col ${targetData.start.col}`}
-              row={targetData.start.row}
-              col={targetData.start.col}
-              occupied={false}
-              height={height}
-              activeCoordinates={activeCoordinates}
-              range={range}
-              rangeColor={rangeColor}
-              handleRemoveTarget={handleRemoveTarget}
-            />
-            <EncounterGridTile
-              id={`row ${targetData.end.row}, col ${targetData.end.col}`}
-              row={targetData.end.row}
-              col={targetData.end.col}
-              occupied={false}
-              height={height}
-              activeCoordinates={activeCoordinates}
-              range={range}
-              rangeColor={rangeColor}
-            />
-          </Fragment>
-        ))}
-        {locations.length > 0 &&
-          locations.map((location) => (
-            <CharacterEncounterToken
-              key={location.characterId}
-              location={location}
-              activeCoordinates={activeCoordinates}
-              range={range}
-              rangeColor={rangeColor}
-              height={height}
-              mapScale={mapScale}
-              handleDragStart={measureMode ? handleDragStart : undefined}
-              handleDragUpdate={measureMode ? handleDragUpdate : undefined}
-              handleRemoveTarget={
-                targetMap.get(`character ${location.characterId}`)
-                  ? handleRemoveTarget
-                  : undefined
-              }
-            />
-          ))}
       </div>
     </DragScrollContainer>
   );

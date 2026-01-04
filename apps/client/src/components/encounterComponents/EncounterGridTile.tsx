@@ -1,4 +1,4 @@
-import { useContext, useMemo } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import isInRange from './encounterUtils/isInRange';
 
@@ -6,11 +6,11 @@ const EncounterGridTile = ({
   id,
   row,
   col,
-  occupied,
   height,
   activeCoordinates,
   range,
   rangeColor,
+  gridDisplay,
   handleDragStart,
   handleDragUpdate,
   handleRemoveTarget,
@@ -18,16 +18,17 @@ const EncounterGridTile = ({
   id: string;
   row: number;
   col: number;
-  occupied: boolean;
   height: number;
   activeCoordinates: { row: number; col: number } | null;
   range: number;
   rangeColor: string;
+  gridDisplay: boolean;
   handleDragStart?: (row: number, col: number, characterId?: number) => void;
   handleDragUpdate?: (row: number, col: number, targetId?: number) => void;
   handleRemoveTarget?: (characterId?: number) => void;
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
+  const [hover, setHover] = useState(false);
 
   const inRange = useMemo(
     () =>
@@ -40,12 +41,13 @@ const EncounterGridTile = ({
   return (
     <div
       id={id}
-      className={`relative size-full`}
+      className={`${gridDisplay ? 'border-accent' : 'border-transparent'} relative size-full border border-opacity-50`}
       style={{
         gridRow: row,
         gridColumn: col,
-        background:
-          id === 'hoveredTile'
+        background: inRange
+          ? `radial-gradient(circle, transparent, 75%, ${rangeColor})`
+          : hover
             ? `radial-gradient(circle, transparent, 75%, ${accentPrimary})`
             : undefined,
       }}
@@ -53,23 +55,28 @@ const EncounterGridTile = ({
         handleDragStart ? () => handleDragStart(row, col) : undefined
       }
       onMouseEnter={
-        handleDragUpdate ? () => handleDragUpdate(row, col) : undefined
+        handleDragUpdate
+          ? () => handleDragUpdate(row, col)
+          : () => setHover(true)
       }
+      onMouseLeave={() => setHover(false)}
       onDoubleClick={
         handleRemoveTarget ? () => handleRemoveTarget() : undefined
       }
     >
-      <p
-        className={`bg-tertiary pointer-events-none absolute right-1/2 top-1/2 z-20 select-none whitespace-nowrap rounded p-1 py-0.5 text-sm`}
-        style={{
-          transform:
-            row > height / 2
-              ? 'translateY(-50%) translateY(-42px)  translateX(50%)'
-              : 'translateY(-50%) translateY(42px)  translateX(50%)',
-        }}
-      >
-        [{col}, {row}]
-      </p>
+      {hover && (
+        <p
+          className={`bg-tertiary pointer-events-none absolute right-1/2 top-1/2 select-none whitespace-nowrap rounded p-1 py-0.5 text-sm`}
+          style={{
+            transform:
+              row > height / 2
+                ? 'translateY(-50%) translateY(-42px)  translateX(50%)'
+                : 'translateY(-50%) translateY(42px)  translateX(50%)',
+          }}
+        >
+          [{col}, {row}]
+        </p>
+      )}
     </div>
   );
 };
