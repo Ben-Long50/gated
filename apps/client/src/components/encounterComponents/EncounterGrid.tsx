@@ -64,6 +64,7 @@ const EncounterGrid = ({
     useContext(EncounterContext);
 
   const {
+    targetData,
     handleDragStart,
     handleDragUpdate,
     handleDragEnd,
@@ -166,17 +167,11 @@ const EncounterGrid = ({
     return () => window.removeEventListener('mouseup', onMouseUp);
   }, []);
 
-  const targets = Array.from(targetMap.entries()) as [
-    string,
-    {
-      start: { row: number; col: number; characterId?: number };
-      end: { row: number; col: number; targetId?: number };
-      distance: number;
-      color: string;
-      occupied: boolean;
-      inRange: boolean;
-    },
-  ][];
+  const targets = useMemo(() => {
+    return targetData
+      ? [...targetMap.values(), targetData]
+      : [...targetMap.values()];
+  }, [targetMap, targetData]);
 
   return (
     <DragScrollContainer
@@ -196,43 +191,41 @@ const EncounterGrid = ({
         }}
         onMouseMove={(e) => handleMouseMove(e)}
       >
-        {targets.length > 0 &&
-          targets.map(([key, target]) => (
-            <Xarrow
-              key={key}
-              zIndex={20}
-              animateDrawing={0.3}
-              labels={
-                <div
-                  className="flex flex-col items-center rounded-md px-1"
-                  style={{ backgroundColor: target.color }}
-                >
-                  <p className="text-sm font-semibold !text-black">{`${target.distance} Tiles`}</p>
-                  {target.inRange === false && (
-                    <p className="!text-error text-sm font-semibold">
-                      Not in Range
-                    </p>
-                  )}
-                  {target.occupied && (
-                    <p className="!text-error text-sm font-semibold">
-                      Occupied
-                    </p>
-                  )}
-                </div>
-              }
-              start={`row ${target.start.row}, col ${target.start.col}`}
-              end={`row ${target.end.row}, col ${target.end.col}`}
-              path="straight"
-              color={target.color}
-              startAnchor="middle"
-              endAnchor="middle"
-              showTail={true}
-              tailSize={3}
-              headSize={5}
-              headShape="arrow1"
-              tailShape="circle"
-            />
-          ))}
+        {targets.map((targetData, index) => (
+          <Xarrow
+            key={index}
+            zIndex={10}
+            animateDrawing={0.3}
+            labels={
+              <div
+                className="flex flex-col items-center rounded-md px-1"
+                style={{ backgroundColor: targetData.color }}
+              >
+                <p className="text-sm font-semibold !text-black">{`${targetData.distance} Tiles`}</p>
+                {targetData.inRange === false && (
+                  <p className="!text-error text-sm font-semibold">
+                    Not in Range
+                  </p>
+                )}
+                {targetData.occupied && (
+                  <p className="!text-error text-sm font-semibold">Occupied</p>
+                )}
+              </div>
+            }
+            start={`row ${targetData.start.row}, col ${targetData.start.col}`}
+            end={`row ${targetData.end.row}, col ${targetData.end.col}`}
+            path="straight"
+            color={targetData.color}
+            startAnchor="middle"
+            endAnchor="middle"
+            showTail={true}
+            tailSize={3}
+            headSize={5}
+            headShape="arrow1"
+            tailShape="circle"
+          />
+        ))}
+
         {layers.map((layer, index) => {
           if (!layer.hidden) {
             return (
@@ -275,32 +268,31 @@ const EncounterGrid = ({
             handleDragUpdate={measureMode ? handleDragUpdate : undefined}
           />
         )}
-        {targets.length > 0 &&
-          targets.map(([_, value], index) => (
-            <Fragment key={index}>
-              <EncounterGridTile
-                id={`row ${value.start.row}, col ${value.start.col}`}
-                row={value.start.row}
-                col={value.start.col}
-                occupied={false}
-                height={height}
-                activeCoordinates={activeCoordinates}
-                range={range}
-                rangeColor={rangeColor}
-                handleRemoveTarget={handleRemoveTarget}
-              />
-              <EncounterGridTile
-                id={`row ${value.end.row}, col ${value.end.col}`}
-                row={value.end.row}
-                col={value.end.col}
-                occupied={false}
-                height={height}
-                activeCoordinates={activeCoordinates}
-                range={range}
-                rangeColor={rangeColor}
-              />
-            </Fragment>
-          ))}
+        {targets.map((targetData, index) => (
+          <Fragment key={index}>
+            <EncounterGridTile
+              id={`row ${targetData.start.row}, col ${targetData.start.col}`}
+              row={targetData.start.row}
+              col={targetData.start.col}
+              occupied={false}
+              height={height}
+              activeCoordinates={activeCoordinates}
+              range={range}
+              rangeColor={rangeColor}
+              handleRemoveTarget={handleRemoveTarget}
+            />
+            <EncounterGridTile
+              id={`row ${targetData.end.row}, col ${targetData.end.col}`}
+              row={targetData.end.row}
+              col={targetData.end.col}
+              occupied={false}
+              height={height}
+              activeCoordinates={activeCoordinates}
+              range={range}
+              rangeColor={rangeColor}
+            />
+          </Fragment>
+        ))}
         {locations.length > 0 &&
           locations.map((location) => (
             <CharacterEncounterToken

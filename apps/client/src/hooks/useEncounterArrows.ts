@@ -4,20 +4,39 @@ import { EncounterContext } from 'src/contexts/EncounterContext';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import { socket } from 'src/socket';
 
+type TargetData = {
+  start: {
+    row: number;
+    col: number;
+    characterId?: number;
+  };
+  end: {
+    row: number;
+    col: number;
+    targetId?: number;
+  };
+  distance: number;
+  color: string;
+  occupied: boolean;
+  inRange: boolean;
+};
+
 const useEncounterArrows = () => {
   const { user } = useContext(AuthContext);
   const { accentPrimary } = useContext(ThemeContext);
-  const { combat, removeTarget, setTarget, getTarget } =
-    useContext(EncounterContext);
+  const { combat, removeTarget, setTarget } = useContext(EncounterContext);
 
   const isDraggingRef = useRef(false);
   const keyRef = useRef<string | null>(null);
+  const targetRef = useRef<TargetData | null>(null);
 
   const handleDragStart = (row: number, col: number, characterId?: number) => {
     isDraggingRef.current = true;
 
     const key = characterId ? `character ${characterId}` : `user ${user.id}`;
     keyRef.current = key;
+
+    removeTarget(key);
 
     const targetData = {
       start: {
@@ -35,13 +54,7 @@ const useEncounterArrows = () => {
       inRange: true,
     };
 
-    setTarget(key, targetData);
-
-    socket.emit('changeTarget', {
-      encounterId: combat.id,
-      key,
-      targetData,
-    });
+    targetRef.current = targetData;
   };
 
   const handleDragUpdate = (row: number, col: number, targetId?: number) => {
@@ -54,7 +67,11 @@ const useEncounterArrows = () => {
       return;
     }
 
-    const data = getTarget(key);
+    const data = targetRef.current;
+
+    if (!data) {
+      return;
+    }
 
     const targetData = {
       ...data,
@@ -64,12 +81,22 @@ const useEncounterArrows = () => {
         targetId,
       },
       distance: Math.round(
-        Math.sqrt((col - data.start.col) ** 2 + (row - data.end.row) ** 2),
+        Math.sqrt((col - data.start.col) ** 2 + (row - data.start.row) ** 2),
       ),
       color: accentPrimary,
-      occupied: targetId,
+      occupied: !!targetId,
       inRange: true,
     };
+
+    targetRef.current = targetData;
+  };
+
+  const handleDragEnd = () => {
+    const key = keyRef.current;
+    const targetData = targetRef.current;
+    if (!key || !targetData) {
+      return;
+    }
 
     setTarget(key, targetData);
 
@@ -78,16 +105,10 @@ const useEncounterArrows = () => {
       key,
       targetData,
     });
-  };
-
-  const handleDragEnd = () => {
-    const key = keyRef.current;
-    if (!key) {
-      return;
-    }
 
     isDraggingRef.current = false;
     keyRef.current = null;
+    targetRef.current = null;
   };
 
   const handleRemoveTarget = (characterId?: number) => {
@@ -96,11 +117,11 @@ const useEncounterArrows = () => {
   };
 
   return {
+    targetData: targetRef.current,
     handleDragStart,
     handleDragUpdate,
     handleDragEnd,
     handleRemoveTarget,
-    isDragging: isDraggingRef.current,
   };
 };
 
