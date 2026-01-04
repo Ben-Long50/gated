@@ -32,6 +32,7 @@ interface Character {
   lastName: string;
   active: boolean;
   playerCharacter: boolean;
+  pushCount: number;
   npcTypes?: string[];
   preferences: CharacterPreferences;
   perks: Perk[];

@@ -20,8 +20,6 @@ import useRollReactionMutation from './encounter hooks/useRollReactionMutation/u
 import useRoll from './useRoll';
 import calculateDiceCount from 'src/utils/calculateDiceCount';
 import { socket } from 'src/socket';
-import actionFuncs from 'src/utils/actionFuncs';
-import { camelCase } from 'change-case';
 import parsePhaseAction from 'src/utils/parsePhaseAction';
 
 const useCombat = () => {
@@ -29,6 +27,54 @@ const useCombat = () => {
   const { gameMaster } = useContext(CampaignContext);
   const { campaignId, mapId, encounterId } = useParams();
   const queryClient = useQueryClient();
+
+  const [targetMap, setTargetMap] = useState<
+    Map<
+      string,
+      {
+        start: string;
+        end: string;
+        distance: number;
+        color: string;
+        occupied: boolean | null;
+        inRange: boolean | null;
+      }
+    >
+  >(() => new Map());
+
+  const resetTargetMap = () => {
+    setTargetMap(new Map());
+  };
+
+  const removeTarget = (key: string) => {
+    setTargetMap((prev) => {
+      const next = new Map(prev);
+      next.delete(key);
+      return next;
+    });
+  };
+
+  const getTarget = (key: string) => {
+    return targetMap.get(key);
+  };
+
+  const setTarget = (
+    key: string,
+    value: {
+      start: string;
+      end: string;
+      distance: number;
+      color: string;
+      occupied: boolean | null;
+      inRange: boolean | null;
+    },
+  ) => {
+    setTargetMap((prev) => {
+      const next = new Map(prev);
+      next.set(key, value);
+      return next;
+    });
+  };
 
   const [isFetching, setIsFetching] = useState(false);
 
@@ -261,6 +307,7 @@ const useCombat = () => {
         setRolls(loadingRollMap);
       }
 
+      removeTarget(`${activeCharacter.id} ${value.locationId}`);
       actionForm.reset();
       setItem(null);
     },
@@ -400,6 +447,11 @@ const useCombat = () => {
 
   return {
     combat,
+    targetMap,
+    resetTargetMap,
+    removeTarget,
+    setTarget,
+    getTarget,
     encounterPermissions,
     blockPermissions,
     controlledCharacterId,

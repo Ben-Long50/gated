@@ -8,7 +8,6 @@ import CharacterCardSmall from '../CharacterCardSmall';
 import CharacterOptions from './CharacterOptions';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import ActionSidebar from './ActionSidebar';
-import { LayoutContext } from 'src/contexts/LayoutContext';
 import ActionIcon from '../icons/ActionIcon';
 import Divider from '../Divider';
 import ReactionIcon from '../icons/ReactionIcon';
@@ -42,6 +41,7 @@ const Encounter = () => {
   const { campaignId, encounterId, mapId } = useParams();
   const parts = location.pathname.split('/');
   const [gridDisplay, setGridDisplay] = useState(false);
+  const [measureMode, setMeasureMode] = useState(false);
   const [characterList, setCharacterList] = useState(false);
   const [actionSidebar, setActionSidebar] = useState(false);
   const [characterOptions, setCharacterOptions] = useState(true);
@@ -96,14 +96,14 @@ const Encounter = () => {
       <div
         className={`${mapInfo && 'pt-3'} flex h-full w-full flex-col items-center justify-center gap-4`}
       >
-        <div className="absolute left-1 top-1 z-10 ml-[72px] mr-auto flex flex-col items-start justify-start gap-1">
+        <div className="absolute left-1 top-1 z-10 mx-auto ml-[72px] flex flex-col items-start justify-start gap-1">
           <button
             className="bg-secondary group flex w-full items-center gap-2 rounded p-1 shadow shadow-black"
             onClick={() => setMapInfo((prev) => !prev)}
           >
             <MapIcon className="timing text-primary group-hover:text-accent size-5" />
             <p className="group-hover:text-accent timing text-base">
-              Toggle Map Info
+              Toggle Map Tools
             </p>
           </button>
           <div className="bg-primary flex flex-col items-start p-1.5">
@@ -122,20 +122,25 @@ const Encounter = () => {
             mapName={map.name}
             gridDisplay={gridDisplay}
             setGridDisplay={setGridDisplay}
+            measureMode={measureMode}
+            setMeasureMode={setMeasureMode}
             mapScale={mapScale}
             setMapScale={setMapScale}
           />
         )}
-        <EncounterGrid
-          width={map.width}
-          height={map.height}
-          baseColor={map.baseColor}
-          layers={map.layers}
-          mapScale={mapScale}
-          locations={locations}
-          gridDisplay={gridDisplay}
-          setActionSidebar={setActionSidebar}
-        />
+        <div className="flex w-full grow items-center">
+          <EncounterGrid
+            width={map.width}
+            height={map.height}
+            baseColor={map.baseColor}
+            layers={map.layers}
+            mapScale={mapScale}
+            locations={locations}
+            gridDisplay={gridDisplay}
+            measureMode={measureMode}
+            setActionSidebar={setActionSidebar}
+          />
+        </div>
         <div
           className={`${characterList ? 'w-96' : 'w-[72px]'} bg-primary timing absolute left-0 top-0 z-10 flex h-full flex-col justify-start gap-3 p-3 shadow-md shadow-black`}
           onMouseEnter={() => {

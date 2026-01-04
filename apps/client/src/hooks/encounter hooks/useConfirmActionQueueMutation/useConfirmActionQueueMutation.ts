@@ -9,7 +9,6 @@ const useConfirmActionQueueMutation = (
   encounterId: number,
 ) => {
   const queryClient = useQueryClient();
-  const setTarget = useCombatStore((state) => state.setTarget);
   const navigate = useNavigate();
 
   return useMutation({
@@ -38,7 +37,6 @@ const useConfirmActionQueueMutation = (
         }),
       );
 
-      setTarget(null);
       navigate('..');
 
       return prevEncounter;

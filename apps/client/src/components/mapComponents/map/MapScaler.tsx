@@ -29,7 +29,6 @@ const MapScaler = ({
           className={`text-tertiary group-hover:text-accent timing size-8`}
         />
       </button>
-      <h3>{Math.floor(mapScale * 100)}%</h3>
       <button
         className="bg-tertiary group my-auto flex justify-self-start rounded p-1.5 shadow-md shadow-black"
         aria-label="Open save modal"
@@ -49,6 +48,7 @@ const MapScaler = ({
           className={`text-tertiary group-hover:text-accent timing size-8`}
         />
       </button>
+      <h3 className="w-20">{Math.floor(mapScale * 100)}%</h3>
     </div>
   );
 };

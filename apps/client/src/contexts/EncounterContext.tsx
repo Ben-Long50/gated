@@ -27,13 +27,13 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
   const [joinedPlayers, setJoinedPlayers] = useState<string[]>([]);
 
-  const advancePhase = useAdvancePhaseMutation(
-    Number(campaignId),
-    Number(encounterId),
-  );
-
   const {
     combat,
+    targetMap,
+    resetTargetMap,
+    removeTarget,
+    setTarget,
+    getTarget,
     encounterPermissions,
     blockPermissions,
     controlledCharacterId,
@@ -57,7 +57,6 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
   const setEncounterLayout = useNavigationStore(
     (state) => state.setEncounterLayout,
   );
-  const setTarget = useCombatStore((state) => state.setTarget);
 
   useEffect(() => {
     setEncounterLayout(true);
@@ -85,7 +84,7 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
 
     socket.on('resetBoard', () => {
       resetRolls();
-      setTarget(null);
+      resetTargetMap();
     });
 
     socket.on('actionRoll', async ({ encounterId, rollsArray }) => {
@@ -139,8 +138,12 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
       );
     });
 
-    socket.on('changeTarget', ({ characterId }) => {
-      setTarget(characterId);
+    socket.on('changeTarget', ({ key, targetData }) => {
+      setTarget(key, targetData);
+    });
+
+    socket.on('removeTarget', ({ activeId }) => {
+      removeTarget(activeId);
     });
 
     return () => {
@@ -159,6 +162,11 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
     <EncounterContext.Provider
       value={{
         combat,
+        targetMap,
+        resetTargetMap,
+        removeTarget,
+        setTarget,
+        getTarget,
         combatLoading,
         combatPending,
         isFetching,

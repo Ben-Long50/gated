@@ -31,7 +31,7 @@ const CharacterPictureRound = ({
     false;
 
   return (
-    <div className="relative">
+    <div className="pointer-events-none relative">
       <div
         className={`${className} shadow-color relative aspect-square size-12 shrink-0 overflow-hidden rounded-full shadow-md`}
         style={style}

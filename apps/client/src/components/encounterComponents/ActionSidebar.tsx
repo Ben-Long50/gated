@@ -102,7 +102,7 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
       {parts.includes('availableActions') && (
         <Outlet
           context={{
-            actions: availableActions,
+            actions: actionList,
             category,
             form: actionForm,
             handleChosenItem,
@@ -360,6 +360,41 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
                 </BtnRect>
               </>
             )
+          );
+        }}
+      </actionForm.Subscribe>
+      <actionForm.Subscribe
+        selector={(state) => [
+          state.values.action,
+          state.values.locationId,
+          state.values.row,
+          state.values.col,
+          state.errorMap,
+        ]}
+      >
+        {([action, locationId, row, col, errorMap]) => {
+          const errors = errorMap.onSubmit?.split(', ') || [];
+          return (
+            <>
+              {errors.length > 0 && (
+                <ul className="flex list-disc flex-col gap-2">
+                  {errors.map((error) => (
+                    <li className="text-error w-full text-base">{error}</li>
+                  ))}
+                </ul>
+              )}
+              <BtnRect
+                type="button"
+                ariaLabel="Confirm action"
+                onClick={() => {
+                  if (action && locationId && row && col) {
+                    actionForm.handleSubmit();
+                  }
+                }}
+              >
+                Confirm
+              </BtnRect>
+            </>
           );
         }}
       </actionForm.Subscribe>

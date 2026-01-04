@@ -2,6 +2,9 @@ import { Character } from 'src/types/character';
 import { Item } from 'src/types/item';
 
 const actionRanges = {
+  basicMovement: (character: Character, item: Item) => {
+    return character.stats.speed;
+  },
   strike: (character: Character, item: Item) => {
     return item.stats.range || 1;
   },

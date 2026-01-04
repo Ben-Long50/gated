@@ -6,7 +6,6 @@ import { useContext } from 'react';
 import Die from './Die';
 import useCombatStore from 'src/stores/combatStore';
 import RangeIcon from '../icons/RangeIcon';
-import { useDraggable } from '@dnd-kit/core';
 import { EncounterContext } from 'src/contexts/EncounterContext';
 import { socket } from 'src/socket';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -17,14 +16,22 @@ const CharacterEncounterToken = ({
   location,
   activeCoordinates,
   range,
+  rangeColor,
   height,
   mapScale,
+  handleDragStart,
+  handleDragUpdate,
+  handleRemoveTarget,
 }: {
   location: Location;
   activeCoordinates: { row: number; col: number } | null;
   range: number;
+  rangeColor: string;
   height: number;
   mapScale: number;
+  handleDragStart?: (row: number, col: number, characterId?: number) => void;
+  handleDragUpdate?: (row: number, col: number, targetId?: number) => void;
+  handleRemoveTarget?: (characterId?: number) => void;
 }) => {
   const { statColorMap } = useContext(ThemeContext);
   const {
@@ -42,22 +49,11 @@ const CharacterEncounterToken = ({
     location.characterId,
   );
 
+  const isActiveCharacter = activeCharacter?.id === location?.characterId;
+
   const roll = rolls.get(location.characterId) || null;
 
-  const target = useCombatStore((state) => state.target);
-  const damage = useCombatStore((state) => state.damage);
   const setRange = useCombatStore((state) => state.setRange);
-
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: `${location.characterId} ${location.id}`,
-    data: {
-      characterId: location.characterId,
-      locationId: location.id,
-      row: location.row,
-      col: location.col,
-    },
-    disabled: activeCharacter?.id !== location.characterId,
-  });
 
   if (isLoading || combatLoading) return <Loading size={1.25} />;
 
@@ -65,31 +61,23 @@ const CharacterEncounterToken = ({
     <actionForm.Field name="target">
       {(field) => (
         <div
-          ref={setNodeRef}
-          id={location.characterId.toString()}
-          className="token group relative inset-0 size-12 cursor-grab touch-none rounded-full"
-          style={
-            transform
-              ? {
-                  transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-                  height: `${48 * mapScale * 0.9}px`,
-                  width: `${48 * mapScale * 0.9}px`,
-                }
-              : {
-                  height: `${48 * mapScale * 0.9}px`,
-                  width: `${48 * mapScale * 0.9}px`,
-                }
-          }
-          {...listeners}
-          {...attributes}
+          draggable={false}
+          id={`character ${location.characterId}`}
+          className="token group relative size-12 shrink-0 cursor-grab touch-none rounded-full"
+          style={{
+            gridRow: location.row,
+            gridColumn: location.col,
+            height: `${48 * mapScale * 0.9}px`,
+            width: `${48 * mapScale * 0.9}px`,
+          }}
           onClick={(e) => {
             e.stopPropagation();
             if (encounterPermissions) {
               if (field.state.value?.id === location.characterId) {
                 field.handleChange(null);
-                socket.emit('changeTarget', {
+                socket.emit('removeTarget', {
                   encounterId: Number(encounterId),
-                  characterId: null,
+                  activeId: `character ${activeCharacter?.id}`,
                 });
               } else if (combat.combatPhase === 'action') {
                 const inRange = activeCoordinates
@@ -105,17 +93,37 @@ const CharacterEncounterToken = ({
                 }
                 socket.emit('changeTarget', {
                   encounterId: Number(encounterId),
-                  characterId: location.characterId,
+                  activeId: `character ${activeCharacter?.id}`,
+                  targetId: `character ${location.characterId}`,
+                  color: 'white',
                 });
                 field.handleChange(character);
               }
             }
           }}
-          onDoubleClick={() => {
-            navigate(`characters/${location.characterId}`);
-          }}
+          onDoubleClick={
+            handleRemoveTarget
+              ? () => handleRemoveTarget(location.characterId)
+              : () => navigate(`characters/${location.characterId}`)
+          }
+          onMouseDown={
+            handleDragStart
+              ? () =>
+                  handleDragStart(
+                    location.row,
+                    location.col,
+                    location.characterId,
+                  )
+              : undefined
+          }
           onMouseEnter={() => {
-            if (activeCharacter.id === character?.id) {
+            if (handleDragUpdate) {
+              handleDragUpdate(
+                location.row,
+                location.col,
+                location.characterId,
+              );
+            } else if (activeCharacter.id === character?.id) {
               setRange(character?.stats.speed, statColorMap.SPD);
             }
           }}
@@ -150,11 +158,6 @@ const CharacterEncounterToken = ({
               ))}
             </div>
           )}
-          {target === character?.id && damage !== null && (
-            <h2 className="damage text-shadow absolute top-0 flex w-full -translate-y-full justify-center pb-2 text-center font-zen text-shadow-black">
-              {damage ? damage : 'Miss'}
-            </h2>
-          )}
           {field.state.value?.id === location.characterId && (
             <div className="absolute inset-0 z-10 scale-125">
               <RangeIcon
@@ -167,6 +170,17 @@ const CharacterEncounterToken = ({
               />
             </div>
           )}
+          {range && isActiveCharacter ? (
+            <div
+              className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2"
+              style={{
+                height: range * 2 * 48 * mapScale + (48 * mapScale) / 2,
+                width: range * 2 * 48 * mapScale + (48 * mapScale) / 2,
+                background: `radial-gradient(circle, transparent, 60%, ${rangeColor})`,
+                borderColor: rangeColor,
+              }}
+            />
+          ) : null}
         </div>
       )}
     </actionForm.Field>

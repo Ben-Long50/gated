@@ -10,7 +10,7 @@ const isInRange = (
   const distance =
     range === 1
       ? Math.max(Math.abs(dx), Math.abs(dy))
-      : Math.sqrt(dx * dx + dy * dy);
+      : Math.round(Math.sqrt(dx ** 2 + dy ** 2));
   return distance <= range;
 };
 

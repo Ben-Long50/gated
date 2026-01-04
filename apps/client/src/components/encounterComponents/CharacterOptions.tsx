@@ -9,7 +9,7 @@ import ReactionIcon from '../icons/ReactionIcon';
 import CharacterStatBars from '../CharacterStatBars';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import ThemeContainer from '../ThemeContainer';
-import { Outlet, useNavigate, useParams } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import HandIcon from '../icons/HandIcon';
@@ -22,8 +22,6 @@ import usePassAllReactionsMutation from 'src/hooks/encounter hooks/usePassAllRea
 import useScheduleReactionMutation from 'src/hooks/encounter hooks/useScheduleReactionMutation/useScheduleReactionMutation';
 import usePassReactionMutation from 'src/hooks/encounter hooks/usePassReactionMutation/usePassReactionMutation';
 import useFinishReactionMutation from 'src/hooks/encounter hooks/useFinishReactionMutation/useFinishReactionMutation';
-import { useForm } from '@tanstack/react-form';
-import useCharacterStatMutation from 'src/hooks/character stat hooks/useCharacterStatMutation/useCharacterStatMutation';
 import FootIcon from '../icons/FootIcon';
 
 const CharacterOptions = ({
@@ -40,6 +38,7 @@ const CharacterOptions = ({
   const { gameMaster } = useContext(CampaignContext);
   const {
     combat,
+    resetTargetMap,
     isFetching,
     setIsFetching,
     encounterPermissions,
@@ -53,6 +52,9 @@ const CharacterOptions = ({
 
   const { campaignId, encounterId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const parts = location.pathname.split('/');
+
   const timerRef = useRef<number | null>(null);
   const inputRef = useRef<HTMLDivElement | null>(null);
 
@@ -80,7 +82,6 @@ const CharacterOptions = ({
   );
 
   const setItem = useCombatStore((state) => state.setItem);
-  const setTarget = useCombatStore((state) => state.setTarget);
   const setRange = useCombatStore((state) => state.setRange);
 
   const characterName = character?.lastName
@@ -201,7 +202,7 @@ const CharacterOptions = ({
                   setIsFetching(true);
                   resetRolls();
                   resetForms();
-                  setTarget(null);
+                  resetTargetMap();
                   setRange(null, null);
                   setItem(null);
                   handleAdvanceTurn();
@@ -287,7 +288,7 @@ const CharacterOptions = ({
           )}
         </div>
       </div>
-      <Outlet context={{ character }} />
+      {parts.includes('reset') && <Outlet context={{ character }} />}
     </ThemeContainer>
   );
 };
