@@ -118,11 +118,22 @@ export function setupSocketIO(io: Server) {
         .emit('navigateToEncounter', { encounterId, mapId, campaignId });
     });
 
-    socket.on('changeTarget', ({ encounterId, characterId }) => {
-      io.to(`encounter ${encounterId}`).emit('changeTarget', { characterId });
+    socket.on('changeTarget', ({ encounterId, key, targetData }) => {
+      io.to(`encounter ${encounterId}`).emit('changeTarget', {
+        key,
+        targetData,
+      });
 
       console.log(
-        `Broadcasted change target ${characterId} to encounter ${encounterId}`,
+        `Broadcasted change target ${key} to encounter ${encounterId}`,
+      );
+    });
+
+    socket.on('removeTarget', ({ encounterId, key }) => {
+      io.to(`encounter ${encounterId}`).emit('removeTarget', { key });
+
+      console.log(
+        `Broadcasted remove target ${key} to encounter ${encounterId}`,
       );
     });
 

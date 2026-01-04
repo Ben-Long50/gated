@@ -318,6 +318,7 @@ model Character {
   location           Location?
   locationId         Int?
   active             Boolean                       @default(false)
+  pushCounter        Int                           @default(0)
   perks              Perk[]                        @relation("CharacterToPerk")
   campaign           Campaign?                     @relation(fields: [campaignId], references: [id])
   campaignId         Int?
