@@ -8,6 +8,8 @@ import LightningIcon from './icons/LightningIcon';
 import ActionIcon from './icons/ActionIcon';
 import ReactionIcon from './icons/ReactionIcon';
 import WyrmShellIcon from './icons/WyrmShellIcon';
+import HandIcon from './icons/HandIcon';
+import FootIcon from './icons/FootIcon';
 
 const ActionStatBars = ({
   stats,
@@ -90,6 +92,26 @@ const ActionStatBars = ({
           cardWidth={cardWidth}
         >
           <WyrmShellIcon className="text-secondary size-8" />
+        </StatBar>
+      )}
+      {stats.currentHands && (
+        <StatBar
+          title="Hands"
+          current={stats.currentHands}
+          color={statColorMap['Health']}
+          cardWidth={cardWidth}
+        >
+          <HandIcon className="text-secondary size-8" />
+        </StatBar>
+      )}
+      {stats.currentFeet && (
+        <StatBar
+          title="Feet"
+          current={stats.currentFeet}
+          color={statColorMap['Health']}
+          cardWidth={cardWidth}
+        >
+          <FootIcon className="text-secondary size-8" />
         </StatBar>
       )}
     </>

@@ -6,10 +6,8 @@ import BtnRect from '../buttons/BtnRect';
 import CharacterPictureRound from '../CharacterPictureRound';
 import ActionStatBars from '../ActionStatBars';
 import ArrowHeader4 from '../ArrowHeader4';
-import RangeIcon from '../icons/RangeIcon';
-import WeaponIcon from '../icons/WeaponIcon';
 import InputFieldCheckbox from '../InputFieldCheckbox';
-import { capitalCase } from 'change-case';
+import { camelCase, capitalCase } from 'change-case';
 import ArrowHeader3 from '../ArrowHeader3';
 import ActionIcon from '../icons/ActionIcon';
 import Icon from '@mdi/react';
@@ -24,9 +22,12 @@ import calculateDiceCount from 'src/utils/calculateDiceCount';
 import InputField from '../InputField';
 import { useContext } from 'react';
 import { EncounterContext } from 'src/contexts/EncounterContext';
+import actionFuncs from 'src/utils/actionFuncs';
+import Divider from '../Divider';
 
 const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
-  const { activeCharacter, actionForm } = useContext(EncounterContext);
+  const { activeCharacter, actionForm, removeTarget } =
+    useContext(EncounterContext);
 
   const { filteredCharacter: character } = useCharacter(activeCharacter?.id);
   const navigate = useNavigate();
@@ -41,6 +42,10 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
     (state) => state.values.actionType,
   );
   const item = useStore(actionForm.store, (state) => state.values.item) as Item;
+  const action = useStore(
+    actionForm.store,
+    (state) => state.values.action,
+  ) as Action;
 
   const { filteredActions: availableActions, category } = useActions(
     characterActions,
@@ -49,7 +54,7 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
   );
 
   const filterActions = (item: Item) => {
-    const rangedActions = ['Single Shot', 'Salvo'];
+    const rangedActions = ['Single Shot', 'Salvo', 'Reload'];
     const meleeActions = ['Strike', 'Flurry', 'Haymaker', 'Charge', 'Throw'];
 
     const itemActions = item.itemLinkReference?.actions || [];
@@ -95,6 +100,22 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
     }
   };
 
+  let actionInfo = null;
+
+  if (action) {
+    if (actionFuncs[`${camelCase(action.name)}`]) {
+      actionInfo = actionFuncs[`${camelCase(action.name)}`](
+        action.costs,
+        character,
+        item,
+      );
+    } else {
+      actionInfo = {
+        message: `Programmed support for ${action.name} is currently not supported. Handle this action manually.`,
+      };
+    }
+  }
+
   return (
     <div
       className={`${actionSidebar ? 'visible translate-x-0 opacity-100' : 'invisible translate-x-full opacity-0'} timing z-10 flex flex-col gap-4 p-2`}
@@ -111,7 +132,7 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
       )}
 
       <div className="flex items-center justify-between gap-2">
-        <ArrowHeader3 className="whitespace-nowrap" title="Action Form" />
+        <ArrowHeader3 className="whitespace-nowrap" title="Action" />
         <button
           className="bg-tertiary group my-auto ml-auto flex justify-self-start rounded p-1.5 shadow-md shadow-black"
           aria-label="Open save modal"
@@ -129,6 +150,7 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
           onClick={() => {
             actionForm.reset();
             setItem(null);
+            removeTarget(`character ${activeCharacter?.id}`);
           }}
         >
           <Icon
@@ -137,7 +159,6 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
           />
         </button>
       </div>
-
       <actionForm.Field
         name="actionType"
         listeners={{
@@ -154,98 +175,94 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
           />
         )}
       </actionForm.Field>
-      <actionForm.Subscribe selector={(state) => state.values.item}>
-        {(item) => (
-          <actionForm.Field
-            name="action"
-            listeners={{
-              onChange: ({ value }) => {
-                handleChosenItem(value);
-              },
-            }}
-          >
-            {(field) => {
-              const costs = field.state.value
-                ? field.state.value.name === 'Salvo Fire'
-                  ? {
-                      ...field.state.value.costs,
-                      currentAmmoCount: item?.stats.salvo,
-                    }
-                  : field.state.value.costs
-                : null;
-
-              return (
-                <>
-                  <InputSelectField
-                    field={field}
-                    label="Actions"
-                    options={actionList}
-                  />
-                  {field.state.value && Object.keys(costs).length > 0 && (
-                    <div className="flex w-full flex-col justify-start gap-2">
-                      <p className="text-accent text-base tracking-widest">
-                        Costs
-                      </p>
-                      <div
-                        className={`grid h-full w-full grow grid-cols-[auto_auto_1fr_auto] place-items-center gap-2 gap-y-2 border-x-2 border-gray-400 border-opacity-50 px-2`}
-                      >
-                        <ActionStatBars stats={costs} cardWidth={499} />
-                      </div>
-                    </div>
-                  )}
-                </>
-              );
-            }}
-          </actionForm.Field>
-        )}
-      </actionForm.Subscribe>
-
-      <actionForm.Subscribe
-        selector={(state) => [
-          state.values.action,
-          state.values.item,
-          state.values.target,
-        ]}
+      <actionForm.Field
+        name="action"
+        listeners={{
+          onChange: ({ value }) => {
+            handleChosenItem(value);
+          },
+        }}
       >
-        {([action, item, target]) =>
-          action?.actionSubtypes?.includes('attack') && (
-            <>
-              {item ? (
-                <div className="flex flex-col items-start gap-4">
-                  <div className="flex w-full items-center gap-4">
-                    <CharacterPictureRound character={item} />
-                    <ArrowHeader4
-                      className="text-primary w-[80%]"
-                      title={item.name}
-                    />
+        {(field) => (
+          <InputSelectField
+            field={field}
+            label="Actions"
+            options={actionList}
+          />
+        )}
+      </actionForm.Field>
+      <Divider className="opacity-50" />
+      {actionInfo &&
+        (actionInfo.message ? (
+          <>
+            <p>{actionInfo.message}</p>
+            <Divider className="opacity-50" />
+          </>
+        ) : (
+          <>
+            {actionInfo &&
+              actionInfo.costs &&
+              Object.keys(actionInfo.costs).length > 0 && (
+                <div className="flex w-full flex-col justify-start gap-2">
+                  <p className="text-accent text-base tracking-widest">Costs</p>
+                  <div
+                    className={`grid h-full w-full grow grid-cols-[auto_auto_1fr_auto] place-items-center gap-2 gap-y-2 border-x-2 border-gray-400 border-opacity-50 px-2`}
+                  >
+                    <ActionStatBars stats={actionInfo.costs} cardWidth={499} />
                   </div>
                 </div>
-              ) : (
-                <div className="flex items-center gap-4">
-                  <WeaponIcon className="text-primary size-10" />
-                  <h4>Select Weapon from Equipment</h4>
-                </div>
               )}
-              {target ? (
-                <div className="flex flex-col items-start gap-4">
-                  <div className="flex w-full items-center gap-4">
-                    <CharacterPictureRound character={target} />
-                    <ArrowHeader4
-                      className="text-primary w-[80%]"
-                      title={`${target.firstName} ${target.lastName}`}
-                    />
-                  </div>
-                </div>
-              ) : (
-                <div className="flex items-center gap-4">
-                  <RangeIcon className="text-primary size-10" />
-                  <h4>Select Target on Map</h4>
-                </div>
-              )}
-            </>
-          )
-        }
-      </actionForm.Subscribe>
+            {actionInfo && actionInfo.requirements.includes('item') && (
+              <actionForm.Subscribe selector={(state) => state.values.item}>
+                {(item) => (
+                  <>
+                    <p>
+                      {item
+                        ? 'Selected Weapon'
+                        : 'Select a Weapon from Equipment'}
+                    </p>
+                    {item && (
+                      <div className="flex flex-col items-start gap-4">
+                        <div className="flex w-full items-center gap-4">
+                          <CharacterPictureRound character={item} />
+                          <ArrowHeader4
+                            className="text-primary w-[80%]"
+                            title={item.name}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </actionForm.Subscribe>
+            )}
+            {actionInfo && actionInfo.requirements.includes('target') && (
+              <actionForm.Subscribe selector={(state) => state.values.target}>
+                {(target) => (
+                  <>
+                    <p>
+                      {target
+                        ? 'Selected Target'
+                        : 'Select a Target on the Map'}
+                    </p>
+                    {target && (
+                      <div className="flex flex-col items-start gap-4">
+                        <div className="flex w-full items-center gap-4">
+                          <CharacterPictureRound character={target} />
+                          <ArrowHeader4
+                            className="text-primary w-[80%]"
+                            title={target.firstName}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </actionForm.Subscribe>
+            )}
+            <Divider className="opacity-50" />
+          </>
+        ))}
       <actionForm.Subscribe
         selector={(state) => [
           state.values.action,
@@ -387,9 +404,7 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
                 type="button"
                 ariaLabel="Confirm action"
                 onClick={() => {
-                  if (action && locationId && row && col) {
-                    actionForm.handleSubmit();
-                  }
+                  actionForm.handleSubmit();
                 }}
               >
                 Confirm

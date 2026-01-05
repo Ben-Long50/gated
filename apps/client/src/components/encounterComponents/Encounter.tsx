@@ -25,6 +25,8 @@ import ItemCardBorderless from '../ItemCardBorderless';
 import { EncounterContext } from 'src/contexts/EncounterContext';
 import MapHeader from '../mapComponents/map/MapHeader';
 import MapIcon from '../icons/MapIcon';
+import useCombatStore from 'src/stores/combatStore';
+import { useStore } from '@tanstack/react-form';
 
 const Encounter = () => {
   const {
@@ -34,6 +36,7 @@ const Encounter = () => {
     encounterPermissions,
     activeCharacter,
     controlledCharacterId,
+    actionForm,
   } = useContext(EncounterContext);
   const navigate = useNavigate();
   const location = useLocation();
@@ -46,15 +49,12 @@ const Encounter = () => {
   const [actionSidebar, setActionSidebar] = useState(false);
   const [characterOptions, setCharacterOptions] = useState(true);
   const [historyList, setHistoryList] = useState(false);
-  const [itemId, setItemId] = useState<number | null>(null);
   const [mapScale, setMapScale] = useState(1);
   const [mapInfo, setMapInfo] = useState(false);
 
   const { map, locations, mapLoading } = useMap(Number(mapId));
 
   const { data: campaign } = useCampaignQuery(Number(campaignId));
-
-  const { data: item } = useItemQuery(itemId);
 
   const {
     data: history,
@@ -86,6 +86,10 @@ const Encounter = () => {
       navigate('actionQueue');
     }
   }, [combat]);
+
+  const tempItem = useCombatStore((state) => state.item);
+  const formItem = useStore(actionForm.store, (state) => state.values.item);
+  const item = tempItem || formItem || null;
 
   if (mapLoading || historyLoading || combatLoading) return <Loading />;
 
@@ -359,7 +363,6 @@ const Encounter = () => {
             <CharacterOptions
               setActionSidebar={setActionSidebar}
               characterOptions={characterOptions}
-              setItemId={setItemId}
             />
           </div>
         )}

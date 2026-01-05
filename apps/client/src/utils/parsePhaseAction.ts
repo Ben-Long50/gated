@@ -50,6 +50,8 @@ const parsePhaseAction = (
     const actionResults = actionFuncs[
       `${camelCase(phaseHistory.action.actionSnapshot.name)}`
     ](
+      phaseHistory.action.actionSnapshot.costs,
+      phaseHistory.action.characterSnapshot,
       phaseHistory.action.itemSnapshot,
       phaseHistory.action.rollResult.successes,
     );

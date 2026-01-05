@@ -1,7 +1,6 @@
 import CharacterPictureRound from '../CharacterPictureRound';
 import useCharacter from 'src/hooks/useCharacter';
 import Loading from '../Loading';
-import { ThemeContext } from 'src/contexts/ThemeContext';
 import { useContext } from 'react';
 import Die from './Die';
 import useCombatStore from 'src/stores/combatStore';
@@ -11,27 +10,37 @@ import { socket } from 'src/socket';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Location } from 'src/types/map';
 import isInRange from './encounterUtils/isInRange';
+import statColorMap from 'src/utils/statColorMap';
 
 const CharacterEncounterToken = ({
   location,
   activeCoordinates,
-  range,
+  rangeData,
   height,
   mapScale,
+  handleInsertArrow,
   handleDragStart,
   handleDragUpdate,
   handleRemoveTarget,
 }: {
   location: Location;
   activeCoordinates: { row: number; col: number } | null;
-  range: number;
+  rangeData: { range: number; color: string };
   height: number;
   mapScale: number;
+  handleInsertArrow?: (
+    row: number,
+    col: number,
+    characterId: number,
+    targetRow: number,
+    targetCol: number,
+    targetId: number,
+    inRange: boolean,
+  ) => void;
   handleDragStart?: (row: number, col: number, characterId?: number) => void;
   handleDragUpdate?: (row: number, col: number, targetId?: number) => void;
   handleRemoveTarget?: (characterId?: number) => void;
 }) => {
-  const { statColorMap } = useContext(ThemeContext);
   const {
     combat,
     combatLoading,
@@ -39,6 +48,8 @@ const CharacterEncounterToken = ({
     encounterPermissions,
     rolls,
     actionForm,
+    setTarget,
+    removeTarget,
   } = useContext(EncounterContext);
   const navigate = useNavigate();
   const { encounterId } = useParams();
@@ -49,7 +60,7 @@ const CharacterEncounterToken = ({
 
   const roll = rolls.get(location.characterId) || null;
 
-  const setRange = useCombatStore((state) => state.setRange);
+  const setRangeData = useCombatStore((state) => state.setRangeData);
 
   if (isLoading || combatLoading) return <Loading size={1.25} />;
 
@@ -71,6 +82,7 @@ const CharacterEncounterToken = ({
             if (encounterPermissions) {
               if (field.state.value?.id === location.characterId) {
                 field.handleChange(null);
+                removeTarget(`character ${activeCharacter.id}`);
                 socket.emit('removeTarget', {
                   encounterId: Number(encounterId),
                   activeId: `character ${activeCharacter?.id}`,
@@ -80,19 +92,25 @@ const CharacterEncounterToken = ({
                   ? isInRange(
                       activeCoordinates,
                       { row: location.row, col: location.col },
-                      range,
+                      rangeData.range,
                     )
                   : false;
                 if (!inRange) {
                   console.log('not in range');
                   return;
                 }
-                socket.emit('changeTarget', {
-                  encounterId: Number(encounterId),
-                  activeId: `character ${activeCharacter?.id}`,
-                  targetId: `character ${location.characterId}`,
-                  color: 'white',
-                });
+
+                if (handleInsertArrow) {
+                  handleInsertArrow(
+                    activeCharacter.location.row,
+                    activeCharacter.location.col,
+                    activeCharacter.id,
+                    location.row,
+                    location.col,
+                    location.characterId,
+                    inRange,
+                  );
+                }
                 field.handleChange(character);
               }
             }
@@ -120,12 +138,15 @@ const CharacterEncounterToken = ({
                 location.characterId,
               );
             } else if (activeCharacter.id === character?.id) {
-              setRange(character?.stats.speed, statColorMap.SPD);
+              setRangeData({
+                range: character?.stats.speed,
+                color: statColorMap.SPD,
+              });
             }
           }}
           onMouseLeave={() => {
             if (activeCharacter.id === character?.id) {
-              setRange(null, null);
+              setRangeData(null);
             }
           }}
         >

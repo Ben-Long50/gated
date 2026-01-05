@@ -7,7 +7,6 @@ import {
   useState,
 } from 'react';
 import ItemRarity from './ItemRarity';
-import CartButton from './CartButton';
 import { KeywordReference } from 'src/types/keyword';
 import { Item } from 'src/types/item';
 import ItemPicture from './ItemPicture';
@@ -23,16 +22,12 @@ import {
 } from './ItemCardControls';
 import { AuthContext } from 'src/contexts/AuthContext';
 import useItemStats from 'src/hooks/useItemStats';
-import ItemRadialMenu from './radialMenus/itemRadialMenu/ItemRadialMenu';
 import {
-  Link,
   Outlet,
   useLocation,
   useOutletContext,
   useParams,
 } from 'react-router-dom';
-import Icon from '@mdi/react';
-import { mdiLinkBoxVariantOutline } from '@mdi/js';
 import { useInView } from 'react-intersection-observer';
 import KeywordTag from './KeywordTag';
 import ConditionTag from './ConditionTag';

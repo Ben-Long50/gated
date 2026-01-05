@@ -30,6 +30,41 @@ const useEncounterArrows = () => {
   const keyRef = useRef<string | null>(null);
   const targetRef = useRef<TargetData | null>(null);
 
+  const handleInsertArrow = (
+    row: number,
+    col: number,
+    characterId: number,
+    targetRow: number,
+    targetCol: number,
+    targetId: number,
+    inRange: boolean,
+  ) => {
+    const key = characterId ? `character ${characterId}` : `user ${user.id}`;
+
+    removeTarget(key);
+
+    const targetData = {
+      start: {
+        row,
+        col,
+        characterId,
+      },
+      end: {
+        row: targetRow,
+        col: targetCol,
+        targetId,
+      },
+      distance: Math.round(
+        Math.sqrt((targetCol - col) ** 2 + (targetRow - row) ** 2),
+      ),
+      color: accentPrimary,
+      occupied: false,
+      inRange,
+    };
+
+    setTarget(key, targetData);
+  };
+
   const handleDragStart = (row: number, col: number, characterId?: number) => {
     isDraggingRef.current = true;
 
@@ -57,7 +92,12 @@ const useEncounterArrows = () => {
     targetRef.current = targetData;
   };
 
-  const handleDragUpdate = (row: number, col: number, targetId?: number) => {
+  const handleDragUpdate = (
+    row: number,
+    col: number,
+    targetId?: number,
+    inRange?: boolean | null,
+  ) => {
     if (!isDraggingRef.current) {
       return;
     }
@@ -85,7 +125,7 @@ const useEncounterArrows = () => {
       ),
       color: accentPrimary,
       occupied: !!targetId,
-      inRange: true,
+      inRange,
     };
 
     targetRef.current = targetData;
@@ -119,6 +159,7 @@ const useEncounterArrows = () => {
 
   return {
     isDragging: isDraggingRef.current,
+    handleInsertArrow,
     handleDragStart,
     handleDragUpdate,
     handleDragEnd,

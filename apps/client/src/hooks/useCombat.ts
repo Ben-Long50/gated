@@ -21,6 +21,8 @@ import useRoll from './useRoll';
 import calculateDiceCount from 'src/utils/calculateDiceCount';
 import { socket } from 'src/socket';
 import parsePhaseAction from 'src/utils/parsePhaseAction';
+import actionFuncs from 'src/utils/actionFuncs';
+import { camelCase } from 'change-case';
 
 const useCombat = () => {
   const { user } = useContext(AuthContext);
@@ -240,56 +242,49 @@ const useCombat = () => {
     defaultValues: {
       actionType: null as string | null,
       action: null as Action | null,
-      locationId: null as number | null,
-      row: null as number | null,
-      col: null as number | null,
       item: null as Item | null,
       target: null as Character | null,
       modifiers: [] as string[],
       extraDice: null as number | null,
     },
     onSubmit: async ({ value }) => {
-      setIsFetching(true);
+      const actionData = actionFuncs[`${camelCase(value.action.name)}`](
+        value.action?.costs,
+        activeCharacter,
+        value.item,
+      );
+      const targetData = getTarget(`character ${activeCharacter?.id}`);
 
       const data = {
-        activeCharacterId: activeCharacter.id,
-        actionId: value.action.id,
+        activeCharacterId: activeCharacter?.id,
+        action: value.action.id,
       };
 
-      if (value.target) {
+      if (actionData.requirements.includes('tile')) {
+        data.tile = { row: targetData?.end.row, col: targetData?.end.col };
+      }
+
+      if (actionData.requirements.includes('target')) {
         data.targetCharacterId = value.target.id;
       }
 
-      if (value.item) {
-        data.itemId = value.item.id;
+      if (actionData.requirements.includes('item')) {
+        data.targetCharacterId = value.item.id;
       }
 
-      if (value.action?.roll) {
+      if (actionData.requirements.includes('roll')) {
         data.modifiers = value.modifiers;
+        data.extraDice = value.extraDice || 0;
       }
 
-      if (value.extraDice) {
-        data.extraDice = value.extraDice;
-      }
+      console.log(data);
 
-      if (
-        value.action?.actionSubtypes.includes('movement') &&
-        activeCharacter &&
-        value.locationId &&
-        value.row &&
-        value.col
-      ) {
-        updateCharacterLocation.mutate({
-          characterId: activeCharacter?.id,
-          locationId: Number(value.locationId),
-          row: value.row,
-          col: value.col,
-        });
-      }
+      return;
+      setIsFetching(true);
 
       rollAction.mutate(data);
 
-      if (value.action) {
+      if (actionData.requirements.includes('roll')) {
         const { diceCount } = calculateDiceCount(
           activeCharacter?.attributes,
           value.action,
@@ -307,7 +302,6 @@ const useCombat = () => {
         setRolls(loadingRollMap);
       }
 
-      removeTarget(`${activeCharacter.id} ${value.locationId}`);
       actionForm.reset();
       setItem(null);
     },

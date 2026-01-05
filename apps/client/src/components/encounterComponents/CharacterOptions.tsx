@@ -27,11 +27,9 @@ import FootIcon from '../icons/FootIcon';
 const CharacterOptions = ({
   setActionSidebar,
   characterOptions,
-  setItemId,
 }: {
   setActionSidebar: (state: boolean) => void;
   characterOptions: boolean;
-  setItemId: (id: number) => void;
 }) => {
   const { mobile } = useContext(LayoutContext);
   const { accentPrimary } = useContext(ThemeContext);
@@ -82,7 +80,7 @@ const CharacterOptions = ({
   );
 
   const setItem = useCombatStore((state) => state.setItem);
-  const setRange = useCombatStore((state) => state.setRange);
+  const setRangeData = useCombatStore((state) => state.setRangeData);
 
   const characterName = character?.lastName
     ? character?.firstName + ' ' + character?.lastName
@@ -173,7 +171,6 @@ const CharacterOptions = ({
           <EquippedItems
             className={`${visible ? 'max-h-40' : 'max-h-0'} timing overflow-hidden`}
             setActionSidebar={setActionSidebar}
-            setItemId={setItemId}
           />
         </div>
         <div
@@ -203,7 +200,7 @@ const CharacterOptions = ({
                   resetRolls();
                   resetForms();
                   resetTargetMap();
-                  setRange(null, null);
+                  setRangeData(null);
                   setItem(null);
                   handleAdvanceTurn();
                   socket.emit('resetBoard', {

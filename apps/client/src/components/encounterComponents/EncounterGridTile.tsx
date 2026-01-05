@@ -1,30 +1,35 @@
 import { useContext, useMemo, useState } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import isInRange from './encounterUtils/isInRange';
+import Icon from '@mdi/react';
+import { mdiClose } from '@mdi/js';
 
 const EncounterGridTile = ({
-  id,
   row,
   col,
+  selected,
   height,
   activeCoordinates,
-  range,
-  rangeColor,
+  rangeData,
   gridDisplay,
   handleDragStart,
   handleDragUpdate,
   handleRemoveTarget,
 }: {
-  id: string;
   row: number;
   col: number;
+  selected: boolean;
   height: number;
   activeCoordinates: { row: number; col: number } | null;
-  range: number;
-  rangeColor: string;
+  rangeData: { range: number; color: string };
   gridDisplay: boolean;
   handleDragStart?: (row: number, col: number, characterId?: number) => void;
-  handleDragUpdate?: (row: number, col: number, targetId?: number) => void;
+  handleDragUpdate?: (
+    row: number,
+    col: number,
+    targetId?: number,
+    inRange?: boolean | null,
+  ) => void;
   handleRemoveTarget?: (characterId?: number) => void;
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -33,20 +38,20 @@ const EncounterGridTile = ({
   const inRange = useMemo(
     () =>
       activeCoordinates
-        ? isInRange(activeCoordinates, { row, col }, range)
+        ? isInRange(activeCoordinates, { row, col }, rangeData.range)
         : null,
-    [range],
+    [rangeData],
   );
 
   return (
     <div
-      id={id}
-      className={`${gridDisplay ? 'border-accent' : 'border-transparent'} relative size-full border border-opacity-50`}
+      id={`row ${row}, col ${col}`}
+      className={`${gridDisplay ? 'border-accent' : 'border-transparent'} relative flex size-full items-center justify-center border border-opacity-50`}
       style={{
         gridRow: row,
         gridColumn: col,
         background: inRange
-          ? `radial-gradient(circle, transparent, 75%, ${rangeColor})`
+          ? `radial-gradient(circle, transparent, 75%, ${rangeData.color})`
           : hover
             ? `radial-gradient(circle, transparent, 75%, ${accentPrimary})`
             : undefined,
@@ -56,7 +61,7 @@ const EncounterGridTile = ({
       }
       onMouseEnter={
         handleDragUpdate
-          ? () => handleDragUpdate(row, col)
+          ? () => handleDragUpdate(row, col, undefined, inRange)
           : () => setHover(true)
       }
       onMouseLeave={() => setHover(false)}
@@ -64,6 +69,9 @@ const EncounterGridTile = ({
         handleRemoveTarget ? () => handleRemoveTarget() : undefined
       }
     >
+      {selected && inRange === false && (
+        <Icon className="text-red-500" path={mdiClose} size={2.5} />
+      )}
       {hover && (
         <p
           className={`bg-tertiary pointer-events-none absolute right-1/2 top-1/2 select-none whitespace-nowrap rounded p-1 py-0.5 text-sm`}

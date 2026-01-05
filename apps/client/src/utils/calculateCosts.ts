@@ -13,12 +13,14 @@ const calculateCosts = (character: Character, action: Action, item?: Item) => {
       : action.costs
     : null;
 
-  if (item?.keywords.some((keyword) => keyword.keyword.name === '2H')) {
-    costs.currentHands = 2;
-  }
+  if (item) {
+    if (item?.keywords.some((keyword) => keyword.keyword.name === '2H')) {
+      costs.currentHands = 2;
+    }
 
-  if (item?.keywords.some((keyword) => keyword.keyword.name === '1H')) {
-    costs.currentHands = 1;
+    if (item?.keywords.some((keyword) => keyword.keyword.name === '1H')) {
+      costs.currentHands = 1;
+    }
   }
 
   const characterCosts = {};

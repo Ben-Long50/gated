@@ -12,11 +12,9 @@ import { EncounterContext } from 'src/contexts/EncounterContext';
 const EquippedItems = ({
   className,
   setActionSidebar,
-  setItemId,
 }: {
   className?: string;
   setActionSidebar: (state: boolean) => void;
-  setItemId?: (id: number) => void;
 }) => {
   const { rarityColorMap, statColorMap } = useContext(ThemeContext);
   const { encounterPermissions, controlledCharacterId, actionForm } =
@@ -27,11 +25,10 @@ const EquippedItems = ({
   );
 
   const scrollRef = useRef<HTMLDivElement>(null);
-  const timeoutRef = useRef<number>(null);
 
   const item = useCombatStore((state) => state.item);
   const setItem = useCombatStore((state) => state.setItem);
-  const setRange = useCombatStore((state) => state.setRange);
+  const setRangeData = useCombatStore((state) => state.setRangeData);
 
   const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
     e.stopPropagation();
@@ -75,71 +72,21 @@ const EquippedItems = ({
                       ? field.handleChange(null)
                       : field.handleChange(equipment);
                   }
-                  if (setItemId) {
-                    setItemId(equipment.id);
-                  }
                 }}
                 onMouseEnter={() => {
-                  if (timeoutRef.current) {
-                    clearTimeout(timeoutRef.current);
-                  }
                   setActionSidebar(true);
-                  if (setItemId) {
-                    setItemId(equipment.id);
-                  }
-
-                  if (equipment?.itemTypes.includes('weapon')) {
-                    actionForm.setFieldValue('actionType', 'attack');
-                    actionForm.setFieldValue('action', null);
-                  } else if (equipment.itemLinkReference?.actions.length > 0) {
-                    actionForm.setFieldValue('actionType', 'unique');
-                    actionForm.setFieldValue(
-                      'action',
-                      equipment.itemLinkReference?.actions[0],
-                    );
-                  } else {
-                    actionForm.setFieldValue('actionType', null);
-                    actionForm.setFieldValue('action', null);
-                  }
-                  setRange(equipment.stats.range || null, statColorMap.DMG);
+                  setItem(equipment);
+                  setRangeData({
+                    range: equipment.stats.range || 0,
+                    color: statColorMap.DMG,
+                  });
                 }}
                 onMouseLeave={() => {
-                  if (field.state.value) {
-                    timeoutRef.current = setTimeout(() => {
-                      if (setItemId) {
-                        setItemId(field.state.value.id);
-                      }
-                      setRange(null, null);
-                    }, 200);
-                  } else {
+                  if (!field.state.value) {
                     setActionSidebar(false);
-                    if (setItemId) {
-                      setItemId(null);
-                    }
-                    actionForm.reset();
-                    setRange(null, null);
                   }
-                  if (field.state.value) {
-                    const chosenItem = field.state.value;
-                    if (chosenItem?.itemTypes.includes('weapon')) {
-                      actionForm.setFieldValue('actionType', 'attack');
-                      actionForm.setFieldValue('action', null);
-                    } else if (
-                      chosenItem.itemLinkReference?.actions.length > 0
-                    ) {
-                      actionForm.setFieldValue('actionType', 'unique');
-                      actionForm.setFieldValue(
-                        'action',
-                        chosenItem.itemLinkReference?.actions[0],
-                      );
-                    } else {
-                      actionForm.setFieldValue('actionType', null);
-                      actionForm.setFieldValue('action', null);
-                    }
-                  } else {
-                    actionForm.setFieldValue('actionType', null);
-                    actionForm.setFieldValue('action', null);
-                  }
+                  setItem(null);
+                  setRangeData(null);
                 }}
               >
                 {!equipment.available && (

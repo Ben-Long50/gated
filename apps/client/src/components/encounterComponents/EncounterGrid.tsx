@@ -9,10 +9,10 @@ import { EncounterContext } from 'src/contexts/EncounterContext';
 import DragScrollContainer from '../mapComponents/DragScrollContainer';
 import getCoords from '../mapComponents/mapUtils/getCoords';
 import MapComponent from '../mapComponents/map/MapComponent';
-import actionRanges from 'src/utils/actionRanges';
 import { camelCase } from 'change-case';
 import CharacterEncounterToken from './CharacterEncounterToken';
 import useEncounterArrows from 'src/hooks/useEncounterArrows';
+import actionFuncs from 'src/utils/actionFuncs';
 
 const EncounterGrid = ({
   width,
@@ -35,50 +35,34 @@ const EncounterGrid = ({
   measureMode: boolean;
   setActionSidebar: (value: boolean) => void;
 }) => {
-  const { statColorMap, accentPrimary } = useContext(ThemeContext);
-  const { targetMap, activeCharacter, actionForm } =
+  const { accentPrimary } = useContext(ThemeContext);
+  const { encounterPermissions, targetMap, activeCharacter, actionForm } =
     useContext(EncounterContext);
 
   const {
     isDragging,
+    handleInsertArrow,
     handleDragStart,
     handleDragUpdate,
     handleDragEnd,
     handleRemoveTarget,
   } = useEncounterArrows();
 
-  const tempRange = useCombatStore((state) => state.range);
-  const tempRangeColor = useCombatStore((state) => state.rangeColor);
+  const tempRangeData = useCombatStore((state) => state.rangeData);
   const item = useStore(actionForm.store, (state) => state.values.item);
   const action = useStore(actionForm.store, (state) => state.values.action);
-  const actionType = useStore(
-    actionForm.store,
-    (state) => state.values.actionType,
-  );
 
-  let rangeColor = 'transparent';
+  let rangeData = { range: 0, color: 'transparent' };
 
-  switch (actionType) {
-    case 'attack':
-      rangeColor = statColorMap.DMG;
-      break;
-    case 'movement':
-      rangeColor = statColorMap.SPD;
-      break;
-    default:
-      rangeColor = tempRangeColor || 'transparent';
-      break;
+  if (tempRangeData) {
+    rangeData = tempRangeData;
+  } else if (action && actionFuncs[`${camelCase(action.name)}`]) {
+    rangeData = actionFuncs[`${camelCase(action.name)}`](
+      action.costs,
+      activeCharacter,
+      item,
+    );
   }
-
-  const range = useMemo(() => {
-    if (tempRange) {
-      return tempRange;
-    } else if (action && actionRanges[`${camelCase(action.name)}`]) {
-      return actionRanges[`${camelCase(action.name)}`](activeCharacter, item);
-    } else {
-      return 0;
-    }
-  }, [action, item, activeCharacter, tempRange]);
 
   const activeCoordinates = useMemo(() => {
     if (activeCharacter?.id) {
@@ -151,17 +135,19 @@ const EncounterGrid = ({
         })}
         {Array.from({ length: width * height }).map((_, index) => {
           const { row, col } = getCoords(width, index);
+          const selected = targets.some(
+            (target) => target.end.row === row && target.end.col === col,
+          );
 
           return (
             <EncounterGridTile
               key={index}
-              id={`row ${row}, col ${col}`}
               row={row}
               col={col}
+              selected={selected}
               height={height}
               activeCoordinates={activeCoordinates}
-              range={range}
-              rangeColor={rangeColor}
+              rangeData={rangeData}
               gridDisplay={gridDisplay}
               handleDragStart={measureMode ? handleDragStart : undefined}
               handleDragUpdate={isDragging ? handleDragUpdate : undefined}
@@ -175,10 +161,17 @@ const EncounterGrid = ({
               key={location.characterId}
               location={location}
               activeCoordinates={activeCoordinates}
-              range={range}
+              rangeData={rangeData}
               height={height}
               mapScale={mapScale}
-              handleDragStart={measureMode ? handleDragStart : undefined}
+              handleInsertArrow={encounterPermissions && handleInsertArrow}
+              handleDragStart={
+                !measureMode &&
+                encounterPermissions &&
+                location.characterId === activeCharacter?.id
+                  ? handleDragStart
+                  : undefined
+              }
               handleDragUpdate={isDragging ? handleDragUpdate : undefined}
               handleRemoveTarget={
                 targetMap.get(`character ${location.characterId}`)
