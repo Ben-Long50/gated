@@ -4,8 +4,6 @@ import { uploadToCloudinary } from '../utils/cloudinary.js';
 import upload from '../utils/multer.js';
 import parseRequestBody from '../utils/parseRequestBody.js';
 import cartServices from '../services/cartServices.js';
-import { getIO } from '../sockets/socket.js';
-import campaignServices from '../services/campaignServices.js';
 
 const characterController = {
   getCharacters: async (req: Request, res: Response) => {
