@@ -13,6 +13,8 @@ import useCampaignQueries from 'src/hooks/useCampaignsQuery/useCampaignQueries';
 import Loading from 'src/components/Loading';
 import { useNavigate, useParams } from 'react-router-dom';
 import useCombatQueries from 'src/hooks/encounter hooks/useCombatQueries/useCombatQueries';
+import { Location } from 'src/types/map';
+import { Character } from 'src/types/character';
 
 export const CampaignContext = createContext({
   socket,
@@ -149,8 +151,8 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       queryClient.setQueryData(['location', location.id], location);
     });
 
-    socket.on('location', ({ locationId, mapId, row, col }) => {
-      queryClient.setQueryData(['location', locationId], (prev) => {
+    socket.on('location', ({ characterId, locationId, mapId, row, col }) => {
+      queryClient.setQueryData(['location', locationId], (prev: Location) => {
         if (!prev) return prev;
 
         return {
@@ -160,6 +162,23 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           col,
         };
       });
+
+      queryClient.setQueryData(
+        ['character', characterId],
+        (prev: Character) => {
+          if (!prev) return prev;
+
+          return {
+            ...prev,
+            location: {
+              ...prev.location,
+              mapId,
+              row,
+              col,
+            },
+          };
+        },
+      );
     });
 
     socket.on('item', (itemId) => {
