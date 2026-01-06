@@ -24,9 +24,11 @@ import { useContext } from 'react';
 import { EncounterContext } from 'src/contexts/EncounterContext';
 import actionFuncs from 'src/utils/actionFuncs';
 import Divider from '../Divider';
+import calculateCosts from 'src/utils/calculateCosts';
+import isInRange from './encounterUtils/isInRange';
 
 const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
-  const { activeCharacter, actionForm, removeTarget } =
+  const { activeCharacter, actionForm, removeTarget, getTarget } =
     useContext(EncounterContext);
 
   const { filteredCharacter: character } = useCharacter(activeCharacter?.id);
@@ -113,6 +115,29 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
       actionInfo = {
         message: `Programmed support for ${action.name} is currently not supported. Handle this action manually.`,
       };
+    }
+  }
+
+  const { errors } =
+    actionInfo && actionInfo.costs
+      ? calculateCosts(actionInfo.costs, character, item)
+      : { errors: [] as string[] };
+
+  if (actionInfo) {
+    const targetData = getTarget(`character ${activeCharacter?.id}`);
+    if (targetData) {
+      const inRange = isInRange(
+        { row: targetData.start.row, col: targetData.start.col },
+        { row: targetData.end.row, col: targetData.end.col },
+        actionInfo.range,
+      );
+
+      if (!inRange) {
+        errors.push('Not in Range');
+      }
+      if (targetData.occupied) {
+        errors.push('Tile is Occupied');
+      }
     }
   }
 
@@ -204,7 +229,7 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
               actionInfo.costs &&
               Object.keys(actionInfo.costs).length > 0 && (
                 <div className="flex w-full flex-col justify-start gap-2">
-                  <p className="text-accent text-base tracking-widest">Costs</p>
+                  <ArrowHeader4 className="text-primary" title="Action Costs" />
                   <div
                     className={`grid h-full w-full grow grid-cols-[auto_auto_1fr_auto] place-items-center gap-2 gap-y-2 border-x-2 border-gray-400 border-opacity-50 px-2`}
                   >
@@ -263,89 +288,134 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
             <Divider className="opacity-50" />
           </>
         ))}
-      <actionForm.Subscribe
-        selector={(state) => [
-          state.values.action,
-          state.values.item,
-          state.values.target,
-          state.values.modifiers,
-          state.values.extraDice,
-        ]}
-      >
-        {([action, item, target, modifiers, extraDice]) => {
-          const diceCount =
-            character && action?.roll?.length > 0 && modifiers
-              ? calculateDiceCount(
-                  character?.attributes,
-                  action,
-                  modifiers,
-                  extraDice,
-                ).diceCount
-              : 'N/A';
+      {errors.length > 0 ? (
+        <ul className="flex flex-col items-start">
+          {errors.map((error: string) => (
+            <li className="text-error">{error}</li>
+          ))}
+        </ul>
+      ) : (
+        <actionForm.Subscribe
+          selector={(state) => [
+            state.values.action,
+            state.values.item,
+            state.values.target,
+            state.values.modifiers,
+            state.values.extraDice,
+            state.values.locationId,
+            state.values.row,
+            state.values.col,
+          ]}
+        >
+          {([
+            action,
+            item,
+            target,
+            modifiers,
+            extraDice,
+            locationId,
+            row,
+            col,
+          ]) => {
+            const diceCount =
+              character && action?.roll?.length > 0 && modifiers
+                ? calculateDiceCount(
+                    character?.attributes,
+                    action,
+                    modifiers,
+                    extraDice,
+                  ).diceCount
+                : 'N/A';
 
-          return (
-            action?.roll &&
-            action?.roll.length > 0 && (
+            return (
               <>
-                <div className="relative flex w-full flex-col gap-2">
-                  <actionForm.Field name="modifiers">
-                    {(field) => {
-                      const modifiers = [
-                        'push',
-                        'booming',
-                        'dooming',
-                        'lucky',
-                        'unlucky',
-                      ];
-                      return (
-                        <>
-                          {modifiers.map((modifier) => (
-                            <InputFieldCheckbox
-                              key={modifier}
-                              field={field}
-                              label={capitalCase(modifier)}
-                              value={modifier}
-                              checked={field.state.value?.includes(modifier)}
-                              onChange={(value: string) => {
-                                if (field.state.value?.includes(value)) {
-                                  actionForm.setFieldValue(
-                                    'modifiers',
-                                    (prev) =>
-                                      prev.filter(
-                                        (modifier) => modifier !== value,
-                                      ),
-                                  );
-                                } else {
-                                  actionForm.setFieldValue(
-                                    'modifiers',
-                                    (prev) => [...prev, value],
-                                  );
-                                }
-                              }}
-                            />
-                          ))}
-                        </>
-                      );
+                {action?.roll && action?.roll.length > 0 ? (
+                  <>
+                    <div className="relative flex w-full flex-col gap-2">
+                      <actionForm.Field name="modifiers">
+                        {(field) => {
+                          const modifiers = [
+                            'push',
+                            'booming',
+                            'dooming',
+                            'lucky',
+                            'unlucky',
+                          ];
+                          return (
+                            <>
+                              {modifiers.map((modifier) => (
+                                <InputFieldCheckbox
+                                  key={modifier}
+                                  field={field}
+                                  label={capitalCase(modifier)}
+                                  value={modifier}
+                                  checked={field.state.value?.includes(
+                                    modifier,
+                                  )}
+                                  onChange={(value: string) => {
+                                    if (field.state.value?.includes(value)) {
+                                      actionForm.setFieldValue(
+                                        'modifiers',
+                                        (prev) =>
+                                          prev.filter(
+                                            (modifier) => modifier !== value,
+                                          ),
+                                      );
+                                    } else {
+                                      actionForm.setFieldValue(
+                                        'modifiers',
+                                        (prev) => [...prev, value],
+                                      );
+                                    }
+                                  }}
+                                />
+                              ))}
+                            </>
+                          );
+                        }}
+                      </actionForm.Field>
+                      <actionForm.Field name="extraDice">
+                        {(field) => (
+                          <InputField
+                            field={field}
+                            label="Extra Dice"
+                            type="number"
+                          />
+                        )}
+                      </actionForm.Field>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <DieIcon className="text-secondary size-8" />
+                      {typeof diceCount === 'number' ? (
+                        <h2 className="!text-accent">{diceCount}</h2>
+                      ) : (
+                        <h3>{diceCount}</h3>
+                      )}
+                    </div>
+                    <BtnRect
+                      className={`w-full whitespace-nowrap`}
+                      ariaLabel="Roll action"
+                      type="button"
+                      onClick={() => {
+                        if (action && target && item) {
+                          actionForm.handleSubmit();
+                        }
+                      }}
+                    >
+                      Roll Action
+                    </BtnRect>
+                  </>
+                ) : (
+                  <BtnRect
+                    type="button"
+                    ariaLabel="Confirm action"
+                    onClick={() => {
+                      actionForm.handleSubmit();
                     }}
-                  </actionForm.Field>
-                  <actionForm.Field name="extraDice">
-                    {(field) => (
-                      <InputField
-                        field={field}
-                        label="Extra Dice"
-                        type="number"
-                      />
-                    )}
-                  </actionForm.Field>
-                </div>
-                <div className="flex items-center justify-between">
-                  <DieIcon className="text-secondary size-8" />
-                  {typeof diceCount === 'number' ? (
-                    <h2 className="!text-accent">{diceCount}</h2>
-                  ) : (
-                    <h3>{diceCount}</h3>
-                  )}
-                </div>
+                  >
+                    Confirm
+                  </BtnRect>
+                )}
                 <actionForm.Subscribe selector={(state) => state.errorMap}>
                   {(errorMap) => {
                     const errors = errorMap.onSubmit?.split(', ') || [];
@@ -363,23 +433,12 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
                     );
                   }}
                 </actionForm.Subscribe>
-                <BtnRect
-                  className={`${(!action || !item || !target) && 'pointer-events-none opacity-50'} w-full whitespace-nowrap`}
-                  ariaLabel="Roll action"
-                  type="button"
-                  onClick={() => {
-                    if (action && target && item) {
-                      actionForm.handleSubmit();
-                    }
-                  }}
-                >
-                  Roll Action
-                </BtnRect>
               </>
-            )
-          );
-        }}
-      </actionForm.Subscribe>
+            );
+          }}
+        </actionForm.Subscribe>
+      )}
+      <Divider className="opacity-50" />
       <actionForm.Subscribe
         selector={(state) => [
           state.values.action,
@@ -400,15 +459,6 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
                   ))}
                 </ul>
               )}
-              <BtnRect
-                type="button"
-                ariaLabel="Confirm action"
-                onClick={() => {
-                  actionForm.handleSubmit();
-                }}
-              >
-                Confirm
-              </BtnRect>
             </>
           );
         }}

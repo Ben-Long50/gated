@@ -36,8 +36,13 @@ const EncounterGrid = ({
   setActionSidebar: (value: boolean) => void;
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
-  const { encounterPermissions, targetMap, activeCharacter, actionForm } =
-    useContext(EncounterContext);
+  const {
+    encounterPermissions,
+    combat,
+    targetMap,
+    activeCharacter,
+    actionForm,
+  } = useContext(EncounterContext);
 
   const {
     isDragging,
@@ -79,6 +84,28 @@ const EncounterGrid = ({
       return null;
     }
   }, [activeCharacter, locations]);
+
+  const insertTarget = (
+    row: number,
+    col: number,
+    inRange: boolean,
+    characterId?: number,
+  ) => {
+    if (!characterId) {
+      actionForm.setFieldValue('target', null);
+    }
+    if (encounterPermissions && combat.combatPhase === 'action') {
+      handleInsertArrow(
+        activeCharacter.location.row,
+        activeCharacter.location.col,
+        activeCharacter.id,
+        row,
+        col,
+        inRange,
+        characterId,
+      );
+    }
+  };
 
   useEffect(() => {
     const onMouseUp = () => handleDragEnd();
@@ -149,6 +176,7 @@ const EncounterGrid = ({
               activeCoordinates={activeCoordinates}
               rangeData={rangeData}
               gridDisplay={gridDisplay}
+              insertTarget={insertTarget}
               handleDragStart={measureMode ? handleDragStart : undefined}
               handleDragUpdate={isDragging ? handleDragUpdate : undefined}
               handleRemoveTarget={handleRemoveTarget}
@@ -164,7 +192,7 @@ const EncounterGrid = ({
               rangeData={rangeData}
               height={height}
               mapScale={mapScale}
-              handleInsertArrow={encounterPermissions && handleInsertArrow}
+              insertTarget={insertTarget}
               handleDragStart={
                 !measureMode &&
                 encounterPermissions &&
@@ -183,7 +211,6 @@ const EncounterGrid = ({
         {targets.map((targetData, index) => (
           <Xarrow
             key={index}
-            zIndex={10}
             animateDrawing={0}
             labels={
               <div

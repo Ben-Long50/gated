@@ -17,8 +17,12 @@ const EquippedItems = ({
   setActionSidebar: (state: boolean) => void;
 }) => {
   const { rarityColorMap, statColorMap } = useContext(ThemeContext);
-  const { encounterPermissions, controlledCharacterId, actionForm } =
-    useContext(EncounterContext);
+  const {
+    encounterPermissions,
+    controlledCharacterId,
+    actionForm,
+    removeTarget,
+  } = useContext(EncounterContext);
 
   const { filteredCharacter: character, isLoading } = useCharacter(
     controlledCharacterId,
@@ -48,7 +52,16 @@ const EquippedItems = ({
 
   return (
     character?.equipment && (
-      <actionForm.Field name="item">
+      <actionForm.Field
+        name="item"
+        listeners={{
+          onChange: () => {
+            removeTarget(`character ${controlledCharacterId}`);
+            actionForm.setFieldValue('action', null);
+            actionForm.setFieldValue('target', null);
+          },
+        }}
+      >
         {(field) => (
           <div
             ref={scrollRef}

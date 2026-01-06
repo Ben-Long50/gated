@@ -36,8 +36,8 @@ const useEncounterArrows = () => {
     characterId: number,
     targetRow: number,
     targetCol: number,
-    targetId: number,
     inRange: boolean,
+    targetId?: number,
   ) => {
     const key = characterId ? `character ${characterId}` : `user ${user.id}`;
 

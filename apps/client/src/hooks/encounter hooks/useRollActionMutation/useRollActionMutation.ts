@@ -12,9 +12,13 @@ const useRollActionMutation = (campaignId: number, encounterId: number) => {
       activeCharacterId: number;
       targetCharacterId?: number;
       actionId: number;
+      itemId?: number;
+      tile?: {
+        start: { row: number; col: number };
+        end: { row: number; col: number };
+      };
       modifiers: string[];
       extraDice: number;
-      itemId?: number;
     }) => {
       return rollAction(campaignId, encounterId, actionData);
     },

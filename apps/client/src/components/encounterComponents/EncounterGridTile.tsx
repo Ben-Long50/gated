@@ -12,6 +12,7 @@ const EncounterGridTile = ({
   activeCoordinates,
   rangeData,
   gridDisplay,
+  insertTarget,
   handleDragStart,
   handleDragUpdate,
   handleRemoveTarget,
@@ -23,6 +24,12 @@ const EncounterGridTile = ({
   activeCoordinates: { row: number; col: number } | null;
   rangeData: { range: number; color: string };
   gridDisplay: boolean;
+  insertTarget?: (
+    targetRow: number,
+    targetCol: number,
+    inRange: boolean,
+    targetId?: number,
+  ) => void;
   handleDragStart?: (row: number, col: number, characterId?: number) => void;
   handleDragUpdate?: (
     row: number,
@@ -35,13 +42,9 @@ const EncounterGridTile = ({
   const { accentPrimary } = useContext(ThemeContext);
   const [hover, setHover] = useState(false);
 
-  const inRange = useMemo(
-    () =>
-      activeCoordinates
-        ? isInRange(activeCoordinates, { row, col }, rangeData.range)
-        : null,
-    [rangeData],
-  );
+  const inRange = activeCoordinates
+    ? isInRange(activeCoordinates, { row, col }, rangeData.range)
+    : true;
 
   return (
     <div
@@ -55,6 +58,11 @@ const EncounterGridTile = ({
           : hover
             ? `radial-gradient(circle, transparent, 75%, ${accentPrimary})`
             : undefined,
+      }}
+      onClick={() => {
+        if (insertTarget) {
+          insertTarget(row, col, inRange);
+        }
       }}
       onMouseDown={
         handleDragStart ? () => handleDragStart(row, col) : undefined

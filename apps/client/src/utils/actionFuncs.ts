@@ -22,7 +22,7 @@ const actionFuncs = {
     successes?: number,
   ) => {
     const requirements = ['character', 'target', 'item', 'roll'];
-    const range = item.stats.range;
+    const range = item ? item.stats.range : 0;
     const color = statColorMap.DMG;
     const costs = { ...actionCosts };
     if (item) {
@@ -114,7 +114,7 @@ const actionFuncs = {
     successes?: number,
   ) => {
     const requirements = ['character', 'target', 'item', 'roll'];
-    const range = item.stats.range;
+    const range = item ? item.stats.range : 0;
     const color = statColorMap.DMG;
     const costs = { ...actionCosts };
     if (item) {
@@ -235,7 +235,7 @@ const actionFuncs = {
     successes?: number,
   ) => {
     const requirements = ['character', 'target', 'item', 'roll'];
-    let range = item ? item.stats.range : 1;
+    let range = item ? item.stats.range : 0;
     const color = statColorMap.DMG;
     const costs = { ...actionCosts, currentAmmoCount: 1 };
     if (item) {
@@ -284,7 +284,7 @@ const actionFuncs = {
     successes?: number,
   ) => {
     const requirements = ['character', 'target', 'item', 'roll'];
-    let range = item ? item.stats.range : 1;
+    let range = item ? item.stats.range : 0;
     const color = statColorMap.DMG;
     const costs = { ...actionCosts, currentAmmoCount: item?.stats.salvo };
     if (item) {

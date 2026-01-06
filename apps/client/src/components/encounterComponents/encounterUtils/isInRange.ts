@@ -3,7 +3,7 @@ const isInRange = (
   mapCoordinates: { row: number; col: number },
   range: number,
 ) => {
-  if (!range) return null;
+  if (range == null) return true;
   const dx = mapCoordinates.col - currentCoordinates.col;
   const dy = mapCoordinates.row - currentCoordinates.row;
 

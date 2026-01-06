@@ -8,9 +8,13 @@ const rollAction = async (
     activeCharacterId: number;
     targetCharacterId?: number;
     actionId: number;
+    itemId?: number;
+    tile?: {
+      start: { row: number; col: number };
+      end: { row: number; col: number };
+    };
     modifiers: string[];
     extraDice: number;
-    itemId?: number;
   },
 ) => {
   try {

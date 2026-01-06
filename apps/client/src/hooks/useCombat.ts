@@ -11,7 +11,6 @@ import useResetCharacterStatMutation from './character stat hooks/useResetCharac
 import { useQueryClient } from '@tanstack/react-query';
 import { Character } from 'src/types/character';
 import useCharacterStatHandlers from './character stat hooks/useCharacterStatMutation/useCharacterStatHandlers';
-import useUpdateCharacterLocationMutation from './useUpdateCharacterLocationMutation/useUpdateCharacterLocationMutation';
 import useCombatStore from 'src/stores/combatStore';
 import calculateCosts from 'src/utils/calculateCosts';
 import useAdvanceTurnMutation from './encounter hooks/useAdvanceTurnMutation/useAdvanceTurnMutation';
@@ -27,15 +26,15 @@ import { camelCase } from 'change-case';
 const useCombat = () => {
   const { user } = useContext(AuthContext);
   const { gameMaster } = useContext(CampaignContext);
-  const { campaignId, mapId, encounterId } = useParams();
+  const { campaignId, encounterId } = useParams();
   const queryClient = useQueryClient();
 
   const [targetMap, setTargetMap] = useState<
     Map<
       string,
       {
-        start: string;
-        end: string;
+        start: { row: number; col: number; characterId?: number };
+        end: { row: number; col: number; targetId?: number };
         distance: number;
         color: string;
         occupied: boolean | null;
@@ -63,8 +62,8 @@ const useCombat = () => {
   const setTarget = (
     key: string,
     value: {
-      start: string;
-      end: string;
+      start: { row: number; col: number; characterId?: number };
+      end: { row: number; col: number; targetId?: number };
       distance: number;
       color: string;
       occupied: boolean | null;
@@ -160,10 +159,6 @@ const useCombat = () => {
 
   const characterStatHandlers = useCharacterStatHandlers(controlledCharacterId);
 
-  const updateCharacterLocation = useUpdateCharacterLocationMutation(
-    Number(mapId),
-  );
-
   const handleAdvanceTurn = () => {
     if (!encounterPermissions) return;
 
@@ -257,11 +252,14 @@ const useCombat = () => {
 
       const data = {
         activeCharacterId: activeCharacter?.id,
-        action: value.action.id,
+        actionId: value.action.id,
       };
 
       if (actionData.requirements.includes('tile')) {
-        data.tile = { row: targetData?.end.row, col: targetData?.end.col };
+        data.tile = {
+          start: { row: targetData?.start.row, col: targetData?.start.col },
+          end: { row: targetData?.end.row, col: targetData?.end.col },
+        };
       }
 
       if (actionData.requirements.includes('target')) {
@@ -277,10 +275,9 @@ const useCombat = () => {
         data.extraDice = value.extraDice || 0;
       }
 
-      console.log(data);
-
-      return;
       setIsFetching(true);
+
+      console.log(data);
 
       rollAction.mutate(data);
 
@@ -303,15 +300,48 @@ const useCombat = () => {
       }
 
       actionForm.reset();
-      setItem(null);
     },
     validators: {
       onSubmit: ({ value }) => {
-        const { errors } = calculateCosts(
+        const { requirements } = actionFuncs[`${camelCase(value.action.name)}`](
+          value.action?.costs,
           activeCharacter,
-          value.action,
           value.item,
         );
+
+        const errors = [];
+
+        if (!value.action) {
+          errors.push('Select an Action');
+        }
+        if (requirements.includes('target') && !value.target) {
+          errors.push('Select a Target');
+        }
+        if (requirements.includes('item') && !value.item) {
+          errors.push('Select an Item');
+        }
+        if (requirements.includes('tile')) {
+          const targetData = getTarget(`character ${activeCharacter?.id}`);
+          const tile = targetData
+            ? {
+                start: {
+                  row: targetData.start.row,
+                  col: targetData.start.col,
+                },
+                end: { row: targetData.end.row, col: targetData.end.col },
+              }
+            : null;
+
+          if (
+            !tile ||
+            !tile.start.row ||
+            !tile.start.col ||
+            !tile.end.row ||
+            !tile.end.col
+          ) {
+            errors.push('Select a Tile');
+          }
+        }
 
         return errors.length > 0 ? errors.join(', ') : undefined;
       },
