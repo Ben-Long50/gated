@@ -385,9 +385,13 @@ const encounterServices = {
       activeCharacterId: number;
       targetCharacterId?: number;
       actionId: number;
+      itemId?: number;
+      tile?: {
+        start: { row: number; col: number };
+        end: { row: number; col: number };
+      };
       modifiers: string[];
       extraDice: number;
-      itemId?: number;
     },
   ) => {
     try {
@@ -405,6 +409,8 @@ const encounterServices = {
       const itemPromise = actionData.itemId
         ? itemServices.getItemById(actionData.itemId)
         : Promise.resolve(null);
+
+      const tile = actionData.tile || null;
 
       const [activeCharacter, targetCharacter, action, item] =
         await Promise.all([
@@ -454,6 +460,10 @@ const encounterServices = {
         target?: number;
         action: number;
         item?: number;
+        tile?: {
+          start: { row: number; col: number };
+          end: { row: number; col: number };
+        };
         rollResult?: {
           result: number[];
           successes: number;
@@ -476,6 +486,9 @@ const encounterServices = {
           damage: damage || 0,
         };
       }
+      if (tile) {
+        historyData.tile = tile;
+      }
 
       const phaseAction = await encounterServices.createEncounterHistory(
         campaignId,
@@ -495,7 +508,6 @@ const encounterServices = {
       }
 
       if (item) {
-        // await itemServices.setItemNotAvailable(item.id);
         io.to(`campaign ${campaignId}`).emit('item', item.id);
       }
 
@@ -518,6 +530,10 @@ const encounterServices = {
       modifiers: string[];
       extraDice: number;
       itemId?: number;
+      tile?: {
+        start: { row: number; col: number };
+        end: { row: number; col: number };
+      };
     },
   ) => {
     try {
@@ -548,11 +564,9 @@ const encounterServices = {
         ]);
 
       const rollResults =
-        //@ts-ignore
         reaction && reaction.roll.length > 0
           ? calculateRoll(
               reactiveCharacter?.attributes,
-              //@ts-ignore
               { name: reaction.name, roll: reaction.roll },
               reactionData.modifiers,
               reactionData.extraDice,
@@ -831,24 +845,32 @@ const encounterServices = {
         }
       }
 
+      const actionQueueResults = {
+        successes: phaseHistory.action?.rollResult
+          ? phaseHistory.action?.rollResult.successes
+          : 0,
+        reducedSuccesses: 0,
+        damage: 0,
+        sanityDamage: 0,
+        instances: 0,
+        blockedDamage: 0,
+        blockedSanityDamage: 0,
+      };
+
+      const actionResults = await actionFuncs[
+        `${camelCase(phaseHistory.action.actionSnapshot.name)}`
+      ](
+        phaseHistory.action.characterSnapshot,
+        phaseHistory.action.itemSnapshot
+          ? phaseHistory.action.itemSnapshot
+          : undefined,
+        phaseHistory.action.rollResult
+          ? phaseHistory.action.rollResult.successes
+          : undefined,
+        phaseHistory.action.tile ? phaseHistory.action.tile : undefined,
+      );
+
       if (phaseHistory.action?.rollResult) {
-        const actionQueueResults = {
-          successes: phaseHistory.action?.rollResult.successes || 0,
-          reducedSuccesses: 0,
-          damage: 0,
-          sanityDamage: 0,
-          instances: 0,
-          blockedDamage: 0,
-          blockedSanityDamage: 0,
-        };
-
-        const actionResults = await actionFuncs[
-          `${camelCase(phaseHistory.action.actionSnapshot.name)}`
-        ](
-          phaseHistory.action.itemSnapshot,
-          phaseHistory.action.rollResult.successes,
-        );
-
         if (phaseHistory.action.itemSnapshot) {
           itemIds.push(phaseHistory.action.itemId);
         }
@@ -965,6 +987,10 @@ const encounterServices = {
       target?: number;
       action: number;
       item?: number;
+      tile?: {
+        start: { row: number; col: number };
+        end: { row: number; col: number };
+      };
       rollResult?: {
         result: number[];
         successes: number;
@@ -995,6 +1021,10 @@ const encounterServices = {
 
       if (formData.rollResult) {
         data.rollResult = formData.rollResult;
+      }
+
+      if (formData.tile) {
+        data.tile = formData.tile;
       }
 
       const history = await prisma.history.create({

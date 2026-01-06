@@ -321,6 +321,7 @@ const encounterServices = {
     },
     rollAction: async (campaignId, encounterId, actionData) => {
         try {
+            console.log(actionData);
             const io = getIO();
             const activeCharacterPromise = characterServices.getCharacterById(actionData.activeCharacterId);
             const actionPromise = actionServices.getActionById(actionData.actionId);
@@ -330,6 +331,7 @@ const encounterServices = {
             const itemPromise = actionData.itemId
                 ? itemServices.getItemById(actionData.itemId)
                 : Promise.resolve(null);
+            const tile = actionData.tile || null;
             const [activeCharacter, targetCharacter, action, item] = await Promise.all([
                 activeCharacterPromise,
                 targetCharacterPromise,
@@ -373,6 +375,9 @@ const encounterServices = {
                     damage: damage || 0,
                 };
             }
+            if (tile) {
+                historyData.tile = tile;
+            }
             const phaseAction = await encounterServices.createEncounterHistory(campaignId, encounterId, historyData);
             if (rollResults) {
                 io.to(`encounter ${encounterId}`).emit('actionRoll', {
@@ -386,7 +391,6 @@ const encounterServices = {
                 });
             }
             if (item) {
-                // await itemServices.setItemNotAvailable(item.id);
                 io.to(`campaign ${campaignId}`).emit('item', item.id);
             }
             io.to(`campaign ${campaignId}`).emit('character', activeCharacter.id);
@@ -414,12 +418,8 @@ const encounterServices = {
                 reactionPromise,
                 itemPromise,
             ]);
-            const rollResults = 
-            //@ts-ignore
-            reaction && reaction.roll.length > 0
-                ? calculateRoll(reactiveCharacter === null || reactiveCharacter === void 0 ? void 0 : reactiveCharacter.attributes, 
-                //@ts-ignore
-                { name: reaction.name, roll: reaction.roll }, reactionData.modifiers, reactionData.extraDice) || { result: [], successes: 0 }
+            const rollResults = reaction && reaction.roll.length > 0
+                ? calculateRoll(reactiveCharacter === null || reactiveCharacter === void 0 ? void 0 : reactiveCharacter.attributes, { name: reaction.name, roll: reaction.roll }, reactionData.modifiers, reactionData.extraDice) || { result: [], successes: 0 }
                 : null;
             const rolls = new Map();
             if (rollResults) {
@@ -599,7 +599,7 @@ const encounterServices = {
         }
     },
     confirmActionQueueResults: async (encounter, blockData) => {
-        var _a, _b;
+        var _a, _b, _c;
         try {
             const io = getIO();
             const phaseHistory = encounter === null || encounter === void 0 ? void 0 : encounter.phaseHistory[0];
@@ -625,17 +625,23 @@ const encounterServices = {
                     }
                 }
             }
-            if ((_a = phaseHistory.action) === null || _a === void 0 ? void 0 : _a.rollResult) {
-                const actionQueueResults = {
-                    successes: ((_b = phaseHistory.action) === null || _b === void 0 ? void 0 : _b.rollResult.successes) || 0,
-                    reducedSuccesses: 0,
-                    damage: 0,
-                    sanityDamage: 0,
-                    instances: 0,
-                    blockedDamage: 0,
-                    blockedSanityDamage: 0,
-                };
-                const actionResults = await actionFuncs[`${camelCase(phaseHistory.action.actionSnapshot.name)}`](phaseHistory.action.itemSnapshot, phaseHistory.action.rollResult.successes);
+            const actionQueueResults = {
+                successes: ((_a = phaseHistory.action) === null || _a === void 0 ? void 0 : _a.rollResult)
+                    ? (_b = phaseHistory.action) === null || _b === void 0 ? void 0 : _b.rollResult.successes
+                    : 0,
+                reducedSuccesses: 0,
+                damage: 0,
+                sanityDamage: 0,
+                instances: 0,
+                blockedDamage: 0,
+                blockedSanityDamage: 0,
+            };
+            const actionResults = await actionFuncs[`${camelCase(phaseHistory.action.actionSnapshot.name)}`](phaseHistory.action.characterSnapshot, phaseHistory.action.itemSnapshot
+                ? phaseHistory.action.itemSnapshot
+                : undefined, phaseHistory.action.rollResult
+                ? phaseHistory.action.rollResult.successes
+                : undefined, phaseHistory.action.tile ? phaseHistory.action.tile : undefined);
+            if ((_c = phaseHistory.action) === null || _c === void 0 ? void 0 : _c.rollResult) {
                 if (phaseHistory.action.itemSnapshot) {
                     itemIds.push(phaseHistory.action.itemId);
                 }
@@ -730,6 +736,9 @@ const encounterServices = {
             }
             if (formData.rollResult) {
                 data.rollResult = formData.rollResult;
+            }
+            if (formData.tile) {
+                data.tile = formData.tile;
             }
             const history = await prisma.history.create({
                 data,

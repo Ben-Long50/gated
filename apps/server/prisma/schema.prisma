@@ -179,6 +179,7 @@ model History {
   actionId               Int
   itemSnapshot           Json?
   itemId                 Int?
+  tile                   Json?
   armorSnapshots         Json?
   armorIds               Int[]
   rollResult             Json?

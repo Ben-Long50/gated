@@ -1,9 +1,35 @@
 // @ts-nocheck
 
-import { Item } from '@prisma/client';
+import { Character, Item } from '@prisma/client';
 import itemServices from '../services/itemServices.js';
+import characterServices from '../services/characterServices.js';
+import { getIO } from '../sockets/socket.js';
 
 const actionFuncs = {
+  basicMovement: async (
+    character?: Character,
+    item?: Item,
+    successes?: number,
+    tile?: {
+      start: { row: number; col: number };
+      end: { row: number; col: number };
+    },
+  ) => {
+    const io = getIO();
+
+    await characterServices.createOrUpdateLocation(character?.id, {
+      mapId: character?.location.mapId,
+      row: tile?.end.row,
+      col: tile?.end.col,
+    });
+
+    io.to(`campaign ${character?.campaignId}`).emit('location', {
+      locationId: character?.location.id,
+      mapId: character?.location.mapId,
+      row: tile?.end.row,
+      col: tile?.end.col,
+    });
+  },
   strike: async (item: Item, successes: number) => {
     let damage = item.stats.damage || 0;
     let sanityDamage = item.stats.sanityDamage || 0;

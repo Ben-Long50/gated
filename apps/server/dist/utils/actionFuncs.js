@@ -1,6 +1,23 @@
 // @ts-nocheck
 import itemServices from '../services/itemServices.js';
+import characterServices from '../services/characterServices.js';
+import { getIO } from '../sockets/socket.js';
 const actionFuncs = {
+    basicMovement: async (character, item, successes, tile) => {
+        const io = getIO();
+        await characterServices.createOrUpdateLocation(character === null || character === void 0 ? void 0 : character.id, {
+            mapId: character === null || character === void 0 ? void 0 : character.location.mapId,
+            row: tile === null || tile === void 0 ? void 0 : tile.end.row,
+            col: tile === null || tile === void 0 ? void 0 : tile.end.col,
+        });
+        console.log('emitting location', character === null || character === void 0 ? void 0 : character.location.id);
+        io.to(`campaign ${character === null || character === void 0 ? void 0 : character.campaignId}`).emit('location', {
+            locationId: character === null || character === void 0 ? void 0 : character.location.id,
+            mapId: character === null || character === void 0 ? void 0 : character.location.mapId,
+            row: tile === null || tile === void 0 ? void 0 : tile.end.row,
+            col: tile === null || tile === void 0 ? void 0 : tile.end.col,
+        });
+    },
     strike: async (item, successes) => {
         let damage = item.stats.damage || 0;
         let sanityDamage = item.stats.sanityDamage || 0;
