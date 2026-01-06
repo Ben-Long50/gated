@@ -153,23 +153,12 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       queryClient.setQueryData(['location', locationId], (prev) => {
         if (!prev) return prev;
 
-        console.log({
-          ...prev,
-          mapId,
-          row,
-          col,
-        });
-
         return {
           ...prev,
           mapId,
           row,
           col,
         };
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ['location', locationId],
       });
     });
 
