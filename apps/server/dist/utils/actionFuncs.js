@@ -10,13 +10,6 @@ const actionFuncs = {
             row: tile === null || tile === void 0 ? void 0 : tile.end.row,
             col: tile === null || tile === void 0 ? void 0 : tile.end.col,
         });
-        console.log('emitting location', character === null || character === void 0 ? void 0 : character.location.id);
-        io.to(`campaign ${character === null || character === void 0 ? void 0 : character.campaignId}`).emit('location', {
-            locationId: character === null || character === void 0 ? void 0 : character.location.id,
-            mapId: character === null || character === void 0 ? void 0 : character.location.mapId,
-            row: tile === null || tile === void 0 ? void 0 : tile.end.row,
-            col: tile === null || tile === void 0 ? void 0 : tile.end.col,
-        });
     },
     strike: async (item, successes) => {
         let damage = item.stats.damage || 0;

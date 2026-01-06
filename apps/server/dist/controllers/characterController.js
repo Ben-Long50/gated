@@ -3,8 +3,6 @@ import { uploadToCloudinary } from '../utils/cloudinary.js';
 import upload from '../utils/multer.js';
 import parseRequestBody from '../utils/parseRequestBody.js';
 import cartServices from '../services/cartServices.js';
-import { getIO } from '../sockets/socket.js';
-import campaignServices from '../services/campaignServices.js';
 const characterController = {
     getCharacters: async (req, res) => {
         try {
@@ -159,18 +157,13 @@ const characterController = {
         }
     },
     updateCharacterLocation: async (req, res) => {
-        var _a;
         try {
-            const io = getIO();
             if (!req.user) {
                 throw new Error('Could not find authenticated user');
             }
-            const locationId = await characterServices.createOrUpdateLocation(Number(req.params.characterId), req.body);
-            const location = await campaignServices.getLocationById(locationId);
-            io.to(`campaign ${(_a = location === null || location === void 0 ? void 0 : location.character) === null || _a === void 0 ? void 0 : _a.campaignId}`).emit('updateLocation', location);
+            await characterServices.createOrUpdateLocation(Number(req.params.characterId), req.body);
             res.status(200).json({
                 message: 'Successfully updapted character location',
-                location,
             });
         }
         catch (error) {

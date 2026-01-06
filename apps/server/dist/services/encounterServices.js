@@ -321,7 +321,6 @@ const encounterServices = {
     },
     rollAction: async (campaignId, encounterId, actionData) => {
         try {
-            console.log(actionData);
             const io = getIO();
             const activeCharacterPromise = characterServices.getCharacterById(actionData.activeCharacterId);
             const actionPromise = actionServices.getActionById(actionData.actionId);

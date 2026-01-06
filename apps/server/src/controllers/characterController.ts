@@ -205,27 +205,17 @@ const characterController = {
 
   updateCharacterLocation: async (req: Request, res: Response) => {
     try {
-      const io = getIO();
-
       if (!req.user) {
         throw new Error('Could not find authenticated user');
       }
 
-      const locationId = await characterServices.createOrUpdateLocation(
+      await characterServices.createOrUpdateLocation(
         Number(req.params.characterId),
         req.body,
       );
 
-      const location = await campaignServices.getLocationById(locationId);
-
-      io.to(`campaign ${location?.character?.campaignId}`).emit(
-        'updateLocation',
-        location,
-      );
-
       res.status(200).json({
         message: 'Successfully updapted character location',
-        location,
       });
     } catch (error: any) {
       res.status(500).json({ error: error.message });

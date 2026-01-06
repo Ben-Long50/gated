@@ -11,6 +11,7 @@ import { ItemType } from '@prisma/client';
 import itemServices from './itemServices.js';
 import calculateCharacterStats from '../utils/characterStatUtils.js';
 import calculateItemStats from '../utils/itemStatUtils.js';
+import { getIO } from '../sockets/socket.js';
 
 const characterServices = {
   getCharacters: async (userId: number) => {
@@ -528,6 +529,8 @@ const characterServices = {
     formData: { mapId: number; row: number; col: number },
   ) => {
     try {
+      const io = getIO();
+
       const location = await prisma.location.upsert({
         where: {
           characterId: characterId || 0,
@@ -543,9 +546,15 @@ const characterServices = {
           row: formData.row,
           col: formData.col,
         },
+        include: { character: { select: { campaignId: true } } },
       });
 
-      return location.id;
+      io.to(`campaign ${location.character.campaignId}`).emit('location', {
+        locationId: location.id,
+        mapId: location.mapId,
+        row: location.row,
+        col: location.col,
+      });
     } catch (error) {
       console.error(error);
       throw new Error('Failed to update character location');

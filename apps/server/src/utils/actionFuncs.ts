@@ -22,13 +22,6 @@ const actionFuncs = {
       row: tile?.end.row,
       col: tile?.end.col,
     });
-
-    io.to(`campaign ${character?.campaignId}`).emit('location', {
-      locationId: character?.location.id,
-      mapId: character?.location.mapId,
-      row: tile?.end.row,
-      col: tile?.end.col,
-    });
   },
   strike: async (item: Item, successes: number) => {
     let damage = item.stats.damage || 0;
