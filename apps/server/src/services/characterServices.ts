@@ -550,6 +550,7 @@ const characterServices = {
       });
 
       io.to(`campaign ${location.character.campaignId}`).emit('location', {
+        characterId,
         locationId: location.id,
         mapId: location.mapId,
         row: location.row,
