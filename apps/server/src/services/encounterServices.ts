@@ -655,44 +655,21 @@ const encounterServices = {
     try {
       const io = getIO();
 
-      const updaptedEncounter = await prisma.encounter.update({
+      await prisma.encounter.update({
         where: {
           id: encounterId,
         },
         data: {
           reactions: { push: characterId },
         },
-        include: {
-          characters: true,
-          map: { select: { picture: true, name: true } },
-          phaseHistory: {
-            take: 1,
-            orderBy: { createdAt: 'desc' },
-            include: {
-              action: {
-                include: {
-                  character: true,
-                  target: true,
-                  action: true,
-                  item: true,
-                },
-              },
-              reactions: {
-                include: {
-                  character: true,
-                  target: true,
-                  action: true,
-                  item: true,
-                },
-              },
-            },
-          },
-        },
       });
+
+      const updatedEncounter =
+        await encounterServices.getEncounterById(encounterId);
 
       io.to(`encounter ${encounterId}`).emit(
         'updateEncounter',
-        updaptedEncounter,
+        updatedEncounter,
       );
     } catch (error) {
       console.error(error);
