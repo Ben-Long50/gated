@@ -10,11 +10,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { AuthContext } from './AuthContext';
 import Loading from 'src/components/Loading';
 import { useNavigate, useParams } from 'react-router-dom';
-import useCombatStore from 'src/stores/combatStore';
 import useCombat from 'src/hooks/useCombat';
 import useNavigationStore from 'src/stores/navbarStore';
-import { Encounter } from 'src/types/encounter';
-import useAdvancePhaseMutation from 'src/hooks/encounter hooks/useAdvancePhaseMutation/useAdvancePhaseMutation';
 
 export const EncounterContext = createContext({
   socket,
@@ -22,7 +19,7 @@ export const EncounterContext = createContext({
 
 export const EncounterProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useContext(AuthContext);
-  const { campaignId, encounterId } = useParams();
+  const { encounterId } = useParams();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [joinedPlayers, setJoinedPlayers] = useState<string[]>([]);
@@ -35,7 +32,10 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
     setTarget,
     getTarget,
     encounterPermissions,
+    actionPermissions,
+    reactionPermissions,
     blockPermissions,
+    controlledCharacter,
     controlledCharacterId,
     setControlledCharacterId,
     activeCharacter,
@@ -173,7 +173,10 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
         setIsFetching,
         joinedPlayers,
         encounterPermissions,
+        actionPermissions,
+        reactionPermissions,
         blockPermissions,
+        controlledCharacter,
         controlledCharacterId,
         setControlledCharacterId,
         activeCharacter,

@@ -1,16 +1,12 @@
 import useActions from 'src/hooks/useActions';
 import InputSelectField from '../InputSelectField';
 import useCharacter from 'src/hooks/useCharacter';
-import CharacterRoll from './CharacterRoll';
-import { FormApi } from '@tanstack/react-reactionForm';
 import BtnRect from '../buttons/BtnRect';
 import CharacterPictureRound from '../CharacterPictureRound';
 import ActionStatBars from '../ActionStatBars';
 import ArrowHeader4 from '../ArrowHeader4';
-import RangeIcon from '../icons/RangeIcon';
-import WeaponIcon from '../icons/WeaponIcon';
 import InputFieldCheckbox from '../InputFieldCheckbox';
-import { capitalCase } from 'change-case';
+import { camelCase, capitalCase } from 'change-case';
 import ArrowHeader3 from '../ArrowHeader3';
 import Icon from '@mdi/react';
 import { mdiAutorenew } from '@mdi/js';
@@ -20,21 +16,102 @@ import DieIcon from '../icons/DieIcon';
 import calculateDiceCount from 'src/utils/calculateDiceCount';
 import { useContext } from 'react';
 import { EncounterContext } from 'src/contexts/EncounterContext';
+import { useStore } from '@tanstack/react-form';
+import { Item } from 'src/types/item';
+import useCombatStore from 'src/stores/combatStore';
+import reactionFuncs from 'src/utils/reactionFuncs';
+import isInRange from './encounterUtils/isInRange';
+import calculateCosts from 'src/utils/calculateCosts';
+import Divider from '../Divider';
+import InputField from '../InputField';
+import { useQueryClient } from '@tanstack/react-query';
+import { Action } from 'src/types/action';
 
 const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
-  const { combat, controlledCharacterId, reactionForm } =
-    useContext(EncounterContext);
+  const {
+    reactionPermissions,
+    controlledCharacterId,
+    reactionForm,
+    removeTarget,
+    getTarget,
+  } = useContext(EncounterContext);
 
   const { filteredCharacter: character } = useCharacter(controlledCharacterId);
   const navigate = useNavigate();
   const location = useLocation();
   const parts = location.pathname.split('/');
+  const queryClient = useQueryClient();
 
-  const {
-    filteredActions: availableReactions,
-    filterBySubCategory,
-    category,
-  } = useActions(character?.actions, 'reaction');
+  const characterActions = character?.characterInventory?.actions;
+
+  const item = useStore(
+    reactionForm.store,
+    (state) => state.values.item,
+  ) as Item;
+
+  const reaction = useStore(
+    reactionForm.store,
+    (state) => state.values.reaction,
+  ) as Action;
+
+  const { filteredActions: availableReactions, category } = useActions(
+    characterActions,
+    'reaction',
+  );
+
+  const setItem = useCombatStore((state) => state.setItem);
+
+  const handleChosenItem = (reaction: Action) => {
+    if (reaction && reaction.itemLink) {
+      const item = queryClient.getQueryData([
+        'item',
+        reaction.itemLink.itemId,
+      ]) as Item;
+
+      setItem(item);
+
+      reactionForm.setFieldValue('item', item);
+    }
+  };
+
+  let reactionInfo = null;
+
+  if (reaction) {
+    if (reactionFuncs[`${camelCase(reaction.name)}`]) {
+      reactionInfo = reactionFuncs[`${camelCase(reaction.name)}`](
+        reaction.costs,
+        character,
+        item,
+      );
+    } else {
+      reactionInfo = {
+        message: `Programmed support for ${reaction.name} is currently not supported. Handle this reaction manually.`,
+      };
+    }
+  }
+
+  const { errors } =
+    reactionInfo && reactionInfo.costs
+      ? calculateCosts(reactionInfo.costs, character, item)
+      : { errors: [] as string[] };
+
+  if (reactionInfo) {
+    const targetData = getTarget(`character ${controlledCharacterId}`);
+    if (targetData) {
+      const inRange = isInRange(
+        { row: targetData.start.row, col: targetData.start.col },
+        { row: targetData.end.row, col: targetData.end.col },
+        reactionInfo.range,
+      );
+
+      if (!inRange) {
+        errors.push('Not in Range');
+      }
+      if (targetData.occupied) {
+        errors.push('Tile is Occupied');
+      }
+    }
+  }
 
   return (
     <div
@@ -49,180 +126,254 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
           }}
         />
       )}
-      <>
-        {combat.reactions.includes(controlledCharacterId) && (
-          <>
-            <div className="flex items-center justify-between gap-2">
-              <ArrowHeader3
-                className="whitespace-nowrap"
-                title="Reaction Form"
+      {reactionPermissions && (
+        <>
+          <div className="flex items-center justify-between gap-2">
+            <ArrowHeader3 className="whitespace-nowrap" title="Reaction" />
+            <button
+              className="bg-tertiary group my-auto ml-auto flex justify-self-start rounded p-1.5 shadow-md shadow-black"
+              aria-label="Open available reactions"
+              type="button"
+              onClick={() => navigate('availableReactions')}
+            >
+              <ReactionIcon
+                className={`group-hover:text-accent text-tertiary timing size-8`}
               />
-              <button
-                className="bg-tertiary group my-auto ml-auto flex justify-self-start rounded p-1.5 shadow-md shadow-black"
-                aria-label="Open save modal"
-                type="button"
-                onClick={() => navigate('availableReactions')}
-              >
-                <ReactionIcon
-                  className={`group-hover:text-accent text-tertiary timing size-8`}
-                />
-              </button>
-              <button
-                className="bg-tertiary group my-auto flex justify-self-start rounded p-1.5 shadow-md shadow-black"
-                aria-label="Open save modal"
-                type="button"
-                onClick={() => reactionForm.reset()}
-              >
-                <Icon
-                  path={mdiAutorenew}
-                  className={`group-hover:text-accent text-tertiary timing size-8`}
-                />
-              </button>
-            </div>
-            <reactionForm.Field
-              name="reaction"
-              listeners={{
-                onChange: () => reactionForm.setFieldValue('item', null),
+            </button>
+            <button
+              className="bg-tertiary group my-auto flex justify-self-start rounded p-1.5 shadow-md shadow-black"
+              aria-label="Reset"
+              type="button"
+              onClick={() => {
+                reactionForm.reset();
+                setItem(null);
+                removeTarget(`character ${controlledCharacterId}`);
               }}
             >
-              {(field) => (
-                <>
-                  <InputSelectField
-                    field={field}
-                    label="Reactions"
-                    options={availableReactions}
-                  />
-                  {field.state.value &&
-                    Object.keys(field.state.value.costs).length > 0 && (
-                      <div className="flex w-full flex-col justify-start gap-2">
-                        <p className="text-accent text-base tracking-widest">
-                          Costs
-                        </p>
-                        <div
-                          className={`grid h-full w-full grow grid-cols-[auto_auto_1fr_auto] place-items-center gap-2 gap-y-2 border-x-2 border-gray-400 border-opacity-50 px-2`}
-                        >
-                          <ActionStatBars
-                            stats={field.state.value.costs}
-                            cardWidth={499}
-                          />
-                        </div>
+              <Icon
+                path={mdiAutorenew}
+                className={`group-hover:text-accent text-tertiary timing size-8`}
+              />
+            </button>
+          </div>
+          <reactionForm.Field
+            name="reaction"
+            listeners={{
+              onChange: ({ value }) => {
+                handleChosenItem(value);
+              },
+            }}
+          >
+            {(field) => (
+              <InputSelectField
+                field={field}
+                label="Reactions"
+                options={availableReactions}
+              />
+            )}
+          </reactionForm.Field>
+          <Divider className="opacity-50" />
+          {reactionInfo &&
+            (reactionInfo.message ? (
+              <>
+                <p>{reactionInfo.message}</p>
+                <Divider className="opacity-50" />
+              </>
+            ) : (
+              <>
+                {reactionInfo &&
+                  reactionInfo.costs &&
+                  Object.keys(reactionInfo.costs).length > 0 && (
+                    <div className="flex w-full flex-col justify-start gap-2">
+                      <ArrowHeader4
+                        className="text-primary"
+                        title="Action Costs"
+                      />
+                      <div
+                        className={`grid h-full w-full grow grid-cols-[auto_auto_1fr_auto] place-items-center gap-2 gap-y-2 border-x-2 border-gray-400 border-opacity-50 px-2`}
+                      >
+                        <ActionStatBars
+                          stats={reactionInfo.costs}
+                          cardWidth={499}
+                        />
                       </div>
+                    </div>
+                  )}
+                {reactionInfo && reactionInfo.requirements.includes('item') && (
+                  <reactionForm.Subscribe
+                    selector={(state) => state.values.item}
+                  >
+                    {(item) => (
+                      <>
+                        <p>
+                          {item
+                            ? 'Selected Weapon'
+                            : 'Select a Weapon from Equipment'}
+                        </p>
+                        {item && (
+                          <div className="flex flex-col items-start gap-4">
+                            <div className="flex w-full items-center gap-4">
+                              <CharacterPictureRound character={item} />
+                              <ArrowHeader4
+                                className="text-primary w-[80%]"
+                                title={item.name}
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </>
                     )}
-                </>
-              )}
-            </reactionForm.Field>
+                  </reactionForm.Subscribe>
+                )}
+                {reactionInfo &&
+                  reactionInfo.requirements.includes('target') && (
+                    <reactionForm.Subscribe
+                      selector={(state) => state.values.target}
+                    >
+                      {(target) => (
+                        <>
+                          <p>
+                            {target
+                              ? 'Selected Target'
+                              : 'Select a Target on the Map'}
+                          </p>
+                          {target && (
+                            <div className="flex flex-col items-start gap-4">
+                              <div className="flex w-full items-center gap-4">
+                                <CharacterPictureRound character={target} />
+                                <ArrowHeader4
+                                  className="text-primary w-[80%]"
+                                  title={target.firstName}
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </reactionForm.Subscribe>
+                  )}
+                <Divider className="opacity-50" />
+              </>
+            ))}
+          {errors.length > 0 ? (
+            <ul className="flex flex-col items-start">
+              {errors.map((error: string) => (
+                <li className="text-error">{error}</li>
+              ))}
+            </ul>
+          ) : (
             <reactionForm.Subscribe
               selector={(state) => [
                 state.values.reaction,
                 state.values.item,
                 state.values.target,
-              ]}
-            >
-              {([reaction, item, target]) =>
-                reaction?.actionSubtypes?.includes('attack') && (
-                  <>
-                    {target ? (
-                      <div className="flex flex-col items-start gap-4">
-                        <div className="flex w-full items-center gap-4">
-                          <CharacterPictureRound character={target} />
-                          <ArrowHeader4
-                            className="text-primary w-[80%]"
-                            title={`${target.firstName} ${target.lastName}`}
-                          />
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-4">
-                        <RangeIcon className="text-primary size-10" />
-                        <h4>Select Target on Map</h4>
-                      </div>
-                    )}
-                    {item ? (
-                      <div className="flex flex-col items-start gap-4">
-                        <div className="flex w-full items-center gap-4">
-                          <CharacterPictureRound character={item} />
-                          <ArrowHeader4
-                            className="text-primary w-[80%]"
-                            title={item.name}
-                          />
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-4">
-                        <WeaponIcon className="text-primary size-10" />
-                        <h4>Select Weapon from Equipment</h4>
-                      </div>
-                    )}
-                  </>
-                )
-              }
-            </reactionForm.Subscribe>
-            <div className="relative flex w-full flex-col gap-2">
-              <reactionForm.Field name="modifiers">
-                {(field) => {
-                  const modifiers = [
-                    'push',
-                    'booming',
-                    'dooming',
-                    'lucky',
-                    'unlucky',
-                  ];
-                  return (
-                    <>
-                      {modifiers.map((modifier) => (
-                        <InputFieldCheckbox
-                          key={modifier}
-                          field={field}
-                          label={capitalCase(modifier)}
-                          value={modifier}
-                          checked={field.state.value.includes(modifier)}
-                          onChange={(value: string) => {
-                            if (field.state.value.includes(value)) {
-                              reactionForm.setFieldValue('modifiers', (prev) =>
-                                prev.filter((modifier) => modifier !== value),
-                              );
-                            } else {
-                              reactionForm.setFieldValue(
-                                'modifiers',
-                                (prev) => [...prev, value],
-                              );
-                            }
-                          }}
-                        />
-                      ))}
-                    </>
-                  );
-                }}
-              </reactionForm.Field>
-            </div>
-            <reactionForm.Subscribe
-              selector={(state) => [
-                state.values.reaction,
                 state.values.modifiers,
+                state.values.extraDice,
               ]}
             >
-              {([reaction, modifiers]) => {
-                console.log(reaction);
-
+              {([reaction, item, target, modifiers, extraDice]) => {
                 const diceCount =
-                  character && reaction && modifiers
+                  character && reaction?.roll?.length > 0 && modifiers
                     ? calculateDiceCount(
                         character?.attributes,
                         reaction,
                         modifiers,
+                        extraDice,
                       ).diceCount
                     : 'N/A';
 
                 return (
                   <>
-                    <div className="flex items-center justify-between">
-                      <DieIcon className="text-secondary size-8" />
-                      {typeof diceCount === 'number' ? (
-                        <h2 className="!text-accent">{diceCount}</h2>
-                      ) : (
-                        <h3>{diceCount}</h3>
-                      )}
-                    </div>
+                    {reaction?.roll && reaction?.roll.length > 0 ? (
+                      <>
+                        <div className="relative flex w-full flex-col gap-2">
+                          <reactionForm.Field name="modifiers">
+                            {(field) => {
+                              const modifiers = [
+                                'push',
+                                'booming',
+                                'dooming',
+                                'lucky',
+                                'unlucky',
+                              ];
+                              return (
+                                <>
+                                  {modifiers.map((modifier) => (
+                                    <InputFieldCheckbox
+                                      key={modifier}
+                                      field={field}
+                                      label={capitalCase(modifier)}
+                                      value={modifier}
+                                      checked={field.state.value?.includes(
+                                        modifier,
+                                      )}
+                                      onChange={(value: string) => {
+                                        if (
+                                          field.state.value?.includes(value)
+                                        ) {
+                                          reactionForm.setFieldValue(
+                                            'modifiers',
+                                            (prev) =>
+                                              prev.filter(
+                                                (modifier) =>
+                                                  modifier !== value,
+                                              ),
+                                          );
+                                        } else {
+                                          reactionForm.setFieldValue(
+                                            'modifiers',
+                                            (prev) => [...prev, value],
+                                          );
+                                        }
+                                      }}
+                                    />
+                                  ))}
+                                </>
+                              );
+                            }}
+                          </reactionForm.Field>
+                          <reactionForm.Field name="extraDice">
+                            {(field) => (
+                              <InputField
+                                field={field}
+                                label="Extra Dice"
+                                type="number"
+                              />
+                            )}
+                          </reactionForm.Field>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <DieIcon className="text-secondary size-8" />
+                          {typeof diceCount === 'number' ? (
+                            <h2 className="!text-accent">{diceCount}</h2>
+                          ) : (
+                            <h3>{diceCount}</h3>
+                          )}
+                        </div>
+                        <BtnRect
+                          className={`w-full whitespace-nowrap`}
+                          ariaLabel="Roll reaction"
+                          type="button"
+                          onClick={() => {
+                            if (reaction && target && item) {
+                              reactionForm.handleSubmit();
+                            }
+                          }}
+                        >
+                          Roll Reaction
+                        </BtnRect>
+                      </>
+                    ) : (
+                      <BtnRect
+                        type="button"
+                        ariaLabel="Confirm reaction"
+                        onClick={() => {
+                          reactionForm.handleSubmit();
+                        }}
+                      >
+                        Confirm Reaction
+                      </BtnRect>
+                    )}
                     <reactionForm.Subscribe
                       selector={(state) => state.errorMap}
                     >
@@ -242,25 +393,30 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
                         );
                       }}
                     </reactionForm.Subscribe>
-                    <BtnRect
-                      className={`${!reaction && 'pointer-events-none opacity-50'} w-full whitespace-nowrap`}
-                      ariaLabel="Roll action"
-                      type="button"
-                      onClick={() => {
-                        if (reaction) {
-                          reactionForm.handleSubmit();
-                        }
-                      }}
-                    >
-                      Roll Reaction
-                    </BtnRect>
                   </>
                 );
               }}
             </reactionForm.Subscribe>
-          </>
-        )}
-      </>
+          )}
+          <Divider className="opacity-50" />
+          <reactionForm.Subscribe selector={(state) => state.errorMap}>
+            {(errorMap) => {
+              const errors = errorMap.onSubmit?.split(', ') || [];
+              return (
+                <>
+                  {errors.length > 0 && (
+                    <ul className="flex list-disc flex-col gap-2">
+                      {errors.map((error) => (
+                        <li className="text-error w-full text-base">{error}</li>
+                      ))}
+                    </ul>
+                  )}
+                </>
+              );
+            }}
+          </reactionForm.Subscribe>
+        </>
+      )}
     </div>
   );
 };

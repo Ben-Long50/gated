@@ -64,6 +64,10 @@ export interface History {
   actionId: number;
   itemSnapshot?: Item;
   itemId?: number;
+  tile?: {
+    start: { row: number; col: number };
+    end: { row: number; col: number };
+  };
   armorSnapshots?: Item[];
   armorIds?: number[];
   rollResult: RollResult;

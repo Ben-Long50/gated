@@ -37,6 +37,7 @@ const Encounter = () => {
     activeCharacter,
     controlledCharacterId,
     actionForm,
+    reactionForm,
   } = useContext(EncounterContext);
   const navigate = useNavigate();
   const location = useLocation();
@@ -88,8 +89,13 @@ const Encounter = () => {
   }, [combat]);
 
   const tempItem = useCombatStore((state) => state.item);
-  const formItem = useStore(actionForm.store, (state) => state.values.item);
-  const item = tempItem || formItem || null;
+  const actionItem = useStore(actionForm.store, (state) => state.values.item);
+  const reactionItem = useStore(
+    reactionForm.store,
+    (state) => state.values.item,
+  );
+
+  const item = tempItem || actionItem || reactionItem;
 
   if (mapLoading || historyLoading || combatLoading) return <Loading />;
 
@@ -345,13 +351,14 @@ const Encounter = () => {
               )}
             </>
           )}
-          {item && (
-            <ItemCardBorderless
-              className={`${actionSidebar ? 'visible translate-x-0 opacity-100' : 'invisible translate-x-full opacity-0'} timing w-full`}
-              cardType="small"
-              item={item}
-            />
-          )}
+          {actionItem ||
+            (reactionItem && (
+              <ItemCardBorderless
+                className={`${actionSidebar ? 'visible translate-x-0 opacity-100' : 'invisible translate-x-full opacity-0'} timing w-full`}
+                cardType="small"
+                item={item}
+              />
+            ))}
         </div>
         {controlledCharacterId && (
           <div

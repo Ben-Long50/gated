@@ -44,9 +44,12 @@ const CharacterEncounterToken = ({
     combat,
     combatLoading,
     activeCharacter,
-    encounterPermissions,
+    controlledCharacter,
+    actionPermissions,
+    reactionPermissions,
     rolls,
     actionForm,
+    reactionForm,
     removeTarget,
   } = useContext(EncounterContext);
   const navigate = useNavigate();
@@ -56,6 +59,12 @@ const CharacterEncounterToken = ({
   const { filteredCharacter: character, isLoading } = useCharacter(
     location.characterId,
   );
+
+  const form = actionPermissions
+    ? actionForm
+    : reactionPermissions
+      ? reactionForm
+      : actionForm;
 
   const roll = rolls.get(location.characterId) || null;
 
@@ -78,7 +87,7 @@ const CharacterEncounterToken = ({
   if (isLoading || combatLoading) return <Loading size={1.25} />;
 
   return (
-    <actionForm.Field name="target">
+    <form.Field name="target">
       {(field) => (
         <div
           draggable={false}
@@ -92,15 +101,15 @@ const CharacterEncounterToken = ({
           }}
           onClick={(e) => {
             e.stopPropagation();
-            if (encounterPermissions) {
+            if (actionPermissions || reactionPermissions) {
               if (field.state.value?.id === location.characterId) {
                 field.handleChange(null);
-                removeTarget(`character ${activeCharacter.id}`);
+                removeTarget(`character ${controlledCharacter?.id}`);
                 socket.emit('removeTarget', {
                   encounterId: Number(encounterId),
-                  activeId: `character ${activeCharacter?.id}`,
+                  activeId: `character ${controlledCharacter?.id}`,
                 });
-              } else if (combat.combatPhase === 'action') {
+              } else if (actionPermissions || reactionPermissions) {
                 const inRange = activeCoordinates
                   ? isInRange(
                       activeCoordinates,
@@ -144,7 +153,10 @@ const CharacterEncounterToken = ({
                 location.col,
                 location.characterId,
               );
-            } else if (activeCharacter.id === character?.id) {
+            } else if (
+              controlledCharacter.id === character?.id &&
+              actionPermissions
+            ) {
               setRangeData({
                 range: character?.stats.speed,
                 color: statColorMap.SPD,
@@ -196,7 +208,7 @@ const CharacterEncounterToken = ({
           )}
         </div>
       )}
-    </actionForm.Field>
+    </form.Field>
   );
 };
 

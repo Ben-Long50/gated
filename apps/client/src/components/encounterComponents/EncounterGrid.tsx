@@ -13,6 +13,7 @@ import { camelCase } from 'change-case';
 import CharacterEncounterToken from './CharacterEncounterToken';
 import useEncounterArrows from 'src/hooks/useEncounterArrows';
 import actionFuncs from 'src/utils/actionFuncs';
+import reactionFuncs from 'src/utils/reactionFuncs';
 
 const EncounterGrid = ({
   width,
@@ -37,11 +38,12 @@ const EncounterGrid = ({
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
   const {
-    encounterPermissions,
-    combat,
+    actionPermissions,
+    reactionPermissions,
+    controlledCharacter,
     targetMap,
-    activeCharacter,
     actionForm,
+    reactionForm,
   } = useContext(EncounterContext);
 
   const {
@@ -54,8 +56,23 @@ const EncounterGrid = ({
   } = useEncounterArrows();
 
   const tempRangeData = useCombatStore((state) => state.rangeData);
-  const item = useStore(actionForm.store, (state) => state.values.item);
+  const actionItem = useStore(actionForm.store, (state) => state.values.item);
+  const reactionItem = useStore(
+    reactionForm.store,
+    (state) => state.values.item,
+  );
   const action = useStore(actionForm.store, (state) => state.values.action);
+  const reaction = useStore(
+    reactionForm.store,
+    (state) => state.values.reaction,
+  );
+
+  const item =
+    actionPermissions || reactionPermissions
+      ? actionPermissions
+        ? actionItem
+        : reactionItem
+      : null;
 
   let rangeData = { range: 0, color: 'transparent' };
 
@@ -64,15 +81,21 @@ const EncounterGrid = ({
   } else if (action && actionFuncs[`${camelCase(action.name)}`]) {
     rangeData = actionFuncs[`${camelCase(action.name)}`](
       action.costs,
-      activeCharacter,
+      controlledCharacter,
+      item,
+    );
+  } else if (reaction && reactionFuncs[`${camelCase(reaction.name)}`]) {
+    rangeData = reactionFuncs[`${camelCase(reaction.name)}`](
+      reaction.costs,
+      controlledCharacter,
       item,
     );
   }
 
   const activeCoordinates = useMemo(() => {
-    if (activeCharacter?.id) {
+    if (controlledCharacter?.id) {
       const location = locations.find(
-        (location) => location.characterId === activeCharacter.id,
+        (location) => location.characterId === controlledCharacter.id,
       );
 
       if (!location) {
@@ -83,7 +106,7 @@ const EncounterGrid = ({
     } else {
       return null;
     }
-  }, [activeCharacter, locations]);
+  }, [controlledCharacter, locations]);
 
   const insertTarget = (
     row: number,
@@ -92,13 +115,17 @@ const EncounterGrid = ({
     characterId?: number,
   ) => {
     if (!characterId) {
-      actionForm.setFieldValue('target', null);
+      if (actionPermissions) {
+        actionForm.setFieldValue('target', null);
+      } else if (reactionPermissions) {
+        reactionForm.setFieldValue('target', null);
+      }
     }
-    if (encounterPermissions && combat.combatPhase === 'action') {
+    if (actionPermissions || reactionPermissions) {
       handleInsertArrow(
-        activeCharacter.location.row,
-        activeCharacter.location.col,
-        activeCharacter.id,
+        controlledCharacter.location.row,
+        controlledCharacter.location.col,
+        controlledCharacter.id,
         row,
         col,
         inRange,
@@ -195,8 +222,8 @@ const EncounterGrid = ({
               insertTarget={insertTarget}
               handleDragStart={
                 !measureMode &&
-                encounterPermissions &&
-                location.characterId === activeCharacter?.id
+                actionPermissions &&
+                location.characterId === controlledCharacter.id
                   ? handleDragStart
                   : undefined
               }

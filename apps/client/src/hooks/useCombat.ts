@@ -22,6 +22,8 @@ import { socket } from 'src/socket';
 import parsePhaseAction from 'src/utils/parsePhaseAction';
 import actionFuncs from 'src/utils/actionFuncs';
 import { camelCase } from 'change-case';
+import { distance } from 'motion';
+import statColorMap from 'src/utils/statColorMap';
 
 const useCombat = () => {
   const { user } = useContext(AuthContext);
@@ -97,6 +99,59 @@ const useCombat = () => {
   } = useCombatQuery(Number(encounterId));
 
   useEffect(() => {
+    if (combat?.phaseHistory[0] == null) {
+      return;
+    }
+
+    const phaseAction = combat?.phaseHistory[0].action;
+    const phaseReactions = combat?.phaseHistory[0].reactions || [];
+
+    if (phaseAction && phaseAction.tile) {
+      const target = {
+        start: {
+          ...phaseAction.tile.start,
+          characterId: phaseAction.characterId,
+        },
+        end: { ...phaseAction.tile.end, targetId: phaseAction.targetId },
+        distance: Math.round(
+          Math.sqrt(
+            (phaseAction.tile.end.col - phaseAction.tile.start.col) ** 2 +
+              (phaseAction.tile.end.row - phaseAction.tile.start.row) ** 2,
+          ),
+        ),
+        color: phaseAction.targetId ? statColorMap.DMG : statColorMap.SPD,
+        occupied: null,
+        inRange: null,
+      };
+      setTarget(`character ${phaseAction.characterId}`, target);
+    }
+
+    if (phaseReactions.length > 0) {
+      for (const reaction of phaseReactions) {
+        if (reaction.tile) {
+          const target = {
+            start: {
+              ...reaction.tile.start,
+              characterId: reaction.characterId,
+            },
+            end: { ...reaction.tile.end, targetId: phaseAction.targetId },
+            distance: Math.round(
+              Math.sqrt(
+                (reaction.tile.end.col - reaction.tile.start.col) ** 2 +
+                  (reaction.tile.end.row - reaction.tile.start.row) ** 2,
+              ),
+            ),
+            color: statColorMap.MAG,
+            occupied: null,
+            inRange: null,
+          };
+          setTarget(`character ${reaction.characterId}`, target);
+        }
+      }
+    }
+  }, [combat?.phaseHistory]);
+
+  useEffect(() => {
     if (isFetching && !encounterFetching) {
       console.log(isFetching);
 
@@ -156,6 +211,15 @@ const useCombat = () => {
     () => gameMaster || activeCharacter?.userId === user.id,
     [activeCharacter],
   );
+
+  const actionPermissions =
+    controlledCharacterId === activeCharacter?.id &&
+    combat?.combatPhase === 'action';
+
+  const reactionPermissions =
+    controlledCharacterId &&
+    combat?.reactions.includes(controlledCharacterId) &&
+    combat.combatPhase === 'reaction';
 
   const characterStatHandlers = useCharacterStatHandlers(controlledCharacterId);
 
@@ -276,8 +340,6 @@ const useCombat = () => {
       }
 
       setIsFetching(true);
-
-      console.log(data);
 
       rollAction.mutate(data);
 
@@ -477,7 +539,10 @@ const useCombat = () => {
     setTarget,
     getTarget,
     encounterPermissions,
+    actionPermissions,
+    reactionPermissions,
     blockPermissions,
+    controlledCharacter,
     controlledCharacterId,
     setControlledCharacterId,
     activeCharacter,

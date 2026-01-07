@@ -18,9 +18,11 @@ const EquippedItems = ({
 }) => {
   const { rarityColorMap, statColorMap } = useContext(ThemeContext);
   const {
-    encounterPermissions,
+    actionPermissions,
+    reactionPermissions,
     controlledCharacterId,
     actionForm,
+    reactionForm,
     removeTarget,
   } = useContext(EncounterContext);
 
@@ -41,6 +43,11 @@ const EquippedItems = ({
       behavior: 'auto',
     });
   };
+  const form = actionPermissions
+    ? actionForm
+    : reactionPermissions
+      ? reactionForm
+      : actionForm;
 
   let equipmentList = [] as Item[];
 
@@ -52,13 +59,14 @@ const EquippedItems = ({
 
   return (
     character?.equipment && (
-      <actionForm.Field
+      <form.Field
         name="item"
         listeners={{
           onChange: () => {
             removeTarget(`character ${controlledCharacterId}`);
-            actionForm.setFieldValue('action', null);
-            actionForm.setFieldValue('target', null);
+            form.setFieldValue('action', null);
+            form.setFieldValue('reaction', null);
+            form.setFieldValue('target', null);
           },
         }}
       >
@@ -80,7 +88,7 @@ const EquippedItems = ({
                       : `${rarityColorMap[equipment.rarity]}80`,
                 }}
                 onClick={() => {
-                  if (encounterPermissions) {
+                  if (actionPermissions || reactionPermissions) {
                     field.state.value && field.state.value.id === equipment.id
                       ? field.handleChange(null)
                       : field.handleChange(equipment);
@@ -131,7 +139,7 @@ const EquippedItems = ({
             ))}
           </div>
         )}
-      </actionForm.Field>
+      </form.Field>
     )
   );
 };

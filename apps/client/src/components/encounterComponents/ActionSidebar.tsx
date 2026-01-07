@@ -1,7 +1,7 @@
 import useActions from 'src/hooks/useActions';
 import InputSelectField from '../InputSelectField';
 import useCharacter from 'src/hooks/useCharacter';
-import { FormApi, useStore } from '@tanstack/react-form';
+import { useStore } from '@tanstack/react-form';
 import BtnRect from '../buttons/BtnRect';
 import CharacterPictureRound from '../CharacterPictureRound';
 import ActionStatBars from '../ActionStatBars';
@@ -43,7 +43,9 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
     actionForm.store,
     (state) => state.values.actionType,
   );
+
   const item = useStore(actionForm.store, (state) => state.values.item) as Item;
+
   const action = useStore(
     actionForm.store,
     (state) => state.values.action,
@@ -85,6 +87,7 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
       );
     }
   };
+
   const actionList = item ? filterActions(item) : availableActions;
 
   const setItem = useCombatStore((state) => state.setItem);
@@ -155,12 +158,11 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
           }}
         />
       )}
-
       <div className="flex items-center justify-between gap-2">
         <ArrowHeader3 className="whitespace-nowrap" title="Action" />
         <button
           className="bg-tertiary group my-auto ml-auto flex justify-self-start rounded p-1.5 shadow-md shadow-black"
-          aria-label="Open save modal"
+          aria-label="Open available actions"
           type="button"
           onClick={() => navigate('availableActions')}
         >
@@ -170,7 +172,7 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
         </button>
         <button
           className="bg-tertiary group my-auto flex justify-self-start rounded p-1.5 shadow-md shadow-black"
-          aria-label="Open save modal"
+          aria-label="Reset"
           type="button"
           onClick={() => {
             actionForm.reset();
@@ -302,21 +304,9 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
             state.values.target,
             state.values.modifiers,
             state.values.extraDice,
-            state.values.locationId,
-            state.values.row,
-            state.values.col,
           ]}
         >
-          {([
-            action,
-            item,
-            target,
-            modifiers,
-            extraDice,
-            locationId,
-            row,
-            col,
-          ]) => {
+          {([action, item, target, modifiers, extraDice]) => {
             const diceCount =
               character && action?.roll?.length > 0 && modifiers
                 ? calculateDiceCount(
@@ -413,7 +403,7 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
                       actionForm.handleSubmit();
                     }}
                   >
-                    Confirm
+                    Confirm Action
                   </BtnRect>
                 )}
                 <actionForm.Subscribe selector={(state) => state.errorMap}>
@@ -439,16 +429,8 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
         </actionForm.Subscribe>
       )}
       <Divider className="opacity-50" />
-      <actionForm.Subscribe
-        selector={(state) => [
-          state.values.action,
-          state.values.locationId,
-          state.values.row,
-          state.values.col,
-          state.errorMap,
-        ]}
-      >
-        {([action, locationId, row, col, errorMap]) => {
+      <actionForm.Subscribe selector={(state) => state.errorMap}>
+        {(errorMap) => {
           const errors = errorMap.onSubmit?.split(', ') || [];
           return (
             <>

@@ -1,6 +1,7 @@
 import { Character } from 'src/types/character';
 import { Item } from 'src/types/item';
 import statColorMap from './statColorMap';
+import getHandsAndFeetCosts from './getHandsAndFeetCosts';
 
 const actionFuncs = {
   basicMovement: (
@@ -39,7 +40,7 @@ const actionFuncs = {
     let sanityDamage = item ? item.stats.sanityDamage : 0;
     let instances = 0;
 
-    if (successes && successes && successes > 0) {
+    if (successes && successes > 0) {
       instances = 1;
     }
 
@@ -378,25 +379,6 @@ const actionFuncs = {
 
     return { blockedDamage, blockedSanityDamage, armorPoints, wardPoints };
   },
-};
-
-const getHandsAndFeetCosts = (item: Item) => {
-  let hands = 0;
-  let feet = 0;
-
-  if (item?.keywords.some((keyword) => keyword.keyword.name === '2H')) {
-    hands = 2;
-  } else if (item?.keywords.some((keyword) => keyword.keyword.name === '1H')) {
-    hands = 1;
-  }
-
-  if (item?.keywords.some((keyword) => keyword.keyword.name === '2F')) {
-    feet = 2;
-  } else if (item?.keywords.some((keyword) => keyword.keyword.name === '1F')) {
-    feet = 1;
-  }
-
-  return { hands, feet };
 };
 
 export default actionFuncs;
