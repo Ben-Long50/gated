@@ -411,6 +411,7 @@ const encounterServices = {
             const itemPromise = reactionData.itemId
                 ? itemServices.getItemById(reactionData.itemId)
                 : Promise.resolve(null);
+            const tile = reactionData.tile || null;
             const [reactiveCharacter, targetCharacter, reaction, item] = await Promise.all([
                 reactiveCharacterPromise,
                 targetCharacterPromise,
@@ -462,12 +463,10 @@ const encounterServices = {
                     encounterId,
                 });
             }
-            if (reactiveCharacter) {
-                io.to(`campaign ${campaignId}`).emit('character', reactiveCharacter.id);
-            }
             if (item) {
                 io.to(`campaign ${campaignId}`).emit('item', item.id);
             }
+            io.to(`campaign ${campaignId}`).emit('character', reactiveCharacter.id);
             return phaseReaction;
         }
         catch (error) {

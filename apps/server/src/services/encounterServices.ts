@@ -396,6 +396,7 @@ const encounterServices = {
   ) => {
     try {
       const io = getIO();
+
       const activeCharacterPromise = characterServices.getCharacterById(
         actionData.activeCharacterId,
       );
@@ -527,13 +528,13 @@ const encounterServices = {
       reactiveCharacterId: number;
       targetCharacterId?: number;
       reactionId: number;
-      modifiers: string[];
-      extraDice: number;
       itemId?: number;
       tile?: {
         start: { row: number; col: number };
         end: { row: number; col: number };
       };
+      modifiers: string[];
+      extraDice: number;
     },
   ) => {
     try {
@@ -554,6 +555,8 @@ const encounterServices = {
       const itemPromise = reactionData.itemId
         ? itemServices.getItemById(reactionData.itemId)
         : Promise.resolve(null);
+
+      const tile = reactionData.tile || null;
 
       const [reactiveCharacter, targetCharacter, reaction, item] =
         await Promise.all([
@@ -598,6 +601,10 @@ const encounterServices = {
         target?: number;
         action: number;
         item?: number;
+        tile?: {
+          start: { row: number; col: number };
+          end: { row: number; col: number };
+        };
         rollResult?: {
           result: number[];
           successes: number;
@@ -636,13 +643,11 @@ const encounterServices = {
         });
       }
 
-      if (reactiveCharacter) {
-        io.to(`campaign ${campaignId}`).emit('character', reactiveCharacter.id);
-      }
-
       if (item) {
         io.to(`campaign ${campaignId}`).emit('item', item.id);
       }
+
+      io.to(`campaign ${campaignId}`).emit('character', reactiveCharacter.id);
 
       return phaseReaction;
     } catch (error) {
