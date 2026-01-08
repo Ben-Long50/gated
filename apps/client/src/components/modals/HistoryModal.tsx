@@ -26,7 +26,7 @@ const HistoryModal = () => {
       ) : (
         <div className="flex w-full flex-col gap-4">
           {history.map((entry) => {
-            return <PhaseHistoryCard phaseHistory={entry} />;
+            return <PhaseHistoryCard key={entry.id} phaseHistory={entry} />;
           })}
         </div>
       )}

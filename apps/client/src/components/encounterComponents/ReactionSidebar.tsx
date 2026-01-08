@@ -355,9 +355,7 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
                           ariaLabel="Roll reaction"
                           type="button"
                           onClick={() => {
-                            if (reaction && target && item) {
-                              reactionForm.handleSubmit();
-                            }
+                            reactionForm.handleSubmit();
                           }}
                         >
                           Roll Reaction

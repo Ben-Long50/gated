@@ -11,9 +11,13 @@ const useRollReactionMutation = (campaignId: number, encounterId: number) => {
       reactiveCharacterId: number;
       targetCharacterId?: number;
       reactionId: number;
+      itemId?: number;
+      tile?: {
+        start: { row: number; col: number };
+        end: { row: number; col: number };
+      };
       modifiers: string[];
       extraDice: number;
-      itemId?: number;
     }) => {
       return rollReaction(campaignId, encounterId, reactionData);
     },

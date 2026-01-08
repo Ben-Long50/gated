@@ -24,6 +24,7 @@ import actionFuncs from 'src/utils/actionFuncs';
 import { camelCase } from 'change-case';
 import statColorMap from 'src/utils/statColorMap';
 import { Target } from 'src/types/target';
+import reactionFuncs from 'src/utils/reactionFuncs';
 
 const useCombat = () => {
   const { user } = useContext(AuthContext);
@@ -135,8 +136,6 @@ const useCombat = () => {
 
   useEffect(() => {
     if (isFetching && !encounterFetching) {
-      console.log(isFetching);
-
       setIsFetching(false);
     }
   }, [encounterFetching]);
@@ -309,7 +308,7 @@ const useCombat = () => {
       }
 
       if (actionData.requirements.includes('target')) {
-        data.targetCharacterId = value.target.id;
+        data.itemId = value.target.id;
       }
 
       if (actionData.requirements.includes('item')) {
@@ -364,6 +363,14 @@ const useCombat = () => {
         if (requirements.includes('item') && !value.item) {
           errors.push('Select an Item');
         }
+        if (
+          requirements.includes('roll') &&
+          (!value.action.roll || value.action?.roll.length === 0)
+        ) {
+          errors.push(
+            'This action requires a roll but is not associated with one. An Admin must address this issue',
+          );
+        }
         if (requirements.includes('tile')) {
           const targetData = getTarget(`character ${activeCharacter?.id}`);
           const tile = targetData
@@ -394,11 +401,7 @@ const useCombat = () => {
 
   const reactionForm = useForm({
     defaultValues: {
-      reactionType: null as string | null,
       reaction: null as Action | null,
-      locationId: null as number | null,
-      row: null as number | null,
-      col: null as number | null,
       item: null as Item | null,
       target: null as Character | null,
       modifiers: [] as string[],
@@ -406,37 +409,45 @@ const useCombat = () => {
     },
 
     onSubmit: async ({ value }) => {
+      const reactionData = reactionFuncs[`${camelCase(value.reaction.name)}`](
+        value.reaction?.costs,
+        controlledCharacter,
+        value.item,
+      );
+      const targetData = getTarget(`character ${controlledCharacter?.id}`);
+
       setIsFetching(true);
 
-      if (controlledCharacter?.stats.currentReactions === 0) {
-        alert('You do not have any more reactions this turn');
-        return;
-      }
-
       const data = {
-        reactiveCharacterId: controlledCharacter.id,
+        reactiveCharacterId: controlledCharacter?.id,
         reactionId: value.reaction.id,
       };
 
-      if (value.target) {
+      if (reactionData.requirements.includes('tile')) {
+        data.tile = {
+          start: { row: targetData?.start.row, col: targetData?.start.col },
+          end: { row: targetData?.end.row, col: targetData?.end.col },
+        };
+      }
+
+      if (reactionData.requirements.includes('target')) {
         data.targetCharacterId = value.target.id;
       }
 
-      if (value.item) {
+      if (reactionData.requirements.includes('item')) {
         data.itemId = value.item.id;
       }
 
-      if (value.reaction?.roll) {
+      if (reactionData.requirements.includes('roll')) {
         data.modifiers = value.modifiers;
+        data.extraDice = value.extraDice || 0;
       }
 
-      if (value.extraDice) {
-        data.extraDice = value.extraDice;
-      }
+      setIsFetching(true);
 
       rollReaction.mutate(data);
 
-      if (value.reaction) {
+      if (reactionData.requirements.includes('roll')) {
         const { diceCount } = calculateDiceCount(
           controlledCharacter?.attributes,
           value.reaction,
@@ -455,62 +466,63 @@ const useCombat = () => {
       }
 
       reactionForm.reset();
-      setItem(null);
-
-      if (value.reaction?.costs.currentReactions) {
-        characterStatHandlers.handleCurrentReactions(
-          value.reaction?.costs.currentReactions * -1,
-        );
-      }
     },
     validators: {
       onSubmit: ({ value }) => {
-        const { errors } = calculateCosts(
-          controlledCharacter,
-          value.reaction,
-          value.item,
-        );
+        const { requirements } = reactionFuncs[
+          `${camelCase(value.reaction.name)}`
+        ](value.reaction?.costs, activeCharacter, value.item);
+
+        const errors = [];
+
+        if (!value.reaction) {
+          errors.push('Select an Reaction');
+        }
+        if (requirements.includes('target') && !value.target) {
+          errors.push('Select a Target');
+        }
+        if (requirements.includes('item') && !value.item) {
+          errors.push('Select an Item');
+        }
+        if (
+          requirements.includes('roll') &&
+          (!value.reaction.roll || value.reaction?.roll.length === 0)
+        ) {
+          errors.push(
+            'This action requires a roll but is not associated with one. An Admin must address this issue',
+          );
+        }
+        if (requirements.includes('tile')) {
+          const targetData = getTarget(`character ${activeCharacter?.id}`);
+          const tile = targetData
+            ? {
+                start: {
+                  row: targetData.start.row,
+                  col: targetData.start.col,
+                },
+                end: { row: targetData.end.row, col: targetData.end.col },
+              }
+            : null;
+
+          if (
+            !tile ||
+            !tile.start.row ||
+            !tile.start.col ||
+            !tile.end.row ||
+            !tile.end.col
+          ) {
+            errors.push('Select a Tile');
+          }
+        }
 
         return errors.length > 0 ? errors.join(', ') : undefined;
       },
     },
   });
 
-  const blockPermissions = combat?.phaseHistory[0]
-    ? gameMaster ||
-      controlledCharacterId ===
-        combat?.phaseHistory[0].action?.targetSnapshot?.id
-    : gameMaster;
-
-  const actionQueueResults = parsePhaseAction(combat?.phaseHistory[0]);
-
-  const blockForm = useForm({
-    defaultValues: {
-      blockData:
-        (actionQueueResults.damage || actionQueueResults.sanityDamage) &&
-        actionQueueResults.resultingInstances
-          ? Array.from(
-              { length: actionQueueResults.resultingInstances },
-              () => ({
-                blockedDamage: 0,
-                blockedSanityDamage: 0,
-                armorIds: [] as number[],
-              }),
-            )
-          : [],
-    },
-    onSubmit: ({ value }) => {
-      socket.emit('blockData', {
-        encounterId: Number(encounterId),
-        blockData: value.blockData,
-      });
-    },
-  });
-
   const resetForms = () => {
     actionForm.reset();
     reactionForm.reset();
-    blockForm.reset();
   };
 
   return {
@@ -523,7 +535,6 @@ const useCombat = () => {
     encounterPermissions,
     actionPermissions,
     reactionPermissions,
-    blockPermissions,
     controlledCharacter,
     controlledCharacterId,
     setControlledCharacterId,
@@ -531,7 +542,6 @@ const useCombat = () => {
     handleAdvanceTurn,
     actionForm,
     reactionForm,
-    blockForm,
     resetForms,
     isLoading,
     isPending,
