@@ -13,7 +13,7 @@ const EncounterGridTile = ({
   rangeData,
   gridDisplay,
   insertTarget,
-  handleDragStart,
+  tileDragStart,
   handleDragUpdate,
   handleRemoveTarget,
 }: {
@@ -30,7 +30,7 @@ const EncounterGridTile = ({
     inRange: boolean,
     targetId?: number,
   ) => void;
-  handleDragStart?: (row: number, col: number, characterId?: number) => void;
+  tileDragStart?: (row: number, col: number) => void;
   handleDragUpdate?: (
     row: number,
     col: number,
@@ -64,9 +64,11 @@ const EncounterGridTile = ({
           insertTarget(row, col, inRange);
         }
       }}
-      onMouseDown={
-        handleDragStart ? () => handleDragStart(row, col) : undefined
-      }
+      onMouseDown={() => {
+        if (tileDragStart) {
+          tileDragStart(row, col);
+        }
+      }}
       onMouseEnter={
         handleDragUpdate
           ? () => handleDragUpdate(row, col, undefined, inRange)

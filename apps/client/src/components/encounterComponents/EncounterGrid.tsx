@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import { Layer, Location } from 'src/types/map';
 import useCombatStore from 'src/stores/combatStore';
@@ -14,6 +14,8 @@ import CharacterEncounterToken from './CharacterEncounterToken';
 import useEncounterArrows from 'src/hooks/useEncounterArrows';
 import actionFuncs from 'src/utils/actionFuncs';
 import reactionFuncs from 'src/utils/reactionFuncs';
+import { Action } from 'src/types/action';
+import { useQueryClient } from '@tanstack/react-query';
 
 const EncounterGrid = ({
   width,
@@ -55,6 +57,11 @@ const EncounterGrid = ({
     handleRemoveTarget,
   } = useEncounterArrows();
 
+  const [hoveredArrowIndex, setHoveredArrowIndex] = useState<number | null>(
+    null,
+  );
+
+  const queryClient = useQueryClient();
   const tempRangeData = useCombatStore((state) => state.rangeData);
   const actionItem = useStore(actionForm.store, (state) => state.values.item);
   const reactionItem = useStore(
@@ -121,8 +128,9 @@ const EncounterGrid = ({
         reactionForm.setFieldValue('target', null);
       }
     }
-    if (actionPermissions || reactionPermissions) {
+    if (actionPermissions) {
       handleInsertArrow(
+        action.name,
         controlledCharacter.location.row,
         controlledCharacter.location.col,
         controlledCharacter.id,
@@ -131,6 +139,38 @@ const EncounterGrid = ({
         inRange,
         characterId,
       );
+    } else if (reactionPermissions) {
+      handleInsertArrow(
+        reaction.name,
+        controlledCharacter.location.row,
+        controlledCharacter.location.col,
+        controlledCharacter.id,
+        row,
+        col,
+        inRange,
+        characterId,
+      );
+    }
+  };
+
+  const tileDragStart = (row: number, col: number) => {
+    if (actionPermissions) {
+      handleDragStart(action.name, row, col);
+    } else if (reactionPermissions) {
+      handleDragStart(action.name, row, col);
+    }
+  };
+
+  const tokenDragStart = (row: number, col: number, characterId: number) => {
+    if (!action) {
+      const basicMovement: Action = queryClient
+        .getQueryData(['actions'])
+        .find((action: Action) => action.name === 'Basic Movement');
+
+      actionForm.setFieldValue('action', basicMovement);
+      handleDragStart('Basic Movement', row, col, characterId);
+    } else {
+      handleDragStart(action, row, col, characterId);
     }
   };
 
@@ -204,7 +244,7 @@ const EncounterGrid = ({
               rangeData={rangeData}
               gridDisplay={gridDisplay}
               insertTarget={insertTarget}
-              handleDragStart={measureMode ? handleDragStart : undefined}
+              tileDragStart={measureMode ? tileDragStart : undefined}
               handleDragUpdate={isDragging ? handleDragUpdate : undefined}
               handleRemoveTarget={handleRemoveTarget}
             />
@@ -220,11 +260,11 @@ const EncounterGrid = ({
               height={height}
               mapScale={mapScale}
               insertTarget={insertTarget}
-              handleDragStart={
+              tokenDragStart={
                 !measureMode &&
                 actionPermissions &&
                 location.characterId === controlledCharacter.id
-                  ? handleDragStart
+                  ? tokenDragStart
                   : undefined
               }
               handleDragUpdate={isDragging ? handleDragUpdate : undefined}
@@ -235,39 +275,55 @@ const EncounterGrid = ({
               }
             />
           ))}
-        {targets.map((targetData, index) => (
-          <Xarrow
-            key={index}
-            animateDrawing={0}
-            labels={
-              <div
-                className="flex flex-col items-center rounded-md px-1"
-                style={{ backgroundColor: targetData.color }}
-              >
-                <p className="text-sm font-semibold !text-black">{`${targetData.distance} Tiles`}</p>
-                {targetData.inRange === false && (
-                  <p className="!text-error text-sm font-semibold">
-                    Not in Range
-                  </p>
-                )}
-                {targetData.occupied && (
-                  <p className="!text-error text-sm font-semibold">Occupied</p>
-                )}
-              </div>
-            }
-            start={`row ${targetData.start.row}, col ${targetData.start.col}`}
-            end={`row ${targetData.end.row}, col ${targetData.end.col}`}
-            path="straight"
-            color={targetData.color}
-            startAnchor="middle"
-            endAnchor="middle"
-            showTail={true}
-            tailSize={3}
-            headSize={5}
-            headShape="arrow1"
-            tailShape="circle"
-          />
-        ))}
+        {targets.map((targetData, index) => {
+          const hovered = hoveredArrowIndex === index;
+          return (
+            <Xarrow
+              key={index}
+              animateDrawing={0}
+              labels={
+                <div
+                  className={`${hovered ? 'rounded' : 'size-3 rounded-full'} timing group flex flex-col items-center rounded-md px-1.5`}
+                  style={{ backgroundColor: targetData.color }}
+                  onMouseEnter={() => setHoveredArrowIndex(index)}
+                  onMouseLeave={() => setHoveredArrowIndex(null)}
+                >
+                  {hovered && (
+                    <>
+                      {targetData.action && (
+                        <p className={`text-sm font-semibold !text-black`}>
+                          {targetData.action}
+                        </p>
+                      )}
+                      <p className="text-sm font-semibold !text-black">{`${targetData.distance} Tiles`}</p>
+                      {targetData.inRange === false && (
+                        <p className="!text-error text-sm font-semibold">
+                          Not in Range
+                        </p>
+                      )}
+                      {targetData.occupied && (
+                        <p className="!text-error text-sm font-semibold">
+                          Occupied
+                        </p>
+                      )}
+                    </>
+                  )}
+                </div>
+              }
+              start={`row ${targetData.start.row}, col ${targetData.start.col}`}
+              end={`row ${targetData.end.row}, col ${targetData.end.col}`}
+              path="straight"
+              color={targetData.color}
+              startAnchor="middle"
+              endAnchor="middle"
+              showTail={true}
+              tailSize={3}
+              headSize={5}
+              headShape="arrow1"
+              tailShape="circle"
+            />
+          );
+        })}
       </div>
     </DragScrollContainer>
   );

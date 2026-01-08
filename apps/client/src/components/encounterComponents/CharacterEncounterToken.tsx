@@ -11,8 +11,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Location } from 'src/types/map';
 import isInRange from './encounterUtils/isInRange';
 import statColorMap from 'src/utils/statColorMap';
-import { useQueryClient } from '@tanstack/react-query';
-import { Action } from 'src/types/action';
+import { ActionData } from 'src/types/actionData';
 
 const CharacterEncounterToken = ({
   location,
@@ -21,13 +20,13 @@ const CharacterEncounterToken = ({
   height,
   mapScale,
   insertTarget,
-  handleDragStart,
+  tokenDragStart,
   handleDragUpdate,
   handleRemoveTarget,
 }: {
   location: Location;
   activeCoordinates: { row: number; col: number } | null;
-  rangeData: { range: number; color: string };
+  rangeData: ActionData;
   height: number;
   mapScale: number;
   insertTarget?: (
@@ -36,7 +35,7 @@ const CharacterEncounterToken = ({
     inRange: boolean,
     targetId?: number,
   ) => void;
-  handleDragStart?: (row: number, col: number, characterId?: number) => void;
+  tokenDragStart?: (row: number, col: number, characterId: number) => void;
   handleDragUpdate?: (row: number, col: number, targetId?: number) => void;
   handleRemoveTarget?: (characterId?: number) => void;
 }) => {
@@ -54,7 +53,6 @@ const CharacterEncounterToken = ({
   } = useContext(EncounterContext);
   const navigate = useNavigate();
   const { encounterId } = useParams();
-  const queryClient = useQueryClient();
 
   const { filteredCharacter: character, isLoading } = useCharacter(
     location.characterId,
@@ -69,20 +67,6 @@ const CharacterEncounterToken = ({
   const roll = rolls.get(location.characterId) || null;
 
   const setRangeData = useCombatStore((state) => state.setRangeData);
-
-  const startDrag = () => {
-    const formAction = actionForm.getFieldValue('action');
-
-    if (!formAction) {
-      const basicMovement: Action = queryClient
-        .getQueryData(['actions'])
-        .find((action) => action.name === 'Basic Movement');
-
-      actionForm.setFieldValue('action', basicMovement);
-    }
-
-    handleDragStart(location.row, location.col, location.characterId);
-  };
 
   if (isLoading || combatLoading) return <Loading size={1.25} />;
 
@@ -101,7 +85,20 @@ const CharacterEncounterToken = ({
           }}
           onClick={(e) => {
             e.stopPropagation();
-            if (actionPermissions || reactionPermissions) {
+
+            const inRange = activeCoordinates
+              ? isInRange(
+                  activeCoordinates,
+                  { row: location.row, col: location.col },
+                  rangeData.range,
+                )
+              : false;
+
+            console.log(rangeData);
+            if (
+              (actionPermissions || reactionPermissions) &&
+              rangeData.requirements.includes('target')
+            ) {
               if (field.state.value?.id === location.characterId) {
                 field.handleChange(null);
                 removeTarget(`character ${controlledCharacter?.id}`);
@@ -110,28 +107,20 @@ const CharacterEncounterToken = ({
                   activeId: `character ${controlledCharacter?.id}`,
                 });
               } else if (actionPermissions || reactionPermissions) {
-                const inRange = activeCoordinates
-                  ? isInRange(
-                      activeCoordinates,
-                      { row: location.row, col: location.col },
-                      rangeData.range,
-                    )
-                  : false;
                 if (!inRange) {
                   console.log('not in range');
                   return;
                 }
-
-                if (insertTarget) {
-                  insertTarget(
-                    location.row,
-                    location.col,
-                    inRange,
-                    location.characterId,
-                  );
-                }
                 field.handleChange(character);
               }
+            }
+            if (insertTarget) {
+              insertTarget(
+                location.row,
+                location.col,
+                inRange,
+                location.characterId,
+              );
             }
           }}
           onDoubleClick={
@@ -145,7 +134,11 @@ const CharacterEncounterToken = ({
                   navigate(`characters/${location.characterId}`);
                 }
           }
-          onMouseDown={handleDragStart ? () => startDrag() : undefined}
+          onMouseDown={() => {
+            if (tokenDragStart) {
+              tokenDragStart(location.row, location.col, location.characterId);
+            }
+          }}
           onMouseEnter={() => {
             if (handleDragUpdate) {
               handleDragUpdate(

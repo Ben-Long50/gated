@@ -3,23 +3,7 @@ import { AuthContext } from 'src/contexts/AuthContext';
 import { EncounterContext } from 'src/contexts/EncounterContext';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import { socket } from 'src/socket';
-
-type TargetData = {
-  start: {
-    row: number;
-    col: number;
-    characterId?: number;
-  };
-  end: {
-    row: number;
-    col: number;
-    targetId?: number;
-  };
-  distance: number;
-  color: string;
-  occupied: boolean;
-  inRange: boolean;
-};
+import { Target } from 'src/types/target';
 
 const useEncounterArrows = () => {
   const { user } = useContext(AuthContext);
@@ -28,9 +12,10 @@ const useEncounterArrows = () => {
 
   const isDraggingRef = useRef(false);
   const keyRef = useRef<string | null>(null);
-  const targetRef = useRef<TargetData | null>(null);
+  const targetRef = useRef<Target | null>(null);
 
   const handleInsertArrow = (
+    action: string,
     row: number,
     col: number,
     characterId: number,
@@ -54,6 +39,7 @@ const useEncounterArrows = () => {
         col: targetCol,
         targetId,
       },
+      action,
       distance: Math.round(
         Math.sqrt((targetCol - col) ** 2 + (targetRow - row) ** 2),
       ),
@@ -65,7 +51,12 @@ const useEncounterArrows = () => {
     setTarget(key, targetData);
   };
 
-  const handleDragStart = (row: number, col: number, characterId?: number) => {
+  const handleDragStart = (
+    action: string,
+    row: number,
+    col: number,
+    characterId?: number,
+  ) => {
     isDraggingRef.current = true;
 
     const key = characterId ? `character ${characterId}` : `user ${user.id}`;
@@ -83,6 +74,7 @@ const useEncounterArrows = () => {
         row,
         col: col + 2,
       },
+      action,
       distance: 0,
       color: accentPrimary,
       occupied: false,

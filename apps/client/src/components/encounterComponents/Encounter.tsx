@@ -20,7 +20,6 @@ import ArrowHeader4 from '../ArrowHeader4';
 import CharacterName from './CharacterName';
 import PassTurnIcon from '../icons/PassTurnIcon';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
-import useItemQuery from 'src/hooks/useItemQuery/useItemQuery';
 import ItemCardBorderless from '../ItemCardBorderless';
 import { EncounterContext } from 'src/contexts/EncounterContext';
 import MapHeader from '../mapComponents/map/MapHeader';

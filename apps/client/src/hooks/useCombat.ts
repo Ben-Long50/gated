@@ -22,8 +22,8 @@ import { socket } from 'src/socket';
 import parsePhaseAction from 'src/utils/parsePhaseAction';
 import actionFuncs from 'src/utils/actionFuncs';
 import { camelCase } from 'change-case';
-import { distance } from 'motion';
 import statColorMap from 'src/utils/statColorMap';
+import { Target } from 'src/types/target';
 
 const useCombat = () => {
   const { user } = useContext(AuthContext);
@@ -31,19 +31,9 @@ const useCombat = () => {
   const { campaignId, encounterId } = useParams();
   const queryClient = useQueryClient();
 
-  const [targetMap, setTargetMap] = useState<
-    Map<
-      string,
-      {
-        start: { row: number; col: number; characterId?: number };
-        end: { row: number; col: number; targetId?: number };
-        distance: number;
-        color: string;
-        occupied: boolean | null;
-        inRange: boolean | null;
-      }
-    >
-  >(() => new Map());
+  const [targetMap, setTargetMap] = useState<Map<string, Target>>(
+    () => new Map(),
+  );
 
   const resetTargetMap = () => {
     setTargetMap(new Map());
@@ -61,17 +51,7 @@ const useCombat = () => {
     return targetMap.get(key);
   };
 
-  const setTarget = (
-    key: string,
-    value: {
-      start: { row: number; col: number; characterId?: number };
-      end: { row: number; col: number; targetId?: number };
-      distance: number;
-      color: string;
-      occupied: boolean | null;
-      inRange: boolean | null;
-    },
-  ) => {
+  const setTarget = (key: string, value: Target) => {
     setTargetMap((prev) => {
       const next = new Map(prev);
       next.set(key, value);
@@ -119,6 +99,7 @@ const useCombat = () => {
               (phaseAction.tile.end.row - phaseAction.tile.start.row) ** 2,
           ),
         ),
+        action: phaseAction.actionSnapshot.name,
         color: phaseAction.targetId ? statColorMap.DMG : statColorMap.SPD,
         occupied: null,
         inRange: null,
@@ -141,6 +122,7 @@ const useCombat = () => {
                   (reaction.tile.end.row - reaction.tile.start.row) ** 2,
               ),
             ),
+            action: reaction.actionSnapshot.name,
             color: statColorMap.MAG,
             occupied: null,
             inRange: null,

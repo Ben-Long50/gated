@@ -10,7 +10,7 @@ const reactionFuncs = {
     item?: Item,
     successes?: number,
   ) => {
-    const requirements = ['character', 'target', 'item', 'roll'];
+    const requirements = ['character', 'item', 'roll'];
     const range = item ? item.stats.range : 0;
     const color = statColorMap.DMG;
     const costs = { ...actionCosts };
