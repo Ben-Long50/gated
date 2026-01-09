@@ -12,19 +12,17 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Character } from 'src/types/character';
 import useCharacterStatHandlers from './character stat hooks/useCharacterStatMutation/useCharacterStatHandlers';
 import useCombatStore from 'src/stores/combatStore';
-import calculateCosts from 'src/utils/calculateCosts';
 import useAdvanceTurnMutation from './encounter hooks/useAdvanceTurnMutation/useAdvanceTurnMutation';
 import useRollActionMutation from './encounter hooks/useRollActionMutation/useRollActionMutation';
 import useRollReactionMutation from './encounter hooks/useRollReactionMutation/useRollReactionMutation';
 import useRoll from './useRoll';
 import calculateDiceCount from 'src/utils/calculateDiceCount';
-import { socket } from 'src/socket';
-import parsePhaseAction from 'src/utils/parsePhaseAction';
 import actionFuncs from 'src/utils/actionFuncs';
 import { camelCase } from 'change-case';
 import statColorMap from 'src/utils/statColorMap';
 import { Target } from 'src/types/target';
 import reactionFuncs from 'src/utils/reactionFuncs';
+import { BlockData } from 'src/types/blockData';
 
 const useCombat = () => {
   const { user } = useContext(AuthContext);
@@ -36,8 +34,16 @@ const useCombat = () => {
     () => new Map(),
   );
 
+  const [blockDataMap, setBlockDataMap] = useState<Map<string, BlockData>>(
+    () => new Map(),
+  );
+
   const resetTargetMap = () => {
     setTargetMap(new Map());
+  };
+
+  const resetBlockDataMap = () => {
+    setBlockDataMap(new Map());
   };
 
   const removeTarget = (key: string) => {
@@ -52,8 +58,20 @@ const useCombat = () => {
     return targetMap.get(key);
   };
 
+  const getBlockData = (key: string) => {
+    return blockDataMap.get(key);
+  };
+
   const setTarget = (key: string, value: Target) => {
     setTargetMap((prev) => {
+      const next = new Map(prev);
+      next.set(key, value);
+      return next;
+    });
+  };
+
+  const setBlockData = (key: string, value: BlockData) => {
+    setBlockDataMap((prev) => {
       const next = new Map(prev);
       next.set(key, value);
       return next;
@@ -202,8 +220,6 @@ const useCombat = () => {
     combat?.reactions.includes(controlledCharacterId) &&
     combat.combatPhase === 'reaction';
 
-  const characterStatHandlers = useCharacterStatHandlers(controlledCharacterId);
-
   const handleAdvanceTurn = () => {
     if (!encounterPermissions) return;
 
@@ -308,11 +324,11 @@ const useCombat = () => {
       }
 
       if (actionData.requirements.includes('target')) {
-        data.itemId = value.target.id;
+        data.targetCharacterId = value.target.id;
       }
 
       if (actionData.requirements.includes('item')) {
-        data.targetCharacterId = value.item.id;
+        data.itemId = value.item.id;
       }
 
       if (actionData.requirements.includes('roll')) {
@@ -528,10 +544,14 @@ const useCombat = () => {
   return {
     combat,
     targetMap,
+    blockDataMap,
     resetTargetMap,
+    resetBlockDataMap,
     removeTarget,
     setTarget,
+    setBlockData,
     getTarget,
+    getBlockData,
     encounterPermissions,
     actionPermissions,
     reactionPermissions,

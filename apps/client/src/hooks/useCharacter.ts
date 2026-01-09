@@ -6,9 +6,11 @@ import useAttributeTree from './useAttributeTree';
 import useInventory from './useInventory';
 import useCharacterQuery from './useCharacterQuery/useCharacterQuery';
 import { useQueryClient } from '@tanstack/react-query';
+import { CampaignContext } from 'src/contexts/CampaignContext';
 
 const useCharacter = (characterId: number) => {
   const { user } = useContext(AuthContext);
+  const { gameMaster } = useContext(CampaignContext);
   const queryClient = useQueryClient();
 
   const {
@@ -30,10 +32,7 @@ const useCharacter = (characterId: number) => {
   const stats = character?.stats;
 
   const filterByPreferences = (character: Character) => {
-    const characterOwner =
-      character?.userId === user?.id ||
-      character?.campaign?.ownerId === user?.id;
-
+    const characterOwner = gameMaster || character?.userId === user?.id;
     const characterStats = { ...character?.stats, ...stats };
 
     return {
@@ -93,7 +92,7 @@ const useCharacter = (characterId: number) => {
       ),
       attributes:
         characterOwner || character?.preferences?.attributes
-          ? character.attributes
+          ? character?.attributes
           : emptyAttributeTree,
       perks:
         characterOwner || character?.preferences?.perks

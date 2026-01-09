@@ -350,14 +350,13 @@ const Encounter = () => {
               )}
             </>
           )}
-          {actionItem ||
-            (reactionItem && (
-              <ItemCardBorderless
-                className={`${actionSidebar ? 'visible translate-x-0 opacity-100' : 'invisible translate-x-full opacity-0'} timing w-full`}
-                cardType="small"
-                item={item}
-              />
-            ))}
+          {item && (
+            <ItemCardBorderless
+              className={`${actionSidebar ? 'visible translate-x-0 opacity-100' : 'invisible translate-x-full opacity-0'} timing w-full`}
+              cardType="small"
+              item={item}
+            />
+          )}
         </div>
         {controlledCharacterId && (
           <div

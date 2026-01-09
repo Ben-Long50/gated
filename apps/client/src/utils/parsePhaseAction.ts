@@ -79,8 +79,6 @@ const parsePhaseAction = (
     return results;
   });
 
-  console.log(actionResults, reactionResults);
-
   return { actionResults, reactionResults };
 };
 

@@ -49,7 +49,7 @@ const PhaseActionCard = ({
           <div className={`relative flex w-full items-center`}>
             <CharacterPictureRound character={character} />
             {character?.conditions && character?.conditions.length > 0 && (
-              <div className="absolute left-0 top-0 z-10 size-3 rounded-full bg-red-600 shadow-md shadow-black"></div>
+              <div className="absolute left-0 top-0 z-10 size-3 rounded-full bg-red-600 shadow-md shadow-black" />
             )}
             <div
               className={`timing visible ml-4 grid max-h-20 w-full translate-x-0 grid-cols-[auto_auto_1fr_auto] place-items-center gap-2 gap-y-0 opacity-100`}
@@ -68,7 +68,6 @@ const PhaseActionCard = ({
             </div>
           </div>
         </div>
-
         {phaseAction.targetId && (
           <>
             <Icon

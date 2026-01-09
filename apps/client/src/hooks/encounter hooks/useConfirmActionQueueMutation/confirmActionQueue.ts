@@ -4,7 +4,10 @@ import handleResponse from '../../handleResponse';
 const confirmActionQueue = async (
   campaignId: number,
   encounterId: number,
-  blockData: { damage: number; blockedDamage: number; armorIds: number[] }[],
+  blockData: [
+    key: string,
+    { damage: number; blockedDamage: number; armorIds: number[] }[],
+  ][],
 ) => {
   try {
     const response = await fetch(

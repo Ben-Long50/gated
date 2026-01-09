@@ -19,7 +19,7 @@ const ActionQueueModal = () => {
     setIsFetching,
     encounterPermissions,
     resetRolls,
-    blockForm,
+    blockDataMap,
   } = useContext(EncounterContext);
 
   const navigate = useNavigate();
@@ -77,179 +77,6 @@ const ActionQueueModal = () => {
       ) : (
         <h2>No Actions Currently in Queue</h2>
       )}
-      {/* {phaseAction && (
-            <div className="flex w-full flex-col gap-4">
-              {phaseAction.rollResult && (
-                <div className="flex w-full items-center justify-between px-2">
-                  <ArrowHeader4
-                    className="text-secondary"
-                    title="Action Successes"
-                  />
-                  <h3 className="flex size-6 items-center justify-center">
-                    {phaseAction.rollResult.successes}
-                  </h3>
-                </div>
-              )} */}
-
-      {/* {!!actionQueueResults.instances && (
-                <>
-                  {actionQueueResults.reducedSuccesses > 0 && (
-                    <div className="flex w-full items-center justify-between px-2">
-                      <ArrowHeader4
-                        className="text-secondary"
-                        title="Reaction Success Reductions"
-                      />
-                      <h3 className="flex size-6 items-center justify-center">
-                        {actionQueueResults.reducedSuccesses}
-                      </h3>
-                    </div>
-                  )}
-                  <div className="flex w-full items-center justify-between px-2">
-                    <ArrowHeader4
-                      className="text-secondary"
-                      title="Damage Instances"
-                    />
-                    <h3 className="flex size-6 items-center justify-center">
-                      {actionQueueResults.resultingInstances}
-                    </h3>
-                  </div>
-                  {actionQueueResults.damage > 0 && (
-                    <div className="flex w-full items-center justify-between px-2">
-                      <ArrowHeader4
-                        className="text-secondary"
-                        title="Damage per Instance"
-                      />
-                      <h3 className="flex size-6 items-center justify-center">
-                        {actionQueueResults.damage}
-                      </h3>
-                    </div>
-                  )}
-                  {actionQueueResults.sanityDamage > 0 && (
-                    <div className="flex w-full items-center justify-between px-2">
-                      <ArrowHeader4
-                        className="text-secondary"
-                        title="Sanity Damage per Instance"
-                      />
-                      <h3 className="flex size-6 items-center justify-center">
-                        {actionQueueResults.sanityDamage}
-                      </h3>
-                    </div>
-                  )}
-                  {actionQueueResults.damage > 0 && (
-                    <div className="flex w-full items-center justify-between">
-                      <ArrowHeader3 title="Total Damage" />
-                      <h2 className="flex size-6 items-center justify-center">
-                        {actionQueueResults.damage *
-                          actionQueueResults.resultingInstances}
-                      </h2>
-                    </div>
-                  )}
-                  {actionQueueResults.sanityDamage > 0 && (
-                    <div className="flex w-full items-center justify-between">
-                      <ArrowHeader3 title="Total Sanity Damage" />
-                      <h2 className="flex size-6 items-center justify-center">
-                        {actionQueueResults.sanityDamage *
-                          actionQueueResults.resultingInstances}
-                      </h2>
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-          )}
-
-          <Divider className="opacity-50" />
-         
-
-          {actionQueueResults.damage + actionQueueResults.sanityDamage > 0 && (
-            <div className="flex w-full flex-col gap-4">
-              {actionQueueResults.blockedDamage > 0 && (
-                <div className="mt-2 flex w-full items-center justify-between px-2">
-                  <ArrowHeader4results.successes
-                    className="text-secondary"
-                    title="Blocked Damage"
-                  />
-                  <div className="flex items-center gap-2">
-                    <ArmorIcon className="text-primary size-6" />
-                    <h3 className="flex size-6 items-center justify-center">
-                      {actionQueueResults.blockedDamage}
-                    </h3>
-                    {actionQueueResults.armorPoints >
-                      actionQueueResults.blockedDamage && (
-                      <h3 className="text-tertiary text-base">
-                        (
-                        {actionQueueResults.armorPoints -
-                          actionQueueResults.blockedDamage}
-                        )
-                      </h3>
-                    )}
-                  </div>
-                </div>
-              )}
-              {actionQueueResults.blockedSanityDamage > 0 && (
-                <div className="mt-2 flex w-full items-center justify-between px-2">
-                  <ArrowHeader4
-                    className="text-secondary"
-                    title="Blocked Sanity Damage"
-                  />
-                  <div className="flex items-center gap-2">
-                    <WardIcon className="text-primary size-6" />
-                    <h3 className="flex size-6 items-center justify-center">
-                      {actionQueueResults.blockedSanityDamage}
-                    </h3>
-                    {actionQueueResults.wardPoints >
-                      actionQueueResults.blockedSanityDamage && (
-                      <h3 className="text-tertiary text-base">
-                        (
-                        {actionQueueResults.wardPoints -
-                          actionQueueResults.blockedSanityDamage}
-                        )
-                      </h3>
-                    )}
-                  </div>
-                </div>
-              )}
-              {actionQueueResults.damage > 0 && (
-                <div className="flex w-full items-center justify-between">
-                  <ArrowHeader3 title="Final Damage" />
-                  <div className="flex items-center gap-4">
-                    <DamageIcon className="text-primary size-8" />
-                    <h2 className="flex size-6 items-center justify-center">
-                      {actionQueueResults.damage *
-                        actionQueueResults.resultingInstances -
-                        actionQueueResults.blockedDamage >
-                      0
-                        ? actionQueueResults.damage *
-                            actionQueueResults.resultingInstances -
-                          actionQueueResults.blockedDamage
-                        : 0}
-                    </h2>
-                  </div>
-                </div>
-              )}
-              {actionQueueResults.sanityDamage > 0 && (
-                <div className="flex w-full items-center justify-between">
-                  <ArrowHeader3 title="Final Sanity Damage" />
-                  <div className="flex items-center gap-4">
-                    <SanityDamageIcon className="text-primary size-8" />
-                    <h2 className="flex size-6 items-center justify-center">
-                      {actionQueueResults.sanityDamage *
-                        actionQueueResults.resultingInstances -
-                        actionQueueResults.blockedSanityDamage >
-                      0
-                        ? actionQueueResults.sanityDamage *
-                            actionQueueResults.resultingInstances -
-                          actionQueueResults.blockedSanityDamage
-                        : 0}
-                    </h2>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-          
-        </> */}
-
       {combat.passes.length >= combat.turnOrder.length - 1 &&
       encounterPermissions ? (
         <BtnRect
@@ -259,8 +86,7 @@ const ActionQueueModal = () => {
           active={!isFetching}
           onClick={() => {
             setIsFetching(true);
-            const blockData = blockForm.getFieldValue('blockData');
-            confirmActionQueue.mutate(blockData);
+            confirmActionQueue.mutate(Array.from(blockDataMap.entries()));
             resetRolls();
           }}
         >

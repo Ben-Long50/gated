@@ -13,11 +13,14 @@ const useConfirmActionQueueMutation = (
 
   return useMutation({
     mutationFn: (
-      blockData: {
-        damage: number;
-        blockedDamage: number;
-        armorIds: number[];
-      }[],
+      blockData: [
+        key: string,
+        {
+          damage: number;
+          blockedDamage: number;
+          armorIds: number[];
+        }[],
+      ][],
     ) => {
       return confirmActionQueue(campaignId, encounterId, blockData);
     },

@@ -8,6 +8,7 @@ import useCombatStore from 'src/stores/combatStore';
 import Icon from '@mdi/react';
 import { mdiCheckCircle, mdiCloseBoxOutline } from '@mdi/js';
 import { EncounterContext } from 'src/contexts/EncounterContext';
+import { useNavigate } from 'react-router-dom';
 
 const EquippedItems = ({
   className,
@@ -25,6 +26,7 @@ const EquippedItems = ({
     reactionForm,
     removeTarget,
   } = useContext(EncounterContext);
+  const navigate = useNavigate();
 
   const { filteredCharacter: character, isLoading } = useCharacter(
     controlledCharacterId,
@@ -93,6 +95,11 @@ const EquippedItems = ({
                       ? field.handleChange(null)
                       : field.handleChange(equipment);
                   }
+                }}
+                onDoubleClick={() => {
+                  navigate(
+                    `characters/${character.id}/inventory/items/${equipment.id}`,
+                  );
                 }}
                 onMouseEnter={() => {
                   setActionSidebar(true);
