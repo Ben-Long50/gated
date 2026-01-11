@@ -11,6 +11,8 @@ var __rest = (this && this.__rest) || function (s, e) {
 };
 import prisma from '../config/database.js';
 import calendar from '../utils/calendar.js';
+import { getIO } from '../sockets/socket.js';
+import { calculateRoll } from '../utils/rollUtilities.js';
 const campaignServices = {
     getCampaigns: async (userId) => {
         try {
@@ -421,6 +423,67 @@ const campaignServices = {
         catch (error) {
             console.error(error);
             throw new Error('Failed to set campaign time');
+        }
+    },
+    campaignRoll: async (userId, campaignId, rollData) => {
+        try {
+            const io = getIO();
+            const { character, action, modifiers, extraDice } = rollData;
+            if (!character) {
+                throw new Error('Failed to find character');
+            }
+            if (!action) {
+                throw new Error('Failed to find action');
+            }
+            const rollResults = calculateRoll(character === null || character === void 0 ? void 0 : character.attributes, 
+            //@ts-ignore
+            { name: action.name, roll: action.roll }, modifiers, extraDice) || { result: [], successes: 0, roll: null };
+            const rolls = new Map();
+            if (rollResults) {
+                rolls.set(userId, {
+                    character,
+                    action,
+                    roll: rollResults.roll,
+                    diceArray: rollResults.result,
+                    successes: rollResults.successes,
+                    modifiers: modifiers,
+                });
+            }
+            const rollsArray = rollResults ? Array.from(rolls.entries()) : null;
+            const historyData = {
+                character,
+                action,
+            };
+            io.to(`campaign ${campaignId}`).emit('campaignRoll', {
+                rollsArray,
+                character,
+                action,
+            });
+            await campaignServices.createCampaignHistory(campaignId, historyData);
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to roll action');
+        }
+    },
+    createCampaignHistory: async (campaignId, formData) => {
+        try {
+            const data = {
+                campaignId,
+                characterSnapshot: formData.character,
+                characterId: formData.character.id,
+                actionSnapshot: formData.action,
+                actionId: formData.action.id,
+                rollResult: formData.rollResult,
+            };
+            const history = await prisma.history.create({
+                data,
+            });
+            return history;
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to create encounter history entry');
         }
     },
     joinCampaign: async (campaignId, userId) => {

@@ -82,7 +82,7 @@ export const calculateRoll = (
     successes -= result.filter((number) => number === 5).length;
   }
 
-  return { result, successes };
+  return { result, successes, roll: bestRoll.roll };
 };
 
 export const calculateActionQueueSuccesses = (phaseHistory) => {

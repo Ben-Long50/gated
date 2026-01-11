@@ -87,6 +87,12 @@ router.post(
   campaignController.createOrUpdateCampaignMap,
 );
 
+router.post(
+  '/campaigns/:campaignId/roll',
+  authentication.authenticate,
+  campaignController.campaignRoll,
+);
+
 router.patch(
   '/campaigns/:campaignId/active',
   authentication.authenticate,

@@ -18,6 +18,7 @@ router.post('/factions/:factionId/affiliations/create', authentication.authentic
 router.post('/campaigns', authentication.authenticate, campaignController.createCampaign);
 router.post('/campaigns/:campaignId/events', authentication.authenticate, campaignController.createOrUpdateEvent);
 router.post('/campaigns/:campaignId/maps', authentication.authenticate, campaignController.createOrUpdateCampaignMap);
+router.post('/campaigns/:campaignId/roll', authentication.authenticate, campaignController.campaignRoll);
 router.patch('/campaigns/:campaignId/active', authentication.authenticate, campaignController.toggleCampaign);
 router.patch('/campaigns/:campaignId/date', authentication.authenticate, campaignController.setCampaignDate);
 router.patch('/campaigns/:campaignId/time', authentication.authenticate, campaignController.setCampaignTime);

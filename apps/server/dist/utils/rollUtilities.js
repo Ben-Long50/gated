@@ -47,7 +47,7 @@ export const calculateRoll = (attributes, action, modifiers, extraDice) => {
     if (modifiers.includes('unlucky') && !modifiers.includes('lucky')) {
         successes -= result.filter((number) => number === 5).length;
     }
-    return { result, successes };
+    return { result, successes, roll: bestRoll.roll };
 };
 export const calculateActionQueueSuccesses = (phaseHistory) => {
     const actionSuccesses = phaseHistory.action.rollResult.successes;

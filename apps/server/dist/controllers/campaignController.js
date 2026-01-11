@@ -179,6 +179,21 @@ const campaignController = {
             }
         },
     ],
+    campaignRoll: async (req, res) => {
+        try {
+            if (!req.user) {
+                res
+                    .status(401)
+                    .json({ error: 'You must be signed in to use this function' });
+                return;
+            }
+            await campaignServices.campaignRoll(req.user.id, Number(req.params.campaignId), req.body);
+            res.status(200).json({ message: 'Successfully rolled' });
+        }
+        catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
     joinCampaign: async (req, res) => {
         try {
             if (!req.user) {
