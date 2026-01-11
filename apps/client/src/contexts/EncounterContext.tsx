@@ -122,7 +122,7 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
 
     socket.on('navigateToEncounter', ({ encounterId, mapId, campaignId }) => {
       navigate(
-        `glam/campaigns/${campaignId}/maps/${mapId}/encounters/${encounterId}`,
+        `/glam/campaigns/${campaignId}/maps/${mapId}/encounters/${encounterId}`,
       );
     });
 
