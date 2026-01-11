@@ -36,7 +36,6 @@ const EncounterGridTile = ({
   handleDragUpdate?: (
     row: number,
     col: number,
-    color: string,
     targetId?: number,
     inRange?: boolean | null,
   ) => void;
@@ -76,8 +75,7 @@ const EncounterGridTile = ({
       }}
       onMouseEnter={
         handleDragUpdate
-          ? () =>
-              handleDragUpdate(row, col, rangeData.color, undefined, inRange)
+          ? () => handleDragUpdate(row, col, undefined, inRange)
           : () => setHover(true)
       }
       onMouseUp={() => {

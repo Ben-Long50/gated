@@ -133,6 +133,7 @@ const PhaseActionCard = ({
         {phaseAction.armorSnapshots &&
           phaseAction.armorSnapshots.map((armor) => (
             <ItemCardSmall
+              key={armor.id}
               className="col-span-2"
               heading={
                 <div className="mr-4 flex w-full items-center justify-between gap-4">

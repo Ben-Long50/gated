@@ -84,7 +84,7 @@ const EncounterGrid = ({
         : reactionItem
       : null;
 
-  let rangeData = { range: 0, color: accentPrimary };
+  let rangeData = { range: 0, color: 'transparent' };
 
   if (tempRangeData) {
     rangeData = tempRangeData;
@@ -190,13 +190,11 @@ const EncounterGrid = ({
   };
 
   const tileDragStart = (row: number, col: number) => {
+    const color =
+      rangeData.color === 'transparent' ? accentPrimary : rangeData.color;
+
     if (actionPermissions || reactionPermissions || measureMode) {
-      handleDragStart(
-        row,
-        col,
-        rangeData.color,
-        action ? action.name : undefined,
-      );
+      handleDragStart(row, col, color, action ? action.name : undefined);
     }
   };
 

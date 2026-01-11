@@ -87,7 +87,6 @@ const useEncounterArrows = () => {
   const handleDragUpdate = (
     row: number,
     col: number,
-    color: string,
     targetId?: number,
     inRange?: boolean | null,
   ) => {
@@ -116,7 +115,6 @@ const useEncounterArrows = () => {
       distance: Math.round(
         Math.sqrt((col - data.start.col) ** 2 + (row - data.start.row) ** 2),
       ),
-      color,
       occupied: !!targetId,
       inRange,
     };

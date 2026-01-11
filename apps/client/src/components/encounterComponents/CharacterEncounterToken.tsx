@@ -41,7 +41,6 @@ const CharacterEncounterToken = ({
   handleDragUpdate?: (
     row: number,
     col: number,
-    color: string,
     targetId?: number,
     inRange?: boolean | null,
   ) => void;
@@ -154,7 +153,6 @@ const CharacterEncounterToken = ({
               handleDragUpdate(
                 location.row,
                 location.col,
-                rangeData.color,
                 location.characterId,
                 inRange,
               );
