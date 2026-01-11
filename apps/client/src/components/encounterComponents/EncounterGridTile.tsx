@@ -1,4 +1,4 @@
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useState } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import isInRange from './encounterUtils/isInRange';
 import Icon from '@mdi/react';

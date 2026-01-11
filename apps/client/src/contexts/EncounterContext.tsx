@@ -127,6 +127,8 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
     });
 
     socket.on('changeTarget', ({ key, targetData }) => {
+      console.log('socket');
+
       const data = {
         start: {
           row: targetData.row,

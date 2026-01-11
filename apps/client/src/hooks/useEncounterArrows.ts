@@ -1,13 +1,11 @@
-import { useContext, useRef, useState } from 'react';
+import { useContext, useRef } from 'react';
 import { AuthContext } from 'src/contexts/AuthContext';
 import { EncounterContext } from 'src/contexts/EncounterContext';
-import { ThemeContext } from 'src/contexts/ThemeContext';
 import { socket } from 'src/socket';
 import { Target } from 'src/types/target';
 
 const useEncounterArrows = () => {
   const { user } = useContext(AuthContext);
-  const { accentPrimary } = useContext(ThemeContext);
   const { combat, removeTarget, setTarget } = useContext(EncounterContext);
 
   const isDraggingRef = useRef(false);
@@ -53,10 +51,10 @@ const useEncounterArrows = () => {
   };
 
   const handleDragStart = (
-    action: string,
     row: number,
     col: number,
     color: string,
+    action?: string,
     characterId?: number,
   ) => {
     isDraggingRef.current = true;

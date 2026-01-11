@@ -84,7 +84,7 @@ const EncounterGrid = ({
         : reactionItem
       : null;
 
-  let rangeData = { range: 0, color: 'transparent' };
+  let rangeData = { range: 0, color: accentPrimary };
 
   if (tempRangeData) {
     rangeData = tempRangeData;
@@ -190,10 +190,13 @@ const EncounterGrid = ({
   };
 
   const tileDragStart = (row: number, col: number) => {
-    if (actionPermissions) {
-      handleDragStart(action.name, row, col, rangeData.color);
-    } else if (reactionPermissions) {
-      handleDragStart(action.name, row, col, rangeData.color);
+    if (actionPermissions || reactionPermissions || measureMode) {
+      handleDragStart(
+        row,
+        col,
+        rangeData.color,
+        action ? action.name : undefined,
+      );
     }
   };
 
@@ -204,9 +207,9 @@ const EncounterGrid = ({
         .find((action: Action) => action.name === 'Basic Movement');
 
       actionForm.setFieldValue('action', basicMovement);
-      handleDragStart('Basic Movement', row, col, rangeData.color, characterId);
+      handleDragStart(row, col, rangeData.color, 'Basic Movement', characterId);
     } else {
-      handleDragStart(action, row, col, rangeData.color, characterId);
+      handleDragStart(row, col, rangeData.color, action.name, characterId);
     }
   };
 
@@ -307,6 +310,7 @@ const EncounterGrid = ({
                   : undefined
               }
               handleDragUpdate={isDragging ? handleDragUpdate : undefined}
+              handleDragEnd={isDragging ? handleDragEnd : undefined}
               handleRemoveTarget={
                 targetMap.get(`character ${location.characterId}`)
                   ? handleRemoveTarget

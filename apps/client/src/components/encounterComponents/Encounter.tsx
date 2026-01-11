@@ -103,7 +103,7 @@ const Encounter = () => {
   return (
     <>
       <div
-        className={`${mapInfo && 'pt-3'} flex h-full w-full flex-col items-center justify-center gap-4`}
+        className={`${mapInfo && 'pt-3'} flex h-full w-full flex-col items-center justify-start gap-4 overflow-hidden`}
       >
         <div className="absolute left-1 top-1 z-10 mx-auto ml-[72px] flex flex-col items-start justify-start gap-1">
           <button
@@ -137,7 +137,9 @@ const Encounter = () => {
             setMapScale={setMapScale}
           />
         )}
-        <div className="flex w-full grow items-center">
+        <div
+          className={`${mapInfo && 'pb-[60px]'} flex h-full w-full grow items-center`}
+        >
           <EncounterGrid
             width={map.width}
             height={map.height}

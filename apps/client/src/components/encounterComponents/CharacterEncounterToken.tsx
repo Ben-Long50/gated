@@ -10,7 +10,6 @@ import { socket } from 'src/socket';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Location } from 'src/types/map';
 import isInRange from './encounterUtils/isInRange';
-import statColorMap from 'src/utils/statColorMap';
 import { ActionData } from 'src/types/actionData';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 
@@ -23,6 +22,7 @@ const CharacterEncounterToken = ({
   insertTarget,
   tokenDragStart,
   handleDragUpdate,
+  handleDragEnd,
   handleRemoveTarget,
 }: {
   location: Location;
@@ -38,7 +38,14 @@ const CharacterEncounterToken = ({
     targetId?: number,
   ) => void;
   tokenDragStart?: (row: number, col: number, characterId: number) => void;
-  handleDragUpdate?: (row: number, col: number, targetId?: number) => void;
+  handleDragUpdate?: (
+    row: number,
+    col: number,
+    color: string,
+    targetId?: number,
+    inRange?: boolean | null,
+  ) => void;
+  handleDragEnd?: () => void;
   handleRemoveTarget?: (characterId?: number) => void;
 }) => {
   const {
@@ -71,6 +78,14 @@ const CharacterEncounterToken = ({
 
   const setRangeData = useCombatStore((state) => state.setRangeData);
 
+  const inRange = activeCoordinates
+    ? isInRange(
+        activeCoordinates,
+        { row: location.row, col: location.col },
+        rangeData.range,
+      )
+    : false;
+
   if (isLoading || combatLoading) return <Loading size={1.25} />;
 
   return (
@@ -88,14 +103,6 @@ const CharacterEncounterToken = ({
           }}
           onClick={(e) => {
             e.stopPropagation();
-
-            const inRange = activeCoordinates
-              ? isInRange(
-                  activeCoordinates,
-                  { row: location.row, col: location.col },
-                  rangeData.range,
-                )
-              : false;
 
             if (
               (actionPermissions || reactionPermissions) &&
@@ -147,7 +154,9 @@ const CharacterEncounterToken = ({
               handleDragUpdate(
                 location.row,
                 location.col,
+                rangeData.color,
                 location.characterId,
+                inRange,
               );
             } else if (
               controlledCharacter.id === character?.id &&
@@ -157,6 +166,11 @@ const CharacterEncounterToken = ({
                 range: character?.stats.speed,
                 color: statColorMap.SPD,
               });
+            }
+          }}
+          onMouseUp={() => {
+            if (handleDragEnd) {
+              handleDragEnd();
             }
           }}
           onMouseLeave={() => {
