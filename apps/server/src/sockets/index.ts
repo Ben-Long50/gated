@@ -119,7 +119,7 @@ export function setupSocketIO(io: Server) {
     });
 
     socket.on('changeTarget', ({ encounterId, key, targetData }) => {
-      io.to(`encounter ${encounterId}`).emit('changeTarget', {
+      socket.to(`encounter ${encounterId}`).emit('changeTarget', {
         key,
         targetData,
       });

@@ -83,7 +83,7 @@ export function setupSocketIO(io) {
                 .emit('navigateToEncounter', { encounterId, mapId, campaignId });
         });
         socket.on('changeTarget', ({ encounterId, key, targetData }) => {
-            io.to(`encounter ${encounterId}`).emit('changeTarget', {
+            socket.to(`encounter ${encounterId}`).emit('changeTarget', {
                 key,
                 targetData,
             });
