@@ -16,6 +16,7 @@ import AccountTabRoutes from './AccountTabRoutes';
 import CampaignTabRoutes from './CampaignTabRoutes';
 import CharacterTabRoutes from './CharacterTabRoutes';
 import CodexTabRoutes from './CodexTabRoutes';
+import RollModal from 'src/components/modals/RollModal';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -41,6 +42,7 @@ const router = createBrowserRouter(
           {CampaignTabRoutes()}
           {CharacterTabRoutes()}
           {CodexTabRoutes()}
+          <Route path="rollResults" element={<RollModal />} />
         </Route>
       </Route>
       ,

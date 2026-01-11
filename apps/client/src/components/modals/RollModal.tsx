@@ -1,4 +1,4 @@
-import { useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import Modal from './Modal';
 import BtnRect from '../buttons/BtnRect';
 import Die from '../encounterComponents/Die';
@@ -7,9 +7,13 @@ import constructName from 'src/utils/constructName';
 import CharacterPictureRound from '../CharacterPictureRound';
 import Divider from '../Divider';
 import { capitalCase } from 'change-case';
+import { useContext } from 'react';
+import { CampaignContext } from 'src/contexts/CampaignContext';
 
 const RollModal = () => {
-  const { rolls, rolling, rollForm } = useOutletContext() || {};
+  const { rolls, rolling } = useContext(CampaignContext);
+  const { rollForm } = useOutletContext() || {};
+  const navigate = useNavigate();
 
   const rollsArray = Array.from(rolls.entries());
 
@@ -44,18 +48,32 @@ const RollModal = () => {
         </div>
       ))}
       <Divider className="opacity-50" />
-      <BtnRect
-        type="button"
-        className="w-full"
-        ariaLabel="Reroll"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          rollForm.handleSubmit();
-        }}
-      >
-        Reroll
-      </BtnRect>
+      {rollForm ? (
+        <BtnRect
+          type="button"
+          className="w-full"
+          ariaLabel="Reroll"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            rollForm.handleSubmit();
+          }}
+        >
+          Reroll
+        </BtnRect>
+      ) : (
+        <BtnRect
+          type="button"
+          className="w-full"
+          ariaLabel="Close"
+          onClick={(e) => {
+            e.preventDefault();
+            navigate('..');
+          }}
+        >
+          Close
+        </BtnRect>
+      )}
     </Modal>
   );
 };
