@@ -1,122 +1,61 @@
 import { useOutletContext } from 'react-router-dom';
 import Modal from './Modal';
-import Die1Icon from '../icons/Die1Icon';
-import Die2Icon from '../icons/Die2Icon';
-import Die3Icon from '../icons/Die3Icon';
-import Die4Icon from '../icons/Die4Icon';
-import Die5Icon from '../icons/Die5Icon';
-import Die6Icon from '../icons/Die6Icon';
 import BtnRect from '../buttons/BtnRect';
-import ThemeContainer from '../ThemeContainer';
-import { useContext } from 'react';
-import { ThemeContext } from 'src/contexts/ThemeContext';
-import Loading from '../Loading';
-import ArrowHeader2 from '../ArrowHeader2';
-import { LayoutContext } from 'src/contexts/LayoutContext';
+import Die from '../encounterComponents/Die';
+import ArrowHeader3 from '../ArrowHeader3';
+import constructName from 'src/utils/constructName';
+import CharacterPictureRound from '../CharacterPictureRound';
+import Divider from '../Divider';
+import { capitalCase } from 'change-case';
 
 const RollModal = () => {
-  const { accentPrimary } = useContext(ThemeContext);
-  const { mobile } = useContext(LayoutContext);
-  const { rollForm, diceArray, rolling, successes } = useOutletContext() || {};
+  const { rolls, rolling, rollForm } = useOutletContext() || {};
+
+  const rollsArray = Array.from(rolls.entries());
 
   return (
     <Modal className="h-full">
       <h1>Roll Results</h1>
-      <div className="scrollbar-primary-2 grid shrink-0 grid-cols-3 gap-4 overflow-y-auto sm:gap-12">
-        {diceArray.map((number: number, index) => {
-          const modifiers = rollForm.getFieldValue('modifiers');
-          const lucky =
-            modifiers.includes('lucky') && !modifiers.includes('unlucky');
-          const unlucky =
-            modifiers.includes('unlucky') && !modifiers.includes('lucky');
-          switch (number) {
-            case 1:
-              return (
-                <Die1Icon
-                  key={index}
-                  className={`${!rolling && modifiers.includes('dooming') ? 'fill-red-500' : 'fill-zinc-600 dark:fill-gray-200'} h-full w-full`}
-                />
-              );
-            case 2:
-              return (
-                <Die2Icon
-                  key={index}
-                  className="h-full w-full fill-zinc-600 dark:fill-gray-200"
-                />
-              );
-            case 3:
-              return (
-                <Die3Icon
-                  key={index}
-                  className="h-full w-full fill-zinc-600 dark:fill-gray-200"
-                />
-              );
-            case 4:
-              return (
-                <Die4Icon
-                  key={index}
-                  className={`${!rolling && lucky ? 'fill-green-500' : 'fill-zinc-600 dark:fill-gray-200'} h-full w-full`}
-                />
-              );
-            case 5:
-              return (
-                <Die5Icon
-                  key={index}
-                  className={`${!rolling && !unlucky ? 'fill-green-500' : 'fill-zinc-600 dark:fill-gray-200'} h-full w-full`}
-                />
-              );
-            case 6:
-              return (
-                <Die6Icon
-                  key={index}
-                  className={`${!rolling && modifiers.includes('booming') ? 'fill-yellow-400' : !rolling && !modifiers.includes('booming') ? 'fill-green-500' : 'fill-zinc-600 dark:fill-gray-200'} h-full w-full`}
-                />
-              );
-            default:
-              return;
-          }
-        })}
-      </div>
-      <div className="sticky bottom-0 mt-auto w-full">
-        <ThemeContainer borderColor={accentPrimary} chamfer="medium">
-          <div className="flex w-full flex-col gap-4 p-4 sm:p-8">
-            <div className="grid grid-cols-[1fr_auto] gap-y-4">
-              <ArrowHeader2 title="Successes" />
-              {!rolling ? (
-                <h2 className="justify-self-end">{successes}</h2>
-              ) : (
-                <Loading
-                  className="text-accent ml-auto justify-self-end"
-                  size={mobile ? 1.3 : 1.5}
-                />
-              )}
-              <ArrowHeader2 title="Success Rate" />
-              {!rolling ? (
-                <h2 className="justify-self-end">
-                  {Math.floor((successes / diceArray.length) * 100 || 0) + '%'}
-                </h2>
-              ) : (
-                <Loading
-                  className="text-accent ml-auto justify-self-end"
-                  size={mobile ? 1.3 : 1.5}
-                />
-              )}
-            </div>
-
-            <BtnRect
-              type="button"
-              ariaLabel="Reroll"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                rollForm.handleSubmit();
-              }}
-            >
-              Reroll
-            </BtnRect>
+      <Divider className="opacity-50" />
+      {rollsArray.map(([_, roll], index) => (
+        <div className="flex w-full grow flex-col items-start gap-4">
+          <div className="flex items-center gap-4">
+            <CharacterPictureRound character={roll.character} />
+            <ArrowHeader3 title={constructName(roll.character)} />
           </div>
-        </ThemeContainer>
-      </div>
+          <div className="flex w-full items-center justify-between">
+            <p>{roll.action.name}</p>
+            <p>{`${capitalCase(roll.roll.attribute)} - ${capitalCase(roll.roll.skill)}`}</p>
+          </div>
+          <div
+            key={index}
+            className="scrollbar-primary-2 flex w-full shrink-0 flex-wrap gap-4"
+          >
+            {roll.diceArray.map((value: number, index: number) => (
+              <Die
+                key={index}
+                number={value}
+                rolling={rolling}
+                size={80}
+                modifiers={roll.modifiers}
+              />
+            ))}
+          </div>
+        </div>
+      ))}
+      <Divider className="opacity-50" />
+      <BtnRect
+        type="button"
+        className="w-full"
+        ariaLabel="Reroll"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          rollForm.handleSubmit();
+        }}
+      >
+        Reroll
+      </BtnRect>
     </Modal>
   );
 };

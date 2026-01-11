@@ -18,7 +18,7 @@ const useRoll = () => {
       }
 
       let count = 1;
-      const maxRolls = 18;
+      const maxRolls = 30;
 
       const rollOnce = () => {
         const fakeRollMap = new Map();
@@ -52,7 +52,7 @@ const useRoll = () => {
           return;
         }
 
-        const delay = count * 15;
+        const delay = 50;
         timeoutRef.current = setTimeout(rollOnce, delay);
       };
 

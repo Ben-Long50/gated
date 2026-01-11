@@ -4,32 +4,31 @@ import ArrowHeader3 from './ArrowHeader3';
 import ThemeContainer from './ThemeContainer';
 import { useContext } from 'react';
 import { ThemeContext } from '../contexts/ThemeContext';
-import InputFieldRadio from './InputFieldRadio';
 import { AuthContext } from '../contexts/AuthContext';
-import useAttributeTree from '../hooks/useAttributeTree';
 import Loading from './Loading';
 import BtnRect from './buttons/BtnRect';
 import DieIcon from './icons/DieIcon';
-import Icon from '@mdi/react';
-import { mdiTriangleDown } from '@mdi/js';
 import InputFieldCheckbox from './InputFieldCheckbox';
 import InputField from './InputField';
-import useRoll from '../hooks/useRoll';
-import { AttributeName, SkillName } from 'src/types/attributeTree';
 import InputSelectField from './InputSelectField';
 import { Outlet, useParams, useNavigate, useLocation } from 'react-router-dom';
 import useCampaignQuery from '../hooks/useCampaignQuery/useCampaignQuery';
+import useCampaignRollMutation from '../hooks/campaign hooks/useCampaignRollMutation/useCampaignRollMutation';
 import { LayoutContext } from '../contexts/LayoutContext';
-import CharacterPictureRound from './CharacterPictureRound';
-import ArrowHeader2 from './ArrowHeader2';
-import useCharacters from 'src/hooks/useCharacters';
 import { capitalCase } from 'change-case';
 import useModalStore from 'src/stores/modalStore';
+import { CampaignContext } from 'src/contexts/CampaignContext';
+import calculateDiceCount from 'src/utils/calculateDiceCount';
+import ArrowHeader2 from './ArrowHeader2';
+import { Character } from 'src/types/character';
+import { Action } from 'src/types/action';
+import useCharacterQueries from 'src/hooks/useCharactersQuery/useCharacterQueries';
 
 const RollSimulator = () => {
   const { user } = useContext(AuthContext);
   const { mobile } = useContext(LayoutContext);
   const { accentPrimary } = useContext(ThemeContext);
+  const { rolls, rolling, rollComplete } = useContext(CampaignContext);
   const navigate = useNavigate();
   const location = useLocation();
   const parts = location.pathname.split('/');
@@ -39,10 +38,13 @@ const RollSimulator = () => {
     Number(campaignId),
   );
 
-  const { filteredActions: actions } = useActions();
+  const campaignRoll = useCampaignRollMutation(Number(campaignId));
 
-  const { diceArray, setDiceArray, rolling, calculateSuccesses, successes } =
-    useRoll();
+  const { characters } = useCharacterQueries(
+    campaign?.characters.map((character) => character.id),
+  );
+
+  const { filteredActions: actions } = useActions();
 
   const setBackgroundPath = useModalStore((state) => state.setBackgroundPath);
 
@@ -53,27 +55,33 @@ const RollSimulator = () => {
 
   const rollForm = useForm({
     defaultValues: {
-      activeCharacter: null,
-      action: '',
-      rollType: 'recommended' as 'recommended' | 'custom',
-      attribute: '' as AttributeName,
-      skill: '' as SkillName,
+      character: null as Character | null,
+      action: null as Action | null,
       modifiers: [] as string[],
-      diceCount: 0,
+      extraDice: null,
     },
     onSubmit: ({ value }) => {
-      const diceCount =
-        (value.activeCharacter.attributes[value.attribute]?.points || 0) +
-        (value.activeCharacter.attributes[value.attribute]?.skills[value.skill]
-          ?.points || 0) +
-        value.diceCount +
-        (value.modifiers.includes('push') ? 2 : 0);
-
-      calculateSuccesses(diceCount, value.modifiers);
+      campaignRoll.mutate({
+        character: value.character,
+        action: value.action,
+        modifiers: value.modifiers,
+        extraDice: value.extraDice,
+      });
+      openRollModal();
+    },
+    validators: {
+      onSubmit: ({ value }) => {
+        const errors = [];
+        if (!value.character) {
+          errors.push('Select a character');
+        }
+        if (!value.action) {
+          errors.push('Select an action');
+        }
+        return errors.length > 0 ? errors.join(', ') : undefined;
+      },
     },
   });
-
-  const { emptyAttributeTree } = useAttributeTree();
 
   if (campaignLoading) return <Loading />;
 
@@ -87,70 +95,22 @@ const RollSimulator = () => {
         chamfer="medium"
       >
         <div className={`flex w-full flex-col gap-8 p-4`}>
-          <rollForm.Field
-            name="activeCharacter"
-            listeners={{
-              onChange: () => {
-                rollForm.setFieldValue('action', '');
-                rollForm.setFieldValue('rollType', 'recommended');
-                rollForm.setFieldValue('modifiers', []);
-                setDiceArray([]);
-              },
-            }}
-          >
+          <rollForm.Field name="character">
             {(field) => (
               <div className="flex w-full flex-col gap-8">
                 <InputSelectField
                   field={field}
-                  options={campaign?.characters || []}
-                  label="Character to Roll"
+                  options={characters}
+                  label="Character"
                 />
-                {field.state.value && (
-                  <div className="flex w-full items-center justify-start gap-4">
-                    <CharacterPictureRound character={field.state.value} />
-                    <ArrowHeader2
-                      title={
-                        field.state.value.firstName +
-                        ' ' +
-                        field.state.value.lastName
-                      }
-                    />
-                  </div>
-                )}
               </div>
             )}
           </rollForm.Field>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              rollForm.handleSubmit();
-            }}
+          <div
             className={`${mobile ? 'row-span-1' : 'col-start-2 row-start-1 row-end-3'} mb-auto flex flex-col items-start justify-start gap-8`}
           >
             <ArrowHeader3 title="Roll Options" />
-            <rollForm.Field
-              name="action"
-              listeners={{
-                onChange: ({ value }) => {
-                  const rollType = rollForm.getFieldValue('rollType');
-
-                  if (rollType === 'recommended') {
-                    rollForm.setFieldValue(
-                      'attribute',
-                      value.roll?.length > 0 ? value.roll[0].attribute : '',
-                    );
-                    rollForm.setFieldValue(
-                      'skill',
-                      value.roll?.length > 0 ? value.roll[0].skill : '',
-                    );
-                  } else {
-                    rollForm.setFieldValue('attribute', '');
-                    rollForm.setFieldValue('skill', '');
-                  }
-                },
-              }}
-            >
+            <rollForm.Field name="action">
               {(field) => (
                 <InputSelectField
                   options={actions || []}
@@ -164,125 +124,7 @@ const RollSimulator = () => {
               borderColor={accentPrimary}
               chamfer="small"
             >
-              <p className="!text-accent bg-primary absolute -top-2 left-3.5 z-20 px-1.5 text-base">
-                Roll Type
-              </p>
-              <rollForm.Field
-                name="rollType"
-                listeners={{
-                  onChange: ({ value }) => {
-                    const selectedAction = rollForm.getFieldValue('action');
-
-                    if (value === 'recommended') {
-                      rollForm.setFieldValue(
-                        'attribute',
-                        selectedAction && selectedAction.roll?.length > 0
-                          ? selectedAction.roll[0].attribute
-                          : '',
-                      );
-                      rollForm.setFieldValue(
-                        'skill',
-                        selectedAction && selectedAction.roll?.length > 0
-                          ? selectedAction.roll[0].skill
-                          : '',
-                      );
-                    } else {
-                      rollForm.setFieldValue('attribute', '');
-                      rollForm.setFieldValue('skill', '');
-                    }
-                  },
-                }}
-              >
-                {(field) => (
-                  <div className="flex w-full flex-col gap-4 p-4 px-4 pt-6">
-                    <InputFieldRadio
-                      className="w-full"
-                      field={field}
-                      label="Recommended"
-                      value="recommended"
-                      onChange={() => field.handleChange('recommended')}
-                      checked={field.state.value === 'recommended'}
-                    />
-                    <InputFieldRadio
-                      className="w-full"
-                      field={field}
-                      label="Custom"
-                      value="custom"
-                      onChange={() => field.handleChange('custom')}
-                      checked={field.state.value === 'custom'}
-                    />
-                  </div>
-                )}
-              </rollForm.Field>
-            </ThemeContainer>
-            <rollForm.Subscribe
-              selector={(state) => [state.values.action, state.values.rollType]}
-            >
-              {([action, rollType]) => (
-                <>
-                  <rollForm.Field name="attribute">
-                    {(field) => {
-                      const attributeList =
-                        rollType === 'custom'
-                          ? Object.keys(emptyAttributeTree)
-                          : action?.roll
-                            ? action.roll?.map(
-                                (r: { attribute: string; skill: string }) =>
-                                  r.attribute,
-                              )
-                            : [];
-
-                      return (
-                        <InputSelectField
-                          options={attributeList}
-                          label="Attribute"
-                          field={field}
-                        />
-                      );
-                    }}
-                  </rollForm.Field>
-                  <rollForm.Subscribe
-                    selector={(state) => state.values.attribute}
-                  >
-                    {(attribute) => (
-                      <rollForm.Field name="skill">
-                        {(field) => {
-                          const skillList =
-                            rollType === 'custom'
-                              ? Object.keys(emptyAttributeTree).includes(
-                                  attribute,
-                                )
-                                ? Object.keys(
-                                    emptyAttributeTree[attribute]?.skills,
-                                  )
-                                : []
-                              : action?.roll
-                                ? action.roll?.map(
-                                    (r: { attribute: string; skill: string }) =>
-                                      r.skill,
-                                  )
-                                : [];
-
-                          return (
-                            <InputSelectField
-                              options={skillList}
-                              label="Skill"
-                              field={field}
-                            />
-                          );
-                        }}
-                      </rollForm.Field>
-                    )}
-                  </rollForm.Subscribe>
-                </>
-              )}
-            </rollForm.Subscribe>
-            <ThemeContainer
-              className="w-full"
-              borderColor={accentPrimary}
-              chamfer="small"
-            >
-              <p className="!text-accent bg-primary absolute -top-2 left-3.5 z-20 px-1.5 text-base">
+              <p className="!text-accent bg-primary absolute -top-2 left-3.5 px-1.5 text-base">
                 Modifiers
               </p>
               <div className="relative flex w-full flex-col gap-4 p-4 pt-6">
@@ -324,7 +166,7 @@ const RollSimulator = () => {
                 </rollForm.Field>
               </div>
             </ThemeContainer>
-            <rollForm.Field name="diceCount">
+            <rollForm.Field name="extraDice">
               {(field) => (
                 <InputField
                   className="w-full"
@@ -334,56 +176,72 @@ const RollSimulator = () => {
                 />
               )}
             </rollForm.Field>
-            <div className="flex w-full items-center justify-between gap-12">
-              <div className="flex items-center gap-4">
-                <rollForm.Subscribe
-                  selector={(state) => [
-                    state.values.attribute,
-                    state.values.skill,
-                    state.values.diceCount,
-                    state.values.modifiers,
-                  ]}
-                >
-                  {([attribute, skill, dice, modifiers]) => {
-                    const attributePoints =
-                      activeCharacter?.attributes[attribute]?.points || 0;
-                    const skillPoints =
-                      activeCharacter?.attributes[attribute]?.skills[skill]
-                        ?.points || 0;
-                    return (
-                      <>
-                        <DieIcon className="text-secondary size-10" />
-                        <Icon
-                          className="text-primary"
-                          path={mdiTriangleDown}
-                          size={0.375}
-                          rotate={-90}
-                        />
-                        <h2 className="pt-1">
-                          {attributePoints +
-                            skillPoints +
-                            dice +
-                            (modifiers?.includes('push') ? 2 : 0)}
-                        </h2>
-                      </>
-                    );
-                  }}
-                </rollForm.Subscribe>
-              </div>
-              <BtnRect
-                ariaLabel="Roll dice"
-                type="submit"
-                className="w-full min-w-28 self-end"
-                onClick={() => openRollModal()}
+            <div className="flex w-full items-center justify-between gap-4">
+              <rollForm.Subscribe
+                selector={(state) => [
+                  state.values.character,
+                  state.values.action,
+                  state.values.modifiers,
+                  state.values.extraDice,
+                ]}
               >
-                Roll
-              </BtnRect>
+                {([character, action, modifiers, extraDice]) => {
+                  const { diceCount, roll } =
+                    character && action
+                      ? calculateDiceCount(
+                          character.attributes,
+                          action,
+                          modifiers,
+                          extraDice,
+                        )
+                      : { diceCount: null, roll: null };
+                  return (
+                    <>
+                      {roll && (
+                        <div className="flex items-center gap-4">
+                          <h3>{capitalCase(roll.attribute)}</h3>
+                          <ArrowHeader3 title={capitalCase(roll.skill)} />
+                        </div>
+                      )}
+                      <div className="ml-auto flex items-center gap-4">
+                        <DieIcon className="text-secondary size-10" />
+                        <h2>{diceCount}</h2>
+                      </div>
+                    </>
+                  );
+                }}
+              </rollForm.Subscribe>
             </div>
-          </form>
+            <rollForm.Subscribe selector={(state) => state.errorMap}>
+              {(errorMap) => {
+                const errors = errorMap.onSubmit?.split(', ') || [];
+
+                return (
+                  errors.length > 0 && (
+                    <ul className="flex list-disc flex-col gap-2">
+                      {errors.map((error) => (
+                        <li className="text-error w-full text-base">{error}</li>
+                      ))}
+                    </ul>
+                  )
+                );
+              }}
+            </rollForm.Subscribe>
+            <BtnRect
+              ariaLabel="Roll dice"
+              type="submit"
+              className="w-full min-w-28 self-end"
+              onClick={() => {
+                rollForm.handleSubmit();
+              }}
+            >
+              Roll
+            </BtnRect>
+          </div>
         </div>
       </ThemeContainer>
       {parts.includes('rollSimulator') && (
-        <Outlet context={{ rollForm, diceArray, rolling, successes }} />
+        <Outlet context={{ rolls, rolling, rollForm }} />
       )}
     </div>
   );

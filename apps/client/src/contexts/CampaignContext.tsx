@@ -15,6 +15,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import useCombatQueries from 'src/hooks/encounter hooks/useCombatQueries/useCombatQueries';
 import { Location } from 'src/types/map';
 import { Character } from 'src/types/character';
+import useRoll from 'src/hooks/useRoll';
 
 export const CampaignContext = createContext({
   socket,
@@ -27,6 +28,16 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   const { campaignId } = useParams();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+
+  const {
+    rolls,
+    setRolls,
+    rolling,
+    animateRoll,
+    resetRolls,
+    rollComplete,
+    rollCounter,
+  } = useRoll();
 
   const gameMaster = user.ownerCampaigns
     .map((campaign) => campaign.id)
@@ -141,6 +152,13 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       navigate('/glam/campaigns');
     });
 
+    socket.on('campaignRoll', async ({ rollsArray, character, action }) => {
+      if (rollsArray) {
+        const rolls = new Map(rollsArray) as Map<number, any>;
+        await animateRoll(rolls);
+      }
+    });
+
     socket.on('character', (characterId) => {
       queryClient.invalidateQueries({
         queryKey: ['character', characterId],
@@ -220,6 +238,13 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         campaigns,
         activeCampaigns,
         activeEncounters,
+        rolls,
+        setRolls,
+        rolling,
+        animateRoll,
+        resetRolls,
+        rollComplete,
+        rollCounter,
       }}
     >
       {children}
