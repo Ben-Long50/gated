@@ -137,8 +137,11 @@ export function setupSocketIO(io: Server) {
       );
     });
 
-    socket.on('blockData', ({ encounterId, blockData }) => {
-      io.to(`encounter ${encounterId}`).emit('blockData', blockData);
+    socket.on('blockData', ({ encounterId, characterId, blockData }) => {
+      io.to(`encounter ${encounterId}`).emit('blockData', {
+        characterId,
+        blockData,
+      });
 
       console.log(`Broadcasted block data to encounter ${encounterId}`);
     });

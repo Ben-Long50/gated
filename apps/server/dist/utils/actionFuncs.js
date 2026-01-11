@@ -11,7 +11,7 @@ const actionFuncs = {
             col: tile === null || tile === void 0 ? void 0 : tile.end.col,
         });
     },
-    strike: async (item, successes) => {
+    strike: async (character, item, successes, tile) => {
         let damage = item.stats.damage || 0;
         let sanityDamage = item.stats.sanityDamage || 0;
         let instances = 0;
@@ -23,7 +23,7 @@ const actionFuncs = {
         }
         return { damage, sanityDamage, instances };
     },
-    haymaker: async (item, successes) => {
+    haymaker: async (character, item, successes, tile) => {
         let damage = item && item.keywords.length > 0
             ? item.keywords.some((keyword) => keyword.keyword.name === '2H')
                 ? item.stats.damage + 3
@@ -35,7 +35,7 @@ const actionFuncs = {
                 : item.stats.sanityDamage + 2
             : 0;
         let instances = 0;
-        if (successes > 0) {
+        if (successes && successes > 0) {
             instances = 1;
         }
         if (item) {
@@ -43,11 +43,11 @@ const actionFuncs = {
         }
         return { damage, sanityDamage, instances };
     },
-    flurry: async (item, successes) => {
+    flurry: async (character, item, successes, tile) => {
         let damage = item.stats.damage || 0;
         let sanityDamage = item.stats.sanityDamage || 0;
         let instances = 0;
-        if (successes > 0) {
+        if (successes && successes > 0) {
             const maxSuccesses = item.stats.flurry || 1;
             if (successes < maxSuccesses) {
                 instances = successes;
@@ -61,11 +61,11 @@ const actionFuncs = {
         }
         return { damage, sanityDamage, instances };
     },
-    singleShot: async (item, successes) => {
+    singleShot: async (character, item, successes, tile) => {
         let damage = item.stats.damage || 0;
         let sanityDamage = item.stats.sanityDamage || 0;
         let instances = 0;
-        if (successes > 0) {
+        if (successes && successes > 0) {
             instances = 1;
         }
         if (item) {
@@ -73,11 +73,11 @@ const actionFuncs = {
         }
         return { damage, sanityDamage, instances };
     },
-    salvo: async (item, successes) => {
+    salvo: async (character, item, successes, tile) => {
         let damage = item.stats.damage || 0;
         let sanityDamage = item.stats.sanityDamage || 0;
         let instances = 0;
-        if (successes > 0) {
+        if (successes && successes > 0) {
             const maxSuccesses = item.stats.salvo || 1;
             if (successes < maxSuccesses) {
                 instances = successes;

@@ -93,8 +93,11 @@ export function setupSocketIO(io) {
             io.to(`encounter ${encounterId}`).emit('removeTarget', { key });
             console.log(`Broadcasted remove target ${key} to encounter ${encounterId}`);
         });
-        socket.on('blockData', ({ encounterId, blockData }) => {
-            io.to(`encounter ${encounterId}`).emit('blockData', blockData);
+        socket.on('blockData', ({ encounterId, characterId, blockData }) => {
+            io.to(`encounter ${encounterId}`).emit('blockData', {
+                characterId,
+                blockData,
+            });
             console.log(`Broadcasted block data to encounter ${encounterId}`);
         });
         socket.on('resetBoard', ({ encounterId }) => {

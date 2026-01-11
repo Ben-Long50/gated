@@ -1,6 +1,7 @@
 import { Picture } from './picture';
 
 export interface Character {
+  id: number;
   playerCharacter: boolean;
   campaignId: number | null;
   perks: number[];

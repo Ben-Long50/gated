@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import encounterServices from '../services/encounterServices.js';
+import { getIO } from '../sockets/socket.js';
 
 const encounterController = {
   getEncounters: async (req: Request, res: Response) => {
@@ -150,19 +151,27 @@ const encounterController = {
 
   rollReaction: async (req: Request, res: Response) => {
     try {
+      const io = getIO();
+
       if (!req.user) {
         throw new Error('Could not find authenticated user');
       }
 
       const encounterId = Number(req.params.encounterId);
 
-      const reaction = await encounterServices.rollReaction(
+      const reaction = await encounterServices.rollAction(
         Number(req.params.campaignId),
         encounterId,
         req.body,
       );
 
       await encounterServices.setPhaseReaction(encounterId, reaction);
+      const updatedEncounter = encounterServices.getEncounterById(encounterId);
+
+      io.to(`encounter ${encounterId}`).emit(
+        'updateEncounter',
+        updatedEncounter,
+      );
 
       res.status(200).json({ message: 'Successfully rolled reaction' });
     } catch (error: any) {

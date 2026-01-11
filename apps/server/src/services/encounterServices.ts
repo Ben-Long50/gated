@@ -1,4 +1,4 @@
-// @ts-nocheck
+//@ts-nocheck
 
 import { $Enums, CombatPhase, Encounter, History } from '@prisma/client';
 import prisma from '../config/database.js';
@@ -6,7 +6,6 @@ import itemServices from './itemServices.js';
 import {
   applyDamage,
   calculateCosts,
-  calculateDamage,
   calculateRoll,
 } from '../utils/rollUtilities.js';
 import { getIO } from '../sockets/socket.js';
@@ -15,6 +14,10 @@ import actionServices from './actionServices.js';
 import actionFuncs from '../utils/actionFuncs.js';
 import { camelCase } from 'change-case';
 import reactionFuncs from '../utils/reactionFuncs.js';
+import parseBlockData from '../utils/parseBlockData.js';
+import { Character } from '../types/character.js';
+import { Action } from '../types/action.js';
+import { Item } from '../types/item.js';
 
 const encounterServices = {
   getEncounters: async (campaignId: number) => {
@@ -397,13 +400,13 @@ const encounterServices = {
     try {
       const io = getIO();
 
-      const activeCharacterPromise = characterServices.getCharacterById(
+      const characterPromise = characterServices.getCharacterById(
         actionData.activeCharacterId,
       );
 
       const actionPromise = actionServices.getActionById(actionData.actionId);
 
-      const targetCharacterPromise = actionData.targetCharacterId
+      const targetPromise = actionData.targetCharacterId
         ? characterServices.getCharacterById(actionData.targetCharacterId)
         : Promise.resolve(null);
 
@@ -413,18 +416,25 @@ const encounterServices = {
 
       const tile = actionData.tile || null;
 
-      const [activeCharacter, targetCharacter, action, item] =
-        await Promise.all([
-          activeCharacterPromise,
-          targetCharacterPromise,
-          actionPromise,
-          itemPromise,
-        ]);
+      const [character, target, action, item] = await Promise.all([
+        characterPromise,
+        targetPromise,
+        actionPromise,
+        itemPromise,
+      ]);
+
+      if (!character) {
+        throw new Error('Failed to find character');
+      }
+
+      if (!action) {
+        throw new Error('Failed to find action');
+      }
 
       const rollResults =
-        action && action.roll.length > 0
+        action.roll && action.roll.length > 0
           ? calculateRoll(
-              activeCharacter?.attributes,
+              character?.attributes,
               { name: action.name, roll: action.roll },
               actionData.modifiers,
               actionData.extraDice,
@@ -433,16 +443,11 @@ const encounterServices = {
 
       const rolls = new Map();
 
-      const { damage } =
-        rollResults && item
-          ? calculateDamage(item, action, rollResults.successes)
-          : { damage: null };
-
       if (rollResults) {
-        rolls.set(activeCharacter?.id, {
-          characterId: activeCharacter?.id,
-          name: `${activeCharacter?.firstName} ${activeCharacter?.lastName}`,
-          playerCharacter: activeCharacter?.playerCharacter,
+        rolls.set(character?.id, {
+          characterId: character?.id,
+          name: `${character?.firstName} ${character?.lastName}`,
+          playerCharacter: character?.playerCharacter,
           diceArray: rollResults.result,
           successes: rollResults.successes,
           modifiers: actionData.modifiers,
@@ -451,16 +456,16 @@ const encounterServices = {
 
       const rollsArray = rollResults ? Array.from(rolls.entries()) : null;
 
-      await calculateCosts(activeCharacter, item, action);
+      await calculateCosts(character, item, action);
 
-      const historyData = {
-        character: activeCharacter,
-        action: action,
+      const historyData: History = {
+        character,
+        action,
       } as {
-        character: number;
-        target?: number;
-        action: number;
-        item?: number;
+        character: Character;
+        target?: Character;
+        action: Action;
+        item?: Item;
         tile?: {
           start: { row: number; col: number };
           end: { row: number; col: number };
@@ -469,12 +474,11 @@ const encounterServices = {
           result: number[];
           successes: number;
           modifiers: string[];
-          damage: number;
         };
       };
 
-      if (targetCharacter) {
-        historyData.target = targetCharacter;
+      if (target) {
+        historyData.target = target;
       }
       if (item) {
         historyData.item = item;
@@ -484,7 +488,6 @@ const encounterServices = {
           result: rollResults.result,
           successes: rollResults.successes,
           modifiers: actionData.modifiers,
-          damage: damage || 0,
         };
       }
       if (tile) {
@@ -512,147 +515,12 @@ const encounterServices = {
         io.to(`campaign ${campaignId}`).emit('item', item.id);
       }
 
-      io.to(`campaign ${campaignId}`).emit('character', activeCharacter.id);
+      io.to(`campaign ${campaignId}`).emit('character', character.id);
 
       return phaseAction;
     } catch (error) {
       console.error(error);
       throw new Error('Failed to roll action');
-    }
-  },
-
-  rollReaction: async (
-    campaignId: number,
-    encounterId: number,
-    reactionData: {
-      reactiveCharacterId: number;
-      targetCharacterId?: number;
-      reactionId: number;
-      itemId?: number;
-      tile?: {
-        start: { row: number; col: number };
-        end: { row: number; col: number };
-      };
-      modifiers: string[];
-      extraDice: number;
-    },
-  ) => {
-    try {
-      const io = getIO();
-
-      const reactiveCharacterPromise = characterServices.getCharacterById(
-        reactionData.reactiveCharacterId,
-      );
-
-      const reactionPromise = actionServices.getActionById(
-        reactionData.reactionId,
-      );
-
-      const targetCharacterPromise = reactionData.targetCharacterId
-        ? characterServices.getCharacterById(reactionData.targetCharacterId)
-        : Promise.resolve(null);
-
-      const itemPromise = reactionData.itemId
-        ? itemServices.getItemById(reactionData.itemId)
-        : Promise.resolve(null);
-
-      const tile = reactionData.tile || null;
-
-      const [reactiveCharacter, targetCharacter, reaction, item] =
-        await Promise.all([
-          reactiveCharacterPromise,
-          targetCharacterPromise,
-          reactionPromise,
-          itemPromise,
-        ]);
-
-      const rollResults =
-        reaction && reaction.roll.length > 0
-          ? calculateRoll(
-              reactiveCharacter?.attributes,
-              { name: reaction.name, roll: reaction.roll },
-              reactionData.modifiers,
-              reactionData.extraDice,
-            ) || { result: [], successes: 0 }
-          : null;
-
-      const rolls = new Map();
-
-      if (rollResults) {
-        rolls.set(reactiveCharacter?.id, {
-          characterId: reactiveCharacter?.id,
-          name: `${reactiveCharacter?.firstName} ${reactiveCharacter?.lastName}`,
-          playerCharacter: reactiveCharacter?.playerCharacter,
-          diceArray: rollResults.result,
-          successes: rollResults.successes,
-          modifiers: reactionData.modifiers,
-        });
-      }
-
-      const rollsArray = rollResults ? Array.from(rolls.entries()) : null;
-
-      await calculateCosts(reactiveCharacter, item, reaction);
-
-      const historyData = {
-        character: reactiveCharacter,
-        action: reaction,
-      } as {
-        character: number;
-        target?: number;
-        action: number;
-        item?: number;
-        tile?: {
-          start: { row: number; col: number };
-          end: { row: number; col: number };
-        };
-        rollResult?: {
-          result: number[];
-          successes: number;
-          modifiers: string[];
-          damage?: number;
-        };
-      };
-      if (targetCharacter) {
-        historyData.target = targetCharacter;
-      }
-      if (item) {
-        historyData.item = item;
-      }
-      if (rollResults) {
-        historyData.rollResult = {
-          result: rollResults.result,
-          successes: rollResults.successes,
-          modifiers: reactionData.modifiers,
-        };
-      }
-
-      const phaseReaction = await encounterServices.createEncounterHistory(
-        campaignId,
-        encounterId,
-        historyData,
-      );
-
-      if (rollResults) {
-        io.to(`encounter ${encounterId}`).emit('reactionRoll', {
-          encounterId,
-          rollsArray,
-        });
-      } else {
-        io.to(`encounter ${encounterId}`).emit('reactionRoll', {
-          encounterId,
-        });
-      }
-
-      if (item) {
-        io.to(`campaign ${campaignId}`).emit('item', item.id);
-      }
-
-      io.to(`campaign ${campaignId}`).emit('character', reactiveCharacter.id);
-
-      return phaseReaction;
-    } catch (error) {
-      console.error(error);
-      throw new Error('Failed to roll reaction');
     }
   },
 
@@ -792,158 +660,125 @@ const encounterServices = {
 
   confirmActionQueueResults: async (
     encounter: Encounter,
-    blockData: {
-      blockedDamage: number;
-      blockedSanityDamage: number;
-      armorIds: number[];
-    }[],
+    blockData: [
+      key: string,
+      {
+        blockedDamage: number;
+        blockedSanityDamage: number;
+        armorIds: number[];
+      }[],
+    ][],
   ) => {
     try {
       const io = getIO();
 
-      const phaseHistory = encounter?.phaseHistory[0];
-
-      if (!phaseHistory) {
-        throw new Error('Failed to find phase history');
-      }
       if (!encounter) {
         throw new Error('Failed to find encounter');
       }
 
-      const itemIds = [];
+      const phaseHistory = encounter.phaseHistory[0];
+      const phaseAction = phaseHistory.action;
+      const phaseReactions = phaseHistory.reactions;
 
-      function mergeActionResults(target, source) {
-        for (const key in source) {
-          const srcVal = source[key];
-          const tgtVal = target[key];
+      if (!phaseHistory) {
+        throw new Error('Failed to find phase history');
+      }
 
-          if (typeof srcVal === 'number' && typeof tgtVal === 'number') {
-            target[key] = tgtVal + srcVal;
-          } else if (tgtVal === undefined) {
-            target[key] = srcVal;
-          } else {
-            target[key] = srcVal;
-          }
+      let characterIds = [] as number[];
+      let itemIds = [] as number[];
+
+      const blockDataMap = blockData ? new Map(blockData) : null;
+
+      let reducedSuccesses = 0;
+
+      for (const reaction of phaseReactions) {
+        const results = await reactionFuncs[
+          `${camelCase(reaction.actionSnapshot.name)}`
+        ](
+          reaction.characterSnapshot,
+          reaction.itemSnapshot ? reaction.itemSnapshot : undefined,
+          reaction.rollResult ? reaction.rollResult.successes : undefined,
+          reaction.tile ? reaction.tile : undefined,
+        );
+
+        if (results.reducedSuccesses) {
+          reducedSuccesses += results.reducedSuccesses;
+        }
+
+        const targetBlockData =
+          phaseAction.targetId && blockDataMap
+            ? blockDataMap.get(`character ${phaseAction.targetId}`)
+            : undefined;
+
+        const { blockedDamage, blockedSanityDamage, armorIds } = targetBlockData
+          ? await parseBlockData(reaction.id, targetBlockData)
+          : { blockedDamage: 0, blockedSanityDamage: 0, armorIds: [] };
+
+        if (reaction.itemSnapshot) {
+          itemIds = [...itemIds, reaction.itemId, ...armorIds];
+        } else {
+          itemIds = [...itemIds, ...armorIds];
+        }
+
+        if (
+          reaction.targetSnapshot &&
+          (results.damage || results.sanityDamage)
+        ) {
+          await applyDamage(
+            reaction.targetSnapshot,
+            results.damage - blockedDamage,
+            results.sanityDamage - blockedSanityDamage,
+          );
+          characterIds.push(reaction.targetId);
         }
       }
 
-      const actionQueueResults = {
-        successes: phaseHistory.action?.rollResult
-          ? phaseHistory.action?.rollResult.successes
-          : 0,
-        reducedSuccesses: 0,
-        damage: 0,
-        sanityDamage: 0,
-        instances: 0,
-        blockedDamage: 0,
-        blockedSanityDamage: 0,
-      };
-
       const actionResults = await actionFuncs[
-        `${camelCase(phaseHistory.action.actionSnapshot.name)}`
+        `${camelCase(phaseAction.actionSnapshot.name)}`
       ](
-        phaseHistory.action.characterSnapshot,
-        phaseHistory.action.itemSnapshot
-          ? phaseHistory.action.itemSnapshot
+        phaseAction.characterSnapshot,
+        phaseAction.itemSnapshot ? phaseAction.itemSnapshot : undefined,
+        phaseAction.rollResult
+          ? phaseAction.rollResult.successes - reducedSuccesses
           : undefined,
-        phaseHistory.action.rollResult
-          ? phaseHistory.action.rollResult.successes
-          : undefined,
-        phaseHistory.action.tile ? phaseHistory.action.tile : undefined,
+        phaseAction.tile ? phaseAction.tile : undefined,
       );
 
-      if (phaseHistory.action?.rollResult) {
-        if (phaseHistory.action.itemSnapshot) {
-          itemIds.push(phaseHistory.action.itemId);
-        }
+      const targetBlockData =
+        phaseAction.targetId && blockDataMap
+          ? blockDataMap.get(`character ${phaseAction.targetId}`)
+          : undefined;
 
-        mergeActionResults(actionQueueResults, actionResults);
+      const { blockedDamage, blockedSanityDamage, armorIds } = targetBlockData
+        ? await parseBlockData(phaseAction.id, targetBlockData)
+        : { blockedDamage: 0, blockedSanityDamage: 0, armorIds: [] };
 
-        for (const reaction of phaseHistory.reactions) {
-          const reactionResults = await reactionFuncs[
-            `${camelCase(reaction.actionSnapshot.name)}`
-          ](reaction.itemSnapshot, reaction.rollResult.successes);
+      if (phaseAction.itemSnapshot) {
+        itemIds = [...itemIds, phaseAction.itemId, ...armorIds];
+      } else {
+        itemIds = [...itemIds, ...armorIds];
+      }
 
-          if (reaction.itemSnapshot) {
-            itemIds.push(reaction.itemId);
-          }
-
-          mergeActionResults(actionQueueResults, reactionResults);
-        }
-
-        const armorCosts = new Map();
-
-        if (blockData) {
-          const data = actionFuncs.block(blockData);
-          mergeActionResults(actionQueueResults, data);
-
-          for (const data of blockData) {
-            data.armorIds.forEach((id) => {
-              const currentValue = armorCosts.get(id);
-              if (currentValue) {
-                armorCosts.set(id, currentValue + 1);
-              } else {
-                armorCosts.set(id, 1);
-              }
-            });
-          }
-
-          const armors = [];
-
-          for (const id of armorCosts.keys()) {
-            const armor = await itemServices.getItemById(id);
-            armors.push({ ...armor, blocks: armorCosts.get(id) });
-            await calculateCosts(undefined, armor, {
-              costs: {
-                currentBlock: armorCosts.get(id),
-              },
-            });
-
-            itemIds.push(id);
-          }
-
-          const armorIds = Array.from(armorCosts.keys()) || [];
-
-          await prisma.history.update({
-            where: { id: phaseHistory.action.id },
-            data: {
-              armorSnapshots: armors,
-              armorIds,
-              blockData,
-            },
-          });
-        }
-
-        io.to(`encounter ${encounter.id}`).emit(
-          'encounterHistory',
-          encounter.id,
+      if (
+        phaseAction.targetSnapshot &&
+        (actionResults.damage || actionResults.sanityDamage)
+      ) {
+        await applyDamage(
+          phaseAction.targetSnapshot,
+          actionResults.damage - blockedDamage,
+          actionResults.sanityDamage - blockedSanityDamage,
         );
+        characterIds.push(phaseAction.targetId);
+      }
 
-        const damageInstances =
-          actionQueueResults.instances <
-          actionQueueResults.successes - actionQueueResults.reducedSuccesses
-            ? actionQueueResults.instances
-            : actionQueueResults.successes -
-              actionQueueResults.reducedSuccesses;
+      io.to(`encounter ${encounter.id}`).emit('encounterHistory', encounter.id);
+      io.to(`encounter ${encounter.id}`).emit('resetBoard');
 
-        const finalDamage =
-          damageInstances * actionQueueResults.damage -
-          actionQueueResults.blockedDamage;
-
-        const finalSanityDamage =
-          damageInstances * actionQueueResults.sanityDamage -
-          actionQueueResults.blockedSanityDamage;
-
-        if (phaseHistory.action.targetSnapshot) {
-          await applyDamage(
-            phaseHistory.action.targetSnapshot,
-            finalDamage,
-            finalSanityDamage,
-          );
-
+      if (characterIds.length > 0) {
+        for (const characterId of characterIds) {
           io.to(`campaign ${encounter.campaignId}`).emit(
             'character',
-            phaseHistory.action.targetId,
+            characterId,
           );
         }
       }
@@ -953,8 +788,6 @@ const encounterServices = {
           io.to(`campaign ${encounter.campaignId}`).emit('item', itemId);
         }
       }
-
-      io.to(`encounter ${encounter.id}`).emit('resetBoard');
     } catch (error) {
       console.error(error);
       throw new Error('Failed to confirm action queue results');
@@ -965,10 +798,10 @@ const encounterServices = {
     campaignId: number,
     encounterId: number,
     formData: {
-      character: number;
-      target?: number;
-      action: number;
-      item?: number;
+      character: Character;
+      target?: Character;
+      action: Action;
+      item?: Item;
       tile?: {
         start: { row: number; col: number };
         end: { row: number; col: number };
@@ -977,7 +810,6 @@ const encounterServices = {
         result: number[];
         successes: number;
         modifiers: string[];
-        damage?: number;
       };
     },
   ) => {

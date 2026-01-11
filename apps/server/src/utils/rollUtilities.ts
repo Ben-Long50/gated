@@ -49,10 +49,7 @@ export const calculateRoll = (
       bestRoll.diceCount += 2;
     }
 
-    if (
-      action.name &&
-      (action.name === 'Salvo Fire' || action.name === 'Flurry')
-    ) {
+    if (action.name && (action.name === 'Salvo' || action.name === 'Flurry')) {
       bestRoll.diceCount += 2;
     }
 
