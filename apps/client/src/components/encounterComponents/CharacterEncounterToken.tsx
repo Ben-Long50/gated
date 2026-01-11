@@ -56,7 +56,6 @@ const CharacterEncounterToken = ({
     reactionPermissions,
     rolls,
     actionForm,
-    reactionForm,
     removeTarget,
   } = useContext(EncounterContext);
   const { statColorMap } = useContext(ThemeContext);
@@ -66,12 +65,6 @@ const CharacterEncounterToken = ({
   const { filteredCharacter: character, isLoading } = useCharacter(
     location.characterId,
   );
-
-  const form = actionPermissions
-    ? actionForm
-    : reactionPermissions
-      ? reactionForm
-      : actionForm;
 
   const roll = rolls.get(location.characterId) || null;
 
@@ -88,7 +81,7 @@ const CharacterEncounterToken = ({
   if (isLoading || combatLoading) return <Loading size={1.25} />;
 
   return (
-    <form.Field name="target">
+    <actionForm.Field name="target">
       {(field) => (
         <div
           draggable={false}
@@ -216,7 +209,7 @@ const CharacterEncounterToken = ({
           )}
         </div>
       )}
-    </form.Field>
+    </actionForm.Field>
   );
 };
 

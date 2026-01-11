@@ -36,7 +36,6 @@ const Encounter = () => {
     activeCharacter,
     controlledCharacterId,
     actionForm,
-    reactionForm,
   } = useContext(EncounterContext);
   const navigate = useNavigate();
   const location = useLocation();
@@ -89,12 +88,8 @@ const Encounter = () => {
 
   const tempItem = useCombatStore((state) => state.item);
   const actionItem = useStore(actionForm.store, (state) => state.values.item);
-  const reactionItem = useStore(
-    reactionForm.store,
-    (state) => state.values.item,
-  );
 
-  const item = tempItem || actionItem || reactionItem;
+  const item = tempItem || actionItem;
 
   if (mapLoading || historyLoading || combatLoading) return <Loading />;
 

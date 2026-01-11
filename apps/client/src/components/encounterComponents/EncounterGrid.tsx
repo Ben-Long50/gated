@@ -47,7 +47,6 @@ const EncounterGrid = ({
     controlledCharacter,
     targetMap,
     actionForm,
-    reactionForm,
   } = useContext(EncounterContext);
   const { encounterId } = useParams();
 
@@ -67,22 +66,9 @@ const EncounterGrid = ({
   const queryClient = useQueryClient();
   const tempRangeData = useCombatStore((state) => state.rangeData);
   const actionItem = useStore(actionForm.store, (state) => state.values.item);
-  const reactionItem = useStore(
-    reactionForm.store,
-    (state) => state.values.item,
-  );
   const action = useStore(actionForm.store, (state) => state.values.action);
-  const reaction = useStore(
-    reactionForm.store,
-    (state) => state.values.reaction,
-  );
 
-  const item =
-    actionPermissions || reactionPermissions
-      ? actionPermissions
-        ? actionItem
-        : reactionItem
-      : null;
+  const item = actionPermissions || reactionPermissions ? actionItem : null;
 
   let rangeData = { range: 0, color: 'transparent' };
 
@@ -94,9 +80,9 @@ const EncounterGrid = ({
       controlledCharacter,
       item,
     );
-  } else if (reaction && reactionFuncs[`${camelCase(reaction.name)}`]) {
-    rangeData = reactionFuncs[`${camelCase(reaction.name)}`](
-      reaction.costs,
+  } else if (action && reactionFuncs[`${camelCase(action.name)}`]) {
+    rangeData = reactionFuncs[`${camelCase(action.name)}`](
+      action.costs,
       controlledCharacter,
       item,
     );
@@ -126,10 +112,8 @@ const EncounterGrid = ({
     characterId?: number,
   ) => {
     if (!characterId) {
-      if (actionPermissions) {
+      if (actionPermissions || reactionPermissions) {
         actionForm.setFieldValue('target', null);
-      } else if (reactionPermissions) {
-        reactionForm.setFieldValue('target', null);
       }
     }
     if (actionPermissions) {

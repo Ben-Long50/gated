@@ -23,7 +23,6 @@ const EquippedItems = ({
     reactionPermissions,
     controlledCharacterId,
     actionForm,
-    reactionForm,
     removeTarget,
   } = useContext(EncounterContext);
   const navigate = useNavigate();
@@ -45,11 +44,6 @@ const EquippedItems = ({
       behavior: 'auto',
     });
   };
-  const form = actionPermissions
-    ? actionForm
-    : reactionPermissions
-      ? reactionForm
-      : actionForm;
 
   let equipmentList = [] as Item[];
 
@@ -61,12 +55,12 @@ const EquippedItems = ({
 
   return (
     character?.equipment && (
-      <form.Field
+      <actionForm.Field
         name="item"
         listeners={{
           onChange: () => {
             removeTarget(`character ${controlledCharacterId}`);
-            form.setFieldValue('target', null);
+            actionForm.setFieldValue('target', null);
           },
         }}
       >
@@ -144,7 +138,7 @@ const EquippedItems = ({
             ))}
           </div>
         )}
-      </form.Field>
+      </actionForm.Field>
     )
   );
 };

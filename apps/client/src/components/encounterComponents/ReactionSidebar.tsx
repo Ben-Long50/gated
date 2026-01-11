@@ -31,7 +31,7 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
   const {
     reactionPermissions,
     controlledCharacterId,
-    reactionForm,
+    actionForm,
     removeTarget,
     getTarget,
   } = useContext(EncounterContext);
@@ -44,14 +44,11 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
 
   const characterActions = character?.characterInventory?.actions;
 
-  const item = useStore(
-    reactionForm.store,
-    (state) => state.values.item,
-  ) as Item;
+  const item = useStore(actionForm.store, (state) => state.values.item) as Item;
 
   const reaction = useStore(
-    reactionForm.store,
-    (state) => state.values.reaction,
+    actionForm.store,
+    (state) => state.values.action,
   ) as Action;
 
   const { filteredActions: availableReactions, category } = useActions(
@@ -70,7 +67,7 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
 
       setItem(item);
 
-      reactionForm.setFieldValue('item', item);
+      actionForm.setFieldValue('item', item);
     }
   };
 
@@ -122,7 +119,7 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
           context={{
             actions: availableReactions,
             category,
-            form: reactionForm,
+            form: actionForm,
           }}
         />
       )}
@@ -145,7 +142,7 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
               aria-label="Reset"
               type="button"
               onClick={() => {
-                reactionForm.reset();
+                actionForm.reset();
                 setItem(null);
                 removeTarget(`character ${controlledCharacterId}`);
               }}
@@ -156,8 +153,8 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
               />
             </button>
           </div>
-          <reactionForm.Field
-            name="reaction"
+          <actionForm.Field
+            name="action"
             listeners={{
               onChange: ({ value }) => {
                 handleChosenItem(value);
@@ -171,7 +168,7 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
                 options={availableReactions}
               />
             )}
-          </reactionForm.Field>
+          </actionForm.Field>
           <Divider className="opacity-50" />
           {reactionInfo &&
             (reactionInfo.message ? (
@@ -187,7 +184,7 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
                     <div className="flex w-full flex-col justify-start gap-2">
                       <ArrowHeader4
                         className="text-primary"
-                        title="Action Costs"
+                        title="Reaction Costs"
                       />
                       <div
                         className={`grid h-full w-full grow grid-cols-[auto_auto_1fr_auto] place-items-center gap-2 gap-y-2 border-x-2 border-gray-400 border-opacity-50 px-2`}
@@ -200,9 +197,7 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
                     </div>
                   )}
                 {reactionInfo && reactionInfo.requirements.includes('item') && (
-                  <reactionForm.Subscribe
-                    selector={(state) => state.values.item}
-                  >
+                  <actionForm.Subscribe selector={(state) => state.values.item}>
                     {(item) => (
                       <>
                         <p>
@@ -223,11 +218,11 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
                         )}
                       </>
                     )}
-                  </reactionForm.Subscribe>
+                  </actionForm.Subscribe>
                 )}
                 {reactionInfo &&
                   reactionInfo.requirements.includes('target') && (
-                    <reactionForm.Subscribe
+                    <actionForm.Subscribe
                       selector={(state) => state.values.target}
                     >
                       {(target) => (
@@ -250,7 +245,7 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
                           )}
                         </>
                       )}
-                    </reactionForm.Subscribe>
+                    </actionForm.Subscribe>
                   )}
                 <Divider className="opacity-50" />
               </>
@@ -262,9 +257,9 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
               ))}
             </ul>
           ) : (
-            <reactionForm.Subscribe
+            <actionForm.Subscribe
               selector={(state) => [
-                state.values.reaction,
+                state.values.action,
                 state.values.item,
                 state.values.target,
                 state.values.modifiers,
@@ -287,7 +282,7 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
                     {reaction?.roll && reaction?.roll.length > 0 ? (
                       <>
                         <div className="relative flex w-full flex-col gap-2">
-                          <reactionForm.Field name="modifiers">
+                          <actionForm.Field name="modifiers">
                             {(field) => {
                               const modifiers = [
                                 'push',
@@ -311,7 +306,7 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
                                         if (
                                           field.state.value?.includes(value)
                                         ) {
-                                          reactionForm.setFieldValue(
+                                          actionForm.setFieldValue(
                                             'modifiers',
                                             (prev) =>
                                               prev.filter(
@@ -320,7 +315,7 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
                                               ),
                                           );
                                         } else {
-                                          reactionForm.setFieldValue(
+                                          actionForm.setFieldValue(
                                             'modifiers',
                                             (prev) => [...prev, value],
                                           );
@@ -331,8 +326,8 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
                                 </>
                               );
                             }}
-                          </reactionForm.Field>
-                          <reactionForm.Field name="extraDice">
+                          </actionForm.Field>
+                          <actionForm.Field name="extraDice">
                             {(field) => (
                               <InputField
                                 field={field}
@@ -340,7 +335,7 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
                                 type="number"
                               />
                             )}
-                          </reactionForm.Field>
+                          </actionForm.Field>
                         </div>
                         <div className="flex items-center justify-between">
                           <DieIcon className="text-secondary size-8" />
@@ -355,7 +350,7 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
                           ariaLabel="Roll reaction"
                           type="button"
                           onClick={() => {
-                            reactionForm.handleSubmit();
+                            actionForm.handleSubmit();
                           }}
                         >
                           Roll Reaction
@@ -366,15 +361,13 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
                         type="button"
                         ariaLabel="Confirm reaction"
                         onClick={() => {
-                          reactionForm.handleSubmit();
+                          actionForm.handleSubmit();
                         }}
                       >
                         Confirm Reaction
                       </BtnRect>
                     )}
-                    <reactionForm.Subscribe
-                      selector={(state) => state.errorMap}
-                    >
+                    <actionForm.Subscribe selector={(state) => state.errorMap}>
                       {(errorMap) => {
                         const errors = errorMap.onSubmit?.split(', ') || [];
 
@@ -390,11 +383,11 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
                           )
                         );
                       }}
-                    </reactionForm.Subscribe>
+                    </actionForm.Subscribe>
                   </>
                 );
               }}
-            </reactionForm.Subscribe>
+            </actionForm.Subscribe>
           )}
           <Divider className="opacity-50" />
         </>

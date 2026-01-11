@@ -304,16 +304,24 @@ const useCombat = () => {
       extraDice: null as number | null,
     },
     onSubmit: async ({ value }) => {
-      const actionData = actionFuncs[`${camelCase(value.action.name)}`](
-        value.action?.costs,
-        activeCharacter,
-        value.item,
-      );
-      const targetData = getTarget(`character ${activeCharacter?.id}`);
+      const actionData =
+        combat?.combatPhase === 'action'
+          ? actionFuncs[`${camelCase(value.action.name)}`](
+              value.action?.costs,
+              activeCharacter,
+              value.item,
+            )
+          : reactionFuncs[`${camelCase(value.action.name)}`](
+              value.action?.costs,
+              controlledCharacter,
+              value.item,
+            );
+
+      const targetData = getTarget(`character ${controlledCharacter?.id}`);
 
       const data = {
-        activeCharacterId: activeCharacter?.id,
-        actionId: value.action.id,
+        activeCharacterId: controlledCharacter?.id,
+        actionId: value.action?.id,
       };
 
       if (actionData.requirements.includes('tile')) {
@@ -338,135 +346,16 @@ const useCombat = () => {
 
       setIsFetching(true);
 
-      rollAction.mutate(data);
+      if (combat?.combatPhase === 'action') {
+        rollAction.mutate(data);
+      } else if (combat?.combatPhase === 'reaction') {
+        rollReaction.mutate(data);
+      }
 
       if (actionData.requirements.includes('roll')) {
         const { diceCount } = calculateDiceCount(
-          activeCharacter?.attributes,
-          value.action,
-          value.modifiers,
-          value.extraDice,
-        );
-
-        const loadingRollMap = new Map();
-
-        loadingRollMap.set(activeCharacter?.id, {
-          diceArray: Array.from({ length: diceCount as number }).map((_) => 1),
-          modifiers: ['loading'],
-        });
-
-        setRolls(loadingRollMap);
-      }
-
-      actionForm.reset();
-    },
-    validators: {
-      onSubmit: ({ value }) => {
-        const { requirements } = actionFuncs[`${camelCase(value.action.name)}`](
-          value.action?.costs,
-          activeCharacter,
-          value.item,
-        );
-
-        const errors = [];
-
-        if (!value.action) {
-          errors.push('Select an Action');
-        }
-        if (requirements.includes('target') && !value.target) {
-          errors.push('Select a Target');
-        }
-        if (requirements.includes('item') && !value.item) {
-          errors.push('Select an Item');
-        }
-        if (
-          requirements.includes('roll') &&
-          (!value.action.roll || value.action?.roll.length === 0)
-        ) {
-          errors.push(
-            'This action requires a roll but is not associated with one. An Admin must address this issue',
-          );
-        }
-        if (requirements.includes('tile')) {
-          const targetData = getTarget(`character ${activeCharacter?.id}`);
-          const tile = targetData
-            ? {
-                start: {
-                  row: targetData.start.row,
-                  col: targetData.start.col,
-                },
-                end: { row: targetData.end.row, col: targetData.end.col },
-              }
-            : null;
-
-          if (
-            !tile ||
-            !tile.start.row ||
-            !tile.start.col ||
-            !tile.end.row ||
-            !tile.end.col
-          ) {
-            errors.push('Select a Tile');
-          }
-        }
-
-        return errors.length > 0 ? errors.join(', ') : undefined;
-      },
-    },
-  });
-
-  const reactionForm = useForm({
-    defaultValues: {
-      reaction: null as Action | null,
-      item: null as Item | null,
-      target: null as Character | null,
-      modifiers: [] as string[],
-      extraDice: null as number | null,
-    },
-
-    onSubmit: async ({ value }) => {
-      const reactionData = reactionFuncs[`${camelCase(value.reaction.name)}`](
-        value.reaction?.costs,
-        controlledCharacter,
-        value.item,
-      );
-      const targetData = getTarget(`character ${controlledCharacter?.id}`);
-
-      setIsFetching(true);
-
-      const data = {
-        activeCharacterId: controlledCharacter?.id,
-        actionId: value.reaction.id,
-      };
-
-      if (reactionData.requirements.includes('tile')) {
-        data.tile = {
-          start: { row: targetData?.start.row, col: targetData?.start.col },
-          end: { row: targetData?.end.row, col: targetData?.end.col },
-        };
-      }
-
-      if (reactionData.requirements.includes('target')) {
-        data.targetCharacterId = value.target.id;
-      }
-
-      if (reactionData.requirements.includes('item')) {
-        data.itemId = value.item.id;
-      }
-
-      if (reactionData.requirements.includes('roll')) {
-        data.modifiers = value.modifiers;
-        data.extraDice = value.extraDice || 0;
-      }
-
-      setIsFetching(true);
-
-      rollReaction.mutate(data);
-
-      if (reactionData.requirements.includes('roll')) {
-        const { diceCount } = calculateDiceCount(
           controlledCharacter?.attributes,
-          value.reaction,
+          value.action,
           value.modifiers,
           value.extraDice,
         );
@@ -481,18 +370,27 @@ const useCombat = () => {
         setRolls(loadingRollMap);
       }
 
-      reactionForm.reset();
+      actionForm.reset();
     },
     validators: {
       onSubmit: ({ value }) => {
-        const { requirements } = reactionFuncs[
-          `${camelCase(value.reaction.name)}`
-        ](value.reaction?.costs, activeCharacter, value.item);
+        const { requirements } =
+          combat?.combatPhase === 'action'
+            ? actionFuncs[`${camelCase(value.action.name)}`](
+                value.action?.costs,
+                controlledCharacter,
+                value.item,
+              )
+            : reactionFuncs[`${camelCase(value.action.name)}`](
+                value.action?.costs,
+                controlledCharacter,
+                value.item,
+              );
 
         const errors = [];
 
-        if (!value.reaction) {
-          errors.push('Select an Reaction');
+        if (!value.action) {
+          errors.push('Select an Action');
         }
         if (requirements.includes('target') && !value.target) {
           errors.push('Select a Target');
@@ -502,14 +400,14 @@ const useCombat = () => {
         }
         if (
           requirements.includes('roll') &&
-          (!value.reaction.roll || value.reaction?.roll.length === 0)
+          (!value.action?.roll || value.action?.roll.length === 0)
         ) {
           errors.push(
             'This action requires a roll but is not associated with one. An Admin must address this issue',
           );
         }
         if (requirements.includes('tile')) {
-          const targetData = getTarget(`character ${activeCharacter?.id}`);
+          const targetData = getTarget(`character ${controlledCharacter?.id}`);
           const tile = targetData
             ? {
                 start: {
@@ -538,7 +436,6 @@ const useCombat = () => {
 
   const resetForms = () => {
     actionForm.reset();
-    reactionForm.reset();
   };
 
   return {
@@ -561,7 +458,6 @@ const useCombat = () => {
     activeCharacter,
     handleAdvanceTurn,
     actionForm,
-    reactionForm,
     resetForms,
     isLoading,
     isPending,
