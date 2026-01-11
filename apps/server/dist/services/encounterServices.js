@@ -535,7 +535,7 @@ const encounterServices = {
                 }
                 if (reaction.targetSnapshot &&
                     (results.damage || results.sanityDamage)) {
-                    await applyDamage(reaction.targetSnapshot, results.damage - blockedDamage, results.sanityDamage - blockedSanityDamage);
+                    await applyDamage(reaction.targetSnapshot, results.damage * results.instances - blockedDamage, results.sanityDamage * results.instances - blockedSanityDamage);
                     characterIds.push(reaction.targetId);
                 }
             }
@@ -556,7 +556,8 @@ const encounterServices = {
             }
             if (phaseAction.targetSnapshot &&
                 (actionResults.damage || actionResults.sanityDamage)) {
-                await applyDamage(phaseAction.targetSnapshot, actionResults.damage - blockedDamage, actionResults.sanityDamage - blockedSanityDamage);
+                await applyDamage(phaseAction.targetSnapshot, actionResults.damage * actionResults.instances - blockedDamage, actionResults.sanityDamage * actionResults.instances -
+                    blockedSanityDamage);
                 characterIds.push(phaseAction.targetId);
             }
             io.to(`encounter ${encounter.id}`).emit('encounterHistory', encounter.id);

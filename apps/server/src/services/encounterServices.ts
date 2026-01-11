@@ -726,8 +726,8 @@ const encounterServices = {
         ) {
           await applyDamage(
             reaction.targetSnapshot,
-            results.damage - blockedDamage,
-            results.sanityDamage - blockedSanityDamage,
+            results.damage * results.instances - blockedDamage,
+            results.sanityDamage * results.instances - blockedSanityDamage,
           );
           characterIds.push(reaction.targetId);
         }
@@ -765,8 +765,9 @@ const encounterServices = {
       ) {
         await applyDamage(
           phaseAction.targetSnapshot,
-          actionResults.damage - blockedDamage,
-          actionResults.sanityDamage - blockedSanityDamage,
+          actionResults.damage * actionResults.instances - blockedDamage,
+          actionResults.sanityDamage * actionResults.instances -
+            blockedSanityDamage,
         );
         characterIds.push(phaseAction.targetId);
       }
