@@ -7,36 +7,40 @@ import { mdiClose } from '@mdi/js';
 const EncounterGridTile = ({
   row,
   col,
-  selected,
   height,
   activeCoordinates,
   rangeData,
+  targetData,
   gridDisplay,
   insertTarget,
   tileDragStart,
   handleDragUpdate,
+  handleDragEnd,
   handleRemoveTarget,
 }: {
   row: number;
   col: number;
-  selected: boolean;
   height: number;
   activeCoordinates: { row: number; col: number } | null;
   rangeData: { range: number; color: string };
+  targetData?: {};
   gridDisplay: boolean;
   insertTarget?: (
     targetRow: number,
     targetCol: number,
     inRange: boolean,
+    color: string,
     targetId?: number,
   ) => void;
   tileDragStart?: (row: number, col: number) => void;
   handleDragUpdate?: (
     row: number,
     col: number,
+    color: string,
     targetId?: number,
     inRange?: boolean | null,
   ) => void;
+  handleDragEnd?: () => void;
   handleRemoveTarget?: (characterId?: number) => void;
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -61,7 +65,8 @@ const EncounterGridTile = ({
       }}
       onClick={() => {
         if (insertTarget) {
-          insertTarget(row, col, inRange);
+          const color = rangeData ? rangeData.color : accentPrimary;
+          insertTarget(row, col, inRange, color);
         }
       }}
       onMouseDown={() => {
@@ -71,15 +76,21 @@ const EncounterGridTile = ({
       }}
       onMouseEnter={
         handleDragUpdate
-          ? () => handleDragUpdate(row, col, undefined, inRange)
+          ? () =>
+              handleDragUpdate(row, col, rangeData.color, undefined, inRange)
           : () => setHover(true)
       }
+      onMouseUp={() => {
+        if (handleDragEnd) {
+          handleDragEnd();
+        }
+      }}
       onMouseLeave={() => setHover(false)}
       onDoubleClick={
         handleRemoveTarget ? () => handleRemoveTarget() : undefined
       }
     >
-      {selected && inRange === false && (
+      {targetData && targetData.inRange === false && (
         <Icon className="text-red-500" path={mdiClose} size={2.5} />
       )}
       {hover && (

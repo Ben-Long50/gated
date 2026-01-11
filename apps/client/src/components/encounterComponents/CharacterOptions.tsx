@@ -107,17 +107,35 @@ const CharacterOptions = ({
         }}
       >
         {gameMaster && (
-          <InputSelectField
-            ref={inputRef}
-            className={`${visible ? 'max-h-24' : 'max-h-0 overflow-hidden'} timing`}
-            label="Switch Character"
-            reverse={true}
-            options={characters}
-            onChange={(value) => {
-              setControlledCharacterId(value.id);
-              setItem(null);
-            }}
-          />
+          <div
+            className={`${visible ? 'max-h-24' : 'max-h-0 overflow-hidden'} timing flex w-full items-center gap-4`}
+          >
+            <InputSelectField
+              ref={inputRef}
+              label="Switch Character"
+              reverse={true}
+              options={characters}
+              onChange={(value) => {
+                setControlledCharacterId(value.id);
+                setItem(null);
+              }}
+            />
+            <button
+              className="bg-tertiary group my-auto flex justify-self-start rounded p-1 shadow-md shadow-black"
+              aria-label="Open save modal"
+              type="button"
+              onClick={() => {
+                setControlledCharacterId(activeCharacter.id);
+                setItem(null);
+              }}
+            >
+              <CharacterPictureRound
+                className="group-hover:border-accent group-hover:border-2"
+                key={activeCharacter.id}
+                character={activeCharacter}
+              />
+            </button>
+          </div>
         )}
         <div
           className={`${visible ? 'gap-4' : 'gap-0'} timing flex flex-col items-center justify-start overflow-hidden`}

@@ -12,6 +12,7 @@ import { Location } from 'src/types/map';
 import isInRange from './encounterUtils/isInRange';
 import statColorMap from 'src/utils/statColorMap';
 import { ActionData } from 'src/types/actionData';
+import { ThemeContext } from 'src/contexts/ThemeContext';
 
 const CharacterEncounterToken = ({
   location,
@@ -33,6 +34,7 @@ const CharacterEncounterToken = ({
     targetRow: number,
     targetCol: number,
     inRange: boolean,
+    color: string,
     targetId?: number,
   ) => void;
   tokenDragStart?: (row: number, col: number, characterId: number) => void;
@@ -51,6 +53,7 @@ const CharacterEncounterToken = ({
     reactionForm,
     removeTarget,
   } = useContext(EncounterContext);
+  const { statColorMap } = useContext(ThemeContext);
   const navigate = useNavigate();
   const { encounterId } = useParams();
 
@@ -94,7 +97,6 @@ const CharacterEncounterToken = ({
                 )
               : false;
 
-            console.log(rangeData);
             if (
               (actionPermissions || reactionPermissions) &&
               rangeData.requirements.includes('target')
@@ -104,7 +106,7 @@ const CharacterEncounterToken = ({
                 removeTarget(`character ${controlledCharacter?.id}`);
                 socket.emit('removeTarget', {
                   encounterId: Number(encounterId),
-                  activeId: `character ${controlledCharacter?.id}`,
+                  key: `character ${controlledCharacter?.id}`,
                 });
               } else if (actionPermissions || reactionPermissions) {
                 if (!inRange) {
@@ -119,6 +121,7 @@ const CharacterEncounterToken = ({
                 location.row,
                 location.col,
                 inRange,
+                statColorMap.DMG,
                 location.characterId,
               );
             }

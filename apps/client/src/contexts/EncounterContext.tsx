@@ -87,6 +87,7 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
     socket.on('resetBoard', () => {
       resetRolls();
       resetTargetMap();
+      resetBlockDataMap();
     });
 
     socket.on('actionRoll', async ({ encounterId, rollsArray }) => {
@@ -100,23 +101,8 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
       });
     });
 
-    socket.on('reactionRoll', async ({ encounterId, rollsArray }) => {
-      const rolls = new Map(rollsArray) as Map<number, any>;
-
-      await animateRoll(rolls);
-
-      setTimeout(() => {
-        queryClient.invalidateQueries({
-          queryKey: ['encounter', encounterId],
-        });
-        queryClient.invalidateQueries({
-          queryKey: ['encounterHistory', encounterId],
-        });
-      }, 3000);
-    });
-
-    socket.on('blockData', (blockData) => {
-      blockForm.setFieldValue('blockData', blockData);
+    socket.on('blockData', ({ characterId, blockData }) => {
+      setBlockData(`character ${characterId}`, blockData);
     });
 
     socket.on('encounterHistory', (encounterId) => {
@@ -141,11 +127,34 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
     });
 
     socket.on('changeTarget', ({ key, targetData }) => {
-      setTarget(key, targetData);
+      const data = {
+        start: {
+          row: targetData.row,
+          col: targetData.col,
+          characterId: targetData.characterId,
+        },
+        end: {
+          row: targetData.targetRow,
+          col: targetData.targetCol,
+          targetId: targetData.targetId,
+        },
+        action: targetData.action,
+        distance: Math.round(
+          Math.sqrt(
+            (targetData.targetCol - targetData.col) ** 2 +
+              (targetData.targetRow - targetData.row) ** 2,
+          ),
+        ),
+        color: targetData.color,
+        occupied: false,
+        inRange: targetData.inRange,
+      };
+
+      setTarget(key, data);
     });
 
-    socket.on('removeTarget', ({ activeId }) => {
-      removeTarget(activeId);
+    socket.on('removeTarget', ({ key }) => {
+      removeTarget(key);
     });
 
     return () => {

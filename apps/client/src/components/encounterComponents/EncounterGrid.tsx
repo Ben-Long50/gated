@@ -16,6 +16,8 @@ import actionFuncs from 'src/utils/actionFuncs';
 import reactionFuncs from 'src/utils/reactionFuncs';
 import { Action } from 'src/types/action';
 import { useQueryClient } from '@tanstack/react-query';
+import { socket } from 'src/socket';
+import { useParams } from 'react-router-dom';
 
 const EncounterGrid = ({
   width,
@@ -47,6 +49,7 @@ const EncounterGrid = ({
     actionForm,
     reactionForm,
   } = useContext(EncounterContext);
+  const { encounterId } = useParams();
 
   const {
     isDragging,
@@ -119,6 +122,7 @@ const EncounterGrid = ({
     row: number,
     col: number,
     inRange: boolean,
+    color: string,
     characterId?: number,
   ) => {
     if (!characterId) {
@@ -137,8 +141,24 @@ const EncounterGrid = ({
         row,
         col,
         inRange,
+        color,
         characterId,
       );
+      socket.emit('changeTarget', {
+        encounterId: Number(encounterId),
+        key: `character ${controlledCharacter?.id}`,
+        targetData: {
+          action: action.name,
+          row: controlledCharacter.location.row,
+          col: controlledCharacter.location.col,
+          characterId: controlledCharacter.id,
+          targetRow: row,
+          targetCol: col,
+          inRange,
+          color,
+          targetId: characterId,
+        },
+      });
     } else if (reactionPermissions) {
       handleInsertArrow(
         reaction.name,
@@ -148,16 +168,32 @@ const EncounterGrid = ({
         row,
         col,
         inRange,
+        color,
         characterId,
       );
+      socket.emit('changeTarget', {
+        encounterId: Number(encounterId),
+        key: `character ${controlledCharacter?.id}`,
+        targetData: {
+          action: reaction.name,
+          row: controlledCharacter.location.row,
+          col: controlledCharacter.location.col,
+          characterId: controlledCharacter.id,
+          targetRow: row,
+          targetCol: col,
+          inRange,
+          color,
+          targetId: characterId,
+        },
+      });
     }
   };
 
   const tileDragStart = (row: number, col: number) => {
     if (actionPermissions) {
-      handleDragStart(action.name, row, col);
+      handleDragStart(action.name, row, col, rangeData.color);
     } else if (reactionPermissions) {
-      handleDragStart(action.name, row, col);
+      handleDragStart(action.name, row, col, rangeData.color);
     }
   };
 
@@ -168,9 +204,9 @@ const EncounterGrid = ({
         .find((action: Action) => action.name === 'Basic Movement');
 
       actionForm.setFieldValue('action', basicMovement);
-      handleDragStart('Basic Movement', row, col, characterId);
+      handleDragStart('Basic Movement', row, col, rangeData.color, characterId);
     } else {
-      handleDragStart(action, row, col, characterId);
+      handleDragStart(action, row, col, rangeData.color, characterId);
     }
   };
 
@@ -229,23 +265,26 @@ const EncounterGrid = ({
         })}
         {Array.from({ length: width * height }).map((_, index) => {
           const { row, col } = getCoords(width, index);
-          const selected = targets.some(
-            (target) => target.end.row === row && target.end.col === col,
-          );
+
+          const targetData =
+            targets.find(
+              (target) => target.end.row === row && target.end.col === col,
+            ) || undefined;
 
           return (
             <EncounterGridTile
               key={index}
               row={row}
               col={col}
-              selected={selected}
               height={height}
               activeCoordinates={activeCoordinates}
               rangeData={rangeData}
+              targetData={targetData}
               gridDisplay={gridDisplay}
               insertTarget={insertTarget}
               tileDragStart={measureMode ? tileDragStart : undefined}
               handleDragUpdate={isDragging ? handleDragUpdate : undefined}
+              handleDragEnd={isDragging ? handleDragEnd : undefined}
               handleRemoveTarget={handleRemoveTarget}
             />
           );

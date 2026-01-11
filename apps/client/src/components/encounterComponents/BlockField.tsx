@@ -13,6 +13,8 @@ import BlockIcon from '../icons/BlockIcon';
 import useCharacter from 'src/hooks/useCharacter';
 import constructName from 'src/utils/constructName';
 import { CampaignContext } from 'src/contexts/CampaignContext';
+import { socket } from 'src/socket';
+import { useParams } from 'react-router-dom';
 
 const BlockField = ({
   phaseAction,
@@ -24,8 +26,7 @@ const BlockField = ({
   const { gameMaster } = useContext(CampaignContext);
   const { controlledCharacter, getBlockData, setBlockData } =
     useContext(EncounterContext);
-
-  console.log(phaseAction);
+  const { encounterId } = useParams();
 
   const [listExpanded, setListExpanded] = useState(false);
   const [blockDataIndex, setBlockDataIndex] = useState(0);
@@ -34,20 +35,24 @@ const BlockField = ({
 
   useEffect(() => {
     if (target?.id) {
-      setBlockData(
-        `character ${target?.id}`,
-        Array.from({ length: results.instances }).map(() => ({
-          blockedDamage: 0,
-          blockedSanityDamage: 0,
-          armorIds: [],
-        })),
-      );
+      const blockData = getBlockData(`character ${target?.id}`);
+
+      if (!blockData) {
+        setBlockData(
+          `character ${target?.id}`,
+          Array.from({ length: results.resultingInstances }).map(() => ({
+            blockedDamage: 0,
+            blockedSanityDamage: 0,
+            armorIds: [],
+          })),
+        );
+      }
     }
-  }, [phaseAction, target?.id]);
+  }, [phaseAction, target?.id, results]);
 
   const blockData = getBlockData(`character ${target?.id}`) || [];
 
-  const blockPermissions = gameMaster || controlledCharacter.id === target?.id;
+  const blockPermissions = gameMaster || controlledCharacter?.id === target?.id;
 
   const armor = target
     ? target?.equipment?.armors
@@ -84,6 +89,11 @@ const BlockField = ({
     );
 
     setBlockData(`character ${target?.id}`, newBlockData);
+    socket.emit('blockData', {
+      encounterId: Number(encounterId),
+      characterId: target?.id,
+      blockData: newBlockData,
+    });
   };
 
   return (

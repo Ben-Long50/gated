@@ -13,6 +13,7 @@ import CharacterStatBars from '../CharacterStatBars';
 import { ActionData } from 'src/types/actionData';
 import BlockField from './BlockField';
 import Divider from '../Divider';
+import constructName from 'src/utils/constructName';
 
 const PhaseActionCard = ({
   phaseAction,
@@ -26,26 +27,28 @@ const PhaseActionCard = ({
   const item = phaseAction.itemSnapshot;
   const action = phaseAction.actionSnapshot;
 
-  const characterName = character?.lastName
-    ? character?.firstName + ' ' + character?.lastName
-    : character?.firstName;
+  let resultingInstances = 0;
 
-  const targetName = target?.lastName
-    ? target?.firstName + ' ' + target?.lastName
-    : target?.firstName;
+  if (results.reducedSuccesses) {
+    const totalSuccesses =
+      phaseAction.rollResult.successes - results.reducedSuccesses;
+    resultingInstances =
+      totalSuccesses > results.instances ? results.instances : totalSuccesses;
+  } else {
+    resultingInstances = results.instances;
+  }
 
-  const damage = [
-    results.damage * results.instances,
-    results.sanityDamage * results.instances,
-  ]
-    .filter((damage) => damage && damage > 0)
-    .reduce((sum, damage) => sum + damage, 0);
+  const damage = results.damage * resultingInstances;
+  const sanityDamage = results.sanityDamage * resultingInstances;
 
   return (
     <div className="bg-primary flex w-full flex-col gap-8 rounded-md p-4 shadow-md shadow-black">
       <div className="flex w-full items-center gap-8">
         <div className="flex w-full flex-col items-start gap-4">
-          <ArrowHeader4 className="text-primary" title={characterName} />
+          <ArrowHeader4
+            className="text-primary"
+            title={constructName(character)}
+          />
           <div className={`relative flex w-full items-center`}>
             <CharacterPictureRound character={character} />
             {character?.conditions && character?.conditions.length > 0 && (
@@ -68,7 +71,7 @@ const PhaseActionCard = ({
             </div>
           </div>
         </div>
-        {phaseAction.targetId && (
+        {target && (
           <>
             <Icon
               path={mdiArrowRight}
@@ -76,10 +79,13 @@ const PhaseActionCard = ({
               className="text-tertiary shrink-0"
             />
             <div className="flex w-full flex-col items-start gap-4">
-              <ArrowHeader4 className="text-primary" title={targetName} />
+              <ArrowHeader4
+                className="text-primary"
+                title={constructName(target)}
+              />
               <div className={`relative flex w-full items-center`}>
                 <CharacterPictureRound character={target} />
-                {target?.conditions && target?.conditions.length > 0 && (
+                {target.conditions && target.conditions.length > 0 && (
                   <div className="absolute left-0 top-0 z-10 size-3 rounded-full bg-red-600 shadow-md shadow-black"></div>
                 )}
                 <div
@@ -89,10 +95,10 @@ const PhaseActionCard = ({
                     characterId={target?.id}
                     size="small"
                     stats={{
-                      currentHealth: target?.stats.currentHealth,
-                      maxHealth: target?.stats.maxHealth,
-                      currentSanity: target?.stats.currentSanity,
-                      maxSanity: target?.stats.maxSanity,
+                      currentHealth: target.stats.currentHealth,
+                      maxHealth: target.stats.maxHealth,
+                      currentSanity: target.stats.currentSanity,
+                      maxSanity: target.stats.maxSanity,
                     }}
                     cardWidth={300}
                   />
@@ -155,7 +161,6 @@ const PhaseActionCard = ({
       {phaseAction.rollResult && (
         <div className="flex w-full items-center justify-between gap-4">
           <ArrowHeader3 title="Roll" />
-          <h4 className="text-tertiary mr-auto">{`(${phaseAction.rollResult.successes} successes)`}</h4>
           <div className="col-span-2 flex flex-wrap items-center justify-center gap-2">
             {phaseAction?.rollResult?.result.map((number: number, index) => (
               <Die
@@ -170,30 +175,78 @@ const PhaseActionCard = ({
           </div>
         </div>
       )}
-      {results.damage && results.instances != null && (
+      {phaseAction.rollResult && (
         <div className="flex flex-col gap-2 border-x-2 border-gray-400/50 px-2">
           <div className="flex w-full items-center justify-between px-2">
-            <ArrowHeader4
-              className="text-secondary"
-              title="Damage (Instances)"
-            />
+            <ArrowHeader4 className="text-secondary" title="Successes" />
             <h3 className="min-size-6 flex items-center justify-center">
-              {`${results.damage}`}
-              <span className="text-tertiary ml-2 text-lg">{`(${results.instances})`}</span>
+              {phaseAction.rollResult.successes}
             </h3>
           </div>
-          <div className="flex w-full items-center justify-between px-2">
-            <ArrowHeader4 className="text-secondary" title="Total Damage" />
-            <h3 className="flex size-6 items-center justify-center">
-              {results.instances * results.damage}
-            </h3>
-          </div>
+
+          {!!results.reducedSuccesses && (
+            <div className="flex w-full items-center justify-between px-2">
+              <ArrowHeader4
+                className="text-secondary"
+                title="Reduced Successes"
+              />
+              <h3 className="min-size-6 flex items-center justify-center">
+                {results.reducedSuccesses}
+              </h3>
+            </div>
+          )}
+          {!!damage && (
+            <>
+              <div className="flex w-full items-center justify-between px-2">
+                <ArrowHeader4
+                  className="text-secondary"
+                  title="Damage (Instances)"
+                />
+                <h3 className="min-size-6 flex items-center justify-center">
+                  {`${results.damage}`}
+                  <span className="text-tertiary ml-2 text-lg">{`(${resultingInstances})`}</span>
+                </h3>
+              </div>
+              <div className="flex w-full items-center justify-between px-2">
+                <ArrowHeader4 className="text-secondary" title="Total Damage" />
+                <h3 className="flex size-6 items-center justify-center">
+                  {damage}
+                </h3>
+              </div>
+            </>
+          )}
+          {!!sanityDamage && (
+            <>
+              <div className="flex w-full items-center justify-between px-2">
+                <ArrowHeader4
+                  className="text-secondary"
+                  title="Sanity Damage (Instances)"
+                />
+                <h3 className="min-size-6 flex items-center justify-center">
+                  {`${results.sanityDamage}`}
+                  <span className="text-tertiary ml-2 text-lg">{`(${resultingInstances})`}</span>
+                </h3>
+              </div>
+              <div className="flex w-full items-center justify-between px-2">
+                <ArrowHeader4
+                  className="text-secondary"
+                  title="Total Sanity Damage"
+                />
+                <h3 className="flex size-6 items-center justify-center">
+                  {sanityDamage}
+                </h3>
+              </div>
+            </>
+          )}
         </div>
       )}
-      {damage > 0 && (
+      {(damage > 0 || sanityDamage > 0) && (
         <>
           <Divider className="opacity-50" />
-          <BlockField phaseAction={phaseAction} results={results} />
+          <BlockField
+            phaseAction={phaseAction}
+            results={{ ...results, resultingInstances }}
+          />
         </>
       )}
     </div>

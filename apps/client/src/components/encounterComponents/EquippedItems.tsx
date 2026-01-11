@@ -66,8 +66,6 @@ const EquippedItems = ({
         listeners={{
           onChange: () => {
             removeTarget(`character ${controlledCharacterId}`);
-            form.setFieldValue('action', null);
-            form.setFieldValue('reaction', null);
             form.setFieldValue('target', null);
           },
         }}
@@ -140,7 +138,7 @@ const EquippedItems = ({
                 />
                 <CloudinaryImage
                   className={`${!equipment.available && 'opacity-50'} `}
-                  publicId={equipment.picture.publicId}
+                  publicId={equipment.picture?.publicId}
                 />
               </button>
             ))}

@@ -397,22 +397,6 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
             </reactionForm.Subscribe>
           )}
           <Divider className="opacity-50" />
-          <reactionForm.Subscribe selector={(state) => state.errorMap}>
-            {(errorMap) => {
-              const errors = errorMap.onSubmit?.split(', ') || [];
-              return (
-                <>
-                  {errors.length > 0 && (
-                    <ul className="flex list-disc flex-col gap-2">
-                      {errors.map((error) => (
-                        <li className="text-error w-full text-base">{error}</li>
-                      ))}
-                    </ul>
-                  )}
-                </>
-              );
-            }}
-          </reactionForm.Subscribe>
         </>
       )}
     </div>

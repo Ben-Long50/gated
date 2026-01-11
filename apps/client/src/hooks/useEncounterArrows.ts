@@ -22,6 +22,7 @@ const useEncounterArrows = () => {
     targetRow: number,
     targetCol: number,
     inRange: boolean,
+    color: string,
     targetId?: number,
   ) => {
     const key = characterId ? `character ${characterId}` : `user ${user.id}`;
@@ -43,7 +44,7 @@ const useEncounterArrows = () => {
       distance: Math.round(
         Math.sqrt((targetCol - col) ** 2 + (targetRow - row) ** 2),
       ),
-      color: accentPrimary,
+      color,
       occupied: false,
       inRange,
     };
@@ -55,6 +56,7 @@ const useEncounterArrows = () => {
     action: string,
     row: number,
     col: number,
+    color: string,
     characterId?: number,
   ) => {
     isDraggingRef.current = true;
@@ -76,7 +78,7 @@ const useEncounterArrows = () => {
       },
       action,
       distance: 0,
-      color: accentPrimary,
+      color,
       occupied: false,
       inRange: true,
     };
@@ -87,6 +89,7 @@ const useEncounterArrows = () => {
   const handleDragUpdate = (
     row: number,
     col: number,
+    color: string,
     targetId?: number,
     inRange?: boolean | null,
   ) => {
@@ -115,7 +118,7 @@ const useEncounterArrows = () => {
       distance: Math.round(
         Math.sqrt((col - data.start.col) ** 2 + (row - data.start.row) ** 2),
       ),
-      color: accentPrimary,
+      color,
       occupied: !!targetId,
       inRange,
     };
@@ -136,7 +139,17 @@ const useEncounterArrows = () => {
     socket.emit('changeTarget', {
       encounterId: combat.id,
       key,
-      targetData,
+      targetData: {
+        action: targetData.action,
+        row: targetData.start.row,
+        col: targetData.start.col,
+        characterId: targetData.start.characterId,
+        targetRow: targetData.end.row,
+        targetCol: targetData.end.col,
+        inRange: targetData.inRange,
+        color: targetData.color,
+        targetId: targetData.end.targetId,
+      },
     });
 
     isDraggingRef.current = false;

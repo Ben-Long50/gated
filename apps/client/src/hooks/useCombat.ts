@@ -435,8 +435,8 @@ const useCombat = () => {
       setIsFetching(true);
 
       const data = {
-        reactiveCharacterId: controlledCharacter?.id,
-        reactionId: value.reaction.id,
+        activeCharacterId: controlledCharacter?.id,
+        actionId: value.reaction.id,
       };
 
       if (reactionData.requirements.includes('tile')) {
