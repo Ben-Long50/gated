@@ -130,7 +130,7 @@ export function setupSocketIO(io: Server) {
     });
 
     socket.on('removeTarget', ({ encounterId, key }) => {
-      io.to(`encounter ${encounterId}`).emit('removeTarget', { key });
+      socket.to(`encounter ${encounterId}`).emit('removeTarget', { key });
 
       console.log(
         `Broadcasted remove target ${key} to encounter ${encounterId}`,
@@ -138,7 +138,7 @@ export function setupSocketIO(io: Server) {
     });
 
     socket.on('blockData', ({ encounterId, characterId, blockData }) => {
-      io.to(`encounter ${encounterId}`).emit('blockData', {
+      socket.to(`encounter ${encounterId}`).emit('blockData', {
         characterId,
         blockData,
       });
