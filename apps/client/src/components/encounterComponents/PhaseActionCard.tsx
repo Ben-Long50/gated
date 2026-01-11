@@ -18,9 +18,11 @@ import constructName from 'src/utils/constructName';
 const PhaseActionCard = ({
   phaseAction,
   results,
+  showBlockField = true,
 }: {
   phaseAction: History;
   results: ActionData;
+  showBlockField?: boolean;
 }) => {
   const character = phaseAction.characterSnapshot;
   const target = phaseAction.targetSnapshot;
@@ -241,7 +243,7 @@ const PhaseActionCard = ({
           )}
         </div>
       )}
-      {(damage > 0 || sanityDamage > 0) && (
+      {(damage > 0 || sanityDamage > 0) && showBlockField && (
         <>
           <Divider className="opacity-50" />
           <BlockField

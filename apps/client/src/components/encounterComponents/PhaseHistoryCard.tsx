@@ -70,6 +70,7 @@ const PhaseHistoryCard = ({ phaseHistory }: { phaseHistory: PhaseHistory }) => {
           <PhaseActionCard
             phaseAction={phaseAction}
             results={{ ...actionResults, reducedSuccesses }}
+            showBlockField={false}
           />
 
           {phaseReactions.length > 0 && (
@@ -82,6 +83,7 @@ const PhaseHistoryCard = ({ phaseHistory }: { phaseHistory: PhaseHistory }) => {
                     key={phaseReaction.id}
                     phaseAction={phaseReaction}
                     results={reactionResults[index]}
+                    showBlockField={false}
                   />
                 );
               })}
