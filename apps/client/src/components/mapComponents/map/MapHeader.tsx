@@ -26,7 +26,7 @@ const MapHeader = ({
   const { user } = useContext(AuthContext);
   const { targetMap, removeTarget } = useContext(EncounterContext);
 
-  const measuring = targetMap.get(`user ${user.id}`);
+  const measuring = targetMap ? targetMap.get(`user ${user.id}`) : null;
 
   return (
     <div className="flex w-full items-center justify-center gap-8">

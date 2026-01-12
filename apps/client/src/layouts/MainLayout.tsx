@@ -33,8 +33,6 @@ const MainLayout = () => {
 
   const rollsArray = Array.from(rolls.values());
 
-  console.log(rollsArray);
-
   return (
     <div
       className={`${theme} main-layout-large relative min-h-dvh w-dvw`}

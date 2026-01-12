@@ -98,7 +98,7 @@ const TileListModal = () => {
       )}
       <Divider className="!my-0" />
       {tab === 'tiles' && (
-        <div className="scrollbar-primary flex h-full w-full items-start justify-center overflow-y-auto">
+        <div className="scrollbar-primary flex h-full w-full items-start justify-start overflow-auto">
           {isPng ? (
             <TilePicker
               pngPath={pngPath}
@@ -173,16 +173,6 @@ const TileListModal = () => {
                 const componentParts = component.layers.flatMap((layer) =>
                   layer.components.map((component) => component),
                 );
-
-                console.log({
-                  name: component.name,
-                  id: 0,
-                  mapColStart: 1,
-                  mapRowStart: 1,
-                  width: component.width,
-                  height: component.height,
-                  subComponents: componentParts,
-                });
 
                 setTempComponent({
                   name: component.name,

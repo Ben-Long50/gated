@@ -37,7 +37,7 @@ const TilePicker = ({
   return (
     <div
       ref={pngRef}
-      className="relative grid justify-center"
+      className="relative mx-auto grid justify-center"
       style={{
         height: `${grid.rows * 48}px`,
         width: `${grid.cols * 48}px`,
@@ -67,7 +67,7 @@ const TilePicker = ({
         return (
           <div
             key={index}
-            className={`${selected ? 'bg-yellow-300/50 hover:bg-yellow-300/80' : 'hover:bg-gray-400/50'} size-full ring-1 ring-inset ring-gray-400/50`}
+            className={`${selected ? 'bg-yellow-300/50 hover:bg-yellow-300/80' : 'hover:bg-gray-400/50'} size-[48px] ring-1 ring-inset ring-gray-400/50`}
             style={{ gridRow: row, gridColumn: col }}
             onClick={() => {
               handleTileSelect(row, col);
