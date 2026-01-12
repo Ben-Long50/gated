@@ -17,6 +17,7 @@ import CampaignTabRoutes from './CampaignTabRoutes';
 import CharacterTabRoutes from './CharacterTabRoutes';
 import CodexTabRoutes from './CodexTabRoutes';
 import RollModal from 'src/components/modals/RollModal';
+import { CampaignProvider } from 'src/contexts/CampaignContext';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -32,7 +33,11 @@ const router = createBrowserRouter(
         </Route>
         <Route
           path="glam"
-          element={<MainLayout />}
+          element={
+            <CampaignProvider>
+              <MainLayout />
+            </CampaignProvider>
+          }
           errorElement={<ErrorPage />}
         >
           <Route path="error">

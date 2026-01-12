@@ -39,7 +39,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     rollCounter,
   } = useRoll();
 
-  const gameMaster = user.ownerCampaigns
+  const gameMaster = user?.ownerCampaigns
     .map((campaign) => campaign.id)
     .some((id) => id === Number(campaignId));
 

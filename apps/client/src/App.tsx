@@ -5,7 +5,6 @@ import ThemeProvider from './contexts/ThemeContext';
 import AuthProvider from './contexts/AuthContext';
 import LayoutProvider from './contexts/LayoutContext';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { CampaignProvider } from './contexts/CampaignContext';
 
 const App = () => {
   return (
@@ -13,9 +12,7 @@ const App = () => {
       <ThemeProvider>
         <AuthProvider>
           <LayoutProvider>
-            <CampaignProvider>
-              <Outlet />
-            </CampaignProvider>
+            <Outlet />
           </LayoutProvider>
         </AuthProvider>
       </ThemeProvider>
