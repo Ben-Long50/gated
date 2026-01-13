@@ -77,21 +77,18 @@ const MapBuilder = () => {
     const fetchFolders = async () => {
       const fullPath = path.join('/');
 
-      const response = await fetch(`/public/${fullPath}.json`);
+      const response = await fetch(`/${fullPath}.json`);
       const data = await response.json();
 
       setFolders(data);
       setCurrentFolder(data);
-      console.log(data);
     };
 
     if (length === 0) {
       fetchFolders();
     } else {
-      let currentFolder = folders;
+      let folder = folders;
       for (const part of path) {
-        console.log(part);
-
         if (
           isPng ||
           part === 'favorites' ||
@@ -101,7 +98,7 @@ const MapBuilder = () => {
         ) {
           continue;
         } else {
-          currentFolder = currentFolder[part];
+          currentFolder = folder[part];
         }
       }
       setCurrentFolder(currentFolder);
