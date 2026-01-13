@@ -39,8 +39,6 @@ const TileListModal = () => {
     setTempComponent,
   } = useOutletContext() || {};
 
-  console.log(path, currentFolder);
-
   return (
     <Modal className="relative h-full">
       <h1>Tile Explorer</h1>

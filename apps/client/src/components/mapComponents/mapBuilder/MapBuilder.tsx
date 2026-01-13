@@ -87,8 +87,10 @@ const MapBuilder = () => {
     if (length === 0) {
       fetchFolders();
     } else {
-      let folder = folders;
+      let f = folders;
       for (const part of path) {
+        console.log(part);
+
         if (
           isPng ||
           part === 'favorites' ||
@@ -98,10 +100,10 @@ const MapBuilder = () => {
         ) {
           continue;
         } else {
-          currentFolder = folder[part];
+          f = f[part];
         }
       }
-      setCurrentFolder(currentFolder);
+      setCurrentFolder(f);
     }
   }, [path]);
 
