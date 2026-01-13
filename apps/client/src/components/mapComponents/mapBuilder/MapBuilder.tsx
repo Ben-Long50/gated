@@ -767,7 +767,7 @@ const MapBuilder = () => {
         )}
       </mapForm.Field>
       {pngPath && quickTilePicker && (
-        <div className="bg-primary timing absolute bottom-4 left-4 flex origin-bottom-left scale-50 flex-col items-start gap-4 rounded-md p-4 shadow-md shadow-black hover:scale-100">
+        <div className="bg-primary timing absolute bottom-4 left-4 z-10 flex origin-bottom-left scale-50 flex-col items-start gap-4 rounded-md p-4 shadow-md shadow-black hover:scale-100">
           <ArrowHeader4 className="text-primary" title={capitalCase(pngName)} />
           <TilePicker
             pngPath={pngPath}

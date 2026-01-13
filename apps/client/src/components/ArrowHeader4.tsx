@@ -18,7 +18,7 @@ const ArrowHeader4 = ({
 
   return (
     <div
-      className={`${className} text-left ${reverse && 'flex-row-reverse'} flex items-start gap-4`}
+      className={`${className} text-left ${reverse && 'flex-row-reverse'} flex items-start gap-2.5`}
     >
       <Icon
         className={`${mobile ? 'mt-[7px]' : 'mt-[9px]'} shrink-0 !text-inherit`}

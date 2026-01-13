@@ -1,6 +1,7 @@
+import getUsedPoints from 'src/utils/getUsedPoints';
 import { AttributeTree } from '../types/attributeTree';
 
-const useAttributeTree = () => {
+const useAttributeTree = (tree: AttributeTree) => {
   const emptyAttributeTree: AttributeTree = {
     cybernetica: {
       points: 0,
@@ -40,8 +41,16 @@ const useAttributeTree = () => {
     },
   };
 
+  if (!tree) {
+    return { emptyAttributeTree };
+  }
+
+  const { usedAttributePoints, usedSkillPoints } = getUsedPoints(tree);
+
   return {
     emptyAttributeTree,
+    usedAttributePoints,
+    usedSkillPoints,
   };
 };
 

@@ -4,20 +4,29 @@ import { useNavigate, useOutletContext } from 'react-router-dom';
 import BtnRect from '../../buttons/BtnRect';
 import { capitalCase } from 'change-case';
 import Icon from '@mdi/react';
-import { mdiArrowULeftBottom, mdiCancel, mdiFolderOutline } from '@mdi/js';
+import {
+  mdiArrowULeftBottom,
+  mdiCancel,
+  mdiFolderOutline,
+  mdiStar,
+  mdiStarOutline,
+} from '@mdi/js';
 import Divider from '../../Divider';
 import ArrowHeader3 from '../../ArrowHeader3';
 import BtnAuth from 'src/components/buttons/BtnAuth';
 import useMaps from 'src/hooks/useMaps';
 import CloudinaryImage from 'src/components/CloudinaryImage';
 import TilePicker from './TilePicker';
+import useMapFavoriteStore from 'src/stores/mapFavoriteStore';
 
 const TileListModal = () => {
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [tab, setTab] = useState<'tiles' | 'components'>('tiles');
+  const [tab, setTab] = useState<'favorites' | 'tiles' | 'components'>('tiles');
 
   const navigate = useNavigate();
   const { maps: components } = useMaps(false, 'component');
+
+  const { favorites, addFavorite, removeFavorite, hasPath } =
+    useMapFavoriteStore();
 
   const {
     folders,
@@ -32,20 +41,122 @@ const TileListModal = () => {
     setTempComponent,
   } = useOutletContext() || {};
 
+  console.log(path);
+
   return (
     <Modal className="relative h-full">
       <h1>Tile Explorer</h1>
-      <div className="grid w-full grid-flow-col gap-8">
-        <BtnAuth active={tab === 'tiles'} onClick={() => setTab('tiles')}>
+      <div className="grid w-full grid-cols-3 gap-4">
+        <BtnAuth
+          active={tab === 'favorites'}
+          onClick={() => {
+            setTab('favorites');
+            setPath(['/assets', 'favorites']);
+          }}
+        >
+          Favorites
+        </BtnAuth>
+        <BtnAuth
+          active={tab === 'tiles'}
+          onClick={() => {
+            setTab('tiles');
+            setPath(['/assets', 'tiles']);
+          }}
+        >
           Tiles
         </BtnAuth>
         <BtnAuth
           active={tab === 'components'}
-          onClick={() => setTab('components')}
+          onClick={() => {
+            setTab('components');
+            setPath(['/assets', 'components']);
+          }}
         >
           Components
         </BtnAuth>
       </div>
+      {tab === 'favorites' && (
+        <>
+          <div className="flex w-full flex-col items-center gap-4 sm:flex-row">
+            <button
+              className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
+              aria-label="Clear autosaved map"
+              type="button"
+              onClick={() => {
+                setPath(['/assets', 'favorites']);
+              }}
+            >
+              <Icon
+                path={mdiArrowULeftBottom}
+                className="text-tertiary group-hover:text-accent timing size-8"
+              />
+            </button>
+            {path.slice(1).map((part: string, index: number) => (
+              <ArrowHeader3 key={index} title={capitalCase(part)} />
+            ))}
+            {tempComponent && (
+              <button
+                className="bg-tertiary group ml-auto flex rounded p-1.5 shadow-md shadow-black"
+                aria-label="Clear temporary component"
+                type="button"
+                onClick={() => {
+                  setTempComponent(null);
+                }}
+              >
+                <Icon
+                  path={mdiCancel}
+                  className="text-tertiary group-hover:text-accent timing size-8"
+                />
+              </button>
+            )}
+          </div>
+          <div className="scrollbar-primary flex h-full w-full items-start justify-start overflow-auto">
+            {isPng ? (
+              <TilePicker
+                pngPath={pngPath}
+                tempComponent={tempComponent}
+                handleTileSelect={handleTileSelect}
+              />
+            ) : (
+              <div className="col-span-2 grid w-full grid-cols-3 gap-4">
+                {favorites.map((file: string, index: number) => {
+                  const splitFile = file.split('/');
+                  const fileName = splitFile[splitFile.length - 1];
+
+                  return (
+                    <div
+                      key={index}
+                      className="hover:border-accent relative aspect-square size-full rounded border-2 border-gray-500 shadow-md shadow-black"
+                      style={{
+                        backgroundImage: `url(${file})`,
+                        backgroundSize: 'contain',
+                        backgroundPosition: 'center',
+                        imageRendering: 'pixelated',
+                        backgroundRepeat: 'no-repeat',
+                      }}
+                      onClick={() => setPath([...splitFile])}
+                    >
+                      <button
+                        className="group absolute right-0 top-0 p-2"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeFavorite(file);
+                        }}
+                      >
+                        <Icon
+                          className="group-hover:text-tertiary timing text-yellow-400"
+                          path={mdiStar}
+                          size={1.2}
+                        />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </>
+      )}
       {tab === 'tiles' && (
         <div className="flex w-full flex-col items-center gap-4 sm:flex-row">
           <button
@@ -130,12 +241,14 @@ const TileListModal = () => {
                     <div className="col-span-2 grid grid-cols-3 gap-4">
                       {value.map((file: string, index: number) => {
                         const fullPath = path.join('/');
+
+                        const filePath = `${fullPath}/${file}`;
                         return (
-                          <button
+                          <div
                             key={index}
                             className="hover:border-accent relative aspect-square size-full rounded border-2 border-gray-500 shadow-md shadow-black"
                             style={{
-                              backgroundImage: `url(${fullPath}/${file})`,
+                              backgroundImage: `url(${filePath})`,
                               backgroundSize: 'contain',
                               backgroundPosition: 'center',
                               imageRendering: 'pixelated',
@@ -144,15 +257,37 @@ const TileListModal = () => {
                             onClick={() =>
                               setPath((prev) => [...prev, `${file}`])
                             }
-                            onMouseEnter={() => setHoveredIndex(index)}
-                            onMouseLeave={() => setHoveredIndex(null)}
                           >
-                            {hoveredIndex === index && (
-                              <p className="bg-tertiary absolute right-0 top-0 rounded !bg-opacity-90 p-1 text-sm">
-                                {file}
-                              </p>
+                            {!hasPath(filePath) ? (
+                              <button
+                                className="group absolute right-0 top-0 p-2"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  addFavorite(filePath);
+                                }}
+                              >
+                                <Icon
+                                  className="text-tertiary group-hover:text-primary timing"
+                                  path={mdiStarOutline}
+                                  size={1.2}
+                                />
+                              </button>
+                            ) : (
+                              <button
+                                className="group absolute right-0 top-0 p-2"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  removeFavorite(filePath);
+                                }}
+                              >
+                                <Icon
+                                  className="group-hover:text-tertiary timing text-yellow-400"
+                                  path={mdiStar}
+                                  size={1.2}
+                                />
+                              </button>
                             )}
-                          </button>
+                          </div>
                         );
                       })}
                     </div>

@@ -32,6 +32,7 @@ import { capitalCase } from 'change-case';
 import ConditionTag from './ConditionTag';
 import ExpandingList from './ExpandingList';
 import NavTabs from './NavTabs';
+import ArrowHeader4 from './ArrowHeader4';
 
 const CharacterSheet = () => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -325,6 +326,38 @@ const CharacterSheet = () => {
                   )}
                 </div>
               </div>
+            </div>
+          </div>
+        </ThemeContainer>
+        <ThemeContainer chamfer="medium" borderColor={accentPrimary}>
+          <div className="flex items-center justify-around p-4">
+            <div className="flex flex-col items-center gap-2">
+              <ArrowHeader4 title="Attribute Points" />
+              <p>
+                {character?.stats.usedAttributePoints} /{' '}
+                {character?.stats.attributePoints}
+              </p>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <ArrowHeader4 title="Skill Points" />
+              <p>
+                {character?.stats.usedSkillPoints} /{' '}
+                {character?.stats.skillPoints}
+              </p>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <ArrowHeader4 title="Perks" />
+              <p>
+                {character?.stats.usedPerkPoints} /{' '}
+                {character?.stats.perkPoints}
+              </p>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <ArrowHeader4 title="Master Perks" />
+              <p>
+                {character?.stats.usedMasterPerkPoints} /{' '}
+                {character?.stats.masterPerkPoints}
+              </p>
             </div>
           </div>
         </ThemeContainer>

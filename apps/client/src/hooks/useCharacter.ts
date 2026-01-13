@@ -1,7 +1,6 @@
 import { useContext, useMemo } from 'react';
 import { AuthContext } from 'src/contexts/AuthContext';
 import { Character } from 'src/types/character';
-import useStats from './useStats';
 import useAttributeTree from './useAttributeTree';
 import useInventory from './useInventory';
 import useCharacterQuery from './useCharacterQuery/useCharacterQuery';
@@ -19,7 +18,7 @@ const useCharacter = (characterId: number) => {
     isPending: characterPending,
   } = useCharacterQuery(characterId);
 
-  const { emptyAttributeTree } = useAttributeTree();
+  const { emptyAttributeTree } = useAttributeTree(character?.attributes);
 
   const {
     inventory,
@@ -29,11 +28,9 @@ const useCharacter = (characterId: number) => {
     isPending: inventoryPending,
   } = useInventory(character?.characterInventory);
 
-  const stats = character?.stats;
-
   const filterByPreferences = (character: Character) => {
     const characterOwner = gameMaster || character?.userId === user?.id;
-    const characterStats = { ...character?.stats, ...stats };
+    const characterStats = { ...character?.stats };
 
     return {
       ...character,
@@ -108,7 +105,7 @@ const useCharacter = (characterId: number) => {
 
   const filteredCharacter = useMemo(
     () => filterByPreferences(character),
-    [equipment, inventory, stats, character],
+    [equipment, inventory, character],
   );
 
   useMemo(
