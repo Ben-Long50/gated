@@ -71,15 +71,42 @@ const MapBuilder = () => {
   const colorRef = useRef(null);
 
   useEffect(() => {
+    const length = Object.values(folders).length;
+    console.log(length);
+
     const fetchFolders = async () => {
-      const response = await fetch('/assets/tiles.json');
+      const fullPath = path.join('/');
+
+      const response = await fetch(`/public/${fullPath}.json`);
       const data = await response.json();
+
       setFolders(data);
       setCurrentFolder(data);
+      console.log(data);
     };
 
-    fetchFolders();
-  }, []);
+    if (length === 0) {
+      fetchFolders();
+    } else {
+      let currentFolder = folders;
+      for (const part of path) {
+        console.log(part);
+
+        if (
+          isPng ||
+          part === 'favorites' ||
+          part === 'components' ||
+          part === '/assets' ||
+          part === 'tiles'
+        ) {
+          continue;
+        } else {
+          currentFolder = currentFolder[part];
+        }
+      }
+      setCurrentFolder(currentFolder);
+    }
+  }, [path]);
 
   const createMap = useCreateMapMutation(Number(campaignId), Number(mapId));
 
@@ -750,7 +777,6 @@ const MapBuilder = () => {
                 context={{
                   form: mapForm,
                   isPending: createMap.isPending,
-                  folders,
                   currentFolder,
                   setCurrentFolder,
                   path,

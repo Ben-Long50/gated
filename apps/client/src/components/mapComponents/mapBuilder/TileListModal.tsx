@@ -29,9 +29,7 @@ const TileListModal = () => {
     useMapFavoriteStore();
 
   const {
-    folders,
     currentFolder,
-    setCurrentFolder,
     path,
     setPath,
     isPng,
@@ -41,7 +39,7 @@ const TileListModal = () => {
     setTempComponent,
   } = useOutletContext() || {};
 
-  console.log(path);
+  console.log(path, currentFolder);
 
   return (
     <Modal className="relative h-full">
@@ -78,12 +76,85 @@ const TileListModal = () => {
       {tab === 'favorites' && (
         <>
           <div className="flex w-full flex-col items-center gap-4 sm:flex-row">
+            {path.slice(1).map((part: string, index: number) => (
+              <ArrowHeader3 key={index} title={capitalCase(part)} />
+            ))}
+            {tempComponent && (
+              <button
+                className="bg-tertiary group ml-auto flex rounded p-1.5 shadow-md shadow-black"
+                aria-label="Clear temporary component"
+                type="button"
+                onClick={() => {
+                  setTempComponent(null);
+                }}
+              >
+                <Icon
+                  path={mdiCancel}
+                  className="text-tertiary group-hover:text-accent timing size-8"
+                />
+              </button>
+            )}
+          </div>
+          <Divider className="!my-0" />
+          <div className="scrollbar-primary flex h-full w-full items-start justify-start overflow-auto">
+            {isPng ? (
+              <TilePicker
+                pngPath={pngPath}
+                tempComponent={tempComponent}
+                handleTileSelect={handleTileSelect}
+              />
+            ) : (
+              <div className="col-span-2 grid w-full grid-cols-3 gap-4">
+                {favorites.map((file: string, index: number) => {
+                  const splitFile = file.split('/');
+
+                  return (
+                    <div
+                      key={index}
+                      className="hover:border-accent relative aspect-square size-full rounded border-2 border-gray-500 shadow-md shadow-black"
+                      style={{
+                        backgroundImage: `url(${file})`,
+                        backgroundSize: 'contain',
+                        backgroundPosition: 'center',
+                        imageRendering: 'pixelated',
+                        backgroundRepeat: 'no-repeat',
+                      }}
+                      onClick={() => setPath([...splitFile])}
+                    >
+                      <button
+                        className="group absolute right-0 top-0 p-2"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeFavorite(file);
+                        }}
+                      >
+                        <Icon
+                          className="timing text-yellow-400"
+                          path={mdiStar}
+                          size={1.2}
+                        />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </>
+      )}
+      {tab === 'tiles' && (
+        <>
+          <div className="flex w-full flex-col items-center gap-4 sm:flex-row">
             <button
               className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
               aria-label="Clear autosaved map"
               type="button"
               onClick={() => {
-                setPath(['/assets', 'favorites']);
+                if (path.length === 2) {
+                  return;
+                }
+
+                setPath((prev) => prev.slice(0, -1));
               }}
             >
               <Icon
@@ -110,104 +181,10 @@ const TileListModal = () => {
               </button>
             )}
           </div>
-          <div className="scrollbar-primary flex h-full w-full items-start justify-start overflow-auto">
-            {isPng ? (
-              <TilePicker
-                pngPath={pngPath}
-                tempComponent={tempComponent}
-                handleTileSelect={handleTileSelect}
-              />
-            ) : (
-              <div className="col-span-2 grid w-full grid-cols-3 gap-4">
-                {favorites.map((file: string, index: number) => {
-                  const splitFile = file.split('/');
-                  const fileName = splitFile[splitFile.length - 1];
-
-                  return (
-                    <div
-                      key={index}
-                      className="hover:border-accent relative aspect-square size-full rounded border-2 border-gray-500 shadow-md shadow-black"
-                      style={{
-                        backgroundImage: `url(${file})`,
-                        backgroundSize: 'contain',
-                        backgroundPosition: 'center',
-                        imageRendering: 'pixelated',
-                        backgroundRepeat: 'no-repeat',
-                      }}
-                      onClick={() => setPath([...splitFile])}
-                    >
-                      <button
-                        className="group absolute right-0 top-0 p-2"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeFavorite(file);
-                        }}
-                      >
-                        <Icon
-                          className="group-hover:text-tertiary timing text-yellow-400"
-                          path={mdiStar}
-                          size={1.2}
-                        />
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+          <Divider className="!my-0" />
         </>
       )}
-      {tab === 'tiles' && (
-        <div className="flex w-full flex-col items-center gap-4 sm:flex-row">
-          <button
-            className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
-            aria-label="Clear autosaved map"
-            type="button"
-            onClick={() => {
-              if (path.length === 2) return;
 
-              const newPath = path.slice(0, -1).slice(2);
-              if (newPath.length === 0) {
-                setPath((prev) => prev.slice(0, -1));
-                setCurrentFolder(folders);
-                return;
-              }
-
-              let currentFolder = folders;
-              newPath.forEach((part) => {
-                currentFolder = currentFolder[part];
-              });
-
-              setPath((prev) => prev.slice(0, -1));
-              setCurrentFolder(currentFolder);
-            }}
-          >
-            <Icon
-              path={mdiArrowULeftBottom}
-              className="text-tertiary group-hover:text-accent timing size-8"
-            />
-          </button>
-          {path.slice(1).map((part: string, index: number) => (
-            <ArrowHeader3 key={index} title={capitalCase(part)} />
-          ))}
-          {tempComponent && (
-            <button
-              className="bg-tertiary group ml-auto flex rounded p-1.5 shadow-md shadow-black"
-              aria-label="Clear temporary component"
-              type="button"
-              onClick={() => {
-                setTempComponent(null);
-              }}
-            >
-              <Icon
-                path={mdiCancel}
-                className="text-tertiary group-hover:text-accent timing size-8"
-              />
-            </button>
-          )}
-        </div>
-      )}
-      <Divider className="!my-0" />
       {tab === 'tiles' && (
         <div className="scrollbar-primary flex h-full w-full items-start justify-start overflow-auto">
           {isPng ? (
@@ -224,7 +201,6 @@ const TileListModal = () => {
                     key={index}
                     className="bg-tertiary group flex w-full items-center gap-4 rounded p-2 shadow-md shadow-black"
                     onClick={() => {
-                      setCurrentFolder((prev) => prev[key]);
                       setPath((prev) => [...prev, key]);
                     }}
                   >
@@ -299,42 +275,64 @@ const TileListModal = () => {
         </div>
       )}
       {tab === 'components' && (
-        <div className="scrollbar-primary grid h-full w-full grid-cols-3 gap-4 overflow-y-auto">
-          {components?.map((component) => (
-            <button
-              key={component.id}
-              className={`hover:border-accent bg-secondary timing mb-auto flex flex-col gap-4 rounded-md border-2 border-transparent p-4 shadow-md shadow-black`}
-              onClick={() => {
-                const componentParts = component.layers.flatMap((layer) =>
-                  layer.components.map((component) => component),
-                );
-
-                setTempComponent({
-                  name: component.name,
-                  id: 0,
-                  mapColStart: 1,
-                  mapRowStart: 1,
-                  width: component.width,
-                  height: component.height,
-                  subComponents: componentParts,
-                });
-              }}
-            >
-              <div className="flex w-full items-center justify-between">
-                <ArrowHeader3 title={component.name} />
-                <p>{`${component.width} x ${component.height}`}</p>
-              </div>
-              <div className="flex w-full items-center justify-center">
-                <CloudinaryImage
-                  className="border-accent aspect-square overflow-hidden rounded border"
-                  publicId={component.picture.publicId}
+        <>
+          <div className="flex w-full flex-col items-center gap-4 sm:flex-row">
+            {path.slice(1).map((part: string, index: number) => (
+              <ArrowHeader3 key={index} title={capitalCase(part)} />
+            ))}
+            {tempComponent && (
+              <button
+                className="bg-tertiary group ml-auto flex rounded p-1.5 shadow-md shadow-black"
+                aria-label="Clear temporary component"
+                type="button"
+                onClick={() => {
+                  setTempComponent(null);
+                }}
+              >
+                <Icon
+                  path={mdiCancel}
+                  className="text-tertiary group-hover:text-accent timing size-8"
                 />
-              </div>
-            </button>
-          ))}
-        </div>
-      )}
+              </button>
+            )}
+          </div>
+          <Divider className="!my-0" />
+          <div className="scrollbar-primary grid h-full w-full grid-cols-3 gap-4 overflow-y-auto">
+            {components?.map((component) => (
+              <button
+                key={component.id}
+                className={`hover:border-accent bg-secondary timing mb-auto flex flex-col gap-4 rounded-md border-2 border-transparent p-4 shadow-md shadow-black`}
+                onClick={() => {
+                  const componentParts = component.layers.flatMap((layer) =>
+                    layer.components.map((component) => component),
+                  );
 
+                  setTempComponent({
+                    name: component.name,
+                    id: 0,
+                    mapColStart: 1,
+                    mapRowStart: 1,
+                    width: component.width,
+                    height: component.height,
+                    subComponents: componentParts,
+                  });
+                }}
+              >
+                <div className="flex w-full items-center justify-between">
+                  <ArrowHeader3 title={component.name} />
+                  <p>{`${component.width} x ${component.height}`}</p>
+                </div>
+                <div className="flex w-full items-center justify-center">
+                  <CloudinaryImage
+                    className="border-accent aspect-square overflow-hidden rounded border"
+                    publicId={component.picture.publicId}
+                  />
+                </div>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
       <BtnRect
         className="sticky bottom-0 w-full"
         type="button"
