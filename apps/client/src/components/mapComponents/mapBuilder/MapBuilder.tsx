@@ -74,9 +74,9 @@ const MapBuilder = () => {
     const length = Object.values(folders).length;
 
     const fetchFolders = async () => {
-      const fullPath = path.join('/');
+      const fullPath = path.filter(Boolean).join('/');
 
-      const response = await fetch(`/public/${fullPath}.json`);
+      const response = await fetch(`${fullPath}.json`);
       const data = await response.json();
 
       setFolders(data);
