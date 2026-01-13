@@ -72,12 +72,11 @@ const MapBuilder = () => {
 
   useEffect(() => {
     const length = Object.values(folders).length;
-    console.log(length);
 
     const fetchFolders = async () => {
       const fullPath = path.join('/');
 
-      const response = await fetch(`/${fullPath}.json`);
+      const response = await fetch(`/public/${fullPath}.json`);
       const data = await response.json();
 
       setFolders(data);
@@ -89,8 +88,6 @@ const MapBuilder = () => {
     } else {
       let f = folders;
       for (const part of path) {
-        console.log(part);
-
         if (
           isPng ||
           part === 'favorites' ||
