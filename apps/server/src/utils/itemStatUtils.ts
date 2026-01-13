@@ -37,12 +37,8 @@ const calculateItemStats = (items: Item[]) => {
 
     const combined: Record<string, number> = {};
 
-    const baseStats = item?.stats || {};
+    const baseStats = item?.stats ? { ...item.stats } : {};
     const modifiedStats = item?.modifiedStats || {};
-
-    for (const [key, value] of Object.entries(baseStats)) {
-      combined[key] = value;
-    }
 
     for (const [key, value] of Object.entries(modifiedStats)) {
       if (combined[key]) {

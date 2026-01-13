@@ -18,6 +18,7 @@ import parseBlockData from '../utils/parseBlockData.js';
 import { Character } from '../types/character.js';
 import { Action } from '../types/action.js';
 import { Item } from '../types/item.js';
+import calculateItemStats from '../utils/itemStatUtils.js';
 
 const encounterServices = {
   getEncounters: async (campaignId: number) => {
@@ -696,7 +697,9 @@ const encounterServices = {
           `${camelCase(reaction.actionSnapshot.name)}`
         ](
           reaction.characterSnapshot,
-          reaction.itemSnapshot ? reaction.itemSnapshot : undefined,
+          reaction.itemSnapshot
+            ? calculateItemStats(reaction.itemSnapshot)
+            : undefined,
           reaction.rollResult ? reaction.rollResult.successes : undefined,
           reaction.tile ? reaction.tile : undefined,
         );
@@ -737,7 +740,9 @@ const encounterServices = {
         `${camelCase(phaseAction.actionSnapshot.name)}`
       ](
         phaseAction.characterSnapshot,
-        phaseAction.itemSnapshot ? phaseAction.itemSnapshot : undefined,
+        phaseAction.itemSnapshot
+          ? calculateItemStats(phaseAction.itemSnapshot)
+          : undefined,
         phaseAction.rollResult
           ? phaseAction.rollResult.successes - reducedSuccesses
           : undefined,

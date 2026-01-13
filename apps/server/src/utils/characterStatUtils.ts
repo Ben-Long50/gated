@@ -2,6 +2,7 @@
 
 import { Prisma } from '@prisma/client';
 import { CharacterStats } from '../types/character';
+import calculateLevelBonus from './calculateLevelBonus.js';
 
 type ConstructedCharacter = Prisma.CharacterGetPayload<{
   include: {
@@ -67,6 +68,12 @@ const calculateCharacterStats = (character: ConstructedCharacter) => {
       return sum;
     }, 0) || 0;
 
+  const levelBonus = calculateLevelBonus(
+    character.level,
+    attributeTree,
+    character.perks,
+  );
+
   const baseStats: CharacterStats = {
     maxHealth: 10 + attributeTree?.violence.skills.threshold.points * 2,
     maxSanity: 5 + attributeTree?.esoterica.skills.mysticism.points * 2,
@@ -100,6 +107,7 @@ const calculateCharacterStats = (character: ConstructedCharacter) => {
     shootingTn: attributeTree?.violence.skills.shooting.points,
     subterfugeTn: attributeTree?.violence.skills.subterfuge.points,
     thresholdTn: attributeTree?.violence.skills.threshold.points,
+    ...levelBonus,
   };
 
   const calculateBonus = (

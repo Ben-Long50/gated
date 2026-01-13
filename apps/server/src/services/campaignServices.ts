@@ -209,7 +209,7 @@ const campaignServices = {
   ) => {
     let currentPending = [] as User[];
 
-    if (formData.id) {
+    if (formData.id != null) {
       const campaign = await prisma.campaign.findUnique({
         where: { id: formData.id },
         select: { ownerId: true, players: true, pendingPlayers: true },

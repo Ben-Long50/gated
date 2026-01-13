@@ -20,6 +20,7 @@ import actionFuncs from '../utils/actionFuncs.js';
 import { camelCase } from 'change-case';
 import reactionFuncs from '../utils/reactionFuncs.js';
 import parseBlockData from '../utils/parseBlockData.js';
+import calculateItemStats from '../utils/itemStatUtils.js';
 const encounterServices = {
     getEncounters: async (campaignId) => {
         try {
@@ -517,7 +518,9 @@ const encounterServices = {
             const blockDataMap = blockData ? new Map(blockData) : null;
             let reducedSuccesses = 0;
             for (const reaction of phaseReactions) {
-                const results = await reactionFuncs[`${camelCase(reaction.actionSnapshot.name)}`](reaction.characterSnapshot, reaction.itemSnapshot ? reaction.itemSnapshot : undefined, reaction.rollResult ? reaction.rollResult.successes : undefined, reaction.tile ? reaction.tile : undefined);
+                const results = await reactionFuncs[`${camelCase(reaction.actionSnapshot.name)}`](reaction.characterSnapshot, reaction.itemSnapshot
+                    ? calculateItemStats(reaction.itemSnapshot)
+                    : undefined, reaction.rollResult ? reaction.rollResult.successes : undefined, reaction.tile ? reaction.tile : undefined);
                 if (results.reducedSuccesses) {
                     reducedSuccesses += results.reducedSuccesses;
                 }
@@ -539,7 +542,9 @@ const encounterServices = {
                     characterIds.push(reaction.targetId);
                 }
             }
-            const actionResults = await actionFuncs[`${camelCase(phaseAction.actionSnapshot.name)}`](phaseAction.characterSnapshot, phaseAction.itemSnapshot ? phaseAction.itemSnapshot : undefined, phaseAction.rollResult
+            const actionResults = await actionFuncs[`${camelCase(phaseAction.actionSnapshot.name)}`](phaseAction.characterSnapshot, phaseAction.itemSnapshot
+                ? calculateItemStats(phaseAction.itemSnapshot)
+                : undefined, phaseAction.rollResult
                 ? phaseAction.rollResult.successes - reducedSuccesses
                 : undefined, phaseAction.tile ? phaseAction.tile : undefined);
             const targetBlockData = phaseAction.targetId && blockDataMap

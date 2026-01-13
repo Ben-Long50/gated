@@ -27,11 +27,8 @@ const calculateItemStats = (items) => {
             }
         });
         const combined = {};
-        const baseStats = (item === null || item === void 0 ? void 0 : item.stats) || {};
+        const baseStats = (item === null || item === void 0 ? void 0 : item.stats) ? Object.assign({}, item.stats) : {};
         const modifiedStats = (item === null || item === void 0 ? void 0 : item.modifiedStats) || {};
-        for (const [key, value] of Object.entries(baseStats)) {
-            combined[key] = value;
-        }
         for (const [key, value] of Object.entries(modifiedStats)) {
             if (combined[key]) {
                 combined[key] = combined[key] + value;
