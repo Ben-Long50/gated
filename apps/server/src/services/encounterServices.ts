@@ -18,7 +18,7 @@ import parseBlockData from '../utils/parseBlockData.js';
 import { Character } from '../types/character.js';
 import { Action } from '../types/action.js';
 import { Item } from '../types/item.js';
-import calculateItemStats from '../utils/itemStatUtils.js';
+import { calculateItemStats } from '../utils/itemStatUtils.js';
 
 const encounterServices = {
   getEncounters: async (campaignId: number) => {

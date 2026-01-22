@@ -9,8 +9,7 @@ import {
 } from '../utils/linkQueryStructures.js';
 import { ItemType } from '@prisma/client';
 import itemServices from './itemServices.js';
-import calculateCharacterStats from '../utils/characterStatUtils.js';
-import calculateItemStats from '../utils/itemStatUtils.js';
+import calculateItemsStats from '../utils/itemStatUtils.js';
 import { getIO } from '../sockets/socket.js';
 
 const characterServices = {
@@ -54,7 +53,7 @@ const characterServices = {
           affiliations: { select: { id: true } },
           perks: true,
           characterInventory: {
-            include: includeCharacterInventory,
+            include: { items: { select: { id: true } } },
           },
           characterCart: {
             include: includeCharacterCart,
@@ -66,13 +65,6 @@ const characterServices = {
       if (characters.length === 0) {
         throw new Error('You have not created any characters');
       }
-
-      characters.forEach((character) => {
-        character.stats = calculateCharacterStats(character);
-        character.characterInventory?.items = calculateItemStats(
-          character.characterInventory?.items,
-        );
-      });
 
       return characters;
     } catch (error) {
@@ -101,7 +93,7 @@ const characterServices = {
           affiliations: { select: { id: true } },
           perks: true,
           characterInventory: {
-            include: includeCharacterInventory,
+            include: { items: { select: { id: true } } },
           },
           characterCart: {
             include: includeCharacterCart,
@@ -109,8 +101,6 @@ const characterServices = {
           location: { include: { map: { select: { name: true } } } },
         },
       });
-
-      character.stats = calculateCharacterStats(character);
 
       return character;
     } catch (error) {

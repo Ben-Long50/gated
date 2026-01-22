@@ -189,6 +189,9 @@ const itemServices = {
                     },
                 },
             });
+            if (!item) {
+                throw new Error('Failed to find item');
+            }
             return item;
         }
         catch (error) {

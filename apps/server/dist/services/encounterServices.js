@@ -20,7 +20,7 @@ import actionFuncs from '../utils/actionFuncs.js';
 import { camelCase } from 'change-case';
 import reactionFuncs from '../utils/reactionFuncs.js';
 import parseBlockData from '../utils/parseBlockData.js';
-import calculateItemStats from '../utils/itemStatUtils.js';
+import { calculateItemStats } from '../utils/itemStatUtils.js';
 const encounterServices = {
     getEncounters: async (campaignId) => {
         try {
