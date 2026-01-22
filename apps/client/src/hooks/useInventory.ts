@@ -1,9 +1,9 @@
 import { CharacterInventory } from 'src/types/character';
-import useInventoryItemQueries from './useInventoryItemQueries/useInventoryItemQueries';
+import useItemQueries from './useItemQueries/useItemQueries';
 import { useMemo } from 'react';
 
 const useInventory = (inventory: CharacterInventory) => {
-  const { items, isLoading, isPending } = useInventoryItemQueries(
+  const { items, isLoading, isPending } = useItemQueries(
     inventory?.items.map((item) => item.id) || [],
   );
 

@@ -1,16 +1,15 @@
-import { useContext, useMemo } from 'react';
+import { useContext } from 'react';
 import { AuthContext } from 'src/contexts/AuthContext';
 import { Character } from 'src/types/character';
 import useAttributeTree from './useAttributeTree';
-import useInventory from './useInventory';
 import useCharacterQuery from './useCharacterQuery/useCharacterQuery';
-import { useQueryClient } from '@tanstack/react-query';
 import { CampaignContext } from 'src/contexts/CampaignContext';
+import calculateCharacterStats from 'src/utils/characterStatUtils';
+import useItems from './useItems';
 
 const useCharacter = (characterId: number) => {
   const { user } = useContext(AuthContext);
   const { gameMaster } = useContext(CampaignContext);
-  const queryClient = useQueryClient();
 
   const {
     data: character,
@@ -18,19 +17,70 @@ const useCharacter = (characterId: number) => {
     isPending: characterPending,
   } = useCharacterQuery(characterId);
 
-  const { emptyAttributeTree } = useAttributeTree(character?.attributes);
+  const itemIds = character
+    ? character.characterInventory.items.filter(Boolean).map((item) => item.id)
+    : [];
 
   const {
-    inventory,
-    equipment,
-    actions,
-    isLoading: inventoryLoading,
-    isPending: inventoryPending,
-  } = useInventory(character?.characterInventory);
+    items,
+    isLoading: itemsLoading,
+    isPending: itemsPending,
+  } = useItems(itemIds);
+
+  const { emptyAttributeTree } = useAttributeTree(character?.attributes);
+
+  const equipment = items
+    ? {
+        weapons: items?.filter(
+          (item) =>
+            item?.itemTypes.includes('weapon') && item?.equipped === true,
+        ),
+        armors: items?.filter(
+          (item) =>
+            item?.itemTypes.includes('armor') && item?.equipped === true,
+        ),
+        augmentations: items?.filter(
+          (item) =>
+            item?.itemTypes.includes('augmentation') && item?.equipped === true,
+        ),
+        vehicles: items?.filter(
+          (item) =>
+            item?.itemTypes.includes('vehicle') && item?.equipped === true,
+        ),
+        drones: items?.filter(
+          (item) =>
+            item?.itemTypes.includes('drone') && item?.equipped === true,
+        ),
+        modifications: items?.filter(
+          (item) =>
+            item?.itemTypes.includes('modification') && item?.equipped === true,
+        ),
+        reusables: items?.filter(
+          (item) =>
+            item?.itemTypes.includes('reusable') && item?.equipped === true,
+        ),
+        consumables: items?.filter(
+          (item) =>
+            item?.itemTypes.includes('consumable') && item?.equipped === true,
+        ),
+      }
+    : null;
+
+  const actions = equipment
+    ? Object.values(equipment).flatMap((items) =>
+        items.flatMap((item) => item.itemLinkReference.actions),
+      )
+    : [];
+
+  const stats =
+    character && equipment
+      ? calculateCharacterStats(character, equipment, actions)
+      : {};
+
+  console.log(character?.stats);
 
   const filterByPreferences = (character: Character) => {
     const characterOwner = gameMaster || character?.userId === user?.id;
-    const characterStats = { ...character?.stats };
 
     return {
       ...character,
@@ -79,7 +129,7 @@ const useCharacter = (characterId: number) => {
           ? character?.badMedicine
           : { html: '<h1>?????</h1>' },
       stats: Object.fromEntries(
-        Object.entries(characterStats).map(([stat, value]) => {
+        Object.entries(stats).map(([stat, value]) => {
           if (characterOwner || character?.preferences?.stats) {
             return [stat, value];
           } else {
@@ -99,25 +149,16 @@ const useCharacter = (characterId: number) => {
         characterOwner || character?.preferences?.equipment ? equipment : null,
       actions:
         characterOwner || character?.preferences?.equipment ? actions : null,
-      inventory,
     };
   };
 
-  const filteredCharacter = useMemo(
-    () => filterByPreferences(character),
-    [equipment, inventory, character],
-  );
-
-  useMemo(
-    () =>
-      queryClient.setQueryData(['character', character?.id], filteredCharacter),
-    [filteredCharacter],
-  );
+  const filteredCharacter = filterByPreferences(character);
 
   return {
     filteredCharacter: character ? filteredCharacter : null,
-    isLoading: characterLoading || inventoryLoading,
-    isPending: characterPending || inventoryPending,
+    itemIds,
+    isLoading: characterLoading || itemsLoading,
+    isPending: characterPending || itemsPending,
   };
 };
 

@@ -24,7 +24,6 @@ import DroneIcon from './icons/DroneIcon';
 import WyrmShellIcon from './icons/WyrmShellIcon';
 import InsanityIcon from './icons/InsanityIcon';
 import WyrmMoldSlotsIcon from './icons/WyrmMoldSlotsIcon';
-import { useLocation } from 'react-router-dom';
 import SanityDamageIcon from './icons/SanityDamageIcon';
 
 const StatBars = ({
@@ -35,13 +34,6 @@ const StatBars = ({
   cardWidth: number;
 }) => {
   const { statColorMap } = useContext(ThemeContext);
-  const location = useLocation();
-  const parts = location.pathname.split('/');
-
-  const updating =
-    parts.includes('equipment') ||
-    parts.includes('deployments') ||
-    parts.includes('maps');
 
   return (
     <>
@@ -96,7 +88,7 @@ const StatBars = ({
           <RangeIcon className="text-secondary size-8" />
         </StatBar>
       )}
-      {updating
+      {stats.currentMagCount
         ? stats.currentAmmoCount !== undefined &&
           stats.magCapacity !== undefined && (
             <StatBar
@@ -110,7 +102,8 @@ const StatBars = ({
               <MagCapacityIcon className="text-secondary size-8" />
             </StatBar>
           )
-        : stats.magCapacity !== undefined && (
+        : stats.magCapacity !== undefined &&
+          stats.magCount !== undefined && (
             <StatBar
               title="MAG"
               total={stats.magCapacity}
@@ -123,7 +116,7 @@ const StatBars = ({
             </StatBar>
           )}
 
-      {stats.cyber !== undefined && !stats.maxCyber && (
+      {stats.cyber !== undefined && stats.maxCyber !== undefined && (
         <StatBar
           title="CBR"
           current={stats.cyber}
@@ -273,7 +266,7 @@ const StatBars = ({
           <WardIcon className="text-secondary size-8" />
         </StatBar>
       )}
-      {updating
+      {stats.currentBlock
         ? stats.block !== undefined &&
           stats.currentBlock !== undefined && (
             <StatBar
@@ -289,6 +282,7 @@ const StatBars = ({
         : stats.block !== undefined && (
             <StatBar
               title="BP"
+              total={stats.block}
               current={stats.block}
               color={statColorMap['BP']}
               cardWidth={cardWidth}

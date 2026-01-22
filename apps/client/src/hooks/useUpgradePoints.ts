@@ -1,11 +1,8 @@
 import { FormApi, useStore } from '@tanstack/react-form';
 import { Item } from 'src/types/item';
-import useItemStats from './useItemStats';
 import upgradePointMap from './upgradePointMap';
 
 const useUpgradePoints = (form: FormApi, item: Item) => {
-  const { powerLevel } = useItemStats(item);
-
   const newGrade = useStore(form.store, (state) => state.values.grade);
 
   const newStats = useStore(form.store, (state) => state.values.modifiedStats);
@@ -37,24 +34,10 @@ const useUpgradePoints = (form: FormApi, item: Item) => {
     return Math.ceil(cost);
   })();
 
-  const upgradedPowerLevel = powerLevel
-    ? (
-        Object.entries(newStats) as [keyof typeof upgradePointMap, number][]
-      ).reduce((sum, [stat, value]) => {
-        if (upgradePointMap[stat]) {
-          return sum + upgradePointMap[stat](value);
-        } else {
-          return sum;
-        }
-      }, 0) + powerLevel
-    : null;
-
   return {
     upgradePointMap,
     availableUp,
     upgradePrice,
-    powerLevel,
-    upgradedPowerLevel,
   };
 };
 

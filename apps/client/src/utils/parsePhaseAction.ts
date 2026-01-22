@@ -2,6 +2,7 @@ import { PhaseHistory } from 'src/types/encounter';
 import actionFuncs from './actionFuncs';
 import { camelCase } from 'change-case';
 import reactionFuncs from './reactionFuncs';
+import calculateItemStats from './calculateItemStats';
 
 const mergeActionResults = (target, source) => {
   for (const key in source) {
@@ -42,7 +43,7 @@ const parsePhaseAction = (
   ](
     phaseAction.actionSnapshot.costs,
     phaseAction.characterSnapshot,
-    phaseAction.itemSnapshot,
+    calculateItemStats(phaseAction.itemSnapshot),
     phaseActionSuccesses,
   );
 
@@ -72,7 +73,7 @@ const parsePhaseAction = (
     const results = reactionFuncs[`${camelCase(reaction.actionSnapshot.name)}`](
       phaseAction.actionSnapshot.costs,
       phaseAction.characterSnapshot,
-      reaction.itemSnapshot,
+      calculateItemStats(phaseAction.itemSnapshot),
       phaseReactionSuccesses,
     );
 

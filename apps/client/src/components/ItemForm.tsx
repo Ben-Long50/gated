@@ -19,7 +19,7 @@ import KeywordLinkField from './formFields/KeywordLinkField';
 import { extractItemListIds, extractKeywordListIds } from '../utils/extractIds';
 import useItemQuery from 'src/hooks/useItemQuery/useItemQuery';
 import { Item, Stats } from 'src/types/item';
-import useItems from 'src/hooks/useItems';
+import useBaseItems from 'src/hooks/useBaseItems';
 import PictureField from './formFields/PictureField';
 import RarityField from './formFields/RarityField';
 import StatFields from './formFields/StatFields';
@@ -39,27 +39,27 @@ const ItemForm = () => {
 
   const { data: item } = useItemQuery(Number(itemId));
 
-  const { filteredItems: weapons } = useItems({
+  const { filteredItems: weapons } = useBaseItems({
     category: 'weapons',
     excludedKeywords: ['Cyber Weapon', 'Vehicle Weapon', 'Drone Weapon'],
   });
 
-  const { filteredItems: vehicleWeapons } = useItems({
+  const { filteredItems: vehicleWeapons } = useBaseItems({
     category: 'weapons',
     excludedKeywords: ['Cyber Weapon', 'Drone Weapon'],
   });
 
-  const { filteredItems: droneWeapons } = useItems({
+  const { filteredItems: droneWeapons } = useBaseItems({
     category: 'weapons',
     includedKeywords: ['Drone Weapon'],
   });
 
-  const { filteredItems: armors } = useItems({
+  const { filteredItems: armors } = useBaseItems({
     category: 'armors',
     excludedKeywords: ['Cyber Armor'],
   });
 
-  const { filteredItems: vehicles } = useItems({
+  const { filteredItems: vehicles } = useBaseItems({
     category: 'vehicles',
   });
 

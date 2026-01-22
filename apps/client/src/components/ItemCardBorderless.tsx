@@ -21,7 +21,6 @@ import {
   WeaponControls,
 } from './ItemCardControls';
 import { AuthContext } from 'src/contexts/AuthContext';
-import useItemStats from 'src/hooks/useItemStats';
 import {
   Outlet,
   useLocation,
@@ -94,8 +93,6 @@ const ItemCardBorderless = ({
       setCardWidth(cardRef.current.offsetWidth);
     }
   }, [cardType, inView]);
-
-  const { itemStats } = useItemStats(item);
 
   const keywordList = [...item?.keywords, ...item?.modifiedKeywords].sort(
     (a, b) => a.keyword.name.localeCompare(b.keyword.name),
@@ -202,7 +199,7 @@ const ItemCardBorderless = ({
                 >
                   <StatBars
                     cardWidth={cardWidth}
-                    stats={itemStats}
+                    stats={item.stats}
                     mode={mode}
                   />
                   {linkedWeapons.length > 0 && (

@@ -24,7 +24,6 @@ import {
   WeaponControls,
 } from './ItemCardControls';
 import { AuthContext } from 'src/contexts/AuthContext';
-import useItemStats from 'src/hooks/useItemStats';
 import ItemRadialMenu from './radialMenus/itemRadialMenu/ItemRadialMenu';
 import {
   Link,
@@ -102,8 +101,6 @@ const ItemCard = ({
       setCardWidth(cardRef.current.offsetWidth);
     }
   }, [cardType, inView]);
-
-  const { itemStats } = useItemStats(item);
 
   const keywordList = [...item?.keywords, ...item?.modifiedKeywords].sort(
     (a, b) => a.keyword.name.localeCompare(b.keyword.name),
@@ -206,9 +203,9 @@ const ItemCard = ({
                 <div
                   className={`timing flex items-center justify-between gap-x-8 gap-y-2`}
                 >
-                  {keywordList.length > 0 && (
+                  {item.keywords.length > 0 && (
                     <div className={`flex flex-wrap items-center gap-1`}>
-                      {keywordList.map((keyword: KeywordReference) => {
+                      {item.keywords.map((keyword: KeywordReference) => {
                         return (
                           <Fragment key={keyword.id}>
                             <KeywordTag key={keyword.id} keyword={keyword} />
@@ -234,7 +231,7 @@ const ItemCard = ({
                   >
                     <StatBars
                       cardWidth={cardWidth}
-                      stats={itemStats}
+                      stats={item?.stats}
                       mode={mode}
                     />
                     {linkedWeapons.length > 0 && (
@@ -289,38 +286,38 @@ const ItemCard = ({
                   {item.itemTypes.includes('weapon') ? (
                     <WeaponControls
                       weaponId={item.id}
-                      stats={itemStats}
+                      stats={item.stats}
                       cardType={cardType}
                     />
                   ) : item.itemTypes.includes('armor') ? (
                     <ArmorControls
                       armorId={item.id}
-                      stats={itemStats}
+                      stats={item.stats}
                       cardType={cardType}
                     />
                   ) : item.itemTypes.includes('augmentation') ? (
                     <CyberneticControls
                       cyberneticId={item.id}
-                      stats={itemStats}
+                      stats={item.stats}
                       cardType={cardType}
                     />
                   ) : item.itemTypes.includes('vehicle') ? (
                     <VehicleControls
                       vehicleId={item.id}
-                      stats={itemStats}
+                      stats={item.stats}
                       cardType={cardType}
                     />
                   ) : item.itemTypes.includes('drone') ? (
                     <DroneControls
                       droneId={item.id}
-                      stats={itemStats}
+                      stats={item.stats}
                       cardType={cardType}
                     />
                   ) : (
                     item.itemTypes.includes('reusable') && (
                       <ItemControls
                         itemId={item.id}
-                        stats={itemStats}
+                        stats={item.stats}
                         cardType={cardType}
                       />
                     )

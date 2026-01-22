@@ -83,7 +83,7 @@ const CharacterLocationCard = ({
           <div className="flex items-center gap-4">
             <LocationIcon className="text-accent size-5" />
             <h4 className="!text-accent">
-              {character?.location ? character.location.map.name : 'N/A'}
+              {character?.location ? character?.location?.map?.name : 'N/A'}
             </h4>
           </div>
         </div>

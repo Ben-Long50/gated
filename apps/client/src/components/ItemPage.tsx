@@ -23,19 +23,17 @@ import ItemPicture from './ItemPicture';
 import Divider from './Divider';
 import Loading from './Loading';
 import StatBars from './StatBars';
-import ArrowHeader3 from './ArrowHeader3';
 import ArrowHeader2 from './ArrowHeader2';
-import useItemQuery from '../hooks/useItemQuery/useItemQuery';
 import ItemCardSmall from './ItemCardSmall';
 import { KeywordReference } from 'src/types/keyword';
 import { Item } from 'src/types/item';
-import useItemStats from 'src/hooks/useItemStats';
 import LinkedItemCard from './LinkedItemCard';
 import LinkedActionCard from './LinkedActionCard';
 import ItemRadialMenu from './radialMenus/itemRadialMenu/ItemRadialMenu';
 import useModalStore from 'src/stores/modalStore';
 import ConditionTag from './ConditionTag';
 import ExpandingList from './ExpandingList';
+import useItem from 'src/hooks/useItem';
 
 const ItemPage = ({
   itemId,
@@ -59,9 +57,7 @@ const ItemPage = ({
 
   const setBackgroundPath = useModalStore((state) => state.setBackgroundPath);
 
-  const { data: item, isLoading } = useItemQuery(Number(itemId));
-
-  const { itemStats, itemKeywords, powerLevel } = useItemStats(item);
+  const { item, isLoading } = useItem(Number(itemId));
 
   const linkedWeapons =
     item?.itemLinkReference?.items.filter((item) =>
@@ -132,17 +128,12 @@ const ItemPage = ({
             />
             <h4>Cost {item.price ? <span>{`${item.price}p`}</span> : 'N/A'}</h4>
           </div>
-
-          <div className="flex items-center justify-between">
-            <ArrowHeader3 title="Power Level" />
-            <h3>{powerLevel}</h3>
-          </div>
           {item.keywords?.length > 0 && (
             <ExpandingList
               title="Traits"
               className={`${mode !== 'codex' && 'col-span-2'} col-start-1 row-start-2 flex flex-wrap items-center gap-2`}
             >
-              {itemKeywords?.map((item: KeywordReference) => {
+              {item.keywords?.map((item: KeywordReference) => {
                 return (
                   <ItemCardSmall
                     key={item.keyword?.id}
@@ -172,12 +163,12 @@ const ItemPage = ({
           )}
         </div>
       </div>
-      {itemStats && (
+      {item && (
         <div
           ref={cardRef}
           className={`${cardWidth < 500 ? 'gap-2 px-2' : 'gap-8 px-4'} grid h-full w-full grow grid-cols-[auto_auto_1fr_auto] place-items-center gap-y-2 border-x-2 border-gray-400 border-opacity-50`}
         >
-          <StatBars stats={itemStats} cardWidth={cardWidth} />
+          <StatBars stats={item.stats} cardWidth={cardWidth} />
         </div>
       )}
       <p className="self-start">{item.description}</p>

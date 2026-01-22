@@ -4,7 +4,7 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import InputField from './InputField';
 import { useForm } from '@tanstack/react-form';
 import Loading from './Loading';
-import useItems from '../hooks/useItems';
+import useBaseItems from '../hooks/useBaseItems';
 import { Item } from 'src/types/item';
 import ArrowHeader2 from './ArrowHeader2';
 import { LayoutContext } from '../contexts/LayoutContext';
@@ -64,7 +64,7 @@ const Items = ({
     filterByRarity,
     filteredKeywords,
     isLoading,
-  } = useItems({
+  } = useBaseItems({
     category: forcedCategory || category,
     itemList: categorizedShopItems || itemList || undefined,
     includedKeywords: include.length > 0 ? include : undefined,

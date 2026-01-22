@@ -14,6 +14,7 @@ import { ActionData } from 'src/types/actionData';
 import BlockField from './BlockField';
 import Divider from '../Divider';
 import constructName from 'src/utils/constructName';
+import calculateItemStats from 'src/utils/calculateItemStats';
 
 const PhaseActionCard = ({
   phaseAction,
@@ -26,7 +27,7 @@ const PhaseActionCard = ({
 }) => {
   const character = phaseAction.characterSnapshot;
   const target = phaseAction.targetSnapshot;
-  const item = phaseAction.itemSnapshot;
+  const item = calculateItemStats(phaseAction.itemSnapshot);
   const action = phaseAction.actionSnapshot;
 
   let resultingInstances = 0;

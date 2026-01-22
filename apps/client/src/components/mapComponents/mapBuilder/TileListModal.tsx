@@ -20,12 +20,10 @@ import TilePicker from './TilePicker';
 import useMapFavoriteStore from 'src/stores/mapFavoriteStore';
 
 const TileListModal = () => {
-  const [tab, setTab] = useState<'favorites' | 'tiles' | 'components'>('tiles');
-
   const navigate = useNavigate();
   const { maps: components } = useMaps(false, 'component');
 
-  const { favorites, addFavorite, removeFavorite, hasPath } =
+  const { favorites, addFavorite, removeFavorite, hasPath, tab, setTab } =
     useMapFavoriteStore();
 
   const {

@@ -1,155 +1,90 @@
-import { useContext, useMemo, useState } from 'react';
-import { AuthContext } from '../contexts/AuthContext';
-import useItemsQuery from './useItemsQuery/useItemsQuery';
-import { Item } from 'src/types/item';
-import { camelCase } from 'change-case';
+import { useState } from 'react';
+import calculateItemStats from 'src/utils/calculateItemStats';
+import useItemQueries from './useItemQueries/useItemQueries';
 
-const useItems = ({
-  category,
-  itemList,
-  includedKeywords,
-  excludedKeywords,
-  subcategory,
-}: {
-  category: string;
-  itemList?: Item[];
-  includedKeywords?: string[];
-  excludedKeywords?: string[];
-  subcategory?: string;
-}) => {
-  const { data: items, isLoading, isPending } = useItemsQuery(category);
+const useItems = (itemIds: number[], category?: string | null) => {
+  const { items: data, isLoading, isPending } = useItemQueries(itemIds);
 
-  const list = itemList || items;
+  const items = data?.map((item) => calculateItemStats(item));
 
-  const categorizeItems = (itemList: Item[]) => {
-    let list = itemList;
+  const [query, setQuery] = useState<string | null>(null);
+  const [priceFilter, setPriceFilter] = useState<
+    'highToLow' | 'lowToHigh' | null
+  >(null);
+  const [rarity, setRarity] = useState<string | null>(null);
 
-    if (subcategory) {
-      list = list?.filter((item) => item.itemSubtypes?.includes(subcategory));
-    }
+  const filterItems = () => {
+    let filteredItems = items.sort((a, b) => a.name.localeCompare(b.name));
 
-    if (excludedKeywords) {
-      list = list?.filter((item: Item) =>
-        item.keywords?.every(
-          (keyword) => !excludedKeywords?.includes(keyword.keyword?.name),
-        ),
+    if (category) {
+      filteredItems = filteredItems.filter((item) =>
+        item.itemTypes.includes(category),
       );
     }
 
-    if (includedKeywords) {
-      list = list?.filter((item: Item) =>
-        item.keywords?.some((keyword) =>
-          includedKeywords?.includes(keyword.keyword?.name),
-        ),
-      );
-    }
-
-    return list;
-  };
-
-  const categorizedItems = useMemo(
-    () => categorizeItems(list || []),
-    [list, includedKeywords, excludedKeywords, subcategory],
-  );
-
-  const filteredKeywords = useMemo(() => {
-    if (!categorizedItems) return null;
-
-    const kw = [
-      ...new Set(
-        categorizedItems.flatMap((item: Item) => {
-          return item.keywords?.map((keyword) => keyword.keyword?.name);
-        }),
-      ),
-    ] as string[];
-
-    return kw.sort((a, b) => a.localeCompare(b));
-  }, [categorizedItems]);
-
-  const [query, setQuery] = useState('');
-  const [itemCategory, setItemCategory] = useState('');
-  const [priceFilter, setPriceFilter] = useState('');
-  const [rarity, setRarity] = useState('');
-
-  const filterItems = (items: Item[]) => {
-    if (!items) return;
-    let filteredItems = items;
-    if (itemCategory) {
-      filteredItems = items.filter((item: Item) =>
-        item.keywords.some(
-          (keyword) =>
-            camelCase(itemCategory) === camelCase(keyword.keyword.name),
-        ),
-      );
-    }
     if (query) {
-      filteredItems = filteredItems.filter((item: Item) =>
+      filteredItems = filteredItems.filter((item) =>
         item.name.toLowerCase().includes(query.toLowerCase()),
       );
     }
-    if (priceFilter === 'lowToHigh') {
-      filteredItems = filteredItems.sort((a, b) => {
-        if (a.price === null) {
-          return -1;
-        } else if (b.price === null) {
-          return 1;
-        } else {
-          return a.price - b.price;
-        }
-      });
-    }
-    if (priceFilter === 'highToLow') {
-      filteredItems = filteredItems.sort((a, b) => {
-        if (b.price === null) {
-          return -1;
-        } else if (a.price === null) {
-          return 1;
-        } else {
-          return b.price - a.price;
-        }
-      });
-    }
-    if (!priceFilter) {
-      filteredItems = filteredItems.sort((a, b) =>
-        a.name.localeCompare(b.name),
+
+    if (rarity) {
+      filteredItems = filteredItems.filter(
+        (item) => item.rarity.toLowerCase() === rarity.toLowerCase(),
       );
     }
-    if (rarity) {
-      filteredItems = filteredItems.filter((item) => item.rarity === rarity);
+
+    if (priceFilter) {
+      switch (priceFilter) {
+        case 'lowToHigh':
+          filteredItems = filteredItems.sort((a, b) => {
+            if (a.price === null) {
+              return -1;
+            } else if (b.price === null) {
+              return 1;
+            } else {
+              return a.price - b.price;
+            }
+          });
+          break;
+        case 'highToLow':
+          filteredItems = filteredItems.sort((a, b) => {
+            if (b.price === null) {
+              return -1;
+            } else if (a.price === null) {
+              return 1;
+            } else {
+              return b.price - a.price;
+            }
+          });
+          break;
+      }
     }
+
     return filteredItems;
   };
-
-  const filteredItems = useMemo(
-    () => filterItems(categorizedItems),
-    [query, priceFilter, rarity, category, itemCategory, categorizedItems],
-  );
 
   const filterByQuery = (newQuery: string) => {
     setQuery(newQuery);
   };
 
-  const filterByPrice = (direction: string) => {
+  const filterByPrice = (direction: 'highToLow' | 'lowToHigh' | null) => {
     setPriceFilter(direction);
   };
 
-  const filterByRarity = (rarity: string) => {
+  const filterByRarity = (rarity: string | null) => {
     setRarity(rarity);
   };
 
-  const filterByCategory = (newCategory: string) => {
-    setItemCategory(newCategory);
-  };
-
   const resetList = () => {
-    setQuery('');
+    setQuery(null);
+    setPriceFilter(null);
+    setRarity(null);
   };
 
   return {
-    filteredItems,
-    filteredKeywords,
+    items: filterItems(),
     filterByQuery,
-    filterByCategory,
     filterByPrice,
     filterByRarity,
     resetList,

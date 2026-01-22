@@ -26,7 +26,6 @@ import ArrowHeader2 from './ArrowHeader2';
 import BtnRect from './buttons/BtnRect';
 import useCharacter from 'src/hooks/useCharacter';
 import ItemCard from './ItemCard';
-import EquipmentIcon from './icons/EquipmentIcon';
 import CharacterIcon from './icons/CharacterIcon';
 import CharacterStatBars from './CharacterStatBars';
 import CharacterPicture from './CharacterPicture';
@@ -80,14 +79,6 @@ const Equipment = () => {
     isLoading,
     isPending,
   } = useCharacter(Number(characterId));
-
-  // const { powerLevel } = useItemStats(
-  //   character?.equipment
-  //     ? Object.values(character?.equipment).flatMap((value) => value)
-  //     : null,
-  // );
-
-  const powerLevel = 0;
 
   const activeItem = useMemo(() => {
     switch (active?.category) {
@@ -169,17 +160,6 @@ const Equipment = () => {
         <ThemeContainer chamfer="medium" borderColor={accentPrimary}>
           <div className="flex h-full w-full flex-col gap-4 p-4 pr-6">
             <ArrowHeader3 title="Character Stats" />
-            {/* <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center justify-center gap-4">
-                <EquipmentIcon className="text-secondary size-8 shrink-0" />
-                <h3 className="text-primary text-xl font-semibold tracking-widest">
-                  Power Level
-                </h3>
-              </div>
-              <p className="text-secondary min-w-6 text-center text-xl sm:pt-1 sm:text-2xl">
-                {powerLevel}
-              </p>
-            </div> */}
             <div className="grid w-full grid-cols-4 gap-4">
               <div className="bg-secondary flex items-center justify-between gap-2 rounded-md p-2 shadow-md shadow-black">
                 <div className="flex items-center justify-center gap-4">

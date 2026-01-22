@@ -50,6 +50,7 @@ interface Stats {
   currentBlock?: number;
   block?: number;
   cyber?: number;
+  maxCyber?: number;
   currentPower?: number;
   power?: number;
   weight?: number;
@@ -84,4 +85,15 @@ enum ItemType {
   modification = 'modification',
   reusable = 'reusable',
   consumable = 'consumable',
+}
+
+export interface Equipment {
+  weapons: Item[];
+  armors: Item[];
+  augmentations: Item[];
+  vehicles: Item[];
+  drones: Item[];
+  modifications: Item[];
+  reusables: Item[];
+  consumables: Item[];
 }

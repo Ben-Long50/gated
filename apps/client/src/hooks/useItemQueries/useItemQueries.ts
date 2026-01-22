@@ -2,7 +2,7 @@ import { useQueries } from '@tanstack/react-query';
 import getItemById from '../useItemQuery/getItemById';
 import { Item } from 'src/types/item';
 
-const useInventoryItemQueries = (itemsIds: number[]) => {
+const useItemQueries = (itemsIds: number[]) => {
   return useQueries({
     queries: itemsIds?.map((itemId) => ({
       queryKey: ['item', itemId],
@@ -19,4 +19,4 @@ const useInventoryItemQueries = (itemsIds: number[]) => {
   });
 };
 
-export default useInventoryItemQueries;
+export default useItemQueries;

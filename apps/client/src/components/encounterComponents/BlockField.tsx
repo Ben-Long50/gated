@@ -15,6 +15,7 @@ import constructName from 'src/utils/constructName';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import { socket } from 'src/socket';
 import { useParams } from 'react-router-dom';
+import calculateItemStats from 'src/utils/calculateItemStats';
 
 const BlockField = ({
   phaseAction,
@@ -55,24 +56,30 @@ const BlockField = ({
   const blockPermissions = gameMaster || controlledCharacter?.id === target?.id;
 
   const armor = target
-    ? target?.equipment?.armors
-        .filter(
-          (armor: Item) =>
-            armor.stats.armor &&
-            armor.stats.currentBlock &&
-            armor.stats.currentBlock > 0,
-        )
+    ? Object.values(target?.equipment)
+        .flatMap((items) => items.flatMap((item) => calculateItemStats(item)))
+        .filter((item: Item) => {
+          return (
+            item.stats.armor &&
+            item.stats.currentBlock &&
+            item.stats.currentBlock > 0
+          );
+        })
         .sort((a: Item, b: Item) => b.stats.armor - a.stats.armor)
     : [];
 
+  console.log(armor);
+
   const wardArmor = target
-    ? target?.equipment?.armors
-        .filter(
-          (armor: Item) =>
-            armor.stats.ward &&
-            armor.stats.currentBlock &&
-            armor.stats.currentBlock > 0,
-        )
+    ? Object.values(target?.equipment)
+        .flatMap((items) => items.flatMap((item) => calculateItemStats(item)))
+        .filter((item: Item) => {
+          return (
+            item.stats.ward &&
+            item.stats.currentBlock &&
+            item.stats.currentBlock > 0
+          );
+        })
         .sort((a: Item, b: Item) => b.stats.ward - a.stats.ward)
     : [];
 
