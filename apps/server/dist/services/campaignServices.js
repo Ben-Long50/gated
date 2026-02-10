@@ -53,6 +53,7 @@ const campaignServices = {
                             firstName: true,
                             lastName: true,
                             picture: true,
+                            userId: true,
                         },
                         orderBy: { firstName: 'asc' },
                     },
