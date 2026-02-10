@@ -131,7 +131,7 @@ const Equipment = () => {
           <BtnAuth>Drones & Vehicles</BtnAuth>
         </Link>
       </NavTabs>
-      <h1 className="text-center">{namePrefix + ' ' + 'Equipment'}</h1>
+      <h1 className="text-center">{`${character?.firstName}'s Equipment`}</h1>
       <div className="flex w-full flex-col gap-8 sm:flex-row">
         {character?.picture?.publicId && (
           <CharacterPicture className="min-w-60" character={character} />

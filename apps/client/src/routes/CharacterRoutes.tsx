@@ -8,7 +8,6 @@ import Deployments from 'src/components/Deployments';
 import Equipment from 'src/components/Equipment';
 import Inventory from 'src/components/Inventory';
 import ItemUpgradeForm from 'src/components/ItemUpgradeForm';
-import ItemPageWrapper from 'src/components/ItemPageWrapper';
 import Resume from 'src/components/Resume';
 import ResumeForm from 'src/components/ResumeForm';
 import InventoryModal from 'src/components/modals/InventoryModal';
@@ -22,6 +21,8 @@ import DescriptionModal from 'src/components/modals/DescriptionModal';
 import ShopModal from 'src/components/modals/ShopModal';
 import Items from 'src/components/Items';
 import AffiliationModal from 'src/components/modals/AffiliationModal';
+import Modal from 'src/components/modals/Modal';
+import ItemPage from 'src/components/ItemPage';
 
 const CharacterRoutes = () => {
   return (
@@ -40,14 +41,14 @@ const CharacterRoutes = () => {
           <Route path=":category" element={<Items />}>
             <Route path="traits/:traitId" element={<DescriptionModal />} />
           </Route>
-          <Route path=":category/:itemId" element={<ItemPageWrapper />} />
+          <Route path=":category/:itemId" element={<ItemPage />} />
         </Route>
         <Route path=":shopId" element={<ShopModal />}>
           <Route path="cart" element={<Cart />} />
           <Route path=":category" element={<Items />}>
             <Route path="traits/:traitId" element={<DescriptionModal />} />
           </Route>
-          <Route path=":category/:itemId" element={<ItemPageWrapper />} />
+          <Route path=":category/:itemId" element={<ItemPage />} />
         </Route>
       </Route>
       <Route path="update" element={<CharacterUpdateForm />}>
@@ -59,20 +60,27 @@ const CharacterRoutes = () => {
       <Route path="resume/update" element={<ResumeForm />} />
       <Route path="equipment" element={<Equipment />}>
         <Route path="inventory" element={<InventoryModal />} />
+        <Route path="items/:itemId/conditions" element={<ConditionModal />} />
+        <Route path="conditions/:conditionId" element={<DescriptionModal />} />
+        <Route path="traits/:traitId" element={<DescriptionModal />} />
+      </Route>
+      <Route path="drones" element={<Items />}>
+        <Route path="conditions/:conditionId" element={<DescriptionModal />} />
+        <Route path="traits/:traitId" element={<DescriptionModal />} />
+      </Route>
+      <Route path="vehicles" element={<Items />}>
+        <Route path="conditions/:conditionId" element={<DescriptionModal />} />
+        <Route path="traits/:traitId" element={<DescriptionModal />} />
+      </Route>
+      <Route path="inventory" element={<Inventory />}>
         <Route
-          path=":category/:itemId/conditions"
-          element={<ConditionModal />}
-        />
-        <Route path="conditions/:conditionId" element={<DescriptionModal />} />
-        <Route path="traits/:traitId" element={<DescriptionModal />} />
-      </Route>
-      <Route path="deployments" element={<Deployments />}>
-        <Route path="inventory" element={<InventoryModal />} />
-        <Route path="conditions/:conditionId" element={<DescriptionModal />} />
-        <Route path="traits/:traitId" element={<DescriptionModal />} />
-      </Route>
-      <Route path="inventory">
-        <Route path=":category">
+          path="items/:itemId"
+          element={
+            <Modal>
+              <ItemPage />
+            </Modal>
+          }
+        >
           <Route path=":itemId/conditions" element={<ConditionModal />} />
           <Route path="" element={<Inventory />}>
             <Route path="traits/:traitId" element={<DescriptionModal />} />
@@ -81,7 +89,7 @@ const CharacterRoutes = () => {
               element={<DescriptionModal />}
             />
           </Route>
-          <Route path=":itemId" element={<ItemPageWrapper />}>
+          <Route path=":itemId" element={<ItemPage />}>
             <Route path="update" element={<ItemUpdateModal />} />
             <Route
               path="conditions/:conditionId"

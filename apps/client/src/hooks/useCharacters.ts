@@ -4,7 +4,7 @@ import useCharacterQueries from './useCharactersQuery/useCharacterQueries';
 
 const useCharacters = (
   characterIds: number[],
-  playerCharacter: boolean | null,
+  playerCharacter?: boolean | null,
   npcTypes?: string[],
 ) => {
   const { characters, isLoading: charactersLoading } =

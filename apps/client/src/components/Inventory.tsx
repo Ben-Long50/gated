@@ -8,28 +8,35 @@ import InventoryIcon from './icons/InventoryIcon';
 import PotionIcon from './icons/PotionIcon';
 import VehicleIcon from './icons/VehicleIcon';
 import WeaponIcon from './icons/WeaponIcon';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import {
+  Outlet,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from 'react-router-dom';
 import Icon from '@mdi/react';
 import { mdiCheckCircle } from '@mdi/js';
 import useToggleEquipmentMutation from 'src/hooks/useEquipmentToggleMutation/useEquipmentToggleMutation';
 import rarityColorMap from 'src/utils/rarityColorMap';
 import useCharacter from 'src/hooks/useCharacter';
 import Loading from './Loading';
+import { Item } from 'src/types/item';
+import { useRef } from 'react';
 
 const Inventory = () => {
   const { characterId } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const {
-    filteredCharacter: character,
-    itemIds,
-    isLoading,
-  } = useCharacter(Number(characterId));
+  const { filteredCharacter: character, isLoading } = useCharacter(
+    Number(characterId),
+  );
 
   const category = searchParams.get('category');
 
-  const { items } = useItems(itemIds, category);
+  const items = category
+    ? character?.inventory.filter((item) => item.itemTypes.includes(category))
+    : character?.inventory;
 
   const toggleEquipment = useToggleEquipmentMutation();
 
@@ -41,10 +48,34 @@ const Inventory = () => {
     }
   };
 
+  const clickTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  const handleClick = (item: Item) => {
+    clickTimeout.current = setTimeout(() => {
+      navigate(`items/${item.id}`);
+    }, 200);
+  };
+
+  const handleDoubleClick = (item: Item) => {
+    if (clickTimeout.current) {
+      clearTimeout(clickTimeout.current);
+      clickTimeout.current = null;
+    }
+
+    if (character) {
+      toggleEquipment.mutate({
+        characterId: character?.id,
+        inventoryId: character?.characterInventory.id,
+        category: item.itemTypes,
+        itemId: item.id,
+      });
+    }
+  };
+
   return (
-    <div className="flex h-full w-full flex-col gap-4">
-      <h1 className="text-center">Inventory</h1>
-      <div className="grid h-full grow grid-flow-col gap-2 sm:gap-4">
+    <div className="flex h-full w-full max-w-6xl flex-col gap-4">
+      <h1 className="mb-4 text-center">{`${character?.firstName}'s Inventory`}</h1>
+      <div className="grid grid-flow-col gap-2 sm:gap-4">
         <BtnAuth active={!category} onClick={() => handleTab(null)}>
           All
         </BtnAuth>
@@ -91,7 +122,7 @@ const Inventory = () => {
           <DroneIcon className="size-8" />
         </BtnAuth>
       </div>
-      <Divider className="col-span-2" />
+      <Divider className="col-span-2 opacity-50" />
       {isLoading ? (
         <Loading />
       ) : (
@@ -104,19 +135,13 @@ const Inventory = () => {
                 className="group relative h-full cursor-pointer select-none overflow-hidden rounded-bl rounded-tr pl-1 clip-4"
                 style={{ backgroundColor: rarityColorMap[item.rarity] }}
                 key={index}
-                onDoubleClick={() => {
-                  if (character) {
-                    toggleEquipment.mutate({
-                      characterId: character?.id,
-                      inventoryId: character?.characterInventory.id,
-                      category: item.itemTypes,
-                      itemId: item.id,
-                    });
-                  }
-                }}
-                onContextMenu={(e) => {
+                onDoubleClick={(e) => {
                   e.preventDefault();
-                  navigate(`../../inventory/items/${item.id}`);
+                  handleDoubleClick(item);
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleClick(item);
                 }}
               >
                 {item.equipped === true && (
@@ -149,6 +174,7 @@ const Inventory = () => {
       <p className="text-tertiary text-right">
         (Double click to equip / unequip)
       </p>
+      <Outlet />
     </div>
   );
 };

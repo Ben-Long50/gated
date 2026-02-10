@@ -3,11 +3,11 @@ import AffiliationForm from 'src/components/AffiliationForm';
 import Cart from 'src/components/Cart';
 import CharacterAffiliations from 'src/components/CharacterAffiliations';
 import ConditionModal from 'src/components/modals/ConditionModal';
-import ItemPageWrapper from 'src/components/ItemPageWrapper';
 import Items from 'src/components/Items';
 import ShopModal from 'src/components/modals/ShopModal';
 import AffiliationModal from 'src/components/modals/AffiliationModal';
 import DescriptionModal from 'src/components/modals/DescriptionModal';
+import ItemPage from 'src/components/ItemPage';
 
 const CharacterModalRoutes = () => {
   return (
@@ -22,12 +22,12 @@ const CharacterModalRoutes = () => {
         <Route path="global" element={<ShopModal />}>
           <Route path="cart" element={<Cart />} />
           <Route path=":category" element={<Items />} />
-          <Route path=":category/:itemId" element={<ItemPageWrapper />} />
+          <Route path=":category/:itemId" element={<ItemPage />} />
         </Route>
         <Route path=":shopId" element={<ShopModal />}>
           <Route path="cart" element={<Cart />} />
           <Route path=":category" element={<Items />} />
-          <Route path=":category/:itemId" element={<ItemPageWrapper />} />
+          <Route path=":category/:itemId" element={<ItemPage />} />
         </Route>
       </Route>
     </Route>

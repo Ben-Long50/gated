@@ -5,20 +5,21 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import { LayoutContext } from '../contexts/LayoutContext';
 import Sidebar from '../components/sidebars/Sidebar';
 import CodexLinks from '../components/sidebars/CodexLinks';
-import CharacterLinks from '../components/sidebars/CharacterLinks';
+import CharacterListLinks from '../components/sidebars/CharacterListLinks';
 import CampaignLinks from '../components/sidebars/CampaignLinks';
 import AccountLinks from '../components/sidebars/AccountLinks';
 import useNavigationStore from 'src/stores/navbarStore';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import DieIcon from 'src/components/icons/DieIcon';
 import RollModal from 'src/components/modals/RollModal';
+import CharacterLinks from 'src/components/sidebars/CharacterLinks';
 
 const MainLayout = () => {
   const { theme, accentPrimary } = useContext(ThemeContext);
   const { rolls } = useContext(CampaignContext);
   const { mobile } = useContext(LayoutContext);
   const { pathname } = useLocation();
-  const { encounterId } = useParams();
+  const { encounterId, characterId } = useParams();
   const navigate = useNavigate();
 
   const navbar = useNavigationStore((state) => state.navbar);
@@ -42,7 +43,13 @@ const MainLayout = () => {
       {!encounterId && (
         <Sidebar>
           {pathname.startsWith('/glam/codex') && <CodexLinks />}
-          {pathname.startsWith('/glam/characters') && <CharacterLinks />}
+          {pathname.startsWith('/glam/characters') ? (
+            characterId ? (
+              <CharacterLinks />
+            ) : (
+              <CharacterListLinks />
+            )
+          ) : null}
           {pathname.startsWith('/glam/campaigns') && <CampaignLinks />}
           {pathname.startsWith('/glam/account') && <AccountLinks />}
         </Sidebar>

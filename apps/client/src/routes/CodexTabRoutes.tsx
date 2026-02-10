@@ -9,7 +9,6 @@ import ConditionForm from 'src/components/ConditionForm';
 import Conditions from 'src/components/Conditions';
 import ItemLinkModal from 'src/components/modals/ItemLinkModal';
 import ItemForm from 'src/components/ItemForm';
-import ItemPageWrapper from 'src/components/ItemPageWrapper';
 import Items from 'src/components/Items';
 import KeywordForm from 'src/components/KeywordForm';
 import Keywords from 'src/components/Keywords';
@@ -21,12 +20,13 @@ import PerkForm from 'src/components/PerkForm';
 import Perks from 'src/components/Perks';
 import ActionLinkModal from 'src/components/modals/ActionLinkModal';
 import DescriptionModal from 'src/components/modals/DescriptionModal';
+import ItemPage from 'src/components/ItemPage';
 
 const CodexTabRoutes = () => {
   return (
     <Route path="codex">
       <Route path="search" element={<CodexSearch />} />
-      <Route path="search/:category/:itemId" element={<ItemPageWrapper />} />
+      <Route path="search/:category/:itemId" element={<ItemPage />} />
       <Route index element={<PatchNotes />} />
       <Route path="patchNotes">
         <Route path="create" element={<PatchNoteForm />} />
@@ -47,7 +47,7 @@ const CodexTabRoutes = () => {
             />
             <Route path="traits/:traitId" element={<DescriptionModal />} />
           </Route>
-          <Route path=":itemId" element={<ItemPageWrapper />}>
+          <Route path=":itemId" element={<ItemPage />}>
             <Route
               path="conditions/:conditionId"
               element={<DescriptionModal />}

@@ -8,7 +8,6 @@ import Deployments from 'src/components/Deployments';
 import Equipment from 'src/components/Equipment';
 import Inventory from 'src/components/Inventory';
 import ItemUpgradeForm from 'src/components/ItemUpgradeForm';
-import ItemPageWrapper from 'src/components/ItemPageWrapper';
 import Resume from 'src/components/Resume';
 import ResumeForm from 'src/components/ResumeForm';
 import InventoryModal from 'src/components/modals/InventoryModal';
@@ -23,6 +22,7 @@ import ShopModal from 'src/components/modals/ShopModal';
 import Items from 'src/components/Items';
 import AffiliationModal from 'src/components/modals/AffiliationModal';
 import Modal from 'src/components/modals/Modal';
+import ItemPage from 'src/components/ItemPage';
 
 const CharacterMenuRoutes = () => {
   return (
@@ -48,14 +48,14 @@ const CharacterMenuRoutes = () => {
           <Route path=":category" element={<Items />}>
             <Route path="traits/:traitId" element={<DescriptionModal />} />
           </Route>
-          <Route path=":category/:itemId" element={<ItemPageWrapper />} />
+          <Route path=":category/:itemId" element={<ItemPage />} />
         </Route>
         <Route path=":shopId" element={<ShopModal />}>
           <Route path="cart" element={<Cart />} />
           <Route path=":category" element={<Items />}>
             <Route path="traits/:traitId" element={<DescriptionModal />} />
           </Route>
-          <Route path=":category/:itemId" element={<ItemPageWrapper />} />
+          <Route path=":category/:itemId" element={<ItemPage />} />
         </Route>
       </Route>
       <Route
@@ -128,7 +128,7 @@ const CharacterMenuRoutes = () => {
             path=":itemId"
             element={
               <Modal>
-                <ItemPageWrapper />
+                <ItemPage />
               </Modal>
             }
           >

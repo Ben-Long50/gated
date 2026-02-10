@@ -35,18 +35,10 @@ import ConditionTag from './ConditionTag';
 import ExpandingList from './ExpandingList';
 import useItem from 'src/hooks/useItem';
 
-const ItemPage = ({
-  itemId,
-  mode,
-  category,
-}: {
-  itemId: number;
-  mode?: string;
-  category: string;
-}) => {
+const ItemPage = () => {
   const { accentPrimary } = useContext(ThemeContext);
   const { user } = useContext(AuthContext);
-  const { conditionId } = useParams();
+  const { conditionId, itemId } = useParams();
   const navigate = useNavigate();
   const [cardWidth, setCardWidth] = useState(0);
 
@@ -96,11 +88,11 @@ const ItemPage = ({
       <div className="relative grid w-full grid-cols-[1fr_auto_1fr]">
         <ItemRadialMenu className="relative size-8" item={item} />
         <h1 className="col-start-2 text-center">{item.name}</h1>
-        {mode === 'codex' && (
+        {/* {!characterId && (
           <div className="col-start-3 flex items-center justify-end gap-4 self-end">
-            <CartButton category={category} itemId={item?.id} />
+            <CartButton itemId={item?.id} />
           </div>
-        )}
+        )} */}
       </div>
       <div className="relative grid h-full w-full grid-rows-[auto_auto] gap-8 sm:grid-cols-2 sm:grid-rows-1">
         {item.picture?.imageUrl && (
@@ -131,7 +123,7 @@ const ItemPage = ({
           {item.keywords?.length > 0 && (
             <ExpandingList
               title="Traits"
-              className={`${mode !== 'codex' && 'col-span-2'} col-start-1 row-start-2 flex flex-wrap items-center gap-2`}
+              className={`col-start-1 row-start-2 flex flex-wrap items-center gap-2`}
             >
               {item.keywords?.map((item: KeywordReference) => {
                 return (
@@ -181,7 +173,6 @@ const ItemPage = ({
               return (
                 <LinkedItemCard
                   key={index}
-                  mode={mode}
                   item={weapon}
                   cardWidth={cardRef.current?.offsetWidth}
                 />
@@ -199,7 +190,6 @@ const ItemPage = ({
               return (
                 <LinkedItemCard
                   key={index}
-                  mode={mode}
                   item={armor}
                   cardWidth={cardRef.current?.offsetWidth}
                 />
@@ -217,7 +207,6 @@ const ItemPage = ({
               return (
                 <LinkedItemCard
                   key={index}
-                  mode={mode}
                   item={vehicle}
                   cardWidth={cardRef.current?.offsetWidth}
                 />
@@ -268,7 +257,7 @@ const ItemPage = ({
         <div className="flex w-full items-center justify-between">
           <Link
             className="timing group flex items-center gap-4 self-start py-2"
-            to={`/glam/codex/${category}/${item.baseItem.id}`}
+            to={`/glam/codex/items/${item.baseItem.id}`}
           >
             <Icon
               path={mdiLinkBoxVariantOutline}

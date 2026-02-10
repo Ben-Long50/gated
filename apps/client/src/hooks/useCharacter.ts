@@ -77,8 +77,6 @@ const useCharacter = (characterId: number) => {
       ? calculateCharacterStats(character, equipment, actions)
       : {};
 
-  console.log(character?.stats);
-
   const filterByPreferences = (character: Character) => {
     const characterOwner = gameMaster || character?.userId === user?.id;
 
@@ -147,6 +145,7 @@ const useCharacter = (characterId: number) => {
           : null,
       equipment:
         characterOwner || character?.preferences?.equipment ? equipment : null,
+      inventory: characterOwner ? items : null,
       actions:
         characterOwner || character?.preferences?.equipment ? actions : null,
     };
@@ -156,7 +155,6 @@ const useCharacter = (characterId: number) => {
 
   return {
     filteredCharacter: character ? filteredCharacter : null,
-    itemIds,
     isLoading: characterLoading || itemsLoading,
     isPending: characterPending || itemsPending,
   };

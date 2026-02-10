@@ -61,13 +61,6 @@ const CampaignLinks = () => {
             />
             <SubLinkSidebar title="Create campaign" path={`campaigns/create`} />
           </LinkListSidebar>
-          <LinkSidebar
-            title="Roll Simulator"
-            icon={
-              <DieIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
-            }
-            path="campaigns/rollSimulator"
-          />
         </>
       ) : (
         <>

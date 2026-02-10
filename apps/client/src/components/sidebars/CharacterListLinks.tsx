@@ -1,0 +1,81 @@
+import constructName from 'src/utils/constructName';
+import CharacterIcon from '../icons/CharacterIcon';
+import LinkListSidebar from './LinkListSidebar';
+import SubLinkSidebar from './SubLinkSidebar';
+import { useContext } from 'react';
+import { AuthContext } from 'src/contexts/AuthContext';
+import useCharacters from 'src/hooks/useCharacters';
+import Loading from '../Loading';
+import LinkSidebar from './LinkSidebar';
+import CharacterPictureRound from '../CharacterPictureRound';
+import { useSearchParams } from 'react-router-dom';
+
+const CharacterListLinks = () => {
+  const { user } = useContext(AuthContext);
+
+  const [searchParams] = useSearchParams();
+
+  const characterType = searchParams.get('characterType');
+  const npcTypes = searchParams.getAll('npcType');
+
+  let playerCharacter = null;
+
+  if (characterType && characterType === 'playerCharacter') {
+    playerCharacter = true;
+  } else if (characterType && characterType === 'nonPlayerCharacter') {
+    playerCharacter = false;
+  }
+
+  const { characters, isLoading } = useCharacters(
+    user.characters?.map((character) => character.id),
+    playerCharacter,
+    npcTypes,
+  );
+
+  if (isLoading) {
+    return <Loading size={1.5} />;
+  }
+
+  return (
+    <>
+      <LinkListSidebar
+        icon={
+          <CharacterIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+        }
+        title="Character Categories"
+      >
+        <SubLinkSidebar title="All Characters" path="characters" />
+        <SubLinkSidebar
+          title="Player Characters"
+          path="characters?characterType=playerCharacter"
+        />
+        <SubLinkSidebar
+          title="Generic NPCs"
+          path="characters?characterType=nonPlayerCharacter"
+        />
+        <SubLinkSidebar
+          title="Shop NPCs"
+          path="characters?characterType=nonPlayerCharacter&npcType=shop"
+        />
+        <SubLinkSidebar
+          title="Template NPCs"
+          path="characters?characterType=nonPlayerCharacter&npcType=template"
+        />
+        <SubLinkSidebar title="Create New Character" path="characters/create" />
+      </LinkListSidebar>
+      {characters.map((character) => {
+        const characterName = constructName(character);
+
+        return (
+          <LinkSidebar
+            title={characterName}
+            icon={<CharacterPictureRound character={character} />}
+            path={`characters/${character.id}`}
+          />
+        );
+      })}
+    </>
+  );
+};
+
+export default CharacterListLinks;
