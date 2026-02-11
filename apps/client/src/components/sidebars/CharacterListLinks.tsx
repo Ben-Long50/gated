@@ -9,6 +9,7 @@ import Loading from '../Loading';
 import LinkSidebar from './LinkSidebar';
 import CharacterPictureRound from '../CharacterPictureRound';
 import { useSearchParams } from 'react-router-dom';
+import CreateCharacterIcon from '../icons/CreateCharacterIcon';
 
 const CharacterListLinks = () => {
   const { user } = useContext(AuthContext);
@@ -61,8 +62,15 @@ const CharacterListLinks = () => {
           title="Template NPCs"
           path="characters?characterType=nonPlayerCharacter&npcType=template"
         />
-        <SubLinkSidebar title="Create New Character" path="characters/create" />
       </LinkListSidebar>
+      <LinkSidebar
+        icon={
+          <CreateCharacterIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+        }
+        title="Create Character"
+        path="characters/create"
+      />
+
       {characters.map((character) => {
         const characterName = constructName(character);
 

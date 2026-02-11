@@ -23,6 +23,7 @@ import Items from 'src/components/Items';
 import AffiliationModal from 'src/components/modals/AffiliationModal';
 import Modal from 'src/components/modals/Modal';
 import ItemPage from 'src/components/ItemPage';
+import ProgressionPage from 'src/components/ProgressionPage';
 
 const CharacterRoutes = () => {
   return (
@@ -30,6 +31,7 @@ const CharacterRoutes = () => {
       <Route path="" element={<CharacterSheet />}>
         <Route path="conditions/:conditionId" element={<DescriptionModal />} />
       </Route>
+      <Route path="progression" element={<ProgressionPage />} />
       <Route path="conditions" element={<ConditionModal />} />
       <Route path="affiliations" element={<AffiliationModal />}>
         <Route index element={<CharacterAffiliations />} />

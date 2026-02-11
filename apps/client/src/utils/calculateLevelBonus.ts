@@ -111,9 +111,9 @@ const calculateLevelBonus = (
       break;
     default:
       levelBonus = {
-        attributePoints: 6,
-        skillPoints: 12,
-        perkPoints: 1,
+        attributePoints: 0,
+        skillPoints: 0,
+        perkPoints: 0,
         masterPerkPoints: 0,
       };
       break;
@@ -143,11 +143,22 @@ const calculateLevelBonus = (
     usedSkillPoints,
     usedPerkPoints,
     usedMasterPerkPoints,
-    availableAttributePoints: levelBonus.attributePoints - usedAttributePoints,
-    availableSkillPoints: levelBonus.skillPoints - usedSkillPoints,
-    availablePerkPoints: levelBonus.perkPoints - usedPerkPoints,
+    availableAttributePoints:
+      levelBonus.attributePoints - usedAttributePoints < 0
+        ? 0
+        : levelBonus.attributePoints - usedAttributePoints,
+    availableSkillPoints:
+      levelBonus.skillPoints - usedSkillPoints < 0
+        ? 0
+        : levelBonus.skillPoints - usedSkillPoints,
+    availablePerkPoints:
+      levelBonus.perkPoints - usedPerkPoints < 0
+        ? 0
+        : levelBonus.perkPoints - usedPerkPoints,
     availableMasterPerkPoints:
-      levelBonus.masterPerkPoints - usedMasterPerkPoints,
+      levelBonus.masterPerkPoints - usedMasterPerkPoints < 0
+        ? 0
+        : levelBonus.masterPerkPoints - usedMasterPerkPoints,
   };
 };
 

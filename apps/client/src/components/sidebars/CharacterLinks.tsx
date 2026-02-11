@@ -11,6 +11,7 @@ import InventoryIcon from '../icons/InventoryIcon';
 import EquipmentIcon from '../icons/EquipmentIcon';
 import DroneIcon from '../icons/DroneIcon';
 import VehicleIcon from '../icons/VehicleIcon';
+import ProgressionIcon from '../icons/ProgressionIcon';
 
 const CharacterLinks = () => {
   const { characterId } = useParams();
@@ -31,6 +32,13 @@ const CharacterLinks = () => {
           <CharacterIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         path={`/glam/characters/${character?.id}`}
+      />
+      <LinkSidebar
+        title="Progression"
+        icon={
+          <ProgressionIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+        }
+        path={`/glam/characters/${character?.id}/progression`}
       />
       <LinkSidebar
         title="Equipment"

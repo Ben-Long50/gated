@@ -40,7 +40,7 @@ const CodexLinks = () => {
         }
         path="/glam/codex/search"
       />
-      <LinkListSidebar
+      {/* <LinkListSidebar
         icon={
           <BookIcon className="group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2" />
         }
@@ -70,7 +70,7 @@ const CodexLinks = () => {
         {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
           <SubLinkSidebar title="Create Entry" path="codex/book/create" />
         )}
-      </LinkListSidebar>
+      </LinkListSidebar> */}
       <LinkListSidebar
         icon={
           <WeaponIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
