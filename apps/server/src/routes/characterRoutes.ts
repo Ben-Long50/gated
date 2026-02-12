@@ -41,6 +41,12 @@ router.patch(
   characterController.editCart,
 );
 
+router.patch(
+  '/characters/:characterId/level',
+  authentication.authenticate,
+  characterController.updateCharacterLevel,
+);
+
 router.post(
   '/characters/:characterId/inventory/:inventoryId',
   authentication.authenticate,

@@ -59,6 +59,7 @@ const characterServices = {
             include: includeCharacterCart,
           },
           location: { include: { map: { select: { name: true } } } },
+          characterLevelBonuses: { include: { perk: true } },
         },
       });
 
@@ -99,6 +100,7 @@ const characterServices = {
             include: includeCharacterCart,
           },
           location: { include: { map: { select: { name: true } } } },
+          characterLevelBonuses: { include: { perk: true } },
         },
       });
 
@@ -214,6 +216,8 @@ const characterServices = {
         insanities: 0,
       };
 
+      const perks = formData.perks?.map((id: number) => ({ id })) || [];
+
       const data = {
         ...formData,
         userId,
@@ -222,12 +226,21 @@ const characterServices = {
           ...startingStats,
         },
         perks: {
-          connect: formData.perks?.map((id: number) => ({ id })) || [],
+          connect: perks,
         },
       };
 
       const newCharacter = await prisma.character.create({
-        data,
+        data: {
+          ...data,
+          characterLevelBonuses: {
+            create: {
+              level: 1,
+              attributes: data.attributes,
+              perk: { connect: perks[0] },
+            },
+          },
+        },
       });
 
       await characterServices.createCharacterCart(newCharacter.id);
@@ -449,17 +462,11 @@ const characterServices = {
         ...formData,
       };
 
-      if (formData.perks) {
-        //@ts-ignore
-        data.perks = { set: formData.perks.map((perk) => ({ id: perk })) };
-      }
-
       const updatedCharacter = await prisma.character.update({
         where: {
           userId,
           id: Number(characterId),
         },
-        //@ts-ignore
         data,
       });
 
@@ -467,6 +474,26 @@ const characterServices = {
     } catch (error) {
       console.error(error);
       throw new Error('Failed to update character');
+    }
+  },
+
+  updateCharacterLevel: async (characterId: number, levelChange: number) => {
+    try {
+      const character = await prisma.character.findUnique({
+        where: { id: characterId },
+      });
+
+      await prisma.character.update({
+        where: {
+          id: characterId,
+        },
+        data: {
+          level: character?.level + levelChange,
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to change character level');
     }
   },
 

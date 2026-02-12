@@ -59,6 +59,7 @@ const characterServices = {
                         include: includeCharacterCart,
                     },
                     location: { include: { map: { select: { name: true } } } },
+                    characterLevelBonuses: { include: { perk: true } },
                 },
             });
             if (characters.length === 0) {
@@ -97,6 +98,7 @@ const characterServices = {
                         include: includeCharacterCart,
                     },
                     location: { include: { map: { select: { name: true } } } },
+                    characterLevelBonuses: { include: { perk: true } },
                 },
             });
             return character;
@@ -199,11 +201,18 @@ const characterServices = {
                 injuries: 0,
                 insanities: 0,
             };
+            const perks = ((_c = formData.perks) === null || _c === void 0 ? void 0 : _c.map((id) => ({ id }))) || [];
             const data = Object.assign(Object.assign({}, formData), { userId, stats: Object.assign(Object.assign({}, formData.stats), startingStats), perks: {
-                    connect: ((_c = formData.perks) === null || _c === void 0 ? void 0 : _c.map((id) => ({ id }))) || [],
+                    connect: perks,
                 } });
             const newCharacter = await prisma.character.create({
-                data,
+                data: Object.assign(Object.assign({}, data), { characterLevelBonuses: {
+                        create: {
+                            level: 1,
+                            attributes: data.attributes,
+                            perk: { connect: perks[0] },
+                        },
+                    } }),
             });
             await characterServices.createCharacterCart(newCharacter.id);
             const characterInventory = await characterServices.createCharacterInventory(newCharacter.id);
@@ -344,16 +353,11 @@ const characterServices = {
     updateCharacter: async (formData, userId, characterId) => {
         try {
             const data = Object.assign({}, formData);
-            if (formData.perks) {
-                //@ts-ignore
-                data.perks = { set: formData.perks.map((perk) => ({ id: perk })) };
-            }
             const updatedCharacter = await prisma.character.update({
                 where: {
                     userId,
                     id: Number(characterId),
                 },
-                //@ts-ignore
                 data,
             });
             return updatedCharacter.campaignId;
@@ -361,6 +365,25 @@ const characterServices = {
         catch (error) {
             console.error(error);
             throw new Error('Failed to update character');
+        }
+    },
+    updateCharacterLevel: async (characterId, levelChange) => {
+        try {
+            const character = await prisma.character.findUnique({
+                where: { id: characterId },
+            });
+            await prisma.character.update({
+                where: {
+                    id: characterId,
+                },
+                data: {
+                    level: (character === null || character === void 0 ? void 0 : character.level) + levelChange,
+                },
+            });
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to change character level');
         }
     },
     createCharacterConditions: async (characterId, formData) => {

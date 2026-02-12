@@ -9,6 +9,7 @@ router.get('/characters/:characterId', authentication.authenticate, characterCon
 router.patch('/characters/:characterId/inventory/:inventoryId/equipment/:itemId', authentication.authenticate, characterController.toggleEquipment);
 router.patch('/characters/active', authentication.authenticate, characterController.setActiveCharacter);
 router.patch('/characters/:characterId/cart/:cartId', authentication.authenticate, characterController.editCart);
+router.patch('/characters/:characterId/level', authentication.authenticate, characterController.updateCharacterLevel);
 router.post('/characters/:characterId/inventory/:inventoryId', authentication.authenticate, characterController.completePurchase);
 router.post('/characters', authentication.authenticate, characterController.createCharacter);
 router.post('/characters/:characterId/affiliations/create', authentication.authenticate, affiliationController.createCharacterAffiliation);

@@ -295,46 +295,57 @@ model Property {
 }
 
 model Character {
-  id                 Int                           @id @default(autoincrement())
-  createdAt          DateTime                      @default(now())
-  user               User                          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId             Int
-  level              Int                           @default(1)
-  profits            Int                           @default(10)
-  stats              Json                          @default("{}")
-  picture            Json?
-  height             Int
-  weight             Int
-  age                Int
-  sex                String
-  backstory          Json?
-  firstTaste         Json?
-  badMedicine        Json?
-  attributes         Json
-  firstName          String
-  lastName           String?
-  playerCharacter    Boolean                       @default(false)
-  npcTypes           NpcTypes[]
-  preferences        Json?
-  location           Location?
-  locationId         Int?
-  active             Boolean                       @default(false)
-  pushCounter        Int                           @default(0)
-  perks              Perk[]                        @relation("CharacterToPerk")
-  campaign           Campaign?                     @relation(fields: [campaignId], references: [id])
-  campaignId         Int?
-  sessions           Session[]
-  gang               Gang?                         @relation(fields: [gangId], references: [id])
-  gangId             Int?
-  conditions         CharacterConditionReference[]
-  characterCart      CharacterCart?
-  characterInventory CharacterInventory?
-  Note               Note[]
-  affiliations       Affiliation[]
-  events             Event[]
-  encounters         Encounter[]
+  id                    Int                           @id @default(autoincrement())
+  createdAt             DateTime                      @default(now())
+  user                  User                          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                Int
+  level                 Int                           @default(1)
+  profits               Int                           @default(10)
+  stats                 Json                          @default("{}")
+  picture               Json?
+  height                Int
+  weight                Int
+  age                   Int
+  sex                   String
+  backstory             Json?
+  firstTaste            Json?
+  badMedicine           Json?
+  attributes            Json
+  firstName             String
+  lastName              String?
+  playerCharacter       Boolean                       @default(false)
+  npcTypes              NpcTypes[]
+  preferences           Json?
+  location              Location?
+  locationId            Int?
+  active                Boolean                       @default(false)
+  pushCounter           Int                           @default(0)
+  perks                 Perk[]                        @relation("CharacterToPerk")
+  campaign              Campaign?                     @relation(fields: [campaignId], references: [id])
+  campaignId            Int?
+  sessions              Session[]
+  gang                  Gang?                         @relation(fields: [gangId], references: [id])
+  gangId                Int?
+  conditions            CharacterConditionReference[]
+  characterCart         CharacterCart?
+  characterInventory    CharacterInventory?
+  Note                  Note[]
+  affiliations          Affiliation[]
+  events                Event[]
+  encounters            Encounter[]
+  characterLevelBonuses CharacterLevelBonus[]
 
   @@index([userId])
+}
+
+model CharacterLevelBonus {
+  id          Int        @id @default(autoincrement())
+  character   Character? @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  characterId Int?       @unique
+  level       Int
+  attributes  Json?
+  perk        Perk?      @relation(fields: [perkId], references: [id])
+  perkId      Int?
 }
 
 model CharacterCart {
@@ -531,12 +542,13 @@ enum DurationUnit {
 }
 
 model Perk {
-  id          Int         @id @default(autoincrement())
-  name        String      @unique
-  description String
-  attributes  Json?
-  characters  Character[] @relation("CharacterToPerk")
-  modifiers   Json?
+  id                    Int                   @id @default(autoincrement())
+  name                  String                @unique
+  description           String
+  attributes            Json?
+  characters            Character[]           @relation("CharacterToPerk")
+  modifiers             Json?
+  characterLevelBonuses CharacterLevelBonus[]
 }
 
 model BookSection {
