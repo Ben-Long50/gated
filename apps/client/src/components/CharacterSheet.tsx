@@ -33,6 +33,7 @@ import ConditionTag from './ConditionTag';
 import ExpandingList from './ExpandingList';
 import NavTabs from './NavTabs';
 import ArrowHeader4 from './ArrowHeader4';
+import StatBarContainer from './StatBarContainer';
 
 const CharacterSheet = () => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -41,8 +42,6 @@ const CharacterSheet = () => {
   const { mobile } = useContext(LayoutContext);
 
   const [infoVisibility, setInfoVisibility] = useState(mobile ? false : true);
-
-  const cardRef = useRef(null);
 
   const {
     filteredCharacter: character,
@@ -202,9 +201,7 @@ const CharacterSheet = () => {
         </ThemeContainer>
       </div>
       {character?.conditions.length > 0 && (
-        <div
-          className={`${cardRef.current?.offsetWidth < 500 ? 'px-2' : 'px-4'} flex grow flex-wrap items-center justify-start gap-1`}
-        >
+        <div className={`flex grow flex-wrap items-center justify-start gap-1`}>
           {character?.conditions?.map((condition) => (
             <Fragment key={condition.id}>
               <ConditionTag key={condition.id} condition={condition} />
@@ -215,12 +212,8 @@ const CharacterSheet = () => {
           ))}
         </div>
       )}
-      <div
-        ref={cardRef}
-        className={`${cardRef.current?.offsetWidth < 500 ? 'gap-2 px-2' : 'gap-4 px-4'} grid h-full w-full grow grid-cols-[auto_auto_1fr_auto] place-items-center gap-y-2`}
-      >
+      <StatBarContainer>
         <CharacterStatBars
-          cardWidth={cardRef.current?.offsetWidth}
           stats={{
             maxHealth: character?.stats.maxHealth,
             maxSanity: character?.stats.maxSanity,
@@ -233,7 +226,7 @@ const CharacterSheet = () => {
           }}
           characterId={character.id}
         />
-      </div>
+      </StatBarContainer>
       <div className="flex flex-col gap-8">
         <ThemeContainer chamfer="medium" borderColor={accentPrimary}>
           <div className="flex flex-wrap justify-center gap-8 px-8 py-4 lg:justify-between lg:pl-10">

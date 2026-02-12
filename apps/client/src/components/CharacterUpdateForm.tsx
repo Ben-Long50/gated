@@ -20,6 +20,7 @@ import { Perk } from 'src/types/perk';
 import InputFieldRadio from './InputFieldRadio';
 import ArrowHeader2 from './ArrowHeader2';
 import Divider from './Divider';
+import StatBarContainer from './StatBarContainer';
 import useCampaignsQuery from '../hooks/useCampaignsQuery/useCampaignsQuery';
 import InputSelectField from './InputSelectField';
 import InjuryIcon from './icons/InjuryIcon';
@@ -100,8 +101,6 @@ const CharacterUpdateForm = () => {
       },
       firstName: character?.firstName ?? '',
       lastName: character?.lastName ?? '',
-      level: character?.level ?? '',
-      profits: character?.profits ?? '',
       stats: {
         currentHealth: character?.stats.currentHealth ?? '',
         currentSanity: character?.stats.currentSanity ?? '',
@@ -117,8 +116,6 @@ const CharacterUpdateForm = () => {
       weight: character?.weight ?? '',
       age: character?.age ?? '',
       sex: character?.sex ?? '',
-      attributes: character?.attributes ?? '',
-      perks: character?.perks ?? ([] as Perk[]),
     },
     onSubmit: async ({ value }) => {
       value.campaignId = value.campaignId?.id ? value.campaignId.id : null;
@@ -272,24 +269,6 @@ const CharacterUpdateForm = () => {
               )}
             </characterUpdateForm.Field>
             <div className="grid grid-cols-2 gap-4 sm:gap-8">
-              <characterUpdateForm.Field
-                name="level"
-                validators={{
-                  onChange: ({ value }) =>
-                    value < 1
-                      ? 'You cannot be a lower level than 1'
-                      : undefined,
-                }}
-              >
-                {(field) => (
-                  <InputField type="number" label="Level" field={field} />
-                )}
-              </characterUpdateForm.Field>
-              <characterUpdateForm.Field name="profits">
-                {(field) => (
-                  <InputField type="number" label="Profits" field={field} />
-                )}
-              </characterUpdateForm.Field>
               <characterUpdateForm.Field name="height">
                 {(field) => (
                   <InputField type="number" label="Height (in)" field={field} />
@@ -326,9 +305,7 @@ const CharacterUpdateForm = () => {
         >
           {(attributes) => (
             <>
-              <div
-                className={`${cardRef.current?.offsetWidth < 500 ? 'gap-2' : 'gap-4'} grid h-full w-full grow grid-cols-[auto_auto_1fr_auto] place-items-center gap-y-2`}
-              >
+              <StatBarContainer>
                 {character?.stats.currentHealth !== undefined && (
                   <characterUpdateForm.Field name="stats.currentHealth">
                     {(field) => (
@@ -337,9 +314,8 @@ const CharacterUpdateForm = () => {
                         current={field.state.value}
                         total={
                           character?.stats.maxHealth +
-                          (attributes.violence.skills.threshold.points -
-                            character?.attributes.violence.skills.threshold
-                              .points) *
+                          character?.attributes.violence.skills.threshold
+                            .points *
                             2
                         }
                         color={statColorMap['Health']}
@@ -362,9 +338,8 @@ const CharacterUpdateForm = () => {
                         current={field.state.value}
                         total={
                           character?.stats.maxSanity +
-                          (attributes.esoterica.skills.mysticism.points -
-                            character?.attributes.esoterica.skills.mysticism
-                              .points) *
+                          character?.attributes.esoterica.skills.mysticism
+                            .points *
                             2
                         }
                         color={statColorMap['Sanity']}
@@ -384,9 +359,7 @@ const CharacterUpdateForm = () => {
                   current={character?.stats.cyber || 0}
                   total={
                     character?.stats.maxCyber +
-                    (attributes.cybernetica.skills.chromebits.points -
-                      character?.attributes.cybernetica.skills.chromebits
-                        .points) *
+                    character?.attributes.cybernetica.skills.chromebits.points *
                       2
                   }
                   color="rgb(52 211 153)"
@@ -399,61 +372,13 @@ const CharacterUpdateForm = () => {
                   current={character?.stats.weight || 0}
                   total={
                     character?.stats.maxEquip +
-                    (attributes.violence.skills.threshold.points -
-                      character?.attributes.violence.skills.threshold.points) *
-                      2
+                    character?.attributes.violence.skills.threshold.points * 2
                   }
                   color="rgb(251 191 36)"
                   cardWidth={cardRef.current?.offsetWidth}
                 >
                   <EquipIcon className="text-secondary size-8" />
                 </StatBar>
-                <div className="col-span-4 flex w-full items-center gap-8">
-                  <characterUpdateForm.Field
-                    name="stats.permanentInjuries"
-                    validators={{
-                      onChange: ({ value }) => {
-                        if (value > 5) {
-                          return 'Cannot exceed 5 injuries';
-                        } else if (value < 0) {
-                          return 'Injuries cannot be lower than 0';
-                        }
-                        return undefined;
-                      },
-                    }}
-                  >
-                    {(field) => (
-                      <InputField
-                        className="w-full"
-                        type="number"
-                        label="Max Injuries"
-                        field={field}
-                      />
-                    )}
-                  </characterUpdateForm.Field>
-                  <characterUpdateForm.Field
-                    name="stats.permanentInsanities"
-                    validators={{
-                      onChange: ({ value }) => {
-                        if (value > 5) {
-                          return 'Cannot exceed 5 insanities';
-                        } else if (value < 0) {
-                          return 'Insanities cannot be lower than 0';
-                        }
-                        return undefined;
-                      },
-                    }}
-                  >
-                    {(field) => (
-                      <InputField
-                        className="w-full"
-                        type="number"
-                        label="Max Insanities"
-                        field={field}
-                      />
-                    )}
-                  </characterUpdateForm.Field>
-                </div>
                 <characterUpdateForm.Subscribe
                   selector={(state) => [
                     state.values.stats.permanentInjuries,
@@ -575,28 +500,50 @@ const CharacterUpdateForm = () => {
                     </>
                   )}
                 </characterUpdateForm.Subscribe>
+              </StatBarContainer>
+              <div className="col-span-4 flex w-full items-center gap-8">
+                <characterUpdateForm.Field
+                  name="stats.permanentInjuries"
+                  validators={{
+                    onChange: ({ value }) => {
+                      if (value < 0) {
+                        return 'Injuries cannot be lower than 0';
+                      }
+                      return undefined;
+                    },
+                  }}
+                >
+                  {(field) => (
+                    <InputField
+                      className="w-full"
+                      type="number"
+                      label="Max Injuries"
+                      field={field}
+                    />
+                  )}
+                </characterUpdateForm.Field>
+                <characterUpdateForm.Field
+                  name="stats.permanentInsanities"
+                  validators={{
+                    onChange: ({ value }) => {
+                      if (value < 0) {
+                        return 'Insanities cannot be lower than 0';
+                      }
+                      return undefined;
+                    },
+                  }}
+                >
+                  {(field) => (
+                    <InputField
+                      className="w-full"
+                      type="number"
+                      label="Max Insanities"
+                      field={field}
+                    />
+                  )}
+                </characterUpdateForm.Field>
               </div>
             </>
-          )}
-        </characterUpdateForm.Subscribe>
-        <ArrowHeader2 title="Attributes and Skills" />
-        <AttributeField form={characterUpdateForm} />
-        <Divider />
-        <ArrowHeader2 title="Manage Perks" />
-        <p className="text-secondary border-l-2 border-gray-400 border-opacity-50 pl-4">
-          Select the perks associated with your character. Available perks are
-          only shown if you meet the attribute and skill point requirements
-        </p>
-        <characterUpdateForm.Subscribe
-          selector={(state) => state.values.attributes}
-        >
-          {(attributes) => (
-            <div className="flex flex-col gap-4">
-              <PerkLinkField
-                form={characterUpdateForm}
-                attributeTree={attributes}
-              />
-            </div>
           )}
         </characterUpdateForm.Subscribe>
         <Divider />

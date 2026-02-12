@@ -1,7 +1,4 @@
-import { mdiCircle, mdiSquare } from '@mdi/js';
-import Icon from '@mdi/react';
 import { useContext } from 'react';
-import { ThemeContext } from '../contexts/ThemeContext';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import { Perk } from 'src/types/perk';
@@ -10,6 +7,8 @@ import ArrowHeader4 from './ArrowHeader4';
 import ThemeContainer from './ThemeContainer';
 import { capitalCase } from 'change-case';
 import { FieldApi } from '@tanstack/react-form';
+import AttributeListSmall from './AttributeListSmall';
+import AttributeList from './AttributeList';
 
 const PerkCard = ({
   perk,
@@ -24,7 +23,6 @@ const PerkCard = ({
   perkIds?: number[];
   field?: FieldApi;
 }) => {
-  const { accentPrimary } = useContext(ThemeContext);
   const { user } = useContext(AuthContext);
 
   const attributes = Object.entries(perk.attributes)
@@ -44,40 +42,7 @@ const PerkCard = ({
         heading={
           <div className="flex w-full items-center justify-between gap-4 pr-3">
             <h3>{perk.name}</h3>
-            <div className="ml-auto flex flex-col items-end justify-center gap-1">
-              {attributes.map(([attribute, points]) => {
-                return (
-                  <div className="flex items-center gap-2" key={attribute}>
-                    {Array.from({ length: points }).map((_, index) => (
-                      <Icon
-                        key={index}
-                        path={mdiCircle}
-                        className="text-accent size-6"
-                      />
-                    ))}
-                  </div>
-                );
-              })}
-              {skills.map(([skill, points]) => {
-                return (
-                  <div className="flex items-center gap-1" key={skill}>
-                    {points === 4 ? (
-                      <p className="font-zen font-semibold italic tracking-widest">
-                        Master
-                      </p>
-                    ) : (
-                      Array.from({ length: points }).map((_, index) => (
-                        <Icon
-                          key={index}
-                          path={mdiCircle}
-                          className="text-secondary size-4 shrink-0"
-                        />
-                      ))
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+            <AttributeListSmall attributeTree={perk.attributes} />
             {mode === 'codex' &&
               ((mode === 'codex' && user?.role === 'ADMIN') ||
                 (mode === 'codex' && user?.role === 'SUPERADMIN')) && (
@@ -91,43 +56,7 @@ const PerkCard = ({
         {attributes.length === 0 && skills.length === 0 ? (
           <ArrowHeader4 title="No skill requirements" />
         ) : (
-          <div>
-            {attributes.map(([attribute, points]) => (
-              <div key={attribute} className="flex items-center gap-2">
-                <div className="flex items-center justify-between">
-                  <ArrowHeader4
-                    className="text-primary"
-                    title={capitalCase(attribute)}
-                  />
-                </div>
-                <div className="flex gap-2">
-                  {Array.from({ length: points }).map((_, index) => (
-                    <Icon
-                      key={index}
-                      path={mdiSquare}
-                      size={1}
-                      color={accentPrimary}
-                    />
-                  ))}
-                </div>
-              </div>
-            ))}
-            {skills.map(([skill, points]) => (
-              <div key={skill} className="flex items-center gap-2">
-                <ArrowHeader4 title={capitalCase(skill)} />
-                <div className="flex gap-2">
-                  {Array.from({ length: points }).map((_, index) => (
-                    <Icon
-                      className="text-primary"
-                      key={index}
-                      path={mdiSquare}
-                      size={1}
-                    />
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
+          <AttributeList attributeTree={perk.attributes} />
         )}
         <p className="text-secondary">{perk.description}</p>
         {perk.modifiers && (
