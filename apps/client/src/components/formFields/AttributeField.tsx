@@ -11,8 +11,24 @@ import { useContext } from 'react';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import { FormApi } from '@tanstack/react-form';
+import { AttributeTree } from 'src/types/attributeTree';
+import { getAttributeValue, getSkillValue } from 'src/utils/getUsedPoints';
 
-const AttributeField = ({ form }: { form: FormApi }) => {
+const AttributeField = ({
+  form,
+  attributeTree,
+  attributeIncrease = true,
+  attributeDecrease = true,
+  skillIncrease = true,
+  skillDecrease = true,
+}: {
+  form: FormApi;
+  attributeTree?: AttributeTree;
+  attributeIncrease?: boolean;
+  attributeDecrease?: boolean;
+  skillIncrease?: boolean;
+  skillDecrease?: boolean;
+}) => {
   const { mobile } = useContext(LayoutContext);
   const { accentPrimary } = useContext(ThemeContext);
 
@@ -29,54 +45,78 @@ const AttributeField = ({ form }: { form: FormApi }) => {
                     <div className="flex w-full items-center justify-between gap-8">
                       <ArrowHeader3 title={capitalCase(attribute)} />
                       <div className="flex gap-2 sm:gap-4">
-                        {Array.from({ length: 4 }).map((_, index) => (
-                          <button
-                            key={index}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              subfield.handleChange({
-                                ...subfield.state.value,
-                                points:
-                                  index === 0 &&
-                                  subfield.state.value.points === 1
-                                    ? 0
-                                    : index + 1,
-                              });
-                            }}
-                          >
-                            {mobile ? (
-                              index < subfield.state.value.points ? (
+                        {Array.from({ length: 4 }).map((_, index) => {
+                          const attributeValue = attributeTree
+                            ? getAttributeValue(attributeTree, attribute)
+                            : null;
+
+                          return (
+                            <button
+                              key={index}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                if (
+                                  attributeIncrease &&
+                                  subfield.state.value.points <= index + 1
+                                ) {
+                                  subfield.handleChange({
+                                    ...subfield.state.value,
+                                    points:
+                                      index === 0 &&
+                                      subfield.state.value.points === 1
+                                        ? 0
+                                        : index + 1,
+                                  });
+                                }
+                                if (
+                                  attributeDecrease &&
+                                  subfield.state.value.points >= index + 1
+                                ) {
+                                  subfield.handleChange({
+                                    ...subfield.state.value,
+                                    points:
+                                      index === 0 &&
+                                      subfield.state.value.points === 1
+                                        ? 0
+                                        : index + 1,
+                                  });
+                                }
+                              }}
+                            >
+                              {mobile ? (
+                                index < subfield.state.value.points ? (
+                                  <Icon
+                                    key={index}
+                                    path={mdiCircle}
+                                    size={0.7}
+                                    color={accentPrimary}
+                                  />
+                                ) : (
+                                  <Icon
+                                    key={index}
+                                    path={mdiCircleOutline}
+                                    size={0.7}
+                                    color={accentPrimary}
+                                  />
+                                )
+                              ) : index < subfield.state.value.points ? (
                                 <Icon
                                   key={index}
-                                  path={mdiCircle}
-                                  size={0.7}
+                                  path={mdiSquare}
+                                  size={1}
                                   color={accentPrimary}
                                 />
                               ) : (
                                 <Icon
                                   key={index}
-                                  path={mdiCircleOutline}
-                                  size={0.7}
+                                  path={mdiSquareOutline}
+                                  size={1}
                                   color={accentPrimary}
                                 />
-                              )
-                            ) : index < subfield.state.value.points ? (
-                              <Icon
-                                key={index}
-                                path={mdiSquare}
-                                size={1}
-                                color={accentPrimary}
-                              />
-                            ) : (
-                              <Icon
-                                key={index}
-                                path={mdiSquareOutline}
-                                size={1}
-                                color={accentPrimary}
-                              />
-                            )}
-                          </button>
-                        ))}
+                              )}
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
                     <div>
@@ -95,53 +135,87 @@ const AttributeField = ({ form }: { form: FormApi }) => {
                                 {(subSubfield) => (
                                   <div className="flex gap-2 sm:gap-4">
                                     {Array.from({ length: 4 }).map(
-                                      (_, index) => (
-                                        <button
-                                          key={index}
-                                          onClick={(e) => {
-                                            e.preventDefault();
-                                            subSubfield.handleChange(
-                                              index === 0 &&
-                                                subSubfield.state.value === 1
-                                                ? 0
-                                                : index + 1,
-                                            );
-                                          }}
-                                        >
-                                          {mobile ? (
-                                            index < subSubfield.state.value ? (
+                                      (_, index) => {
+                                        const skillValue = attributeTree
+                                          ? getSkillValue(
+                                              attributeTree,
+                                              attribute,
+                                              skill,
+                                            )
+                                          : null;
+
+                                        return (
+                                          <button
+                                            key={index}
+                                            onClick={(e) => {
+                                              e.preventDefault();
+                                              if (
+                                                (skillIncrease &&
+                                                  !skillValue) ||
+                                                (skillIncrease &&
+                                                  skillValue <= index + 1)
+                                              ) {
+                                                subSubfield.handleChange(
+                                                  index === 0 &&
+                                                    subSubfield.state.value ===
+                                                      1
+                                                    ? 0
+                                                    : index + 1,
+                                                );
+                                              }
+
+                                              if (
+                                                (skillDecrease &&
+                                                  !skillValue) ||
+                                                (skillDecrease &&
+                                                  skillValue >= index + 1)
+                                              ) {
+                                                subSubfield.handleChange(
+                                                  index === 0 &&
+                                                    subSubfield.state.value ===
+                                                      1
+                                                    ? 0
+                                                    : index + 1,
+                                                );
+                                              }
+                                            }}
+                                          >
+                                            {mobile ? (
+                                              index <
+                                              subSubfield.state.value ? (
+                                                <Icon
+                                                  className="text-primary"
+                                                  key={index}
+                                                  path={mdiCircle}
+                                                  size={0.7}
+                                                />
+                                              ) : (
+                                                <Icon
+                                                  className="text-tertiary"
+                                                  key={index}
+                                                  path={mdiCircleOutline}
+                                                  size={0.7}
+                                                />
+                                              )
+                                            ) : index <
+                                              subSubfield.state.value ? (
                                               <Icon
                                                 className="text-primary"
                                                 key={index}
-                                                path={mdiCircle}
-                                                size={0.7}
+                                                path={mdiSquare}
+                                                size={1}
                                               />
                                             ) : (
                                               <Icon
                                                 className="text-tertiary"
                                                 key={index}
-                                                path={mdiCircleOutline}
-                                                size={0.7}
+                                                path={mdiSquareOutline}
+                                                size={1}
                                               />
-                                            )
-                                          ) : index <
-                                            subSubfield.state.value ? (
-                                            <Icon
-                                              className="text-primary"
-                                              key={index}
-                                              path={mdiSquare}
-                                              size={1}
-                                            />
-                                          ) : (
-                                            <Icon
-                                              className="text-tertiary"
-                                              key={index}
-                                              path={mdiSquareOutline}
-                                              size={1}
-                                            />
-                                          )}
-                                        </button>
-                                      ),
+                                            )}
+                                          </button>
+                                        );
+                                      },
                                     )}
                                   </div>
                                 )}

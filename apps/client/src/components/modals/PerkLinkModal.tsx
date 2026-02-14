@@ -18,7 +18,6 @@ const PerkLinkModal = () => {
         field={field}
         attributeTree={attributeTree}
       />
-      ;
       <BtnRect
         type="button"
         ariaLabel="Close"

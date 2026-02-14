@@ -6,18 +6,27 @@ import { capitalCase } from 'change-case';
 import { useContext } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 
-const AttributeList = ({ attributeTree }: { attributeTree: AttributeTree }) => {
+const AttributeList = ({
+  attributeTree,
+  className,
+}: {
+  attributeTree: AttributeTree;
+  className?: string;
+}) => {
   const { accentPrimary } = useContext(ThemeContext);
 
   return (
-    <div className="grid grid-cols-[auto,_1fr] gap-4">
+    <div className={`${className} grid grid-cols-[auto,_1fr] gap-4`}>
       {Object.entries(attributeTree)
         .sort(([a], [b]) => a.localeCompare(b))
         .map(([attribute, { points, skills }]) => (
           <>
             {points > 0 && (
               <>
-                <ArrowHeader4 title={capitalCase(attribute)} />
+                <ArrowHeader4
+                  className="text-primary"
+                  title={capitalCase(attribute)}
+                />
                 <div className="flex gap-2 justify-self-start">
                   {Array.from({ length: points }).map((_, index) => (
                     <Icon
@@ -36,7 +45,10 @@ const AttributeList = ({ attributeTree }: { attributeTree: AttributeTree }) => {
                 ([skill, { points }]) =>
                   points > 0 && (
                     <>
-                      <ArrowHeader4 title={capitalCase(skill)} />
+                      <ArrowHeader4
+                        className="text-primary"
+                        title={capitalCase(skill)}
+                      />
                       <div className="flex gap-2 justify-self-start">
                         {Array.from({ length: points }).map((_, index) => (
                           <Icon

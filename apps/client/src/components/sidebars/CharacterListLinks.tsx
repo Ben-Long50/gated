@@ -33,10 +33,6 @@ const CharacterListLinks = () => {
     npcTypes,
   );
 
-  if (isLoading) {
-    return <Loading size={1.5} />;
-  }
-
   return (
     <>
       <LinkListSidebar
@@ -71,17 +67,21 @@ const CharacterListLinks = () => {
         path="characters/create"
       />
 
-      {characters.map((character) => {
-        const characterName = constructName(character);
+      {isLoading ? (
+        <Loading size={1.5} />
+      ) : (
+        characters.map((character) => {
+          const characterName = constructName(character);
 
-        return (
-          <LinkSidebar
-            title={characterName}
-            icon={<CharacterPictureRound character={character} />}
-            path={`characters/${character.id}`}
-          />
-        );
-      })}
+          return (
+            <LinkSidebar
+              title={characterName}
+              icon={<CharacterPictureRound character={character} />}
+              path={`characters/${character.id}`}
+            />
+          );
+        })
+      )}
     </>
   );
 };

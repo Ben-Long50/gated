@@ -9,7 +9,7 @@ import {
   mdiStorefrontOutline,
 } from '@mdi/js';
 import Icon from '@mdi/react';
-import { useParams } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import BtnRect from './buttons/BtnRect';
 import Loading from './Loading';
 import ArrowHeader1 from './ArrowHeader1';
@@ -19,16 +19,19 @@ import useCharacter from 'src/hooks/useCharacter';
 import CharacterPicture from './CharacterPicture';
 import ExpandingList from './ExpandingList';
 import ArrowHeader4 from './ArrowHeader4';
-import calculateLevelBonus from 'src/utils/calculateLevelBonus';
 import ItemCardSmall from './ItemCardSmall';
 import updateCharacterLevelMutation from 'src/hooks/character hooks/useUpdateCharacterLevelMutation/useUpdateCharacterLevelMutation';
 import constructName from 'src/utils/constructName';
 import PerkCard from './PerkCard';
 import AttributeList from './AttributeList';
+import getLevelBonusData from 'src/utils/getLevelBonusData';
 
 const ProgressionPage = () => {
   const { accentPrimary } = useContext(ThemeContext);
   const { characterId } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const parts = location.pathname.split('/');
 
   const changeLevel = updateCharacterLevelMutation(Number(characterId));
 
@@ -37,58 +40,6 @@ const ProgressionPage = () => {
     isLoading,
     isPending,
   } = useCharacter(Number(characterId));
-
-  console.log(character);
-
-  const getLevelBonusData = (level: number) => {
-    const {
-      attributePoints,
-      skillPoints,
-      perkPoints,
-      masterPerkPoints,
-      availableAttributePoints,
-      availableSkillPoints,
-      availablePerkPoints,
-      availableMasterPerkPoints,
-    } = calculateLevelBonus(level, character?.attributes, character?.perks);
-
-    const {
-      attributePoints: prevAttributePoints,
-      skillPoints: prevSkillPoints,
-      perkPoints: prevPerkPoints,
-      masterPerkPoints: prevMasterPerkPoints,
-    } = calculateLevelBonus(level - 1, character?.attributes, character?.perks);
-
-    const levelUpAttributePoints = attributePoints - prevAttributePoints;
-    const levelUpSkillPoints = skillPoints - prevSkillPoints;
-    const levelUpPerkPoints = perkPoints - prevPerkPoints;
-    const levelUpMasterPerkPoints = masterPerkPoints - prevMasterPerkPoints;
-
-    let outstandingPoints = 0;
-
-    if (levelUpAttributePoints) {
-      outstandingPoints += availableAttributePoints;
-    }
-    if (levelUpSkillPoints) {
-      outstandingPoints += availableSkillPoints;
-    }
-    if (levelUpPerkPoints) {
-      outstandingPoints += availablePerkPoints;
-    }
-    if (levelUpMasterPerkPoints) {
-      outstandingPoints += availableMasterPerkPoints;
-    }
-
-    const levelBonusUsed = outstandingPoints <= 0;
-
-    return {
-      levelUpAttributePoints,
-      levelUpSkillPoints,
-      levelUpPerkPoints,
-      levelUpMasterPerkPoints,
-      levelBonusUsed,
-    };
-  };
 
   if (isLoading || isPending) {
     return <Loading />;
@@ -196,10 +147,10 @@ const ProgressionPage = () => {
                 levelUpPerkPoints,
                 levelUpMasterPerkPoints,
                 levelBonusUsed,
-              } = getLevelBonusData(level);
+              } = getLevelBonusData(character, level);
 
               return (
-                <div className="flex items-center gap-8">
+                <div className="flex items-center gap-4">
                   <ItemCardSmall
                     key={index}
                     heading={
@@ -283,7 +234,11 @@ const ProgressionPage = () => {
                     )}
                   </ItemCardSmall>
                   {!levelBonusUsed && (
-                    <BtnRect className="w-80" ariaLabel="Select level up bonus">
+                    <BtnRect
+                      className="w-80"
+                      ariaLabel="Select level up bonus"
+                      onClick={() => navigate(`levelBonus?level=${level}`)}
+                    >
                       Select Level Up Bonus
                     </BtnRect>
                   )}
@@ -307,7 +262,7 @@ const ProgressionPage = () => {
               levelUpPerkPoints,
               levelUpMasterPerkPoints,
               levelBonusUsed,
-            } = getLevelBonusData(level);
+            } = getLevelBonusData(character, level);
 
             return (
               <ItemCardSmall
@@ -383,6 +338,7 @@ const ProgressionPage = () => {
           })}
         </div>
       </ThemeContainer>
+      {parts.includes('levelBonus') && <Outlet />}
     </div>
   );
 };

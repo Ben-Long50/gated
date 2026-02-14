@@ -1,0 +1,194 @@
+import { useLocation, useParams, useSearchParams } from 'react-router-dom';
+import Modal from './modals/Modal';
+import getLevelBonusData from 'src/utils/getLevelBonusData';
+import useCharacter from 'src/hooks/useCharacter';
+import Loading from './Loading';
+import AttributeField from './formFields/AttributeField';
+import { useForm, useStore } from '@tanstack/react-form';
+import BtnRect from './buttons/BtnRect';
+import PerkLinkModal from './modals/PerkLinkModal';
+import Perks from './Perks';
+import useAttributeTree from 'src/hooks/useAttributeTree';
+import getUsedPoints, { subtractAttributeTrees } from 'src/utils/getUsedPoints';
+import AttributeList from './AttributeList';
+import Divider from './Divider';
+
+const LevelBonusModal = () => {
+  const { characterId } = useParams();
+  const [searchParams] = useSearchParams();
+
+  const location = useLocation();
+  const level = searchParams.get('level');
+
+  const {
+    filteredCharacter: character,
+    isLoading,
+    isPending,
+  } = useCharacter(Number(characterId));
+
+  const {
+    levelUpAttributePoints,
+    levelUpSkillPoints,
+    levelUpPerkPoints,
+    levelUpMasterPerkPoints,
+    levelBonusUsed,
+  } = getLevelBonusData(character, Number(level));
+
+  const {
+    usedAttributePoints: usedCharacterAttributePoints,
+    usedSkillPoints: usedCharacterSkillPoints,
+  } = getUsedPoints(character?.attributes);
+
+  const totalCharacterPoints =
+    usedCharacterAttributePoints + usedCharacterSkillPoints;
+
+  const levelBonusForm = useForm({
+    defaultValues: {
+      attributes: character?.attributes,
+      perks: character?.perks,
+    },
+    onSubmit: ({ value }) => {
+      const data = {};
+
+      if (levelUpAttributePoints || levelUpSkillPoints) {
+        data.attributes = value.attributes;
+      }
+
+      if (levelUpPerkPoints || levelUpMasterPerkPoints) {
+        data.perks = value.perks;
+      }
+
+      console.log(data);
+    },
+    validators: {
+      onSubmit: ({ value }) => {
+        if (levelUpAttributePoints || levelUpSkillPoints) {
+          const { usedAttributePoints, usedSkillPoints } = getUsedPoints(
+            character?.attributes,
+          );
+          const {
+            usedAttributePoints: newUsedAttributePoints,
+            usedSkillPoints: newUsedSkillPoints,
+          } = getUsedPoints(value.attributes);
+
+          const attributePointDifference =
+            newUsedAttributePoints - usedAttributePoints;
+          const skillPointDifference = newUsedSkillPoints - usedSkillPoints;
+
+          if (attributePointDifference > levelUpAttributePoints) {
+            return `You may only increase your total Attribute Points by ${levelUpAttributePoints}`;
+          }
+
+          if (skillPointDifference > levelUpSkillPoints) {
+            return `You may only increase your total Skill Points by ${levelUpSkillPoints}`;
+          }
+
+          if (totalPoints === 0) {
+            return 'You have not selected an upgrade yet idiot';
+          }
+        }
+      },
+    },
+  });
+
+  const formAttributeTree = useStore(
+    levelBonusForm.store,
+    (state) => state.values.attributes,
+  );
+
+  const subtractedTree = subtractAttributeTrees(
+    formAttributeTree,
+    character?.attributes,
+  );
+
+  const { usedAttributePoints, usedSkillPoints } =
+    getUsedPoints(subtractedTree);
+
+  const totalPoints = usedAttributePoints + usedSkillPoints;
+
+  if (isLoading || isPending) {
+    return <Loading />;
+  }
+
+  return (
+    <Modal
+      path={location.pathname}
+      button={
+        <BtnRect
+          className="w-full"
+          ariaLabel="Confirm level bonus"
+          onClick={(e) => {
+            e.preventDefault();
+            levelBonusForm.handleSubmit();
+          }}
+        >
+          Confirm Bonus
+        </BtnRect>
+      }
+    >
+      <h1>{`Select Level ${level} Bonus`}</h1>
+      {levelUpSkillPoints > 0 && (
+        <>
+          <p>{`Distribute ${levelUpSkillPoints} Skill Point(s) and confirm your level up bonus. This action cannot be undone`}</p>
+          <AttributeField
+            form={levelBonusForm}
+            attributeTree={character?.attributes}
+            attributeIncrease={levelUpAttributePoints > 0}
+            attributeDecrease={false}
+            skillIncrease={levelUpSkillPoints > 0}
+            skillDecrease={false}
+          />
+          {totalPoints > 0 && <Divider className="opacity-50" />}
+          {totalPoints > 0 && (
+            <div className="flex w-full flex-col items-start gap-4">
+              <p className="mr-auto">Selected Bonuses</p>
+              <AttributeList
+                className="mr-auto"
+                attributeTree={subtractedTree}
+              />
+            </div>
+          )}
+        </>
+      )}
+      {levelUpPerkPoints > 0 && (
+        <>
+          <p>{`Select an additional ${levelUpPerkPoints} Perk(s) and confirm your level up bonus. This action cannot be undone`}</p>
+          <levelBonusForm.Field name="perks">
+            {(field) => (
+              <Perks
+                title="Link Perks"
+                forcedMode="form"
+                field={field}
+                attributeTree={character?.attributes}
+              />
+            )}
+          </levelBonusForm.Field>
+        </>
+      )}
+      {levelUpMasterPerkPoints > 0 && (
+        <>
+          <p>{`Select an additional ${levelUpPerkPoints} Master Perk(s) and confirm your level up bonus. This action cannot be undone`}</p>
+          <levelBonusForm.Field name="perks">
+            {(field) => (
+              <Perks
+                title="Link Perks"
+                forcedMode="form"
+                field={field}
+                attributeTree={character?.attributes}
+              />
+            )}
+          </levelBonusForm.Field>
+        </>
+      )}
+      <levelBonusForm.Subscribe selector={(state) => state.errorMap}>
+        {(errorMap) =>
+          errorMap.onSubmit ? (
+            <em className="text-error text-lg">{errorMap.onSubmit}</em>
+          ) : null
+        }
+      </levelBonusForm.Subscribe>
+    </Modal>
+  );
+};
+
+export default LevelBonusModal;
