@@ -18,12 +18,10 @@ import { mdiSync } from '@mdi/js';
 import { useLocation } from 'react-router-dom';
 
 const Perks = ({
-  title,
   field,
   forcedMode,
   attributeTree,
 }: {
-  title?: string;
   field?: FieldApi;
   forcedMode?: string;
   attributeTree?: AttributeTree;
@@ -54,7 +52,6 @@ const Perks = ({
 
   return (
     <div className="flex w-full max-w-5xl flex-col items-center gap-6 sm:gap-8">
-      <h1 className="text-center">{title || 'Perks'}</h1>
       <ThemeContainer
         className="w-full"
         chamfer="medium"

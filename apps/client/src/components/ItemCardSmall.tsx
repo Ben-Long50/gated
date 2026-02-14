@@ -28,7 +28,7 @@ const ItemCardSmall = ({
     if (detailRef.current) {
       setDetailHeight(detailRef.current.offsetHeight);
     }
-  }, [detailRef.current]);
+  }, [detailRef.current, children]);
 
   return (
     <ThemeContainer

@@ -8,11 +8,13 @@ import useModalStore from 'src/stores/modalStore';
 const Modal = ({
   children,
   button,
+  errors,
   className,
   path,
 }: {
   children: ReactNode;
   button?: ReactNode;
+  errors?: ReactNode;
   className?: string;
   path?: string;
 }) => {
@@ -57,8 +59,9 @@ const Modal = ({
           />
           {children}
         </div>
-        {button && (
-          <div className="bg-primary sticky bottom-0 w-full p-4 pt-2 sm:p-8 sm:pt-2">
+        {(button || errors) && (
+          <div className="bg-primary sticky bottom-0 flex w-full flex-col gap-4 p-4 pt-2 sm:p-8 sm:pt-4">
+            {errors}
             {button}
           </div>
         )}

@@ -4,7 +4,7 @@ import { socket } from 'src/socket';
 import { useRef } from 'react';
 import { Character } from 'src/types/character';
 
-const updateCharacterLevelMutation = (characterId: number) => {
+const useUpdateCharacterLevelMutation = (characterId: number) => {
   const queryClient = useQueryClient();
   const updateBuffer = useRef(0);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -62,4 +62,4 @@ const updateCharacterLevelMutation = (characterId: number) => {
   });
 };
 
-export default updateCharacterLevelMutation;
+export default useUpdateCharacterLevelMutation;

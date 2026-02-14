@@ -25,6 +25,7 @@ import constructName from 'src/utils/constructName';
 import PerkCard from './PerkCard';
 import AttributeList from './AttributeList';
 import getLevelBonusData from 'src/utils/getLevelBonusData';
+import { Perk } from 'src/types/perk';
 
 const ProgressionPage = () => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -219,7 +220,10 @@ const ProgressionPage = () => {
                       </div>
                     }
                   >
-                    {characterLevelBonus && (
+                    {levelBonusUsed && !characterLevelBonus ? (
+                      <p>Legacy level up bonuses are not displayed</p>
+                    ) : null}
+                    {characterLevelBonus ? (
                       <div className="bg-primary shadow-color mt-2 flex flex-col gap-4 p-4">
                         {characterLevelBonus &&
                           characterLevelBonus.attributes && (
@@ -227,11 +231,13 @@ const ProgressionPage = () => {
                               attributeTree={characterLevelBonus.attributes}
                             />
                           )}
-                        {characterLevelBonus && characterLevelBonus.perk && (
-                          <PerkCard perk={characterLevelBonus.perk} />
-                        )}
+                        {characterLevelBonus &&
+                          characterLevelBonus.perks &&
+                          characterLevelBonus.perks.map((perk: Perk) => (
+                            <PerkCard perk={perk} />
+                          ))}
                       </div>
-                    )}
+                    ) : null}
                   </ItemCardSmall>
                   {!levelBonusUsed && (
                     <BtnRect

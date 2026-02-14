@@ -53,7 +53,7 @@ export const subtractAttributeTrees = (
             ),
           }
         : {}),
-    } as T[typeof key];
+    };
   }
 
   return result;
