@@ -15,6 +15,7 @@ import { includeCharacterCart, unequipLinked, } from '../utils/linkQueryStructur
 import itemServices from './itemServices.js';
 import { getIO } from '../sockets/socket.js';
 import subtractAttributeTrees from '../utils/subtractAttributeTrees.js';
+import validateLevelUpBonus from '../utils/validateLevelUpBonus.js';
 const characterServices = {
     getCharacters: async (userId) => {
         try {
@@ -390,6 +391,14 @@ const characterServices = {
     selectLevelUpBonus: async (characterId, bonus) => {
         try {
             const character = await characterServices.getCharacterById(characterId);
+            const validated = validateLevelUpBonus({
+                level: bonus.level,
+                attributes: bonus.attributes || (character === null || character === void 0 ? void 0 : character.attributes),
+                perks: bonus.perks || character.perks,
+            });
+            if (!validated) {
+                throw new Error('The incorrect amount of level up bonus points have been distributed');
+            }
             const levelUpBonusTree = bonus.attributes
                 ? subtractAttributeTrees(bonus.attributes, character === null || character === void 0 ? void 0 : character.attributes)
                 : null;
