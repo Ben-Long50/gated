@@ -339,13 +339,12 @@ model Character {
 }
 
 model CharacterLevelBonus {
-  id          Int        @id @default(autoincrement())
-  character   Character? @relation(fields: [characterId], references: [id], onDelete: Cascade)
-  characterId Int?       @unique
+  id          Int       @id @default(autoincrement())
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  characterId Int
   level       Int
   attributes  Json?
-  perk        Perk?      @relation(fields: [perkId], references: [id])
-  perkId      Int?
+  perks       Perk[]
 }
 
 model CharacterCart {

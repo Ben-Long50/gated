@@ -159,6 +159,23 @@ const characterController = {
             }
         }
     },
+    selectLevelUpBonus: async (req, res) => {
+        try {
+            if (!req.user) {
+                throw new Error('Could not find authenticated user');
+            }
+            await characterServices.selectLevelUpBonus(Number(req.params.characterId), req.body);
+            res.status(200).json({
+                message: 'Successfully selected level up bonus',
+            });
+        }
+        catch (error) {
+            console.error(error);
+            if (error instanceof Error) {
+                res.status(500).json({ error: error.message });
+            }
+        }
+    },
     createCharacterConditions: async (req, res) => {
         try {
             if (!req.user) {

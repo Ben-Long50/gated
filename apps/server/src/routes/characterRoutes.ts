@@ -47,6 +47,12 @@ router.patch(
   characterController.updateCharacterLevel,
 );
 
+router.patch(
+  '/characters/:characterId/levelBonus',
+  authentication.authenticate,
+  characterController.selectLevelUpBonus,
+);
+
 router.post(
   '/characters/:characterId/inventory/:inventoryId',
   authentication.authenticate,

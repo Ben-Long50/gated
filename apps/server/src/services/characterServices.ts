@@ -7,10 +7,13 @@ import {
   includeCharacterInventory,
   unequipLinked,
 } from '../utils/linkQueryStructures.js';
-import { ItemType } from '@prisma/client';
+import { ItemType, Perk } from '@prisma/client';
 import itemServices from './itemServices.js';
 import calculateItemsStats from '../utils/itemStatUtils.js';
 import { getIO } from '../sockets/socket.js';
+import { AttributeTree } from '../types/attributeTree.js';
+import subtractAttributeTrees from '../utils/subtractAttributeTrees.js';
+import { connect } from 'http2';
 
 const characterServices = {
   getCharacters: async (userId: number) => {
@@ -59,7 +62,7 @@ const characterServices = {
             include: includeCharacterCart,
           },
           location: { include: { map: { select: { name: true } } } },
-          characterLevelBonuses: { include: { perk: true } },
+          characterLevelBonuses: { include: { perks: true } },
         },
       });
 
@@ -100,7 +103,7 @@ const characterServices = {
             include: includeCharacterCart,
           },
           location: { include: { map: { select: { name: true } } } },
-          characterLevelBonuses: { include: { perk: true } },
+          characterLevelBonuses: { include: { perks: true } },
         },
       });
 
@@ -237,7 +240,7 @@ const characterServices = {
             create: {
               level: 1,
               attributes: data.attributes,
-              perk: { connect: perks[0] },
+              perks: { connect: perks },
             },
           },
         },
@@ -494,6 +497,51 @@ const characterServices = {
     } catch (error) {
       console.error(error);
       throw new Error('Failed to change character level');
+    }
+  },
+
+  selectLevelUpBonus: async (
+    characterId: number,
+    bonus: { level: number; attributes?: AttributeTree; perks?: Perk[] },
+  ) => {
+    try {
+      const character = await characterServices.getCharacterById(characterId);
+
+      const levelUpBonusTree = bonus.attributes
+        ? subtractAttributeTrees(bonus.attributes, character?.attributes)
+        : null;
+
+      const data = {};
+      const bonusData = { level: bonus.level };
+
+      if (bonus.attributes) {
+        data.attributes = bonus.attributes;
+        bonusData.attributes = levelUpBonusTree;
+      }
+
+      if (bonus.perks) {
+        data.perks = { connect: bonus.perks.map((perk) => ({ id: perk.id })) };
+        bonusData.perks = {
+          connect: bonus.perks
+            .filter((perk) => !character.perks.some((p) => perk.id === p.id))
+            .map((perk) => ({ id: perk.id })),
+        };
+      }
+
+      await prisma.character.update({
+        where: {
+          id: characterId,
+        },
+        data: {
+          ...data,
+          characterLevelBonuses: {
+            create: bonusData,
+          },
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to select level up bonus');
     }
   },
 
