@@ -33,6 +33,9 @@ import { EncounterProvider } from 'src/contexts/EncounterContext';
 import EncounterFormMap from 'src/components/encounterComponents/EncounterFormMap';
 import EncounterFormInfo from 'src/components/encounterComponents/EncounterFormInfo';
 import ResetModal from 'src/components/encounterComponents/ResetModal';
+import GangForm from 'src/components/GangForm';
+import CharacterSelectModal from 'src/components/CharacterSelectModal';
+import Gangs from 'src/components/Gangs';
 
 const CampaignTabRoutes = () => {
   return (
@@ -68,6 +71,12 @@ const CampaignTabRoutes = () => {
           </Route>
           <Route path=":characterId/notes" element={<Notes />} />
           {CharacterRoutes()}
+        </Route>
+        <Route path="gangs">
+          <Route path="" element={<Gangs />} />
+          <Route path="create" element={<GangForm />}>
+            <Route path="characterSelect" element={<CharacterSelectModal />} />
+          </Route>
         </Route>
         {SessionRoutes()}
         <Route path="maps">

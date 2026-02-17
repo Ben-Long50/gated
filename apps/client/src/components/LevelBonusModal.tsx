@@ -11,6 +11,7 @@ import getUsedPoints, { subtractAttributeTrees } from 'src/utils/getUsedPoints';
 import AttributeList from './AttributeList';
 import Divider from './Divider';
 import useSelectLevelUpBonusMutation from 'src/hooks/character hooks/useUpdateCharacterLevelMutation/useSelectLevelUpBonusMutation';
+import validateLevelUpBonus from 'src/utils/validateLevelUpBonus';
 
 const LevelBonusModal = () => {
   const { characterId } = useParams();
@@ -55,53 +56,14 @@ const LevelBonusModal = () => {
     },
     validators: {
       onSubmit: ({ value }) => {
-        if (levelUpAttributePoints || levelUpSkillPoints) {
-          const { usedAttributePoints, usedSkillPoints } = getUsedPoints(
-            character?.attributes,
-          );
-          const {
-            usedAttributePoints: newUsedAttributePoints,
-            usedSkillPoints: newUsedSkillPoints,
-          } = getUsedPoints(value.attributes);
+        const validationData = validateLevelUpBonus({
+          level: value.level,
+          attributes: value.attributes,
+          perks: value.perks,
+        });
 
-          const attributePointDifference =
-            newUsedAttributePoints - usedAttributePoints;
-          const skillPointDifference = newUsedSkillPoints - usedSkillPoints;
-
-          if (attributePointDifference > levelUpAttributePoints) {
-            return `You may only increase your total Attribute Points by ${levelUpAttributePoints}`;
-          }
-
-          if (skillPointDifference > levelUpSkillPoints) {
-            return `You may only increase your total Skill Points by ${levelUpSkillPoints}`;
-          }
-
-          if (levelUpSkillPoints && totalPoints === 0) {
-            return `You have not selected ${levelUpSkillPoints} Skill Point(s) yet`;
-          }
-
-          if (levelUpAttributePoints && totalPoints === 0) {
-            return `You have not selected ${levelUpAttributePoints} Attribute Point(s) yet`;
-          }
-        }
-
-        if (levelUpPerkPoints || levelUpMasterPerkPoints) {
-          if (
-            (levelUpPerkPoints || levelUpMasterPerkPoints) &&
-            character?.perks.length === value.perks.length
-          ) {
-            return `You have not selected ${levelUpPerkPoints} Perk(s) yet`;
-          }
-
-          if (
-            (levelUpPerkPoints || levelUpMasterPerkPoints) &&
-            value.perks.length >
-              character?.perks.length +
-                levelUpPerkPoints +
-                levelUpMasterPerkPoints
-          ) {
-            return `You have selected too many Perks`;
-          }
+        if (!validationData.validated) {
+          return `Adjust your bonus selection by the following values: ${validationData.errors.join(', ')}`;
         }
       },
     },

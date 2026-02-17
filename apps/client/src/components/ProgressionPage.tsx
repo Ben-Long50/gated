@@ -220,6 +220,7 @@ const ProgressionPage = () => {
                       </div>
                     }
                   >
+                    {!levelBonusUsed && <p>Select a level up bonus</p>}
                     {levelBonusUsed && !characterLevelBonus ? (
                       <p>Legacy level up bonuses are not displayed</p>
                     ) : null}

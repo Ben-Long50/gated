@@ -16,24 +16,16 @@ const useCharacters = (
   const sortedCharacters = characters?.filter((character) => {
     if (!character) return false;
 
-    const matchesType =
-      playerCharacter === null || character.playerCharacter === playerCharacter;
+    const matchesType = playerCharacter
+      ? character.playerCharacter === playerCharacter
+      : true;
 
-    if (!npcTypes || npcTypes.length === 0) {
-      return (
-        matchesType &&
-        (character.npcTypes === null || character.npcTypes.length === 0)
-      );
-    }
+    const matchesNpcType =
+      npcTypes && npcTypes.length > 0
+        ? character.npcTypes?.some((type) => npcTypes.includes(type))
+        : true;
 
-    if (character.playerCharacter) {
-      return matchesType;
-    } else if (!character.playerCharacter) {
-      const matchesInclude = npcTypes.some((type) =>
-        character.npcTypes?.includes(type),
-      );
-      return matchesType && matchesInclude;
-    }
+    return playerCharacter ? matchesType : matchesType && matchesNpcType;
   });
 
   const filteredCharacters = campaignId

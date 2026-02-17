@@ -19,6 +19,7 @@ import { Keyword } from 'src/types/keyword';
 import BtnIcon from './buttons/BtnIcon';
 import { capitalCase } from 'change-case';
 import { Campaign } from 'src/types/campaign';
+import constructName from 'src/utils/constructName';
 
 type onChangeArg = Character | Action | Keyword | Campaign | string;
 
@@ -118,16 +119,7 @@ const InputSelectField = ({
   }, [focus, field?.state]);
 
   const optionName = (option: any) => {
-    if (!option) return '';
-    if (option?.firstName) {
-      return option.firstName + ' ' + option.lastName;
-    } else if (option?.name) {
-      return capitalCase(option.name);
-    } else if (typeof option === 'number') {
-      return option.toString();
-    } else if (typeof option === 'string') {
-      return capitalCase(option);
-    } else return '';
+    return constructName(option);
   };
 
   const filteredOptions =

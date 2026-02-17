@@ -21,6 +21,7 @@ import CrownIcon from '../icons/CrownIcon';
 import Loading from '../Loading';
 import CombatIcon from '../icons/CombatIcon';
 import { CampaignContext } from 'src/contexts/CampaignContext';
+import PassIcon from '../icons/PassIcon';
 
 const CampaignLinks = () => {
   const { user } = useContext(AuthContext);
@@ -88,7 +89,7 @@ const CampaignLinks = () => {
             icon={
               <CharacterIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
             }
-            title="Campaign Characters"
+            title="Characters"
           >
             <SubLinkSidebar
               title="Player Characters"
@@ -101,9 +102,24 @@ const CampaignLinks = () => {
           </LinkListSidebar>
           <LinkListSidebar
             icon={
+              <PassIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+            }
+            title="Gangs"
+          >
+            <SubLinkSidebar
+              title="Gangs"
+              path={`campaigns/${campaignId}/gangs`}
+            />
+            <SubLinkSidebar
+              title="Create a Gang"
+              path={`campaigns/${campaignId}/gangs/create`}
+            />
+          </LinkListSidebar>
+          <LinkListSidebar
+            icon={
               <MapIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
             }
-            title="Campaign Maps"
+            title="Maps"
           >
             <SubLinkSidebar
               title="Maps"
@@ -114,11 +130,11 @@ const CampaignLinks = () => {
               path={`campaigns/${campaignId}/maps/?mapType=component&draft=false`}
             />
             <SubLinkSidebar
-              title="Drafts"
+              title="Your Drafts"
               path={`campaigns/${campaignId}/maps/?draft=true`}
             />
             <SubLinkSidebar
-              title="Create a New Map"
+              title="Create a Map"
               path={`campaigns/${campaignId}/maps/create`}
             />
           </LinkListSidebar>
@@ -139,7 +155,7 @@ const CampaignLinks = () => {
                   path={`campaigns/${campaignId}/encounters/pending`}
                 />
                 <SubLinkSidebar
-                  title={`Create Encounter`}
+                  title={`Create an Encounter`}
                   path={`campaigns/${campaignId}/encounters/create`}
                 />
               </>

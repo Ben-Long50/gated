@@ -43,7 +43,7 @@ const PictureField = ({
 
   return (
     <div className="flex flex-col gap-4 sm:gap-8">
-      <div className="flex aspect-square w-full items-center">
+      <div className="flex w-full items-center">
         <ThemeContainer
           className="mx-auto my-auto w-full"
           chamfer="medium"
