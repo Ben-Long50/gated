@@ -1,5 +1,5 @@
 import { Perk } from '@prisma/client';
-import { AttributeTree } from '../types/attributeTree';
+import { AttributeTree } from '../types/attributeTree.js';
 import getUsedPoints from './getUsedPoints.js';
 import calculateLevelBonus from './calculateLevelBonus.js';
 
