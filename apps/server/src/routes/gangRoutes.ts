@@ -1,0 +1,40 @@
+import express from 'express';
+import authentication from '../middleware/authentication.js';
+import gangController from '../controllers/gangController.js';
+import campaignAuthentication from '../middleware/campaignAuthentication.js';
+
+const router = express.Router();
+
+router.get(
+  '/campaigns/:campaignId/gangs',
+  authentication.authenticate,
+  gangController.getGangs,
+);
+
+router.get(
+  '/gangs/batch',
+  authentication.authenticate,
+  gangController.getBatchGangs,
+);
+
+router.get(
+  '/campaigns/:campaignId/gangs/:gangId',
+  authentication.authenticate,
+  gangController.getGangById,
+);
+
+router.post(
+  '/campaigns/:campaignId/gangs',
+  authentication.authenticate,
+  campaignAuthentication.validateGameMaster,
+  gangController.createGang,
+);
+
+router.delete(
+  '/campaigns/:campaignId/gangs/:gangId',
+  authentication.authenticate,
+  campaignAuthentication.validateGameMaster,
+  gangController.deleteGang,
+);
+
+export default router;

@@ -588,6 +588,7 @@ model Error {
 enum NpcTypes {
   shop
   template
+  goon
 }
 
 enum UserRole {
