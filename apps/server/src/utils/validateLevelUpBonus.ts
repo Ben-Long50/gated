@@ -1,7 +1,24 @@
 import { Perk } from '@prisma/client';
-import { AttributeTree } from '../types/attributeTree.js';
 import getUsedPoints from './getUsedPoints.js';
 import calculateLevelBonus from './calculateLevelBonus.js';
+
+export interface AttributeTree {
+  cybernetica: Attribute;
+  esoterica: Attribute;
+  peace: Attribute;
+  violence: Attribute;
+}
+
+export interface Attribute {
+  points: number;
+  skills: {
+    [key: string]: Skill;
+  };
+}
+
+interface Skill {
+  points: number;
+}
 
 const validateLevelUpBonus = ({
   level,
