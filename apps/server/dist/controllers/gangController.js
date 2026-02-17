@@ -51,7 +51,7 @@ const gangController = {
                     return;
                 }
                 const parsedBody = parseRequestBody(req.body);
-                await gangServices.createOrUpdateGang(parsedBody, req.user.id);
+                await gangServices.createOrUpdateGang(parsedBody);
                 res.status(200).json({ message: 'Successfully created gang' });
             }
             catch (error) {
@@ -69,7 +69,7 @@ const gangController = {
                     .json({ error: 'You must be signed in to use this function' });
                 return;
             }
-            await gangServices.deleteGang(Number(req.params.gangId), req.user.id);
+            await gangServices.deleteGang(Number(req.params.gangId));
             res.status(200).json({ message: 'Successfully deleted gang' });
         }
         catch (error) {
