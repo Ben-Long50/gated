@@ -13,6 +13,8 @@ import ConditionTag from './ConditionTag';
 import { useLayoutEffect, useRef, useState } from 'react';
 import CharacterRadialMenu from './radialMenus/characterRadialMenu/CharacterRadialMenu';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
+import PassIcon from './icons/PassIcon';
+import CrownIcon from './icons/CrownIcon';
 
 const CharacterCardSmall = ({
   characterList,
@@ -88,10 +90,29 @@ const CharacterCardSmall = ({
       }}
     >
       <CharacterRadialMenu character={character} containerRef={containerRef} />
-      <ArrowHeader4
-        className={`${characterList ? 'visible h-8 translate-x-0 opacity-100' : 'invisible h-0 -translate-x-full opacity-0'} ${active ? 'text-accent' : 'text-primary'} timing w-full`}
-        title={characterName}
-      />
+      <div className="mb-2 flex items-center justify-between gap-8">
+        <ArrowHeader4
+          className={`${characterList ? 'visible h-8 translate-x-0 opacity-100' : 'invisible h-0 -translate-x-full opacity-0'} ${active ? 'text-accent' : 'text-primary'} timing w-full`}
+          title={characterName}
+        />
+        {character?.gang && (
+          <div className="flex items-center gap-2">
+            <PassIcon className="text-accent size-6" />
+            <p className="!text-accent whitespace-nowrap">
+              {character?.gang.name}
+            </p>
+          </div>
+        )}
+        {character?.controlledGang && (
+          <div className="flex items-center gap-2">
+            <CrownIcon className="text-accent size-6" />
+            <p className="!text-accent whitespace-nowrap">
+              {character?.controlledGang.name}
+            </p>
+          </div>
+        )}
+      </div>
+
       <div className={`relative flex items-center`}>
         <CharacterPictureRound
           className={`${active && 'liveToken'}`}

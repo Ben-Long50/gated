@@ -8,6 +8,7 @@ import LocationIcon from './icons/LocationIcon';
 import AccountPicture from './AccountPicture';
 import { User } from 'src/types/user';
 import ArrowHeader2 from './ArrowHeader2';
+import ArrowHeader3 from './ArrowHeader3';
 
 const CampaignCard = ({ campaign }: { campaign: Campaign }) => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -38,7 +39,7 @@ const CampaignCard = ({ campaign }: { campaign: Campaign }) => {
           </div>
           <div className="grid grid-cols-[1fr_1fr]">
             <div className="flex flex-col gap-4">
-              <h3>Players</h3>
+              <ArrowHeader3 title="Players" />
               {campaign.players.map((player: User) => (
                 <div key={player.id} className="flex items-center gap-4">
                   <AccountPicture user={player} />
@@ -54,22 +55,19 @@ const CampaignCard = ({ campaign }: { campaign: Campaign }) => {
             </div>
             <div className="flex w-full flex-col items-end justify-between gap-8">
               <div className="flex flex-col items-end gap-4">
-                <h3>Game Master</h3>
+                <ArrowHeader3 title="Game Master" />
                 <div className="flex items-center gap-4">
                   <AccountPicture user={campaign.owner} />
                   <p className="font-semibold">{campaign.owner.username}</p>
                 </div>
               </div>
-              <Link
-                className="ml-auto mt-auto self-end"
-                to={`${campaign.id}?npcType=shop`}
-              >
-                <BtnRect ariaLabel="navigate to campaign information ml-auto mt-auto self-end">
-                  Campaign Info
-                </BtnRect>
-              </Link>
             </div>
           </div>
+          <Link className="mt-auto w-full" to={`${campaign.id}`}>
+            <BtnRect ariaLabel="navigate to campaign information ml-auto mt-auto self-end">
+              Campaign Info
+            </BtnRect>
+          </Link>
         </div>
       </div>
     </ThemeContainer>

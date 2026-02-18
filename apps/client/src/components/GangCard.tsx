@@ -30,21 +30,41 @@ const GangCard = ({ gang }: { gang: Gang }) => {
               <h2 className="!text-accent">{gang.level}</h2>
             </div>
             <div className="flex w-full flex-col items-start gap-2">
+              <p>{`Reputation ${gang.reputation}`}</p>
               <p>{`Gang Points ${gang.gangPoints}`}</p>
               <p>{`Profits ${gang.profits}`}</p>
             </div>
-
             <Divider className="opacity-50" />
-            <ArrowHeader3 title="Characters" />
-            {gang.characters.map((character: Character) => (
-              <CharacterCardSmall
-                key={character.id}
-                characterId={character.id}
-                characterList={true}
-                expanding={false}
-                active={false}
-              />
-            ))}
+            <div className="bg-secondary shadow-color rounded-md p-4 shadow-md">
+              <ArrowHeader3 title="Leaders" />
+              <Divider className="opacity-50" />
+              <div className="flex flex-col gap-4">
+                {gang.leaders.map((character: Character) => (
+                  <CharacterCardSmall
+                    key={character.id}
+                    characterId={character.id}
+                    characterList={true}
+                    expanding={false}
+                    active={false}
+                  />
+                ))}
+              </div>
+            </div>
+            <div className="bg-secondary shadow-color rounded-md p-4 shadow-md">
+              <ArrowHeader3 title="Members" />
+              <Divider className="opacity-50" />
+              <div className="flex flex-col gap-4">
+                {gang.characters.map((character: Character) => (
+                  <CharacterCardSmall
+                    key={character.id}
+                    characterId={character.id}
+                    characterList={true}
+                    expanding={false}
+                    active={false}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
           <Link to={`${gang.id}`}>
             <BtnRect ariaLabel="navigate to gang information w-full ">

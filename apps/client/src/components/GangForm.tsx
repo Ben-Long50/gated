@@ -17,6 +17,7 @@ import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import CharacterCardSmall from './CharacterCardSmall';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import ThemeContainer from './ThemeContainer';
+import ArrowHeader3 from './ArrowHeader3';
 
 const GangForm = () => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -35,7 +36,10 @@ const GangForm = () => {
     Number(gangId),
   );
 
-  const { data: gang, isLoading: gangLoading } = useGangQuery(Number(gangId));
+  const { data: gang, isLoading: gangLoading } = useGangQuery(
+    Number(campaignId),
+    Number(gangId),
+  );
 
   const handleReset = async () => {
     gangForm.reset();
@@ -50,6 +54,7 @@ const GangForm = () => {
       id: gangId || null,
       name: gang?.name || '',
       gangPoints: gang?.gangPoints || null,
+      reputation: gang?.reputation || null,
       profits: gang?.profits || null,
       picture: gang?.picture || '',
       background: {} as { html: string; nodes: string },
@@ -57,23 +62,34 @@ const GangForm = () => {
       factionId: gang?.factionId || null,
       publicId: gang?.picture?.publicId || '',
       position: gang?.picture?.position || { x: 50, y: 50 },
+      leaders: gang?.leaders || ([] as Character[]),
       characters: gang?.characters || ([] as Character[]),
     },
 
     onSubmit: async ({ value }) => {
-      if (value.factionId) {
-        value.factionId = value.factionId.id;
-      }
-
-      value.characters = value.characters.map((character: Character) => ({
-        id: character.id,
-      }));
-
-      console.log(value);
+      const data = {
+        name: value.name,
+        picture: value.picture,
+        campaignId: value.campaignId,
+        ...(value.gangPoints != null && { gangPoints: value.gangPoints }),
+        ...(value.reputation != null && { reputation: value.reputation }),
+        ...(value.profits != null && { profits: value.profits }),
+        ...(value.factionId != null && {
+          factionId: value.factionId.id,
+        }),
+        ...(value.leaders.length > 0 && {
+          leaderIds: value.leaders.map((leader: Character) => leader.id),
+        }),
+        ...(value.characters.length > 0 && {
+          characterIds: value.characters.map(
+            (character: Character) => character.id,
+          ),
+        }),
+      };
 
       const formData = new FormData();
 
-      Object.entries(value).forEach(([key, value]) => {
+      Object.entries(data).forEach(([key, value]) => {
         if (key === 'picture' && value instanceof File) {
           formData.append(key, value);
         } else {
@@ -188,20 +204,52 @@ const GangForm = () => {
           </gangForm.Field>
         </div>
         <Divider className="opacity-50" />
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-8">
           <ArrowHeader2 title="Gang Characters" />
-          <gangForm.Subscribe selector={(state) => state.values.characters}>
-            {(characters) =>
-              characters.map((character: Character) => (
-                <CharacterCardSmall
-                  characterList={true}
-                  characterId={character.id}
-                  expanding={false}
-                  active={false}
-                />
-              ))
-            }
-          </gangForm.Subscribe>
+          <div className="bg-secondary shadow-color rounded-md p-4 shadow-md">
+            <ArrowHeader3 title="Leaders" />
+            <Divider className="opacity-50" />
+            <div className="flex w-full flex-col gap-4 sm:gap-8">
+              <gangForm.Subscribe selector={(state) => state.values.leaders}>
+                {(leaders) =>
+                  leaders.length > 0 ? (
+                    leaders.map((character: Character) => (
+                      <CharacterCardSmall
+                        characterList={true}
+                        characterId={character.id}
+                        expanding={false}
+                        active={false}
+                      />
+                    ))
+                  ) : (
+                    <h4>N/A</h4>
+                  )
+                }
+              </gangForm.Subscribe>
+            </div>
+          </div>
+          <div className="bg-secondary shadow-color rounded-md p-4 shadow-md">
+            <ArrowHeader3 title="Members" />
+            <Divider className="opacity-50" />
+            <div className="flex w-full flex-col gap-4 sm:gap-8">
+              <gangForm.Subscribe selector={(state) => state.values.characters}>
+                {(characters) =>
+                  characters.length > 0 ? (
+                    characters.map((character: Character) => (
+                      <CharacterCardSmall
+                        characterList={true}
+                        characterId={character.id}
+                        expanding={false}
+                        active={false}
+                      />
+                    ))
+                  ) : (
+                    <h4>N/A</h4>
+                  )
+                }
+              </gangForm.Subscribe>
+            </div>
+          </div>
           <BtnRect
             ariaLabel="Open character select window"
             onClick={() => navigate('characterSelect')}
