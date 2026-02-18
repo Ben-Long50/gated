@@ -55,6 +55,8 @@ const characterServices = {
             orderBy: { condition: { name: 'asc' } },
           },
           affiliations: { select: { id: true } },
+          gang: { select: { name: true } },
+          controlledGang: { select: { name: true } },
           perks: true,
           characterInventory: {
             include: { items: { select: { id: true } } },
@@ -96,6 +98,8 @@ const characterServices = {
             orderBy: { condition: { name: 'asc' } },
           },
           affiliations: { select: { id: true } },
+          gang: { select: { name: true } },
+          controlledGang: { select: { name: true } },
           perks: true,
           characterInventory: {
             include: { items: { select: { id: true } } },

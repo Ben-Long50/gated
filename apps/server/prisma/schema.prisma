@@ -270,12 +270,14 @@ model Gang {
   background   Json?
   level        Int           @default(1)
   gangPoints   Int           @default(0)
+  reputation   Int           @default(0)
   profits      Int           @default(10)
   campaign     Campaign      @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   campaignId   Int
   faction      Faction?      @relation(fields: [factionId], references: [id], onDelete: Cascade)
   factionId    Int?
-  characters   Character[]
+  leaders      Character[]   @relation("leader")
+  characters   Character[]   @relation("member")
   properties   Property[]
   affiliations Affiliation[]
 }
@@ -324,8 +326,10 @@ model Character {
   campaign              Campaign?                     @relation(fields: [campaignId], references: [id])
   campaignId            Int?
   sessions              Session[]
-  gang                  Gang?                         @relation(fields: [gangId], references: [id])
+  gang                  Gang?                         @relation("member", fields: [gangId], references: [id])
   gangId                Int?
+  controlledGang        Gang?                         @relation("leader", fields: [controlledGangId], references: [id])
+  controlledGangId      Int?
   conditions            CharacterConditionReference[]
   characterCart         CharacterCart?
   characterInventory    CharacterInventory?

@@ -6,6 +6,15 @@ const gangServices = {
                 where: { id: gangId },
                 include: {
                     faction: { select: { id: true, name: true, factionType: true } },
+                    leaders: {
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                            picture: true,
+                            userId: true,
+                        },
+                    },
                     characters: {
                         select: {
                             id: true,
@@ -33,6 +42,15 @@ const gangServices = {
                 where: { id: { in: gangIds } },
                 include: {
                     faction: { select: { id: true, name: true, factionType: true } },
+                    leaders: {
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                            picture: true,
+                            userId: true,
+                        },
+                    },
                     characters: {
                         select: {
                             id: true,
@@ -60,6 +78,15 @@ const gangServices = {
                 where: { id: gangId },
                 include: {
                     faction: { select: { id: true, name: true, factionType: true } },
+                    leaders: {
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                            picture: true,
+                            userId: true,
+                        },
+                    },
                     characters: {
                         select: {
                             id: true,
@@ -82,10 +109,18 @@ const gangServices = {
         }
     },
     createOrUpdateGang: async (formData) => {
-        const data = Object.assign(Object.assign(Object.assign(Object.assign({ name: formData.name, picture: formData.picture, campaign: { connect: { id: formData.campaignId } } }, (formData.gangPoints != null && { gangPoints: formData.gangPoints })), (formData.profits != null && { profits: formData.profits })), (formData.factionId != null && {
+        const data = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ name: formData.name, picture: formData.picture, campaign: { connect: { id: formData.campaignId } } }, (formData.gangPoints != null && { gangPoints: formData.gangPoints })), (formData.reputation != null && { gangPoints: formData.reputation })), (formData.profits != null && { profits: formData.profits })), (formData.factionId != null && {
             faction: { connect: { id: formData.factionId } },
-        })), (formData.characters.length > 0 && {
-            characters: { connect: formData.characters },
+        })), (formData.leaderIds.length > 0 && {
+            leaders: {
+                connect: formData.leaderIds.map((leaderId) => ({ id: leaderId })),
+            },
+        })), (formData.characterIds.length > 0 && {
+            characters: {
+                connect: formData.characterIds.map((characterId) => ({
+                    id: characterId,
+                })),
+            },
         }));
         try {
             const gang = await prisma.gang.upsert({
