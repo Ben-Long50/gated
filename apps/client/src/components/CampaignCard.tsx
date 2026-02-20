@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import ThemeContainer from './ThemeContainer';
 import { ThemeContext } from '../contexts/ThemeContext';
 import BtnRect from './buttons/BtnRect';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Campaign } from 'src/types/campaign';
 import LocationIcon from './icons/LocationIcon';
 import AccountPicture from './AccountPicture';
@@ -12,7 +12,6 @@ import ArrowHeader3 from './ArrowHeader3';
 
 const CampaignCard = ({ campaign }: { campaign: Campaign }) => {
   const { accentPrimary } = useContext(ThemeContext);
-  const navigate = useNavigate();
 
   return (
     <ThemeContainer
@@ -37,7 +36,7 @@ const CampaignCard = ({ campaign }: { campaign: Campaign }) => {
               <h3 className="!text-accent text-right">{campaign.location}</h3>
             </div>
           </div>
-          <div className="grid grid-cols-[1fr_1fr]">
+          <div className="bg-primary shadow-color grid grid-cols-[1fr_1fr] rounded-md p-4 shadow-md">
             <div className="flex flex-col gap-4">
               <ArrowHeader3 title="Players" />
               {campaign.players.map((player: User) => (

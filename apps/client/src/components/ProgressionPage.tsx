@@ -255,9 +255,9 @@ const ProgressionPage = () => {
           </ExpandingList>
           {character?.level < 12 && (
             <div className="flex w-full items-center gap-4">
-              <Divider className="opacity-50" />
+              <Divider />
               <h4 className="whitespace-nowrap text-center">Next Level</h4>
-              <Divider className="opacity-50" />
+              <Divider />
             </div>
           )}
           {Array.from({ length: 12 - character?.level }).map((_, index) => {

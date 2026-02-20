@@ -5,7 +5,7 @@ const Divider = ({ className }: { className?: string }) => {
   const { accentPrimary } = useContext(ThemeContext);
   return (
     <hr
-      className={`${className} my-4 w-full border border-opacity-50`}
+      className={`${className} my-4 w-full border opacity-50`}
       style={{ borderColor: accentPrimary }}
     />
   );

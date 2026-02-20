@@ -172,9 +172,7 @@ const Encounter = () => {
                     combat.turnPosition
                   }
                 />
-                {index < combat.turnOrder.length - 1 && (
-                  <Divider className="opacity-50" />
-                )}
+                {index < combat.turnOrder.length - 1 && <Divider />}
               </Fragment>
             ))}
           </div>

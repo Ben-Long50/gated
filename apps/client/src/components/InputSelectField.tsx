@@ -118,16 +118,10 @@ const InputSelectField = ({
     handleBorder();
   }, [focus, field?.state]);
 
-  const optionName = (option: any) => {
-    return constructName(option);
-  };
-
   const filteredOptions =
-    options?.filter((item) => {
-      return item
-        ? optionName(item).toLowerCase().includes(query.toLowerCase())
-        : '';
-    }) || [];
+    options?.filter((entity) =>
+      constructName(entity).toLowerCase().includes(query.toLowerCase()),
+    ) || [];
 
   return (
     <div
@@ -144,7 +138,9 @@ const InputSelectField = ({
           className={`${fieldColor.border} ${fieldColor.background} text-secondary timing relative w-full rounded-none pb-2 pl-4 pr-2 pt-3 outline-none clip-4`}
           name={name}
           id={name}
-          value={field ? optionName(field.state.value) : optionName(value)}
+          value={
+            field ? constructName(field.state.value) : constructName(value)
+          }
           onFocus={() => {
             setFocus(true);
           }}
@@ -184,7 +180,7 @@ const InputSelectField = ({
               <button
                 className="hover:bg-tertiary text-secondary w-full rounded-md p-2 text-left text-lg"
                 key={index}
-                value={optionName(option)}
+                value={constructName(option)}
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={(e) => {
                   e.preventDefault();
@@ -192,7 +188,7 @@ const InputSelectField = ({
                   handleValue(option);
                 }}
               >
-                <p>{optionName(option)}</p>
+                <p>{constructName(option)}</p>
               </button>
             ))}
           </div>

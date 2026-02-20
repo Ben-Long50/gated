@@ -218,12 +218,12 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
           />
         )}
       </actionForm.Field>
-      <Divider className="opacity-50" />
+      <Divider />
       {actionInfo &&
         (actionInfo.message ? (
           <>
             <p>{actionInfo.message}</p>
-            <Divider className="opacity-50" />
+            <Divider />
           </>
         ) : (
           <>
@@ -287,7 +287,7 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
                 )}
               </actionForm.Subscribe>
             )}
-            <Divider className="opacity-50" />
+            <Divider />
           </>
         ))}
       {errors.length > 0 ? (
@@ -428,7 +428,7 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
           }}
         </actionForm.Subscribe>
       )}
-      <Divider className="opacity-50" />
+      <Divider />
     </div>
   );
 };

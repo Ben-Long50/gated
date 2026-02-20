@@ -2,16 +2,21 @@ import { useContext } from 'react';
 import ThemeContainer from './ThemeContainer';
 import { ThemeContext } from '../contexts/ThemeContext';
 import BtnRect from './buttons/BtnRect';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Character } from 'src/types/character';
 import CharacterCardSmall from './CharacterCardSmall';
 import ArrowHeader2 from './ArrowHeader2';
 import Divider from './Divider';
 import ArrowHeader3 from './ArrowHeader3';
+import { Gang } from 'src/types/gang';
 
 const GangCard = ({ gang }: { gang: Gang }) => {
   const { accentPrimary } = useContext(ThemeContext);
-  const navigate = useNavigate();
+
+  const goonCount = gang.characters.filter(
+    (character: Character) =>
+      character.npcTypes && character.npcTypes.includes('goon'),
+  ).length;
 
   return (
     <ThemeContainer
@@ -27,17 +32,25 @@ const GangCard = ({ gang }: { gang: Gang }) => {
           <div className="flex flex-col gap-4">
             <div className="flex w-full items-center justify-between">
               <ArrowHeader2 title={gang.name} />
-              <h2 className="!text-accent">{gang.level}</h2>
+              <h2 className="!text-accent">
+                <h3 className="!text-accent inline">Gang Level </h3>
+                {gang.level}
+              </h2>
             </div>
-            <div className="flex w-full flex-col items-start gap-2">
-              <p>{`Reputation ${gang.reputation}`}</p>
-              <p>{`Gang Points ${gang.gangPoints}`}</p>
-              <p>{`Profits ${gang.profits}`}</p>
+            <div className="flex w-full items-start justify-between gap-8">
+              <div className="flex w-full flex-col items-start gap-2">
+                <p>{`Reputation ${gang.reputation}`}</p>
+                <p>{`Goons ${goonCount}`}</p>
+              </div>
+              <div className="flex w-full flex-col items-end gap-2">
+                <p>{`Gang Points ${gang.gangPoints}`}</p>
+                <p>{`Profits ${gang.profits}`}</p>
+              </div>
             </div>
-            <Divider className="opacity-50" />
-            <div className="bg-secondary shadow-color rounded-md p-4 shadow-md">
+            <Divider />
+            <div className="bg-primary shadow-color rounded-md p-4 shadow-md">
               <ArrowHeader3 title="Leaders" />
-              <Divider className="opacity-50" />
+              <Divider />
               <div className="flex flex-col gap-4">
                 {gang.leaders.map((character: Character) => (
                   <CharacterCardSmall
@@ -50,9 +63,9 @@ const GangCard = ({ gang }: { gang: Gang }) => {
                 ))}
               </div>
             </div>
-            <div className="bg-secondary shadow-color rounded-md p-4 shadow-md">
+            <div className="bg-primary shadow-color rounded-md p-4 shadow-md">
               <ArrowHeader3 title="Members" />
-              <Divider className="opacity-50" />
+              <Divider />
               <div className="flex flex-col gap-4">
                 {gang.characters.map((character: Character) => (
                   <CharacterCardSmall

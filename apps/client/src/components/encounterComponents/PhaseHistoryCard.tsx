@@ -75,7 +75,7 @@ const PhaseHistoryCard = ({ phaseHistory }: { phaseHistory: PhaseHistory }) => {
 
           {phaseReactions.length > 0 && (
             <>
-              <Divider className="opacity-50" />
+              <Divider />
               <ArrowHeader3 title="Reactions" className="self-start" />
               {phaseReactions.map((phaseReaction, index) => {
                 return (

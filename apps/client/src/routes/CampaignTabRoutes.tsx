@@ -36,6 +36,7 @@ import ResetModal from 'src/components/encounterComponents/ResetModal';
 import GangForm from 'src/components/GangForm';
 import CharacterSelectModal from 'src/components/CharacterSelectModal';
 import Gangs from 'src/components/Gangs';
+import GangPage from 'src/components/GangPage';
 
 const CampaignTabRoutes = () => {
   return (
@@ -74,6 +75,7 @@ const CampaignTabRoutes = () => {
         </Route>
         <Route path="gangs">
           <Route path="" element={<Gangs />} />
+          <Route path=":gangId" element={<GangPage />} />
           <Route path="create" element={<GangForm />}>
             <Route path="characterSelect" element={<CharacterSelectModal />} />
           </Route>

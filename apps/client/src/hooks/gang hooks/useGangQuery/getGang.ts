@@ -1,7 +1,7 @@
 import { create, keyResolver, windowScheduler } from '@yornaath/batshit';
 import handleResponse from '../../handleResponse';
-import { Campaign } from 'src/types/campaign';
 import apiUrl from 'src/utils/configureUrl';
+import { Gang } from 'src/types/gang';
 
 const getGang = create({
   fetcher: async (gangIds: number[]) => {
@@ -12,7 +12,7 @@ const getGang = create({
         credentials: 'include',
       },
     );
-    const data: Campaign[] = await handleResponse(response);
+    const data: Gang[] = await handleResponse(response);
 
     return data;
   },

@@ -11,13 +11,9 @@ const Gangs = () => {
 
   const { data: campaign } = useCampaignQuery(Number(campaignId));
 
-  console.log(campaign);
-
   const { gangs, isLoading } = useGangQueries(
     campaign?.gangs.map((gang: Gang) => gang.id),
   );
-
-  console.log(gangs);
 
   if (isLoading) {
     return <Loading />;

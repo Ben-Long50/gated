@@ -246,7 +246,7 @@ const PhaseActionCard = ({
       )}
       {(damage > 0 || sanityDamage > 0) && showBlockField && (
         <>
-          <Divider className="opacity-50" />
+          <Divider />
           <BlockField
             phaseAction={phaseAction}
             results={{ ...results, resultingInstances }}

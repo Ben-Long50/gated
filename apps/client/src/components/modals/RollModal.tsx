@@ -20,7 +20,7 @@ const RollModal = () => {
   return (
     <Modal className="h-full">
       <h1>Roll Results</h1>
-      <Divider className="opacity-50" />
+      <Divider />
       {rollsArray.map(([_, roll], index) => (
         <div className="flex w-full grow flex-col items-start gap-4">
           <div className="flex items-center gap-4">
@@ -47,7 +47,7 @@ const RollModal = () => {
           </div>
         </div>
       ))}
-      <Divider className="opacity-50" />
+      <Divider />
       {rollForm ? (
         <BtnRect
           type="button"

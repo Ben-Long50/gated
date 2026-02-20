@@ -131,7 +131,7 @@ const LevelBonusModal = () => {
             skillIncrease={levelUpSkillPoints > 0}
             skillDecrease={false}
           />
-          {totalPoints > 0 && <Divider className="opacity-50" />}
+          {totalPoints > 0 && <Divider />}
           {totalPoints > 0 && (
             <div className="flex w-full flex-col items-start gap-4">
               <p className="mr-auto">Selected Bonuses</p>

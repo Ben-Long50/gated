@@ -54,7 +54,7 @@ const ActionQueueModal = () => {
         <p className="text-base">{`Round ${combat.phaseHistory[0].round}`}</p>
         <p className="text-base">{`Turn ${combat.phaseHistory[0].turn}`}</p>
       </div>
-      <Divider className="opacity-50" />
+      <Divider />
       <div className="grid w-full grid-cols-2 gap-8">
         <BtnAuth active={tab === 'action'} onClick={() => setTab('action')}>
           Action

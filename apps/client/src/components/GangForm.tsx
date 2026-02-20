@@ -123,7 +123,7 @@ const GangForm = () => {
         <div className="flex items-center justify-center gap-4">
           <h1>{gangId ? `Update ${gang?.name}` : 'Create Gang'}</h1>
         </div>
-        <Divider className="opacity-50" />
+        <Divider />
         <ArrowHeader2 title="Gang Information" />
         <gangForm.Field
           name="name"
@@ -159,7 +159,7 @@ const GangForm = () => {
             minHeight: '',
           }}
         />
-        <Divider className="opacity-50" />
+        <Divider />
         <div className="flex flex-col gap-4">
           <ArrowHeader2 title="Faction Affiliation" />
           <gangForm.Field name="factionId" mode="array">
@@ -174,7 +174,7 @@ const GangForm = () => {
             )}
           </gangForm.Field>
         </div>
-        <Divider className="opacity-50" />
+        <Divider />
         <div className="flex flex-col gap-4">
           <ArrowHeader2 title="Gang Background" />
           <gangForm.Field
@@ -203,12 +203,12 @@ const GangForm = () => {
             )}
           </gangForm.Field>
         </div>
-        <Divider className="opacity-50" />
+        <Divider />
         <div className="flex flex-col gap-8">
           <ArrowHeader2 title="Gang Characters" />
           <div className="bg-secondary shadow-color rounded-md p-4 shadow-md">
             <ArrowHeader3 title="Leaders" />
-            <Divider className="opacity-50" />
+            <Divider />
             <div className="flex w-full flex-col gap-4 sm:gap-8">
               <gangForm.Subscribe selector={(state) => state.values.leaders}>
                 {(leaders) =>
@@ -230,7 +230,7 @@ const GangForm = () => {
           </div>
           <div className="bg-secondary shadow-color rounded-md p-4 shadow-md">
             <ArrowHeader3 title="Members" />
-            <Divider className="opacity-50" />
+            <Divider />
             <div className="flex w-full flex-col gap-4 sm:gap-8">
               <gangForm.Subscribe selector={(state) => state.values.characters}>
                 {(characters) =>
@@ -257,7 +257,7 @@ const GangForm = () => {
             Select Gang Characters
           </BtnRect>
         </div>
-        <Divider className="opacity-50" />
+        <Divider />
         {formErrorMap.onSubmit && (
           <div>
             <em className="text-error">{formErrorMap.onSubmit}</em>

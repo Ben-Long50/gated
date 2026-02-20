@@ -57,7 +57,7 @@ const ResetModal = () => {
     <Modal>
       <div className="flex w-full flex-col items-center gap-4">
         <h1>Reset Stats</h1>
-        <Divider className="opacity-50" />
+        <Divider />
         <div className="flex items-center gap-8">
           <resetForm.Field name="currentActions">
             {(field) => (
@@ -180,7 +180,7 @@ const ResetModal = () => {
             )}
           </resetForm.Field>
         </div>
-        <Divider className="opacity-50" />
+        <Divider />
         <BtnRect
           className="group w-full"
           type="button"

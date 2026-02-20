@@ -16,7 +16,7 @@ const NpcPreferenceField = ({ form }: { form: FormApi }) => {
     navigate('npcPreferences');
   };
 
-  const npcTypes = ['shop', 'template'];
+  const npcTypes = ['shop', 'template', 'goon'];
 
   return (
     <form.Subscribe selector={(state) => state.values.playerCharacter}>
