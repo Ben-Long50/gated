@@ -26,6 +26,7 @@ const gangServices = {
             },
             orderBy: { firstName: 'asc' },
           },
+          turf: true,
           properties: true,
           affiliations: { select: { id: true } },
         },
@@ -63,6 +64,7 @@ const gangServices = {
             },
             orderBy: { firstName: 'asc' },
           },
+          turf: true,
           properties: true,
           affiliations: { select: { id: true } },
         },
@@ -163,6 +165,18 @@ const gangServices = {
     } catch (error) {
       console.error(error);
       throw new Error('Failed to create or update gang');
+    }
+  },
+
+  updateReputation: async (gangId: number, value: number) => {
+    try {
+      await prisma.gang.update({
+        where: { id: gangId },
+        data: { reputation: value },
+      });
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to update gang reputation');
     }
   },
 

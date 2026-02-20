@@ -100,6 +100,8 @@ model Map {
   layers      Json
   locations   Location[]
   encounters  Encounter[]
+  gang        Gang?       @relation(fields: [gangId], references: [id])
+  gangId      Int?
 }
 
 enum MapType {
@@ -270,7 +272,7 @@ model Gang {
   background   Json?
   level        Int           @default(1)
   gangPoints   Int           @default(0)
-  reputation   Int           @default(0)
+  reputation   Int           @default(1)
   profits      Int           @default(10)
   campaign     Campaign      @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   campaignId   Int
@@ -278,6 +280,7 @@ model Gang {
   factionId    Int?
   leaders      Character[]   @relation("leader")
   characters   Character[]   @relation("member")
+  turf         Map[]
   properties   Property[]
   affiliations Affiliation[]
 }

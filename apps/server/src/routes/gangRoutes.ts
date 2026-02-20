@@ -30,6 +30,13 @@ router.post(
   gangController.createGang,
 );
 
+router.patch(
+  '/campaigns/:campaignId/gangs/:gangId/reputation',
+  authentication.authenticate,
+  campaignAuthentication.validateGameMaster,
+  gangController.updateReputation,
+);
+
 router.delete(
   '/campaigns/:campaignId/gangs/:gangId',
   authentication.authenticate,

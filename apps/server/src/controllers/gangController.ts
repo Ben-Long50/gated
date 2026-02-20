@@ -70,6 +70,20 @@ const gangController = {
     },
   ],
 
+  updateReputation: async (req: Request, res: Response) => {
+    try {
+      await gangServices.updateReputation(
+        Number(req.params.gangId),
+        req.body.value,
+      );
+      res
+        .status(200)
+        .json({ messagee: 'Successfully updated gang reputation' });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
   deleteGang: async (req: Request, res: Response) => {
     try {
       if (!req.user) {
