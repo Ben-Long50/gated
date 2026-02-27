@@ -1,9 +1,17 @@
 import { ReactNode } from 'react';
 
-const StatBarContainer = ({ children }: { children: ReactNode }) => {
+const StatBarContainer = ({
+  children,
+  className,
+  size = 'small',
+}: {
+  children: ReactNode;
+  className?: string;
+  size?: 'small' | 'large';
+}) => {
   return (
     <div
-      className={`grid h-full w-full grow grid-cols-[auto_auto_1fr_auto] place-items-start gap-4 gap-y-2`}
+      className={`${className} ${size === 'small' ? 'gap-4' : 'gap-8'} grid h-full w-full grow grid-cols-[auto_auto_1fr_auto] place-items-start items-center gap-y-2`}
     >
       {children}
     </div>
