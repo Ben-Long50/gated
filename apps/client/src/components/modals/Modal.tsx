@@ -4,6 +4,7 @@ import BtnIcon from '../buttons/BtnIcon';
 import { mdiClose } from '@mdi/js';
 import { useNavigate } from 'react-router-dom';
 import useModalStore from 'src/stores/modalStore';
+import Divider from '../Divider';
 
 const Modal = ({
   children,
@@ -60,7 +61,8 @@ const Modal = ({
           {children}
         </div>
         {(button || errors) && (
-          <div className="bg-primary sticky bottom-0 flex w-full flex-col gap-4 p-4 pt-2 sm:p-8 sm:pt-4">
+          <div className="bg-primary sticky bottom-0 flex w-full flex-col gap-4 px-4 pb-4 sm:px-8 sm:pb-8">
+            <Divider />
             {errors}
             {button}
           </div>

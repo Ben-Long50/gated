@@ -22,6 +22,7 @@ import Loading from '../Loading';
 import CombatIcon from '../icons/CombatIcon';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import PassIcon from '../icons/PassIcon';
+import { Gang } from 'src/types/gang';
 
 const CampaignLinks = () => {
   const { user } = useContext(AuthContext);
@@ -106,10 +107,12 @@ const CampaignLinks = () => {
             }
             title="Gangs"
           >
-            <SubLinkSidebar
-              title="Gangs"
-              path={`campaigns/${campaignId}/gangs`}
-            />
+            {campaign?.gangs.map((gang: Gang) => (
+              <SubLinkSidebar
+                title={gang.name}
+                path={`campaigns/${campaignId}/gangs/${gang.id}`}
+              />
+            ))}
             <SubLinkSidebar
               title="Create a Gang"
               path={`campaigns/${campaignId}/gangs/create`}

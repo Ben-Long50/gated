@@ -83,7 +83,7 @@ const InputFieldBasic = ({
         />
         <label
           htmlFor={name}
-          className={` ${errors.length > 0 ? 'text-error' : ''} ${inputValue || focus ? 'bg-primary text-accent -translate-y-6' : ''} ${!inputValue && !focus ? 'text-gray-400' : ''} timing pointer-events-none absolute left-5 top-3.5 z-20 transform cursor-text transition-all`}
+          className={` ${errors.length > 0 ? 'text-error' : ''} ${inputValue || focus ? 'bg-primary text-accent -translate-y-6' : ''} ${!inputValue && !focus ? 'text-gray-400' : ''} timing pointer-events-none absolute left-5 top-3.5 transform cursor-text transition-all`}
         >
           {label}
         </label>

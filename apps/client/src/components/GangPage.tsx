@@ -58,7 +58,7 @@ const GangPage = () => {
             <div className="flex flex-col items-center gap-2 px-4">
               <h3>{`Reputation - ${reputation.description}`}</h3>
               <ReputationBar
-                value={reputation.level}
+                value={gang?.reputation}
                 onClick={(value) => updateReputation.mutate(value)}
               />
             </div>
@@ -70,7 +70,17 @@ const GangPage = () => {
                 {gang?.level}
               </h2>
             </div>
-            <StatBarContainer className="my-4" size="small">
+            <StatBarContainer className="my-4" icon={false} size="small">
+              {reputation.requiredPoints && (
+                <StatBar
+                  title="Reputation Points"
+                  total={reputation.requiredPoints}
+                  current={gang?.reputationPoints}
+                  color="gold"
+                  size="large"
+                  widthCap={false}
+                />
+              )}
               <StatBar
                 title="Level Nodes"
                 total={requiredNodes}
@@ -78,12 +88,10 @@ const GangPage = () => {
                 color="gold"
                 size="large"
                 widthCap={false}
-              >
-                <span></span>
-              </StatBar>
+              />
             </StatBarContainer>
             <div className="flex w-full items-start justify-between gap-8">
-              <div className="grid grid-cols-[auto_auto] gap-x-6 gap-y-1">
+              <div className="grid grid-cols-[auto_auto] gap-x-8 gap-y-1">
                 <p>Leaders</p>
                 <p className="justify-self-end">{leaderCount}</p>
                 <p>Members</p>
@@ -92,22 +100,18 @@ const GangPage = () => {
                 <p className="justify-self-end whitespace-nowrap text-center">
                   {goonCount} / {gangPoints}
                 </p>
-                <p>Properties</p>
-                <p className="justify-self-end whitespace-nowrap text-center">
-                  {gang?.properties.length}
-                </p>
               </div>
-              <div className="grid grid-cols-[auto_auto] gap-x-4 gap-y-1">
-                <p>Reputation Points</p>
-                <p className="justify-self-end">{gang?.reputationPoints}</p>
+              <div className="grid grid-cols-[auto_auto] gap-x-8 gap-y-1">
                 <p>Gang Points</p>
-                <p className="justify-self-end">{gangPoints}</p>
-                <p>Used GP</p>
                 <p className="justify-self-end">
                   {usedGangPoints} / {gangPoints}
                 </p>
                 <p>Profits</p>
                 <p className="justify-self-end">{gang?.profits}</p>
+                <p>Properties</p>
+                <p className="justify-self-end whitespace-nowrap text-center">
+                  {gang?.properties.length}
+                </p>
               </div>
             </div>
             <Divider />
@@ -117,6 +121,9 @@ const GangPage = () => {
               </BtnAuth>
               <BtnAuth onClick={() => navigate('allocateNodes')}>
                 Allocate Level Nodes
+              </BtnAuth>
+              <BtnAuth onClick={() => navigate('distributeProfits')}>
+                Distribute Profits
               </BtnAuth>
             </div>
           </div>

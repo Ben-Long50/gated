@@ -17,7 +17,6 @@ import Divider from './Divider';
 import { Character } from 'src/types/character';
 import { Keyword } from 'src/types/keyword';
 import BtnIcon from './buttons/BtnIcon';
-import { capitalCase } from 'change-case';
 import { Campaign } from 'src/types/campaign';
 import constructName from 'src/utils/constructName';
 
@@ -123,6 +122,15 @@ const InputSelectField = ({
       constructName(entity).toLowerCase().includes(query.toLowerCase()),
     ) || [];
 
+  let displayValue =
+    typeof value === 'number'
+      ? constructName(
+          options.find(
+            (option) => option.id === field.state.value || option.id === value,
+          ),
+        )
+      : constructName(value);
+
   return (
     <div
       ref={selectRef}
@@ -138,9 +146,7 @@ const InputSelectField = ({
           className={`${fieldColor.border} ${fieldColor.background} text-secondary timing relative w-full rounded-none pb-2 pl-4 pr-2 pt-3 outline-none clip-4`}
           name={name}
           id={name}
-          value={
-            field ? constructName(field.state.value) : constructName(value)
-          }
+          value={displayValue}
           onFocus={() => {
             setFocus(true);
           }}

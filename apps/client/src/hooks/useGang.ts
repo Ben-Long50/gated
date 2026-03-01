@@ -18,21 +18,51 @@ const useGang = (gangId: number) => {
 
   const usedGangPoints = 0;
 
-  let reputation = { level: 0, description: '' };
+  let reputation = { level: 0, requiredPoints: null, description: '' } as {
+    level: number;
+    requiredPoints: number | null;
+    description: string;
+  };
   let requiredNodes = 0;
 
-  if (gang?.reputationPoints < 10) {
-    reputation = { level: 1, description: 'New Kids on the Block' };
-  } else if (gang?.reputationPoints < 20) {
-    reputation = { level: 2, description: 'Up and Comers' };
-  } else if (gang?.reputationPoints < 30) {
-    reputation = { level: 3, description: 'Original Gangsters' };
-  } else if (gang?.reputationPoints < 40) {
-    reputation = { level: 4, description: 'Made Men' };
-  } else if (gang?.reputationPoints < 50) {
-    reputation = { level: 5, description: 'Living Legends' };
-  } else {
-    reputation = { level: 0, description: 'No Reputation' };
+  switch (gang?.reputation) {
+    case 1:
+      reputation = {
+        level: 1,
+        requiredPoints: 10,
+        description: 'New Kids on the Block',
+      };
+      break;
+    case 2:
+      reputation = {
+        level: 1,
+        requiredPoints: 20,
+        description: 'New Kids on the Block',
+      };
+      break;
+    case 3:
+      reputation = {
+        level: 1,
+        requiredPoints: 30,
+        description: 'New Kids on the Block',
+      };
+      break;
+    case 4:
+      reputation = {
+        level: 1,
+        requiredPoints: 50,
+        description: 'New Kids on the Block',
+      };
+      break;
+    case 5:
+      reputation = {
+        level: 1,
+        requiredPoints: null,
+        description: 'New Kids on the Block',
+      };
+      break;
+    default:
+      break;
   }
 
   switch (gang?.level) {
