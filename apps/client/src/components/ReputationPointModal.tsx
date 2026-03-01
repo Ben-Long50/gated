@@ -1,25 +1,32 @@
-import { useForm } from '@tanstack/react-form';
+import { useForm, useStore } from '@tanstack/react-form';
 import ArrowHeader3 from './ArrowHeader3';
 import BtnRect from './buttons/BtnRect';
 import Modal from './modals/Modal';
 import Divider from './Divider';
 import InputSelectField from './InputSelectField';
 import { useParams } from 'react-router-dom';
-import BtnIcon from './buttons/BtnIcon';
-import { mdiCheck, mdiClose, mdiMinus, mdiPlus } from '@mdi/js';
+import { mdiCheck, mdiClose } from '@mdi/js';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import { sentenceCase } from 'change-case';
 import BtnAuth from './buttons/BtnAuth';
-import InputField from './InputField';
 import InputFieldBasic from './InputFieldBasic';
 import { useState } from 'react';
 import Icon from '@mdi/react';
+import useAllocateReputationMutation from 'src/hooks/gang hooks/useAllocateReputationMutation/useAllocateReputationMutation';
+import Loading from './Loading';
+import useGang from 'src/hooks/useGang';
 
 const ReputationPointModal = () => {
-  const { campaignId } = useParams();
+  const { campaignId, gangId } = useParams();
   const [customDescription, setCustomDescription] = useState(new Map());
 
   const { data: campaign } = useCampaignQuery(Number(campaignId));
+  const { gang } = useGang(Number(gangId));
+
+  const allocateReputation = useAllocateReputationMutation(
+    Number(campaignId),
+    Number(gangId),
+  );
 
   const reputationBonusData = [
     {
@@ -70,31 +77,26 @@ const ReputationPointModal = () => {
     },
   ];
 
+  const defaultSessionId = campaign?.sessions[0]?.id;
+  const defaultBonus = gang?.gangSessionBonuses.find(
+    (bonus) => bonus.sessionId === defaultSessionId,
+  )?.reputationBonus;
+
   const reputationForm = useForm({
     defaultValues: {
-      sessionId: campaign?.sessions[0]?.id || null,
-      reputationPoints: [] as { value: number; description: string }[],
+      sessionId: defaultSessionId as number,
+      bonus: defaultBonus || ([] as { value: number; description: string }[]),
     },
     onSubmit: ({ value }) => {
-      const total = value.reputationPoints.reduce(
-        (sum, bonus) => sum + bonus.value,
-        0,
-      );
-
-      console.log(value.reputationPoints, value.sessionId);
+      allocateReputation.mutate({
+        sessionId: value.sessionId,
+        bonus: value.bonus,
+      });
     },
     validators: {
       onSubmit: ({ value }) => {
-        const total = value.reputationPoints.reduce(
-          (sum, bonus) => sum + bonus.value,
-          0,
-        );
-
         if (!value.sessionId) {
           return 'Select a session';
-        }
-        if (total === 0) {
-          return 'Select at least 1 Reputation Point bonus';
         }
         return undefined;
       },
@@ -105,7 +107,7 @@ const ReputationPointModal = () => {
     <Modal
       button={
         <div className="flex w-full flex-col gap-8">
-          <reputationForm.Field name="reputationPoints">
+          <reputationForm.Field name="bonus">
             {(field) => {
               const total = field.state.value.reduce(
                 (sum, bonus) => sum + bonus.value,
@@ -150,13 +152,21 @@ const ReputationPointModal = () => {
             }}
           </reputationForm.Field>
           <BtnRect
+            className="group"
             ariaLabel="Confirm"
             onClick={(e) => {
               e.preventDefault();
               reputationForm.handleSubmit();
             }}
           >
-            Confirm
+            {allocateReputation.isPending ? (
+              <Loading
+                size={1.15}
+                className="group-hover:text-accent text-black"
+              />
+            ) : (
+              'Confirm'
+            )}
           </BtnRect>
         </div>
       }
@@ -172,16 +182,34 @@ const ReputationPointModal = () => {
     >
       <h1>Allocate Reputation</h1>
       <Divider />
-      <reputationForm.Field name="sessionId">
+      <reputationForm.Field
+        name="sessionId"
+        listeners={{
+          onChange: ({ value }) => {
+            const existingBonus = gang?.gangSessionBonuses.find(
+              (bonus) => bonus.sessionId === value,
+            )?.reputationBonus;
+
+            console.log(value);
+
+            if (existingBonus) {
+              reputationForm.setFieldValue('bonus', existingBonus);
+            } else {
+              reputationForm.setFieldValue('bonus', []);
+            }
+          },
+        }}
+      >
         {(field) => (
           <InputSelectField
             field={field}
             label="Session"
-            options={campaign?.sessions}
+            options={campaign?.sessions || []}
+            onChange={(value) => field.handleChange(value.id)}
           />
         )}
       </reputationForm.Field>
-      <reputationForm.Field name="reputationPoints">
+      <reputationForm.Field name="bonus">
         {(field) => (
           <div className="flex w-full flex-col gap-8">
             {reputationBonusData.map((bonus, index) => {
@@ -201,7 +229,7 @@ const ReputationPointModal = () => {
                       {sentenceCase(d)}
                     </BtnAuth>
                   ))}
-                  <div className="flex w-full items-center gap-8">
+                  <div className="flex w-full items-center gap-4">
                     <InputFieldBasic
                       className="grow"
                       label="Custom Description"

@@ -37,7 +37,7 @@ import GangForm from 'src/components/GangForm';
 import CharacterSelectModal from 'src/components/CharacterSelectModal';
 import Gangs from 'src/components/Gangs';
 import GangPage from 'src/components/GangPage';
-import ReputationPointModal from 'src/components/ReputationPointModal copy';
+import ReputationPointModal from 'src/components/ReputationPointModal';
 import LevelNodeModal from 'src/components/LevelNodeModal';
 
 const CampaignTabRoutes = () => {

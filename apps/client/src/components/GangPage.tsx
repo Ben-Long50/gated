@@ -25,7 +25,7 @@ const GangPage = () => {
     gang,
     gangPoints,
     usedGangPoints,
-    reputation,
+    reputationData,
     requiredNodes,
     leaderCount,
     memberCount,
@@ -56,9 +56,9 @@ const GangPage = () => {
         >
           <div className="flex w-full flex-col gap-4 p-6">
             <div className="flex flex-col items-center gap-2 px-4">
-              <h3>{`Reputation - ${reputation.description}`}</h3>
+              <h3>{`Reputation - ${reputationData.description}`}</h3>
               <ReputationBar
-                value={gang?.reputation}
+                value={reputationData.reputation}
                 onClick={(value) => updateReputation.mutate(value)}
               />
             </div>
@@ -71,11 +71,11 @@ const GangPage = () => {
               </h2>
             </div>
             <StatBarContainer className="my-4" icon={false} size="small">
-              {reputation.requiredPoints && (
+              {reputationData.requiredPoints && (
                 <StatBar
                   title="Reputation Points"
-                  total={reputation.requiredPoints}
-                  current={gang?.reputationPoints}
+                  total={reputationData.requiredPoints}
+                  current={reputationData.reputationPoints}
                   color="gold"
                   size="large"
                   widthCap={false}

@@ -1,5 +1,6 @@
 import { Character } from 'src/types/character';
 import useGangQuery from './gang hooks/useGangQuery/useGangQuery';
+import calculateReputation from 'src/utils/calculateReputation';
 
 const useGang = (gangId: number) => {
   const { data: gang, isLoading } = useGangQuery(Number(gangId));
@@ -18,48 +19,42 @@ const useGang = (gangId: number) => {
 
   const usedGangPoints = 0;
 
-  let reputation = { level: 0, requiredPoints: null, description: '' } as {
-    level: number;
-    requiredPoints: number | null;
-    description: string;
-  };
   let requiredNodes = 0;
 
-  switch (gang?.reputation) {
+  const { reputation, reputationPoints } = gang
+    ? calculateReputation(gang)
+    : { reputation: 0, reputationPoints: 0 };
+
+  const reputationData = {
+    reputation,
+    reputationPoints,
+  } as {
+    reputation: number;
+    reputationPoints: number;
+    requiredPoints: number;
+    description: string;
+  };
+
+  switch (reputation) {
     case 1:
-      reputation = {
-        level: 1,
-        requiredPoints: 10,
-        description: 'New Kids on the Block',
-      };
+      reputationData.requiredPoints = 10;
+      reputationData.description = 'New Kids on the Block';
       break;
     case 2:
-      reputation = {
-        level: 1,
-        requiredPoints: 20,
-        description: 'New Kids on the Block',
-      };
+      reputationData.requiredPoints = 20;
+      reputationData.description = 'Up and Comers';
       break;
     case 3:
-      reputation = {
-        level: 1,
-        requiredPoints: 30,
-        description: 'New Kids on the Block',
-      };
+      reputationData.requiredPoints = 30;
+      reputationData.description = 'Original Gangsters';
       break;
     case 4:
-      reputation = {
-        level: 1,
-        requiredPoints: 50,
-        description: 'New Kids on the Block',
-      };
+      reputationData.requiredPoints = 50;
+      reputationData.description = 'Made Men';
       break;
     case 5:
-      reputation = {
-        level: 1,
-        requiredPoints: null,
-        description: 'New Kids on the Block',
-      };
+      reputationData.requiredPoints = 0;
+      reputationData.description = 'Living Legends';
       break;
     default:
       break;
@@ -113,7 +108,7 @@ const useGang = (gangId: number) => {
     gang,
     gangPoints,
     usedGangPoints,
-    reputation,
+    reputationData,
     requiredNodes,
     leaderCount,
     memberCount,

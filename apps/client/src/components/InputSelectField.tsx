@@ -53,16 +53,16 @@ const InputSelectField = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const selectRef = useRef<HTMLDivElement>(null);
 
-  const handleValue = (newValue: string) => {
+  const handleValue = (newValue: onChangeArg) => {
     if (inputRef.current) {
       inputRef.current.value = newValue;
       setValue(newValue);
-      if (field) {
-        field.handleChange(newValue);
-      }
       if (onChange) {
         onChange(newValue);
+      } else if (field) {
+        field.handleChange(newValue);
       }
+
       setFocus(false);
       if (inputRef.current) {
         inputRef.current.blur();
