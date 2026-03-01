@@ -70,11 +70,12 @@ const gangController = {
     },
   ],
 
-  updateReputation: async (req: Request, res: Response) => {
+  allocateReputation: async (req: Request, res: Response) => {
     try {
-      await gangServices.updateReputation(
+      await gangServices.allocateReputation(
         Number(req.params.gangId),
-        req.body.value,
+        req.body.sessionId,
+        req.body.bonus,
       );
       res
         .status(200)

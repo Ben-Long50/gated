@@ -61,9 +61,9 @@ const gangController = {
             }
         },
     ],
-    updateReputation: async (req, res) => {
+    allocateReputation: async (req, res) => {
         try {
-            await gangServices.updateReputation(Number(req.params.gangId), req.body.value);
+            await gangServices.allocateReputation(Number(req.params.gangId), req.body.sessionId, req.body.bonus);
             res
                 .status(200)
                 .json({ messagee: 'Successfully updated gang reputation' });

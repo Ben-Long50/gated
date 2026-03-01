@@ -28,6 +28,7 @@ const gangServices = {
                     turf: true,
                     properties: true,
                     affiliations: { select: { id: true } },
+                    gangSessionBonuses: true,
                 },
             });
             return gangs;
@@ -65,6 +66,7 @@ const gangServices = {
                     turf: true,
                     properties: true,
                     affiliations: { select: { id: true } },
+                    gangSessionBonuses: true,
                 },
             });
             return gangs;
@@ -101,6 +103,7 @@ const gangServices = {
                     },
                     properties: true,
                     affiliations: { select: { id: true } },
+                    gangSessionBonuses: true,
                 },
             });
             return gang;
@@ -137,16 +140,28 @@ const gangServices = {
             throw new Error('Failed to create or update gang');
         }
     },
-    updateReputation: async (gangId, value) => {
+    allocateReputation: async (gangId, sessionId, bonus) => {
         try {
-            await prisma.gang.update({
-                where: { id: gangId },
-                data: { reputation: value },
+            await prisma.gangSessionBonus.upsert({
+                where: {
+                    gangId_sessionId: {
+                        gangId,
+                        sessionId,
+                    },
+                },
+                update: {
+                    reputationBonus: bonus,
+                },
+                create: {
+                    gang: { connect: { id: gangId } },
+                    session: { connect: { id: sessionId } },
+                    reputationBonus: bonus,
+                },
             });
         }
         catch (error) {
             console.error(error);
-            throw new Error('Failed to update gang reputation');
+            throw new Error('Failed to update create gang session bonus');
         }
     },
     deleteGang: async (gangId) => {

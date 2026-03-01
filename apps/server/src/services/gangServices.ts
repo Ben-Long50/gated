@@ -29,6 +29,7 @@ const gangServices = {
           turf: true,
           properties: true,
           affiliations: { select: { id: true } },
+          gangSessionBonuses: true,
         },
       });
 
@@ -67,6 +68,7 @@ const gangServices = {
           turf: true,
           properties: true,
           affiliations: { select: { id: true } },
+          gangSessionBonuses: true,
         },
       });
 
@@ -104,6 +106,7 @@ const gangServices = {
           },
           properties: true,
           affiliations: { select: { id: true } },
+          gangSessionBonuses: true,
         },
       });
 
@@ -168,15 +171,31 @@ const gangServices = {
     }
   },
 
-  updateReputation: async (gangId: number, value: number) => {
+  allocateReputation: async (
+    gangId: number,
+    sessionId: number,
+    bonus: { value: number; description: string }[],
+  ) => {
     try {
-      await prisma.gang.update({
-        where: { id: gangId },
-        data: { reputation: value },
+      await prisma.gangSessionBonus.upsert({
+        where: {
+          gangId_sessionId: {
+            gangId,
+            sessionId,
+          },
+        },
+        update: {
+          reputationBonus: bonus,
+        },
+        create: {
+          gang: { connect: { id: gangId } },
+          session: { connect: { id: sessionId } },
+          reputationBonus: bonus,
+        },
       });
     } catch (error) {
       console.error(error);
-      throw new Error('Failed to update gang reputation');
+      throw new Error('Failed to update create gang session bonus');
     }
   },
 
