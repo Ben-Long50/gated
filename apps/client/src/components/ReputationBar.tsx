@@ -1,40 +1,24 @@
 import { mdiTriangleDown } from '@mdi/js';
 import Icon from '@mdi/react';
-import { useState } from 'react';
 
 const ReputationBar = ({
   value,
   className,
-  onClick,
 }: {
   value: number;
   className?: string;
   onClick?: (value: number) => void;
 }) => {
-  const [hoverValue, setHoverValue] = useState<number | null>(null);
-
   const reputationValue = value;
 
   const handleButtonColor = (buttonValue: number) => {
-    if (hoverValue == null) {
-      if (reputationValue > buttonValue) {
-        return 'transparent';
-      }
-
-      if (reputationValue <= buttonValue) {
-        return 'bg-zinc-500';
-      }
+    if (reputationValue > buttonValue) {
+      return 'transparent';
+    } else if (reputationValue <= buttonValue) {
+      return 'bg-zinc-500';
     }
 
-    if (hoverValue != null) {
-      if (reputationValue <= buttonValue && hoverValue >= buttonValue) {
-        return 'bg-zinc-500 opacity-50';
-      } else if (reputationValue > buttonValue && hoverValue < buttonValue) {
-        return 'bg-zinc-500 opacity-50';
-      } else if (reputationValue <= buttonValue) {
-        return 'bg-zinc-500';
-      }
-    }
+    return;
   };
 
   return (
@@ -59,35 +43,15 @@ const ReputationBar = ({
             const buttonValue = index + 1;
 
             const buttonClassName = handleButtonColor(buttonValue);
+
             const showMarker =
               (reputationValue === 5 && buttonValue === 4) ||
               reputationValue === buttonValue;
 
-            const showTempMarker =
-              (hoverValue === 0 && buttonValue === 1) ||
-              hoverValue === buttonValue;
-            const setLeft =
-              hoverValue != null ? hoverValue < buttonValue : false;
-
             return (
-              <button
+              <div
                 key={index}
                 className={`${buttonClassName} ${buttonValue === 4 && 'rounded-r'} ${buttonValue === 0 && 'rounded-l'} timing relative w-full`}
-                onMouseMove={(e) => {
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  const isLeftHalf = e.clientX < rect.left + rect.width / 2;
-                  setHoverValue(isLeftHalf ? buttonValue - 1 : buttonValue);
-                }}
-                onMouseLeave={() => setHoverValue(null)}
-                onClick={(e) => {
-                  e.preventDefault();
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  const isLeftHalf = e.clientX < rect.left + rect.width / 2;
-                  const newValue = isLeftHalf ? buttonValue : buttonValue + 1;
-                  if (onClick) {
-                    onClick(newValue);
-                  }
-                }}
               >
                 {showMarker && (
                   <div className="absolute left-0 top-0 -translate-x-1/2 -translate-y-2 opacity-100">
@@ -98,18 +62,7 @@ const ReputationBar = ({
                     />
                   </div>
                 )}
-                {showTempMarker && (
-                  <div
-                    className={`${setLeft ? 'left-0 -translate-x-1/2' : 'right-0 translate-x-1/2'} absolute top-0 -translate-y-2 opacity-100`}
-                  >
-                    <Icon
-                      className="text-accent"
-                      path={mdiTriangleDown}
-                      size={0.75}
-                    />
-                  </div>
-                )}
-              </button>
+              </div>
             );
           })}
         </div>

@@ -10,7 +10,6 @@ import { ThemeContext } from 'src/contexts/ThemeContext';
 import CharacterListSmall from './CharacterListSmall';
 import { Map } from 'src/types/map';
 import ReputationBar from './ReputationBar';
-import useUpdateReputationMutation from 'src/hooks/gang hooks/useUpdateReputationMutation/useUpdateReputationMutation';
 import useGang from 'src/hooks/useGang';
 import BtnAuth from './buttons/BtnAuth';
 import StatBarContainer from './StatBarContainer';
@@ -18,7 +17,7 @@ import StatBar from './StatBar';
 
 const GangPage = () => {
   const { accentPrimary } = useContext(ThemeContext);
-  const { campaignId, gangId } = useParams();
+  const { gangId } = useParams();
   const navigate = useNavigate();
 
   const {
@@ -32,11 +31,6 @@ const GangPage = () => {
     goonCount,
     gangLoading,
   } = useGang(Number(gangId));
-
-  const updateReputation = useUpdateReputationMutation(
-    Number(campaignId),
-    Number(gangId),
-  );
 
   if (gangLoading) {
     return <Loading />;
@@ -57,10 +51,7 @@ const GangPage = () => {
           <div className="flex w-full flex-col gap-4 p-6">
             <div className="flex flex-col items-center gap-2 px-4">
               <h3>{`Reputation - ${reputationData.description}`}</h3>
-              <ReputationBar
-                value={reputationData.reputation}
-                onClick={(value) => updateReputation.mutate(value)}
-              />
+              <ReputationBar value={reputationData.reputation} />
             </div>
             <Divider />
             <div className="flex items-center justify-between">
