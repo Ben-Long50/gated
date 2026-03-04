@@ -21,31 +21,31 @@ const calculateLevelNodes = (gang: Gang) => {
     levelNodes = totalPoints - 10;
   } else if (totalPoints < 30) {
     level = 3;
-    levelNodes = totalPoints - 30;
+    levelNodes = totalPoints - 20;
   } else if (totalPoints < 45) {
     level = 4;
-    levelNodes = totalPoints - 45;
+    levelNodes = totalPoints - 30;
   } else if (totalPoints < 60) {
     level = 5;
-    levelNodes = totalPoints - 60;
+    levelNodes = totalPoints - 45;
   } else if (totalPoints < 75) {
     level = 6;
-    levelNodes = totalPoints - 75;
+    levelNodes = totalPoints - 60;
   } else if (totalPoints < 95) {
     level = 7;
-    levelNodes = totalPoints - 95;
+    levelNodes = totalPoints - 75;
   } else if (totalPoints < 115) {
     level = 8;
-    levelNodes = totalPoints - 115;
+    levelNodes = totalPoints - 95;
   } else if (totalPoints < 135) {
     level = 9;
-    levelNodes = totalPoints - 135;
+    levelNodes = totalPoints - 115;
   } else if (totalPoints < 160) {
     level = 10;
-    levelNodes = totalPoints - 160;
+    levelNodes = totalPoints - 135;
   } else if (totalPoints < 185) {
     level = 11;
-    levelNodes = totalPoints - 185;
+    levelNodes = totalPoints - 160;
   } else {
     level = 12;
     levelNodes = 0;

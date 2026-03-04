@@ -117,6 +117,9 @@ const GangPage = () => {
               <BtnAuth onClick={() => navigate('distributeProfits')}>
                 Distribute Profits
               </BtnAuth>
+              <BtnAuth onClick={() => navigate('manageCharacterLevels')}>
+                Manage Character Levels
+              </BtnAuth>
             </div>
           </div>
         </ThemeContainer>
