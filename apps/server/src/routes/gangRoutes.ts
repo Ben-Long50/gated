@@ -37,6 +37,13 @@ router.post(
   gangController.allocateReputation,
 );
 
+router.post(
+  '/campaigns/:campaignId/gangs/:gangId/levelNodes',
+  authentication.authenticate,
+  campaignAuthentication.validateGameMaster,
+  gangController.allocateLevelNodes,
+);
+
 router.delete(
   '/campaigns/:campaignId/gangs/:gangId',
   authentication.authenticate,

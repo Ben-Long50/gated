@@ -72,6 +72,17 @@ const gangController = {
             res.status(500).json({ error: error.message });
         }
     },
+    allocateLevelNodes: async (req, res) => {
+        try {
+            await gangServices.allocateLevelNodes(Number(req.params.gangId), req.body.sessionId, req.body.bonus);
+            res
+                .status(200)
+                .json({ messagee: 'Successfully updated gang reputation' });
+        }
+        catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
     deleteGang: async (req, res) => {
         try {
             if (!req.user) {

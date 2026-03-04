@@ -161,7 +161,31 @@ const gangServices = {
         }
         catch (error) {
             console.error(error);
-            throw new Error('Failed to update create gang session bonus');
+            throw new Error('Failed to allocate reputation bonus');
+        }
+    },
+    allocateLevelNodes: async (gangId, sessionId, bonus) => {
+        try {
+            await prisma.gangSessionBonus.upsert({
+                where: {
+                    gangId_sessionId: {
+                        gangId,
+                        sessionId,
+                    },
+                },
+                update: {
+                    levelNodeBonus: bonus,
+                },
+                create: {
+                    gang: { connect: { id: gangId } },
+                    session: { connect: { id: sessionId } },
+                    levelNodeBonus: bonus,
+                },
+            });
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to allocate level node bonus');
         }
     },
     deleteGang: async (gangId) => {
