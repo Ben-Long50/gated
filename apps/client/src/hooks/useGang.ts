@@ -1,6 +1,7 @@
 import { Character } from 'src/types/character';
 import useGangQuery from './gang hooks/useGangQuery/useGangQuery';
 import calculateReputation from 'src/utils/calculateReputation';
+import calculateLevelNodes from 'src/utils/calculateLevelNodes';
 
 const useGang = (gangId: number) => {
   const { data: gang, isLoading } = useGangQuery(Number(gangId));
@@ -19,11 +20,13 @@ const useGang = (gangId: number) => {
 
   const usedGangPoints = 0;
 
-  let requiredNodes = 0;
-
   const { reputation, reputationPoints } = gang
     ? calculateReputation(gang)
     : { reputation: 0, reputationPoints: 0 };
+
+  const { level, levelNodes } = gang
+    ? calculateLevelNodes(gang)
+    : { level: 0, levelNodes: 0 };
 
   const reputationData = {
     reputation,
@@ -60,47 +63,52 @@ const useGang = (gangId: number) => {
       break;
   }
 
-  switch (gang?.level) {
+  const levelData = {
+    level,
+    levelNodes,
+  } as { level: number; levelNodes: number; requiredNodes: number };
+
+  switch (level) {
     case 1:
-      requiredNodes = 10;
+      levelData.requiredNodes = 10;
       break;
     case 2:
-      requiredNodes = 10;
+      levelData.requiredNodes = 10;
       break;
     case 3:
-      requiredNodes = 10;
+      levelData.requiredNodes = 10;
       break;
     case 4:
-      requiredNodes = 15;
+      levelData.requiredNodes = 15;
       break;
     case 5:
-      requiredNodes = 15;
+      levelData.requiredNodes = 15;
       break;
     case 6:
-      requiredNodes = 15;
+      levelData.requiredNodes = 15;
       break;
     case 7:
-      requiredNodes = 20;
+      levelData.requiredNodes = 20;
       break;
     case 8:
-      requiredNodes = 20;
+      levelData.requiredNodes = 20;
       break;
     case 9:
-      requiredNodes = 20;
+      levelData.requiredNodes = 20;
       break;
     case 10:
-      requiredNodes = 25;
+      levelData.requiredNodes = 25;
       break;
     case 11:
-      requiredNodes = 25;
+      levelData.requiredNodes = 25;
       break;
     default:
-      requiredNodes = 0;
+      levelData.requiredNodes = 0;
       break;
   }
 
   const gangPoints = [0, 2, 5, 8, 10].reduce(
-    (sum, points, index) => (reputation.level > index ? sum + points : sum),
+    (sum, points, index) => (reputation > index ? sum + points : sum),
     0,
   );
 
@@ -109,7 +117,7 @@ const useGang = (gangId: number) => {
     gangPoints,
     usedGangPoints,
     reputationData,
-    requiredNodes,
+    levelData,
     leaderCount,
     memberCount,
     goonCount,

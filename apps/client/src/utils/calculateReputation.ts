@@ -9,6 +9,7 @@ const calculateReputation = (gang: Gang) => {
   );
 
   const totalPoints = reputationBonuses
+    .filter((bonus) => bonus)
     .flatMap((bonus) => bonus.value)
     .reduce((sum, bonus) => sum + bonus, 0);
 

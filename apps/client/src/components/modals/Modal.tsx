@@ -38,12 +38,14 @@ const Modal = ({
 
   return (
     <RootPortal>
-      <div className="scrollbar-primary-2 bg-primary shadow-color relative flex max-h-85dvh w-full max-w-5xl flex-col overflow-y-auto rounded-lg shadow-lg">
+      <div
+        className="scrollbar-primary-2 bg-primary shadow-color relative flex max-h-85dvh w-full max-w-5xl flex-col overflow-y-auto rounded-lg shadow-lg"
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+      >
         <div
           className={`${className} flex flex-col items-center gap-4 p-4 sm:gap-8 sm:p-8`}
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
         >
           <BtnIcon
             active={true}

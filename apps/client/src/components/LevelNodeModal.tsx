@@ -3,16 +3,24 @@ import BtnRect from './buttons/BtnRect';
 import Modal from './modals/Modal';
 import Divider from './Divider';
 import ArrowHeader3 from './ArrowHeader3';
-import ArrowHeader4 from './ArrowHeader4';
 import InputSelectField from './InputSelectField';
 import { useParams } from 'react-router-dom';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import { sentenceCase } from 'change-case';
+import useAllocateLevelNodesMutation from 'src/hooks/gang hooks/useAllocateLevelNodesMutation/useAllocateLevelNodesMutation';
+import useGang from 'src/hooks/useGang';
+import Loading from './Loading';
 
 const LevelNodeModal = () => {
-  const { campaignId } = useParams();
+  const { campaignId, gangId } = useParams();
 
   const { data: campaign } = useCampaignQuery(Number(campaignId));
+  const { gang } = useGang(Number(gangId));
+
+  const allocateLevelNodes = useAllocateLevelNodesMutation(
+    Number(campaignId),
+    Number(gangId),
+  );
 
   const reputationBonusData = [
     {
@@ -89,26 +97,26 @@ const LevelNodeModal = () => {
     },
   ];
 
+  const defaultSessionId = campaign?.sessions[0]?.id;
+  const defaultBonus = gang?.gangSessionBonuses.find(
+    (bonus) => bonus.sessionId === defaultSessionId,
+  )?.levelNodeBonus;
+
   const levelNodeForm = useForm({
     defaultValues: {
-      sessionId: campaign?.sessions[0]?.id || null,
-      levelNodes: [] as { value: number; description: string }[],
+      sessionId: defaultSessionId as number,
+      bonus: defaultBonus || ([] as { value: number; description: string }[]),
     },
     onSubmit: ({ value }) => {
-      const total = value.levelNodes.reduce(
-        (sum, bonus) => sum + bonus.value,
-        0,
-      );
-
-      console.log(value.levelNodes, value.sessionId);
+      allocateLevelNodes.mutate({
+        sessionId: value.sessionId,
+        bonus: value.bonus,
+      });
     },
     validators: {
       onSubmit: ({ value }) => {
         if (!value.sessionId) {
           return 'Select a session';
-        }
-        if (value.levelNodes.length === 0) {
-          return 'Select at least 1 level node bonus';
         }
         return undefined;
       },
@@ -119,14 +127,9 @@ const LevelNodeModal = () => {
     <Modal
       button={
         <div className="flex w-full flex-col gap-8">
-          <levelNodeForm.Subscribe
-            selector={(state) => state.values.levelNodes}
-          >
-            {(levelNodes) => {
-              const total = levelNodes.reduce(
-                (sum, bonus) => sum + bonus.value,
-                0,
-              );
+          <levelNodeForm.Subscribe selector={(state) => state.values.bonus}>
+            {(bonus) => {
+              const total = bonus.reduce((sum, bonus) => sum + bonus.value, 0);
               return (
                 <div className="flex w-full items-center justify-between">
                   <ArrowHeader3 title="Total Level Nodes" />
@@ -136,13 +139,21 @@ const LevelNodeModal = () => {
             }}
           </levelNodeForm.Subscribe>
           <BtnRect
+            className="group"
             ariaLabel="Confirm"
             onClick={(e) => {
               e.preventDefault();
               levelNodeForm.handleSubmit();
             }}
           >
-            Confirm
+            {allocateLevelNodes.isPending ? (
+              <Loading
+                size={1.15}
+                className="group-hover:text-accent text-black"
+              />
+            ) : (
+              'Confirm'
+            )}
           </BtnRect>
         </div>
       }
@@ -158,16 +169,32 @@ const LevelNodeModal = () => {
     >
       <h1>Allocate Level Nodes</h1>
       <Divider />
-      <levelNodeForm.Field name="sessionId">
+      <levelNodeForm.Field
+        name="sessionId"
+        listeners={{
+          onChange: ({ value }) => {
+            const existingBonus = gang?.gangSessionBonuses.find(
+              (bonus) => bonus.sessionId === value,
+            )?.levelNodeBonus;
+
+            if (existingBonus) {
+              levelNodeForm.setFieldValue('bonus', existingBonus);
+            } else {
+              levelNodeForm.setFieldValue('bonus', []);
+            }
+          },
+        }}
+      >
         {(field) => (
           <InputSelectField
             field={field}
             label="Session"
-            options={campaign?.sessions}
+            options={campaign?.sessions || []}
+            onChange={(value) => field.handleChange(value.id)}
           />
         )}
       </levelNodeForm.Field>
-      <levelNodeForm.Field name="levelNodes">
+      <levelNodeForm.Field name="bonus">
         {(field) => (
           <div className="flex w-full flex-col gap-8">
             <ArrowHeader3 title="Level Node Bonuses" />

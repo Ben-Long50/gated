@@ -1,4 +1,4 @@
-import { useForm, useStore } from '@tanstack/react-form';
+import { useForm } from '@tanstack/react-form';
 import ArrowHeader3 from './ArrowHeader3';
 import BtnRect from './buttons/BtnRect';
 import Modal from './modals/Modal';
@@ -189,8 +189,6 @@ const ReputationPointModal = () => {
             const existingBonus = gang?.gangSessionBonuses.find(
               (bonus) => bonus.sessionId === value,
             )?.reputationBonus;
-
-            console.log(value);
 
             if (existingBonus) {
               reputationForm.setFieldValue('bonus', existingBonus);

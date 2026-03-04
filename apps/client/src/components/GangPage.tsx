@@ -14,6 +14,7 @@ import useGang from 'src/hooks/useGang';
 import BtnAuth from './buttons/BtnAuth';
 import StatBarContainer from './StatBarContainer';
 import StatBar from './StatBar';
+import ArrowHeader4 from './ArrowHeader4';
 
 const GangPage = () => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -25,7 +26,7 @@ const GangPage = () => {
     gangPoints,
     usedGangPoints,
     reputationData,
-    requiredNodes,
+    levelData,
     leaderCount,
     memberCount,
     goonCount,
@@ -56,10 +57,10 @@ const GangPage = () => {
             <Divider />
             <div className="flex items-center justify-between">
               <ArrowHeader3 title="Gang Stats" />
-              <h2 className="!text-accent">
-                <span className="text-xl">Gang Level - </span>
-                {gang?.level}
-              </h2>
+              <div className="flex items-center gap-8">
+                <ArrowHeader4 className="!text-accent" title="Gang Level" />
+                <h2 className="!text-accent">{levelData.level}</h2>
+              </div>
             </div>
             <StatBarContainer className="my-4" icon={false} size="small">
               {reputationData.requiredPoints && (
@@ -67,16 +68,16 @@ const GangPage = () => {
                   title="Reputation Points"
                   total={reputationData.requiredPoints}
                   current={reputationData.reputationPoints}
-                  color="gold"
+                  color="rgb(59 130 246)"
                   size="large"
                   widthCap={false}
                 />
               )}
               <StatBar
                 title="Level Nodes"
-                total={requiredNodes}
-                current={gang?.levelNodes}
-                color="gold"
+                total={levelData.requiredNodes}
+                current={levelData.levelNodes}
+                color="rgb(250 204 21)"
                 size="large"
                 widthCap={false}
               />

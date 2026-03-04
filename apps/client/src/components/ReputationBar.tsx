@@ -51,7 +51,7 @@ const ReputationBar = ({
             return (
               <div
                 key={index}
-                className={`${buttonClassName} ${buttonValue === 4 && 'rounded-r'} ${buttonValue === 0 && 'rounded-l'} timing relative w-full`}
+                className={`${buttonClassName} ${buttonValue === 4 && 'rounded-r'} ${buttonValue === 1 && 'rounded-l'} timing relative w-full`}
               >
                 {showMarker && (
                   <div className="absolute left-0 top-0 -translate-x-1/2 -translate-y-2 opacity-100">

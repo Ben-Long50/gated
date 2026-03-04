@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import updateFaction from './allocateReputation';
 import { Gang } from 'src/types/gang';
 import { useNavigate } from 'react-router-dom';
+import allocateReputation from './allocateReputation';
 
 const useAllocateReputationMutation = (campaignId: number, gangId: number) => {
   const queryClient = useQueryClient();
@@ -12,7 +12,7 @@ const useAllocateReputationMutation = (campaignId: number, gangId: number) => {
       sessionId: number;
       bonus: { value: number; description: string }[];
     }) => {
-      return updateFaction(campaignId, gangId, data);
+      return allocateReputation(campaignId, gangId, data);
     },
     onMutate(value) {
       queryClient.cancelQueries({ queryKey: ['gang', gangId] });
