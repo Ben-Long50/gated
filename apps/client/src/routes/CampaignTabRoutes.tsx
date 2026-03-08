@@ -39,6 +39,8 @@ import Gangs from 'src/components/Gangs';
 import GangPage from 'src/components/GangPage';
 import ReputationPointModal from 'src/components/ReputationPointModal';
 import LevelNodeModal from 'src/components/LevelNodeModal';
+import CharacterLevelsModal from 'src/components/CharacterLevelsModal';
+import GangProfitsModal from 'src/components/GangProfitsModal';
 
 const CampaignTabRoutes = () => {
   return (
@@ -83,6 +85,8 @@ const CampaignTabRoutes = () => {
               element={<ReputationPointModal />}
             />
             <Route path="allocateNodes" element={<LevelNodeModal />} />
+            <Route path="manageLevels" element={<CharacterLevelsModal />} />
+            <Route path="distributeProfits" element={<GangProfitsModal />} />
           </Route>
           <Route path="create" element={<GangForm />}>
             <Route path="characterSelect" element={<CharacterSelectModal />} />

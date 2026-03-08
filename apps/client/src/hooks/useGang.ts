@@ -2,9 +2,19 @@ import { Character } from 'src/types/character';
 import useGangQuery from './gang hooks/useGangQuery/useGangQuery';
 import calculateReputation from 'src/utils/calculateReputation';
 import calculateLevelNodes from 'src/utils/calculateLevelNodes';
+import useCharacters from './useCharacters';
 
 const useGang = (gangId: number) => {
   const { data: gang, isLoading } = useGangQuery(Number(gangId));
+
+  const gangCharacters =
+    gang?.leaders.length > 0 || gang?.characters.length > 0
+      ? [...gang?.leaders, ...gang?.characters]
+      : [];
+
+  const { characters } = useCharacters(
+    gangCharacters.map((character) => character.id),
+  );
 
   const leaderCount = gang?.leaders.length;
 
@@ -114,6 +124,7 @@ const useGang = (gangId: number) => {
 
   return {
     gang,
+    characters,
     gangPoints,
     usedGangPoints,
     reputationData,

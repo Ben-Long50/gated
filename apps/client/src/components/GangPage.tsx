@@ -117,7 +117,7 @@ const GangPage = () => {
               <BtnAuth onClick={() => navigate('distributeProfits')}>
                 Distribute Profits
               </BtnAuth>
-              <BtnAuth onClick={() => navigate('manageCharacterLevels')}>
+              <BtnAuth onClick={() => navigate('manageLevels')}>
                 Manage Character Levels
               </BtnAuth>
             </div>
@@ -153,7 +153,7 @@ const GangPage = () => {
           </div>
         </div>
       </div>
-      <Outlet />
+      <Outlet context={{ gang }} />
     </>
   );
 };

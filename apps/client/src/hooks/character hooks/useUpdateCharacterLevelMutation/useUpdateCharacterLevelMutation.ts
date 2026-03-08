@@ -4,13 +4,19 @@ import { socket } from 'src/socket';
 import { useRef } from 'react';
 import { Character } from 'src/types/character';
 
-const useUpdateCharacterLevelMutation = (characterId: number) => {
+const useUpdateCharacterLevelMutation = () => {
   const queryClient = useQueryClient();
   const updateBuffer = useRef(0);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   return useMutation({
-    mutationFn: (levelChange: number) => {
+    mutationFn: ({
+      characterId,
+      levelChange,
+    }: {
+      characterId: number;
+      levelChange: number;
+    }) => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
@@ -35,27 +41,29 @@ const useUpdateCharacterLevelMutation = (characterId: number) => {
     },
 
     onMutate: (data) => {
-      queryClient.cancelQueries({ queryKey: ['character', characterId] });
+      queryClient.cancelQueries({ queryKey: ['character', data.characterId] });
 
       const prevCharacterData: Character | undefined = queryClient.getQueryData(
-        ['character', characterId],
+        ['character', data.characterId],
       );
 
       queryClient.setQueryData(
-        ['character', characterId],
+        ['character', data.characterId],
         (prev: Character) => ({
           ...prev,
-          level: prevCharacterData ? prevCharacterData.level + data : data,
+          level: prevCharacterData
+            ? prevCharacterData.level + data.levelChange
+            : data.levelChange,
         }),
       );
 
       return { prevCharacterData };
     },
 
-    onSuccess: (campaignId) => {
-      socket.emit('character', { characterId, campaignId });
+    onSuccess: (campaignId, data) => {
+      socket.emit('character', { characterId: data.characterId, campaignId });
       return queryClient.invalidateQueries({
-        queryKey: ['character', characterId],
+        queryKey: ['character', data.characterId],
       });
     },
     throwOnError: false,
