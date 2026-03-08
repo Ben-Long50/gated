@@ -100,6 +100,23 @@ const gangController = {
     }
   },
 
+  distributeProfits: async (req: Request, res: Response) => {
+    try {
+      await gangServices.distributeProfits(
+        Number(req.params.gangId),
+        Number(req.params.characterId),
+        Number(req.body.value),
+      );
+      res
+        .status(200)
+        .json({
+          message: `Distributed ${req.body.value} profits to character ${req.params.characterId}`,
+        });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
   deleteGang: async (req: Request, res: Response) => {
     try {
       if (!req.user) {

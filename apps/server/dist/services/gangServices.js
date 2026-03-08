@@ -22,6 +22,8 @@ const gangServices = {
                             lastName: true,
                             picture: true,
                             userId: true,
+                            playerCharacter: true,
+                            level: true,
                         },
                         orderBy: { firstName: 'asc' },
                     },
@@ -60,6 +62,8 @@ const gangServices = {
                             lastName: true,
                             picture: true,
                             userId: true,
+                            playerCharacter: true,
+                            level: true,
                         },
                         orderBy: { firstName: 'asc' },
                     },
@@ -98,6 +102,8 @@ const gangServices = {
                             lastName: true,
                             picture: true,
                             userId: true,
+                            playerCharacter: true,
+                            level: true,
                         },
                         orderBy: { firstName: 'asc' },
                     },
@@ -186,6 +192,32 @@ const gangServices = {
         catch (error) {
             console.error(error);
             throw new Error('Failed to allocate level node bonus');
+        }
+    },
+    distributeProfits: async (gangId, characterId, value) => {
+        try {
+            await prisma.$transaction(async (tx) => {
+                await tx.gang.update({
+                    where: {
+                        id: gangId,
+                    },
+                    data: {
+                        profits: { decrement: value },
+                    },
+                });
+                await tx.character.update({
+                    where: {
+                        id: characterId,
+                    },
+                    data: {
+                        profits: { increment: value },
+                    },
+                });
+            });
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to update current profits');
         }
     },
     deleteGang: async (gangId) => {
