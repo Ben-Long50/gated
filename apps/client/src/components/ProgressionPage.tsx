@@ -34,7 +34,7 @@ const ProgressionPage = () => {
   const location = useLocation();
   const parts = location.pathname.split('/');
 
-  const changeLevel = updateCharacterLevelMutation(Number(characterId));
+  const changeLevel = updateCharacterLevelMutation();
 
   const {
     filteredCharacter: character,
@@ -118,14 +118,24 @@ const ProgressionPage = () => {
             <BtnRect
               className="w-full"
               ariaLabel="Level up"
-              onClick={() => changeLevel.mutate(1)}
+              onClick={() =>
+                changeLevel.mutate({
+                  characterId: Number(characterId),
+                  levelChange: 1,
+                })
+              }
             >
               Level Up
             </BtnRect>
             <BtnRect
               className="w-full"
               ariaLabel="Level down"
-              onClick={() => changeLevel.mutate(-1)}
+              onClick={() =>
+                changeLevel.mutate({
+                  characterId: Number(characterId),
+                  levelChange: -1,
+                })
+              }
             >
               Level Down
             </BtnRect>

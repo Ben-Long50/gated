@@ -15,6 +15,7 @@ import BtnAuth from './buttons/BtnAuth';
 import StatBarContainer from './StatBarContainer';
 import StatBar from './StatBar';
 import ArrowHeader4 from './ArrowHeader4';
+import BtnRect from './buttons/BtnRect';
 
 const GangPage = () => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -23,6 +24,7 @@ const GangPage = () => {
 
   const {
     gang,
+    characters,
     gangPoints,
     usedGangPoints,
     reputationData,
@@ -32,6 +34,14 @@ const GangPage = () => {
     goonCount,
     gangLoading,
   } = useGang(Number(gangId));
+
+  const levelUpAvailable = characters.some(
+    (character) => character.level < levelData.level,
+  );
+
+  console.log(levelData.level);
+
+  console.log(levelUpAvailable);
 
   if (gangLoading) {
     return <Loading />;
@@ -117,9 +127,18 @@ const GangPage = () => {
               <BtnAuth onClick={() => navigate('distributeProfits')}>
                 Distribute Profits
               </BtnAuth>
-              <BtnAuth onClick={() => navigate('manageLevels')}>
-                Manage Character Levels
-              </BtnAuth>
+              {levelUpAvailable ? (
+                <BtnRect
+                  ariaLabel="Manage levels"
+                  onClick={() => navigate('manageLevels')}
+                >
+                  Manage Character Levels
+                </BtnRect>
+              ) : (
+                <BtnAuth onClick={() => navigate('manageLevels')}>
+                  Manage Character Levels
+                </BtnAuth>
+              )}
             </div>
           </div>
         </ThemeContainer>
