@@ -150,11 +150,14 @@ const Navbar = ({
         </h2>
       </Link>
       <div className="relative flex items-center justify-items-end gap-10">
-        <Link to="campaigns">
-          <BtnNavbar className="bg-primary">Campaigns</BtnNavbar>
+        <Link to="social/characters">
+          <BtnNavbar className="bg-primary">Social</BtnNavbar>
         </Link>
         <Link to="codex">
           <BtnNavbar className="bg-primary">Codex</BtnNavbar>
+        </Link>
+        <Link to="campaigns">
+          <BtnNavbar className="bg-primary">Campaigns</BtnNavbar>
         </Link>
         <Link to="characters?excludedNpcType=template">
           <BtnNavbar className="bg-primary">Characters</BtnNavbar>

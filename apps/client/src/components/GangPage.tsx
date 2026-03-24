@@ -16,6 +16,7 @@ import StatBarContainer from './StatBarContainer';
 import StatBar from './StatBar';
 import ArrowHeader4 from './ArrowHeader4';
 import BtnRect from './buttons/BtnRect';
+import ArrowHeader2 from './ArrowHeader2';
 
 const GangPage = () => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -63,14 +64,14 @@ const GangPage = () => {
             <div className="flex flex-col items-center gap-2 px-4">
               <h3>{`Reputation - ${reputationData.description}`}</h3>
               <ReputationBar value={reputationData.reputation} />
+              <div className="flex w-full items-center justify-between gap-8">
+                <ArrowHeader2 className="!text-accent" title="Gang Level" />
+                <h2 className="!text-accent text-4xl">{levelData.level}</h2>
+              </div>
             </div>
             <Divider />
             <div className="flex items-center justify-between">
               <ArrowHeader3 title="Gang Stats" />
-              <div className="flex items-center gap-8">
-                <ArrowHeader4 className="!text-accent" title="Gang Level" />
-                <h2 className="!text-accent">{levelData.level}</h2>
-              </div>
             </div>
             <StatBarContainer className="my-4" icon={false} size="small">
               {reputationData.requiredPoints && (

@@ -6,14 +6,16 @@ import Divider from './Divider';
 import ArrowHeader3 from './ArrowHeader3';
 import { Character } from 'src/types/character';
 import CharacterCardXSmall from './CharacterCardXSmall';
-import BtnRect from './buttons/BtnRect';
-import useUpdateCharacterLevelMutation from 'src/hooks/character hooks/useUpdateCharacterLevelMutation/useUpdateCharacterLevelMutation';
 import BtnIcon from './buttons/BtnIcon';
-import Icon from '@mdi/react';
 import { mdiMinus, mdiPlus } from '@mdi/js';
 import useDistributeProfitsMutation from 'src/hooks/gang hooks/useDistributeProfitsMutation/useDistributeProfitsMutation';
+import { CampaignContext } from 'src/contexts/CampaignContext';
+import { useContext } from 'react';
+import { AuthContext } from 'src/contexts/AuthContext';
 
 const GangProfitsModal = () => {
+  const { user } = useContext(AuthContext);
+  const { gameMaster } = useContext(CampaignContext);
   const { campaignId, gangId } = useParams();
 
   const { gang, characters } = useGang(Number(gangId));
@@ -62,7 +64,10 @@ const GangProfitsModal = () => {
               />
               <div className="flex items-center gap-8">
                 <BtnIcon
-                  active={character.profits > 0}
+                  active={
+                    character.profits > 0 &&
+                    (user?.id === character.userId || gameMaster)
+                  }
                   path={mdiMinus}
                   onClick={() => {
                     distributeProfits.mutate({
@@ -73,7 +78,10 @@ const GangProfitsModal = () => {
                 />
                 <p className="w-8 text-center text-2xl">{character.profits}</p>
                 <BtnIcon
-                  active={gang?.profits > 0}
+                  active={
+                    gang?.profits &&
+                    (user?.id === character.userId || gameMaster)
+                  }
                   path={mdiPlus}
                   onClick={() => {
                     distributeProfits.mutate({
@@ -99,7 +107,10 @@ const GangProfitsModal = () => {
               />
               <div className="flex items-center gap-8">
                 <BtnIcon
-                  active={character.profits > 0}
+                  active={
+                    character.profits > 0 &&
+                    (user?.id === character.userId || gameMaster)
+                  }
                   path={mdiMinus}
                   onClick={() => {
                     distributeProfits.mutate({
@@ -110,7 +121,10 @@ const GangProfitsModal = () => {
                 />
                 <p className="w-8 text-center text-2xl">{character.profits}</p>
                 <BtnIcon
-                  active={gang?.profits > 0}
+                  active={
+                    gang?.profits > 0 &&
+                    (user?.id === character.userId || gameMaster)
+                  }
                   path={mdiPlus}
                   onClick={() => {
                     distributeProfits.mutate({

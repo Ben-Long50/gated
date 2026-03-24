@@ -18,6 +18,7 @@ import CharacterTabRoutes from './CharacterTabRoutes';
 import CodexTabRoutes from './CodexTabRoutes';
 import RollModal from 'src/components/modals/RollModal';
 import { CampaignProvider } from 'src/contexts/CampaignContext';
+import SocialTabRoutes from './SocialTabRoutes';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -44,6 +45,7 @@ const router = createBrowserRouter(
             <Route index element={<ErrorReports />} />
           </Route>
           {AccountTabRoutes()}
+          {SocialTabRoutes()}
           {CampaignTabRoutes()}
           {CharacterTabRoutes()}
           {CodexTabRoutes()}

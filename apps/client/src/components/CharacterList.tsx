@@ -1,5 +1,6 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import CharacterCard from './CharacterCard';
+import CharacterCardAlt from './CharacterCardAlt';
 import BtnRect from './buttons/BtnRect';
 import { Link } from 'react-router-dom';
 import Loading from './Loading';
@@ -23,6 +24,7 @@ const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
   const { accentPrimary } = useContext(ThemeContext);
   const { campaignId } = useParams();
   const [searchParams] = useSearchParams();
+  const [cardType, setCardType] = useState<'large' | 'small'>('large');
 
   const characterType = searchParams.get('characterType');
   const npcTypes = searchParams.getAll('npcType');
@@ -49,7 +51,7 @@ const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
 
   const searchForm = useForm({
     defaultValues: {
-      campaign: null as Campaign | null,
+      campaignId: null as number | null,
       query: '' as string,
     },
     onSubmit: ({ value }) => {},
@@ -72,7 +74,7 @@ const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
             <ArrowHeader2 title="Character Options" />
           </div>
           {availableCampaigns?.length > 1 && (
-            <searchForm.Field name="campaign">
+            <searchForm.Field name="campaignId">
               {(field) => (
                 <InputSelectField
                   field={field}
@@ -108,6 +110,22 @@ const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
                 className="text-secondary group-hover:text-accent timing"
               />
             </button>
+            <button
+              className="text-accent bg-tertiary shadow-color group grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
+              onClick={(e) => {
+                e.preventDefault();
+                if (cardType === 'large') {
+                  setCardType('small');
+                } else if (cardType === 'small') {
+                  setCardType('large');
+                }
+              }}
+            >
+              <Icon
+                path={mdiSync}
+                className="text-secondary group-hover:text-accent timing"
+              />
+            </button>
           </div>
         </form>
       </ThemeContainer>
@@ -121,12 +139,21 @@ const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
           </Link>
         </div>
       ) : (
-        <div className="grid w-full grid-flow-row gap-10">
+        <div
+          className={`${cardType === 'large' ? 'grid-cols-1' : 'grid-cols-3'} grid w-full gap-10`}
+        >
           {characters
             ?.filter((character) => character !== undefined)
-            .map((character: Character) => (
-              <CharacterCard key={character.id} characterId={character.id} />
-            ))}
+            .map((character: Character) =>
+              cardType === 'large' ? (
+                <CharacterCard key={character.id} characterId={character.id} />
+              ) : (
+                <CharacterCardAlt
+                  key={character.id}
+                  characterId={character.id}
+                />
+              ),
+            )}
         </div>
       )}
     </div>
