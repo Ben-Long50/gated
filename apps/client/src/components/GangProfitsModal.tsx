@@ -12,6 +12,7 @@ import useDistributeProfitsMutation from 'src/hooks/gang hooks/useDistributeProf
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import { useContext } from 'react';
 import { AuthContext } from 'src/contexts/AuthContext';
+import useGangProfitsMutation from 'src/hooks/gang hooks/useGangProfitsMutation/useGangProfitsMutation';
 
 const GangProfitsModal = () => {
   const { user } = useContext(AuthContext);
@@ -21,6 +22,11 @@ const GangProfitsModal = () => {
   const { gang, characters } = useGang(Number(gangId));
 
   const distributeProfits = useDistributeProfitsMutation(
+    Number(campaignId),
+    Number(gangId),
+  );
+
+  const editGangProfits = useGangProfitsMutation(
     Number(campaignId),
     Number(gangId),
   );
@@ -43,7 +49,27 @@ const GangProfitsModal = () => {
       <h1>Distribute Gang Profits</h1>
       <div className="flex w-full items-center justify-between gap-8">
         <ArrowHeader2 title="Gang Profits" />
-        <h1 className="!text-accent">{gang?.profits}</h1>
+        <div className="flex items-center gap-8">
+          {gameMaster && (
+            <BtnIcon
+              active={gang?.profits > 0 && gameMaster}
+              path={mdiMinus}
+              onClick={() => {
+                editGangProfits.mutate(-1);
+              }}
+            />
+          )}
+          <h1 className="!text-accent w-12 text-center">{gang?.profits}</h1>
+          {gameMaster && (
+            <BtnIcon
+              active={gameMaster}
+              path={mdiPlus}
+              onClick={() => {
+                editGangProfits.mutate(1);
+              }}
+            />
+          )}
+        </div>
       </div>
 
       <div className="flex w-full flex-col gap-4">

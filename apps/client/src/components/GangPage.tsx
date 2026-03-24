@@ -14,7 +14,6 @@ import useGang from 'src/hooks/useGang';
 import BtnAuth from './buttons/BtnAuth';
 import StatBarContainer from './StatBarContainer';
 import StatBar from './StatBar';
-import ArrowHeader4 from './ArrowHeader4';
 import BtnRect from './buttons/BtnRect';
 import ArrowHeader2 from './ArrowHeader2';
 
@@ -39,10 +38,6 @@ const GangPage = () => {
   const levelUpAvailable = characters.some(
     (character) => character.level < levelData.level,
   );
-
-  console.log(levelData.level);
-
-  console.log(levelUpAvailable);
 
   if (gangLoading) {
     return <Loading />;
