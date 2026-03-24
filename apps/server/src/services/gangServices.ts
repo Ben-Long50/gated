@@ -233,6 +233,22 @@ const gangServices = {
     }
   },
 
+  editGangProfits: async (gangId: number, value: number) => {
+    try {
+      await prisma.gang.update({
+        where: {
+          id: gangId,
+        },
+        data: {
+          profits: { increment: value },
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to update current gang profits');
+    }
+  },
+
   distributeProfits: async (
     gangId: number,
     characterId: number,

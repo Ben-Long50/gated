@@ -194,6 +194,22 @@ const gangServices = {
             throw new Error('Failed to allocate level node bonus');
         }
     },
+    editGangProfits: async (gangId, value) => {
+        try {
+            await prisma.gang.update({
+                where: {
+                    id: gangId,
+                },
+                data: {
+                    profits: { increment: value },
+                },
+            });
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to update current gang profits');
+        }
+    },
     distributeProfits: async (gangId, characterId, value) => {
         try {
             await prisma.$transaction(async (tx) => {

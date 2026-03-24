@@ -8,6 +8,7 @@ router.get('/gangs/batch', authentication.authenticate, gangController.getBatchG
 router.get('/campaigns/:campaignId/gangs/:gangId', authentication.authenticate, gangController.getGangById);
 router.post('/campaigns/:campaignId/gangs', authentication.authenticate, campaignAuthentication.validateGameMaster, gangController.createGang);
 router.patch('/campaigns/:campaignId/gangs/:gangId/characters/:characterId/profits', authentication.authenticate, campaignAuthentication.validateGameMaster, gangController.distributeProfits);
+router.patch('/campaigns/:campaignId/gangs/:gangId/profits', authentication.authenticate, campaignAuthentication.validateGameMaster, gangController.editGangProfits);
 router.post('/campaigns/:campaignId/gangs/:gangId/reputation', authentication.authenticate, campaignAuthentication.validateGameMaster, gangController.allocateReputation);
 router.post('/campaigns/:campaignId/gangs/:gangId/levelNodes', authentication.authenticate, campaignAuthentication.validateGameMaster, gangController.allocateLevelNodes);
 router.delete('/campaigns/:campaignId/gangs/:gangId', authentication.authenticate, campaignAuthentication.validateGameMaster, gangController.deleteGang);

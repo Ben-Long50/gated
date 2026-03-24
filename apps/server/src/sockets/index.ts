@@ -73,6 +73,11 @@ export function setupSocketIO(io: Server) {
       );
     });
 
+    socket.on('gang', ({ gangId, campaignId }) => {
+      io.to(`campaign ${campaignId}`).emit('gang', gangId);
+      console.log(`Broadcasted gang ${gangId} to campaign ${campaignId}`);
+    });
+
     socket.on('item', ({ itemId, campaignId }) => {
       io.to(`campaign ${campaignId}`).emit('item', itemId);
       console.log(`Broadcasted item ${itemId} to campaign ${campaignId}`);

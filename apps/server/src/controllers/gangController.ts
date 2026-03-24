@@ -100,6 +100,20 @@ const gangController = {
     }
   },
 
+  editGangProfits: async (req: Request, res: Response) => {
+    try {
+      await gangServices.editGangProfits(
+        Number(req.params.gangId),
+        Number(req.body.value),
+      );
+      res
+        .status(200)
+        .json({ message: `Changed current gang profits by ${req.body.value}` });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
   distributeProfits: async (req: Request, res: Response) => {
     try {
       await gangServices.distributeProfits(
@@ -107,11 +121,9 @@ const gangController = {
         Number(req.params.characterId),
         Number(req.body.value),
       );
-      res
-        .status(200)
-        .json({
-          message: `Distributed ${req.body.value} profits to character ${req.params.characterId}`,
-        });
+      res.status(200).json({
+        message: `Distributed ${req.body.value} profits to character ${req.params.characterId}`,
+      });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }

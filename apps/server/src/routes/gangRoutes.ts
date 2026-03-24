@@ -37,6 +37,13 @@ router.patch(
   gangController.distributeProfits,
 );
 
+router.patch(
+  '/campaigns/:campaignId/gangs/:gangId/profits',
+  authentication.authenticate,
+  campaignAuthentication.validateGameMaster,
+  gangController.editGangProfits,
+);
+
 router.post(
   '/campaigns/:campaignId/gangs/:gangId/reputation',
   authentication.authenticate,
