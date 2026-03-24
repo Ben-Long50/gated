@@ -11,6 +11,8 @@ router.get(
   characterController.getCharacters,
 );
 
+router.get('/social/characters', characterController.getSocialCharacters);
+
 router.get(
   '/characters/batch',
   authentication.authenticate,

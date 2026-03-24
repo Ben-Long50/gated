@@ -96,8 +96,8 @@ model Map {
   width       Int
   height      Int
   baseColor   String
-  layerCount  Int
-  layers      Json
+  layerCount  Int?
+  layers      Json?
   locations   Location[]
   encounters  Encounter[]
   gang        Gang?       @relation(fields: [gangId], references: [id])
@@ -111,8 +111,8 @@ enum MapType {
 
 model Location {
   id          Int        @id @default(autoincrement())
-  row         Int
-  col         Int
+  row         Int?
+  col         Int?
   map         Map        @relation(fields: [mapId], references: [id], onDelete: Cascade)
   mapId       Int
   character   Character? @relation(fields: [characterId], references: [id], onDelete: Cascade)

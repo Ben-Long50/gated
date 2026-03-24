@@ -16,6 +16,15 @@ const characterController = {
             res.status(500).json({ error: error.message });
         }
     },
+    getSocialCharacters: async (_, res) => {
+        try {
+            const characters = await characterServices.getSocialCharacters();
+            res.status(200).json(characters);
+        }
+        catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
     getBatchCharacters: async (req, res) => {
         try {
             if (!req.user) {

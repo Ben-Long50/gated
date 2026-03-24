@@ -4,6 +4,7 @@ import characterController from '../controllers/characterController.js';
 import affiliationController from '../controllers/affiliationController.js';
 const router = express.Router();
 router.get('/characters', authentication.authenticate, characterController.getCharacters);
+router.get('/social/characters', characterController.getSocialCharacters);
 router.get('/characters/batch', authentication.authenticate, characterController.getBatchCharacters);
 router.get('/characters/:characterId', authentication.authenticate, characterController.getCharacterById);
 router.patch('/characters/:characterId/inventory/:inventoryId/equipment/:itemId', authentication.authenticate, characterController.toggleEquipment);

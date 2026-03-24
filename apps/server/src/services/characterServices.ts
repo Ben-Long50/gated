@@ -37,6 +37,32 @@ const characterServices = {
     }
   },
 
+  getSocialCharacters: async () => {
+    try {
+      const characters = await prisma.character.findMany({
+        orderBy: {
+          firstName: 'asc',
+        },
+        include: {
+          perks: true,
+          characterInventory: {
+            include: { items: { select: { id: true } } },
+          },
+          characterLevelBonuses: { include: { perks: true } },
+        },
+      });
+
+      if (characters.length === 0) {
+        throw new Error('No public characters exist');
+      }
+
+      return characters;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to fetch social characters');
+    }
+  },
+
   getBatchCharacters: async (characterIds: number[]) => {
     try {
       const characters = await prisma.character.findMany({
