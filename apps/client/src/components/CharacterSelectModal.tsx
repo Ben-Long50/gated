@@ -1,4 +1,4 @@
-import { useOutletContext, useParams } from 'react-router-dom';
+import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import BtnRect from './buttons/BtnRect';
 import Modal from './modals/Modal';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
@@ -11,7 +11,8 @@ import { Fragment } from 'react/jsx-runtime';
 import Divider from './Divider';
 
 const CharacterSelectModal = () => {
-  const { campaignId } = useParams();
+  const { campaignId, gangId } = useParams();
+  const navigate = useNavigate();
 
   const { form } = useOutletContext();
 
@@ -30,7 +31,12 @@ const CharacterSelectModal = () => {
   return (
     <Modal
       button={
-        <BtnRect ariaLabel="Select characters">Confirm Selection</BtnRect>
+        <BtnRect
+          ariaLabel="Select characters"
+          onClick={gangId ? () => form.handleSubmit() : () => navigate('..')}
+        >
+          Confirm Selection
+        </BtnRect>
       }
     >
       <h1>Select Gang Characters</h1>
@@ -55,44 +61,40 @@ const CharacterSelectModal = () => {
               expanding={false}
               active={false}
             />
-            <form.Field name="leaders">
+            <form.Field name="leaderIds">
               {(field) => (
                 <input
                   className="size-6 justify-self-center"
                   type="checkbox"
                   checked={field.state.value.some(
-                    (c: Character) => character.id === c.id,
+                    (id: number) => character.id === id,
                   )}
                   onChange={() => {
-                    field.handleChange((prev: Character[]) => {
-                      if (prev.some((c: Character) => character.id === c.id)) {
-                        return prev.filter(
-                          (c: Character) => character.id !== c.id,
-                        );
+                    field.handleChange((prev: number[]) => {
+                      if (prev.some((id: number) => character.id === id)) {
+                        return prev.filter((id: number) => character.id !== id);
                       } else {
-                        return [...prev, character];
+                        return [...prev, character.id];
                       }
                     });
                   }}
                 />
               )}
             </form.Field>
-            <form.Field name="characters">
+            <form.Field name="characterIds">
               {(field) => (
                 <input
                   className="size-6 justify-self-center"
                   type="checkbox"
                   checked={field.state.value.some(
-                    (c: Character) => character.id === c.id,
+                    (id: number) => character.id === id,
                   )}
                   onChange={() => {
-                    field.handleChange((prev: Character[]) => {
-                      if (prev.some((c: Character) => character.id === c.id)) {
-                        return prev.filter(
-                          (c: Character) => character.id !== c.id,
-                        );
+                    field.handleChange((prev: number[]) => {
+                      if (prev.some((id: number) => character.id === id)) {
+                        return prev.filter((id: number) => character.id !== id);
                       } else {
-                        return [...prev, character];
+                        return [...prev, character.id];
                       }
                     });
                   }}

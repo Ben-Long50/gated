@@ -23,9 +23,12 @@ import CombatIcon from '../icons/CombatIcon';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import PassIcon from '../icons/PassIcon';
 import { Gang } from 'src/types/gang';
+import CharacterPictureRound from '../CharacterPictureRound';
+import constructName from 'src/utils/constructName';
 
 const CampaignLinks = () => {
   const { user } = useContext(AuthContext);
+  const { campaigns } = useContext(CampaignContext);
   const { layoutSize } = useContext(LayoutContext);
   const { gameMaster } = useContext(CampaignContext);
   const { campaignId } = useParams();
@@ -43,26 +46,24 @@ const CampaignLinks = () => {
     <>
       {!campaignId ? (
         <>
-          <LinkListSidebar
+          <LinkSidebar
             icon={
               <CampaignIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
             }
-            title="Campaigns"
-          >
-            <SubLinkSidebar
-              title="Player campaigns"
-              path={`campaigns?campaignType=player`}
-            />
-            <SubLinkSidebar
-              title="Pending campaigns"
-              path={`campaigns?campaignType=pending`}
-            />
-            <SubLinkSidebar
-              title="Owner campaigns"
-              path={`campaigns?campaignType=owner`}
-            />
-            <SubLinkSidebar title="Create campaign" path={`campaigns/create`} />
-          </LinkListSidebar>
+            title="Create Campaign"
+            path="campaigns/create"
+          ></LinkSidebar>
+          {campaigns.map((campaign) => {
+            const characterName = constructName(campaign);
+
+            return (
+              <LinkSidebar
+                title={characterName}
+                icon={<CharacterPictureRound character={campaign} />}
+                path={`campaigns/${campaign.id}`}
+              />
+            );
+          })}
         </>
       ) : (
         <>

@@ -22,32 +22,15 @@ import ArrowHeader3 from './ArrowHeader3';
 const GangForm = () => {
   const { accentPrimary } = useContext(ThemeContext);
   const { campaignId, gangId } = useParams();
-  const [formMessage, setFormMessage] = useState('');
-  const [deleteMode, setDeleteMode] = useState(false);
   const navigate = useNavigate();
 
   const { data: campaign, isLoading: campaignLoading } = useCampaignQuery(
     Number(campaignId),
   );
 
-  const createGang = useCreateGangMutation(
-    Number(campaignId),
-    setFormMessage,
-    Number(gangId),
-  );
+  const createGang = useCreateGangMutation(Number(campaignId), Number(gangId));
 
-  const { data: gang, isLoading: gangLoading } = useGangQuery(
-    Number(campaignId),
-    Number(gangId),
-  );
-
-  const handleReset = async () => {
-    gangForm.reset();
-  };
-
-  const handleDelete = () => {
-    return;
-  };
+  const { data: gang, isLoading: gangLoading } = useGangQuery(Number(gangId));
 
   const gangForm = useForm({
     defaultValues: {
@@ -62,8 +45,10 @@ const GangForm = () => {
       factionId: gang?.factionId || null,
       publicId: gang?.picture?.publicId || '',
       position: gang?.picture?.position || { x: 50, y: 50 },
-      leaders: gang?.leaders || ([] as Character[]),
-      characters: gang?.characters || ([] as Character[]),
+      leaderIds:
+        gang?.leaders.map((character) => character.id) || ([] as number[]),
+      characterIds:
+        gang?.characters.map((character) => character.id) || ([] as number[]),
     },
 
     onSubmit: async ({ value }) => {
@@ -77,14 +62,8 @@ const GangForm = () => {
         ...(value.factionId != null && {
           factionId: value.factionId.id,
         }),
-        ...(value.leaders.length > 0 && {
-          leaderIds: value.leaders.map((leader: Character) => leader.id),
-        }),
-        ...(value.characters.length > 0 && {
-          characterIds: value.characters.map(
-            (character: Character) => character.id,
-          ),
-        }),
+        leaderIds: value.leaderIds,
+        characterIds: value.characterIds,
       };
 
       const formData = new FormData();
@@ -210,13 +189,13 @@ const GangForm = () => {
             <ArrowHeader3 title="Leaders" />
             <Divider />
             <div className="flex w-full flex-col gap-4 sm:gap-8">
-              <gangForm.Subscribe selector={(state) => state.values.leaders}>
+              <gangForm.Subscribe selector={(state) => state.values.leaderIds}>
                 {(leaders) =>
                   leaders.length > 0 ? (
-                    leaders.map((character: Character) => (
+                    leaders.map((id: number) => (
                       <CharacterCardSmall
                         characterList={true}
-                        characterId={character.id}
+                        characterId={id}
                         expanding={false}
                         active={false}
                       />
@@ -232,13 +211,15 @@ const GangForm = () => {
             <ArrowHeader3 title="Members" />
             <Divider />
             <div className="flex w-full flex-col gap-4 sm:gap-8">
-              <gangForm.Subscribe selector={(state) => state.values.characters}>
+              <gangForm.Subscribe
+                selector={(state) => state.values.characterIds}
+              >
                 {(characters) =>
                   characters.length > 0 ? (
-                    characters.map((character: Character) => (
+                    characters.map((id: number) => (
                       <CharacterCardSmall
                         characterList={true}
-                        characterId={character.id}
+                        characterId={id}
                         expanding={false}
                         active={false}
                       />

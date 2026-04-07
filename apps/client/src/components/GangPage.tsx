@@ -16,10 +16,13 @@ import StatBarContainer from './StatBarContainer';
 import StatBar from './StatBar';
 import BtnRect from './buttons/BtnRect';
 import ArrowHeader2 from './ArrowHeader2';
+import { useForm } from '@tanstack/react-form';
+import useCreateGangMutation from 'src/hooks/gang hooks/useCreateGangMutation/useCreateGangMutation';
+import useUpdateGangCharactersMutation from 'src/hooks/gang hooks/updateGangCharactersMutation/useUpdateGangCharactersMutation';
 
 const GangPage = () => {
   const { accentPrimary } = useContext(ThemeContext);
-  const { gangId } = useParams();
+  const { campaignId, gangId } = useParams();
   const navigate = useNavigate();
 
   const {
@@ -38,6 +41,24 @@ const GangPage = () => {
   const levelUpAvailable = characters.some(
     (character) => character.level < levelData.level,
   );
+
+  const createGang = useUpdateGangCharactersMutation(
+    Number(campaignId),
+    Number(gangId),
+  );
+
+  const gangCharactersForm = useForm({
+    defaultValues: {
+      leaderIds:
+        gang?.leaders.map((character) => character.id) || ([] as number[]),
+      characterIds:
+        gang?.characters.map((character) => character.id) || ([] as number[]),
+    },
+
+    onSubmit: async ({ value }) => {
+      await createGang.mutate(value);
+    },
+  });
 
   if (gangLoading) {
     return <Loading />;
@@ -135,6 +156,9 @@ const GangPage = () => {
                   Manage Character Levels
                 </BtnAuth>
               )}
+              <BtnAuth onClick={() => navigate('manageGangCharacters')}>
+                Manage Gang Characters
+              </BtnAuth>
             </div>
           </div>
         </ThemeContainer>
@@ -168,7 +192,7 @@ const GangPage = () => {
           </div>
         </div>
       </div>
-      <Outlet context={{ gang }} />
+      <Outlet context={{ gang, form: gangCharactersForm }} />
     </>
   );
 };

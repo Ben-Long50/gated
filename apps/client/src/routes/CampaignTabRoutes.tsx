@@ -87,6 +87,10 @@ const CampaignTabRoutes = () => {
             <Route path="allocateNodes" element={<LevelNodeModal />} />
             <Route path="manageLevels" element={<CharacterLevelsModal />} />
             <Route path="distributeProfits" element={<GangProfitsModal />} />
+            <Route
+              path="manageGangCharacters"
+              element={<CharacterSelectModal />}
+            />
           </Route>
           <Route path="create" element={<GangForm />}>
             <Route path="characterSelect" element={<CharacterSelectModal />} />

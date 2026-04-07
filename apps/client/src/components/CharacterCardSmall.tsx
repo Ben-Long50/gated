@@ -15,6 +15,8 @@ import CharacterRadialMenu from './radialMenus/characterRadialMenu/CharacterRadi
 import useRadialMenuStore from 'src/stores/radialMenuStore';
 import PassIcon from './icons/PassIcon';
 import CrownIcon from './icons/CrownIcon';
+import Icon from '@mdi/react';
+import { mdiCrown } from '@mdi/js';
 
 const CharacterCardSmall = ({
   characterList,
@@ -97,16 +99,15 @@ const CharacterCardSmall = ({
         />
         {character?.gang && (
           <div className="flex items-center gap-2">
-            <PassIcon className="text-accent size-6" />
-            <p className="!text-accent whitespace-nowrap">
+            <p className="!text-accent whitespace-nowrap text-base">
               {character?.gang.name}
             </p>
           </div>
         )}
         {character?.controlledGang && (
           <div className="flex items-center gap-2">
-            <CrownIcon className="text-accent size-6" />
-            <p className="!text-accent whitespace-nowrap">
+            <Icon path={mdiCrown} className="text-accent size-6" />
+            <p className="!text-accent whitespace-nowrap text-base">
               {character?.controlledGang.name}
             </p>
           </div>
