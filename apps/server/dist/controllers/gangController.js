@@ -61,6 +61,23 @@ const gangController = {
             }
         },
     ],
+    updateGangCharacters: async (req, res) => {
+        try {
+            if (!req.user) {
+                res.status(401).json({
+                    error: 'You do not have the required permissions to update gang characters',
+                });
+                return;
+            }
+            await gangServices.updateGangCharacters(Number(req.params.gangId), req.body);
+            res.status(200).json({ message: 'Successfully updated gang characters' });
+        }
+        catch (error) {
+            if (error instanceof Error) {
+                res.status(500).json({ error: error.message });
+            }
+        }
+    },
     allocateReputation: async (req, res) => {
         try {
             await gangServices.allocateReputation(Number(req.params.gangId), req.body.sessionId, req.body.bonus);

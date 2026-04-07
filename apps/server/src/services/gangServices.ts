@@ -177,6 +177,39 @@ const gangServices = {
     }
   },
 
+  updateGangCharacters: async (
+    gangId: number,
+    value: {
+      leaderIds: number[];
+      characterIds: number[];
+    },
+  ) => {
+    const data = {
+      leaders: {
+        set: value.leaderIds.map((leaderId) => ({ id: leaderId })),
+      },
+      characters: {
+        set: value.characterIds.map((characterId) => ({
+          id: characterId,
+        })),
+      },
+    };
+
+    try {
+      const gang = await prisma.gang.update({
+        where: { id: gangId },
+        data: {
+          ...data,
+        },
+      });
+
+      return gang;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to create or update gang');
+    }
+  },
+
   allocateReputation: async (
     gangId: number,
     sessionId: number,

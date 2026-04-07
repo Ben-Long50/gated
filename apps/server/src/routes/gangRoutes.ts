@@ -31,6 +31,13 @@ router.post(
 );
 
 router.patch(
+  '/campaigns/:campaignId/gangs/:gangId/characters',
+  authentication.authenticate,
+  campaignAuthentication.validateGameMaster,
+  gangController.updateGangCharacters,
+);
+
+router.patch(
   '/campaigns/:campaignId/gangs/:gangId/characters/:characterId/profits',
   authentication.authenticate,
   campaignAuthentication.validateGameMaster,
