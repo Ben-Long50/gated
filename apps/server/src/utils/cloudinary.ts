@@ -25,8 +25,8 @@ export const uploadToCloudinary = async (
         folder: '/gated',
       };
 
-      if (req.body.publicId) {
-        await deleteFromCloudinary(JSON.parse(req.body.publicId));
+      if (req.body.picture.publicId) {
+        await deleteFromCloudinary(JSON.parse(req.body.picture.publicId));
       }
 
       const result = await cloudinary.uploader.upload(
@@ -38,7 +38,7 @@ export const uploadToCloudinary = async (
         if (error) console.error('Error deleting temp file:', error);
       });
 
-      if (req.body.position) {
+      if (req.body.picture.position) {
         req.body.picture = JSON.stringify({
           imageUrl: result.secure_url,
           publicId: result.public_id,
@@ -62,7 +62,7 @@ export const uploadToCloudinary = async (
   if (!req.file && req.body.picture) {
     const pictureInfo = JSON.parse(req.body.picture);
 
-    if (req.body.position) {
+    if (req.body.picture.position) {
       req.body.picture = JSON.stringify({
         imageUrl: pictureInfo.imageUrl,
         publicId: pictureInfo.publicId,

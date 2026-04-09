@@ -15,15 +15,15 @@ export const uploadToCloudinary = async (req, res, next) => {
                 quality: 'auto:eco',
                 folder: '/gated',
             };
-            if (req.body.publicId) {
-                await deleteFromCloudinary(JSON.parse(req.body.publicId));
+            if (req.body.picture.publicId) {
+                await deleteFromCloudinary(JSON.parse(req.body.picture.publicId));
             }
             const result = await cloudinary.uploader.upload(req.file.path, uploadOptions);
             fs.unlink(req.file.path, (error) => {
                 if (error)
                     console.error('Error deleting temp file:', error);
             });
-            if (req.body.position) {
+            if (req.body.picture.position) {
                 req.body.picture = JSON.stringify({
                     imageUrl: result.secure_url,
                     publicId: result.public_id,
@@ -47,7 +47,7 @@ export const uploadToCloudinary = async (req, res, next) => {
     }
     if (!req.file && req.body.picture) {
         const pictureInfo = JSON.parse(req.body.picture);
-        if (req.body.position) {
+        if (req.body.picture.position) {
             req.body.picture = JSON.stringify({
                 imageUrl: pictureInfo.imageUrl,
                 publicId: pictureInfo.publicId,

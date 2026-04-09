@@ -26,6 +26,7 @@ import patchNoteRouter from './routes/patchNoteRoutes.js';
 import errorRouter from './routes/errorRoutes.js';
 import encounterRouter from './routes/encounterRoutes.js';
 import characterStatRouter from './routes/characterStatRoutes.js';
+import propertyRouter from './routes/propertyRoutes.js';
 import './passport/passport.js';
 import { NextFunction } from 'express-serve-static-core';
 
@@ -82,6 +83,7 @@ app.use('/', patchNoteRouter);
 app.use('/', errorRouter);
 app.use('/', encounterRouter);
 app.use('/', characterStatRouter);
+app.use('/', propertyRouter);
 
 // catch 404 and forward to error handler
 app.use((_req: Request, _res: Response, next) => {

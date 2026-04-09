@@ -304,6 +304,7 @@ model Property {
   picture        Json?
   description    String
   gpPrice        Int
+  type           String     @default("property")
   gang           Gang?      @relation(fields: [gangId], references: [id])
   gangId         Int?
   baseProperty   Property?  @relation("copyProperty", fields: [basePropertyId], references: [id])
