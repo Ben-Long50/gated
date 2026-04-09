@@ -13,6 +13,7 @@ import { CampaignContext } from 'src/contexts/CampaignContext';
 import DieIcon from 'src/components/icons/DieIcon';
 import RollModal from 'src/components/modals/RollModal';
 import CharacterLinks from 'src/components/sidebars/CharacterLinks';
+import { ToastContainer } from 'react-toastify';
 
 const MainLayout = () => {
   const { theme, accentPrimary } = useContext(ThemeContext);
@@ -82,6 +83,16 @@ const MainLayout = () => {
           </button>
         )}
       </div>
+      <ToastContainer
+        position="bottom-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={true}
+        rtl={false}
+        pauseOnFocusLoss
+        theme="dark"
+      />
     </div>
   );
 };

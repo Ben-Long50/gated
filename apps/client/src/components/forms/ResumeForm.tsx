@@ -1,14 +1,14 @@
-import FormLayout from '../layouts/FormLayout';
+import FormLayout from '../../layouts/FormLayout';
 import { useParams } from 'react-router-dom';
 import { useForm } from '@tanstack/react-form';
-import BtnRect from './buttons/BtnRect';
+import BtnRect from '../buttons/BtnRect';
 import { useContext, useState } from 'react';
-import { AuthContext } from '../contexts/AuthContext';
-import Loading from './Loading';
-import LexicalEditor from './lexical/LexicalEditor';
-import useCharacterQuery from '../hooks/useCharacterQuery/useCharacterQuery';
-import useUpdateCharacterMutation from '../hooks/useCharacterUpdateMutation/useCharacterUpdateMutation';
-import ArrowHeader2 from './ArrowHeader2';
+import { AuthContext } from '../../contexts/AuthContext';
+import Loading from '../Loading';
+import LexicalEditor from '../lexical/LexicalEditor';
+import useCharacterQuery from '../../hooks/useCharacterQuery/useCharacterQuery';
+import useUpdateCharacterMutation from '../../hooks/useCharacterUpdateMutation/useCharacterUpdateMutation';
+import ArrowHeader2 from '../ArrowHeader2';
 
 const ResumeForm = () => {
   const [formMessage, setFormMessage] = useState('');

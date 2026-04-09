@@ -1,23 +1,23 @@
 import { useContext, useState } from 'react';
-import InputField from './InputField';
-import BtnRect from './buttons/BtnRect';
-import AttributeCard from './AttributeCard';
-import TextAreaField from './TextAreaField';
-import { AuthContext } from '../contexts/AuthContext';
-import useCreatePerkMutation from '../hooks/useCreatePerkMutation/useCreatePerkMutation';
+import InputField from '../InputField';
+import BtnRect from '../buttons/BtnRect';
+import AttributeCard from '../AttributeCard';
+import TextAreaField from '../TextAreaField';
+import { AuthContext } from '../../contexts/AuthContext';
+import useCreatePerkMutation from '../../hooks/useCreatePerkMutation/useCreatePerkMutation';
 import { useForm } from '@tanstack/react-form';
-import useAttributeTree from '../hooks/useAttributeTree';
-import FormLayout from '../layouts/FormLayout';
+import useAttributeTree from '../../hooks/useAttributeTree';
+import FormLayout from '../../layouts/FormLayout';
 import { useLocation, useParams } from 'react-router-dom';
-import Loading from './Loading';
-import useDeletePerkMutation from '../hooks/useDeletePerkMutation/useDeletePerkMutation';
-import usePerks from '../hooks/usePerks';
+import Loading from '../Loading';
+import useDeletePerkMutation from '../../hooks/useDeletePerkMutation/useDeletePerkMutation';
+import usePerks from '../../hooks/usePerks';
 import { Perk } from 'src/types/perk';
-import ModifierField from './formFields/ModifierField';
-import Divider from './Divider';
-import ArrowHeader2 from './ArrowHeader2';
+import ModifierField from '../formFields/ModifierField';
+import Divider from '../Divider';
+import ArrowHeader2 from '../ArrowHeader2';
 import { capitalCase } from 'change-case';
-import AttributeField from './formFields/AttributeField';
+import AttributeField from '../formFields/AttributeField';
 
 const PerkForm = () => {
   const [formMessage, setFormMessage] = useState('');

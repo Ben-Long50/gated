@@ -1,18 +1,18 @@
 import { useForm } from '@tanstack/react-form';
-import InputField from './InputField';
+import InputField from '../InputField';
 import { useNavigate, useParams } from 'react-router-dom';
-import TextAreaField from './TextAreaField';
+import TextAreaField from '../TextAreaField';
 import { capitalCase } from 'change-case';
 import { mdiArrowULeftBottom, mdiCircle } from '@mdi/js';
 import Icon from '@mdi/react';
-import BtnRect from './buttons/BtnRect';
-import BtnIcon from './buttons/BtnIcon';
-import Modal from './modals/Modal';
+import BtnRect from '../buttons/BtnRect';
+import BtnIcon from '../buttons/BtnIcon';
+import Modal from '../modals/Modal';
 import useCreateEventMutation from 'src/hooks/useCreateEventMutation/useCreateEventMutation';
 import { useContext, useRef, useState } from 'react';
 import { AuthContext } from 'src/contexts/AuthContext';
 import useCharacters from 'src/hooks/useCharacters';
-import TimeField from './formFields/TimeField';
+import TimeField from '../formFields/TimeField';
 import useCharactersQuery from 'src/hooks/useCharactersQuery/useCharactersQuery';
 
 const EventForm = () => {

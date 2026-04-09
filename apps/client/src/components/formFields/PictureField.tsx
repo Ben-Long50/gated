@@ -34,7 +34,7 @@ const PictureField = ({
     const selectedFile = e.target.files[0];
 
     if (selectedFile) {
-      form.setFieldValue('picture', selectedFile);
+      form.setFieldValue('pictureFile', selectedFile);
 
       const fileUrl = URL.createObjectURL(selectedFile);
       setImagePreview(fileUrl);
@@ -68,7 +68,7 @@ const PictureField = ({
               />
             </label>
           ) : (
-            <form.Subscribe selector={(state) => state.values.position}>
+            <form.Subscribe selector={(state) => state.values.picture.position}>
               {(position) => (
                 <div
                   className="bg-secondary h-full w-full overflow-hidden bg-black"
@@ -133,7 +133,7 @@ const PictureField = ({
           </button>
         </div>
       </div>
-      <form.Field name="position.y">
+      <form.Field name="picture.position.y">
         {(field) => (
           <label className="flex flex-col gap-4" htmlFor="position">
             <div className="flex justify-between">
@@ -145,7 +145,7 @@ const PictureField = ({
             </div>
             <input
               id="position"
-              name="position.y"
+              name="picture.position.y"
               className="w-full"
               onChange={(e) => field.handleChange(Number(e.target.value))}
               value={field.state.value}

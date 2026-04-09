@@ -1,22 +1,22 @@
 import { useForm, ValidationError } from '@tanstack/react-form';
 import { useContext, useState } from 'react';
-import { AuthContext } from '../contexts/AuthContext';
-import BtnRect from './buttons/BtnRect';
-import InputField from './InputField';
-import Loading from './Loading';
-import FormLayout from '../layouts/FormLayout';
+import { AuthContext } from '../../contexts/AuthContext';
+import BtnRect from '../buttons/BtnRect';
+import InputField from '../InputField';
+import Loading from '../Loading';
+import FormLayout from '../../layouts/FormLayout';
 import { useParams } from 'react-router-dom';
-import LexicalEditor from './lexical/LexicalEditor';
+import LexicalEditor from '../lexical/LexicalEditor';
 import { mdiClose } from '@mdi/js';
 import Icon from '@mdi/react';
-import ArrowHeader2 from './ArrowHeader2';
-import Divider from './Divider';
+import ArrowHeader2 from '../ArrowHeader2';
+import Divider from '../Divider';
 import { Character } from 'src/types/character';
-import useCreateSessionMutation from '../hooks/useCreateSessionMutation/useCreateSessionMutation';
-import useCampaignQuery from '../hooks/useCampaignQuery/useCampaignQuery';
-import InputSelectField from './InputSelectField';
-import useSessionQuery from '../hooks/useSessionQuery/useSessionQuery';
-import PictureField from './formFields/PictureField';
+import useCreateSessionMutation from '../../hooks/useCreateSessionMutation/useCreateSessionMutation';
+import useCampaignQuery from '../../hooks/useCampaignQuery/useCampaignQuery';
+import InputSelectField from '../InputSelectField';
+import useSessionQuery from '../../hooks/useSessionQuery/useSessionQuery';
+import PictureField from '../formFields/PictureField';
 import useCampaignCharactersQuery from 'src/hooks/useCampaignCharactersQuery/useCampaignCharactersQuery';
 
 const SessionForm = ({ title, mode }: { title: string; mode?: string }) => {

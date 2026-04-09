@@ -5,31 +5,31 @@ import { AuthContext } from 'src/contexts/AuthContext';
 import useItemQuery from 'src/hooks/useItemQuery/useItemQuery';
 import FormLayout from 'src/layouts/FormLayout';
 import { Keyword, KeywordReference } from 'src/types/keyword';
-import TextAreaField from './TextAreaField';
-import PictureField from './formFields/PictureField';
-import Loading from './Loading';
-import InputField from './InputField';
-import ArrowHeader2 from './ArrowHeader2';
-import Divider from './Divider';
+import TextAreaField from '../TextAreaField';
+import PictureField from '../formFields/PictureField';
+import Loading from '../Loading';
+import InputField from '../InputField';
+import ArrowHeader2 from '../ArrowHeader2';
+import Divider from '../Divider';
 import Icon from '@mdi/react';
 import { mdiMinus, mdiPlus, mdiStar, mdiTriangleDown } from '@mdi/js';
-import ArrowHeader3 from './ArrowHeader3';
-import BtnRect from './buttons/BtnRect';
+import ArrowHeader3 from '../ArrowHeader3';
+import BtnRect from '../buttons/BtnRect';
 import useModifyItemMutation from 'src/hooks/useModifyItemMutation/useModifyItemMutation';
 import useDeleteItemMutation from 'src/hooks/useDeleteItemMutation/useDeleteItemMutation';
 import {
   extractItemListIds,
   extractKeywordListIds,
 } from 'src/utils/extractIds';
-import KeywordLinkField from './formFields/KeywordLinkField';
-import KeywordList from './KeywordList';
+import KeywordLinkField from '../formFields/KeywordLinkField';
+import KeywordList from '../KeywordList';
 import useCharacterQuery from 'src/hooks/useCharacterQuery/useCharacterQuery';
-import BtnIcon from './buttons/BtnIcon';
+import BtnIcon from '../buttons/BtnIcon';
 import { capitalCase } from 'change-case';
-import upgradePointMap from '../hooks/upgradePointMap';
+import upgradePointMap from '../../hooks/upgradePointMap';
 import useUpgradePoints from 'src/hooks/useUpgradePoints';
-import ExpandingList from './ExpandingList';
-import KeywordCard from './KeywordCard';
+import ExpandingList from '../ExpandingList';
+import KeywordCard from '../KeywordCard';
 
 const ItemUpgradeForm = () => {
   const [formMessage, setFormMessage] = useState('');

@@ -7,7 +7,7 @@ import Loading from './Loading';
 import useNotesQuery from '../hooks/useNotesQuery/useNotesQuery';
 import useCharacterQuery from '../hooks/useCharacterQuery/useCharacterQuery';
 import ArrowHeader3 from './ArrowHeader3';
-import NotesForm from './NotesForm';
+import NotesForm from './forms/NotesForm';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import CharacterPictureRound from './CharacterPictureRound';
 

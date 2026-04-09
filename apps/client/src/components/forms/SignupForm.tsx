@@ -1,14 +1,14 @@
 import { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import InputField from './InputField';
-import BtnRect from './buttons/BtnRect';
-import { AuthContext } from '../contexts/AuthContext';
-import { ThemeContext } from '../contexts/ThemeContext';
-import ThemeContainer from './ThemeContainer';
-import useSignupMutation from '../hooks/useSignupMutation/useSignupMutation';
+import InputField from '../InputField';
+import BtnRect from '../buttons/BtnRect';
+import { AuthContext } from '../../contexts/AuthContext';
+import { ThemeContext } from '../../contexts/ThemeContext';
+import ThemeContainer from '../ThemeContainer';
+import useSignupMutation from '../../hooks/useSignupMutation/useSignupMutation';
 import { useForm } from '@tanstack/react-form';
-import Loading from './Loading';
-import ArrowHeader1 from './ArrowHeader1';
+import Loading from '../Loading';
+import ArrowHeader1 from '../ArrowHeader1';
 
 const SignupForm = () => {
   const [errors, setErrors] = useState([]);

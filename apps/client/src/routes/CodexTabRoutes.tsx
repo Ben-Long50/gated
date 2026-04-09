@@ -1,26 +1,25 @@
 import { Route } from 'react-router-dom';
-import ActionForm from 'src/components/ActionForm';
+import ActionForm from 'src/components/forms/ActionForm';
 import Actions from 'src/components/Actions';
-import BookEntry from 'src/components/BookEntry';
-import BookEntryForm from 'src/components/BookEntryForm';
-import BookManage from 'src/components/BookManage';
 import CodexSearch from 'src/components/CodexSearch';
-import ConditionForm from 'src/components/ConditionForm';
+import ConditionForm from 'src/components/forms/ConditionForm';
 import Conditions from 'src/components/Conditions';
 import ItemLinkModal from 'src/components/modals/ItemLinkModal';
-import ItemForm from 'src/components/ItemForm';
+import ItemForm from 'src/components/forms/ItemForm';
 import Items from 'src/components/Items';
-import KeywordForm from 'src/components/KeywordForm';
+import KeywordForm from 'src/components/forms/KeywordForm';
 import Keywords from 'src/components/Keywords';
 import KeywordLinkModal from 'src/components/modals/KeywordLinkModal';
 import ModifierModal from 'src/components/modals/ModifierModal';
 import PatchNotes from 'src/components/PatchNotes';
-import PatchNoteForm from 'src/components/PatchNotesForm';
-import PerkForm from 'src/components/PerkForm';
+import PatchNoteForm from 'src/components/forms/PatchNotesForm';
+import PerkForm from 'src/components/forms/PerkForm';
 import Perks from 'src/components/Perks';
 import ActionLinkModal from 'src/components/modals/ActionLinkModal';
 import DescriptionModal from 'src/components/modals/DescriptionModal';
 import ItemPage from 'src/components/ItemPage';
+import Properties from 'src/components/Properties';
+import PropertyForm from 'src/components/forms/PropertyForm';
 
 const CodexTabRoutes = () => {
   return (
@@ -31,12 +30,6 @@ const CodexTabRoutes = () => {
       <Route path="patchNotes">
         <Route path="create" element={<PatchNoteForm />} />
         <Route path=":patchNoteId/update" element={<PatchNoteForm />} />
-      </Route>
-      <Route path="book">
-        <Route path=":bookEntryId" element={<BookEntry />} />
-        <Route path=":bookEntryId/update" element={<BookEntryForm />} />
-        <Route path="manage" element={<BookManage />} />
-        <Route path="create" element={<BookEntryForm />} />
       </Route>
       <Route path="items">
         <Route path=":category">
@@ -65,6 +58,14 @@ const CodexTabRoutes = () => {
             <Route path="actions" element={<ActionLinkModal />} />
           </Route>
         </Route>
+      </Route>
+      <Route path="properties">
+        <Route index element={<Properties key="properties" />} />
+        <Route path="create" element={<PropertyForm key="create perk" />} />
+        <Route
+          path=":propertyId/update"
+          element={<PropertyForm key="update perk" />}
+        />
       </Route>
       <Route path="perks">
         <Route index element={<Perks key="perks" />} />

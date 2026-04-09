@@ -1,13 +1,13 @@
 import { useForm } from '@tanstack/react-form';
 import { useContext, useState } from 'react';
-import { AuthContext } from '../contexts/AuthContext';
-import BtnRect from './buttons/BtnRect';
-import Loading from './Loading';
-import FormLayout from '../layouts/FormLayout';
+import { AuthContext } from '../../contexts/AuthContext';
+import BtnRect from '../buttons/BtnRect';
+import Loading from '../Loading';
+import FormLayout from '../../layouts/FormLayout';
 import { useParams } from 'react-router-dom';
-import LexicalEditor from './lexical/LexicalEditor';
-import useNotesQuery from '../hooks/useNotesQuery/useNotesQuery';
-import useCreateNotesMutation from '../hooks/useCreateNotesMutation/useCreateNotesMutation';
+import LexicalEditor from '../lexical/LexicalEditor';
+import useNotesQuery from '../../hooks/useNotesQuery/useNotesQuery';
+import useCreateNotesMutation from '../../hooks/useCreateNotesMutation/useCreateNotesMutation';
 import { Notes } from 'src/types/campaign';
 
 const NotesForm = ({

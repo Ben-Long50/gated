@@ -21,6 +21,7 @@ import ModificationIcon from '../icons/ModificationIcon';
 import DroneIcon from '../icons/DroneIcon';
 import PotionIcon from '../icons/PotionIcon';
 import { capitalCase } from 'change-case';
+import PropertyIcon from '../icons/PropertyIcon';
 
 const CodexLinks = () => {
   const { user } = useContext(AuthContext);
@@ -40,37 +41,6 @@ const CodexLinks = () => {
         }
         path="/glam/codex/search"
       />
-      {/* <LinkListSidebar
-        icon={
-          <BookIcon className="group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2" />
-        }
-        title="The Book"
-      >
-        {bookSections?.map((section) => {
-          return (
-            <LinkSublistSidebar
-              key={section.id}
-              title={capitalCase(section.title)}
-            >
-              {section.entries?.map((entry) => {
-                return (
-                  <SubLinkSidebar
-                    key={entry.id}
-                    title={capitalCase(entry.title)}
-                    path={`codex/book/${entry.id}`}
-                  />
-                );
-              })}
-            </LinkSublistSidebar>
-          );
-        })}
-        {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
-          <SubLinkSidebar title="Manage Book" path="codex/book/manage" />
-        )}
-        {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
-          <SubLinkSidebar title="Create Entry" path="codex/book/create" />
-        )}
-      </LinkListSidebar> */}
       <LinkListSidebar
         icon={
           <WeaponIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
@@ -237,6 +207,22 @@ const CodexLinks = () => {
             <SubLinkSidebar
               title="Create a New Consumable"
               path="codex/items/consumables/create"
+            />
+          </>
+        )}
+      </LinkListSidebar>
+      <LinkListSidebar
+        icon={
+          <PropertyIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+        }
+        title="Properties"
+      >
+        <SubLinkSidebar title="All Properties" path="codex/properties" />
+        {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
+          <>
+            <SubLinkSidebar
+              title="Create a New Property"
+              path="codex/properties/create"
             />
           </>
         )}

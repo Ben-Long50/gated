@@ -1,28 +1,31 @@
 import { useForm } from '@tanstack/react-form';
 import { useContext, useState } from 'react';
-import { AuthContext } from '../contexts/AuthContext';
-import BtnRect from './buttons/BtnRect';
-import InputField from './InputField';
-import InputSelectField from './InputSelectField';
-import TextAreaField from './TextAreaField';
-import Loading from './Loading';
-import FormLayout from '../layouts/FormLayout';
+import { AuthContext } from '../../contexts/AuthContext';
+import BtnRect from '../buttons/BtnRect';
+import InputField from '../InputField';
+import InputSelectField from '../InputSelectField';
+import TextAreaField from '../TextAreaField';
+import Loading from '../Loading';
+import FormLayout from '../../layouts/FormLayout';
 import { useLocation, useParams } from 'react-router-dom';
 import { Keyword } from 'src/types/keyword';
-import ArrowHeader2 from './ArrowHeader2';
-import Divider from './Divider';
+import ArrowHeader2 from '../ArrowHeader2';
+import Divider from '../Divider';
 import { Action } from 'src/types/action';
-import ActionLinkField from './formFields/ActionLinkField';
+import ActionLinkField from '../formFields/ActionLinkField';
 import ArmorLinkField from './formFields/ArmorLinkField';
-import ItemLinkField from './formFields/ItemLinkField';
-import KeywordLinkField from './formFields/KeywordLinkField';
-import { extractItemListIds, extractKeywordListIds } from '../utils/extractIds';
+import ItemLinkField from '../formFields/ItemLinkField';
+import KeywordLinkField from '../formFields/KeywordLinkField';
+import {
+  extractItemListIds,
+  extractKeywordListIds,
+} from '../../utils/extractIds';
 import useItemQuery from 'src/hooks/useItemQuery/useItemQuery';
 import { Item, Stats } from 'src/types/item';
 import useBaseItems from 'src/hooks/useBaseItems';
-import PictureField from './formFields/PictureField';
-import RarityField from './formFields/RarityField';
-import StatFields from './formFields/StatFields';
+import PictureField from '../formFields/PictureField';
+import RarityField from '../formFields/RarityField';
+import StatFields from '../formFields/StatFields';
 import useCreateItemMutation from 'src/hooks/useCreateItemMutation/useCreateItemMutation';
 import useDeleteItemMutation from 'src/hooks/useDeleteItemMutation/useDeleteItemMutation';
 import VehicleLinkField from './formFields/VehicleLinkField';

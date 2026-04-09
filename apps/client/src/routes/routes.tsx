@@ -7,8 +7,8 @@ import {
   createRoutesFromElements,
 } from 'react-router-dom';
 import AuthLayout from '../layouts/AuthLayout';
-import SigninForm from '../components/SigninForm';
-import SignupForm from '../components/SignupForm';
+import SigninForm from '../components/forms/SigninForm';
+import SignupForm from '../components/forms/SignupForm';
 import MainLayout from '../layouts/MainLayout';
 import ErrorReport from '../components/ErrorReport';
 import ErrorReports from '../components/ErrorReports';

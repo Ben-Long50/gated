@@ -1,5 +1,5 @@
 import { Route } from 'react-router-dom';
-import AffiliationForm from 'src/components/AffiliationForm';
+import AffiliationForm from 'src/components/forms/AffiliationForm';
 import Cart from 'src/components/Cart';
 import CharacterAffiliations from 'src/components/CharacterAffiliations';
 import ConditionModal from 'src/components/modals/ConditionModal';

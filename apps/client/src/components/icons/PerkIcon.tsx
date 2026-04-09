@@ -3,7 +3,7 @@ const PerkIcon = ({ className }: { className?: string }) => {
     <svg
       className={`${className ? className : 'text-secondary'} timing`}
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="-5.0 -10.0 110.0 110 "
+      viewBox="0 0 100 100 "
     >
       <g stroke="currentColor" strokeWidth="1">
         <path d="m50 5c-24.812 0-45 20.188-45 45s20.188 45 45 45 45-20.188 45-45-20.188-45-45-45zm0 87c-23.16 0-42-18.84-42-42s18.84-42 42-42 42 18.84 42 42-18.84 42-42 42z" />

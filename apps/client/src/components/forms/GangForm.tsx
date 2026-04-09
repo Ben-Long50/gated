@@ -1,23 +1,23 @@
 import { useForm, useStore } from '@tanstack/react-form';
 import { useContext, useState } from 'react';
-import BtnRect from './buttons/BtnRect';
-import InputField from './InputField';
-import Loading from './Loading';
-import FormLayout from '../layouts/FormLayout';
+import BtnRect from '../buttons/BtnRect';
+import InputField from '../InputField';
+import Loading from '../Loading';
+import FormLayout from '../../layouts/FormLayout';
 import { Outlet, useNavigate, useParams } from 'react-router-dom';
-import LexicalEditor from './lexical/LexicalEditor';
-import ArrowHeader2 from './ArrowHeader2';
-import Divider from './Divider';
-import PictureField from './formFields/PictureField';
-import InputSelectField from './InputSelectField';
+import LexicalEditor from '../lexical/LexicalEditor';
+import ArrowHeader2 from '../ArrowHeader2';
+import Divider from '../Divider';
+import PictureField from '../formFields/PictureField';
+import InputSelectField from '../InputSelectField';
 import useCreateGangMutation from 'src/hooks/gang hooks/useCreateGangMutation/useCreateGangMutation';
 import useGangQuery from 'src/hooks/gang hooks/useGangQuery/useGangQuery';
 import { Character } from 'src/types/character';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
-import CharacterCardSmall from './CharacterCardSmall';
+import CharacterCardSmall from '../CharacterCardSmall';
 import { ThemeContext } from 'src/contexts/ThemeContext';
-import ThemeContainer from './ThemeContainer';
-import ArrowHeader3 from './ArrowHeader3';
+import ThemeContainer from '../ThemeContainer';
+import ArrowHeader3 from '../ArrowHeader3';
 
 const GangForm = () => {
   const { accentPrimary } = useContext(ThemeContext);

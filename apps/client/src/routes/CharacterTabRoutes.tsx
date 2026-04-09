@@ -1,5 +1,5 @@
 import { Route } from 'react-router-dom';
-import CharacterForm from 'src/components/CharacterForm';
+import CharacterForm from 'src/components/forms/CharacterForm';
 import CharacterList from 'src/components/CharacterList';
 import NpcPreferenceModal from 'src/components/modals/NpcPreferenceModal';
 import PerkLinkModal from 'src/components/modals/PerkLinkModal';

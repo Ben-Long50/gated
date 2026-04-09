@@ -1,19 +1,19 @@
 import { useForm } from '@tanstack/react-form';
 import { useContext, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
-import { AuthContext } from '../contexts/AuthContext';
-import BtnRect from './buttons/BtnRect';
-import Loading from './Loading';
-import TextAreaField from './TextAreaField';
-import InputField from './InputField';
-import useCreateConditionMutation from '../hooks/useCreateConditionMutation/useCreateConditionMutation';
-import useDeleteConditionMutation from '../hooks/useDeleteConditionMutation/useDeleteConditionMutation';
-import FormLayout from '../layouts/FormLayout';
-import useConditions from '../hooks/useConditions';
+import { AuthContext } from '../../contexts/AuthContext';
+import BtnRect from '../buttons/BtnRect';
+import Loading from '../Loading';
+import TextAreaField from '../TextAreaField';
+import InputField from '../InputField';
+import useCreateConditionMutation from '../../hooks/useCreateConditionMutation/useCreateConditionMutation';
+import useDeleteConditionMutation from '../../hooks/useDeleteConditionMutation/useDeleteConditionMutation';
+import FormLayout from '../../layouts/FormLayout';
+import useConditions from '../../hooks/useConditions';
 import { Condition } from 'src/types/condition';
-import ArrowHeader2 from './ArrowHeader2';
-import Divider from './Divider';
-import InputSelectField from './InputSelectField';
+import ArrowHeader2 from '../ArrowHeader2';
+import Divider from '../Divider';
+import InputSelectField from '../InputSelectField';
 import { capitalCase } from 'change-case';
 
 const ConditionForm = () => {

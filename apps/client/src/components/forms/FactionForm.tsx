@@ -1,22 +1,22 @@
 import { useForm } from '@tanstack/react-form';
 import { useContext, useEffect, useState } from 'react';
-import { AuthContext } from '../contexts/AuthContext';
-import BtnRect from './buttons/BtnRect';
-import InputField from './InputField';
-import Loading from './Loading';
-import FormLayout from '../layouts/FormLayout';
+import { AuthContext } from '../../contexts/AuthContext';
+import BtnRect from '../buttons/BtnRect';
+import InputField from '../InputField';
+import Loading from '../Loading';
+import FormLayout from '../../layouts/FormLayout';
 import { useParams } from 'react-router-dom';
-import LexicalEditor from './lexical/LexicalEditor';
+import LexicalEditor from '../lexical/LexicalEditor';
 import { mdiCloseBox, mdiImagePlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import ThemeContainer from './ThemeContainer';
-import { ThemeContext } from '../contexts/ThemeContext';
-import Divider from './Divider';
-import useFactionQuery from '../hooks/useFactionQuery/useFactionQuery';
-import ArrowHeader2 from './ArrowHeader2';
-import useUpdateFactionMutation from '../hooks/useUpdateFactionMutation/useUpdateFactionMutation';
-import useDeleteFactionMutation from '../hooks/useDeleteFactionMutation/useDeleteFactionMutation';
-import PictureField from './formFields/PictureField';
+import ThemeContainer from '../ThemeContainer';
+import { ThemeContext } from '../../contexts/ThemeContext';
+import Divider from '../Divider';
+import useFactionQuery from '../../hooks/useFactionQuery/useFactionQuery';
+import ArrowHeader2 from '../ArrowHeader2';
+import useUpdateFactionMutation from '../../hooks/useUpdateFactionMutation/useUpdateFactionMutation';
+import useDeleteFactionMutation from '../../hooks/useDeleteFactionMutation/useDeleteFactionMutation';
+import PictureField from '../formFields/PictureField';
 
 const FactionForm = ({ title, mode }: { title: string; mode?: string }) => {
   const { accentPrimary } = useContext(ThemeContext);
