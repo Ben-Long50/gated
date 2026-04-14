@@ -484,7 +484,6 @@ model Item {
   userId               Int?
   name                 String
   itemTypes            ItemType[]
-  itemSubtypes         String[]
   rarity               ItemRarity               @default(common)
   grade                Int                      @default(1)
   picture              Json?
@@ -526,7 +525,7 @@ model ItemLinkReference {
 enum ItemType {
   weapon
   armor
-  augmentation
+  cybernetic
   mutation
   vehicle
   drone

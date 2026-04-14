@@ -28,11 +28,6 @@ const itemServices = {
                             characterInventory: null,
                             itemLinkId: null,
                             itemTypes: { hasEvery: category },
-                            NOT: {
-                                itemTypes: {
-                                    has: 'augmentation',
-                                },
-                            },
                         }
                         : {
                             characterInventory: null,
@@ -274,10 +269,10 @@ const itemServices = {
             throw new Error('Failed to create or update item');
         }
     },
-    createItemCopy: async (itemId, category) => {
+    createItemCopy: async (itemId) => {
         try {
             const itemDetails = await prisma.item.findUnique({
-                where: { id: itemId, itemTypes: { hasEvery: category } },
+                where: { id: itemId },
                 include: {
                     keywords: { include: { keyword: true } },
                     itemLinkReference: { include: { items: true, actions: true } },
@@ -301,7 +296,7 @@ const itemServices = {
             const actionIds = [];
             if (itemLinkReference === null || itemLinkReference === void 0 ? void 0 : itemLinkReference.items) {
                 for (let item of itemLinkReference === null || itemLinkReference === void 0 ? void 0 : itemLinkReference.items) {
-                    const newItem = await itemServices.createItemCopy(item.id, item.itemTypes);
+                    const newItem = await itemServices.createItemCopy(item.id);
                     itemIds.push(newItem.id);
                 }
             }

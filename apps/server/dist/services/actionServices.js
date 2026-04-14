@@ -39,6 +39,21 @@ const actionServices = {
             throw new Error('Failed to fetch action');
         }
     },
+    getBatchActions: async (actionIds) => {
+        try {
+            const actions = await prisma.action.findMany({
+                where: {
+                    id: { in: actionIds },
+                },
+                include: { keywordModifiers: { include: { keyword: true } } },
+            });
+            return actions;
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to fetch actions');
+        }
+    },
     createAction: async (formData) => {
         var _a, _b;
         try {

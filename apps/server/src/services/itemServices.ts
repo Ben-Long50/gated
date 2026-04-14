@@ -22,11 +22,6 @@ const itemServices = {
                 characterInventory: null,
                 itemLinkId: null,
                 itemTypes: { hasEvery: category },
-                NOT: {
-                  itemTypes: {
-                    has: 'augmentation',
-                  },
-                },
               }
             : {
                 characterInventory: null,
@@ -310,10 +305,10 @@ const itemServices = {
     }
   },
 
-  createItemCopy: async (itemId: number, category: $Enums.ItemType[]) => {
+  createItemCopy: async (itemId: number) => {
     try {
       const itemDetails = await prisma.item.findUnique({
-        where: { id: itemId, itemTypes: { hasEvery: category } },
+        where: { id: itemId },
         include: {
           keywords: { include: { keyword: true } },
           itemLinkReference: { include: { items: true, actions: true } },
@@ -359,10 +354,7 @@ const itemServices = {
 
       if (itemLinkReference?.items) {
         for (let item of itemLinkReference?.items) {
-          const newItem = await itemServices.createItemCopy(
-            item.id,
-            item.itemTypes,
-          );
+          const newItem = await itemServices.createItemCopy(item.id);
 
           itemIds.push(newItem.id);
         }

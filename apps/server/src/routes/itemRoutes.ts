@@ -14,7 +14,7 @@ router.get(
 );
 
 router.post(
-  '/items/:category',
+  '/items/create',
   authentication.authenticate,
   authentication.authenticateAdmin,
   itemController.createOrUpdateItem,
@@ -27,7 +27,7 @@ router.post(
 );
 
 router.post(
-  '/items/:category/:itemId',
+  '/items/:itemId/createCopy',
   authentication.authenticate,
   authentication.authenticateAdmin,
   itemController.createItemCopy,
@@ -54,7 +54,7 @@ router.patch(
 );
 
 router.delete(
-  '/items/:category/:itemId',
+  '/items/:itemId/delete',
   authentication.authenticate,
   authentication.authenticateAdmin,
   itemController.deleteItem,

@@ -70,9 +70,7 @@ const itemController = {
 
   createItemCopy: async (req: Request, res: Response) => {
     try {
-      const category = req.params.category.slice(0, -1) as ItemType;
-
-      await itemServices.createItemCopy(Number(req.params.itemId), [category]);
+      await itemServices.createItemCopy(Number(req.params.itemId));
 
       res.status(200).json({
         message: 'Successfully created item copy',

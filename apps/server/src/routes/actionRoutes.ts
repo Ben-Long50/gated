@@ -11,6 +11,12 @@ router.get(
 );
 
 router.get(
+  '/actions/batch',
+  authentication.authenticate,
+  actionController.getBatchActions,
+);
+
+router.get(
   '/actions/:actionId',
   authentication.authenticate,
   actionController.getActionById,

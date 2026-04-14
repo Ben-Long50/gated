@@ -22,6 +22,21 @@ const actionController = {
     }
   },
 
+  getBatchActions: async (req: Request, res: Response) => {
+    try {
+      if (!req.user) {
+        throw new Error('Could not find authenticated user');
+      }
+      const actionIds = (req.query.ids as string).split(',').map(Number);
+
+      const actions = await actionServices.getBatchActions(actionIds);
+
+      res.status(200).json(actions);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
   createAction: async (req: Request, res: Response) => {
     try {
       await actionServices.createAction(req.body);
