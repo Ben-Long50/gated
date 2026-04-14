@@ -1,17 +1,12 @@
 import { Action } from 'src/types/action';
 import { Item } from 'src/types/item';
-import { Keyword } from 'src/types/keyword';
+import { KeywordReference } from 'src/types/keyword';
 
 export const extractItemListIds = (itemList: Item[] | Action[]) => {
   return itemList.map((item) => item.id);
 };
 
-export const extractKeywordListIds = (
-  keywordList: {
-    keyword: Keyword;
-    value?: number;
-  }[],
-) => {
+export const extractKeywordListIds = (keywordList: KeywordReference[]) => {
   return keywordList.map(({ keyword, value }) => ({
     keywordId: keyword.id,
     value,

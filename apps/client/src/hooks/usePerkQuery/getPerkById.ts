@@ -1,7 +1,7 @@
 import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const getPerkById = async (perkId: string) => {
+const getPerkById = async (perkId: number) => {
   try {
     const response = await fetch(`${apiUrl}/perks/${perkId}`, {
       method: 'GET',

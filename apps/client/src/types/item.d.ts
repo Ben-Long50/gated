@@ -20,7 +20,7 @@ interface Item {
   stats: Stats;
   modifiedStats?: Stats;
   keywords: KeywordReference[];
-  modifiedKeywords: { keyword: Keyword; value: number | null }[];
+  modifiedKeywords: KeywordReference[];
   conditions: ConditionReference[];
   itemLinkReference?: LinkReference;
   baseItemId: number | null;
@@ -76,16 +76,16 @@ interface Stats {
   currentEsotericCharges?: number;
 }
 
-enum ItemType {
-  weapon = 'weapon',
-  armor = 'armor',
-  augmentation = 'augmentation',
-  vehicle = 'vehicle',
-  drone = 'drone',
-  modification = 'modification',
-  reusable = 'reusable',
-  consumable = 'consumable',
-}
+export type ItemType =
+  | 'weapon'
+  | 'armor'
+  | 'cybernetic'
+  | 'mutation'
+  | 'vehicle'
+  | 'drone'
+  | 'modification'
+  | 'reusable'
+  | 'consumable';
 
 export interface Equipment {
   weapons: Item[];

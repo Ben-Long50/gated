@@ -1,24 +1,22 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import updateFaction from './updateFaction';
+import { toast } from 'react-toastify';
 
-const useUpdateFactionMutation = (
-  campaignId: number,
-  factionId: number,
-  setFormMessage: (message: string) => void,
-) => {
+const useUpdateFactionMutation = (campaignId: number, factionId: number) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (formData: FormData) => {
       return updateFaction(formData, campaignId, factionId);
     },
     onSuccess: () => {
-      setFormMessage('Faction successfully updated');
+      toast('Faction successfully updated');
+
       return queryClient.invalidateQueries({
         queryKey: ['faction', factionId],
       });
     },
-    onError: (error) => {
-      setFormMessage(error.message);
+    onError: (data) => {
+      toast(data.message);
     },
     throwOnError: false,
   });

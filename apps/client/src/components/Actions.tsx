@@ -11,24 +11,20 @@ import InputSelectField from './InputSelectField';
 import Icon from '@mdi/react';
 import { mdiSync } from '@mdi/js';
 import { ItemObject } from 'src/types/global';
-import { Action } from 'src/types/action';
-import { useLocation } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 
 const Actions = ({
   title,
-  forcedMode,
   field,
   toggleFormLink,
 }: {
   title?: string;
-  forcedMode?: string;
   field?: FieldApi;
   toggleFormLink?: (item: ItemObject) => void;
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
-  const location = useLocation();
-  const parts = location.pathname.split('/').filter(Boolean);
-  const mode = forcedMode || parts[parts.length - 2];
+  const [searchParams] = useSearchParams();
+  const mode = searchParams.get('mode');
 
   const actions = useActions();
 
@@ -143,21 +139,21 @@ const Actions = ({
             }}
           </searchForm.Subscribe>
           <div className="flex flex-col gap-4 md:grid md:grid-cols-2">
-            {actions.filteredActions.map((action) => {
+            {actions.filteredActions?.map((action) => {
               return (
                 <div key={action.id} className="flex items-center gap-4">
-                  <ActionCard action={action} mode={mode} />
+                  <ActionCard action={action} />
                   {mode === 'form' && (
                     <input
                       className="size-8"
                       type="checkbox"
                       onChange={() => {
                         if (toggleFormLink) {
-                          toggleFormLink(action);
+                          toggleFormLink(action.id);
                         }
                       }}
                       checked={field.state.value.some(
-                        (item: Action) => item.id === action.id,
+                        (actionId: number) => actionId === action.id,
                       )}
                     />
                   )}

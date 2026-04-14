@@ -1,24 +1,21 @@
 import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const createNotes = async (
-  campaignId: number,
-  sessionId: number,
-  characterId: number,
-  content: { html: string; nodes: object },
-) => {
+const createNotes = async (formData: {
+  id?: number;
+  characterId: number;
+  sessionId: number;
+  content: { html: string; nodes: object };
+}) => {
   try {
-    const response = await fetch(
-      `${apiUrl}/campaigns/${campaignId}/sessions/${sessionId}/characters/${characterId}/notes`,
-      {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ content }),
+    const response = await fetch(`${apiUrl}/notes`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
       },
-    );
+      body: JSON.stringify(formData),
+    });
     const data = await handleResponse(response);
     return data;
   } catch (error) {

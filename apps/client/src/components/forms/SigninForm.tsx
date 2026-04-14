@@ -89,7 +89,11 @@ const SigninForm = () => {
             )}
           </signinForm.Field>
         </div>
-        <BtnRect type="submit" className="group w-full min-w-40">
+        <BtnRect
+          ariaLabel="Submit form"
+          type="submit"
+          className="group w-full min-w-40"
+        >
           {signinMutation.isPending ? (
             <Loading
               className="group-hover:text-accent dark:text-gray-900"

@@ -2,7 +2,6 @@ import { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import InputField from '../InputField';
 import BtnRect from '../buttons/BtnRect';
-import { AuthContext } from '../../contexts/AuthContext';
 import { ThemeContext } from '../../contexts/ThemeContext';
 import ThemeContainer from '../ThemeContainer';
 import useSignupMutation from '../../hooks/useSignupMutation/useSignupMutation';
@@ -123,7 +122,11 @@ const SignupForm = () => {
             )}
           </signupForm.Field>
         </div>
-        <BtnRect type="submit" className="group w-full min-w-40">
+        <BtnRect
+          ariaLabel="Submit form"
+          type="submit"
+          className="group w-full min-w-40"
+        >
           {signupMutation.isPending ? (
             <Loading
               className="group-hover:text-accent dark:text-gray-900"

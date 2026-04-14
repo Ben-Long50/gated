@@ -1,9 +1,12 @@
 import { ReactNode, useContext } from 'react';
 import ThemeContainer from '../components/ThemeContainer';
 import { ThemeContext } from '../contexts/ThemeContext';
-import Icon from '@mdi/react';
-import { mdiAlertOutline } from '@mdi/js';
 import { UseMutationResult } from '@tanstack/react-query';
+import { FormApi, useStore } from '@tanstack/react-form';
+import BtnAuth from 'src/components/buttons/BtnAuth';
+import Loading from 'src/components/Loading';
+import BtnRect from 'src/components/buttons/BtnRect';
+import Divider from 'src/components/Divider';
 
 type MutationType<TData = any, TVariables = any> = UseMutationResult<
   TData,
@@ -13,43 +16,24 @@ type MutationType<TData = any, TVariables = any> = UseMutationResult<
 
 const FormLayout = ({
   children,
+  label,
+  form,
   itemId,
   createMutation,
-  modifyMutation,
   deleteMutation,
-  handleDelete,
-  handleReset,
-  formMessage,
-  deleteMode,
-  setDeleteMode,
 }: {
   children: ReactNode;
+  label: string;
+  form: FormApi;
   itemId?: string;
   createMutation?: MutationType;
-  modifyMutation?: MutationType;
   deleteMutation?: MutationType;
-  handleDelete?: () => void;
-  handleReset?: () => void;
-  formMessage?: string;
-  deleteMode?: boolean;
-  setDeleteMode?: (value: boolean) => void;
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
 
-  const isPending =
-    createMutation?.isPending ||
-    modifyMutation?.isPending ||
-    deleteMutation?.isPending;
+  const formErrorMap = useStore(form.store, (state) => state.errorMap);
 
-  const isSuccess =
-    createMutation?.isSuccess ||
-    modifyMutation?.isSuccess ||
-    deleteMutation?.isSuccess;
-
-  const isError =
-    createMutation?.isError ||
-    modifyMutation?.isError ||
-    deleteMutation?.isError;
+  const isPending = createMutation?.isPending || deleteMutation?.isPending;
 
   return (
     <ThemeContainer
@@ -57,65 +41,58 @@ const FormLayout = ({
       chamfer="large"
       borderColor={accentPrimary}
     >
-      <div className="flex w-full min-w-96 flex-col gap-8 p-4 sm:p-8">
+      <form
+        className="flex flex-col gap-8 p-8"
+        onSubmit={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (!isPending) {
+            form.handleSubmit();
+          }
+        }}
+      >
+        <h1 className="w-full text-center">
+          {itemId ? `Update ${label}` : `Create ${label}`}
+        </h1>
+        <Divider />
         {children}
-        {itemId && (
-          <div className="flex flex-col gap-4">
-            <div className="flex w-full items-center justify-between gap-8">
-              {deleteMutation && (
-                <button
-                  type="button"
-                  className="text-accent hover:underline"
-                  onClick={handleDelete}
-                >
-                  Delete
-                </button>
-              )}
-              {deleteMode && (
-                <div className="grow">
-                  <button
-                    type="button"
-                    className="text-secondary text-left hover:underline"
-                    onClick={() => setDeleteMode && setDeleteMode(false)}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              )}
-            </div>
-            {deleteMode && (
-              <div className="flex items-center gap-4">
-                <Icon
-                  className="text-error"
-                  path={mdiAlertOutline}
-                  size={1.5}
-                />
-                <p className="text-error text-base">
-                  Press the delete button one more time to permanently delete
-                </p>
+        <Divider className="mt-0.5" />
+        <div className="flex w-full flex-col gap-4">
+          {formErrorMap.onSubmit &&
+            typeof formErrorMap.onSubmit === 'string' && (
+              <div>
+                <em className="text-error">{formErrorMap.onSubmit}</em>
               </div>
             )}
-          </div>
-        )}
-        {formMessage && (
-          <div className="flex w-full items-center justify-between">
-            {isPending && <p>Submitting...</p>}
-            {isSuccess && <p>{formMessage}</p>}
-            {isError && (
-              <p>
-                Error: <span className="text-error">{formMessage}</span>
-              </p>
+          <BtnRect
+            ariaLabel={itemId ? `Update ${label}` : `Create ${label}`}
+            type="submit"
+            className="group w-full"
+          >
+            {isPending ? (
+              <Loading
+                className="group-hover:text-accent dark:text-gray-900"
+                size={1.15}
+              />
+            ) : itemId ? (
+              `Update ${label}`
+            ) : (
+              `Create ${label}`
             )}
-            <button
-              type="button"
-              className="text-accent text-xl hover:underline"
-              onClick={handleReset}
+          </BtnRect>
+          <BtnAuth className="ml-auto w-full" onClick={() => form.reset()}>
+            Reset Form
+          </BtnAuth>
+          {itemId && (
+            <BtnAuth
+              className="ml-auto w-1/3"
+              onClick={() => deleteMutation?.mutate(Number(itemId))}
             >
-              Reset form
-            </button>
-          </div>
-        )}
-      </div>
+              Delete
+            </BtnAuth>
+          )}
+        </div>
+      </form>
     </ThemeContainer>
   );
 };

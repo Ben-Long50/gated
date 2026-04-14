@@ -326,8 +326,8 @@ const ItemPage = () => {
       )}
       {(parts.includes('inventory') || parts.includes('equipment')) && (
         <Link
-          className="w-full self-end sm:max-w-1/3"
-          to="upgrade/tutorial"
+          className="w-full self-end"
+          to="upgrade"
           onClick={() => setBackgroundPath(`${location.pathname}/upgrade`)}
         >
           <BtnRect ariaLabel="Navigate to modify weapon form" type="button">

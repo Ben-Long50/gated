@@ -43,7 +43,7 @@ const ItemRadialMenu = ({
 
   const detailsPath = (() => {
     if (parts.includes('equipment') || parts.includes('deployments')) {
-      return `../inventory/${item?.itemTypes[0]}s/${item?.id}`;
+      return `../inventory/items/${item?.id}`;
     } else if (
       parts.includes('codex') ||
       parts.includes('inventory') ||

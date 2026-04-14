@@ -1,11 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import deleteCondition from './deleteCondition';
+import { toast } from 'react-toastify';
 
-const useDeleteConditionMutation = (
-  conditionId: string,
-  setFormMessage: (message: string) => void,
-) => {
+const useDeleteConditionMutation = (conditionId: number) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   return useMutation({
@@ -13,18 +11,16 @@ const useDeleteConditionMutation = (
       return deleteCondition(conditionId);
     },
     onSuccess: () => {
+      toast('Condition successfully deleted');
+
       navigate('/glam/codex/conditions');
-      queryClient.invalidateQueries({
-        queryKey: ['condition'],
-        exact: false,
-      });
+
       return queryClient.invalidateQueries({
         queryKey: ['conditions'],
-        exact: false,
       });
     },
-    onError: (error) => {
-      setFormMessage(error.message);
+    onError: (data) => {
+      toast(data.message);
     },
     throwOnError: false,
   });

@@ -1,12 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import deleteFaction from './deleteFaction';
+import { toast } from 'react-toastify';
 
-const useDeleteFactionMutation = (
-  campaignId: number,
-  factionId: number,
-  setFormMessage: (message: string) => void,
-) => {
+const useDeleteFactionMutation = (campaignId: number, factionId: number) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   return useMutation({
@@ -14,16 +11,20 @@ const useDeleteFactionMutation = (
       return deleteFaction(campaignId, factionId);
     },
     onSuccess: () => {
+      toast('Faction successfully deleted');
+
       navigate(`/glam/campaigns/${campaignId}`);
+
       queryClient.invalidateQueries({
         queryKey: ['faction', factionId],
       });
+
       return queryClient.invalidateQueries({
         queryKey: ['campaign', campaignId],
       });
     },
-    onError: (error) => {
-      setFormMessage(error.message);
+    onError: (data) => {
+      toast(data.message);
     },
     throwOnError: false,
   });

@@ -10,8 +10,7 @@ import ArrowHeader2 from './ArrowHeader2';
 import InputSelectField from './InputSelectField';
 import Icon from '@mdi/react';
 import { mdiSync } from '@mdi/js';
-import { Keyword, KeywordReference } from 'src/types/keyword';
-import InputFieldBasic from './InputFieldBasic';
+import { KeywordReference } from 'src/types/keyword';
 import { useLocation } from 'react-router-dom';
 import { capitalCase } from 'change-case';
 import ExpandingList from './ExpandingList';
@@ -134,7 +133,7 @@ const Keywords = ({
                     mode === 'form'
                       ? field.state.value?.find(
                           (item: KeywordReference) =>
-                            item.keyword.id === keyword.id,
+                            item.keywordId === keyword.id,
                         )
                       : null;
                   return (

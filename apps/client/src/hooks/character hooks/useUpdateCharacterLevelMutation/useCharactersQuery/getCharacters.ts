@@ -1,5 +1,5 @@
 import apiUrl from 'src/utils/configureUrl';
-import handleResponse from '../handleResponse';
+import handleResponse from '../../../handleResponse';
 
 const getCharacters = async () => {
   try {

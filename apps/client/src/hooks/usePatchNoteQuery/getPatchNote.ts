@@ -1,7 +1,7 @@
 import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const getPatchNote = async (patchNoteId: string) => {
+const getPatchNote = async (patchNoteId: number) => {
   try {
     const response = await fetch(`${apiUrl}/patchNotes/${patchNoteId}`, {
       method: 'GET',

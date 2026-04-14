@@ -1,56 +1,43 @@
 import Modal from './Modal';
-import { ItemObject } from 'src/types/global';
-import { Item } from 'src/types/item';
 import Items from '../Items';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import useModalStore from 'src/stores/modalStore';
 import BtnRect from '../buttons/BtnRect';
-import { capitalCase } from 'change-case';
 
 const ItemLinkModal = () => {
   const navigate = useNavigate();
 
-  const { field, category } = useOutletContext() || {};
+  const { field } = useOutletContext() || {};
 
   const backgroundPath = useModalStore((state) => state.backgroundPath);
 
-  const toggleFormLink = (targetItem: Item) => {
-    if (!field.state.value.some((item: Item) => item.id === targetItem.id)) {
-      field.handleChange([...field.state.value, targetItem]);
-    } else {
-      field.handleChange(
-        field.state.value.filter(
-          (item: ItemObject) => item.id !== targetItem.id,
-        ),
-      );
-    }
+  const toggleFormLink = (itemId: number) => {
+    field.handleChange([...field.state.value, itemId]);
   };
 
   return (
-    <Modal>
-      <Items
-        // title={'Link ' + capitalCase(category)}
-        forcedMode="form"
-        forcedCategory={category}
-        toggleFormLink={toggleFormLink}
-      />
-      <BtnRect
-        type="button"
-        ariaLabel="Confirm preferences"
-        className="w-full"
-        onClick={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
-          if (!backgroundPath) {
-            navigate('..', { replace: true });
-          } else {
-            navigate(backgroundPath, { replace: true });
-            navigate(-1);
-          }
-        }}
-      >
-        Close
-      </BtnRect>
+    <Modal
+      button={
+        <BtnRect
+          type="button"
+          ariaLabel="Confirm preferences"
+          className="w-full"
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            if (!backgroundPath) {
+              navigate('..', { replace: true });
+            } else {
+              navigate(backgroundPath, { replace: true });
+              navigate(-1);
+            }
+          }}
+        >
+          Close
+        </BtnRect>
+      }
+    >
+      <Items toggleFormLink={toggleFormLink} field={field} />
     </Modal>
   );
 };

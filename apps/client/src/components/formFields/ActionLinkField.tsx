@@ -1,75 +1,81 @@
-import { FormApi, FormState } from '@tanstack/react-form';
-import BtnRect from '../buttons/BtnRect';
+import { FormApi, useStore } from '@tanstack/react-form';
 import { Action } from 'src/types/action';
 import ActionCard from '../ActionCard';
 import Icon from '@mdi/react';
-import { mdiClose } from '@mdi/js';
+import { mdiLinkVariantOff } from '@mdi/js';
 import ArrowHeader2 from '../ArrowHeader2';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import useModalStore from 'src/stores/modalStore';
+import useActionQueries from 'src/hooks/useActionsQuery/useActionQueries';
+import BtnAuth from '../buttons/BtnAuth';
+import Loading from '../Loading';
 
 const ActionLinkField = ({ form }: { form: FormApi }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const parts = location.pathname.split('/');
 
-  const setBackgroundPath = useModalStore((state) => state.setBackgroundPath);
-
-  const openActionModal = () => {
-    setBackgroundPath(location.pathname);
-    navigate('actions');
-  };
+  const actionIds = useStore(form.store, (state) => state.values.actionIds);
+  const { actions, isLoading } = useActionQueries(actionIds);
 
   return (
     <>
-      <form.Subscribe selector={(state: FormState) => state.values.actions}>
-        {(actions: Action[]) => (
+      <form.Subscribe selector={(state) => state.values.actionIds}>
+        {(actionIds: number[]) => (
           <>
-            {actions.length > 0 && <ArrowHeader2 title="Linked Actions" />}
-            <form.Field name="actions">
+            {actionIds.length > 0 && <ArrowHeader2 title="Linked Actions" />}
+            <form.Field name="actionIds">
               {(field) => (
                 <>
                   {parts[parts.length - 1] === 'actions' && (
                     <Outlet context={{ field }} />
                   )}
-                  {actions.map((action: Action) => {
-                    return (
-                      <div className="flex items-center gap-4" key={action.id}>
-                        <ActionCard action={action} mode="form" />
-                        <button
-                          onClick={() => {
-                            field.handleChange(
-                              field.state.value.filter(
-                                (item: Action) => item.id !== action.id,
-                              ),
-                            );
-                          }}
+                  {isLoading ? (
+                    <Loading />
+                  ) : (
+                    actions?.map((action: Action) => {
+                      return (
+                        <div
+                          className="flex items-center gap-4"
+                          key={action?.id}
                         >
-                          <Icon
-                            path={mdiClose}
-                            className="text-tertiary hover:text-accent timing size-10"
-                          />
-                        </button>
-                      </div>
-                    );
-                  })}
+                          <ActionCard action={action} mode="form" />
+                          <button
+                            className="shadow-color hover:border-accent timing bg-secondary group rounded border-2 border-transparent p-4"
+                            onClick={() => {
+                              field.handleChange(
+                                field.state.value.filter(
+                                  (actionId: number) => actionId !== action?.id,
+                                ),
+                              );
+                            }}
+                          >
+                            <Icon
+                              className="text-primary timing group-hover:text-accent"
+                              path={mdiLinkVariantOff}
+                              size={1.2}
+                            />
+                          </button>
+                        </div>
+                      );
+                    })
+                  )}
                 </>
               )}
             </form.Field>
           </>
         )}
       </form.Subscribe>
-      <BtnRect
-        className="w-1/3 min-w-48 self-end"
+      <BtnAuth
+        className="w-full min-w-48"
         ariaLabel="Open link action modal"
         type="button"
         onClick={(e) => {
           e.preventDefault();
-          openActionModal();
+          navigate('actions?mode=form');
         }}
       >
         Link Actions
-      </BtnRect>
+      </BtnAuth>
     </>
   );
 };

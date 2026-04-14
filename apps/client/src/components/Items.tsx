@@ -2,59 +2,46 @@ import { useContext, useState } from 'react';
 import ThemeContainer from './ThemeContainer';
 import { ThemeContext } from '../contexts/ThemeContext';
 import InputField from './InputField';
-import { useForm } from '@tanstack/react-form';
+import { FieldApi, useForm } from '@tanstack/react-form';
 import Loading from './Loading';
 import useBaseItems from '../hooks/useBaseItems';
 import { Item } from 'src/types/item';
 import ArrowHeader2 from './ArrowHeader2';
 import { LayoutContext } from '../contexts/LayoutContext';
 import Icon from '@mdi/react';
-import { mdiCropSquare, mdiGrid, mdiSync } from '@mdi/js';
-import {
-  useLocation,
-  useOutletContext,
-  useParams,
-  useSearchParams,
-} from 'react-router-dom';
+import { mdiCropSquare, mdiGrid, mdiLinkVariant, mdiSync } from '@mdi/js';
+import { useOutletContext, useSearchParams } from 'react-router-dom';
 import InputSelectField from './InputSelectField';
 import { capitalCase } from 'change-case';
 import ItemCard from './ItemCard';
+import BtnAuth from './buttons/BtnAuth';
 
 const Items = ({
-  title,
   itemList,
-  forcedMode,
-  forcedCategory,
-  character,
+  field,
   toggleFormLink,
 }: {
-  title?: string;
   itemList?: Item[];
-  forcedMode?: string;
-  forcedCategory?: string;
-  character?: string;
-  toggleFormLink?: (item: Item) => void;
+  field?: FieldApi;
+  toggleFormLink?: (itemId: number) => void;
 }) => {
   const { mobile } = useContext(LayoutContext);
   const { accentPrimary } = useContext(ThemeContext);
-  const [searchParams] = useSearchParams();
-  const location = useLocation();
-  const state = location.state;
-  const parts = location.pathname.split('/').filter(Boolean);
-  const { category } = useParams();
-  const mode = forcedMode || parts[parts.length - 2];
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const { categorizedShopItems } = useOutletContext() || {};
 
-  const heading = state ? state.title : title;
-
+  const category = searchParams.get('category') || '';
+  const linkCategory = searchParams.get('linkCategory') || '';
+  const mode = searchParams.get('mode');
   const include = searchParams.getAll('include');
   const exclude = searchParams.getAll('exclude');
-  const augmentType = searchParams.get('augmentType');
 
   const [cardType, setCardType] = useState<'small' | 'large'>(() =>
     mobile ? 'small' : 'large',
   );
+
+  const itemCategory = mode && mode === 'form' ? linkCategory : category;
 
   const {
     filteredItems: items,
@@ -65,11 +52,10 @@ const Items = ({
     filteredKeywords,
     isLoading,
   } = useBaseItems({
-    category: forcedCategory || category,
+    category: itemCategory,
     itemList: categorizedShopItems || itemList || undefined,
     includedKeywords: include.length > 0 ? include : undefined,
     excludedKeywords: exclude.length > 0 ? exclude : undefined,
-    subcategory: augmentType,
   });
 
   const searchForm = useForm({
@@ -89,12 +75,37 @@ const Items = ({
 
   return (
     <div className="flex w-full max-w-6xl flex-col items-center gap-8">
-      {category && (
-        <h1 className="text-center">
-          {include.length > 0
-            ? include[0] + ' ' + capitalCase(category)
-            : capitalCase(category)}
-        </h1>
+      <h1 className="text-center">{capitalCase(itemCategory)}</h1>
+      {mode && mode === 'form' && (
+        <div className="flex w-full gap-4">
+          <BtnAuth
+            active={linkCategory === 'weapon'}
+            className="w-full grow"
+            onClick={() =>
+              setSearchParams({ linkCategory: 'weapon', mode: 'form' })
+            }
+          >
+            Weapons
+          </BtnAuth>
+          <BtnAuth
+            active={linkCategory === 'armor'}
+            className="w-full grow"
+            onClick={() =>
+              setSearchParams({ linkCategory: 'armor', mode: 'form' })
+            }
+          >
+            Armors
+          </BtnAuth>
+          <BtnAuth
+            active={linkCategory === 'vehicle'}
+            className="w-full grow"
+            onClick={() =>
+              setSearchParams({ linkCategory: 'vehicle', mode: 'form' })
+            }
+          >
+            Vehicles
+          </BtnAuth>
+        </div>
       )}
       <ThemeContainer
         className={`ml-auto w-full`}
@@ -155,7 +166,9 @@ const Items = ({
                 <InputField
                   className="w-full"
                   label={
-                    category ? `Search ${capitalCase(category)}` : 'Search All'
+                    itemCategory
+                      ? `Search ${capitalCase(itemCategory)}`
+                      : 'Search All'
                   }
                   field={field}
                   onChange={() => {
@@ -214,16 +227,44 @@ const Items = ({
         {isLoading ? (
           <Loading />
         ) : (
-          items?.map((item: Item) => (
-            <ItemCard
-              key={item.id}
-              item={item}
-              mode={mode}
-              cardType={cardType}
-              character={character}
-              toggleFormLink={toggleFormLink}
-            />
-          ))
+          items?.map((item: Item) => {
+            const linkCount =
+              mode === 'form'
+                ? field.state.value.reduce((sum: number, id: number) => {
+                    if (id === item.id) {
+                      return sum + 1;
+                    } else {
+                      return sum;
+                    }
+                  }, 0)
+                : 0;
+
+            return (
+              <div className="flex w-full items-center gap-4">
+                <ItemCard
+                  className="grow"
+                  key={item.id}
+                  item={item}
+                  cardType={cardType}
+                />
+                {toggleFormLink && mode === 'form' && (
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    {linkCount > 0 && <p>{linkCount}</p>}
+                    <button
+                      className="shadow-color hover:border-accent timing bg-secondary group rounded border-2 border-transparent p-4"
+                      onClick={() => toggleFormLink(item.id)}
+                    >
+                      <Icon
+                        className="text-primary timing group-hover:text-accent"
+                        path={mdiLinkVariant}
+                        size={1.2}
+                      />
+                    </button>
+                  </div>
+                )}
+              </div>
+            );
+          })
         )}
       </div>
     </div>

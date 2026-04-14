@@ -1,29 +1,26 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import deleteItem from './deleteItem';
+import { toast } from 'react-toastify';
 
-const useDeleteItemMutation = (
-  category: string,
-  setFormMessage: (message: string) => void,
-  itemId: number,
-) => {
+const useDeleteItemMutation = (itemId: number) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   return useMutation({
     mutationFn: () => {
-      return deleteItem(category, itemId);
+      return deleteItem(itemId);
     },
     onSuccess: () => {
+      toast('Item successfully deleted');
+
       navigate(-2);
-      queryClient.invalidateQueries({
-        queryKey: [category],
-      });
+
       return queryClient.removeQueries({
         queryKey: ['item', itemId],
       });
     },
-    onError: (error) => {
-      setFormMessage(error.message);
+    onError: (data) => {
+      toast(data.message);
     },
     throwOnError: false,
   });

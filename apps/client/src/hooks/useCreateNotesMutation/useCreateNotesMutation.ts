@@ -1,25 +1,31 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import createNotes from './createNotes';
+import { toast } from 'react-toastify';
 
-const useCreateNotesMutation = (
-  campaignId: number,
-  sessionId: number,
-  characterId: number,
-  setFormMessage: (message: string) => void,
-) => {
+const useCreateNotesMutation = (notesId?: number) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (content: { html: string; nodes: object }) => {
-      return createNotes(campaignId, sessionId, characterId, content);
+    mutationFn: (formData: {
+      id?: number;
+      characterId: number;
+      sessionId: number;
+      content: { html: string; nodes: object };
+    }) => {
+      return createNotes(formData);
     },
-    onSuccess: (data) => {
-      setFormMessage(data.message);
+    onSuccess: () => {
+      const message = notesId
+        ? 'Property successfully updated'
+        : 'Property successfully created';
+
+      toast(message);
+
       return queryClient.invalidateQueries({
-        queryKey: ['notes', characterId],
+        queryKey: ['notes', notesId],
       });
     },
-    onError: (error) => {
-      setFormMessage(error.message);
+    onError: (data) => {
+      toast(data.message);
     },
     throwOnError: false,
   });

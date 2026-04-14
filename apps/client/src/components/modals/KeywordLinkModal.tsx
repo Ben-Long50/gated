@@ -11,25 +11,28 @@ const KeywordLinkModal = () => {
   const { backgroundPath } = useModalStore((state) => state.backgroundPath);
 
   return (
-    <Modal>
+    <Modal
+      button={
+        <BtnRect
+          type="button"
+          ariaLabel="Close"
+          className="w-full"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (!backgroundPath) {
+              navigate('..', { replace: true });
+            } else {
+              navigate(backgroundPath, { replace: true });
+              navigate(-1);
+            }
+          }}
+        >
+          Close
+        </BtnRect>
+      }
+    >
       <Keywords title="Link Traits" forcedMode="form" field={field} />
-      <BtnRect
-        type="button"
-        ariaLabel="Close"
-        className="w-full"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          if (!backgroundPath) {
-            navigate('..', { replace: true });
-          } else {
-            navigate(backgroundPath, { replace: true });
-            navigate(-1);
-          }
-        }}
-      >
-        Close
-      </BtnRect>
     </Modal>
   );
 };

@@ -1,28 +1,26 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import createCondition from './createCondition';
+import { toast } from 'react-toastify';
 
-const useCreateConditionMutation = (
-  conditionId: string,
-  setFormMessage: (message: string) => void,
-) => {
+const useCreateConditionMutation = (conditionId?: number) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (formData: object) => {
-      return createCondition(formData, conditionId);
+      return createCondition(formData);
     },
-    onSuccess: (data) => {
-      setFormMessage(data.message);
-      queryClient.invalidateQueries({
-        queryKey: ['condition'],
-        exact: false,
-      });
+    onSuccess: () => {
+      const message = conditionId
+        ? 'Condition successfully updated'
+        : 'Condition successfully created';
+
+      toast(message);
+
       return queryClient.invalidateQueries({
         queryKey: ['conditions'],
-        exact: false,
       });
     },
-    onError: (error) => {
-      setFormMessage(error.message);
+    onError: (data) => {
+      toast(data.message);
     },
     throwOnError: false,
   });

@@ -1,25 +1,26 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import createAction from './createAction';
+import { toast } from 'react-toastify';
 
-const useCreateActionMutation = (setFormMessage: (message: string) => void) => {
+const useCreateActionMutation = (actionId?: number) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (formData: object) => {
       return createAction(formData);
     },
-    onSuccess: (data) => {
-      setFormMessage(data.message);
-      queryClient.invalidateQueries({
-        queryKey: ['action'],
-        exact: false,
-      });
+    onSuccess: () => {
+      const message = actionId
+        ? 'Action successfully updated'
+        : 'Action successfully created';
+
+      toast(message);
+
       return queryClient.invalidateQueries({
         queryKey: ['actions'],
-        exact: false,
       });
     },
-    onError: (error) => {
-      setFormMessage(error.message);
+    onError: (data) => {
+      toast(data.message);
     },
     throwOnError: false,
   });

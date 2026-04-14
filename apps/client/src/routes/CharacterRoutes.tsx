@@ -102,10 +102,16 @@ const CharacterRoutes = () => {
             />
             <Route path="traits/:traitId" element={<DescriptionModal />} />
           </Route>
-          <Route path=":itemId/upgrade" element={<ItemUpgradeForm />}>
-            <Route path="traits" element={<KeywordLinkModal />} />
-            <Route path="tutorial" element={<ItemUpgradeTutorialModal />} />
-          </Route>
+        </Route>
+        <Route
+          path="items/:itemId/upgrade"
+          element={
+            <Modal>
+              <ItemUpgradeForm />
+            </Modal>
+          }
+        >
+          <Route path="traits" element={<KeywordLinkModal />} />
         </Route>
       </Route>
     </Route>

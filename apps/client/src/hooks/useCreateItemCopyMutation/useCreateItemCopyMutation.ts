@@ -1,24 +1,18 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import createItem from './createItemCopy';
+import { toast } from 'react-toastify';
 
-const useCreateItemCopyMutation = (
-  category: string,
-  itemId: number,
-  setFormMessage: (message: string) => void,
-) => {
+const useCreateItemCopyMutation = (itemId: number) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => {
-      return createItem(category, itemId);
+      return createItem(itemId);
     },
-    onSuccess: (data) => {
-      setFormMessage(data.message);
-      return queryClient.invalidateQueries({
-        queryKey: [category],
-      });
+    onSuccess: () => {
+      toast('Item successfully copied');
     },
-    onError: (error) => {
-      setFormMessage(error.message);
+    onError: (data) => {
+      toast(data.message);
     },
     throwOnError: false,
   });

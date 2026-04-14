@@ -1,7 +1,7 @@
 import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const deletePatchNote = async (patchNoteId: string) => {
+const deletePatchNote = async (patchNoteId: number) => {
   try {
     const response = await fetch(`${apiUrl}/patchNotes/${patchNoteId}`, {
       method: 'DELETE',

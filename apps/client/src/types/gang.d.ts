@@ -2,14 +2,13 @@ import { Campaign } from './campaign';
 import { Character } from './character';
 import { Affiliation, Faction } from './faction';
 import { Map } from './map';
+import { Picture } from './picture';
 
 interface Gang {
   id: number;
   name: string;
   level: number;
-  reputation: number;
-  reputationPoints: number;
-  levelNodes: number;
+  picture: Picture;
   profits: number;
   leaders: Character[];
   characters: Character[];

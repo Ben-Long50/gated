@@ -1,12 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import deleteKeyword from './deleteKeyword';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
-const useDeleteKeywordMutation = (
-  apiUrl: string,
-  keywordId: string,
-  setFormMessage: (message: string) => void,
-) => {
+const useDeleteKeywordMutation = (keywordId: number) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   return useMutation({
@@ -15,17 +12,14 @@ const useDeleteKeywordMutation = (
     },
     onSuccess: () => {
       navigate('/glam/codex/keywords');
-      queryClient.invalidateQueries({
-        queryKey: ['keyword'],
-        exact: false,
-      });
+
       return queryClient.invalidateQueries({
         queryKey: ['keywords'],
         exact: false,
       });
     },
-    onError: (error) => {
-      setFormMessage(error.message);
+    onError: (data) => {
+      toast(data.message);
     },
     throwOnError: false,
   });

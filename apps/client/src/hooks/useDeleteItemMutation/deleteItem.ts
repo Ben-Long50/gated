@@ -1,11 +1,11 @@
 import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const deleteItem = async (category: string, itemId: number) => {
+const deleteItem = async (itemId: number) => {
   try {
     if (!itemId) throw new Error('Cannot delete with an undefined itemId');
 
-    const response = await fetch(`${apiUrl}/items/${category}/${itemId}`, {
+    const response = await fetch(`${apiUrl}/items/${itemId}/delete`, {
       method: 'DELETE',
       credentials: 'include',
     });

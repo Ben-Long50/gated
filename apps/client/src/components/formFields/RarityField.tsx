@@ -1,14 +1,7 @@
 import { FormApi } from '@tanstack/react-form';
 import InputSelectField from '../InputSelectField';
-import { capitalCase } from 'change-case';
 
-const RarityField = ({
-  form,
-  category,
-}: {
-  form: FormApi;
-  category: string;
-}) => {
+const RarityField = ({ form }: { form: FormApi }) => {
   return (
     <form.Field
       name="rarity"
@@ -18,7 +11,7 @@ const RarityField = ({
     >
       {(field) => (
         <InputSelectField
-          label={capitalCase(category) + ' Rarity'}
+          label={'Item Rarity'}
           field={field}
           options={['common', 'uncommon', 'rare', 'blackMarket', 'artifact']}
         />

@@ -1,4 +1,4 @@
-import { Route } from 'react-router-dom';
+import { Route, useSearchParams } from 'react-router-dom';
 import ActionForm from 'src/components/forms/ActionForm';
 import Actions from 'src/components/Actions';
 import CodexSearch from 'src/components/CodexSearch';
@@ -32,31 +32,29 @@ const CodexTabRoutes = () => {
         <Route path=":patchNoteId/update" element={<PatchNoteForm />} />
       </Route>
       <Route path="items">
-        <Route path=":category">
-          <Route path="" element={<Items />}>
-            <Route
-              path="conditions/:conditionId"
-              element={<DescriptionModal />}
-            />
-            <Route path="traits/:traitId" element={<DescriptionModal />} />
-          </Route>
-          <Route path=":itemId" element={<ItemPage />}>
-            <Route
-              path="conditions/:conditionId"
-              element={<DescriptionModal />}
-            />
-            <Route path="traits/:traitId" element={<DescriptionModal />} />
-          </Route>
-          <Route path="create" element={<ItemForm />}>
-            <Route path="traits" element={<KeywordLinkModal />} />
-            <Route path=":linkCategory" element={<ItemLinkModal />} />
-            <Route path="actions" element={<ActionLinkModal />} />
-          </Route>
-          <Route path=":itemId/update" element={<ItemForm />}>
-            <Route path="traits" element={<KeywordLinkModal />} />
-            <Route path=":linkCategory" element={<ItemLinkModal />} />
-            <Route path="actions" element={<ActionLinkModal />} />
-          </Route>
+        <Route path="" element={<Items />}>
+          <Route
+            path="conditions/:conditionId"
+            element={<DescriptionModal />}
+          />
+          <Route path="traits/:traitId" element={<DescriptionModal />} />
+        </Route>
+        <Route path=":itemId" element={<ItemPage />}>
+          <Route
+            path="conditions/:conditionId"
+            element={<DescriptionModal />}
+          />
+          <Route path="traits/:traitId" element={<DescriptionModal />} />
+        </Route>
+        <Route path="create" element={<ItemForm />}>
+          <Route path="traits" element={<KeywordLinkModal />} />
+          <Route path="links" element={<ItemLinkModal />} />
+          <Route path="actions" element={<ActionLinkModal />} />
+        </Route>
+        <Route path=":itemId/update" element={<ItemForm />}>
+          <Route path="traits" element={<KeywordLinkModal />} />
+          <Route path="links" element={<ItemLinkModal />} />
+          <Route path="actions" element={<ActionLinkModal />} />
         </Route>
       </Route>
       <Route path="properties">

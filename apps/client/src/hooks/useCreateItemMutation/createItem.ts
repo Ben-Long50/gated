@@ -1,9 +1,9 @@
 import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const createItem = async (category: string, formData: FormData) => {
+const createItem = async (formData: FormData) => {
   try {
-    const response = await fetch(`${apiUrl}/items/${category}`, {
+    const response = await fetch(`${apiUrl}/items/create`, {
       method: 'POST',
       credentials: 'include',
       body: formData,

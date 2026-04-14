@@ -1,7 +1,7 @@
 import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const getConditionById = async (conditionId?: string) => {
+const getConditionById = async (conditionId: number) => {
   try {
     const response = await fetch(`${apiUrl}/conditions/${conditionId}`, {
       method: 'GET',

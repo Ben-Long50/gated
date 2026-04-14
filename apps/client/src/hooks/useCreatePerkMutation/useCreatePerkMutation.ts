@@ -1,27 +1,32 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import createPerk from './createPerk';
+import { toast } from 'react-toastify';
+import { Perk } from 'src/types/perk';
 
-const useCreatePerkMutation = (
-  perkId: number,
-  setFormMessage: (message: string) => void,
-) => {
+const useCreatePerkMutation = (perkId?: number) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (formData: object) => {
-      return createPerk(formData, perkId);
+    mutationFn: (formData: Perk) => {
+      return createPerk(formData);
     },
     onSuccess: () => {
-      setFormMessage('Perk successfully created');
+      const message = perkId
+        ? 'Perk successfully updated'
+        : 'Perk successfully created';
+
+      toast(message);
+
       queryClient.invalidateQueries({
         queryKey: ['perk', perkId],
       });
+
       return queryClient.invalidateQueries({
         queryKey: ['perks'],
         exact: false,
       });
     },
-    onError: (error) => {
-      setFormMessage(error.message);
+    onError: (data) => {
+      toast(data.message);
     },
     throwOnError: false,
   });

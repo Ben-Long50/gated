@@ -44,19 +44,15 @@ const ItemCard = ({
   item,
   className,
   style,
-  mode,
   menu = true,
-  cardType,
-  toggleFormLink,
+  cardType = 'large',
   ownerId,
 }: {
   item: Item;
   className?: string;
   style?: CSSProperties;
-  mode?: string;
   menu?: boolean;
   cardType?: 'small' | 'large';
-  toggleFormLink?: (item: Item) => void;
   ownerId?: number;
 }) => {
   const { gameMaster } = useContext(CampaignContext);
@@ -132,7 +128,6 @@ const ItemCard = ({
             ref={containerRef}
             className={`timing relative flex w-full cursor-pointer flex-col gap-8 p-4`}
             onClick={(e) => {
-              console.log('menu');
               e.stopPropagation();
               handleMenu(e);
             }}
@@ -140,13 +135,6 @@ const ItemCard = ({
             {menu && <ItemRadialMenu item={item} containerRef={containerRef} />}
             <div
               className={`${cardType === 'small' ? 'flex-col' : 'max-h-[300px] flex-row'} my-auto flex w-full gap-8`}
-              onClick={
-                mode === 'form' && toggleFormLink
-                  ? () => {
-                      toggleFormLink(item);
-                    }
-                  : undefined
-              }
             >
               {cardType === 'large' && item.picture?.publicId && (
                 <ItemPicture
@@ -229,11 +217,7 @@ const ItemCard = ({
                     ref={cardRef}
                     className={`${cardWidth < 500 ? 'max-h-[200px] gap-2 px-2' : 'gap-4 px-4'} scrollbar-primary-2 grid w-full grid-cols-[auto_auto_1fr_auto] place-items-center gap-y-2 overflow-y-auto border-x-2 border-gray-400 border-opacity-50`}
                   >
-                    <StatBars
-                      cardWidth={cardWidth}
-                      stats={item?.stats}
-                      mode={mode}
-                    />
+                    <StatBars cardWidth={cardWidth} stats={item?.stats} />
                     {linkedWeapons.length > 0 && (
                       <>
                         <h4 className="col-span-3 justify-self-start">
@@ -295,7 +279,7 @@ const ItemCard = ({
                       stats={item.stats}
                       cardType={cardType}
                     />
-                  ) : item.itemTypes.includes('augmentation') ? (
+                  ) : item.itemTypes.includes('cybernetic') ? (
                     <CyberneticControls
                       cyberneticId={item.id}
                       stats={item.stats}

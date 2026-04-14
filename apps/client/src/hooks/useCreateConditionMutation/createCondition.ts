@@ -1,7 +1,7 @@
 import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const createCondition = async (formData: object, conditionId: string) => {
+const createCondition = async (formData: object) => {
   try {
     const response = await fetch(`${apiUrl}/conditions`, {
       method: 'POST',
@@ -9,7 +9,7 @@ const createCondition = async (formData: object, conditionId: string) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ ...formData, conditionId }),
+      body: JSON.stringify(formData),
     });
     const data = await handleResponse(response);
     return data;

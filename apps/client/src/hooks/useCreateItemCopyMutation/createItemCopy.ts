@@ -1,9 +1,9 @@
 import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const createItemCopy = async (category: string, itemId: number) => {
+const createItemCopy = async (itemId: number) => {
   try {
-    const response = await fetch(`${apiUrl}/items/${category}/${itemId}`, {
+    const response = await fetch(`${apiUrl}/items/${itemId}/createCopy`, {
       method: 'POST',
       credentials: 'include',
     });

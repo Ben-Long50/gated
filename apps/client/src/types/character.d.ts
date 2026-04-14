@@ -24,9 +24,9 @@ interface Character {
   gangId?: number;
   campaign?: Campaign;
   campaignId?: number;
-  backstory: { html: string; nodes: string };
-  firstTaste: { html: string; nodes: string };
-  badMedicine: { html: string; nodes: string };
+  backstory: { html: string; nodes: object };
+  firstTaste: { html: string; nodes: object };
+  badMedicine: { html: string; nodes: object };
   attributes: AttributeTree;
   firstName: string;
   lastName: string;
@@ -112,4 +112,10 @@ interface CartItemReference {
   itemId: number;
   item: Item;
   quantity: number;
+}
+
+interface Resume {
+  backstory: { html: string; nodes: object };
+  firstTaste: { html: string; nodes: object };
+  badMedicine: { html: string; nodes: object };
 }

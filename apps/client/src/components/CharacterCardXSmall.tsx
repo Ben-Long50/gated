@@ -8,17 +8,20 @@ import CharacterRadialMenu from './radialMenus/characterRadialMenu/CharacterRadi
 import useRadialMenuStore from 'src/stores/radialMenuStore';
 import PassIcon from './icons/PassIcon';
 import CrownIcon from './icons/CrownIcon';
+import constructName from 'src/utils/constructName';
 
 const CharacterCardXSmall = ({
   characterList,
   characterId,
   className,
   active,
+  menu = true,
 }: {
   characterList: boolean;
   characterId: number;
   className?: string;
   active: boolean;
+  menu?: boolean;
 }) => {
   const { filteredCharacter: character, isLoading } = useCharacter(characterId);
   const containerRef = useRef(null);
@@ -27,10 +30,6 @@ const CharacterCardXSmall = ({
   const setMenuOpen = useRadialMenuStore((state) => state.setMenuOpen);
   const setMenu = useRadialMenuStore((state) => state.setMenu);
   const setCoordinates = useRadialMenuStore((state) => state.setCoordinates);
-
-  const characterName = character?.lastName
-    ? character?.firstName + ' ' + character?.lastName
-    : character?.firstName;
 
   const handleMenu = (e: MouseEvent) => {
     if (!containerRef.current) return;
@@ -51,14 +50,18 @@ const CharacterCardXSmall = ({
   return (
     <div
       ref={containerRef}
-      className={`${className} timing relative flex cursor-pointer flex-col`}
+      className={`${className} ${menu && 'cursor-pointer'} timing relative flex flex-col`}
       onClick={(e) => {
         e.stopPropagation();
         handleMenu(e);
       }}
     >
-      <CharacterRadialMenu character={character} containerRef={containerRef} />
-
+      {menu && (
+        <CharacterRadialMenu
+          character={character}
+          containerRef={containerRef}
+        />
+      )}
       <div className={`relative flex items-center gap-4`}>
         <CharacterPictureRound
           className={`${active && 'liveToken'}`}
@@ -69,7 +72,7 @@ const CharacterCardXSmall = ({
         )}
         <ArrowHeader4
           className={`${characterList ? 'visible h-8 translate-x-0 opacity-100' : 'invisible h-0 -translate-x-full opacity-0'} ${active ? 'text-accent' : 'text-primary'} timing w-full`}
-          title={characterName}
+          title={constructName(character)}
         />
       </div>
     </div>

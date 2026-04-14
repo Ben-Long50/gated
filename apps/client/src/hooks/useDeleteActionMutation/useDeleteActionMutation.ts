@@ -1,8 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import deleteAction from './deleteAction';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
-const useDeleteActionMutation = (setFormMessage: (message: string) => void) => {
+const useDeleteActionMutation = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   return useMutation({
@@ -10,18 +11,15 @@ const useDeleteActionMutation = (setFormMessage: (message: string) => void) => {
       return deleteAction(actionId);
     },
     onSuccess: () => {
+      toast('Successfully deleted action');
       navigate('/glam/codex/actions');
-      queryClient.invalidateQueries({
-        queryKey: ['action'],
-        exact: false,
-      });
+
       return queryClient.invalidateQueries({
         queryKey: ['actions'],
-        exact: false,
       });
     },
-    onError: (error) => {
-      setFormMessage(error.message);
+    onError: (data) => {
+      toast(data.message);
     },
     throwOnError: false,
   });

@@ -1,30 +1,26 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import deleteBookEntry from './deletePatchNote';
+import { toast } from 'react-toastify';
+import deletePatchNote from './deletePatchNote';
 
-const useDeletePatchNoteMutation = (
-  patchNoteId: string,
-  setFormMessage: (message: string) => void,
-) => {
+const useDeletePatchNoteMutation = (patchNoteId: number) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   return useMutation({
     mutationFn: () => {
-      return deleteBookEntry(patchNoteId);
+      return deletePatchNote(patchNoteId);
     },
     onSuccess: () => {
+      toast('Patch note successfully deleted');
       navigate('/glam/codex');
-      queryClient.invalidateQueries({
-        queryKey: ['patchNote'],
-        exact: false,
-      });
+
       return queryClient.invalidateQueries({
         queryKey: ['patchNotes'],
         exact: false,
       });
     },
-    onError: (error) => {
-      setFormMessage(error.message);
+    onError: (data) => {
+      toast(data.message);
     },
     throwOnError: false,
   });

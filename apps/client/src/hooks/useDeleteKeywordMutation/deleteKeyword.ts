@@ -1,7 +1,7 @@
 import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const deleteKeyword = async (keywordId: string) => {
+const deleteKeyword = async (keywordId: number) => {
   try {
     const response = await fetch(`${apiUrl}/keywords/${keywordId}`, {
       method: 'DELETE',

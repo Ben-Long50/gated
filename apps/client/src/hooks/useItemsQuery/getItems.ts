@@ -3,7 +3,7 @@ import handleResponse from '../handleResponse';
 
 const getItems = async (category: string) => {
   try {
-    const response = await fetch(`${apiUrl}/items/${category}`, {
+    const response = await fetch(`${apiUrl}/items/${category}s`, {
       method: 'GET',
       credentials: 'include',
     });

@@ -1,32 +1,32 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import createSession from './createSession';
+import { toast } from 'react-toastify';
 
-const useCreateSessionMutation = (
-  campaignId: number,
-  setFormMessage: (message: string) => void,
-  sessionId?: number,
-) => {
+const useCreateSessionMutation = (campaignId: number, sessionId?: number) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (formData: FormData) => {
       return createSession(formData, campaignId);
     },
     onSuccess: () => {
+      const message = sessionId
+        ? 'Session successfully updated'
+        : 'Session successfully created';
+
+      toast(message);
+
       if (sessionId) {
-        setFormMessage('Session successfully updated');
         queryClient.invalidateQueries({
           queryKey: ['session', sessionId],
         });
-        return queryClient.invalidateQueries({
-          queryKey: ['campaign', campaignId],
-        });
-      } else {
-        setFormMessage('Session successfully created');
-        return;
       }
+
+      return queryClient.invalidateQueries({
+        queryKey: ['campaign', campaignId],
+      });
     },
-    onError: (error) => {
-      setFormMessage(error.message);
+    onError: (data) => {
+      toast(data.message);
     },
     throwOnError: false,
   });

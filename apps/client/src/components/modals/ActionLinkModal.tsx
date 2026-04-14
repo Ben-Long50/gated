@@ -1,6 +1,4 @@
 import Modal from './Modal';
-import { ItemObject } from 'src/types/global';
-import { Item } from 'src/types/item';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import useModalStore from 'src/stores/modalStore';
 import BtnRect from '../buttons/BtnRect';
@@ -13,43 +11,43 @@ const ActionLinkModal = () => {
 
   const backgroundPath = useModalStore((state) => state.backgroundPath);
 
-  const toggleFormLink = (targetItem: Item) => {
-    if (!field.state.value.some((item: Item) => item.id === targetItem.id)) {
-      field.handleChange([...field.state.value, targetItem]);
+  const toggleFormLink = (actionId: number) => {
+    if (!field.state.value.some((id: number) => id === actionId)) {
+      field.handleChange([...field.state.value, actionId]);
     } else {
       field.handleChange(
-        field.state.value.filter(
-          (item: ItemObject) => item.id !== targetItem.id,
-        ),
+        field.state.value.filter((id: number) => id !== actionId),
       );
     }
   };
 
   return (
-    <Modal>
+    <Modal
+      button={
+        <BtnRect
+          type="button"
+          ariaLabel="Confirm preferences"
+          className="w-full"
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            if (!backgroundPath) {
+              navigate('..', { replace: true });
+            } else {
+              navigate(backgroundPath, { replace: true });
+              navigate(-1);
+            }
+          }}
+        >
+          Close
+        </BtnRect>
+      }
+    >
       <Actions
         title="Link Actions"
-        forcedMode="form"
         field={field}
         toggleFormLink={toggleFormLink}
       />
-      <BtnRect
-        type="button"
-        ariaLabel="Confirm preferences"
-        className="w-full"
-        onClick={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
-          if (!backgroundPath) {
-            navigate('..', { replace: true });
-          } else {
-            navigate(backgroundPath, { replace: true });
-            navigate(-1);
-          }
-        }}
-      >
-        Close
-      </BtnRect>
     </Modal>
   );
 };

@@ -1,27 +1,27 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import createPatchNote from './createPatchNote';
+import { toast } from 'react-toastify';
 
-const useCreatePatchNoteMutation = (
-  setFormMessage: (message: string) => void,
-) => {
+const useCreatePatchNoteMutation = (patchNoteId?: number) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (formData: object) => {
       return createPatchNote(formData);
     },
     onSuccess: () => {
-      setFormMessage('Patch note entry successfully created');
-      queryClient.invalidateQueries({
-        queryKey: ['patchNote'],
-        exact: false,
-      });
+      const message = patchNoteId
+        ? 'Patch note successfully updated'
+        : 'Patch note successfully created';
+
+      toast(message);
+
       return queryClient.invalidateQueries({
         queryKey: ['patchNotes'],
         exact: false,
       });
     },
-    onError: (error) => {
-      setFormMessage(error.message);
+    onError: (data) => {
+      toast(data.message);
     },
     throwOnError: false,
   });

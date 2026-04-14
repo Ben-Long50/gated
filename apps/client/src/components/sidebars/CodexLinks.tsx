@@ -1,4 +1,3 @@
-import BookIcon from '../icons/BookIcon';
 import ArmorIcon from '../icons/ArmorIcon';
 import CyberIcon from '../icons/CyberIcon';
 import WeaponIcon from '../icons/WeaponIcon';
@@ -9,8 +8,6 @@ import KeywordIcon from '../icons/KeywordIcon';
 import PerkIcon from '../icons/PerkIcon';
 import { AuthContext } from '../../contexts/AuthContext';
 import { useContext } from 'react';
-import useBookSectionsQuery from '../../hooks/useBookSectionsQuery/useBookSectionsQuery';
-import LinkSublistSidebar from './LinkSublistSidebar';
 import VehicleIcon from '../../components/icons/VehicleIcon';
 import ConditionIcon from '../../components/icons/ConditionIcon';
 import Icon from '@mdi/react';
@@ -20,13 +17,10 @@ import LinkSidebar from './LinkSidebar';
 import ModificationIcon from '../icons/ModificationIcon';
 import DroneIcon from '../icons/DroneIcon';
 import PotionIcon from '../icons/PotionIcon';
-import { capitalCase } from 'change-case';
 import PropertyIcon from '../icons/PropertyIcon';
 
 const CodexLinks = () => {
   const { user } = useContext(AuthContext);
-
-  const { data: bookSections } = useBookSectionsQuery();
 
   return (
     <>
@@ -49,24 +43,24 @@ const CodexLinks = () => {
       >
         <SubLinkSidebar
           title="All Weapons"
-          path="codex/items/weapons?exclude=Vehicle Weapon&exclude=Drone Weapon"
+          path="codex/items?category=weapon&exclude=Vehicle Weapon&exclude=Drone Weapon"
         />
         <SubLinkSidebar
           title="Ranged Weapons"
-          path="codex/items/weapons?include=Ranged&exclude=Vehicle Weapon&exclude=Drone Weapon"
+          path="codex/items?category=weapon&include=Ranged&exclude=Vehicle Weapon&exclude=Drone Weapon"
         />
         <SubLinkSidebar
           title="Melee Weapons"
-          path="codex/items/weapons/?include=Melee&exclude=Vehicle Weapon&exclude=Drone Weapon"
+          path="codex/items?category=weapon&include=Melee&exclude=Vehicle Weapon&exclude=Drone Weapon"
         />
         <SubLinkSidebar
           title="Consumable Weapons"
-          path="codex/items/weapons?include=Consumable&include=Light Consumable&exclude=Vehicle Weapon&exclude=Drone Weapon"
+          path="codex/items?category=weapon&include=Consumable&include=Light Consumable&exclude=Vehicle Weapon&exclude=Drone Weapon"
         />
         {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
           <SubLinkSidebar
             title="Create a New Weapon"
-            path="codex/items/weapons/create"
+            path="codex/items/create?category=weapon"
           />
         )}
       </LinkListSidebar>
@@ -76,23 +70,23 @@ const CodexLinks = () => {
         }
         title="Armor"
       >
-        <SubLinkSidebar title="All Armor" path="codex/items/armors" />
+        <SubLinkSidebar title="All Armor" path="codex/items?category=armor" />
         <SubLinkSidebar
           title="Head Armor"
-          path="codex/items/armors/?include=Head"
+          path="codex/items?category=armor&include=Head"
         />
         <SubLinkSidebar
           title="Body Armor"
-          path="codex/items/armors/?include=Body"
+          path="codex/items?category=armor&include=Body"
         />
         <SubLinkSidebar
           title="Cloak Armor"
-          path="codex/items/armors/?include=Cloak"
+          path="codex/items?category=armor&include=Cloak"
         />
         {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
           <SubLinkSidebar
             title="Create New Armor"
-            path="codex/items/armors/create"
+            path="codex/items/create?category=armor"
           />
         )}
       </LinkListSidebar>
@@ -104,16 +98,16 @@ const CodexLinks = () => {
       >
         <SubLinkSidebar
           title="Cybernetics"
-          path="codex/items/augmentations?augmentType=cybernetic"
+          path="codex/items?category=cybernetic"
         />
         <SubLinkSidebar
           title="Mutations"
-          path="codex/items/augmentations?augmentType=mutation"
+          path="codex/items?category=mutation"
         />
         {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
           <SubLinkSidebar
             title="Create a New Augmentation"
-            path="codex/items/augmentations/create"
+            path="codex/items/create?category=cybernetic"
           />
         )}
       </LinkListSidebar>
@@ -123,16 +117,19 @@ const CodexLinks = () => {
         }
         title="Vehicles"
       >
-        <SubLinkSidebar title="All Vehicles" path="codex/items/vehicles" />
+        <SubLinkSidebar
+          title="All Vehicles"
+          path="codex/items?category=vehicle"
+        />
         <SubLinkSidebar
           title="Vehicle Weapons"
-          path="codex/items/weapons?include=Vehicle Weapon"
+          path="codex/items/?category=weapon&include=Vehicle Weapon"
         />
         {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
           <>
             <SubLinkSidebar
               title="Create a New Vehicle"
-              path="codex/items/vehicles/create"
+              path="codex/items/create?category=vehicle"
             />
           </>
         )}
@@ -143,16 +140,16 @@ const CodexLinks = () => {
         }
         title="Drones"
       >
-        <SubLinkSidebar title="All Drones" path="codex/items/drones" />
+        <SubLinkSidebar title="All Drones" path="codex/items?category=drone" />
         <SubLinkSidebar
           title="Drone Weapons"
-          path="codex/items/weapons?include=Drone Weapon"
+          path="codex/items/?category=weapon&include=Drone Weapon"
         />
         {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
           <>
             <SubLinkSidebar
               title="Create a New Drone"
-              path="codex/items/drones/create"
+              path="codex/items/create?category=drone"
             />
           </>
         )}
@@ -165,13 +162,13 @@ const CodexLinks = () => {
       >
         <SubLinkSidebar
           title="All Modifications"
-          path="codex/items/modifications"
+          path="codex/items?category=modifiaction"
         />
         {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
           <>
             <SubLinkSidebar
               title="Create a New Modification"
-              path="codex/items/modifications/create"
+              path="codex/items/create?category=modification"
             />
           </>
         )}
@@ -182,12 +179,15 @@ const CodexLinks = () => {
         }
         title="Reusable Items"
       >
-        <SubLinkSidebar title="All Reusables" path="codex/items/reusables" />
+        <SubLinkSidebar
+          title="All Reusables"
+          path="codex/items?category=reusable"
+        />
         {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
           <>
             <SubLinkSidebar
               title="Create a New Reusable"
-              path="codex/items/reusables/create"
+              path="codex/items/create?category=reusable"
             />
           </>
         )}
@@ -200,13 +200,13 @@ const CodexLinks = () => {
       >
         <SubLinkSidebar
           title="All Consumables"
-          path="codex/items/consumables"
+          path="codex/items?category=consumable"
         />
         {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
           <>
             <SubLinkSidebar
               title="Create a New Consumable"
-              path="codex/items/consumables/create"
+              path="codex/items/create?category=consumable"
             />
           </>
         )}
