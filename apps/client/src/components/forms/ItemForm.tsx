@@ -44,30 +44,12 @@ const ItemForm = () => {
       <ArrowHeader2 title="Item Information" />
       <div className="flex w-full flex-col gap-4">
         <div className="flex w-full gap-4">
-          <itemForm.Field
-            name="name"
-            validators={{
-              onChange: ({ value }) =>
-                value.length < 2
-                  ? `Item name must be at least 2 characters long`
-                  : undefined,
-            }}
-          >
+          <itemForm.Field name="name">
             {(field) => (
               <InputField className="grow" label={'Item Name'} field={field} />
             )}
           </itemForm.Field>
-          <itemForm.Field
-            name="price"
-            validators={{
-              onChange: ({ value }) => {
-                if (value < 0) {
-                  return 'Price cannot be negative';
-                }
-                return undefined;
-              },
-            }}
-          >
+          <itemForm.Field name="price">
             {(field) => (
               <InputField
                 className="max-w-28"
@@ -80,13 +62,7 @@ const ItemForm = () => {
         </div>
         <div className="flex w-full items-center gap-4">
           <RarityField form={itemForm} />
-          <itemForm.Field
-            name="grade"
-            validators={{
-              onChange: ({ value }) =>
-                value <= 0 ? 'Minimum grade is 1' : undefined,
-            }}
-          >
+          <itemForm.Field name="grade">
             {(field) => (
               <InputField
                 className="w-full max-w-28"
@@ -134,8 +110,7 @@ const ItemForm = () => {
               </div>
             ))}
             <BtnAuth
-              onClick={(e) => {
-                e.preventDefault();
+              onClick={() => {
                 itemForm.setFieldValue('itemTypes', [...field.state.value, '']);
               }}
             >
@@ -149,15 +124,7 @@ const ItemForm = () => {
           form={itemForm}
           sizeInfo={{ aspectRatio: '1/1', maxHeight: '', minHeight: '' }}
         />
-        <itemForm.Field
-          name="description"
-          validators={{
-            onChange: ({ value }) =>
-              value.length < 2
-                ? `Item description must be at least 2 characters long`
-                : undefined,
-          }}
-        >
+        <itemForm.Field name="description">
           {(field) => (
             <TextAreaField label={'Item Description'} field={field} />
           )}

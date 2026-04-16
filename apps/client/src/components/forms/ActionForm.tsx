@@ -1,14 +1,11 @@
-import { useState } from 'react';
 import InputField from '../InputField';
-import BtnRect from '../buttons/BtnRect';
 import TextAreaField from '../TextAreaField';
 import useAttributeTree from '../../hooks/useAttributeTree';
 import Icon from '@mdi/react';
 import { mdiClose } from '@mdi/js';
 import FormLayout from '../../layouts/FormLayout';
 import useCreateActionMutation from '../../hooks/useCreateActionMutation/useCreateActionMutation';
-import { useLocation, useParams } from 'react-router-dom';
-import Loading from '../Loading';
+import { useParams } from 'react-router-dom';
 import useDeleteActionMutation from '../../hooks/useDeleteActionMutation/useDeleteActionMutation';
 import useActions from '../../hooks/useActions';
 import { Action } from 'src/types/action';
@@ -18,6 +15,7 @@ import ModifierField from '../formFields/ModifierField';
 import InputSelectField from '../InputSelectField';
 import KeywordLinkField from '../formFields/KeywordLinkField';
 import useActionForm from 'src/hooks/form hooks/useActionForm';
+import BtnAuth from '../buttons/BtnAuth';
 
 const ActionForm = () => {
   const { actionId } = useParams();
@@ -44,26 +42,12 @@ const ActionForm = () => {
       deleteMutation={deleteAction}
     >
       <ArrowHeader2 title="Action Information" />
-      <actionForm.Field
-        name="name"
-        validators={{
-          onChange: ({ value }) =>
-            value.length < 2
-              ? 'Action name must be at least 2 characters long'
-              : undefined,
-        }}
-      >
+      <actionForm.Field name="name">
         {(field) => (
           <InputField className="grow" label="Action name" field={field} />
         )}
       </actionForm.Field>
-      <actionForm.Field
-        name="actionType"
-        validators={{
-          onSubmit: ({ value }) =>
-            !value ? 'An action type must be selected' : undefined,
-        }}
-      >
+      <actionForm.Field name="actionType">
         {(field) => (
           <InputSelectField
             options={['action', 'extendedAction', 'reaction', 'passive']}
@@ -124,24 +108,19 @@ const ActionForm = () => {
                     onClick={() => field.removeValue(j)}
                     type="button"
                   >
-                    <Icon className="text-tertiary" path={mdiClose} size={1} />
+                    <Icon
+                      className="text-tertiary"
+                      path={mdiClose}
+                      size={1.25}
+                    />
                   </button>
                 </div>
               ))}
-              <div className="my-auto flex items-center justify-end gap-4 self-end sm:col-start-2 lg:gap-8">
-                <button
-                  className="text-accent self-end hover:underline"
-                  onClick={() =>
-                    field.pushValue({
-                      attribute: '',
-                      skill: '',
-                    })
-                  }
-                  type="button"
-                >
-                  Add roll
-                </button>
-              </div>
+              <BtnAuth
+                onClick={() => field.pushValue({ attribute: '', skill: '' })}
+              >
+                Add Roll
+              </BtnAuth>
             </div>
           );
         }}
@@ -172,110 +151,120 @@ const ActionForm = () => {
                       <Icon
                         className="text-tertiary"
                         path={mdiClose}
-                        size={1}
+                        size={1.25}
                       />
                     </button>
                   </div>
                 );
               })}
-              <div className="my-auto flex items-center justify-end gap-4 self-end sm:col-start-2 lg:gap-8">
-                <button
-                  className="text-accent self-end hover:underline"
-                  onClick={() => field.pushValue('')}
-                  type="button"
-                >
-                  Add Subtype
-                </button>
-              </div>
+              <BtnAuth onClick={() => field.pushValue('')}>
+                Add Action Subtype
+              </BtnAuth>
             </div>
           );
         }}
       </actionForm.Field>
-      <div className="flex w-full items-center gap-4 lg:gap-8">
-        <actionForm.Field name="duration.unit">
-          {(field) => (
-            <InputSelectField
-              options={[
-                'second',
-                'minute',
-                'hour',
-                'day',
-                'action',
-                'reaction',
-                'turn',
-                'round',
-                'scene',
-                'session',
-              ]}
-              label="Effect Duration"
-              field={field}
-            />
-          )}
-        </actionForm.Field>
-        <actionForm.Field
-          name="duration.value"
-          validators={{
-            onChange: ({ value }) =>
-              value && value <= 0 ? 'Minimum value is 1' : undefined,
-          }}
-        >
-          {(field) => (
-            <InputField
-              className="w-full max-w-28"
-              type="number"
-              label="Dur. Value"
-              field={field}
-            />
-          )}
-        </actionForm.Field>
-      </div>
-      <div className="flex w-full items-center gap-4 lg:gap-8">
-        <actionForm.Field name="cooldown.unit">
-          {(field) => (
-            <InputSelectField
-              options={[
-                'second',
-                'minute',
-                'hour',
-                'day',
-                'action',
-                'reaction',
-                'turn',
-                'round',
-                'scene',
-                'session',
-              ]}
-              label="Cooldown Duration"
-              field={field}
-            />
-          )}
-        </actionForm.Field>
-        <actionForm.Field
-          name="cooldown.value"
-          validators={{
-            onChange: ({ value }) =>
-              value && value <= 0 ? 'Minimum value is 1' : undefined,
-          }}
-        >
-          {(field) => (
-            <InputField
-              className="w-full max-w-28"
-              type="number"
-              label="Cd. Value"
-              field={field}
-            />
-          )}
-        </actionForm.Field>
-      </div>
-      <actionForm.Field
-        name="description"
-        validators={{
-          onChange: ({ value }) =>
-            value.length < 2
-              ? 'Action description must be at least 2 characters long'
-              : undefined,
-        }}
-      >
+      <actionForm.Field name="duration">
+        {(field) =>
+          field.state.value ? (
+            <div className="flex w-full items-center gap-4 lg:gap-8">
+              <actionForm.Field name="duration.unit">
+                {(field) => (
+                  <InputSelectField
+                    options={[
+                      'second',
+                      'minute',
+                      'hour',
+                      'day',
+                      'action',
+                      'reaction',
+                      'turn',
+                      'round',
+                      'scene',
+                      'session',
+                    ]}
+                    label="Effect Duration"
+                    field={field}
+                  />
+                )}
+              </actionForm.Field>
+              <actionForm.Field
+                name="duration.value"
+                validators={{
+                  onChange: ({ value }) =>
+                    value && value <= 0 ? 'Minimum value is 1' : undefined,
+                }}
+              >
+                {(field) => (
+                  <InputField
+                    className="w-full max-w-28"
+                    type="number"
+                    label="Dur. Value"
+                    field={field}
+                  />
+                )}
+              </actionForm.Field>
+            </div>
+          ) : (
+            <BtnAuth
+              onClick={() => field.handleChange({ unit: '', value: null })}
+            >
+              Add Effect Duration
+            </BtnAuth>
+          )
+        }
+      </actionForm.Field>
+      <actionForm.Field name="cooldown">
+        {(field) =>
+          field.state.value ? (
+            <div className="flex w-full items-center gap-4 lg:gap-8">
+              <actionForm.Field name="cooldown.unit">
+                {(field) => (
+                  <InputSelectField
+                    options={[
+                      'second',
+                      'minute',
+                      'hour',
+                      'day',
+                      'action',
+                      'reaction',
+                      'turn',
+                      'round',
+                      'scene',
+                      'session',
+                    ]}
+                    label="Cooldown Duration"
+                    field={field}
+                  />
+                )}
+              </actionForm.Field>
+              <actionForm.Field
+                name="cooldown.value"
+                validators={{
+                  onChange: ({ value }) =>
+                    value && value <= 0 ? 'Minimum value is 1' : undefined,
+                }}
+              >
+                {(field) => (
+                  <InputField
+                    className="w-full max-w-28"
+                    type="number"
+                    label="Cd. Value"
+                    field={field}
+                  />
+                )}
+              </actionForm.Field>
+            </div>
+          ) : (
+            <BtnAuth
+              onClick={() => field.handleChange({ unit: '', value: null })}
+            >
+              Add Effect Cooldown
+            </BtnAuth>
+          )
+        }
+      </actionForm.Field>
+      <actionForm.Field name="description">
         {(field) => (
           <TextAreaField
             className="w-full"
@@ -286,7 +275,7 @@ const ActionForm = () => {
       </actionForm.Field>
       <Divider />
       <ArrowHeader2 title="Action Costs" />
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:gap-8">
+      <div className="grid grid-cols-2 gap-4">
         <actionForm.Field name="costs.currentActions">
           {(field) => (
             <InputField

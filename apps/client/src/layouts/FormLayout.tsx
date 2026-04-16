@@ -33,6 +33,10 @@ const FormLayout = ({
 
   const formErrorMap = useStore(form.store, (state) => state.errorMap);
 
+  const errorArray = formErrorMap.onSubmit
+    ? formErrorMap.onSubmit.split(',')
+    : [];
+
   const isPending = createMutation?.isPending || deleteMutation?.isPending;
 
   return (
@@ -58,12 +62,14 @@ const FormLayout = ({
         {children}
         <Divider className="mt-0.5" />
         <div className="flex w-full flex-col gap-4">
-          {formErrorMap.onSubmit &&
-            typeof formErrorMap.onSubmit === 'string' && (
-              <div>
-                <em className="text-error">{formErrorMap.onSubmit}</em>
-              </div>
-            )}
+          {errorArray.length > 0 && (
+            <div className="flex flex-col items-start gap-2">
+              <em className="text-error text-xl">Errors:</em>
+              {errorArray.map((error: string, index: number) => (
+                <em className="text-error text-lg">{`${index + 1}. ${error}`}</em>
+              ))}
+            </div>
+          )}
           <BtnRect
             ariaLabel={itemId ? `Update ${label}` : `Create ${label}`}
             type="submit"

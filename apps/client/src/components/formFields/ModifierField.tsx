@@ -1,11 +1,10 @@
 import { FormApi } from '@tanstack/react-form';
 import ArrowHeader2 from '../ArrowHeader2';
-import Divider from '../Divider';
 import { capitalCase } from 'change-case';
 import ThemeContainer from '../ThemeContainer';
-import BtnRect from '../buttons/BtnRect';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import useModalStore from 'src/stores/modalStore';
+import BtnAuth from '../buttons/BtnAuth';
 
 const ModifierField = ({ form }: { form: FormApi }) => {
   const navigate = useNavigate();
@@ -21,16 +20,7 @@ const ModifierField = ({ form }: { form: FormApi }) => {
 
   return (
     <>
-      <div className="flex w-full items-center justify-between gap-8">
-        <ArrowHeader2 title="Stat Modifiers" />
-        <BtnRect
-          type="button"
-          ariaLabel="Manage Modifiers"
-          onClick={() => openModifierModal()}
-        >
-          Manage Modifiers
-        </BtnRect>
-      </div>
+      <BtnAuth onClick={() => openModifierModal()}>Add Stat Modifiers</BtnAuth>
       <form.Field name="modifiers">
         {(field) => {
           const modifiedStats = Object.entries(field.state.value) || [];
@@ -42,6 +32,7 @@ const ModifierField = ({ form }: { form: FormApi }) => {
               )}
               {modifiedStats.length > 0 && (
                 <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
+                  <ArrowHeader2 title="Stat Modifiers" className="col-span-2" />
                   {modifiedStats.map(([stat, value]) => (
                     <ThemeContainer
                       key={stat}
@@ -67,7 +58,6 @@ const ModifierField = ({ form }: { form: FormApi }) => {
           );
         }}
       </form.Field>
-      <Divider />
     </>
   );
 };

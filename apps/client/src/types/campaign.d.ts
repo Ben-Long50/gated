@@ -70,6 +70,7 @@ interface Event {
   characterId: number;
   month: Month;
   day: number;
+  time: { hour: number; minute: number; second: number };
   name: string;
   description: string;
 }

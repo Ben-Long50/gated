@@ -37,14 +37,14 @@ const useCampaignForm = (
 
       await mutation.mutate(formData);
     },
-    validators: {
-      onSubmit: ({ value }) => {
-        if ([...value.playerIds, ...value.pendingPlayerIds].length < 1) {
-          return 'You must invite or have a minimum of one active player to create or update this campaign';
-        }
-        return undefined;
-      },
-    },
+    // validators: {
+    //   onSubmit: ({ value }) => {
+    //     if ([...value.playerIds, ...value.pendingPlayerIds].length < 1) {
+    //       return 'You must invite or have a minimum of one active player to create or update this campaign';
+    //     }
+    //     return undefined;
+    //   },
+    // },
   });
 
   return campaignForm;

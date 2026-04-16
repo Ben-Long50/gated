@@ -22,3 +22,11 @@ const constructFormData = (data: object) => {
 };
 
 export default constructFormData;
+
+export const filterFormData = (data: object) => {
+  const filteredData = Object.fromEntries(
+    Object.entries(data).filter(([, value]) => value),
+  );
+
+  return filteredData;
+};

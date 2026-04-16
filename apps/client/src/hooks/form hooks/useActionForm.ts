@@ -1,6 +1,7 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
 import { Action, ActionCosts } from 'src/types/action';
+import { filterFormData } from './constructFormData';
 
 const useActionForm = (
   mutation: UseMutationResult<any, Error, any>,
@@ -11,13 +12,13 @@ const useActionForm = (
       id: action?.id || 0,
       name: action?.name || '',
       costs: {
-        currentActions: action?.costs?.currentActions || '',
-        currentReactions: action?.costs?.currentReactions || '',
-        currentPower: action?.costs?.currentPower || '',
-        currentHealth: action?.costs?.currentHealth || '',
-        currentSanity: action?.costs?.currentSanity || '',
-        wyrmShells: action?.costs?.wyrmShells || '',
-        currentAmmoCount: action?.costs?.currentAmmoCount || '',
+        currentActions: action?.costs?.currentActions || null,
+        currentReactions: action?.costs?.currentReactions || null,
+        currentPower: action?.costs?.currentPower || null,
+        currentHealth: action?.costs?.currentHealth || null,
+        currentSanity: action?.costs?.currentSanity || null,
+        wyrmShells: action?.costs?.wyrmShells || null,
+        currentAmmoCount: action?.costs?.currentAmmoCount || null,
       },
       roll:
         action?.roll ||
@@ -29,12 +30,12 @@ const useActionForm = (
       actionSubtypes: action?.actionSubtypes || ([] as string[]),
       duration:
         action?.duration ||
-        ({ unit: '', value: null } as { unit: string; value: number | null }),
+        (null as { unit: string; value: number | null } | null),
       cooldown:
         action?.cooldown ||
-        ({ unit: '', value: null } as { unit: string; value: number | null }),
+        (null as { unit: string; value: number | null } | null),
       description: action?.description || '',
-      modifiers: action?.modifiers || {},
+      modifiers: action?.modifiers || (null as object | null),
       keywords:
         action?.keywordModifiers.map((keyword) => ({
           keywordId: keyword.keyword.id,
@@ -47,20 +48,41 @@ const useActionForm = (
       );
 
       const filteredCosts = Object.fromEntries(
-        Object.entries(value.costs).filter(([_, value]) => value),
+        Object.entries(value.costs).filter(([_, value]) => value !== null),
       ) as ActionCosts;
 
-      const { keywords, ...rest } = value;
-
       const data = {
-        ...rest,
+        ...value,
         actionSubtypes: filteredSubtypes,
         costs: filteredCosts,
-        keywordModifierIds: keywords,
       };
 
-      await mutation.mutate(data);
+      const filteredData = filterFormData(data);
+
+      await mutation.mutate(filteredData);
     },
+    // validators: {
+    //   onSubmit: ({ value }) => {
+    //     const errors = [];
+    //     if (value.name.length < 2) {
+    //       errors.push('Action name is too short');
+    //     }
+    //     if (value.name.length > 100) {
+    //       errors.push('Action name is too long');
+    //     }
+    //     if (!value.actionType) {
+    //       errors.push('An action type must be selected');
+    //     }
+    //     if (value.description.length < 10) {
+    //       errors.push('Action description is too short');
+    //     }
+    //     if (value.description.length > 250) {
+    //       errors.push('Action description is too long');
+    //     }
+
+    //     return errors.length > 0 ? errors.join(',') : undefined;
+    //   },
+    // },
   });
 
   return actionForm;

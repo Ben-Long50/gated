@@ -11,6 +11,7 @@ const useFactionForm = (
     defaultValues: {
       id: faction?.id || 0,
       name: faction?.name || '',
+      factionType: faction?.factionType || '',
       pictureFile: null as File | null,
       picture: faction?.picture || {
         imageUrl: '',

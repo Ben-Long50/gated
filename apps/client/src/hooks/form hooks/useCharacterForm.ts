@@ -3,7 +3,6 @@ import { UseMutationResult } from '@tanstack/react-query';
 import { Character } from 'src/types/character';
 import constructFormData from './constructFormData';
 import useAttributeTree from '../useAttributeTree';
-import { Perk } from 'src/types/perk';
 
 const useCharacterForm = (
   mutation: UseMutationResult<any, Error, FormData>,
@@ -34,8 +33,12 @@ const useCharacterForm = (
       },
       firstName: '',
       lastName: '',
-      picture: '',
-      position: { x: 50, y: 50 },
+      pictureFile: null as File | null,
+      picture: {
+        imageUrl: '',
+        publicId: '',
+        position: { x: 50, y: 50 },
+      },
       height: '',
       weight: '',
       age: '',
@@ -47,7 +50,7 @@ const useCharacterForm = (
         permanentInsanities: 5,
       },
       attributes: emptyAttributeTree,
-      perks: [] as Perk[] | number[],
+      perkIds: [] as number[],
     },
     onSubmit: ({ value }) => {
       value.npcTypes = value.npcTypes
@@ -61,8 +64,6 @@ const useCharacterForm = (
         permanentInjuries: value.stats.permanentInjuries,
         permanentInsanities: value.stats.permanentInsanities,
       };
-
-      value.perks = value.perks.map((perk) => perk.id);
 
       const formData = constructFormData(value);
 

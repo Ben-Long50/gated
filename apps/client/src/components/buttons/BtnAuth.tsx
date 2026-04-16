@@ -24,7 +24,14 @@ const BtnAuth = ({
     >
       <button
         className={`${active ? 'bg-primary text-accent' : 'bg-secondary text-secondary'} hover:bg-primary md:hover:text-accent timing flex w-full items-center justify-center rounded-bl rounded-tr p-2 text-lg clip-4`}
-        onClick={onClick}
+        onClick={
+          onClick
+            ? (e) => {
+                e.preventDefault();
+                onClick();
+              }
+            : undefined
+        }
         onMouseEnter={() => {
           setBorderColor(accentPrimary);
         }}
