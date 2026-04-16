@@ -8,21 +8,21 @@ export const createLinkedCopies = async (
   inventoryId: number,
   quantity: number,
 ) => {
-  let itemIds = [] as number[];
-  let actionIds = [] as number[];
+  let items = [] as any[];
+  let actions = [] as any[];
 
   if (
     itemReference &&
     'items' in itemReference &&
     itemReference?.items.length > 0
   ) {
-    const modificationInfo = itemReference.items.map((item) => {
+    const itemInfo = itemReference.items.map((item) => {
       return { itemId: item.id, price: 0, quantity };
     });
-    itemIds = await itemServices.createCharacterItemCopy(
+    items = await itemServices.createCharacterItemCopy(
       userId,
       inventoryId,
-      modificationInfo,
+      itemInfo,
     );
   }
 
@@ -34,11 +34,14 @@ export const createLinkedCopies = async (
     const actionInfo = itemReference.actions.map((action) => {
       return { actionId: action.id, quantity };
     });
-    actionIds = await actionServices.createCharacterActionCopy(
+    actions = await actionServices.createCharacterActionCopy(
       inventoryId,
       actionInfo,
     );
   }
 
-  return { itemIds, actionIds };
+  return {
+    itemIds: items.map((item) => item.id),
+    actionIds: actions.map((action) => action.id),
+  };
 };

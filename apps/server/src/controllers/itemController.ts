@@ -5,6 +5,7 @@ import { uploadToCloudinary } from '../utils/cloudinary.js';
 import parseRequestBody from '../utils/parseRequestBody.js';
 import characterServices from '../services/characterServices.js';
 import { ItemType } from '@prisma/client';
+import { ItemInput, ItemUpgradeInput } from '../validation/itemSchema.js';
 
 const itemController = {
   getItems: async (req: Request, res: Response) => {
@@ -55,12 +56,15 @@ const itemController = {
       try {
         const parsedBody = parseRequestBody(req.body);
 
-        await itemServices.createOrUpdateItem(parsedBody);
+        const validatedItem = ItemInput.parse(parsedBody);
+
+        const item = await itemServices.createOrUpdateItem(validatedItem);
 
         res.status(200).json({
+          item,
           message: parsedBody.id
-            ? 'Successfully updated item'
-            : 'Successfully created item',
+            ? `Successfully updated ${item.name}`
+            : `Successfully created ${item.name}`,
         });
       } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -70,10 +74,11 @@ const itemController = {
 
   createItemCopy: async (req: Request, res: Response) => {
     try {
-      await itemServices.createItemCopy(Number(req.params.itemId));
+      const item = await itemServices.createItemCopy(Number(req.params.itemId));
 
       res.status(200).json({
-        message: 'Successfully created item copy',
+        item,
+        message: `Successfully create ${item.name} copy`,
       });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
@@ -91,6 +96,8 @@ const itemController = {
 
         const parsedBody = parseRequestBody(req.body);
 
+        const validatedItem = ItemUpgradeInput.parse(parsedBody);
+
         const character = await characterServices.getCharacterById(
           Number(req.params.characterId),
         );
@@ -107,18 +114,18 @@ const itemController = {
           );
         }
 
-        const { upgradePrice, ...itemInfo } = parsedBody;
-
         await characterServices.updateCharacter(
           {
-            profits: character.profits - upgradePrice,
+            profits: character.profits - validatedItem.upgradePrice,
           },
           req.user.id,
           character.id,
         );
 
-        await itemServices.createOrUpdateItem(itemInfo);
-        res.status(200).json({ message: 'Successfully modified item' });
+        const item = await itemServices.upgradeItem(validatedItem);
+        res
+          .status(200)
+          .json({ item, message: `Successfully upgraded ${item.name}` });
       } catch (error: any) {
         res.status(500).json({ error: error.message });
       }
@@ -131,12 +138,17 @@ const itemController = {
         throw new Error('Could not find authenticated user');
       }
 
-      await itemServices.createItemConditions(
+      const item = await itemServices.createItemConditions(
         Number(req.params.itemId),
         req.body,
       );
 
-      res.status(200).json({ message: 'Successfully created item conditions' });
+      res
+        .status(200)
+        .json({
+          item,
+          message: `Successfully created ${item.name} conditions`,
+        });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }

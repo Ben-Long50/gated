@@ -1,6 +1,4 @@
-import { Stats } from '../types/item';
-
-const addVariableStats = (itemStats: Stats) => {
+const addVariableStats = (itemStats: Record<string, number>) => {
   let stats = itemStats;
 
   if (stats?.magCount && !stats?.currentMagCount) {

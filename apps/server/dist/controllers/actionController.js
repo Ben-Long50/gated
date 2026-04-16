@@ -1,4 +1,5 @@
 import actionServices from '../services/actionServices.js';
+import { ActionInput } from '../validation/actionSchema.js';
 const actionController = {
     getActions: async (_req, res) => {
         try {
@@ -33,7 +34,8 @@ const actionController = {
     },
     createAction: async (req, res) => {
         try {
-            await actionServices.createAction(req.body);
+            const data = ActionInput.parse(req.body);
+            await actionServices.createAction(data);
             res.status(200).json({ message: 'Successfully created action' });
         }
         catch (error) {

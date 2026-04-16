@@ -460,7 +460,7 @@ model Action {
   costs                Json?
   roll                 Json?
   actionType           ActionType
-  actionSubtypes       String[]
+  actionSubtypes       ActionSubtype[]
   duration             Json?
   cooldown             Json?
   equipped             Boolean             @default(false)
@@ -487,8 +487,8 @@ model Item {
   rarity               ItemRarity               @default(common)
   grade                Int                      @default(1)
   picture              Json?
-  description          String?
-  stats                Json?
+  description          String
+  stats                Json
   modifiedStats        Json?
   price                Int?
   equipped             Boolean?                 @default(false)
@@ -639,6 +639,13 @@ enum ActionType {
   extendedAction
   reaction
   passive
+}
+
+enum ActionSubtype {
+  movement
+  attack
+  upkeep
+  unique
 }
 
 enum ItemRarity {

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import actionServices from '../services/actionServices.js';
+import { ActionInput } from '../validation/actionSchema.js';
 
 const actionController = {
   getActions: async (_req: Request, res: Response) => {
@@ -39,7 +40,10 @@ const actionController = {
 
   createAction: async (req: Request, res: Response) => {
     try {
-      await actionServices.createAction(req.body);
+      const data = ActionInput.parse(req.body);
+
+      await actionServices.createAction(data);
+
       res.status(200).json({ message: 'Successfully created action' });
     } catch (error: any) {
       res.status(500).json({ error: error.message });

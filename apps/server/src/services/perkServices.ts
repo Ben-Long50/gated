@@ -1,5 +1,5 @@
 import prisma from '../config/database.js';
-import { Stats } from '../types/item.js';
+import { CharacterStats } from '../validation/fieldSchemas.js';
 
 const perkServices = {
   getPerks: async () => {
@@ -30,7 +30,7 @@ const perkServices = {
     perkId: string;
     name: string;
     description: string;
-    modifiers: Stats;
+    modifiers: CharacterStats;
     attributes: object;
   }) => {
     try {

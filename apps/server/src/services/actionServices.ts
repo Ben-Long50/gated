@@ -1,8 +1,7 @@
-import { ActionType, Prisma } from '@prisma/client';
 import prisma from '../config/database.js';
-import { ActionCosts, ActionRoll } from '../types/action.js';
-import { Stats } from '../types/item.js';
 import addVariableStats from '../utils/addVariableStats.js';
+import { ActionInput } from '../validation/actionSchema.js';
+import { ItemStats } from '../validation/fieldSchemas.js';
 
 const actionServices = {
   getActions: async () => {
@@ -48,26 +47,16 @@ const actionServices = {
     }
   },
 
-  createAction: async (formData: {
-    name: string;
-    description: string;
-    costs: ActionCosts;
-    roll: ActionRoll[];
-    duration: { unit: string; value: number | null };
-    cooldown: { unit: string; value: number | null };
-    actionType: ActionType;
-    actionSubtypes: string[];
-    modifiers: Stats;
-    keywordModifierIds: { keywordId: number; value?: number | null }[];
-    id?: number;
-  }) => {
+  createAction: async (formData: ActionInput) => {
     try {
-      const action = await prisma.action.findUnique({
-        where: { id: formData.id ?? 0 },
-        include: {
-          keywordModifiers: { select: { id: true } },
-        },
-      });
+      const action = formData.id
+        ? await prisma.action.findUnique({
+            where: { id: formData.id },
+            include: {
+              keywordModifiers: { select: { id: true } },
+            },
+          })
+        : null;
 
       if (action && action.keywordModifiers) {
         await prisma.keywordReference.deleteMany({
@@ -77,43 +66,21 @@ const actionServices = {
         });
       }
 
-      const keywordModifierData =
-        formData.keywordModifierIds?.map(
-          (keyword: { keywordId: number; value?: number | null }) => ({
-            keywordId: keyword.keywordId,
-            value: keyword.value,
-          }),
-        ) || [];
+      const { modifiers, keywords, ...data } = formData;
 
-      const modifierStats = formData.modifiers
-        ? addVariableStats({ ...(formData.modifiers as Stats) })
-        : null;
+      const modifierStats = modifiers ? addVariableStats(modifiers) : null;
 
       const newAction = await prisma.action.upsert({
         where: { id: Number(formData?.id) || 0 },
         update: {
-          name: formData.name,
-          description: formData.description,
-          costs: { ...formData.costs },
-          roll: formData.roll as unknown as Prisma.JsonArray,
-          duration: formData.duration,
-          cooldown: formData.cooldown,
-          actionType: formData.actionType,
-          actionSubtypes: formData.actionSubtypes,
+          ...data,
           modifiers: { ...modifierStats },
-          keywordModifiers: { createMany: { data: keywordModifierData } },
+          keywordModifiers: { createMany: { data: keywords || [] } },
         },
         create: {
-          name: formData.name,
-          description: formData.description,
-          costs: { ...formData.costs },
-          roll: formData.roll as unknown as Prisma.JsonArray,
-          duration: formData.duration,
-          cooldown: formData.cooldown,
-          actionType: formData.actionType,
-          actionSubtypes: formData.actionSubtypes,
+          ...data,
           modifiers: { ...modifierStats },
-          keywordModifiers: { createMany: { data: keywordModifierData } },
+          keywordModifiers: { createMany: { data: keywords || [] } },
         },
       });
 
@@ -167,7 +134,7 @@ const actionServices = {
       include: { keywordModifiers: { include: { keyword: true } } },
     });
 
-    const newAction = await Promise.all(
+    const newActions = await Promise.all(
       actionList.flatMap(({ actionId, quantity }) => {
         const actionDetails = actions.find((action) => action.id === actionId);
 
@@ -183,7 +150,7 @@ const actionServices = {
                 cooldown: actionDetails.cooldown || undefined,
                 actionType: actionDetails.actionType,
                 actionSubtypes: actionDetails.actionSubtypes,
-                modifiers: { ...(actionDetails.modifiers as Stats) },
+                modifiers: { ...(actionDetails.modifiers as ItemStats) },
                 keywordModifiers: {
                   create: actionDetails.keywordModifiers.map((modifier) => ({
                     value: modifier.value,
@@ -204,9 +171,7 @@ const actionServices = {
       }),
     );
 
-    return newAction
-      .filter((action) => action !== undefined)
-      .map((action) => action.id);
+    return newActions;
   },
 
   activateAction: async (actionId: number, value: boolean) => {

@@ -1,6 +1,5 @@
-import { KeywordType } from '@prisma/client';
 import prisma from '../config/database.js';
-import { Keyword } from '../types/keyword.js';
+import { KeywordInput } from '../validation/keywordSchema.js';
 
 const keywordServices = {
   getKeywords: async () => {
@@ -27,25 +26,15 @@ const keywordServices = {
     }
   },
 
-  createKeyword: async (formData: {
-    keywordId: string;
-    name: string;
-    description: string;
-    keywordType: KeywordType;
-    gpCost: number;
-  }) => {
-    const { keywordId, ...data } = Object.fromEntries(
-      Object.entries(formData).filter(([_, value]) => Boolean(value)),
-    ) as unknown as Keyword;
-
+  createKeyword: async (formData: KeywordInput) => {
     try {
-      const newKeyword = await prisma.keyword.upsert({
-        where: { id: Number(keywordId) || 0 },
-        update: data,
-        create: data,
+      const keyword = await prisma.keyword.upsert({
+        where: { id: formData.id || 0 },
+        update: formData,
+        create: formData,
       });
 
-      return newKeyword;
+      return keyword;
     } catch (error) {
       console.error(error);
       throw new Error('Failed to create or update keyword');

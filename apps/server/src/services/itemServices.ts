@@ -1,72 +1,62 @@
 import prisma from '../config/database.js';
-import { Item, Stats } from '../types/item.js';
-import addVariableStats from '../utils/addVariableStats.js';
 import { enforceSingularLinking } from '../utils/enforceSingularLinking.js';
 import { createLinkedCopies } from '../utils/createLinkedCopies.js';
-import { $Enums, Keyword } from '@prisma/client';
+import { $Enums } from '@prisma/client';
 import actionServices from './actionServices.js';
+import { ItemInput, ItemUpgradeInput } from '../validation/itemSchema.js';
+import { ItemStats, Picture } from '../validation/fieldSchemas.js';
 
-const itemServices = {
-  getItems: async (category?: $Enums.ItemType[]) => {
-    let excludeAugments = false;
-
-    if (category?.includes('weapon') || category?.includes('armor')) {
-      excludeAugments = true;
-    }
-
-    try {
-      const items = await prisma.item.findMany({
-        where: category
-          ? excludeAugments
-            ? {
-                characterInventory: null,
-                itemLinkId: null,
-                itemTypes: { hasEvery: category },
-              }
-            : {
-                characterInventory: null,
-                itemLinkId: null,
-                itemTypes: { hasEvery: category },
-              }
-          : { characterInventory: null, itemLinkId: null },
+const itemInclude = {
+  baseItem: true,
+  itemLinkReference: {
+    include: {
+      items: {
         include: {
-          baseItem: true,
-          itemLinkReference: {
-            include: {
-              items: {
-                include: {
-                  keywords: {
-                    include: { keyword: true },
-                    orderBy: { keyword: { name: 'asc' } },
-                  },
-                  modifiedKeywords: {
-                    include: { keyword: true },
-                    orderBy: { keyword: { name: 'asc' } },
-                  },
-                  conditions: {
-                    include: { condition: true },
-                    orderBy: { condition: { name: 'asc' } },
-                  },
-                },
-              },
-              actions: {
-                include: { keywordModifiers: { include: { keyword: true } } },
-              },
-            },
-          },
           keywords: {
             include: { keyword: true },
-            orderBy: { keyword: { name: 'asc' } },
+            orderBy: { keyword: { name: 'asc' as const } },
           },
           modifiedKeywords: {
             include: { keyword: true },
-            orderBy: { keyword: { name: 'asc' } },
+            orderBy: { keyword: { name: 'asc' as const } },
           },
           conditions: {
             include: { condition: true },
-            orderBy: { condition: { name: 'asc' } },
+            orderBy: { condition: { name: 'asc' as const } },
           },
         },
+      },
+      actions: {
+        include: { keywordModifiers: { include: { keyword: true } } },
+      },
+    },
+  },
+  keywords: {
+    include: { keyword: true },
+    orderBy: { keyword: { name: 'asc' as const } },
+  },
+  modifiedKeywords: {
+    include: { keyword: true },
+    orderBy: { keyword: { name: 'asc' as const } },
+  },
+  conditions: {
+    include: { condition: true },
+    orderBy: { condition: { name: 'asc' as const } },
+  },
+};
+
+const itemServices = {
+  getItems: async (category?: $Enums.ItemType[]) => {
+    try {
+      const items = await prisma.item.findMany({
+        where: category
+          ? {
+              characterInventory: null,
+              itemLinkId: null,
+              itemTypes: { hasSome: category },
+            }
+          : { characterInventory: null, itemLinkId: null },
+        include: itemInclude,
         orderBy: { name: 'asc' },
       });
 
@@ -81,50 +71,7 @@ const itemServices = {
     try {
       const items = await prisma.item.findMany({
         where: { id: { in: itemIds } },
-        include: {
-          baseItem: true,
-          itemLinkReference: {
-            include: {
-              items: {
-                include: {
-                  keywords: {
-                    include: { keyword: true },
-                    orderBy: { keyword: { name: 'asc' } },
-                  },
-                  modifiedKeywords: {
-                    include: { keyword: true },
-                    orderBy: { keyword: { name: 'asc' } },
-                  },
-                  conditions: {
-                    include: { condition: true },
-                    orderBy: { condition: { name: 'asc' } },
-                  },
-                },
-              },
-              actions: {
-                include: {
-                  keywordModifiers: { include: { keyword: true } },
-                  itemLink: { select: { itemId: true } },
-                },
-              },
-            },
-          },
-          keywords: {
-            include: { keyword: true },
-            orderBy: { keyword: { name: 'asc' } },
-          },
-          modifiedKeywords: {
-            include: { keyword: true },
-            orderBy: { keyword: { name: 'asc' } },
-          },
-          conditions: {
-            include: { condition: true },
-            orderBy: { condition: { name: 'asc' } },
-          },
-          characterInventory: {
-            include: { character: { select: { campaignId: true } } },
-          },
-        },
+        include: itemInclude,
       });
 
       return items;
@@ -138,47 +85,7 @@ const itemServices = {
     try {
       const item = await prisma.item.findUnique({
         where: { id: itemId },
-        include: {
-          baseItem: true,
-          itemLinkReference: {
-            include: {
-              items: {
-                include: {
-                  keywords: {
-                    include: { keyword: true },
-                    orderBy: { keyword: { name: 'asc' } },
-                  },
-                  modifiedKeywords: {
-                    include: { keyword: true },
-                    orderBy: { keyword: { name: 'asc' } },
-                  },
-                  conditions: {
-                    include: { condition: true },
-                    orderBy: { condition: { name: 'asc' } },
-                  },
-                },
-              },
-              actions: {
-                include: {
-                  keywordModifiers: { include: { keyword: true } },
-                  itemLink: { select: { itemId: true } },
-                },
-              },
-            },
-          },
-          keywords: {
-            include: { keyword: true },
-            orderBy: { keyword: { name: 'asc' } },
-          },
-          modifiedKeywords: {
-            include: { keyword: true },
-            orderBy: { keyword: { name: 'asc' } },
-          },
-          conditions: {
-            include: { condition: true },
-            orderBy: { condition: { name: 'asc' } },
-          },
-        },
+        include: itemInclude,
       });
 
       if (!item) {
@@ -192,71 +99,22 @@ const itemServices = {
     }
   },
 
-  createOrUpdateItem: async (formData: Item) => {
+  createOrUpdateItem: async (formData: ItemInput) => {
     try {
-      const item = await prisma.item.findUnique({
-        where: { id: formData.id ?? 0 },
-        include: {
-          keywords: { select: { id: true } },
-          modifiedKeywords: { select: { id: true } },
-        },
-      });
+      const { id, itemIds, actionIds, keywords, pictureFile, ...data } =
+        formData;
 
-      if (item && item.keywords) {
-        await prisma.keywordReference.deleteMany({
-          where: {
-            id: { in: item.keywords.map((keyword) => keyword.id) },
-          },
-        });
-      }
+      formData.id &&
+        (await enforceSingularLinking(formData.id, itemIds, actionIds));
 
-      if (item && item.modifiedKeywords) {
-        await prisma.keywordReference.deleteMany({
-          where: {
-            id: { in: item.modifiedKeywords.map((keyword) => keyword.id) },
-          },
-        });
-      }
-
-      const {
-        id,
-        itemLinkId,
-        itemIds,
-        actionIds,
-        keywordIds,
-        modifiedKeywordIds,
-        stats,
-        characterInventoryId,
-        ...data
-      } = formData;
-
-      await enforceSingularLinking(id, itemIds, actionIds);
-
-      const keywordData =
-        keywordIds?.map(
-          (keyword: { keywordId: number; value?: number | null }) => ({
-            keywordId: keyword.keywordId,
-            value: keyword.value,
-          }),
-        ) || [];
-
-      const modifiedKeywordData =
-        modifiedKeywordIds?.map(
-          (keyword: { keywordId: number; value?: number | null }) => ({
-            keywordId: keyword.keywordId,
-            value: keyword.value,
-          }),
-        ) || [];
-
-      const newItem = await prisma.item.upsert({
-        where: { id: id ?? 0 },
+      const item = await prisma.item.upsert({
+        where: { id: formData.id || 0 },
         update: {
           ...data,
-          ...(stats ? { stats } : {}),
           updatedAt: new Date(),
           itemLinkReference: {
             upsert: {
-              where: { itemId: id ?? 0 },
+              where: { itemId: formData.id || 0 },
               update: {
                 items: {
                   set: itemIds?.map((id) => ({ id })),
@@ -275,13 +133,10 @@ const itemServices = {
               },
             },
           },
-          keywords: { createMany: { data: keywordData } },
-          modifiedKeywords: { createMany: { data: modifiedKeywordData } },
-          characterInventoryId,
+          keywords: { deleteMany: {}, createMany: { data: formData.keywords } },
         },
         create: {
           ...data,
-          ...(stats ? { stats } : {}),
           itemLinkReference: {
             create: {
               items: {
@@ -292,13 +147,36 @@ const itemServices = {
               },
             },
           },
-          keywords: { createMany: { data: keywordData } },
-          modifiedKeywords: { createMany: { data: modifiedKeywordData } },
-          characterInventoryId,
+          keywords: { createMany: { data: formData.keywords } },
         },
+        include: itemInclude,
       });
 
-      return newItem;
+      return item;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to create or update item');
+    }
+  },
+
+  upgradeItem: async (formData: ItemUpgradeInput) => {
+    try {
+      const item = await prisma.item.update({
+        where: { id: formData.id },
+        data: {
+          name: formData.name,
+          description: formData.description,
+          picture: formData.picture,
+          modifiedStats: formData.modifiedStats,
+          modifiedKeywords: {
+            deleteMany: {},
+            createMany: { data: formData.keywords },
+          },
+        },
+        include: itemInclude,
+      });
+
+      return item;
     } catch (error) {
       console.error(error);
       throw new Error('Failed to create or update item');
@@ -309,9 +187,24 @@ const itemServices = {
     try {
       const itemDetails = await prisma.item.findUnique({
         where: { id: itemId },
-        include: {
-          keywords: { include: { keyword: true } },
-          itemLinkReference: { include: { items: true, actions: true } },
+        select: {
+          id: true,
+          name: true,
+          rarity: true,
+          description: true,
+          stats: true,
+          picture: true,
+          itemTypes: true,
+          grade: true,
+          price: true,
+          baseItemId: true,
+          itemLinkReference: {
+            include: {
+              items: { select: { id: true } },
+              actions: { select: { id: true } },
+            },
+          },
+          keywords: { select: { keywordId: true, value: true } },
         },
       });
 
@@ -322,32 +215,15 @@ const itemServices = {
       const {
         id,
         baseItemId,
-        itemLinkId,
         stats,
-        modifiedStats,
         picture,
         keywords,
-        //@ts-ignore
-        modifiedKeywords,
         itemLinkReference,
         ...data
       } = itemDetails;
 
-      const keywordData =
-        keywords?.map(
-          (keyword: { keyword: Keyword; value?: number | null }) => ({
-            keywordId: keyword.keyword.id,
-            value: keyword.value,
-          }),
-        ) || [];
-
-      const modifiedKeywordData =
-        modifiedKeywords?.map(
-          (keyword: { keyword: Keyword; value?: number | null }) => ({
-            keywordId: keyword.keyword.id,
-            value: keyword.value,
-          }),
-        ) || [];
+      const typedPicture = picture as Picture;
+      const typedStats = stats as ItemStats;
 
       const itemIds = [] as number[];
       const actionIds = [] as number[];
@@ -368,12 +244,11 @@ const itemServices = {
         }
       }
 
-      const itemCopy = await prisma.item.create({
+      const item = await prisma.item.create({
         data: {
           ...data,
-          ...(stats ? { stats } : {}),
-          ...(picture ? { picture } : {}),
-          ...(modifiedStats ? { modifiedStats } : {}),
+          picture: typedPicture,
+          stats: typedStats,
           itemLinkReference: {
             create: {
               items: {
@@ -385,13 +260,12 @@ const itemServices = {
               },
             },
           },
-          keywords: { createMany: { data: keywordData } },
-          modifiedKeywords: { createMany: { data: modifiedKeywordData } },
+          keywords: { createMany: { data: keywords } },
           baseItemId: id,
         },
       });
 
-      return itemCopy;
+      return item;
     } catch (error) {
       console.error(error);
       throw new Error('Failed to create item copy');
@@ -401,15 +275,30 @@ const itemServices = {
   createCharacterItemCopy: async (
     userId: number,
     inventoryId: number,
-    itemList: { itemId: number; price: number | null; quantity: number }[],
+    itemList: { itemId: number; price: number | undefined; quantity: number }[],
   ) => {
     const itemIds = itemList?.map((item) => item.itemId);
 
     const items = await prisma.item.findMany({
       where: { id: { in: itemIds } },
-      include: {
-        itemLinkReference: { include: { items: true, actions: true } },
-        keywords: { include: { keyword: true } },
+      select: {
+        id: true,
+        name: true,
+        rarity: true,
+        description: true,
+        stats: true,
+        picture: true,
+        itemTypes: true,
+        grade: true,
+        price: true,
+        baseItemId: true,
+        itemLinkReference: {
+          include: {
+            items: { select: { id: true } },
+            actions: { select: { id: true } },
+          },
+        },
+        keywords: { select: { keywordId: true, value: true } },
       },
     });
 
@@ -420,47 +309,64 @@ const itemServices = {
 
       if (!itemDetails) continue;
 
-      const stats = itemDetails.stats
-        ? addVariableStats({ ...(itemDetails.stats as Stats) })
-        : null;
+      const {
+        id,
+        baseItemId,
+        itemLinkReference,
+        keywords,
+        picture,
+        stats,
+        ...rest
+      } = itemDetails;
+
+      const typedPicture = picture as Picture;
+      const typedStats = stats as ItemStats;
 
       const { itemIds, actionIds } = await createLinkedCopies(
         userId,
-        itemDetails.itemLinkReference,
+        itemLinkReference,
         inventoryId,
         quantity,
       );
 
-      const keywordIds =
-        itemDetails?.keywords.map((keyword) => ({
-          keywordId: keyword.keywordId,
-          value: keyword.value,
-        })) || [];
-
-      const { keywords, baseItemId, ...rest } = itemDetails;
-
-      const itemData = {
-        ...rest,
-        stats,
-        itemIds,
-        actionIds,
-        keywordIds,
-        id: 0,
-        characterInventoryId: inventoryId,
-        baseItemId: baseItemId ?? itemDetails.id,
-        userId,
-      };
-
       if (itemDetails) {
         for (let i = 0; i < quantity; i++) {
-          promises.push(itemServices.createOrUpdateItem(itemData));
+          promises.push(
+            prisma.item.create({
+              data: {
+                ...rest,
+                picture: typedPicture,
+                stats: typedStats,
+                updatedAt: new Date(),
+                characterInventoryId: inventoryId,
+                baseItemId: baseItemId || id,
+                userId,
+                itemLinkReference: {
+                  create: {
+                    items: {
+                      connect: itemIds?.map((id) => ({ id })),
+                    },
+                    actions: {
+                      connect: actionIds?.map((id) => ({ id })),
+                    },
+                  },
+                },
+                keywords: {
+                  createMany: {
+                    data: keywords,
+                  },
+                },
+              },
+              include: itemInclude,
+            }),
+          );
         }
       }
     }
 
     const newItems = await Promise.all(promises);
 
-    return newItems.filter((item) => item !== undefined).map((item) => item.id);
+    return newItems;
   },
 
   createItemConditions: async (
@@ -468,39 +374,17 @@ const itemServices = {
     formData: { conditionId: number; stacks?: number | null }[],
   ) => {
     try {
-      const item = await prisma.item.findUnique({
-        where: { id: itemId },
-        include: {
-          conditions: { select: { id: true } },
-        },
-      });
-
-      if (!item) {
-        throw new Error('Failed to find character');
-      }
-
-      if (item && item.conditions) {
-        await prisma.itemConditionReference.deleteMany({
-          where: {
-            id: { in: item.conditions.map((condition) => condition.id) },
-          },
-        });
-      }
-
-      const conditionData =
-        formData?.map((condition) => ({
-          conditionId: condition.conditionId,
-          stacks: condition.stacks ? condition.stacks : null,
-        })) || [];
-
-      await prisma.item.update({
+      const item = await prisma.item.update({
         where: {
           id: itemId,
         },
         data: {
-          conditions: { createMany: { data: conditionData } },
+          conditions: { deleteMany: {}, createMany: { data: formData } },
         },
+        include: itemInclude,
       });
+
+      return item;
     } catch (error) {
       console.error(error);
       throw new Error('Failed to create item conditions');
@@ -509,10 +393,13 @@ const itemServices = {
 
   setItemAvailable: async (itemId: number) => {
     try {
-      await prisma.item.update({
+      const item = await prisma.item.update({
         where: { id: itemId },
         data: { available: true },
+        include: itemInclude,
       });
+
+      return item;
     } catch (error) {
       console.error(error);
       throw new Error('Failed to set item availability to true');
@@ -521,24 +408,10 @@ const itemServices = {
 
   setAllCharacterItemsAvailable: async (characterId: number) => {
     try {
-      const items =
-        (await prisma.item.findMany({
-          where: { characterInventory: { characterId }, available: false },
-          select: { id: true },
-        })) || [];
-
-      if (items.length === 0) return;
-
-      const itemIds = items.map((item) => item.id);
-
       await prisma.item.updateMany({
-        where: {
-          id: { in: itemIds },
-        },
+        where: { characterInventory: { characterId }, available: false },
         data: { available: true },
       });
-
-      return itemIds;
     } catch (error) {
       console.error(error);
       throw new Error('Failed to set item availability to true');
@@ -561,7 +434,7 @@ const itemServices = {
     try {
       await prisma.item.delete({
         where: {
-          id: Number(itemId),
+          id: itemId,
         },
       });
     } catch (error) {
@@ -570,17 +443,12 @@ const itemServices = {
     }
   },
 
-  deleteItems: async (itemIds: number[], category?: $Enums.ItemType[]) => {
+  deleteItems: async (itemIds: number[]) => {
     try {
       await prisma.item.deleteMany({
-        where: category
-          ? {
-              id: { in: itemIds },
-              itemTypes: { hasSome: category },
-            }
-          : {
-              itemTypes: { hasSome: category },
-            },
+        where: {
+          id: { in: itemIds },
+        },
       });
     } catch (error) {
       console.error(error);

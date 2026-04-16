@@ -55,14 +55,15 @@ const actionServices = {
         }
     },
     createAction: async (formData) => {
-        var _a, _b;
         try {
-            const action = await prisma.action.findUnique({
-                where: { id: (_a = formData.id) !== null && _a !== void 0 ? _a : 0 },
-                include: {
-                    keywordModifiers: { select: { id: true } },
-                },
-            });
+            const action = formData.id
+                ? await prisma.action.findUnique({
+                    where: { id: formData.id },
+                    include: {
+                        keywordModifiers: { select: { id: true } },
+                    },
+                })
+                : null;
             if (action && action.keywordModifiers) {
                 await prisma.keywordReference.deleteMany({
                     where: {
@@ -70,39 +71,12 @@ const actionServices = {
                     },
                 });
             }
-            const keywordModifierData = ((_b = formData.keywordModifierIds) === null || _b === void 0 ? void 0 : _b.map((keyword) => ({
-                keywordId: keyword.keywordId,
-                value: keyword.value,
-            }))) || [];
-            const modifierStats = formData.modifiers
-                ? addVariableStats(Object.assign({}, formData.modifiers))
-                : null;
+            const { modifiers, keywords } = formData, data = __rest(formData, ["modifiers", "keywords"]);
+            const modifierStats = modifiers ? addVariableStats(modifiers) : null;
             const newAction = await prisma.action.upsert({
                 where: { id: Number(formData === null || formData === void 0 ? void 0 : formData.id) || 0 },
-                update: {
-                    name: formData.name,
-                    description: formData.description,
-                    costs: Object.assign({}, formData.costs),
-                    roll: formData.roll,
-                    duration: formData.duration,
-                    cooldown: formData.cooldown,
-                    actionType: formData.actionType,
-                    actionSubtypes: formData.actionSubtypes,
-                    modifiers: Object.assign({}, modifierStats),
-                    keywordModifiers: { createMany: { data: keywordModifierData } },
-                },
-                create: {
-                    name: formData.name,
-                    description: formData.description,
-                    costs: Object.assign({}, formData.costs),
-                    roll: formData.roll,
-                    duration: formData.duration,
-                    cooldown: formData.cooldown,
-                    actionType: formData.actionType,
-                    actionSubtypes: formData.actionSubtypes,
-                    modifiers: Object.assign({}, modifierStats),
-                    keywordModifiers: { createMany: { data: keywordModifierData } },
-                },
+                update: Object.assign(Object.assign({}, data), { modifiers: Object.assign({}, modifierStats), keywordModifiers: { createMany: { data: keywords || [] } } }),
+                create: Object.assign(Object.assign({}, data), { modifiers: Object.assign({}, modifierStats), keywordModifiers: { createMany: { data: keywords || [] } } }),
             });
             return newAction;
         }
@@ -136,7 +110,7 @@ const actionServices = {
             where: { id: { in: actionIds } },
             include: { keywordModifiers: { include: { keyword: true } } },
         });
-        const newAction = await Promise.all(actionList.flatMap(({ actionId, quantity }) => {
+        const newActions = await Promise.all(actionList.flatMap(({ actionId, quantity }) => {
             const actionDetails = actions.find((action) => action.id === actionId);
             if (actionDetails) {
                 return Array.from({ length: quantity }).map(() => prisma.action.create({
@@ -167,9 +141,7 @@ const actionServices = {
             }
             return;
         }));
-        return newAction
-            .filter((action) => action !== undefined)
-            .map((action) => action.id);
+        return newActions;
     },
     activateAction: async (actionId, value) => {
         try {
