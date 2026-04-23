@@ -1,10 +1,11 @@
 import express from 'express';
 import authentication from '../middleware/authentication.js';
 import sessionController from '../controllers/sessionController.js';
+import campaignAuthentication from '../middleware/campaignAuthentication.js';
 const router = express.Router();
 router.get('/campaigns/:campaignId/sessions', authentication.authenticate, sessionController.getCampaignSessions);
 router.get('/campaigns/:campaignId/sessions/:sessionId', authentication.authenticate, sessionController.getSessionById);
-router.post('/campaigns/:campaignId/sessions', authentication.authenticate, sessionController.createOrUpdateSession);
+router.post('/campaigns/:campaignId/sessions', authentication.authenticate, campaignAuthentication.validateGameMaster, sessionController.createOrUpdateSession);
 router.post('/campaigns/:campaignId/sessions/:sessionId/characters/:characterId/notes', authentication.authenticate, sessionController.createOrUpdateSessionNotes);
-router.delete('/campaigns/:campaignId/sessions/:sessionId', authentication.authenticate, sessionController.deleteSession);
+router.delete('/campaigns/:campaignId/sessions/:sessionId', authentication.authenticate, campaignAuthentication.validateGameMaster, sessionController.deleteSession);
 export default router;

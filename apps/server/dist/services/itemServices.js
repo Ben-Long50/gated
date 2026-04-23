@@ -13,8 +13,10 @@ import prisma from '../config/database.js';
 import { enforceSingularLinking } from '../utils/enforceSingularLinking.js';
 import { createLinkedCopies } from '../utils/createLinkedCopies.js';
 import actionServices from './actionServices.js';
-const itemInclude = {
+import { ConditionReferenceInput } from '../validation/conditionSchema.js';
+export const itemInclude = {
     baseItem: true,
+    characterInventory: { select: { characterId: true } },
     itemLinkReference: {
         include: {
             items: {
@@ -150,21 +152,35 @@ const itemServices = {
     },
     upgradeItem: async (formData) => {
         try {
-            const item = await prisma.item.update({
-                where: { id: formData.id },
-                data: {
-                    name: formData.name,
-                    description: formData.description,
-                    picture: formData.picture,
-                    modifiedStats: formData.modifiedStats,
-                    modifiedKeywords: {
-                        deleteMany: {},
-                        createMany: { data: formData.keywords },
-                    },
-                },
-                include: itemInclude,
+            const prevCharacter = await prisma.character.findUnique({
+                where: { id: formData.characterId },
+                select: { profits: true },
             });
-            return item;
+            if (!prevCharacter || prevCharacter.profits < formData.upgradePrice) {
+                throw new Error('You do not have enough profits to purchase the chosen upgrades');
+            }
+            const { character, item } = await prisma.$transaction(async (tx) => {
+                const character = await tx.character.update({
+                    where: { id: formData.characterId },
+                    data: { profits: { decrement: formData.upgradePrice } },
+                });
+                const item = await tx.item.update({
+                    where: { id: formData.id },
+                    data: {
+                        name: formData.name,
+                        description: formData.description,
+                        picture: formData.picture,
+                        modifiedStats: formData.modifiedStats,
+                        modifiedKeywords: {
+                            deleteMany: {},
+                            createMany: { data: formData.keywords },
+                        },
+                    },
+                    include: itemInclude,
+                });
+                return { character, item };
+            });
+            return { item, character };
         }
         catch (error) {
             console.error(error);
@@ -293,13 +309,17 @@ const itemServices = {
         return newItems;
     },
     createItemConditions: async (itemId, formData) => {
+        const validatedConditionReference = ConditionReferenceInput.parse(formData);
         try {
             const item = await prisma.item.update({
                 where: {
                     id: itemId,
                 },
                 data: {
-                    conditions: { deleteMany: {}, createMany: { data: formData } },
+                    conditions: {
+                        deleteMany: {},
+                        createMany: { data: validatedConditionReference },
+                    },
                 },
                 include: itemInclude,
             });

@@ -1,48 +1,36 @@
 import prisma from '../config/database.js';
+import { characterInclude } from './characterServices.js';
 const cartServices = {
-    editCartItem: async (cartId, itemId, value) => {
+    editCartItem: async (characterId, cartId, itemId, value) => {
         try {
-            const cartItem = await prisma.cartItemRelation.findUnique({
-                where: {
-                    characterCartId_itemId: {
-                        characterCartId: cartId,
-                        itemId: itemId,
+            const character = await prisma.character.update({
+                where: { id: characterId },
+                data: {
+                    characterCart: {
+                        update: {
+                            items: {
+                                upsert: {
+                                    where: {
+                                        characterCartId_itemId: {
+                                            characterCartId: cartId,
+                                            itemId,
+                                        },
+                                    },
+                                    update: {
+                                        quantity: { increment: value },
+                                    },
+                                    create: {
+                                        itemId,
+                                        quantity: value,
+                                    },
+                                },
+                            },
+                        },
                     },
                 },
+                include: characterInclude,
             });
-            if (cartItem) {
-                if (cartItem.quantity + value <= 0) {
-                    await prisma.cartItemRelation.delete({
-                        where: {
-                            characterCartId_itemId: {
-                                characterCartId: cartId,
-                                itemId: itemId,
-                            },
-                        },
-                    });
-                }
-                else {
-                    await prisma.cartItemRelation.update({
-                        where: {
-                            characterCartId_itemId: {
-                                characterCartId: cartId,
-                                itemId: itemId,
-                            },
-                        },
-                        data: { quantity: cartItem.quantity + value },
-                    });
-                }
-            }
-            else {
-                await prisma.characterCart.update({
-                    where: { id: cartId },
-                    data: {
-                        items: {
-                            create: { item: { connect: { id: itemId } }, quantity: value },
-                        },
-                    },
-                });
-            }
+            return character;
         }
         catch (error) {
             console.error(error);

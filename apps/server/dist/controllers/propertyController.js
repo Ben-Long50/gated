@@ -2,6 +2,8 @@ import upload from '../utils/multer.js';
 import { uploadToCloudinary } from '../utils/cloudinary.js';
 import parseRequestBody from '../utils/parseRequestBody.js';
 import propertyServices from '../services/propertyServices.js';
+import { PropertyInput } from '../validation/propertySchema.js';
+import handleControllerError from './handleControllerError.js';
 const propertyController = {
     getBaseProperties: async (req, res) => {
         try {
@@ -15,7 +17,7 @@ const propertyController = {
             res.status(200).json(properties);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     getBatchProperties: async (req, res) => {
@@ -27,7 +29,7 @@ const propertyController = {
             res.status(200).json(properties);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     getPropertyById: async (req, res) => {
@@ -36,7 +38,7 @@ const propertyController = {
             res.status(200).json(property);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     createOrUpdateBaseProperty: [
@@ -51,8 +53,11 @@ const propertyController = {
                     return;
                 }
                 const parsedBody = parseRequestBody(req.body);
-                await propertyServices.createOrUpdateBaseProperty(parsedBody);
-                res.status(200).json({ message: 'Successfully created property' });
+                const validatedProperty = PropertyInput.parse(parsedBody);
+                const property = await propertyServices.createOrUpdateBaseProperty(validatedProperty);
+                res
+                    .status(200)
+                    .json({ property, message: 'Successfully created property' });
             }
             catch (error) {
                 if (error instanceof Error) {
@@ -73,7 +78,7 @@ const propertyController = {
             res.status(200).json({ message: 'Successfully deleted property' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
 };

@@ -86,8 +86,8 @@ model Map {
   id          Int         @id @default(autoincrement())
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int
-  campaign    Campaign    @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  campaignId  Int
+  campaign    Campaign?   @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId  Int?
   picture     Json?
   draft       Boolean
   name        String
@@ -613,6 +613,7 @@ enum NpcTypes {
 enum UserRole {
   GUEST
   USER
+  PROUSER
   ADMIN
   SUPERADMIN
 }

@@ -3,26 +3,19 @@ import { uploadToCloudinary } from '../utils/cloudinary.js';
 import upload from '../utils/multer.js';
 import parseRequestBody from '../utils/parseRequestBody.js';
 import cartServices from '../services/cartServices.js';
+import { CharacterInput, CharacterLevelBonus, CharacterUpdateInput, } from '../validation/characterSchema.js';
+import z, { ZodError } from 'zod';
+import { getIO } from '../sockets/socket.js';
+import constructName from '../utils/constructName.js';
+import handleControllerError from './handleControllerError.js';
 const characterController = {
-    getCharacters: async (req, res) => {
-        try {
-            if (!req.user) {
-                throw new Error('Could not find authenticated user');
-            }
-            const characters = await characterServices.getCharacters(req.user.id);
-            res.status(200).json(characters);
-        }
-        catch (error) {
-            res.status(500).json({ error: error.message });
-        }
-    },
     getSocialCharacters: async (_, res) => {
         try {
             const characters = await characterServices.getSocialCharacters();
             res.status(200).json(characters);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     getBatchCharacters: async (req, res) => {
@@ -35,7 +28,7 @@ const characterController = {
             res.status(200).json(characters);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     getCharacterById: async (req, res) => {
@@ -44,37 +37,39 @@ const characterController = {
             res.status(200).json(character);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
-    setActiveCharacter: async (req, res) => {
+    getCharacterNotes: async (req, res) => {
         try {
-            if (!req.user) {
-                throw new Error('Could not find authenticated user');
-            }
-            const activeCharacter = await characterServices.setActiveCharacter(req.user.id, req.body.characterId);
-            res.status(200).json(activeCharacter);
+            const notes = await characterServices.getCharacterNotes(Number(req.params.characterId));
+            res.status(200).json(notes);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     toggleEquipment: async (req, res) => {
         try {
-            await characterServices.toggleEquipment(req.params.inventoryId, req.params.itemId, req.body.category);
-            res.status(200).json({ message: 'Successfully toggled equipment' });
+            const item = await characterServices.toggleEquipment(Number(req.params.inventoryId), Number(req.params.itemId));
+            res
+                .status(200)
+                .json({ item, message: `Successfully toggled ${item.name}` });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     editCart: async (req, res) => {
         try {
-            await cartServices.editCartItem(Number(req.params.cartId), Number(req.body.itemId), Number(req.body.value));
-            res.status(200).json({ message: 'Successfully added item to cart' });
+            const character = await cartServices.editCartItem(Number(req.params.characterId), Number(req.params.cartId), Number(req.body.itemId), Number(req.body.value));
+            res.status(200).json({
+                character,
+                message: `Successfully added ${req.body.value} item(s) to ${constructName(character)}'s cart`,
+            });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     completePurchase: async (req, res) => {
@@ -88,7 +83,7 @@ const characterController = {
             res.status(200).json({ message: 'Purchase completed' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     clearCart: async (req, res) => {
@@ -99,7 +94,7 @@ const characterController = {
         catch (error) { }
     },
     createCharacter: [
-        upload.single('picture'),
+        upload.single('pictureFile'),
         uploadToCloudinary,
         async (req, res) => {
             try {
@@ -107,12 +102,25 @@ const characterController = {
                     throw new Error('Could not find authenticated user');
                 }
                 const parsedBody = parseRequestBody(req.body);
-                const character = await characterServices.createCharacter(parsedBody, req.user.id);
-                res.status(200).json(character);
+                const validatedCharacter = CharacterInput.parse(parsedBody);
+                const character = await characterServices.createCharacter(validatedCharacter, req.user.id);
+                const io = getIO();
+                if (character.campaignId) {
+                    io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
+                        character,
+                    });
+                }
+                res.status(200).json({
+                    character,
+                    message: `Successfully created ${constructName(character)}`,
+                });
             }
             catch (error) {
-                if (error instanceof Error) {
-                    res.status(500).json({ error: error.message });
+                if (error instanceof ZodError) {
+                    res.status(500).json({ error: z.prettifyError(error) });
+                }
+                else if (error instanceof Error) {
+                    res.status(500).json({ message: error });
                 }
             }
         },
@@ -123,16 +131,17 @@ const characterController = {
                 throw new Error('Could not find authenticated user');
             }
             const character = await characterServices.createTemplateCharacter(Number(req.params.characterId), req.user.id);
-            res.status(200).json(character);
+            res.status(200).json({
+                character,
+                message: `Successfully created a character copy of ${constructName(character)}`,
+            });
         }
         catch (error) {
-            if (error instanceof Error) {
-                res.status(500).json({ error: error.message });
-            }
+            handleControllerError(res, error);
         }
     },
     updateCharacter: [
-        upload.single('picture'),
+        upload.single('pictureFile'),
         uploadToCloudinary,
         async (req, res) => {
             try {
@@ -140,8 +149,18 @@ const characterController = {
                     throw new Error('Could not find authenticated user');
                 }
                 const parsedBody = parseRequestBody(req.body);
-                const campaignId = await characterServices.updateCharacter(parsedBody, req.user.id, Number(req.params.characterId));
-                res.status(200).json(campaignId);
+                const validatedCharacter = CharacterUpdateInput.parse(parsedBody);
+                const character = await characterServices.updateCharacter(validatedCharacter, req.user.id);
+                const io = getIO();
+                if (character.campaignId) {
+                    io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
+                        character,
+                    });
+                }
+                res.status(200).json({
+                    character,
+                    message: `Successfully updated ${constructName(character)}`,
+                });
             }
             catch (error) {
                 console.error(error);
@@ -156,9 +175,16 @@ const characterController = {
             if (!req.user) {
                 throw new Error('Could not find authenticated user');
             }
-            await characterServices.updateCharacterLevel(Number(req.params.characterId), req.body.levelChange);
+            const character = await characterServices.updateCharacterLevel(Number(req.params.characterId), req.body.levelChange);
+            const io = getIO();
+            if (character.campaignId) {
+                io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
+                    character,
+                });
+            }
             res.status(200).json({
-                message: 'Successfully updated character level',
+                character,
+                message: `Successfully updated the level of ${constructName(character)} by ${req.body.levelChange}`,
             });
         }
         catch (error) {
@@ -173,9 +199,17 @@ const characterController = {
             if (!req.user) {
                 throw new Error('Could not find authenticated user');
             }
-            await characterServices.selectLevelUpBonus(Number(req.params.characterId), req.body);
+            const bonus = CharacterLevelBonus.parse(req.body);
+            const character = await characterServices.selectLevelUpBonus(Number(req.params.characterId), bonus);
+            const io = getIO();
+            if (character.campaignId) {
+                io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
+                    character,
+                });
+            }
             res.status(200).json({
-                message: 'Successfully selected level up bonus',
+                character,
+                message: `Successfully selected level up bonus for ${constructName(character)}`,
             });
         }
         catch (error) {
@@ -190,13 +224,20 @@ const characterController = {
             if (!req.user) {
                 throw new Error('Could not find authenticated user');
             }
-            await characterServices.createCharacterConditions(Number(req.params.characterId), req.body);
-            res
-                .status(200)
-                .json({ message: 'Successfully created character conditions' });
+            const character = await characterServices.createCharacterConditions(Number(req.params.characterId), req.body);
+            const io = getIO();
+            if (character.campaignId) {
+                io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
+                    character,
+                });
+            }
+            res.status(200).json({
+                character,
+                message: `Successfully created conditions on ${constructName(character)}`,
+            });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     updateCharacterLocation: async (req, res) => {
@@ -210,7 +251,7 @@ const characterController = {
             });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     deleteLocation: async (req, res) => {
@@ -224,7 +265,7 @@ const characterController = {
                 .json({ message: 'Successfully deleted character location' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     deleteCharacter: async (req, res) => {
@@ -232,11 +273,11 @@ const characterController = {
             if (!req.user) {
                 throw new Error('Could not find authenticated user');
             }
-            await characterServices.deleteCharacter(req.user.id, req.params.characterId);
+            await characterServices.deleteCharacter(req.user.id, Number(req.params.characterId));
             res.status(200).json({ message: 'Successfully deleted character' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
 };

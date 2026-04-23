@@ -16,7 +16,7 @@ const notificationServices = {
       });
 
       return notifications;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to fetch notifications');
     }
@@ -37,7 +37,7 @@ const notificationServices = {
           campaignId,
         })),
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to create or update notification');
     }
@@ -49,7 +49,7 @@ const notificationServices = {
         where: { recipientId: userId },
         data: { read: true },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to create or update notification');
     }
@@ -62,7 +62,7 @@ const notificationServices = {
           id: notificationId,
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to delete notification');
     }
@@ -75,7 +75,7 @@ const notificationServices = {
           recipientId: userId,
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to delete notifications');
     }

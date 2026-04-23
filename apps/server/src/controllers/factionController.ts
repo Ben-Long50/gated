@@ -2,41 +2,40 @@ import { Request, Response } from 'express';
 import factionServices from '../services/factionServices.js';
 import upload from '../utils/multer.js';
 import { uploadToCloudinary } from '../utils/cloudinary.js';
-import campaignServices from '../services/campaignServices.js';
 import parseRequestBody from '../utils/parseRequestBody.js';
+import { FactionInput } from '../validation/factionSchema.js';
+import handleControllerError from './handleControllerError.js';
 
 const factionController = {
-  getCampaignFactions: async (req: Request, res: Response) => {
+  getBatchFactions: async (req: Request, res: Response) => {
     try {
       if (!req.user) {
-        res
-          .status(401)
-          .json({ error: 'You must be signed in to use this function' });
-        return;
+        throw new Error('Could not find authenticated user');
       }
+      const factionIds = (req.query.ids as string).split(',').map(Number);
 
-      const factions = await factionServices.getCampaignFactions(
-        req.params.campaignId,
-      );
+      const factions = await factionServices.getBatchFactions(factionIds);
+
       res.status(200).json(factions);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
   getFactionById: async (req: Request, res: Response) => {
     try {
       const faction = await factionServices.getFactionById(
-        req.params.factionId,
+        Number(req.params.factionId),
       );
+
       res.status(200).json(faction);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
   updateFaction: [
-    upload.single('picture'),
+    upload.single('pictureFile'),
     uploadToCloudinary,
     async (req: Request, res: Response) => {
       try {
@@ -48,26 +47,16 @@ const factionController = {
           return;
         }
 
-        const campaign = await campaignServices.getCampaignById(
-          Number(req.params.campaignId),
-        );
-
-        if (req.user.id !== campaign?.ownerId) {
-          res.status(401).json({
-            error:
-              'You can only update faction information if you are the game master of this campaign',
-          });
-          return;
-        }
-
-        req.body.id = req.params.factionId;
-
         const parsedBody = parseRequestBody(req.body);
 
-        await factionServices.updateFaction(parsedBody);
+        const validatedFaction = FactionInput.parse(parsedBody);
 
-        res.status(200).json({ message: 'Successfully created faction' });
-      } catch (error) {
+        const faction = await factionServices.updateFaction(validatedFaction);
+
+        res
+          .status(200)
+          .json({ faction, message: `Successfully updated ${faction.name}` });
+      } catch (error: any) {
         if (error instanceof Error) {
           res.status(500).json({ error: error.message });
         }
@@ -84,22 +73,10 @@ const factionController = {
         return;
       }
 
-      const campaign = await campaignServices.getCampaignById(
-        Number(req.params.campaignId),
-      );
-
-      if (req.user.id !== campaign?.ownerId) {
-        res.status(401).json({
-          error:
-            'You can only delete this faction if you are the game master of this campaign',
-        });
-        return;
-      }
-
-      await factionServices.deleteFaction(req.params.factionId);
+      await factionServices.deleteFaction(Number(req.params.factionId));
       res.status(200).json({ message: 'Successfully deleted faction' });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 };

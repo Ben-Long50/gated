@@ -1,3 +1,14 @@
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 import prisma from '../config/database.js';
 const perkServices = {
     getPerks: async () => {
@@ -12,10 +23,24 @@ const perkServices = {
             throw new Error('Failed to fetch perks');
         }
     },
+    getBatchPerks: async (perkIds) => {
+        try {
+            const perks = await prisma.perk.findMany({
+                where: {
+                    id: { in: perkIds },
+                },
+            });
+            return perks;
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to fetch perks');
+        }
+    },
     getPerkById: async (perkId) => {
         try {
             const perk = await prisma.perk.findUnique({
-                where: { id: Number(perkId) },
+                where: { id: perkId },
             });
             return perk;
         }
@@ -26,22 +51,13 @@ const perkServices = {
     },
     createPerk: async (formData) => {
         try {
-            const newUser = await prisma.perk.upsert({
-                where: { id: Number(formData.perkId) || 0 },
-                update: {
-                    name: formData.name,
-                    description: formData.description,
-                    modifiers: Object.assign({}, formData.modifiers),
-                    attributes: formData.attributes,
-                },
-                create: {
-                    name: formData.name,
-                    description: formData.description,
-                    modifiers: Object.assign({}, formData.modifiers),
-                    attributes: formData.attributes,
-                },
+            const { id } = formData, data = __rest(formData, ["id"]);
+            const perk = await prisma.perk.upsert({
+                where: { id: id || 0 },
+                update: data,
+                create: data,
             });
-            return newUser;
+            return perk;
         }
         catch (error) {
             console.error(error);
@@ -52,7 +68,7 @@ const perkServices = {
         try {
             await prisma.perk.delete({
                 where: {
-                    id: Number(perkId),
+                    id: perkId,
                 },
             });
         }

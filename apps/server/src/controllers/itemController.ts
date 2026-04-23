@@ -3,9 +3,9 @@ import itemServices from '../services/itemServices.js';
 import upload from '../utils/multer.js';
 import { uploadToCloudinary } from '../utils/cloudinary.js';
 import parseRequestBody from '../utils/parseRequestBody.js';
-import characterServices from '../services/characterServices.js';
 import { ItemType } from '@prisma/client';
 import { ItemInput, ItemUpgradeInput } from '../validation/itemSchema.js';
+import handleControllerError from './handleControllerError.js';
 
 const itemController = {
   getItems: async (req: Request, res: Response) => {
@@ -16,7 +16,7 @@ const itemController = {
 
       res.status(200).json(items);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
@@ -31,7 +31,7 @@ const itemController = {
 
       res.status(200).json(items);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
@@ -45,12 +45,12 @@ const itemController = {
 
       res.status(200).json(item);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
   createOrUpdateItem: [
-    upload.single('picture'),
+    upload.single('pictureFile'),
     uploadToCloudinary,
     async (req: Request, res: Response) => {
       try {
@@ -81,12 +81,12 @@ const itemController = {
         message: `Successfully create ${item.name} copy`,
       });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
-  modifyItem: [
-    upload.single('picture'),
+  upgradeItem: [
+    upload.single('pictureFile'),
     uploadToCloudinary,
     async (req: Request, res: Response) => {
       try {
@@ -98,34 +98,14 @@ const itemController = {
 
         const validatedItem = ItemUpgradeInput.parse(parsedBody);
 
-        const character = await characterServices.getCharacterById(
-          Number(req.params.characterId),
-        );
+        const { character, item } =
+          await itemServices.upgradeItem(validatedItem);
 
-        if (!character) {
-          throw new Error(
-            'This item must be associated with an existing character to modify it',
-          );
-        }
-
-        if (character.profits < parsedBody.upgradePrice) {
-          throw new Error(
-            'You do not have enough profits to purchase the chosen upgrades',
-          );
-        }
-
-        await characterServices.updateCharacter(
-          {
-            profits: character.profits - validatedItem.upgradePrice,
-          },
-          req.user.id,
-          character.id,
-        );
-
-        const item = await itemServices.upgradeItem(validatedItem);
-        res
-          .status(200)
-          .json({ item, message: `Successfully upgraded ${item.name}` });
+        res.status(200).json({
+          character,
+          item,
+          message: `Successfully upgraded ${item.name}`,
+        });
       } catch (error: any) {
         res.status(500).json({ error: error.message });
       }
@@ -143,14 +123,12 @@ const itemController = {
         req.body,
       );
 
-      res
-        .status(200)
-        .json({
-          item,
-          message: `Successfully created ${item.name} conditions`,
-        });
+      res.status(200).json({
+        item,
+        message: `Successfully created ${item.name} conditions`,
+      });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
@@ -159,7 +137,7 @@ const itemController = {
       await itemServices.deleteItem(Number(req.params.itemId));
       res.status(200).json({ message: 'Successfully deleted item' });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 };

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import notificationServices from '../services/notificationServices.js';
+import handleControllerError from './handleControllerError.js';
 
 const notificationController = {
   getNotifications: async (req: Request, res: Response) => {
@@ -16,7 +17,7 @@ const notificationController = {
       );
       res.status(200).json(notifications);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
@@ -33,7 +34,7 @@ const notificationController = {
 
       res.status(200).json({ message: 'Notifications marked read' });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
@@ -79,7 +80,7 @@ const notificationController = {
   //     res
   //       .status(200)
   //       .json({ message: 'Successfully created notification and session 0' });
-  //   } catch (error) {
+  //   } catch (error: any) {
   //     if (error instanceof Error) {
   //       res.status(500).json({ error: error.message });
   //     }
@@ -93,7 +94,7 @@ const notificationController = {
       );
       res.status(200).json({ message: 'Successfully deleted notification' });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
@@ -109,7 +110,7 @@ const notificationController = {
       await notificationServices.deleteNotifications(req.user.id);
       res.status(200).json({ message: 'Successfully deleted notification' });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 };

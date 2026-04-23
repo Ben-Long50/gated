@@ -2,32 +2,21 @@ import upload from '../utils/multer.js';
 import { uploadToCloudinary } from '../utils/cloudinary.js';
 import parseRequestBody from '../utils/parseRequestBody.js';
 import gangServices from '../services/gangServices.js';
+import { GangInput, GangSessionBonusInput } from '../validation/gangSchema.js';
+import z from 'zod';
+import handleControllerError from './handleControllerError.js';
 const gangController = {
-    getGangs: async (req, res) => {
-        try {
-            if (!req.user) {
-                res
-                    .status(401)
-                    .json({ error: 'You must be signed in to use this function' });
-                return;
-            }
-            const gangs = await gangServices.getGangs(req.user.id);
-            res.status(200).json(gangs);
-        }
-        catch (error) {
-            res.status(500).json({ error: error.message });
-        }
-    },
     getBatchGangs: async (req, res) => {
         try {
             if (!req.user) {
                 throw new Error('Could not find authenticated user');
             }
-            const gangs = await gangServices.getBatchGangs(req.body.gangIds);
+            const gangIds = req.query.ids.split(',').map(Number);
+            const gangs = await gangServices.getBatchGangs(gangIds);
             res.status(200).json(gangs);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     getGangById: async (req, res) => {
@@ -36,11 +25,11 @@ const gangController = {
             res.status(200).json(gang);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     createGang: [
-        upload.single('picture'),
+        upload.single('pictureFile'),
         uploadToCloudinary,
         async (req, res) => {
             try {
@@ -51,13 +40,14 @@ const gangController = {
                     return;
                 }
                 const parsedBody = parseRequestBody(req.body);
-                await gangServices.createOrUpdateGang(parsedBody);
-                res.status(200).json({ message: 'Successfully created gang' });
+                const validatedGang = GangInput.parse(parsedBody);
+                const gang = await gangServices.createOrUpdateGang(validatedGang);
+                res
+                    .status(200)
+                    .json({ gang, message: `Successfully created ${gang.name}` });
             }
             catch (error) {
-                if (error instanceof Error) {
-                    res.status(500).json({ error: error.message });
-                }
+                res.status(500).json({ error: error.message });
             }
         },
     ],
@@ -69,35 +59,44 @@ const gangController = {
                 });
                 return;
             }
-            await gangServices.updateGangCharacters(Number(req.params.gangId), req.body);
-            res.status(200).json({ message: 'Successfully updated gang characters' });
+            const validatedCharacters = z
+                .object({
+                characterIds: z.array(z.number().int().nonnegative()),
+                leaderIds: z.array(z.number().int().nonnegative()),
+            })
+                .parse(req.body);
+            const gang = await gangServices.updateGangCharacters(Number(req.params.gangId), validatedCharacters);
+            res.status(200).json({
+                gang,
+                message: `Successfully updated ${gang.name} characters`,
+            });
         }
         catch (error) {
-            if (error instanceof Error) {
-                res.status(500).json({ error: error.message });
-            }
+            handleControllerError(res, error);
         }
     },
     allocateReputation: async (req, res) => {
         try {
-            await gangServices.allocateReputation(Number(req.params.gangId), req.body.sessionId, req.body.bonus);
+            const validatedGangSessionBonus = GangSessionBonusInput.parse(req.body.bonus);
+            await gangServices.allocateReputation(Number(req.params.gangId), req.body.sessionId, validatedGangSessionBonus);
             res
                 .status(200)
                 .json({ messagee: 'Successfully updated gang reputation' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     allocateLevelNodes: async (req, res) => {
         try {
-            await gangServices.allocateLevelNodes(Number(req.params.gangId), req.body.sessionId, req.body.bonus);
+            const validatedLevelNodeBonus = GangSessionBonusInput.parse(req.body.bonus);
+            await gangServices.allocateLevelNodes(Number(req.params.gangId), req.body.sessionId, validatedLevelNodeBonus);
             res
                 .status(200)
                 .json({ messagee: 'Successfully updated gang reputation' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     editGangProfits: async (req, res) => {
@@ -108,18 +107,18 @@ const gangController = {
                 .json({ message: `Changed current gang profits by ${req.body.value}` });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     distributeProfits: async (req, res) => {
         try {
-            await gangServices.distributeProfits(Number(req.params.gangId), Number(req.params.characterId), Number(req.body.value));
+            const { gang, character } = await gangServices.distributeProfits(Number(req.params.gangId), Number(req.params.characterId), Number(req.body.value));
             res.status(200).json({
-                message: `Distributed ${req.body.value} profits to character ${req.params.characterId}`,
+                message: `Distributed ${req.body.value} profits from ${gang.name} to ${character.firstName + ' ' + character.lastName}`,
             });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     deleteGang: async (req, res) => {
@@ -134,7 +133,7 @@ const gangController = {
             res.status(200).json({ message: 'Successfully deleted gang' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
 };

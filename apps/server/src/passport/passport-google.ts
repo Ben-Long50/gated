@@ -2,6 +2,7 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import userServices from '../services/userServices.js';
 import prisma from '../config/database.js';
 import { PassportStatic } from 'passport';
+import { GoogleSignUpInput } from '../validation/authSchema.js';
 
 const googleStrategy = (passport: PassportStatic) => {
   passport.use(
@@ -60,7 +61,10 @@ const googleStrategy = (passport: PassportStatic) => {
               email,
               profilePicture,
             };
-            user = await userServices.createUser(userData);
+
+            const validatedData = GoogleSignUpInput.parse(userData);
+
+            user = await userServices.createGoogleUser(validatedData);
           }
 
           return done(null, user as any);

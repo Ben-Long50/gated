@@ -22,7 +22,7 @@
     "src/app.ts",
     "types/**/*.d.ts",
     "src/utils/createCartAndInv.js",
-    "src/utils/updaterScripts/updateDbWeapons.ts",
+    "src/utils/updaterScripts/updateCampaignDateAndTime.ts",
     "src/utils/updaterScripts/updateDbVehicles.ts",
     "src/utils/updaterScripts/updateDbItems.js",
     "src/utils/updaterScripts/updateDbCybernetics.ts",

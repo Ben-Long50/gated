@@ -89,3 +89,21 @@ export const KeywordType = z.enum([
   'hardwired',
   'networked',
 ]);
+
+export const MapType = z.enum(['map', 'component']);
+
+export const RollModifiers = z.enum([
+  'push',
+  'lucky',
+  'unlucky',
+  'booming',
+  'dooming',
+]);
+
+export const UserRole = z.enum([
+  'GUEST',
+  'USER',
+  'PROUSER',
+  'ADMIN',
+  'SUPERADMIN',
+]);

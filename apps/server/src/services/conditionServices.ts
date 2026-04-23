@@ -1,5 +1,5 @@
-import { $Enums } from '@prisma/client';
 import prisma from '../config/database.js';
+import { ConditionInput } from '../validation/conditionSchema.js';
 
 const conditionServices = {
   getConditions: async () => {
@@ -8,7 +8,7 @@ const conditionServices = {
         orderBy: { name: 'asc' },
       });
       return conditions;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to fetch conditions');
     }
@@ -20,7 +20,7 @@ const conditionServices = {
         where: { id: Number(conditionId) },
       });
       return condition;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to fetch condition');
     }
@@ -31,34 +31,26 @@ const conditionServices = {
       const condition = await prisma.condition.findUnique({
         where: { name: conditionName },
       });
+
       return condition;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to fetch condition');
     }
   },
 
-  createCondition: async (formData: {
-    conditionId: string;
-    name: string;
-    description: string;
-    type: $Enums.ConditionType;
-  }) => {
+  createCondition: async (formData: ConditionInput) => {
     try {
-      await prisma.condition.upsert({
-        where: { id: Number(formData.conditionId) || 0 },
-        update: {
-          name: formData.name,
-          description: formData.description,
-          conditionType: formData.type,
-        },
-        create: {
-          name: formData.name,
-          description: formData.description,
-          conditionType: formData.type,
-        },
+      const { id, ...data } = formData;
+
+      const condition = await prisma.condition.upsert({
+        where: { id: formData.id || 0 },
+        update: data,
+        create: data,
       });
-    } catch (error) {
+
+      return condition;
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to create or update condition');
     }
@@ -79,15 +71,16 @@ const conditionServices = {
         throw new Error('Failed to find condition reference');
       }
 
-      await prisma.characterConditionReference.update({
+      const condition = await prisma.characterConditionReference.update({
         where: { id: conditionId },
         data: {
-          stacks: conditionReference?.stacks
-            ? conditionReference?.stacks + value
-            : value,
+          stacks: conditionReference.stacks ? { increment: value } : value,
         },
+        include: { condition: { select: { name: true } } },
       });
-    } catch (error) {
+
+      return condition.condition.name;
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to udpate character condition stacks');
     }
@@ -106,15 +99,16 @@ const conditionServices = {
         throw new Error('Failed to find condition reference');
       }
 
-      await prisma.itemConditionReference.update({
+      const condition = await prisma.itemConditionReference.update({
         where: { id: conditionId },
         data: {
-          stacks: conditionReference?.stacks
-            ? conditionReference?.stacks + value
-            : value,
+          stacks: conditionReference.stacks ? { increment: value } : value,
         },
+        include: { condition: { select: { name: true } } },
       });
-    } catch (error) {
+
+      return condition.condition.name;
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to udpate item condition stacks');
     }
@@ -127,7 +121,7 @@ const conditionServices = {
           id: conditionId,
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to delete condition');
     }
@@ -140,7 +134,7 @@ const conditionServices = {
           id: conditionId,
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to delete character condition');
     }
@@ -153,7 +147,7 @@ const conditionServices = {
           id: conditionId,
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to delete item condition');
     }

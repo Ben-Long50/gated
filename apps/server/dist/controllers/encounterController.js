@@ -1,5 +1,6 @@
 import encounterServices from '../services/encounterServices.js';
 import { getIO } from '../sockets/socket.js';
+import handleControllerError from './handleControllerError.js';
 const encounterController = {
     getEncounters: async (req, res) => {
         try {
@@ -13,7 +14,7 @@ const encounterController = {
             res.status(200).json(encounters);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     getEncounterById: async (req, res) => {
@@ -22,7 +23,7 @@ const encounterController = {
             res.status(200).json(encounter);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     getBatchEncounters: async (req, res) => {
@@ -34,7 +35,7 @@ const encounterController = {
             res.status(200).json(encounters);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     getEncounterHistory: async (req, res) => {
@@ -46,7 +47,7 @@ const encounterController = {
             res.status(200).json(history);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     activateEncounter: async (req, res) => {
@@ -58,7 +59,7 @@ const encounterController = {
             res.status(200).json({ message: 'Successfully activated encounter' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     advancePhase: async (req, res) => {
@@ -72,7 +73,7 @@ const encounterController = {
                 .json({ message: 'Successfully advanced encounter phase' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     advanceTurn: async (req, res) => {
@@ -84,7 +85,7 @@ const encounterController = {
             res.status(200).json({ message: 'Successfully advanced encounter turn' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     rollInitiative: async (req, res) => {
@@ -96,7 +97,7 @@ const encounterController = {
             res.status(200).json({ message: 'Successfully rolled initiative' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     rollAction: async (req, res) => {
@@ -111,7 +112,7 @@ const encounterController = {
             res.status(200).json({ message: 'Successfully rolled action' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     rollReaction: async (req, res) => {
@@ -128,7 +129,7 @@ const encounterController = {
             res.status(200).json({ message: 'Successfully rolled reaction' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     scheduleReaction: async (req, res) => {
@@ -140,7 +141,7 @@ const encounterController = {
             res.status(200).json({ message: 'Successfully scheduled reaction' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     passReaction: async (req, res) => {
@@ -152,7 +153,7 @@ const encounterController = {
             res.status(200).json({ message: 'Successfully passed reaction' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     finishReaction: async (req, res) => {
@@ -164,7 +165,7 @@ const encounterController = {
             res.status(200).json({ message: 'Successfully finished reaction' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     passAllReactions: async (req, res) => {
@@ -176,7 +177,7 @@ const encounterController = {
             res.status(200).json({ message: 'Successfully passed all reactions' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     confirmActionQueueResults: async (req, res) => {
@@ -191,7 +192,7 @@ const encounterController = {
                 .json({ message: 'Successfully confirmed action queue results' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     createOrUpdateEncounter: async (req, res) => {
@@ -206,9 +207,7 @@ const encounterController = {
             res.status(200).json({ message: 'Successfully created encounter' });
         }
         catch (error) {
-            if (error instanceof Error) {
-                res.status(500).json({ error: error.message });
-            }
+            handleControllerError(res, error);
         }
     },
     deleteEncounter: async (req, res) => {
@@ -223,7 +222,7 @@ const encounterController = {
             res.status(200).json({ message: 'Successfully deleted encounter' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
 };

@@ -1,4 +1,5 @@
 import prisma from '../config/database.js';
+import { PropertyInput } from '../validation/propertySchema.js';
 
 const propertyServices = {
   getBaseProperties: async () => {
@@ -11,7 +12,7 @@ const propertyServices = {
       });
 
       return properties;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to fetch owner properties');
     }
@@ -27,7 +28,7 @@ const propertyServices = {
       });
 
       return properties;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to fetch properties');
     }
@@ -43,41 +44,24 @@ const propertyServices = {
       });
 
       return property;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to fetch property');
     }
   },
 
-  createOrUpdateBaseProperty: async (formData: {
-    id: number | null;
-    name: string;
-    description: string;
-    picture: { imageUrl: string; publicId: string };
-    gpPrice: number;
-    type: 'property' | 'districtUpgrade';
-  }) => {
-    const data = {
-      name: formData.name,
-      description: formData.description,
-      picture: formData.picture,
-      gpPrice: formData.gpPrice,
-      type: formData.type,
-    };
-
+  createOrUpdateBaseProperty: async (formData: PropertyInput) => {
     try {
+      const { id, ...data } = formData;
+
       const property = await prisma.property.upsert({
-        where: { id: formData?.id || 0 },
-        update: {
-          ...data,
-        },
-        create: {
-          ...data,
-        },
+        where: { id: id || 0 },
+        update: data,
+        create: data,
       });
 
       return property;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to create or update property');
     }

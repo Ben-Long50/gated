@@ -1,4 +1,5 @@
 import notificationServices from '../services/notificationServices.js';
+import handleControllerError from './handleControllerError.js';
 const notificationController = {
     getNotifications: async (req, res) => {
         try {
@@ -12,7 +13,7 @@ const notificationController = {
             res.status(200).json(notifications);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     markNotificationsRead: async (req, res) => {
@@ -27,7 +28,7 @@ const notificationController = {
             res.status(200).json({ message: 'Notifications marked read' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     // createNotification: async (req: Request, res: Response) => {
@@ -67,7 +68,7 @@ const notificationController = {
     //     res
     //       .status(200)
     //       .json({ message: 'Successfully created notification and session 0' });
-    //   } catch (error) {
+    //   } catch (error: any) {
     //     if (error instanceof Error) {
     //       res.status(500).json({ error: error.message });
     //     }
@@ -79,7 +80,7 @@ const notificationController = {
             res.status(200).json({ message: 'Successfully deleted notification' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     deleteNotifications: async (req, res) => {
@@ -94,7 +95,7 @@ const notificationController = {
             res.status(200).json({ message: 'Successfully deleted notification' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
 };

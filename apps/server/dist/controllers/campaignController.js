@@ -1,9 +1,13 @@
 import campaignServices from '../services/campaignServices.js';
-import sessionServices from '../services/sessionServices.js';
 import upload from '../utils/multer.js';
 import { uploadToCloudinary } from '../utils/cloudinary.js';
-import notificationServices from '../services/notificationServices.js';
 import parseRequestBody from '../utils/parseRequestBody.js';
+import { CampaignInput } from '../validation/campaignSchema.js';
+import { EventInput } from '../validation/eventSchema.js';
+import { Date, Time } from '../validation/fieldSchemas.js';
+import { RollInput } from '../validation/rollSchema.js';
+import { getIO } from '../sockets/socket.js';
+import handleControllerError from './handleControllerError.js';
 const campaignController = {
     getCampaigns: async (req, res) => {
         try {
@@ -17,7 +21,7 @@ const campaignController = {
             res.status(200).json(campaigns);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     getBatchCampaigns: async (req, res) => {
@@ -25,11 +29,12 @@ const campaignController = {
             if (!req.user) {
                 throw new Error('Could not find authenticated user');
             }
-            const campaigns = await campaignServices.getBatchCampaigns(req.body.campaignIds);
+            const campaignIds = req.query.ids.split(',').map(Number);
+            const campaigns = await campaignServices.getBatchCampaigns(campaignIds);
             res.status(200).json(campaigns);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     getCampaignById: async (req, res) => {
@@ -38,7 +43,7 @@ const campaignController = {
             res.status(200).json(campaign);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     toggleCampaign: async (req, res) => {
@@ -49,18 +54,18 @@ const campaignController = {
                     .json({ error: 'You must be signed in to use this function' });
                 return;
             }
-            const campaignStatus = await campaignServices.toggleCampaign(Number(req.params.campaignId));
-            if (campaignStatus.players.length > 0 && campaignStatus.active) {
-                await notificationServices.createCampaignNotification('liveCampaignInvite', campaignStatus.players.map((player) => player.id), req.user.id, campaignStatus.id);
-            }
-            res.status(200).json(campaignStatus);
+            const campaign = await campaignServices.toggleCampaign(Number(req.params.campaignId));
+            res.status(200).json({
+                campaign,
+                message: `Campaign status set to ${campaign.active ? 'active' : 'inactive'}`,
+            });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
-    createCampaign: [
-        upload.single('picture'),
+    createOrUpdateCampaign: [
+        upload.single('pictureFile'),
         uploadToCloudinary,
         async (req, res) => {
             try {
@@ -71,21 +76,17 @@ const campaignController = {
                     return;
                 }
                 const parsedBody = parseRequestBody(req.body);
-                const campaignInfo = await campaignServices.createOrUpdateCampaign(parsedBody, req.user.id);
-                const sessionInfo = {
-                    name: 'Introduction',
-                    sessionNumber: 0,
-                    briefing: parsedBody.briefing,
-                };
-                if (!parsedBody.id) {
-                    await sessionServices.createOrUpdateSession(sessionInfo, campaignInfo.campaign.id);
-                }
-                if (campaignInfo.newPending.length > 0) {
-                    await notificationServices.createCampaignNotification('campaignInvite', campaignInfo.newPending.map((player) => player.id), req.user.id, campaignInfo.campaign.id);
-                }
-                res
-                    .status(200)
-                    .json({ message: 'Successfully created campaign and session 0' });
+                const validatedCampaign = CampaignInput.parse(parsedBody);
+                const campaign = await campaignServices.createOrUpdateCampaign(validatedCampaign, req.user.id);
+                const io = getIO();
+                const players = (campaign === null || campaign === void 0 ? void 0 : campaign.players.map((player) => player.id)) || [];
+                const pendingPlayers = (campaign === null || campaign === void 0 ? void 0 : campaign.pendingPlayers.map((player) => player.id)) || [];
+                const playerIds = [campaign === null || campaign === void 0 ? void 0 : campaign.ownerId, ...players, ...pendingPlayers];
+                io.emit('globalCampaign', { campaignId: campaign.id, playerIds });
+                res.status(200).json({
+                    campaign,
+                    message: `Successfully created ${campaign.name}`,
+                });
             }
             catch (error) {
                 if (error instanceof Error) {
@@ -94,31 +95,13 @@ const campaignController = {
             }
         },
     ],
-    getCharacterNotes: async (req, res) => {
-        try {
-            const notes = await campaignServices.getCharacterNotes(Number(req.params.characterId));
-            res.status(200).json(notes);
-        }
-        catch (error) {
-            res.status(500).json({ error: error.message });
-        }
-    },
     getCampaignMaps: async (req, res) => {
         try {
             const maps = await campaignServices.getCampaignMaps(Number(req.params.campaignId));
             res.status(200).json(maps);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
-        }
-    },
-    getCampaignMap: async (req, res) => {
-        try {
-            const map = await campaignServices.getCampaignMap(Number(req.params.mapId));
-            res.status(200).json(map);
-        }
-        catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     getBatchLocations: async (req, res) => {
@@ -131,54 +114,41 @@ const campaignController = {
             res.status(200).json(locations);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     createOrUpdateEvent: async (req, res) => {
         try {
-            const event = await campaignServices.createOrUpdateEvent(Number(req.params.campaignId), req.body);
-            res.status(200).json(event);
+            const validatedEvent = EventInput.parse(req.body);
+            const event = await campaignServices.createOrUpdateEvent(Number(req.params.campaignId), validatedEvent);
+            res
+                .status(200)
+                .json({ event, message: `Successfully created ${event.name}` });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     setCampaignDate: async (req, res) => {
         try {
-            const campaign = await campaignServices.setCampaignDate(Number(req.params.campaignId), req.body);
+            const validatedDate = Date.parse(req.body);
+            const campaign = await campaignServices.setCampaignDate(Number(req.params.campaignId), validatedDate);
             res.status(200).json(campaign);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     setCampaignTime: async (req, res) => {
         try {
-            const campaign = await campaignServices.setCampaignTime(Number(req.params.campaignId), req.body);
+            const validatedTime = Time.parse(req.body);
+            const campaign = await campaignServices.setCampaignTime(Number(req.params.campaignId), validatedTime);
             res.status(200).json(campaign);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
-    createOrUpdateCampaignMap: [
-        upload.single('picture'),
-        uploadToCloudinary,
-        async (req, res) => {
-            var _a;
-            try {
-                if (!req.user) {
-                    throw new Error('You must be logged in to create or update a map');
-                }
-                const parsedBody = parseRequestBody(req.body);
-                const map = await campaignServices.createOrUpdateCampaignMap(Number(req.params.campaignId), (_a = req.user) === null || _a === void 0 ? void 0 : _a.id, parsedBody);
-                res.status(200).json(map);
-            }
-            catch (error) {
-                res.status(500).json({ error: error.message });
-            }
-        },
-    ],
     campaignRoll: async (req, res) => {
         try {
             if (!req.user) {
@@ -187,11 +157,12 @@ const campaignController = {
                     .json({ error: 'You must be signed in to use this function' });
                 return;
             }
-            await campaignServices.campaignRoll(req.user.id, Number(req.params.campaignId), req.body);
+            const validatedRoll = RollInput.parse(req.body);
+            await campaignServices.campaignRoll(req.user.id, Number(req.params.campaignId), validatedRoll);
             res.status(200).json({ message: 'Successfully rolled' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     joinCampaign: async (req, res) => {
@@ -202,11 +173,13 @@ const campaignController = {
                     .json({ error: 'You must be signed in to use this function' });
                 return;
             }
-            await campaignServices.joinCampaign(req.params.campaignId, req.user.id);
-            res.status(200).json({ message: 'Successfully joined the campaign' });
+            const campaign = await campaignServices.joinCampaign(Number(req.params.campaignId), req.user.id);
+            res
+                .status(200)
+                .json({ campaign, message: `Successfully joined ${campaign.name}` });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     deleteCampaign: async (req, res) => {
@@ -221,22 +194,7 @@ const campaignController = {
             res.status(200).json({ message: 'Successfully deleted campaign' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
-        }
-    },
-    deleteCampaignMap: async (req, res) => {
-        try {
-            if (!req.user) {
-                res
-                    .status(401)
-                    .json({ error: 'You must be signed in to use this function' });
-                return;
-            }
-            await campaignServices.deleteCampaignMap(Number(req.params.campaignId), Number(req.params.mapId), req.user.id);
-            res.status(200).json({ message: 'Successfully deleted map' });
-        }
-        catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
 };

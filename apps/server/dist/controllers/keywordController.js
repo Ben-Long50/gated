@@ -1,4 +1,6 @@
 import keywordServices from '../services/keywordServices.js';
+import { KeywordInput } from '../validation/keywordSchema.js';
+import handleControllerError from './handleControllerError.js';
 const keywordController = {
     getKeywords: async (_req, res) => {
         try {
@@ -6,34 +8,37 @@ const keywordController = {
             res.status(200).json(keywords);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     getKeywordById: async (req, res) => {
         try {
-            const keyword = await keywordServices.getKeywordById(req.params.keywordId);
+            const keyword = await keywordServices.getKeywordById(Number(req.params.keywordId));
             res.status(200).json(keyword);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     createKeyword: async (req, res) => {
         try {
-            const keyword = await keywordServices.createKeyword(req.body);
-            res.status(200).json(keyword);
+            const validatedKeyword = KeywordInput.parse(req.body);
+            const keyword = await keywordServices.createKeyword(validatedKeyword);
+            res
+                .status(200)
+                .json({ keyword, message: `Successfully created ${keyword.name}` });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     deleteKeyword: async (req, res) => {
         try {
-            await keywordServices.deleteKeyword(req.params.keywordId);
+            await keywordServices.deleteKeyword(Number(req.params.keywordId));
             res.status(200).json({ message: 'Successfully deleted keyword' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
 };

@@ -26,7 +26,7 @@ router.post(
   '/actions',
   authentication.authenticate,
   authentication.authenticateAdmin,
-  actionController.createAction,
+  actionController.createOrUpdateAction,
 );
 
 router.patch(

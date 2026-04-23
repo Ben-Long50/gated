@@ -2,8 +2,8 @@ import itemServices from '../services/itemServices.js';
 import upload from '../utils/multer.js';
 import { uploadToCloudinary } from '../utils/cloudinary.js';
 import parseRequestBody from '../utils/parseRequestBody.js';
-import characterServices from '../services/characterServices.js';
 import { ItemInput, ItemUpgradeInput } from '../validation/itemSchema.js';
+import handleControllerError from './handleControllerError.js';
 const itemController = {
     getItems: async (req, res) => {
         try {
@@ -12,7 +12,7 @@ const itemController = {
             res.status(200).json(items);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     getBatchItems: async (req, res) => {
@@ -25,7 +25,7 @@ const itemController = {
             res.status(200).json(items);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     getItemById: async (req, res) => {
@@ -37,11 +37,11 @@ const itemController = {
             res.status(200).json(item);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     createOrUpdateItem: [
-        upload.single('picture'),
+        upload.single('pictureFile'),
         uploadToCloudinary,
         async (req, res) => {
             try {
@@ -69,11 +69,11 @@ const itemController = {
             });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
-    modifyItem: [
-        upload.single('picture'),
+    upgradeItem: [
+        upload.single('pictureFile'),
         uploadToCloudinary,
         async (req, res) => {
             try {
@@ -82,20 +82,12 @@ const itemController = {
                 }
                 const parsedBody = parseRequestBody(req.body);
                 const validatedItem = ItemUpgradeInput.parse(parsedBody);
-                const character = await characterServices.getCharacterById(Number(req.params.characterId));
-                if (!character) {
-                    throw new Error('This item must be associated with an existing character to modify it');
-                }
-                if (character.profits < parsedBody.upgradePrice) {
-                    throw new Error('You do not have enough profits to purchase the chosen upgrades');
-                }
-                await characterServices.updateCharacter({
-                    profits: character.profits - validatedItem.upgradePrice,
-                }, req.user.id, character.id);
-                const item = await itemServices.upgradeItem(validatedItem);
-                res
-                    .status(200)
-                    .json({ item, message: `Successfully upgraded ${item.name}` });
+                const { character, item } = await itemServices.upgradeItem(validatedItem);
+                res.status(200).json({
+                    character,
+                    item,
+                    message: `Successfully upgraded ${item.name}`,
+                });
             }
             catch (error) {
                 res.status(500).json({ error: error.message });
@@ -108,15 +100,13 @@ const itemController = {
                 throw new Error('Could not find authenticated user');
             }
             const item = await itemServices.createItemConditions(Number(req.params.itemId), req.body);
-            res
-                .status(200)
-                .json({
+            res.status(200).json({
                 item,
                 message: `Successfully created ${item.name} conditions`,
             });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     deleteItem: async (req, res) => {
@@ -125,7 +115,7 @@ const itemController = {
             res.status(200).json({ message: 'Successfully deleted item' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
 };

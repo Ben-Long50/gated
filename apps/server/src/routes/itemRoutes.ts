@@ -2,6 +2,7 @@ import express from 'express';
 import authentication from '../middleware/authentication.js';
 import itemController from '../controllers/itemController.js';
 import itemStatController from '../controllers/itemStatController.js';
+import conditionController from '../controllers/conditionController.js';
 
 const router = express.Router();
 
@@ -14,7 +15,7 @@ router.get(
 );
 
 router.post(
-  '/items/create',
+  '/items',
   authentication.authenticate,
   authentication.authenticateAdmin,
   itemController.createOrUpdateItem,
@@ -34,17 +35,17 @@ router.post(
 );
 
 router.put(
-  '/items/:itemId/update',
+  '/items/:itemId',
   authentication.authenticate,
   authentication.authenticateItemModification,
   itemController.createOrUpdateItem,
 );
 
 router.put(
-  '/characters/:characterId/items/:category/:itemId/modify',
+  '/items/:category/:itemId/upgrade',
   authentication.authenticate,
   authentication.authenticateItemModification,
-  itemController.modifyItem,
+  itemController.upgradeItem,
 );
 
 router.patch(
@@ -54,7 +55,13 @@ router.patch(
 );
 
 router.delete(
-  '/items/:itemId/delete',
+  '/items/:itemId/conditions/:conditionId',
+  authentication.authenticate,
+  conditionController.deleteItemCondition,
+);
+
+router.delete(
+  '/items/:itemId',
   authentication.authenticate,
   authentication.authenticateAdmin,
   itemController.deleteItem,

@@ -44,6 +44,7 @@ export const ItemUpgradeInput = z.object({
       value: z.number().int().nonnegative().nullable(),
     }),
   ),
+  characterId: z.number().int().nonnegative(),
 });
 
 export type ItemInput = z.infer<typeof ItemInput>;

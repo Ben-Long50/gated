@@ -32,4 +32,5 @@ export const ItemUpgradeInput = z.object({
         keywordId: z.number().int(),
         value: z.number().int().nonnegative().nullable(),
     })),
+    characterId: z.number().int().nonnegative(),
 });

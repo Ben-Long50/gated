@@ -1,3 +1,14 @@
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 import prisma from '../config/database.js';
 const propertyServices = {
     getBaseProperties: async () => {
@@ -46,18 +57,12 @@ const propertyServices = {
         }
     },
     createOrUpdateBaseProperty: async (formData) => {
-        const data = {
-            name: formData.name,
-            description: formData.description,
-            picture: formData.picture,
-            gpPrice: formData.gpPrice,
-            type: formData.type,
-        };
         try {
+            const { id } = formData, data = __rest(formData, ["id"]);
             const property = await prisma.property.upsert({
-                where: { id: (formData === null || formData === void 0 ? void 0 : formData.id) || 0 },
-                update: Object.assign({}, data),
-                create: Object.assign({}, data),
+                where: { id: id || 0 },
+                update: data,
+                create: data,
             });
             return property;
         }

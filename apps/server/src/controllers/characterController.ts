@@ -4,26 +4,23 @@ import { uploadToCloudinary } from '../utils/cloudinary.js';
 import upload from '../utils/multer.js';
 import parseRequestBody from '../utils/parseRequestBody.js';
 import cartServices from '../services/cartServices.js';
+import {
+  CharacterInput,
+  CharacterLevelBonus,
+  CharacterUpdateInput,
+} from '../validation/characterSchema.js';
+import z, { ZodError } from 'zod';
+import { getIO } from '../sockets/socket.js';
+import constructName from '../utils/constructName.js';
+import handleControllerError from './handleControllerError.js';
 
 const characterController = {
-  getCharacters: async (req: Request, res: Response) => {
-    try {
-      if (!req.user) {
-        throw new Error('Could not find authenticated user');
-      }
-      const characters = await characterServices.getCharacters(req.user.id);
-      res.status(200).json(characters);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
-  },
-
   getSocialCharacters: async (_: Request, res: Response) => {
     try {
       const characters = await characterServices.getSocialCharacters();
       res.status(200).json(characters);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
@@ -39,7 +36,7 @@ const characterController = {
 
       res.status(200).json(characters);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
@@ -48,51 +45,55 @@ const characterController = {
       const character = await characterServices.getCharacterById(
         Number(req.params.characterId),
       );
+
       res.status(200).json(character);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
-  setActiveCharacter: async (req: Request, res: Response) => {
+  getCharacterNotes: async (req: Request, res: Response) => {
     try {
-      if (!req.user) {
-        throw new Error('Could not find authenticated user');
-      }
-      const activeCharacter = await characterServices.setActiveCharacter(
-        req.user.id,
-        req.body.characterId,
+      const notes = await characterServices.getCharacterNotes(
+        Number(req.params.characterId),
       );
-      res.status(200).json(activeCharacter);
+
+      res.status(200).json(notes);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
   toggleEquipment: async (req: Request, res: Response) => {
     try {
-      await characterServices.toggleEquipment(
-        req.params.inventoryId,
-        req.params.itemId,
-        req.body.category,
+      const item = await characterServices.toggleEquipment(
+        Number(req.params.inventoryId),
+        Number(req.params.itemId),
       );
-      res.status(200).json({ message: 'Successfully toggled equipment' });
+
+      res
+        .status(200)
+        .json({ item, message: `Successfully toggled ${item.name}` });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
   editCart: async (req: Request, res: Response) => {
     try {
-      await cartServices.editCartItem(
+      const character = await cartServices.editCartItem(
+        Number(req.params.characterId),
         Number(req.params.cartId),
         Number(req.body.itemId),
         Number(req.body.value),
       );
 
-      res.status(200).json({ message: 'Successfully added item to cart' });
+      res.status(200).json({
+        character,
+        message: `Successfully added ${req.body.value} item(s) to ${constructName(character)}'s cart`,
+      });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
@@ -110,7 +111,7 @@ const characterController = {
       await characterServices.clearCart(Number(req.params.characterId));
       res.status(200).json({ message: 'Purchase completed' });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
@@ -118,11 +119,11 @@ const characterController = {
     try {
       await characterServices.clearCart(Number(req.params.characterId));
       res.status(200).json({ message: 'Cart cleared' });
-    } catch (error) {}
+    } catch (error: any) {}
   },
 
   createCharacter: [
-    upload.single('picture'),
+    upload.single('pictureFile'),
     uploadToCloudinary,
     async (req: Request, res: Response) => {
       try {
@@ -132,15 +133,30 @@ const characterController = {
 
         const parsedBody = parseRequestBody(req.body);
 
+        const validatedCharacter = CharacterInput.parse(parsedBody);
+
         const character = await characterServices.createCharacter(
-          parsedBody,
+          validatedCharacter,
           req.user.id,
         );
 
-        res.status(200).json(character);
-      } catch (error) {
-        if (error instanceof Error) {
-          res.status(500).json({ error: error.message });
+        const io = getIO();
+
+        if (character.campaignId) {
+          io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
+            character,
+          });
+        }
+
+        res.status(200).json({
+          character,
+          message: `Successfully created ${constructName(character)}`,
+        });
+      } catch (error: any) {
+        if (error instanceof ZodError) {
+          res.status(500).json({ error: z.prettifyError(error) });
+        } else if (error instanceof Error) {
+          res.status(500).json({ message: error });
         }
       }
     },
@@ -157,16 +173,17 @@ const characterController = {
         req.user.id,
       );
 
-      res.status(200).json(character);
-    } catch (error) {
-      if (error instanceof Error) {
-        res.status(500).json({ error: error.message });
-      }
+      res.status(200).json({
+        character,
+        message: `Successfully created a character copy of ${constructName(character)}`,
+      });
+    } catch (error: any) {
+      handleControllerError(res, error);
     }
   },
 
   updateCharacter: [
-    upload.single('picture'),
+    upload.single('pictureFile'),
     uploadToCloudinary,
     async (req: Request, res: Response) => {
       try {
@@ -176,13 +193,26 @@ const characterController = {
 
         const parsedBody = parseRequestBody(req.body);
 
-        const campaignId = await characterServices.updateCharacter(
-          parsedBody,
+        const validatedCharacter = CharacterUpdateInput.parse(parsedBody);
+
+        const character = await characterServices.updateCharacter(
+          validatedCharacter,
           req.user.id,
-          Number(req.params.characterId),
         );
-        res.status(200).json(campaignId);
-      } catch (error) {
+
+        const io = getIO();
+
+        if (character.campaignId) {
+          io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
+            character,
+          });
+        }
+
+        res.status(200).json({
+          character,
+          message: `Successfully updated ${constructName(character)}`,
+        });
+      } catch (error: any) {
         console.error(error);
         if (error instanceof Error) {
           res.status(500).json({ error: error.message });
@@ -197,15 +227,24 @@ const characterController = {
         throw new Error('Could not find authenticated user');
       }
 
-      await characterServices.updateCharacterLevel(
+      const character = await characterServices.updateCharacterLevel(
         Number(req.params.characterId),
         req.body.levelChange,
       );
 
+      const io = getIO();
+
+      if (character.campaignId) {
+        io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
+          character,
+        });
+      }
+
       res.status(200).json({
-        message: 'Successfully updated character level',
+        character,
+        message: `Successfully updated the level of ${constructName(character)} by ${req.body.levelChange}`,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       if (error instanceof Error) {
         res.status(500).json({ error: error.message });
@@ -219,15 +258,26 @@ const characterController = {
         throw new Error('Could not find authenticated user');
       }
 
-      await characterServices.selectLevelUpBonus(
+      const bonus = CharacterLevelBonus.parse(req.body);
+
+      const character = await characterServices.selectLevelUpBonus(
         Number(req.params.characterId),
-        req.body,
+        bonus,
       );
 
+      const io = getIO();
+
+      if (character.campaignId) {
+        io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
+          character,
+        });
+      }
+
       res.status(200).json({
-        message: 'Successfully selected level up bonus',
+        character,
+        message: `Successfully selected level up bonus for ${constructName(character)}`,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       if (error instanceof Error) {
         res.status(500).json({ error: error.message });
@@ -241,16 +291,25 @@ const characterController = {
         throw new Error('Could not find authenticated user');
       }
 
-      await characterServices.createCharacterConditions(
+      const character = await characterServices.createCharacterConditions(
         Number(req.params.characterId),
         req.body,
       );
 
-      res
-        .status(200)
-        .json({ message: 'Successfully created character conditions' });
+      const io = getIO();
+
+      if (character.campaignId) {
+        io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
+          character,
+        });
+      }
+
+      res.status(200).json({
+        character,
+        message: `Successfully created conditions on ${constructName(character)}`,
+      });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
@@ -269,7 +328,7 @@ const characterController = {
         message: 'Successfully updapted character location',
       });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
@@ -278,12 +337,14 @@ const characterController = {
       if (!req.user) {
         throw new Error('Could not find authenticated user');
       }
+
       await characterServices.deleteLocation(Number(req.params.characterId));
+
       res
         .status(200)
         .json({ message: 'Successfully deleted character location' });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
@@ -294,11 +355,12 @@ const characterController = {
       }
       await characterServices.deleteCharacter(
         req.user.id,
-        req.params.characterId,
+        Number(req.params.characterId),
       );
+
       res.status(200).json({ message: 'Successfully deleted character' });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 };

@@ -5,9 +5,11 @@ import { $Enums } from '@prisma/client';
 import actionServices from './actionServices.js';
 import { ItemInput, ItemUpgradeInput } from '../validation/itemSchema.js';
 import { ItemStats, Picture } from '../validation/fieldSchemas.js';
+import { ConditionReferenceInput } from '../validation/conditionSchema.js';
 
-const itemInclude = {
+export const itemInclude = {
   baseItem: true,
+  characterInventory: { select: { characterId: true } },
   itemLinkReference: {
     include: {
       items: {
@@ -61,7 +63,7 @@ const itemServices = {
       });
 
       return items;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to fetch items');
     }
@@ -75,7 +77,7 @@ const itemServices = {
       });
 
       return items;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to fetch item');
     }
@@ -93,7 +95,7 @@ const itemServices = {
       }
 
       return item;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to fetch item');
     }
@@ -153,7 +155,7 @@ const itemServices = {
       });
 
       return item;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to create or update item');
     }
@@ -161,23 +163,44 @@ const itemServices = {
 
   upgradeItem: async (formData: ItemUpgradeInput) => {
     try {
-      const item = await prisma.item.update({
-        where: { id: formData.id },
-        data: {
-          name: formData.name,
-          description: formData.description,
-          picture: formData.picture,
-          modifiedStats: formData.modifiedStats,
-          modifiedKeywords: {
-            deleteMany: {},
-            createMany: { data: formData.keywords },
-          },
-        },
-        include: itemInclude,
+      const prevCharacter = await prisma.character.findUnique({
+        where: { id: formData.characterId },
+        select: { profits: true },
       });
 
-      return item;
-    } catch (error) {
+      if (!prevCharacter || prevCharacter.profits < formData.upgradePrice) {
+        throw new Error(
+          'You do not have enough profits to purchase the chosen upgrades',
+        );
+      }
+
+      const { character, item } = await prisma.$transaction(async (tx) => {
+        const character = await tx.character.update({
+          where: { id: formData.characterId },
+
+          data: { profits: { decrement: formData.upgradePrice } },
+        });
+
+        const item = await tx.item.update({
+          where: { id: formData.id },
+          data: {
+            name: formData.name,
+            description: formData.description,
+            picture: formData.picture,
+            modifiedStats: formData.modifiedStats,
+            modifiedKeywords: {
+              deleteMany: {},
+              createMany: { data: formData.keywords },
+            },
+          },
+          include: itemInclude,
+        });
+
+        return { character, item };
+      });
+
+      return { item, character };
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to create or update item');
     }
@@ -266,7 +289,7 @@ const itemServices = {
       });
 
       return item;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to create item copy');
     }
@@ -275,7 +298,7 @@ const itemServices = {
   createCharacterItemCopy: async (
     userId: number,
     inventoryId: number,
-    itemList: { itemId: number; price: number | undefined; quantity: number }[],
+    itemList: { itemId: number; price: number | null; quantity: number }[],
   ) => {
     const itemIds = itemList?.map((item) => item.itemId);
 
@@ -373,19 +396,24 @@ const itemServices = {
     itemId: number,
     formData: { conditionId: number; stacks?: number | null }[],
   ) => {
+    const validatedConditionReference = ConditionReferenceInput.parse(formData);
+
     try {
       const item = await prisma.item.update({
         where: {
           id: itemId,
         },
         data: {
-          conditions: { deleteMany: {}, createMany: { data: formData } },
+          conditions: {
+            deleteMany: {},
+            createMany: { data: validatedConditionReference },
+          },
         },
         include: itemInclude,
       });
 
       return item;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to create item conditions');
     }
@@ -400,7 +428,7 @@ const itemServices = {
       });
 
       return item;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to set item availability to true');
     }
@@ -412,7 +440,7 @@ const itemServices = {
         where: { characterInventory: { characterId }, available: false },
         data: { available: true },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to set item availability to true');
     }
@@ -424,7 +452,7 @@ const itemServices = {
         where: { id: itemId },
         data: { available: false },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to set item availability to false');
     }
@@ -437,7 +465,7 @@ const itemServices = {
           id: itemId,
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to delete item');
     }
@@ -450,7 +478,7 @@ const itemServices = {
           id: { in: itemIds },
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to delete items');
     }

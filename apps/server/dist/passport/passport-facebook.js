@@ -1,6 +1,7 @@
 import { Strategy as FacebookStrategy } from 'passport-facebook';
 import userServices from '../services/userServices.js';
 import prisma from '../config/database.js';
+import { FacebookSignUpInput } from '../validation/authSchema.js';
 const facebookStrategy = (passport) => {
     passport.use(new FacebookStrategy({
         clientID: process.env.FACEBOOK_ID,
@@ -55,7 +56,8 @@ const facebookStrategy = (passport) => {
                     email,
                     profilePicture,
                 };
-                user = await userServices.createUser(userData);
+                const validatedData = FacebookSignUpInput.parse(userData);
+                user = await userServices.createFacebookUser(validatedData);
             }
             return done(null, user);
         }

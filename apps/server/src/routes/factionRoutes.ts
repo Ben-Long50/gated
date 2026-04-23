@@ -1,9 +1,15 @@
 import express from 'express';
 import authentication from '../middleware/authentication.js';
 import factionController from '../controllers/factionController.js';
-import affiliationController from '../controllers/affiliationController.js';
+import campaignAuthentication from '../middleware/campaignAuthentication.js';
 
 const router = express.Router();
+
+router.get(
+  '/factions/batch',
+  authentication.authenticate,
+  factionController.getBatchFactions,
+);
 
 router.get(
   '/factions/:factionId',
@@ -11,63 +17,17 @@ router.get(
   factionController.getFactionById,
 );
 
-router.get(
-  '/affiliations/batch',
-  authentication.authenticate,
-  affiliationController.getBatchAffiliations,
-);
-
-router.get(
-  '/affiliations/:affiliationId',
-  authentication.authenticate,
-  affiliationController.getAffiliationById,
-);
-
-router.patch(
-  '/affiliations/:affiliationId/value',
-  authentication.authenticate,
-  affiliationController.updateAffiliationValue,
-);
-
-router.post(
-  '/factions/:factionId/affiliations/create',
-  authentication.authenticate,
-  affiliationController.createFactionAffiliation,
-);
-
-router.post(
-  '/gangs/:gangId/affiliations/create',
-  authentication.authenticate,
-  affiliationController.createGangAffiliation,
-);
-
-router.post(
-  '/characters/:characterId/affiliations/create',
-  authentication.authenticate,
-  affiliationController.createCharacterAffiliation,
-);
-
 router.put(
-  '/affiliations/:affiliationId',
+  '/factions/:factionId/update',
   authentication.authenticate,
-  affiliationController.updateAffiliationValue,
-);
-
-router.delete(
-  '/affiliations/:affiliationId',
-  authentication.authenticate,
-  affiliationController.deleteAffiliation,
-);
-
-router.put(
-  '/campaigns/:campaignId/factions/:factionId',
-  authentication.authenticate,
+  campaignAuthentication.validateGameMaster,
   factionController.updateFaction,
 );
 
 router.delete(
-  '/campaigns/:campaignId/factions/:factionId',
+  '/factions/:factionId',
   authentication.authenticate,
+  campaignAuthentication.validateGameMaster,
   factionController.deleteFaction,
 );
 

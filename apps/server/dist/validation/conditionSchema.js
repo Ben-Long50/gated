@@ -7,3 +7,7 @@ export const ConditionInput = z.object({
     conditionType: ConditionType,
     description: Description,
 });
+export const ConditionReferenceInput = z.array(z.object({
+    conditionId: z.number().int().nonnegative(),
+    stacks: z.number().int().nonnegative().nullable(),
+}));

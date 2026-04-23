@@ -8,19 +8,19 @@ const keywordServices = {
         orderBy: { name: 'asc' },
       });
       return keywords;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to fetch keywords');
     }
   },
 
-  getKeywordById: async (keywordId: string) => {
+  getKeywordById: async (keywordId: number) => {
     try {
       const keyword = await prisma.keyword.findUnique({
-        where: { id: Number(keywordId) },
+        where: { id: keywordId },
       });
       return keyword;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to fetch keyword');
     }
@@ -28,27 +28,29 @@ const keywordServices = {
 
   createKeyword: async (formData: KeywordInput) => {
     try {
+      const { id, ...data } = formData;
+
       const keyword = await prisma.keyword.upsert({
-        where: { id: formData.id || 0 },
-        update: formData,
-        create: formData,
+        where: { id: id || 0 },
+        update: data,
+        create: data,
       });
 
       return keyword;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to create or update keyword');
     }
   },
 
-  deleteKeyword: async (keywordId: string) => {
+  deleteKeyword: async (keywordId: number) => {
     try {
       await prisma.keyword.delete({
         where: {
-          id: Number(keywordId),
+          id: keywordId,
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to delete keyword');
     }

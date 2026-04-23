@@ -1,15 +1,49 @@
-import { body, validationResult } from 'express-validator';
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 import bcrypt from 'bcryptjs';
 import userServices from '../services/userServices.js';
+import { SignUpInput, UserUpdateInput } from '../validation/authSchema.js';
+import { UserRole } from '../validation/enums.js';
+import handleControllerError from './handleControllerError.js';
 const userController = {
     getAuthenticatedUser: async (req, res) => {
-        if (!req.user) {
-            res.status(401).json({ error: 'User could not be authenticated' });
-            return;
+        try {
+            if (!req.user) {
+                throw new Error('User authentication failed');
+            }
+            const user = await userServices.getAuthenticatedUser(req.user.id);
+            if (!user) {
+                throw new Error('Failed to find user');
+            }
+            res.status(200).json(user);
         }
-        res.status(200).json({ userId: req.user.id });
+        catch (error) {
+            res.status(401).json({ error: error.message });
+        }
     },
-    getUsers: async (req, res) => {
+    getBatchUsers: async (req, res) => {
+        try {
+            if (!req.user) {
+                throw new Error('Could not find authenticated user');
+            }
+            const userIds = req.query.ids.split(',').map(Number);
+            const users = await userServices.getBatchUsers(userIds);
+            res.status(200).json(users);
+        }
+        catch (error) {
+            handleControllerError(res, error);
+        }
+    },
+    getUsersByUsernameQuery: async (req, res) => {
         try {
             if (!req.user) {
                 res
@@ -18,12 +52,11 @@ const userController = {
                 return;
             }
             const query = req.query.nameQuery;
-            const userId = req.user.id;
-            const users = await userServices.getAllUsers(query, userId);
+            const users = await userServices.getUsersByUsernameQuery(query);
             res.status(200).json(users);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     getUserById: async (req, res) => {
@@ -36,157 +69,49 @@ const userController = {
             res.status(200).json(user);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
-    createUser: [
-        body('username', 'Username must be a minimum of 4 characters')
-            .trim()
-            .isLength({ min: 4 })
-            .escape()
-            .custom(async (value) => {
-            const user = await userServices.getUserByUsername(value);
-            if (user) {
-                throw new Error('An account with this username already exists');
-            }
-            return true;
-        }),
-        body('firstName', 'First name must be a minimum of 2 characters')
-            .trim()
-            .isLength({ min: 2 })
-            .escape(),
-        body('lastName', 'Last name must be a minimum of 2 characters')
-            .trim()
-            .isLength({ min: 2 })
-            .escape(),
-        body('email')
-            .trim()
-            .escape()
-            .notEmpty()
-            .withMessage('The email field cannot be empty')
-            .matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)
-            .withMessage('The email input must be in a valid email format')
-            .custom(async (value) => {
-            const user = await userServices.getUserByEmail(value);
-            if (user) {
-                throw new Error('An account with this email already exists');
-            }
-            return true;
-        }),
-        body('password', 'Password must be a minimum of 8 characters')
-            .trim()
-            .isLength({ min: 8 })
-            .escape(),
-        body('confirmPassword', 'Passwords must match')
-            .trim()
-            .escape()
-            .custom((value, { req }) => {
-            if (value !== req.body.password) {
-                return false;
-            }
-            return true;
-        }),
-        async (req, res) => {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                res.status(400).json(errors);
-            }
-            else {
-                try {
-                    const hashedPassword = await bcrypt.hash(req.body.password, 10);
-                    const userData = {
-                        username: req.body.username,
-                        firstName: req.body.firstName,
-                        lastName: req.body.lastName,
-                        email: req.body.email,
-                        password: hashedPassword,
-                    };
-                    await userServices.createUser(userData);
-                    res.status(200).json({ message: 'Account creation successful' });
-                }
-                catch (error) {
-                    if (error instanceof Error) {
-                        res.status(500).json({ error: error.message });
-                    }
-                }
-            }
-        },
-    ],
-    updateUser: [
-        body('username', 'Username must be a minimum of 4 characters')
-            .trim()
-            .isLength({ min: 4 })
-            .escape()
-            .custom(async (value, { req }) => {
-            const user = await userServices.getUserByUsername(value);
-            if (user && user.id !== req.user.id) {
-                throw new Error('This username is already associated with another account');
-            }
-            return true;
-        }),
-        body('firstName', 'First name must be a minimum of 2 characters')
-            .trim()
-            .isLength({ min: 2 })
-            .escape(),
-        body('lastName', 'Last name must be a minimum of 2 characters')
-            .trim()
-            .isLength({ min: 2 })
-            .escape(),
-        body('email', 'The email input must be in a valid email format')
-            .trim()
-            .escape()
-            .matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)
-            .custom(async (value, { req }) => {
-            if (value !== req.user.email && req.user.facebookId) {
-                throw new Error('You cannot change your email when using an account linked to Facebook');
-            }
-            if (value !== req.user.email && req.user.googleId) {
-                throw new Error('You cannot change your email when using an account linked to Google');
-            }
-            const user = await userServices.getUserByEmail(value);
-            if (user && user.id !== req.user.id) {
-                throw new Error('This email is already associated with another account');
-            }
-            return true;
-        }),
-        async (req, res) => {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                res.status(400).json(errors);
-            }
-            else {
-                if (!req.user) {
-                    throw new Error('You must be signed in to complete this action');
-                }
-                try {
-                    const userData = {
-                        username: req.body.username,
-                        firstName: req.body.firstName,
-                        lastName: req.body.lastName,
-                        email: req.body.email,
-                    };
-                    await userServices.updateUser(userData, req.user.id);
-                    res
-                        .status(200)
-                        .json({ message: 'Successfully updated account information' });
-                }
-                catch (error) {
-                    if (error instanceof Error) {
-                        res.status(500).json({ error: error.message });
-                    }
-                }
-            }
-        },
-    ],
-    updateUserRole: async (req, res) => {
+    createUser: async (req, res) => {
         try {
-            await userServices.updateUser({ role: req.body.role }, Number(req.params.userId));
+            const validatedUser = SignUpInput.parse(req.body);
+            const { confirmPassword, password } = validatedUser, data = __rest(validatedUser, ["confirmPassword", "password"]);
+            const hashedPassword = await bcrypt.hash(password, 10);
+            await userServices.createUser(Object.assign(Object.assign({}, data), { password: hashedPassword }));
+            res.status(200).json({ message: 'Account creation successful' });
+        }
+        catch (error) {
+            handleControllerError(res, error);
+        }
+    },
+    updateUser: async (req, res) => {
+        try {
+            if (!req.user) {
+                res
+                    .send(401)
+                    .json({ message: 'You must be signed in to complete this user' });
+                return;
+            }
+            const validatedUser = UserUpdateInput.parse(req.body);
+            await userServices.updateUser(validatedUser, req.user.id);
             res
                 .status(200)
                 .json({ message: 'Successfully updated account information' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
+        }
+    },
+    updateUserRole: async (req, res) => {
+        try {
+            const validatedRole = UserRole.parse(req.body.role);
+            await userServices.updateUserRole(validatedRole, Number(req.params.userId));
+            res
+                .status(200)
+                .json({ message: 'Successfully updated account information' });
+        }
+        catch (error) {
+            handleControllerError(res, error);
         }
     },
 };

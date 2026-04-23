@@ -38,41 +38,21 @@ export const uploadToCloudinary = async (
         if (error) console.error('Error deleting temp file:', error);
       });
 
-      if (req.body.picture.position) {
-        req.body.picture = JSON.stringify({
-          imageUrl: result.secure_url,
-          publicId: result.public_id,
-          position: JSON.parse(req.body.position),
-        });
-      } else {
-        req.body.picture = JSON.stringify({
-          imageUrl: result.secure_url,
-          publicId: result.public_id,
-        });
-      }
-    } catch (error) {
+      const pictureData = JSON.parse(req.body.picture);
+
+      req.body.picture = JSON.stringify({
+        ...pictureData,
+        imageUrl: result.secure_url,
+        publicId: result.public_id,
+      });
+    } catch (error: any) {
       console.error(error);
       res.status(500).json({
         success: false,
         message: 'Error uploading to Cloudinary',
       });
-    }
-  }
 
-  if (!req.file && req.body.picture) {
-    const pictureInfo = JSON.parse(req.body.picture);
-
-    if (req.body.picture.position) {
-      req.body.picture = JSON.stringify({
-        imageUrl: pictureInfo.imageUrl,
-        publicId: pictureInfo.publicId,
-        position: JSON.parse(req.body.position),
-      });
-    } else {
-      req.body.picture = JSON.stringify({
-        imageUrl: pictureInfo.imageUrl,
-        publicId: pictureInfo.publicId,
-      });
+      return;
     }
   }
 
@@ -86,7 +66,7 @@ export const deleteFromCloudinary = async (publicId: string) => {
       return result;
     }
     throw new Error('Error deleting image');
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
   }
 };

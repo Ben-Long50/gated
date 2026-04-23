@@ -10,9 +10,41 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 import prisma from '../config/database.js';
-import calendar from '../utils/calendar.js';
 import { getIO } from '../sockets/socket.js';
 import { calculateRoll } from '../utils/rollUtilities.js';
+import constructCalendar from '../utils/constructCalendar.js';
+const campaignInclude = {
+    sessions: true,
+    players: { orderBy: { firstName: 'desc' } },
+    pendingPlayers: { orderBy: { firstName: 'desc' } },
+    factions: { select: { id: true, name: true, factionType: true } },
+    gangs: { select: { id: true, name: true } },
+    characters: {
+        select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            picture: true,
+            userId: true,
+        },
+        orderBy: { firstName: 'asc' },
+    },
+    events: {
+        include: {
+            character: { select: { firstName: true, picture: true } },
+        },
+    },
+    affiliations: { select: { id: true } },
+    owner: true,
+    encounters: {
+        select: {
+            id: true,
+            map: { select: { name: true, picture: true } },
+            mapId: true,
+            combatPhase: true,
+        },
+    },
+};
 const campaignServices = {
     getCampaigns: async (userId) => {
         try {
@@ -42,60 +74,15 @@ const campaignServices = {
         try {
             const campaigns = await prisma.campaign.findMany({
                 where: { id: { in: campaignIds } },
-                include: {
-                    sessions: true,
-                    players: { orderBy: { firstName: 'desc' } },
-                    pendingPlayers: { orderBy: { firstName: 'desc' } },
-                    factions: { select: { id: true, name: true, factionType: true } },
-                    gangs: { select: { id: true, name: true } },
-                    characters: {
-                        select: {
-                            id: true,
-                            firstName: true,
-                            lastName: true,
-                            picture: true,
-                            userId: true,
-                        },
-                        orderBy: { firstName: 'asc' },
-                    },
-                    events: {
-                        include: {
-                            character: { select: { firstName: true, picture: true } },
-                        },
-                    },
-                    affiliations: { select: { id: true } },
-                    owner: true,
-                    encounters: {
-                        select: {
-                            id: true,
-                            map: { select: { name: true, picture: true } },
-                            mapId: true,
-                            combatPhase: true,
-                        },
-                    },
-                },
+                include: campaignInclude,
             });
             if (campaigns.length === 0) {
                 throw new Error('You are not a part of any campaigns');
             }
-            const eventCalendar = structuredClone(calendar);
-            campaigns.forEach((campaign) => {
-                if (eventCalendar && (campaign === null || campaign === void 0 ? void 0 : campaign.events.length) > 0) {
-                    campaign.events.forEach((event) => {
-                        const monthEntry = eventCalendar[event.month];
-                        if (!monthEntry)
-                            return;
-                        const dayIndex = event.day - 1;
-                        if (Array.isArray(monthEntry.schedule[dayIndex])) {
-                            monthEntry.schedule[dayIndex].push(event);
-                        }
-                        else {
-                            monthEntry.schedule[dayIndex] = [event];
-                        }
-                    });
-                }
+            const modifiedCampaigns = campaigns.map((campaign) => {
+                const calendar = constructCalendar(campaign);
+                return Object.assign(Object.assign({}, campaign), { calendar });
             });
-            const modifiedCampaigns = campaigns.map((campaign) => (Object.assign(Object.assign({}, campaign), { calendar: eventCalendar })));
             return modifiedCampaigns;
         }
         catch (error) {
@@ -107,48 +94,13 @@ const campaignServices = {
         try {
             const campaign = await prisma.campaign.findUnique({
                 where: { id: campaignId },
-                include: {
-                    sessions: true,
-                    players: { orderBy: { firstName: 'desc' } },
-                    pendingPlayers: { orderBy: { firstName: 'desc' } },
-                    factions: { select: { id: true, name: true, factionType: true } },
-                    gangs: { select: { id: true, name: true } },
-                    characters: {
-                        select: {
-                            id: true,
-                            firstName: true,
-                            lastName: true,
-                            picture: true,
-                        },
-                    },
-                    events: {
-                        include: {
-                            character: { select: { firstName: true, picture: true } },
-                        },
-                    },
-                    affiliations: { select: { id: true } },
-                    owner: true,
-                },
+                include: campaignInclude,
             });
             if (!campaign) {
                 throw new Error('Failed to find campaign');
             }
-            const eventCalendar = structuredClone(calendar);
-            if (eventCalendar && (campaign === null || campaign === void 0 ? void 0 : campaign.events.length) > 0) {
-                campaign.events.forEach((event) => {
-                    const monthEntry = eventCalendar[event.month];
-                    if (!monthEntry)
-                        return;
-                    const dayIndex = event.day - 1;
-                    if (Array.isArray(monthEntry.schedule[dayIndex])) {
-                        monthEntry.schedule[dayIndex].push(event);
-                    }
-                    else {
-                        monthEntry.schedule[dayIndex] = [event];
-                    }
-                });
-            }
-            const modifiedCampaign = Object.assign(Object.assign({}, campaign), { calendar: eventCalendar });
+            const calendar = constructCalendar(campaign);
+            const modifiedCampaign = Object.assign(Object.assign({}, campaign), { calendar });
             return modifiedCampaign;
         }
         catch (error) {
@@ -173,12 +125,11 @@ const campaignServices = {
             const updatedCampaign = await prisma.campaign.update({
                 where: { id: campaignId },
                 data: { active: !campaign.active },
+                include: campaignInclude,
             });
-            return {
-                id: campaign.id,
-                active: updatedCampaign.active,
-                players: campaign.players,
-            };
+            const calendar = constructCalendar(updatedCampaign);
+            const modifiedCampaign = Object.assign(Object.assign({}, campaign), { calendar });
+            return modifiedCampaign;
         }
         catch (error) {
             console.error(error);
@@ -186,96 +137,53 @@ const campaignServices = {
         }
     },
     createOrUpdateCampaign: async (formData, ownerId) => {
-        let currentPending = [];
-        if (formData.id != null) {
-            const campaign = await prisma.campaign.findUnique({
-                where: { id: formData.id },
-                select: { ownerId: true, players: true, pendingPlayers: true },
-            });
-            if ((campaign === null || campaign === void 0 ? void 0 : campaign.ownerId) !== ownerId) {
-                throw new Error('Only the owner of the campaign can update it');
-            }
-            currentPending = campaign.pendingPlayers || [];
-        }
-        const newPending = formData.pendingPlayers.filter((player) => !currentPending.some((user) => user.id === player.id));
+        const { id, playerIds, pendingPlayerIds, factions, briefing, affiliation } = formData, data = __rest(formData, ["id", "playerIds", "pendingPlayerIds", "factions", "briefing", "affiliation"]);
         try {
-            const campaign = await prisma.campaign.upsert({
-                where: { id: (formData === null || formData === void 0 ? void 0 : formData.id) || 0 },
-                update: {
-                    name: formData.name,
-                    location: formData.location,
-                    picture: formData.picture,
-                    ownerId,
-                    players: {
-                        set: formData.players.map((user) => ({ id: user.id })),
-                    },
-                    pendingPlayers: {
-                        set: formData.pendingPlayers.map((user) => ({ id: user.id })),
-                    },
-                },
-                create: {
-                    name: formData.name,
-                    date: { month: 'arctus', day: 1 },
-                    time: { hour: 0, minute: 0, second: 0 },
-                    location: formData.location,
-                    picture: formData.picture,
-                    ownerId,
-                    pendingPlayers: {
-                        connect: formData.pendingPlayers.map((user) => ({ id: user.id })),
-                    },
-                },
-            });
-            if (!formData.id) {
-                const createdFactions = await Promise.all(formData.factions.map((faction) => prisma.faction.create({
-                    data: Object.assign(Object.assign({}, faction), { campaignId: campaign.id }),
-                })));
-                if (createdFactions.length >= 2) {
-                    const [faction1, faction2] = createdFactions;
-                    await prisma.affiliation.create({
-                        data: {
-                            campaignId: campaign.id,
-                            factions: { connect: [{ id: faction1.id }, { id: faction2.id }] },
-                            value: formData.affiliation,
+            const campaign = await prisma.$transaction(async (tx) => {
+                const campaign = await tx.campaign.upsert({
+                    where: { id: id || 0 },
+                    update: Object.assign(Object.assign({}, data), { ownerId, players: {
+                            set: playerIds.map((id) => ({ id })),
+                        }, pendingPlayers: {
+                            set: pendingPlayerIds.map((id) => ({ id })),
+                        } }),
+                    create: Object.assign(Object.assign({}, data), { ownerId, sessions: {
+                            create: {
+                                name: 'Introduction',
+                                sessionNumber: 0,
+                                briefing,
+                                picture: {
+                                    imageUrl: '',
+                                    publicId: '',
+                                    position: { x: 50, y: 50 },
+                                },
+                            },
+                        }, date: { month: 'arctus', day: 1 }, time: { hour: 0, minute: 0, second: 0 }, factions: { createMany: { data: factions } }, pendingPlayers: {
+                            connect: pendingPlayerIds.map((id) => ({ id })),
+                        } }),
+                    include: campaignInclude,
+                });
+                await tx.affiliation.create({
+                    data: {
+                        campaignId: campaign.id,
+                        factions: {
+                            connect: campaign.factions.map((faction) => ({ id: faction.id })),
                         },
-                    });
-                }
-            }
-            return { campaign, newPending };
+                        value: affiliation,
+                    },
+                });
+                return campaign;
+            });
+            return campaign;
         }
         catch (error) {
             console.error(error);
             throw new Error('Failed to create or update campaign');
         }
     },
-    getCharacterNotes: async (characterId) => {
-        try {
-            const notes = await prisma.note.findMany({
-                where: { characterId },
-                include: {
-                    character: {
-                        select: {
-                            userId: true,
-                            firstName: true,
-                            lastName: true,
-                            picture: true,
-                        },
-                    },
-                    session: {
-                        select: { sessionNumber: true, createdAt: true, name: true },
-                    },
-                },
-                orderBy: { session: { sessionNumber: 'asc' } },
-            });
-            return notes;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to fetch notes');
-        }
-    },
     getCampaignMaps: async (campaignId) => {
         try {
-            const notes = await prisma.map.findMany({
+            const maps = await prisma.map.findMany({
                 where: { campaignId },
                 include: {
                     user: {
@@ -283,11 +191,17 @@ const campaignServices = {
                             username: true,
                         },
                     },
+                    locations: {
+                        select: {
+                            id: true,
+                        },
+                        orderBy: { character: { firstName: 'asc' } },
+                    },
                     encounters: true,
                 },
                 orderBy: { name: 'asc' },
             });
-            return notes;
+            return maps;
         }
         catch (error) {
             console.error(error);
@@ -320,30 +234,6 @@ const campaignServices = {
             throw new Error('Failed to fetch map');
         }
     },
-    getLocationById: async (locationId) => {
-        try {
-            const location = await prisma.location.findUnique({
-                where: { id: locationId },
-                include: {
-                    character: {
-                        select: {
-                            firstName: true,
-                            lastName: true,
-                            id: true,
-                            userId: true,
-                            campaignId: true,
-                            picture: true,
-                        },
-                    },
-                },
-            });
-            return location;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to fetch locations');
-        }
-    },
     getBatchLocations: async (locationIds) => {
         try {
             const location = await prisma.location.findMany({
@@ -372,30 +262,16 @@ const campaignServices = {
         const { id, characterId } = formData, data = __rest(formData, ["id", "characterId"]);
         try {
             const event = await prisma.event.upsert({
-                where: { id: id || 0, characterId },
-                update: Object.assign({}, data),
-                create: Object.assign(Object.assign({}, data), { campaign: { connect: { id: campaignId } }, character: { connect: { id: characterId } } }),
+                where: { id: id || 0 },
+                update: data,
+                create: Object.assign(Object.assign({}, data), { campaignId,
+                    characterId }),
             });
             return event;
         }
         catch (error) {
             console.error(error);
             throw new Error('Failed to create or update event');
-        }
-    },
-    createOrUpdateCampaignMap: async (campaignId, userId, formData) => {
-        const { id } = formData, data = __rest(formData, ["id"]);
-        try {
-            const event = await prisma.map.upsert({
-                where: { id: id || 0 },
-                update: Object.assign({}, data),
-                create: Object.assign(Object.assign({}, data), { user: { connect: { id: userId } }, campaign: { connect: { id: campaignId } } }),
-            });
-            return event;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to create or update map');
         }
     },
     setCampaignDate: async (campaignId, formData) => {
@@ -405,6 +281,7 @@ const campaignServices = {
                 data: {
                     date: formData,
                 },
+                include: campaignInclude,
             });
             return campaign;
         }
@@ -420,6 +297,7 @@ const campaignServices = {
                 data: {
                     time: formData,
                 },
+                include: campaignInclude,
             });
             return campaign;
         }
@@ -431,16 +309,18 @@ const campaignServices = {
     campaignRoll: async (userId, campaignId, rollData) => {
         try {
             const io = getIO();
-            const { character, action, modifiers, extraDice } = rollData;
-            if (!character) {
-                throw new Error('Failed to find character');
+            const [character, action] = await prisma.$transaction([
+                prisma.character.findUnique({
+                    where: { id: rollData.characterId },
+                }),
+                prisma.action.findUnique({
+                    where: { id: rollData.actionId },
+                }),
+            ]);
+            if (!character || !action) {
+                throw new Error('Failed to find character or action associated with this roll');
             }
-            if (!action) {
-                throw new Error('Failed to find action');
-            }
-            const rollResults = calculateRoll(character === null || character === void 0 ? void 0 : character.attributes, 
-            //@ts-ignore
-            { name: action.name, roll: action.roll }, modifiers, extraDice) || { result: [], successes: 0, roll: null };
+            const rollResults = calculateRoll(character.attributes, { name: action.name, roll: action.roll }, rollData.modifiers, rollData.extraDice) || { result: [], successes: 0, roll: null };
             const rolls = new Map();
             if (rollResults) {
                 rolls.set(userId, {
@@ -449,7 +329,7 @@ const campaignServices = {
                     roll: rollResults.roll,
                     diceArray: rollResults.result,
                     successes: rollResults.successes,
-                    modifiers: modifiers,
+                    modifiers: rollData.modifiers,
                 });
             }
             const rollsArray = rollResults ? Array.from(rolls.entries()) : null;
@@ -491,27 +371,18 @@ const campaignServices = {
     },
     joinCampaign: async (campaignId, userId) => {
         try {
-            const campaign = await prisma.campaign.findUnique({
-                where: { id: Number(campaignId) },
-                select: {
-                    pendingPlayers: { select: { id: true } },
-                },
-            });
-            const inPending = campaign
-                ? campaign.pendingPlayers.some((player) => player.id === userId)
-                : [];
-            if (!inPending) {
-                throw new Error('You cannot join a campaign if you are not a pending player');
-            }
-            await prisma.campaign.update({
+            const campaign = await prisma.campaign.update({
                 where: {
                     id: Number(campaignId),
+                    pendingPlayers: { some: { id: userId } },
                 },
                 data: {
                     pendingPlayers: { disconnect: { id: userId } },
                     players: { connect: { id: userId } },
                 },
+                include: campaignInclude,
             });
+            return campaign;
         }
         catch (error) {
             console.error(error);
@@ -520,48 +391,16 @@ const campaignServices = {
     },
     deleteCampaign: async (campaignId, userId) => {
         try {
-            const campaign = await prisma.campaign.findUnique({
-                where: { id: campaignId },
-                select: { ownerId: true },
-            });
-            if (!campaign) {
-                throw new Error('Failed to find campaign');
-            }
-            if (campaign.ownerId !== userId) {
-                throw new Error('Only the owner of the campaign can delete it');
-            }
             await prisma.campaign.delete({
                 where: {
-                    id: Number(campaignId),
+                    id: campaignId,
+                    ownerId: userId,
                 },
             });
         }
         catch (error) {
             console.error(error);
-            throw new Error(error.message || 'Failed to delete campaign');
-        }
-    },
-    deleteCampaignMap: async (campaignId, mapId, userId) => {
-        try {
-            const map = await prisma.map.findUnique({
-                where: { id: mapId, campaignId },
-                select: { userId: true, campaign: { select: { ownerId: true } } },
-            });
-            if (!map) {
-                throw new Error('Failed to find map');
-            }
-            if (map.userId !== userId && map.campaign.ownerId !== userId) {
-                throw new Error('Only the owner of the map or campaign GM can delete it');
-            }
-            await prisma.map.delete({
-                where: {
-                    id: mapId,
-                },
-            });
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error(error.message || 'Failed to delete campaign');
+            throw new Error('Failed to delete campaign');
         }
     },
 };

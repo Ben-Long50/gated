@@ -7,6 +7,12 @@ const router = express.Router();
 router.get('/perks', authentication.authenticate, perkController.getPerks);
 
 router.get(
+  '/perks/batch',
+  authentication.authenticate,
+  perkController.getBatchPerks,
+);
+
+router.get(
   '/perks/:perkId',
   authentication.authenticate,
   perkController.getPerkById,

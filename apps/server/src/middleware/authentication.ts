@@ -21,7 +21,7 @@ const authentication = {
           next();
         },
       );
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof Error) {
         res.status(500).json({ error: error.message });
         return;

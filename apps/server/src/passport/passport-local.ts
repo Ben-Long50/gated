@@ -12,7 +12,7 @@ const localStrategy = (passport: PassportStatic) => {
         try {
           const user = await userServices.getUserByEmail(email);
           return done(null, user as any);
-        } catch (error) {
+        } catch (error: any) {
           return done(error);
         }
       },

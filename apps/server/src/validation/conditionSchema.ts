@@ -9,4 +9,11 @@ export const ConditionInput = z.object({
   description: Description,
 });
 
+export const ConditionReferenceInput = z.array(
+  z.object({
+    conditionId: z.number().int().nonnegative(),
+    stacks: z.number().int().nonnegative().nullable(),
+  }),
+);
+
 export type ConditionInput = z.infer<typeof ConditionInput>;

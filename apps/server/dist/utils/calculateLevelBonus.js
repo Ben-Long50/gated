@@ -1,4 +1,3 @@
-//@ts-nocheck
 import getUsedPoints from './getUsedPoints.js';
 const calculateLevelBonus = (level, attributeTree, perks) => {
     let levelBonus = null;
@@ -111,7 +110,7 @@ const calculateLevelBonus = (level, attributeTree, perks) => {
     const { usedAttributePoints, usedSkillPoints } = getUsedPoints(attributeTree);
     let usedPerkPoints = 0;
     let usedMasterPerkPoints = 0;
-    perks.forEach((perk) => {
+    perks === null || perks === void 0 ? void 0 : perks.forEach((perk) => {
         const { usedAttributePoints, usedSkillPoints } = getUsedPoints(perk.attributes);
         usedAttributePoints + usedSkillPoints >= 4
             ? usedMasterPerkPoints++

@@ -1,35 +1,34 @@
 import factionServices from '../services/factionServices.js';
 import upload from '../utils/multer.js';
 import { uploadToCloudinary } from '../utils/cloudinary.js';
-import campaignServices from '../services/campaignServices.js';
 import parseRequestBody from '../utils/parseRequestBody.js';
+import { FactionInput } from '../validation/factionSchema.js';
+import handleControllerError from './handleControllerError.js';
 const factionController = {
-    getCampaignFactions: async (req, res) => {
+    getBatchFactions: async (req, res) => {
         try {
             if (!req.user) {
-                res
-                    .status(401)
-                    .json({ error: 'You must be signed in to use this function' });
-                return;
+                throw new Error('Could not find authenticated user');
             }
-            const factions = await factionServices.getCampaignFactions(req.params.campaignId);
+            const factionIds = req.query.ids.split(',').map(Number);
+            const factions = await factionServices.getBatchFactions(factionIds);
             res.status(200).json(factions);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     getFactionById: async (req, res) => {
         try {
-            const faction = await factionServices.getFactionById(req.params.factionId);
+            const faction = await factionServices.getFactionById(Number(req.params.factionId));
             res.status(200).json(faction);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     updateFaction: [
-        upload.single('picture'),
+        upload.single('pictureFile'),
         uploadToCloudinary,
         async (req, res) => {
             try {
@@ -39,17 +38,12 @@ const factionController = {
                     });
                     return;
                 }
-                const campaign = await campaignServices.getCampaignById(Number(req.params.campaignId));
-                if (req.user.id !== (campaign === null || campaign === void 0 ? void 0 : campaign.ownerId)) {
-                    res.status(401).json({
-                        error: 'You can only update faction information if you are the game master of this campaign',
-                    });
-                    return;
-                }
-                req.body.id = req.params.factionId;
                 const parsedBody = parseRequestBody(req.body);
-                await factionServices.updateFaction(parsedBody);
-                res.status(200).json({ message: 'Successfully created faction' });
+                const validatedFaction = FactionInput.parse(parsedBody);
+                const faction = await factionServices.updateFaction(validatedFaction);
+                res
+                    .status(200)
+                    .json({ faction, message: `Successfully updated ${faction.name}` });
             }
             catch (error) {
                 if (error instanceof Error) {
@@ -66,18 +60,11 @@ const factionController = {
                 });
                 return;
             }
-            const campaign = await campaignServices.getCampaignById(Number(req.params.campaignId));
-            if (req.user.id !== (campaign === null || campaign === void 0 ? void 0 : campaign.ownerId)) {
-                res.status(401).json({
-                    error: 'You can only delete this faction if you are the game master of this campaign',
-                });
-                return;
-            }
-            await factionServices.deleteFaction(req.params.factionId);
+            await factionServices.deleteFaction(Number(req.params.factionId));
             res.status(200).json({ message: 'Successfully deleted faction' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
 };

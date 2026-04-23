@@ -1,5 +1,32 @@
 import prisma from '../config/database.js';
 const userServices = {
+    getAuthenticatedUser: async (userId) => {
+        try {
+            const user = await prisma.user.findUnique({
+                where: {
+                    id: userId,
+                },
+                select: {
+                    id: true,
+                    username: true,
+                    email: true,
+                    firstName: true,
+                    lastName: true,
+                    role: true,
+                    profilePicture: true,
+                    characters: { select: { id: true }, orderBy: { firstName: 'asc' } },
+                    ownerCampaigns: { select: { id: true } },
+                    playerCampaigns: { select: { id: true } },
+                    pendingCampaigns: { select: { id: true } },
+                },
+            });
+            return user;
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to fetch users');
+        }
+    },
     getAllUsers: async (query, userId) => {
         try {
             if (!query)
@@ -22,10 +49,12 @@ const userServices = {
             throw new Error('Failed to fetch users');
         }
     },
-    getUserByUsername: async (username) => {
+    getBatchUsers: async (userIds) => {
         try {
-            const user = await prisma.user.findUnique({
-                where: { username },
+            const users = await prisma.user.findMany({
+                where: {
+                    id: { in: userIds },
+                },
                 select: {
                     id: true,
                     username: true,
@@ -34,18 +63,39 @@ const userServices = {
                     lastName: true,
                     role: true,
                     profilePicture: true,
-                    _count: {
-                        select: {
-                            receivedNotifications: { where: { read: false } },
-                        },
-                    },
                 },
             });
-            return user;
+            return users;
         }
         catch (error) {
             console.error(error);
-            throw new Error('Failed to fetch user');
+            throw new Error('Failed to fetch users');
+        }
+    },
+    getUsersByUsernameQuery: async (query) => {
+        try {
+            const users = await prisma.user.findMany({
+                where: query
+                    ? {
+                        username: {
+                            contains: query,
+                            mode: 'insensitive',
+                        },
+                    }
+                    : undefined,
+                select: {
+                    id: true,
+                    username: true,
+                    profilePicture: true,
+                },
+                orderBy: { username: 'asc' },
+                take: 20,
+            });
+            return users;
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to fetch users');
         }
     },
     getUserById: async (id) => {
@@ -60,11 +110,6 @@ const userServices = {
                     lastName: true,
                     role: true,
                     profilePicture: true,
-                    _count: {
-                        select: {
-                            receivedNotifications: { where: { read: false } },
-                        },
-                    },
                     characters: { select: { id: true }, orderBy: { firstName: 'asc' } },
                     ownerCampaigns: { select: { id: true } },
                     playerCampaigns: { select: { id: true } },
@@ -89,11 +134,6 @@ const userServices = {
                     lastName: true,
                     role: true,
                     profilePicture: true,
-                    _count: {
-                        select: {
-                            receivedNotifications: { where: { read: false } },
-                        },
-                    },
                 },
             });
             return user;
@@ -105,21 +145,35 @@ const userServices = {
     },
     createUser: async (userData) => {
         try {
-            const newUser = await prisma.user.create({
+            await prisma.user.create({
                 data: userData,
             });
-            return {
-                id: newUser === null || newUser === void 0 ? void 0 : newUser.id,
-                username: newUser === null || newUser === void 0 ? void 0 : newUser.username,
-                firstName: newUser === null || newUser === void 0 ? void 0 : newUser.firstName,
-                lastName: newUser === null || newUser === void 0 ? void 0 : newUser.lastName,
-                role: newUser === null || newUser === void 0 ? void 0 : newUser.role,
-                profilePicture: newUser === null || newUser === void 0 ? void 0 : newUser.profilePicture,
-            };
         }
         catch (error) {
             console.error(error);
             throw new Error('Failed to create user');
+        }
+    },
+    createFacebookUser: async (userData) => {
+        try {
+            await prisma.user.create({
+                data: userData,
+            });
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to create user with Facebook login');
+        }
+    },
+    createGoogleUser: async (userData) => {
+        try {
+            await prisma.user.create({
+                data: userData,
+            });
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to create user with Google login');
         }
     },
     updateUser: async (userData, userId) => {
@@ -127,6 +181,18 @@ const userServices = {
             await prisma.user.update({
                 where: { id: userId },
                 data: userData,
+            });
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to update account information');
+        }
+    },
+    updateUserRole: async (role, userId) => {
+        try {
+            await prisma.user.update({
+                where: { id: userId },
+                data: { role },
             });
         }
         catch (error) {

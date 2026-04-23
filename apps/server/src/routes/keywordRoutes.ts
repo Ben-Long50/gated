@@ -13,7 +13,6 @@ router.get(
 router.get(
   '/keywords/:keywordId',
   authentication.authenticate,
-  authentication.authenticateAdmin,
   keywordController.getKeywordById,
 );
 

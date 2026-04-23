@@ -1,7 +1,41 @@
-import { User } from '@prisma/client';
+import { UserRole } from '@prisma/client';
 import prisma from '../config/database.js';
+import {
+  FacebookSignUpInput,
+  GoogleSignUpInput,
+  SignUpInput,
+  UserUpdateInput,
+} from '../validation/authSchema.js';
 
 const userServices = {
+  getAuthenticatedUser: async (userId: number) => {
+    try {
+      const user = await prisma.user.findUnique({
+        where: {
+          id: userId,
+        },
+        select: {
+          id: true,
+          username: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          role: true,
+          profilePicture: true,
+          characters: { select: { id: true }, orderBy: { firstName: 'asc' } },
+          ownerCampaigns: { select: { id: true } },
+          playerCampaigns: { select: { id: true } },
+          pendingCampaigns: { select: { id: true } },
+        },
+      });
+
+      return user;
+    } catch (error: any) {
+      console.error(error);
+      throw new Error('Failed to fetch users');
+    }
+  },
+
   getAllUsers: async (query: string, userId: number) => {
     try {
       if (!query) return [];
@@ -18,16 +52,18 @@ const userServices = {
       });
 
       return users;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to fetch users');
     }
   },
 
-  getUserByUsername: async (username: string) => {
+  getBatchUsers: async (userIds: number[]) => {
     try {
-      const user = await prisma.user.findUnique({
-        where: { username },
+      const users = await prisma.user.findMany({
+        where: {
+          id: { in: userIds },
+        },
         select: {
           id: true,
           username: true,
@@ -36,17 +72,40 @@ const userServices = {
           lastName: true,
           role: true,
           profilePicture: true,
-          _count: {
-            select: {
-              receivedNotifications: { where: { read: false } },
-            },
-          },
         },
       });
-      return user;
-    } catch (error) {
+
+      return users;
+    } catch (error: any) {
       console.error(error);
-      throw new Error('Failed to fetch user');
+      throw new Error('Failed to fetch users');
+    }
+  },
+
+  getUsersByUsernameQuery: async (query: string) => {
+    try {
+      const users = await prisma.user.findMany({
+        where: query
+          ? {
+              username: {
+                contains: query,
+                mode: 'insensitive',
+              },
+            }
+          : undefined,
+        select: {
+          id: true,
+          username: true,
+          profilePicture: true,
+        },
+        orderBy: { username: 'asc' },
+        take: 20,
+      });
+
+      return users;
+    } catch (error: any) {
+      console.error(error);
+      throw new Error('Failed to fetch users');
     }
   },
 
@@ -62,11 +121,6 @@ const userServices = {
           lastName: true,
           role: true,
           profilePicture: true,
-          _count: {
-            select: {
-              receivedNotifications: { where: { read: false } },
-            },
-          },
           characters: { select: { id: true }, orderBy: { firstName: 'asc' } },
           ownerCampaigns: { select: { id: true } },
           playerCampaigns: { select: { id: true } },
@@ -74,7 +128,7 @@ const userServices = {
         },
       });
       return user;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to fetch user');
     }
@@ -91,51 +145,67 @@ const userServices = {
           lastName: true,
           role: true,
           profilePicture: true,
-          _count: {
-            select: {
-              receivedNotifications: { where: { read: false } },
-            },
-          },
         },
       });
       return user;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to fetch user');
     }
   },
 
-  createUser: async (userData: {
-    username: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-  }) => {
+  createUser: async (userData: Omit<SignUpInput, 'confirmPassword'>) => {
     try {
-      const newUser = await prisma.user.create({
+      await prisma.user.create({
         data: userData,
       });
-      return {
-        id: newUser?.id,
-        username: newUser?.username,
-        firstName: newUser?.firstName,
-        lastName: newUser?.lastName,
-        role: newUser?.role,
-        profilePicture: newUser?.profilePicture,
-      };
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to create user');
     }
   },
 
-  updateUser: async (userData: Partial<User>, userId: number) => {
+  createFacebookUser: async (userData: FacebookSignUpInput) => {
+    try {
+      await prisma.user.create({
+        data: userData,
+      });
+    } catch (error: any) {
+      console.error(error);
+      throw new Error('Failed to create user with Facebook login');
+    }
+  },
+
+  createGoogleUser: async (userData: GoogleSignUpInput) => {
+    try {
+      await prisma.user.create({
+        data: userData,
+      });
+    } catch (error: any) {
+      console.error(error);
+      throw new Error('Failed to create user with Google login');
+    }
+  },
+
+  updateUser: async (userData: UserUpdateInput, userId: number) => {
     try {
       await prisma.user.update({
         where: { id: userId },
         data: userData,
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.error(error);
+      throw new Error('Failed to update account information');
+    }
+  },
+
+  updateUserRole: async (role: UserRole, userId: number) => {
+    try {
+      await prisma.user.update({
+        where: { id: userId },
+        data: { role },
+      });
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to update account information');
     }

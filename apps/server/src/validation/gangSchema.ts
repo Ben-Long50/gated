@@ -1,5 +1,11 @@
 import z from 'zod';
-import { Name, Picture, PictureFile, RichText } from './fieldSchemas.js';
+import {
+  Description,
+  Name,
+  Picture,
+  PictureFile,
+  RichText,
+} from './fieldSchemas.js';
 
 export const GangInput = z.object({
   id: z.number().int().optional(),
@@ -15,3 +21,12 @@ export const GangInput = z.object({
 });
 
 export type GangInput = z.infer<typeof GangInput>;
+
+export const GangSessionBonusInput = z.array(
+  z.object({
+    value: z.number().int().nonnegative(),
+    description: Description,
+  }),
+);
+
+export type GangSessionBonusInput = z.infer<typeof GangSessionBonusInput>;

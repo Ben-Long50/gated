@@ -11,12 +11,16 @@ var __rest = (this && this.__rest) || function (s, e) {
 };
 import prisma from '../config/database.js';
 import addVariableStats from '../utils/addVariableStats.js';
+import { ActionInput } from '../validation/actionSchema.js';
+const actionInclude = {
+    keywordModifiers: { select: { id: true } },
+};
 const actionServices = {
     getActions: async () => {
         try {
             const actions = await prisma.action.findMany({
                 where: { characterInventory: null, baseActionId: null },
-                include: { keywordModifiers: { include: { keyword: true } } },
+                include: actionInclude,
                 orderBy: { name: 'asc' },
             });
             return actions;
@@ -30,7 +34,7 @@ const actionServices = {
         try {
             const action = await prisma.action.findUnique({
                 where: { id: actionId },
-                include: { keywordModifiers: { include: { keyword: true } } },
+                include: actionInclude,
             });
             return action;
         }
@@ -45,7 +49,7 @@ const actionServices = {
                 where: {
                     id: { in: actionIds },
                 },
-                include: { keywordModifiers: { include: { keyword: true } } },
+                include: actionInclude,
             });
             return actions;
         }
@@ -54,29 +58,18 @@ const actionServices = {
             throw new Error('Failed to fetch actions');
         }
     },
-    createAction: async (formData) => {
+    createOrUpdateAction: async (formData) => {
         try {
-            const action = formData.id
-                ? await prisma.action.findUnique({
-                    where: { id: formData.id },
-                    include: {
-                        keywordModifiers: { select: { id: true } },
-                    },
-                })
-                : null;
-            if (action && action.keywordModifiers) {
-                await prisma.keywordReference.deleteMany({
-                    where: {
-                        id: { in: action.keywordModifiers.map((keyword) => keyword.id) },
-                    },
-                });
-            }
             const { modifiers, keywords } = formData, data = __rest(formData, ["modifiers", "keywords"]);
-            const modifierStats = modifiers ? addVariableStats(modifiers) : null;
+            const modifierStats = modifiers ? addVariableStats(modifiers) : undefined;
             const newAction = await prisma.action.upsert({
-                where: { id: Number(formData === null || formData === void 0 ? void 0 : formData.id) || 0 },
-                update: Object.assign(Object.assign({}, data), { modifiers: Object.assign({}, modifierStats), keywordModifiers: { createMany: { data: keywords || [] } } }),
-                create: Object.assign(Object.assign({}, data), { modifiers: Object.assign({}, modifierStats), keywordModifiers: { createMany: { data: keywords || [] } } }),
+                where: { id: formData.id || 0 },
+                update: Object.assign(Object.assign({}, data), { modifiers: modifierStats, keywordModifiers: {
+                        deleteMany: {},
+                        createMany: { data: keywords || [] },
+                    } }),
+                create: Object.assign(Object.assign({}, data), { modifiers: modifierStats, keywordModifiers: { createMany: { data: keywords || [] } } }),
+                include: actionInclude,
             });
             return newAction;
         }
@@ -89,54 +82,46 @@ const actionServices = {
         try {
             const actionInfo = await prisma.action.findUnique({
                 where: { id: actionId },
+                include: {
+                    keywordModifiers: { select: { keywordId: true, value: true } },
+                },
             });
             if (!actionInfo) {
                 throw new Error('Failed to find action');
             }
-            const { id, costs, roll, duration, cooldown, modifiers } = actionInfo, data = __rest(actionInfo, ["id", "costs", "roll", "duration", "cooldown", "modifiers"]);
+            const validatedAction = ActionInput.parse(actionInfo);
+            const { id } = validatedAction, data = __rest(validatedAction, ["id"]);
             const action = await prisma.action.create({
-                data: Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, data), (costs ? { costs } : {})), (roll ? { roll } : {})), (duration ? { duration } : {})), (cooldown ? { cooldown } : {})), (modifiers ? { modifiers } : {})), { baseActionId: id }),
+                data: Object.assign(Object.assign({}, data), { keywordModifiers: {
+                        createMany: { data: actionInfo.keywordModifiers || [] },
+                    }, baseActionId: actionInfo.baseActionId || id }),
+                include: actionInclude,
             });
             return action;
         }
         catch (error) {
             console.error(error);
-            throw new Error('Failed to create or update action');
+            throw new Error('Failed to create action copy');
         }
     },
     createCharacterActionCopy: async (inventoryId, actionList) => {
         const actionIds = actionList === null || actionList === void 0 ? void 0 : actionList.map((action) => action.actionId);
         const actions = await prisma.action.findMany({
             where: { id: { in: actionIds } },
-            include: { keywordModifiers: { include: { keyword: true } } },
+            include: {
+                keywordModifiers: { select: { keywordId: true, value: true } },
+            },
         });
         const newActions = await Promise.all(actionList.flatMap(({ actionId, quantity }) => {
             const actionDetails = actions.find((action) => action.id === actionId);
+            const validatedAction = ActionInput.parse(actionDetails);
+            const { id } = validatedAction, data = __rest(validatedAction, ["id"]);
             if (actionDetails) {
                 return Array.from({ length: quantity }).map(() => prisma.action.create({
-                    data: {
-                        name: actionDetails.name,
-                        description: actionDetails.description,
-                        costs: actionDetails.costs || undefined,
-                        roll: actionDetails.roll || undefined,
-                        duration: actionDetails.duration || undefined,
-                        cooldown: actionDetails.cooldown || undefined,
-                        actionType: actionDetails.actionType,
-                        actionSubtypes: actionDetails.actionSubtypes,
-                        modifiers: Object.assign({}, actionDetails.modifiers),
-                        keywordModifiers: {
-                            create: actionDetails.keywordModifiers.map((modifier) => ({
-                                value: modifier.value,
-                                keyword: {
-                                    connect: { id: modifier.keywordId },
-                                },
-                            })),
-                        },
-                        characterInventory: {
-                            connect: { id: Number(inventoryId) },
-                        },
-                        baseAction: { connect: { id: actionDetails.id } },
-                    },
+                    data: Object.assign(Object.assign({}, data), { keywordModifiers: {
+                            createMany: { data: actionDetails.keywordModifiers || [] },
+                        }, baseActionId: actionDetails.baseActionId || actionDetails.id, characterInventoryId: inventoryId }),
+                    include: actionInclude,
                 }));
             }
             return;
@@ -148,6 +133,7 @@ const actionServices = {
             const action = await prisma.action.update({
                 where: { id: actionId },
                 data: { active: !value },
+                include: actionInclude,
             });
             return action;
         }
@@ -160,7 +146,7 @@ const actionServices = {
         try {
             await prisma.action.delete({
                 where: {
-                    id: Number(actionId),
+                    id: actionId,
                 },
             });
         }

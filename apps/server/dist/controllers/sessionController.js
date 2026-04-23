@@ -2,6 +2,9 @@ import sessionServices from '../services/sessionServices.js';
 import parseRequestBody from '../utils/parseRequestBody.js';
 import upload from '../utils/multer.js';
 import { uploadToCloudinary } from '../utils/cloudinary.js';
+import { NotesInput } from '../validation/notesSchema.js';
+import { SessionInput } from '../validation/sessionSchema.js';
+import handleControllerError from './handleControllerError.js';
 const sessionController = {
     getCampaignSessions: async (req, res) => {
         try {
@@ -11,11 +14,11 @@ const sessionController = {
                     .json({ error: 'You must be signed in to use this function' });
                 return;
             }
-            const sessions = await sessionServices.getCampaignSessions(req.params.campaignId);
+            const sessions = await sessionServices.getCampaignSessions(Number(req.params.campaignId));
             res.status(200).json(sessions);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     getSessionById: async (req, res) => {
@@ -24,28 +27,38 @@ const sessionController = {
             res.status(200).json(session);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     createOrUpdateSessionNotes: async (req, res) => {
         try {
-            await sessionServices.createOrUpdateSessionNotes(Number(req.params.sessionId), Number(req.params.characterId), req.body.content);
-            res
-                .status(200)
-                .json({ message: 'Successfully created or updated session notes' });
+            const validatedNotes = NotesInput.parse(req.body);
+            const notes = await sessionServices.createOrUpdateSessionNotes(validatedNotes);
+            res.status(200).json({
+                notes,
+                message: validatedNotes.id
+                    ? 'Successfully updated session notes'
+                    : 'Successfully created session notes',
+            });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     createOrUpdateSession: [
-        upload.single('picture'),
+        upload.single('pictureFile'),
         uploadToCloudinary,
         async (req, res) => {
             try {
                 const parsedBody = parseRequestBody(req.body);
-                await sessionServices.createOrUpdateSession(parsedBody, Number(req.params.campaignId));
-                res.status(200).json({ message: 'Successfully created session' });
+                const validatedSession = SessionInput.parse(parsedBody);
+                const session = await sessionServices.createOrUpdateSession(validatedSession);
+                res.status(200).json({
+                    session,
+                    message: validatedSession.id
+                        ? `Successfully updated session: ${session.name}`
+                        : `Successfully created session: ${session.name}`,
+                });
             }
             catch (error) {
                 if (error instanceof Error) {
@@ -56,11 +69,11 @@ const sessionController = {
     ],
     deleteSession: async (req, res) => {
         try {
-            await sessionServices.deleteSession(req.params.campaignId);
+            await sessionServices.deleteSession(Number(req.params.campaignId));
             res.status(200).json({ message: 'Successfully deleted session' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
 };

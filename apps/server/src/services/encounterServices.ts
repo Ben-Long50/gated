@@ -40,7 +40,7 @@ const encounterServices = {
       });
 
       return encounters;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to fetch owner encounters');
     }
@@ -72,7 +72,7 @@ const encounterServices = {
       }
 
       return encounter;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to fetch encounter');
     }
@@ -102,7 +102,7 @@ const encounterServices = {
       });
 
       return encounters;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to fetch encounters');
     }
@@ -131,7 +131,7 @@ const encounterServices = {
       const history = encounter?.phaseHistory;
 
       return history;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to fetch encounter history');
     }
@@ -168,7 +168,7 @@ const encounterServices = {
       );
 
       io.to(`campaign ${encounter.campaignId}`).emit('encounter', encounterId);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to activate encounter');
     }
@@ -245,7 +245,7 @@ const encounterServices = {
       if (nextPhase === 'action') {
         io.to(`encounter ${encounterId}`).emit('resetBoard');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to advance encounter phase');
     }
@@ -331,7 +331,7 @@ const encounterServices = {
       );
 
       io.to(`encounter ${encounterId}`).emit('resetBoard');
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to advance turn');
     }
@@ -376,7 +376,7 @@ const encounterServices = {
       const rollsArray = Array.from(rolls.entries());
 
       io.to(`encounter ${encounterId}`).emit('initiativeRoll', rollsArray);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to roll initiative');
     }
@@ -519,7 +519,7 @@ const encounterServices = {
       io.to(`campaign ${campaignId}`).emit('character', character.id);
 
       return phaseAction;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to roll action');
     }
@@ -545,7 +545,7 @@ const encounterServices = {
         'updateEncounter',
         updatedEncounter,
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to advance turn');
     }
@@ -571,7 +571,7 @@ const encounterServices = {
         'updateEncounter',
         updatedEncounter,
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to advance turn');
     }
@@ -612,7 +612,7 @@ const encounterServices = {
         'updateEncounter',
         updatedEncounter,
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to advance turn');
     }
@@ -653,7 +653,7 @@ const encounterServices = {
         updatedEncounter,
       );
       io.to(`encounter ${encounterId}`).emit('resetBoard');
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to advance turn');
     }
@@ -794,7 +794,7 @@ const encounterServices = {
           io.to(`campaign ${encounter.campaignId}`).emit('item', itemId);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to confirm action queue results');
     }
@@ -852,7 +852,7 @@ const encounterServices = {
       });
 
       return history;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to create encounter history entry');
     }
@@ -877,7 +877,7 @@ const encounterServices = {
           action: { connect: { id: phaseAction.id } },
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to connect phase action');
     }
@@ -902,7 +902,7 @@ const encounterServices = {
           reactions: { connect: { id: phaseReaction.id } },
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to connect phase reaction');
     }
@@ -1006,7 +1006,7 @@ const encounterServices = {
       });
 
       return encounter;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to create or update encounter');
     }

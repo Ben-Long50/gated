@@ -1,13 +1,13 @@
 import z from 'zod';
-import { Attributes, CharacterStats, LastName, Name, Picture, PictureFile, } from './fieldSchemas.js';
+import { Attributes, CharacterStats, FirstName, LastName, Picture, PictureFile, } from './fieldSchemas.js';
 import { NpcType, Sex } from './enums.js';
 export const CharacterInput = z.object({
     id: z.number().int().optional(),
     campaignId: z.number().int().optional(),
-    firstName: Name,
+    firstName: FirstName,
     lastName: LastName,
     playerCharacter: z.boolean(),
-    npcTypes: z.array(NpcType),
+    npcTypes: z.array(NpcType).optional(),
     preferences: z.object({
         firstName: z.boolean(),
         lastName: z.boolean(),
@@ -26,21 +26,21 @@ export const CharacterInput = z.object({
     }),
     pictureFile: PictureFile,
     picture: Picture,
-    height: z.number().int(),
-    weight: z.number(),
-    age: z.number().int(),
+    height: z.number().int().nonnegative(),
+    weight: z.number().nonnegative(),
+    age: z.number().int().nonnegative(),
     sex: Sex,
     stats: CharacterStats,
     attributes: Attributes,
-    perkIds: z.array(z.number().int()),
+    perkIds: z.array(z.number().int()).length(1),
 });
 export const CharacterUpdateInput = z.object({
     id: z.number().int().optional(),
     campaignId: z.number().int().optional(),
-    firstName: Name,
+    firstName: FirstName,
     lastName: LastName,
     playerCharacter: z.boolean(),
-    npcTypes: z.array(NpcType),
+    npcTypes: z.array(NpcType).optional(),
     preferences: z.object({
         firstName: z.boolean(),
         lastName: z.boolean(),
@@ -59,9 +59,14 @@ export const CharacterUpdateInput = z.object({
     }),
     pictureFile: PictureFile,
     picture: Picture,
-    height: z.number().int(),
-    weight: z.number(),
-    age: z.number().int(),
+    height: z.number().int().nonnegative(),
+    weight: z.number().nonnegative(),
+    age: z.number().int().nonnegative(),
     sex: Sex,
     stats: CharacterStats,
+});
+export const CharacterLevelBonus = z.object({
+    level: z.number().int().min(1).max(12),
+    attributes: Attributes.optional(),
+    perkIds: z.array(z.number().int().nonnegative()).optional(),
 });

@@ -5,12 +5,22 @@ import authentication from '../middleware/authentication.js';
 const router = express.Router();
 
 router.get(
+  '/users',
+  authentication.authenticate,
+  userController.getUsersByUsernameQuery,
+);
+
+router.get(
   '/users/authenticated',
   authentication.authenticate,
   userController.getAuthenticatedUser,
 );
 
-router.get('/users', authentication.authenticate, userController.getUsers);
+router.get(
+  '/users/batch',
+  authentication.authenticate,
+  userController.getBatchUsers,
+);
 
 router.get(
   '/users/:userId',

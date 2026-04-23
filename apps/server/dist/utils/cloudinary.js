@@ -23,19 +23,8 @@ export const uploadToCloudinary = async (req, res, next) => {
                 if (error)
                     console.error('Error deleting temp file:', error);
             });
-            if (req.body.picture.position) {
-                req.body.picture = JSON.stringify({
-                    imageUrl: result.secure_url,
-                    publicId: result.public_id,
-                    position: JSON.parse(req.body.position),
-                });
-            }
-            else {
-                req.body.picture = JSON.stringify({
-                    imageUrl: result.secure_url,
-                    publicId: result.public_id,
-                });
-            }
+            const pictureData = JSON.parse(req.body.picture);
+            req.body.picture = JSON.stringify(Object.assign(Object.assign({}, pictureData), { imageUrl: result.secure_url, publicId: result.public_id }));
         }
         catch (error) {
             console.error(error);
@@ -43,22 +32,7 @@ export const uploadToCloudinary = async (req, res, next) => {
                 success: false,
                 message: 'Error uploading to Cloudinary',
             });
-        }
-    }
-    if (!req.file && req.body.picture) {
-        const pictureInfo = JSON.parse(req.body.picture);
-        if (req.body.picture.position) {
-            req.body.picture = JSON.stringify({
-                imageUrl: pictureInfo.imageUrl,
-                publicId: pictureInfo.publicId,
-                position: JSON.parse(req.body.position),
-            });
-        }
-        else {
-            req.body.picture = JSON.stringify({
-                imageUrl: pictureInfo.imageUrl,
-                publicId: pictureInfo.publicId,
-            });
+            return;
         }
     }
     next();

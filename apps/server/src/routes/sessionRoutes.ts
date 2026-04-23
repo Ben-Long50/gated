@@ -1,6 +1,7 @@
 import express from 'express';
 import authentication from '../middleware/authentication.js';
 import sessionController from '../controllers/sessionController.js';
+import campaignAuthentication from '../middleware/campaignAuthentication.js';
 
 const router = express.Router();
 
@@ -19,6 +20,7 @@ router.get(
 router.post(
   '/campaigns/:campaignId/sessions',
   authentication.authenticate,
+  campaignAuthentication.validateGameMaster,
   sessionController.createOrUpdateSession,
 );
 
@@ -31,6 +33,7 @@ router.post(
 router.delete(
   '/campaigns/:campaignId/sessions/:sessionId',
   authentication.authenticate,
+  campaignAuthentication.validateGameMaster,
   sessionController.deleteSession,
 );
 

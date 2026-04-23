@@ -1,4 +1,6 @@
 import errorServices from '../services/errorServices.js';
+import { ErrorReportInput } from '../validation/errorReportSchema.js';
+import handleControllerError from './handleControllerError.js';
 const errorController = {
     getErrorReports: async (_req, res) => {
         try {
@@ -6,7 +8,7 @@ const errorController = {
             res.status(200).json(errorReports);
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     createErrorReport: async (req, res) => {
@@ -14,20 +16,23 @@ const errorController = {
             if (!req.user) {
                 throw new Error('Could not find authenticated user');
             }
-            const errorReport = await errorServices.createErrorReport(req.body, req.user.id);
-            res.status(200).json(errorReport);
+            const validatedErrorReport = ErrorReportInput.parse(req.body);
+            const errorReport = await errorServices.createErrorReport(validatedErrorReport, req.user.id);
+            res
+                .status(200)
+                .json({ errorReport, message: 'Successfully created error report' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     deleteErrorReport: async (req, res) => {
         try {
-            await errorServices.deleteErrorReport(req.params.errorId);
+            await errorServices.deleteErrorReport(Number(req.params.errorId));
             res.status(200).json({ message: 'Successfully deleted error report' });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
 };

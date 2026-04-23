@@ -1,3 +1,14 @@
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 import prisma from '../config/database.js';
 const conditionServices = {
     getConditions: async () => {
@@ -38,19 +49,13 @@ const conditionServices = {
     },
     createCondition: async (formData) => {
         try {
-            await prisma.condition.upsert({
-                where: { id: Number(formData.conditionId) || 0 },
-                update: {
-                    name: formData.name,
-                    description: formData.description,
-                    conditionType: formData.type,
-                },
-                create: {
-                    name: formData.name,
-                    description: formData.description,
-                    conditionType: formData.type,
-                },
+            const { id } = formData, data = __rest(formData, ["id"]);
+            const condition = await prisma.condition.upsert({
+                where: { id: formData.id || 0 },
+                update: data,
+                create: data,
             });
+            return condition;
         }
         catch (error) {
             console.error(error);
@@ -66,14 +71,14 @@ const conditionServices = {
             if (!conditionReference) {
                 throw new Error('Failed to find condition reference');
             }
-            await prisma.characterConditionReference.update({
+            const condition = await prisma.characterConditionReference.update({
                 where: { id: conditionId },
                 data: {
-                    stacks: (conditionReference === null || conditionReference === void 0 ? void 0 : conditionReference.stacks)
-                        ? (conditionReference === null || conditionReference === void 0 ? void 0 : conditionReference.stacks) + value
-                        : value,
+                    stacks: conditionReference.stacks ? { increment: value } : value,
                 },
+                include: { condition: { select: { name: true } } },
             });
+            return condition.condition.name;
         }
         catch (error) {
             console.error(error);
@@ -89,14 +94,14 @@ const conditionServices = {
             if (!conditionReference) {
                 throw new Error('Failed to find condition reference');
             }
-            await prisma.itemConditionReference.update({
+            const condition = await prisma.itemConditionReference.update({
                 where: { id: conditionId },
                 data: {
-                    stacks: (conditionReference === null || conditionReference === void 0 ? void 0 : conditionReference.stacks)
-                        ? (conditionReference === null || conditionReference === void 0 ? void 0 : conditionReference.stacks) + value
-                        : value,
+                    stacks: conditionReference.stacks ? { increment: value } : value,
                 },
+                include: { condition: { select: { name: true } } },
             });
+            return condition.condition.name;
         }
         catch (error) {
             console.error(error);

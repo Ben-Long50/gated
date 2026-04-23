@@ -1,9 +1,25 @@
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 import prisma from '../config/database.js';
+import { NotesInput } from '../validation/notesSchema.js';
+import { SessionInput } from '../validation/sessionSchema.js';
+const sessionInclude = {
+    characters: true,
+};
 const sessionServices = {
     getCampaignSessions: async (campaignId) => {
         try {
             const sessions = await prisma.session.findMany({
-                where: { campaignId: Number(campaignId) },
+                where: { campaignId },
                 orderBy: { sessionNumber: 'asc' },
             });
             return sessions;
@@ -17,7 +33,7 @@ const sessionServices = {
         try {
             const session = await prisma.session.findUnique({
                 where: { id: sessionId, campaignId: campaignId },
-                include: { characters: true },
+                include: sessionInclude,
             });
             return session;
         }
@@ -26,18 +42,22 @@ const sessionServices = {
             throw new Error('Failed to fetch session');
         }
     },
-    createOrUpdateSessionNotes: async (sessionId, characterId, content) => {
+    createOrUpdateSessionNotes: async (formData) => {
         try {
+            console.log(formData);
+            const validatedNotes = NotesInput.parse(formData);
+            const { id } = validatedNotes, data = __rest(validatedNotes, ["id"]);
             const notes = await prisma.note.upsert({
-                where: { sessionId_characterId: { sessionId, characterId } },
+                where: {
+                    sessionId_characterId: {
+                        sessionId: data.sessionId,
+                        characterId: data.characterId,
+                    },
+                },
                 update: {
-                    content,
+                    content: data.content,
                 },
-                create: {
-                    sessionId,
-                    characterId,
-                    content,
-                },
+                create: data,
             });
             return notes;
         }
@@ -46,10 +66,12 @@ const sessionServices = {
             throw new Error('Failed to create or update notes');
         }
     },
-    createOrUpdateSession: async (formData, campaignId) => {
+    createOrUpdateSession: async (formData) => {
         try {
+            const validatedSession = SessionInput.parse(formData);
+            const { id, characterIds } = validatedSession, data = __rest(validatedSession, ["id", "characterIds"]);
             const previousSession = await prisma.session.findFirst({
-                where: { campaignId },
+                where: { campaignId: data.campaignId },
                 orderBy: {
                     sessionNumber: 'desc',
                 },
@@ -58,25 +80,11 @@ const sessionServices = {
             const sessionNumber = previousSession
                 ? (previousSession === null || previousSession === void 0 ? void 0 : previousSession.sessionNumber) + 1
                 : 0;
-            const characterIds = formData.characters
-                ? formData.characters.map((id) => ({ id }))
-                : [];
             const session = await prisma.session.upsert({
-                where: { id: (formData === null || formData === void 0 ? void 0 : formData.id) || 0 },
-                update: {
-                    name: formData.name,
-                    briefing: formData.briefing,
-                    characters: { set: characterIds },
-                    picture: formData.picture,
-                },
-                create: {
-                    name: formData.name,
-                    sessionNumber,
-                    briefing: formData.briefing,
-                    campaignId,
-                    characters: { connect: characterIds },
-                    picture: formData.picture,
-                },
+                where: { id: id || 0 },
+                update: Object.assign(Object.assign({}, data), { characters: { set: characterIds.map((id) => ({ id })) } }),
+                create: Object.assign(Object.assign({}, data), { sessionNumber, characters: { connect: characterIds.map((id) => ({ id })) } }),
+                include: sessionInclude,
             });
             return session;
         }
@@ -89,7 +97,7 @@ const sessionServices = {
         try {
             await prisma.session.delete({
                 where: {
-                    id: Number(sessionId),
+                    id: sessionId,
                 },
             });
         }

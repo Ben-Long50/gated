@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import conditionServices from '../services/conditionServices.js';
+import { ConditionInput } from '../validation/conditionSchema.js';
+import handleControllerError from './handleControllerError.js';
 
 const conditionController = {
   getConditions: async (_req: Request, res: Response) => {
@@ -7,7 +9,7 @@ const conditionController = {
       const conditions = await conditionServices.getConditions();
       res.status(200).json(conditions);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
@@ -18,30 +20,38 @@ const conditionController = {
       );
       res.status(200).json(condition);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
   createCondition: async (req: Request, res: Response) => {
     try {
-      await conditionServices.createCondition(req.body);
-      res.status(200).json({ message: 'Successfully created condition' });
+      const validatedCondition = ConditionInput.parse(req.body);
+
+      const condition =
+        await conditionServices.createCondition(validatedCondition);
+
+      res
+        .status(200)
+        .json({ condition, message: `Successfully created ${condition.name}` });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
   updateConditionStacks: async (req: Request, res: Response) => {
     try {
+      let condition = '';
+
       if (req.params.characterId) {
-        await conditionServices.updateCharacterConditionStacks(
+        condition = await conditionServices.updateCharacterConditionStacks(
           Number(req.params.conditionId),
           req.body.value,
         );
       }
 
       if (req.params.itemId) {
-        await conditionServices.updateItemConditionStacks(
+        condition = await conditionServices.updateItemConditionStacks(
           Number(req.params.conditionId),
           req.body.value,
         );
@@ -49,9 +59,9 @@ const conditionController = {
 
       res
         .status(200)
-        .json({ message: 'Successfully updated condition stacks' });
+        .json({ message: `Successfully updated ${condition} stacks` });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
@@ -60,7 +70,7 @@ const conditionController = {
       await conditionServices.deleteCondition(Number(req.params.conditionId));
       res.status(200).json({ message: 'Successfully deleted condition' });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
@@ -73,7 +83,7 @@ const conditionController = {
         .status(200)
         .json({ message: 'Successfully deleted character condition' });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
@@ -84,7 +94,7 @@ const conditionController = {
       );
       res.status(200).json({ message: 'Successfully deleted item condition' });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 };

@@ -1,15 +1,9 @@
 import express from 'express';
 import authentication from '../middleware/authentication.js';
 import characterController from '../controllers/characterController.js';
-import affiliationController from '../controllers/affiliationController.js';
+import conditionController from '../controllers/conditionController.js';
 
 const router = express.Router();
-
-router.get(
-  '/characters',
-  authentication.authenticate,
-  characterController.getCharacters,
-);
 
 router.get('/social/characters', characterController.getSocialCharacters);
 
@@ -25,16 +19,16 @@ router.get(
   characterController.getCharacterById,
 );
 
+router.get(
+  '/characters/:characterId/notes',
+  authentication.authenticate,
+  characterController.getCharacterNotes,
+);
+
 router.patch(
   '/characters/:characterId/inventory/:inventoryId/equipment/:itemId',
   authentication.authenticate,
   characterController.toggleEquipment,
-);
-
-router.patch(
-  '/characters/active',
-  authentication.authenticate,
-  characterController.setActiveCharacter,
 );
 
 router.patch(
@@ -68,12 +62,6 @@ router.post(
 );
 
 router.post(
-  '/characters/:characterId/affiliations/create',
-  authentication.authenticate,
-  affiliationController.createCharacterAffiliation,
-);
-
-router.post(
   '/characters/:characterId/conditions',
   authentication.authenticate,
   characterController.createCharacterConditions,
@@ -101,6 +89,12 @@ router.put(
   '/characters/:characterId/cart/:cartId',
   authentication.authenticate,
   characterController.clearCart,
+);
+
+router.delete(
+  '/characters/:characterId/conditions/:conditionId',
+  authentication.authenticate,
+  conditionController.deleteCharacterCondition,
 );
 
 router.delete(

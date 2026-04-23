@@ -1,5 +1,5 @@
 import prisma from '../config/database.js';
-import { CharacterStats } from '../validation/fieldSchemas.js';
+import { PerkSchema } from '../validation/perkSchema.js';
 
 const perkServices = {
   getPerks: async () => {
@@ -7,63 +7,66 @@ const perkServices = {
       const perks = await prisma.perk.findMany({
         orderBy: { name: 'asc' },
       });
+
       return perks;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to fetch perks');
     }
   },
 
-  getPerkById: async (perkId: string) => {
+  getBatchPerks: async (perkIds: number[]) => {
+    try {
+      const perks = await prisma.perk.findMany({
+        where: {
+          id: { in: perkIds },
+        },
+      });
+
+      return perks;
+    } catch (error: any) {
+      console.error(error);
+      throw new Error('Failed to fetch perks');
+    }
+  },
+
+  getPerkById: async (perkId: number) => {
     try {
       const perk = await prisma.perk.findUnique({
-        where: { id: Number(perkId) },
+        where: { id: perkId },
       });
+
       return perk;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to fetch perk');
     }
   },
 
-  createPerk: async (formData: {
-    perkId: string;
-    name: string;
-    description: string;
-    modifiers: CharacterStats;
-    attributes: object;
-  }) => {
+  createPerk: async (formData: PerkSchema) => {
     try {
-      const newUser = await prisma.perk.upsert({
-        where: { id: Number(formData.perkId) || 0 },
-        update: {
-          name: formData.name,
-          description: formData.description,
-          modifiers: { ...formData.modifiers },
-          attributes: formData.attributes,
-        },
-        create: {
-          name: formData.name,
-          description: formData.description,
-          modifiers: { ...formData.modifiers },
-          attributes: formData.attributes,
-        },
+      const { id, ...data } = formData;
+      const perk = await prisma.perk.upsert({
+        where: { id: id || 0 },
+        update: data,
+        create: data,
       });
-      return newUser;
-    } catch (error) {
+
+      return perk;
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to create or update perk');
     }
   },
 
-  deletePerk: async (perkId: string) => {
+  deletePerk: async (perkId: number) => {
     try {
       await prisma.perk.delete({
         where: {
-          id: Number(perkId),
+          id: perkId,
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to delete perk');
     }

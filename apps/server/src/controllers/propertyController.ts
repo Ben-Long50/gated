@@ -3,6 +3,8 @@ import upload from '../utils/multer.js';
 import { uploadToCloudinary } from '../utils/cloudinary.js';
 import parseRequestBody from '../utils/parseRequestBody.js';
 import propertyServices from '../services/propertyServices.js';
+import { PropertyInput } from '../validation/propertySchema.js';
+import handleControllerError from './handleControllerError.js';
 
 const propertyController = {
   getBaseProperties: async (req: Request, res: Response) => {
@@ -18,7 +20,7 @@ const propertyController = {
 
       res.status(200).json(properties);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
@@ -34,7 +36,7 @@ const propertyController = {
 
       res.status(200).json(properties);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
@@ -45,7 +47,7 @@ const propertyController = {
       );
       res.status(200).json(property);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
@@ -64,10 +66,15 @@ const propertyController = {
 
         const parsedBody = parseRequestBody(req.body);
 
-        await propertyServices.createOrUpdateBaseProperty(parsedBody);
+        const validatedProperty = PropertyInput.parse(parsedBody);
 
-        res.status(200).json({ message: 'Successfully created property' });
-      } catch (error) {
+        const property =
+          await propertyServices.createOrUpdateBaseProperty(validatedProperty);
+
+        res
+          .status(200)
+          .json({ property, message: 'Successfully created property' });
+      } catch (error: any) {
         if (error instanceof Error) {
           res.status(500).json({ error: error.message });
         }
@@ -87,7 +94,7 @@ const propertyController = {
       await propertyServices.deleteProperty(Number(req.params.propertyId));
       res.status(200).json({ message: 'Successfully deleted property' });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 };

@@ -1,49 +1,44 @@
 import prisma from '../config/database.js';
+import { characterInclude } from './characterServices.js';
 
 const cartServices = {
-  editCartItem: async (cartId: number, itemId: number, value: number) => {
+  editCartItem: async (
+    characterId: number,
+    cartId: number,
+    itemId: number,
+    value: number,
+  ) => {
     try {
-      const cartItem = await prisma.cartItemRelation.findUnique({
-        where: {
-          characterCartId_itemId: {
-            characterCartId: cartId,
-            itemId: itemId,
+      const character = await prisma.character.update({
+        where: { id: characterId },
+        data: {
+          characterCart: {
+            update: {
+              items: {
+                upsert: {
+                  where: {
+                    characterCartId_itemId: {
+                      characterCartId: cartId,
+                      itemId,
+                    },
+                  },
+                  update: {
+                    quantity: { increment: value },
+                  },
+                  create: {
+                    itemId,
+                    quantity: value,
+                  },
+                },
+              },
+            },
           },
         },
+        include: characterInclude,
       });
 
-      if (cartItem) {
-        if (cartItem.quantity + value <= 0) {
-          await prisma.cartItemRelation.delete({
-            where: {
-              characterCartId_itemId: {
-                characterCartId: cartId,
-                itemId: itemId,
-              },
-            },
-          });
-        } else {
-          await prisma.cartItemRelation.update({
-            where: {
-              characterCartId_itemId: {
-                characterCartId: cartId,
-                itemId: itemId,
-              },
-            },
-            data: { quantity: cartItem.quantity + value },
-          });
-        }
-      } else {
-        await prisma.characterCart.update({
-          where: { id: cartId },
-          data: {
-            items: {
-              create: { item: { connect: { id: itemId } }, quantity: value },
-            },
-          },
-        });
-      }
-    } catch (error) {
+      return character;
+    } catch (error: any) {
       console.error(error);
       throw new Error('Failed to add item to cart');
     }

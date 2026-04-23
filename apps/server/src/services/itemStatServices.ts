@@ -1,12 +1,14 @@
 import prisma from '../config/database.js';
-import getStatsObject from '../utils/getStatsObject.js';
+import combineObjects from '../utils/combineObjects.js';
+import { ItemStats } from '../validation/fieldSchemas.js';
+import { itemInclude } from './itemServices.js';
 
 const itemStatServices = {
-  resetItemStats: async (itemId: string | number, value: object) => {
+  resetItemStats: async (itemId: number, stats: ItemStats) => {
     try {
       const item = await prisma.item.findUnique({
         where: {
-          id: Number(itemId),
+          id: itemId,
         },
         select: { stats: true },
       });
@@ -15,32 +17,26 @@ const itemStatServices = {
         throw new Error('Item not found');
       }
 
-      const statsObject = item.stats as Record<string, number>;
+      const typedStats = item.stats as Record<string, number>;
 
-      const newStats = {
-        ...statsObject,
-        ...value,
-      };
-
-      await prisma.item.update({
+      const udpatedItem = await prisma.item.update({
         where: {
-          id: Number(itemId),
+          id: itemId,
         },
         data: {
-          stats: newStats,
+          stats: { ...typedStats, stats },
         },
+        include: itemInclude,
       });
-    } catch (error) {
+
+      return udpatedItem;
+    } catch (error: any) {
       console.error(error);
-      throw new Error(`Failed to update item stats ${value.toString()}`);
+      throw new Error(`Failed to reset item stats`);
     }
   },
 
-  editItemStat: async (
-    itemId: number,
-    value: { stat: string; value: number },
-    userId: number,
-  ) => {
+  editItemStat: async (itemId: number, stats: ItemStats, userId: number) => {
     try {
       const item = await prisma.item.findUnique({
         where: {
@@ -65,31 +61,22 @@ const itemStatServices = {
         throw new Error('Armor not found');
       }
 
-      const statsObject = getStatsObject(item);
+      const typedStats = item.stats as Record<string, number>;
 
-      let adjustedValues = Object.fromEntries(
-        Object.entries(value).map(([stat, value]) => [
-          stat,
-          statsObject[stat] + value,
-        ]),
-      );
-
-      const newStats = {
-        ...statsObject,
-        ...adjustedValues,
-      };
-
-      await prisma.item.update({
+      const updatedItem = await prisma.item.update({
         where: {
           id: itemId,
         },
         data: {
-          stats: newStats,
+          stats: combineObjects(typedStats, stats),
         },
+        include: itemInclude,
       });
-    } catch (error) {
+
+      return updatedItem;
+    } catch (error: any) {
       console.error(error);
-      throw new Error('Failed to update current block points');
+      throw new Error('Failed to update stats');
     }
   },
 };

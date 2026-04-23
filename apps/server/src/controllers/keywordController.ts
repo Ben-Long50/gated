@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import keywordServices from '../services/keywordServices.js';
+import { KeywordInput } from '../validation/keywordSchema.js';
+import handleControllerError from './handleControllerError.js';
 
 const keywordController = {
   getKeywords: async (_req: Request, res: Response) => {
@@ -7,36 +9,41 @@ const keywordController = {
       const keywords = await keywordServices.getKeywords();
       res.status(200).json(keywords);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
   getKeywordById: async (req: Request, res: Response) => {
     try {
       const keyword = await keywordServices.getKeywordById(
-        req.params.keywordId,
+        Number(req.params.keywordId),
       );
       res.status(200).json(keyword);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
   createKeyword: async (req: Request, res: Response) => {
     try {
-      const keyword = await keywordServices.createKeyword(req.body);
-      res.status(200).json(keyword);
+      const validatedKeyword = KeywordInput.parse(req.body);
+
+      const keyword = await keywordServices.createKeyword(validatedKeyword);
+
+      res
+        .status(200)
+        .json({ keyword, message: `Successfully created ${keyword.name}` });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 
   deleteKeyword: async (req: Request, res: Response) => {
     try {
-      await keywordServices.deleteKeyword(req.params.keywordId);
+      await keywordServices.deleteKeyword(Number(req.params.keywordId));
       res.status(200).json({ message: 'Successfully deleted keyword' });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      handleControllerError(res, error);
     }
   },
 };
