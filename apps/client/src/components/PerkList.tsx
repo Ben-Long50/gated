@@ -1,20 +1,18 @@
 import PerkCard from './PerkCard';
 import { Perk, PerkTree } from 'src/types/perk';
 import ArrowHeader2 from './ArrowHeader2';
-import { FieldApi } from '@tanstack/react-form';
+import { FormApi } from '@tanstack/react-form';
 import { capitalCase } from 'change-case';
 import ExpandingList from './ExpandingList';
 
 const PerkList = ({
-  field,
+  form,
   perkTree,
   className,
-  mode,
 }: {
-  field?: FieldApi;
+  form?: FormApi;
   perkTree: Partial<PerkTree>;
   className?: string;
-  mode?: string;
 }) => {
   return (
     <div className={`${className} z-20 flex w-full flex-col gap-8 px-0.5`}>
@@ -37,20 +35,13 @@ const PerkList = ({
                           }
                           className="flex flex-col items-start gap-4 md:grid md:grid-cols-2"
                         >
-                          {perkList.map((perk: Perk) => {
-                            const perkIds = field
-                              ? field.state.value.map((perk: Perk) => perk.id)
-                              : [];
-                            return (
-                              <PerkCard
-                                key={perk.id}
-                                perk={perk}
-                                mode={mode}
-                                perkIds={perkIds}
-                                field={field}
-                              />
-                            );
-                          })}
+                          {perkList.map((perk: Perk) => (
+                            <PerkCard
+                              key={perk.id}
+                              perkId={perk.id}
+                              form={form}
+                            />
+                          ))}
                         </ExpandingList>
                       </div>
                     )

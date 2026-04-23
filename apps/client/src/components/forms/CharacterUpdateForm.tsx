@@ -3,7 +3,6 @@ import InputField from '../InputField';
 import { ThemeContext } from '../../contexts/ThemeContext';
 import { ValidationError } from '@tanstack/react-form';
 import StatBar from '../StatBar';
-import usePerks from '../../hooks/usePerks';
 import Icon from '@mdi/react';
 import { mdiCircleOutline } from '@mdi/js';
 import HealthIcon from '../icons/HealthIcon';
@@ -24,11 +23,11 @@ import InjuryIcon from '../icons/InjuryIcon';
 import InsanityIcon from '../icons/InsanityIcon';
 import NpcPreferenceField from '../formFields/NpcPreferenceField';
 import PictureField from '../formFields/PictureField';
-import useCharacter from 'src/hooks/useCharacter';
 import CyberIcon from '../icons/CyberIcon';
 import EquipIcon from '../icons/EquipIcon';
 import useCharacterUpdateForm from 'src/hooks/form hooks/useCharacterUpdateForm';
 import constructName from 'src/utils/constructName';
+import useCharacter from 'src/hooks/useCharacter';
 
 const CharacterUpdateForm = () => {
   const { statColorMap } = useContext(ThemeContext);
@@ -37,22 +36,10 @@ const CharacterUpdateForm = () => {
 
   const cardRef = useRef(null);
 
-  const {
-    data: campaigns,
-    isLoading: campaignsLoading,
-    isPending: campaignsPending,
-  } = useCampaignsQuery();
+  const { data: campaigns, isLoading: campaignsLoading } = useCampaignsQuery();
 
-  const {
-    filteredCharacter: character,
-    isLoading: characterLoading,
-    isPending: characterPending,
-  } = useCharacter(Number(characterId));
-
-  const isLoading = characterLoading || campaignsLoading;
-  const isPending = characterPending || campaignsPending;
-
-  const perks = usePerks(character?.attributes);
+  const { filteredCharacter: character, isLoading: characterLoading } =
+    useCharacter(Number(characterId));
 
   const updateCharacter = useUpdateCharacterMutation(Number(characterId));
   const deleteCharacter = useDeleteCharacterMutation(Number(characterId));
@@ -62,7 +49,9 @@ const CharacterUpdateForm = () => {
     character,
   );
 
-  if (perks.isLoading || perks.isPending || isLoading || isPending) {
+  const isLoading = characterLoading || campaignsLoading;
+
+  if (isLoading) {
     return <Loading />;
   }
 
@@ -127,6 +116,9 @@ const CharacterUpdateForm = () => {
             field={field}
             label="Campaign"
             options={campaigns}
+            onChange={(campaign) => {
+              field.handleChange(campaign.id);
+            }}
           />
         )}
       </characterUpdateForm.Field>
@@ -143,15 +135,7 @@ const CharacterUpdateForm = () => {
           }}
         />
         <div className="flex w-full flex-col gap-8">
-          <characterUpdateForm.Field
-            name="firstName"
-            validators={{
-              onChange: ({ value }) =>
-                value.length < 2
-                  ? 'First name must be at least 2 characters long'
-                  : undefined,
-            }}
-          >
+          <characterUpdateForm.Field name="firstName">
             {(field) => (
               <InputField className="w-full" label="First name" field={field} />
             )}
@@ -196,10 +180,7 @@ const CharacterUpdateForm = () => {
               <StatBar
                 title="Health"
                 current={field.state.value}
-                total={
-                  character?.stats.maxHealth +
-                  character?.attributes.violence.skills.threshold.points * 2
-                }
+                total={character?.stats.maxHealth}
                 color={statColorMap['Health']}
                 cardWidth={cardRef.current?.offsetWidth}
                 mutation={(value: number) =>
@@ -218,10 +199,7 @@ const CharacterUpdateForm = () => {
               <StatBar
                 title="Sanity"
                 current={field.state.value}
-                total={
-                  character?.stats.maxSanity +
-                  character?.attributes.esoterica.skills.mysticism.points * 2
-                }
+                total={character?.stats.maxSanity}
                 color={statColorMap['Sanity']}
                 cardWidth={cardRef.current?.offsetWidth}
                 mutation={(value: number) =>
@@ -237,10 +215,7 @@ const CharacterUpdateForm = () => {
         <StatBar
           title="Cyber"
           current={character?.stats.cyber || 0}
-          total={
-            character?.stats.maxCyber +
-            character?.attributes.cybernetica.skills.chromebits.points * 2
-          }
+          total={character?.stats.maxCyber}
           color="rgb(52 211 153)"
           cardWidth={cardRef.current?.offsetWidth}
         >
@@ -249,10 +224,7 @@ const CharacterUpdateForm = () => {
         <StatBar
           title="Equip"
           current={character?.stats.weight || 0}
-          total={
-            character?.stats.maxEquip +
-            character?.attributes.violence.skills.threshold.points * 2
-          }
+          total={character?.stats.maxEquip}
           color="rgb(251 191 36)"
           cardWidth={cardRef.current?.offsetWidth}
         >

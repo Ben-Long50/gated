@@ -1,15 +1,13 @@
 import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../../handleResponse';
-import { Character } from 'src/types/character';
-import { Action } from '@cloudinary/url-gen/internal/Action';
 
 const campaignRoll = async (
   campaignId: number,
   rollData: {
-    character: Character;
-    action: Action;
+    characterId: number;
+    actionId: number;
     modifiers: string[];
-    extraDice: number;
+    extraDice: number | null;
   },
 ) => {
   try {

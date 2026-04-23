@@ -4,12 +4,12 @@ import FormLayout from '../../layouts/FormLayout';
 import { useParams } from 'react-router-dom';
 import LexicalEditor from '../lexical/LexicalEditor';
 import Divider from '../Divider';
-import useFactionQuery from '../../hooks/useFactionQuery/useFactionQuery';
 import ArrowHeader2 from '../ArrowHeader2';
 import useUpdateFactionMutation from '../../hooks/useUpdateFactionMutation/useUpdateFactionMutation';
 import useDeleteFactionMutation from '../../hooks/useDeleteFactionMutation/useDeleteFactionMutation';
 import PictureField from '../formFields/PictureField';
 import useFactionForm from 'src/hooks/form hooks/useFactionForm';
+import useFactionQuery from 'src/hooks/faction hooks/useFactionQuery';
 
 const FactionForm = () => {
   const { campaignId, factionId } = useParams();

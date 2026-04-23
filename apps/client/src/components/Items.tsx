@@ -75,7 +75,7 @@ const Items = ({
 
   return (
     <div className="flex w-full max-w-6xl flex-col items-center gap-8">
-      <h1 className="text-center">{capitalCase(itemCategory)}</h1>
+      <h1 className="text-center">{capitalCase(itemCategory)}s</h1>
       {mode && mode === 'form' && (
         <div className="flex w-full gap-4">
           <BtnAuth

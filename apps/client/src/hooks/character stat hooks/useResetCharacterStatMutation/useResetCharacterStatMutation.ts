@@ -1,8 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Character, CharacterStats } from 'src/types/character';
-import { socket } from '../../../socket';
+import { Character } from 'src/types/character';
 import resetCharacterStat from './resetCharacterStat';
 import { useRef } from 'react';
+import combineObjects from 'src/utils/combineObjects';
+import { toast } from 'react-toastify';
 
 const useResetCharacterStatMutation = () => {
   const queryClient = useQueryClient();
@@ -12,8 +13,7 @@ const useResetCharacterStatMutation = () => {
   const resetCharacterStatMutation = useMutation({
     mutationFn: async (data: {
       characterId: number;
-      stat: keyof CharacterStats;
-      value: number;
+      stats: Record<string, number>;
     }) => {
       if (timeoutRef.current.get(data.characterId)) {
         clearTimeout(timeoutRef.current.get(data.characterId));
@@ -23,15 +23,7 @@ const useResetCharacterStatMutation = () => {
 
       updateBuffer.current.set(
         data.characterId,
-        prevBuffer && prevBuffer[data.stat]
-          ? {
-              ...prevBuffer,
-              [data.stat]: prevBuffer[data.stat] + data.value,
-            }
-          : {
-              ...prevBuffer,
-              [data.stat]: data.value,
-            },
+        combineObjects(prevBuffer, data.stats),
       );
 
       return new Promise((resolve) => {
@@ -40,9 +32,12 @@ const useResetCharacterStatMutation = () => {
 
           updateBuffer.current = new Map();
 
-          await resetCharacterStat(data.characterId, data.stat, finalValue);
+          const characterData = await resetCharacterStat(
+            data.characterId,
+            finalValue,
+          );
 
-          resolve(finalValue);
+          resolve(characterData);
         }, 1000);
 
         timeoutRef.current.set(data.characterId, timer);
@@ -60,24 +55,23 @@ const useResetCharacterStatMutation = () => {
         ['character', data.characterId],
         (prev: Character) => ({
           ...prev,
-          stats: {
-            ...prev.stats,
-            [data.stat]: data.value,
-          },
+          stats: { ...prev.stats, ...data.stats },
         }),
       );
 
       return { prevCharacterData };
     },
 
-    onSuccess: (_, data, context) => {
-      socket.emit('character', {
-        characterId: data.characterId,
-        campaignId: context.prevCharacterData?.campaignId,
-      });
-      return queryClient.invalidateQueries({
-        queryKey: ['character', data.characterId],
-      });
+    onSuccess: (data) => {
+      toast.success(data.message);
+
+      queryClient.setQueryData(
+        ['character', data.character.id],
+        data.character,
+      );
+    },
+    onError: (data) => {
+      toast.error(data.message);
     },
     throwOnError: false,
   });

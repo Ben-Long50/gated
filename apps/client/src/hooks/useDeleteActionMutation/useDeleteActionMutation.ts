@@ -3,23 +3,24 @@ import deleteAction from './deleteAction';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-const useDeleteActionMutation = () => {
+const useDeleteActionMutation = (actionId: number) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   return useMutation({
-    mutationFn: (actionId: string) => {
+    mutationFn: () => {
       return deleteAction(actionId);
     },
-    onSuccess: () => {
-      toast('Successfully deleted action');
-      navigate('/glam/codex/actions');
+    onSuccess: (data) => {
+      toast.success(data.message);
 
-      return queryClient.invalidateQueries({
-        queryKey: ['actions'],
+      navigate(-1);
+
+      queryClient.removeQueries({
+        queryKey: ['action', actionId],
       });
     },
     onError: (data) => {
-      toast(data.message);
+      toast.error(data.message);
     },
     throwOnError: false,
   });

@@ -8,16 +8,16 @@ import Resume from 'src/components/Resume';
 import ResumeForm from 'src/components/forms/ResumeForm';
 import Session from 'src/components/Session';
 import SessionForm from 'src/components/forms/SessionForm';
+import CharacterSelectModal from 'src/components/CharacterSelectModal';
 
 const SessionRoutes = () => {
   return (
     <Route path="sessions">
       <Route path=":sessionId">
         <Route index element={<Session />} />
-        <Route
-          path="update"
-          element={<SessionForm title="Update" mode="update" />}
-        />
+        <Route path="update" element={<SessionForm />}>
+          <Route path="sessionCharacters" element={<CharacterSelectModal />} />
+        </Route>
         <Route path="characters/:characterId">
           <Route index element={<CharacterSheet />} />
           <Route path="update" element={<CharacterUpdateForm />} />
@@ -26,21 +26,14 @@ const SessionRoutes = () => {
           <Route path="resume/update" element={<ResumeForm />} />
           <Route path="notes">
             <Route index element={<Notes />} />
-            <Route
-              path="create"
-              element={<NotesForm title="Create" mode="create" />}
-            />
-            <Route
-              path="update"
-              element={<NotesForm title="Update" mode="update" />}
-            />
+            <Route path="create" element={<NotesForm />} />
+            <Route path="update" element={<NotesForm />} />
           </Route>
         </Route>
       </Route>
-      <Route
-        path="create"
-        element={<SessionForm title="Create" mode="create" />}
-      />
+      <Route path="create" element={<SessionForm />}>
+        <Route path="sessionCharacters" element={<CharacterSelectModal />} />
+      </Route>
     </Route>
   );
 };

@@ -1,5 +1,4 @@
 import { useContext, useState } from 'react';
-import { AuthContext } from '../contexts/AuthContext';
 import ThemeContainer from './ThemeContainer';
 import { ThemeContext } from '../contexts/ThemeContext';
 import Loading from './Loading';
@@ -43,7 +42,7 @@ const Cart = ({ character }: { character?: Character }) => {
     : 0;
 
   return (
-    <form className="flex w-full max-w-5xl flex-col items-center gap-6 sm:gap-8">
+    <div className="flex w-full flex-col items-center gap-6 sm:gap-8">
       <ThemeContainer
         className={`ml-auto w-full`}
         chamfer="medium"
@@ -138,7 +137,7 @@ const Cart = ({ character }: { character?: Character }) => {
           />
         );
       })}
-    </form>
+    </div>
   );
 };
 

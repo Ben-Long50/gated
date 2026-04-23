@@ -57,7 +57,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const { activeEncounters, inactiveEncounters } = useCombatQueries(
-    activeCampaigns?.flatMap((campaign) =>
+    activeCampaigns.flatMap((campaign) =>
       campaign?.encounters.map((encounter) => encounter.id),
     ),
   );
@@ -84,18 +84,12 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           playerIds.some((id: number) => id === user.id) ||
           userCampaignIds.some((id) => id === campaignId)
         ) {
-          console.log(
-            `Refetching campaign ${campaignId} for player ${user.id}`,
-          );
-
           queryClient.invalidateQueries({
             queryKey: ['user', user.id],
           });
           queryClient.invalidateQueries({
             queryKey: ['campaign', campaignId],
           });
-        } else {
-          console.log('No refetch necessary');
         }
       });
     };
@@ -157,6 +151,13 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         const rolls = new Map(rollsArray) as Map<number, any>;
         await animateRoll(rolls);
       }
+    });
+
+    socket.on('updateCharacter', (data) => {
+      queryClient.setQueryData(
+        ['character', data.character.id],
+        data.character,
+      );
     });
 
     socket.on('character', (characterId) => {

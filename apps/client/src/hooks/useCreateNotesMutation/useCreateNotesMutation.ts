@@ -1,8 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import createNotes from './createNotes';
 import { toast } from 'react-toastify';
+import { Notes } from 'src/types/campaign';
 
-const useCreateNotesMutation = (notesId?: number) => {
+const useCreateNotesMutation = (
+  setEditModeId: (value: number | null) => void,
+) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (formData: {
@@ -13,19 +16,30 @@ const useCreateNotesMutation = (notesId?: number) => {
     }) => {
       return createNotes(formData);
     },
-    onSuccess: () => {
-      const message = notesId
-        ? 'Property successfully updated'
-        : 'Property successfully created';
+    onSuccess: (data) => {
+      toast.success(data.message);
 
-      toast(message);
+      const prevNotes: Notes[] | undefined = queryClient.getQueryData([
+        'notes',
+        data.notes.characterId,
+      ]);
 
-      return queryClient.invalidateQueries({
-        queryKey: ['notes', notesId],
-      });
+      if (prevNotes && prevNotes.length > 0) {
+        const newNotes = prevNotes.map((notes) =>
+          notes.id === data.notes.id ? data.notes : notes,
+        );
+
+        queryClient.setQueryData(['notes', data.notes.characterId], newNotes);
+      } else {
+        queryClient.invalidateQueries({
+          queryKey: ['notes', data.notes.characterId],
+        });
+      }
+
+      setEditModeId(null);
     },
     onError: (data) => {
-      toast(data.message);
+      toast.error(data.message);
     },
     throwOnError: false,
   });

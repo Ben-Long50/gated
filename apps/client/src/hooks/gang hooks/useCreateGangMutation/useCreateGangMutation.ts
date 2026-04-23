@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { socket } from 'src/socket';
 import createGang from './createGang';
 import { toast } from 'react-toastify';
 
@@ -9,24 +8,13 @@ const useCreateGangMutation = (campaignId: number, gangId?: number) => {
     mutationFn: (formData: FormData) => {
       return createGang(campaignId, formData);
     },
-    onSuccess: () => {
-      const message = gangId
-        ? 'Gang successfully updated'
-        : 'Gang successfully created';
+    onSuccess: (data) => {
+      toast.success(data.message);
 
-      toast(message);
-
-      socket.emit('campaign', campaignId);
-
-      if (gangId) {
-        return queryClient.invalidateQueries({
-          queryKey: ['gang', gangId],
-        });
-      }
-      return;
+      queryClient.setQueryData(['gang', gangId], data.gang);
     },
     onError: (data) => {
-      toast(data.message);
+      toast.error(data.message);
     },
     throwOnError: false,
   });

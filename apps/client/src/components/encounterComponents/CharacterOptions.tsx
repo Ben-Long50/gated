@@ -303,7 +303,7 @@ const CharacterOptions = ({
           )}
         </div>
       </div>
-      {parts.includes('reset') && <Outlet context={{ character }} />}
+      {parts.includes('reset') && <Outlet context={{ character, parts }} />}
     </ThemeContainer>
   );
 };

@@ -1,32 +1,16 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import createCharacterAffiliation from './createCharacterAffiliation';
-import createGangAffiliation from './createGangAffiliation';
-import createFactionAffiliation from './createFactionAffiliation';
+import { useMutation } from '@tanstack/react-query';
+import createAffiliation from './createAffiliation';
+import { toast } from 'react-toastify';
+import { Affiliation } from 'src/types/faction';
 
-const useCreateAffiliationMutation = (
-  setFormMessage: (message: string) => void,
-  factionId?: number,
-  gangId?: number,
-  characterId?: number,
-) => {
-  const queryClient = useQueryClient();
-
+const useCreateAffiliationMutation = () => {
   return useMutation({
-    mutationFn: (formData: FormData) => {
-      if (factionId) {
-        return createFactionAffiliation(formData, factionId);
-      } else if (gangId) {
-        return createGangAffiliation(formData, gangId);
-      } else if (characterId) {
-        return createCharacterAffiliation(formData, characterId);
-      } else throw new Error('No primary affiliation entity provided');
+    mutationFn: (formData: Affiliation) => createAffiliation(formData),
+    onSuccess: (data) => {
+      toast.success(data.message);
     },
-    onSuccess: () => {
-      setFormMessage('Affiliation successfully created');
-      queryClient.invalidateQueries({ queryKey: ['character', characterId] });
-    },
-    onError: (error) => {
-      setFormMessage(error.message);
+    onError: (data) => {
+      toast.error(data.message);
     },
     throwOnError: false,
   });

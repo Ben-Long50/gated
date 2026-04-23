@@ -1,4 +1,4 @@
-import { Fragment, useContext, useRef, useState } from 'react';
+import { Fragment, useContext, useState } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import ThemeContainer from './ThemeContainer';
 import { ThemeContext } from '../contexts/ThemeContext';
@@ -16,7 +16,7 @@ import EvasionIcon from './icons/EvasionIcon';
 import ArmorIcon from './icons/ArmorIcon';
 import WardIcon from './icons/WardIcon';
 import SpeedIcon from './icons/SpeedIcon';
-import { Link, Outlet, useParams } from 'react-router-dom';
+import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
 import BtnRect from './buttons/BtnRect';
 import InjuryIcon from './icons/InjuryIcon';
 import InsanityIcon from './icons/InsanityIcon';
@@ -34,12 +34,16 @@ import ExpandingList from './ExpandingList';
 import NavTabs from './NavTabs';
 import ArrowHeader4 from './ArrowHeader4';
 import StatBarContainer from './StatBarContainer';
+import constructName from 'src/utils/constructName';
+import NpcTypeList from './NpcTypeList';
 
 const CharacterSheet = () => {
   const { accentPrimary } = useContext(ThemeContext);
   const { conditionId, characterId } = useParams();
   const { user } = useContext(AuthContext);
   const { mobile } = useContext(LayoutContext);
+  const location = useLocation();
+  const parts = location.pathname.split('/');
 
   const [infoVisibility, setInfoVisibility] = useState(mobile ? false : true);
 
@@ -48,10 +52,6 @@ const CharacterSheet = () => {
     isLoading,
     isPending,
   } = useCharacter(Number(characterId));
-
-  const characterName = character?.lastName
-    ? character?.firstName + ' ' + character?.lastName
-    : character?.firstName;
 
   const height =
     typeof character?.height === 'number'
@@ -64,14 +64,14 @@ const CharacterSheet = () => {
 
   return (
     <div className="text-primary flex w-full max-w-5xl flex-col gap-8">
-      <NavTabs>
+      {/* <NavTabs>
         <Link to="equipment">
           <BtnAuth>Equipment</BtnAuth>
         </Link>
         <Link to="deployments">
           <BtnAuth>Drones & Vehicles</BtnAuth>
         </Link>
-      </NavTabs>
+      </NavTabs> */}
       <div className="flex flex-col items-center justify-between gap-8 lg:flex-row">
         <div className="flex w-full items-center gap-4">
           <ThemeContainer
@@ -81,21 +81,8 @@ const CharacterSheet = () => {
           >
             <div className="flex h-full w-full items-center justify-between gap-4 p-4">
               <div className="flex items-center justify-start gap-4">
-                <ArrowHeader1 title={characterName} />
-                {character?.npcTypes?.includes('shop') && (
-                  <Icon
-                    className="text-primary"
-                    path={mdiStorefrontOutline}
-                    size={1.5}
-                  />
-                )}
-                {character?.npcTypes?.includes('template') && (
-                  <Icon
-                    className="text-primary"
-                    path={mdiAlphaTCircleOutline}
-                    size={1.5}
-                  />
-                )}
+                <ArrowHeader1 title={constructName(character)} />
+                <NpcTypeList npcTypes={character?.npcTypes} />
               </div>
 
               <h1 className="!text-accent">{character?.level}</h1>
@@ -145,7 +132,7 @@ const CharacterSheet = () => {
         >
           <div className="scrollbar-secondary-2 flex h-full flex-col gap-4 overflow-y-auto p-4">
             <div className="flex w-full items-center justify-between">
-              <ArrowHeader3 title={characterName + "'s Info"} />
+              <ArrowHeader3 title={constructName(character) + "'s Info"} />
               <button
                 type="button"
                 className="text-tertiary hover:underline"
@@ -206,7 +193,7 @@ const CharacterSheet = () => {
             <Fragment key={condition.id}>
               <ConditionTag key={condition.id} condition={condition} />
               {characterId && Number(conditionId) === condition.id && (
-                <Outlet context={{ condition }} />
+                <Outlet context={{ condition, parts }} />
               )}
             </Fragment>
           ))}
@@ -381,9 +368,9 @@ const CharacterSheet = () => {
             className="grid grid-cols-1 gap-4 md:grid-cols-2"
           >
             {character?.perks ? (
-              character?.perks.map((perk) => {
-                return <PerkCard key={perk.name} perk={perk} />;
-              })
+              character?.perks.map((perk) => (
+                <PerkCard key={perk.id} perkId={perk.id} />
+              ))
             ) : (
               <h2 className="pl-6">???</h2>
             )}

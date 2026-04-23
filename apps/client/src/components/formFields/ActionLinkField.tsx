@@ -27,7 +27,7 @@ const ActionLinkField = ({ form }: { form: FormApi }) => {
               {(field) => (
                 <>
                   {parts[parts.length - 1] === 'actions' && (
-                    <Outlet context={{ field }} />
+                    <Outlet context={{ field, parts }} />
                   )}
                   {isLoading ? (
                     <Loading />

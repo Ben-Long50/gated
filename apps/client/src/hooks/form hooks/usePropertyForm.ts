@@ -9,17 +9,17 @@ const usePropertyForm = (
 ) => {
   const propertyForm = useForm({
     defaultValues: {
-      id: property?.id || null,
-      name: property?.name || '',
-      description: property?.description || '',
+      id: property?.id ?? null,
+      name: property?.name ?? '',
+      description: property?.description ?? '',
       pictureFile: null as File | null,
-      picture: property?.picture || {
-        imageUrl: '',
-        publicId: '',
-        position: { x: 50, y: 50 },
+      picture: {
+        imageUrl: property?.picture.imageUrl ?? '',
+        publicId: property?.picture.publicId ?? '',
+        position: property?.picture.position ?? { x: 50, y: 50 },
       },
-      gpPrice: property?.gpPrice || null,
-      type: property?.type || '',
+      gpPrice: property?.gpPrice ?? null,
+      type: property?.type ?? '',
     },
     onSubmit: async ({ value }) => {
       const formData = constructFormData(value);

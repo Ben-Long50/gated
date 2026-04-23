@@ -1,11 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
-import getPerkById from './getPerkById';
 import { Perk } from 'src/types/perk';
+import getPerk from '../usePerkQueries/getPerk';
 
 const usePerkQuery = (perkId: number) => {
   return useQuery<Perk>({
     queryKey: ['perk', perkId],
-    queryFn: async () => await getPerkById(perkId),
+    queryFn: () => getPerk.fetch(perkId),
+    enabled: !!perkId,
   });
 };
 

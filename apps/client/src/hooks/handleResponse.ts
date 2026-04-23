@@ -15,6 +15,7 @@ const handleResponse = async (response) => {
     throw new Error(`${data.error}`);
   }
   const data = await response.json();
+
   return data;
 };
 

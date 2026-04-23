@@ -41,9 +41,26 @@ const useAttributeTree = (tree?: AttributeTree) => {
     },
   };
 
+  type AttributeName = keyof AttributeTree;
+
   if (!tree) {
     return { emptyAttributeTree };
   }
+
+  const getAttributePoints = (attributeName: AttributeName) => {
+    return tree[attributeName]?.points ?? 0;
+  };
+
+  const getSkillPoints = (skillName: string) => {
+    for (const attribute of Object.values(tree)) {
+      if (skillName in attribute.skills) {
+        return (
+          attribute.skills[skillName as keyof typeof attribute.skills].points ??
+          0
+        );
+      }
+    }
+  };
 
   const { usedAttributePoints, usedSkillPoints } = getUsedPoints(tree);
 
@@ -51,6 +68,8 @@ const useAttributeTree = (tree?: AttributeTree) => {
     emptyAttributeTree,
     usedAttributePoints,
     usedSkillPoints,
+    getAttributePoints,
+    getSkillPoints,
   };
 };
 

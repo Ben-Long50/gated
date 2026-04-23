@@ -13,7 +13,7 @@ const useCreateItemMutation = (itemId?: number) => {
         ? 'Item successfully updated'
         : 'Item successfully created';
 
-      toast(message);
+      toast.success(data.message);
 
       if (itemId) {
         queryClient.invalidateQueries({
@@ -22,7 +22,7 @@ const useCreateItemMutation = (itemId?: number) => {
       }
     },
     onError: (data) => {
-      toast(data.message);
+      toast.error(data.message);
     },
     throwOnError: false,
   });

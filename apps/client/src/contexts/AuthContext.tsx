@@ -1,8 +1,7 @@
 import { createContext, ReactNode, useEffect } from 'react';
-import useAccountQuery from '../hooks/useAccountQuery/useAccountQuery';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Loading from '../components/Loading';
-import useUserQuery from 'src/hooks/useUserQuery/useUserQuery';
+import useAuthenticatedUserQuery from 'src/hooks/user hooks/useAuthenticatedUserQuery';
 
 export const AuthContext = createContext({
   user: {
@@ -24,16 +23,11 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { pathname } = useLocation();
 
   const {
-    data: authentication,
+    data: authenticatedUser,
     isError,
     isSuccess,
-    isLoading: authenticationLoading,
-    isPending: authenticationPending,
-  } = useAccountQuery();
-
-  const { data: user, isLoading: userLoading } = useUserQuery(
-    authentication?.userId,
-  );
+    isLoading,
+  } = useAuthenticatedUserQuery();
 
   useEffect(() => {
     if (
@@ -47,9 +41,6 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [isSuccess, isError]);
 
-  const isLoading =
-    authenticationPending || authenticationLoading || userLoading;
-
   if (isLoading) {
     return <Loading />;
   }
@@ -57,7 +48,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   return (
     <AuthContext.Provider
       value={{
-        user,
+        user: authenticatedUser,
       }}
     >
       {children}

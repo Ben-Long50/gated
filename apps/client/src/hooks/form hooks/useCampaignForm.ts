@@ -9,17 +9,17 @@ const useCampaignForm = (
 ) => {
   const campaignForm = useForm({
     defaultValues: {
-      id: campaign?.id || null,
-      name: campaign?.name || '',
-      location: campaign?.location || '',
+      id: campaign?.id ?? null,
+      name: campaign?.name ?? '',
+      location: campaign?.location ?? '',
       pictureFile: null as File | null,
-      picture: campaign?.picture || {
-        imageUrl: '',
-        publicId: '',
-        position: { x: 50, y: 50 },
+      picture: {
+        imageUrl: campaign?.picture.imageUrl ?? '',
+        publicId: campaign?.picture.publicId ?? '',
+        position: campaign?.picture.position ?? { x: 50, y: 50 },
       },
       factions:
-        campaign?.factions ||
+        campaign?.factions ??
         ([
           { factionType: '', name: '' },
           { factionType: '', name: '' },
@@ -27,9 +27,9 @@ const useCampaignForm = (
       affiliation: 0,
       briefing: {} as { html: string; nodes: string },
       playerIds:
-        campaign?.players.map((player) => player.id) || ([] as number[]),
+        campaign?.players.map((player) => player.id) ?? ([] as number[]),
       pendingPlayerIds:
-        campaign?.pendingPlayers.map((player) => player.id) || ([] as number[]),
+        campaign?.pendingPlayers.map((player) => player.id) ?? ([] as number[]),
     },
 
     onSubmit: async ({ value }) => {
@@ -37,14 +37,6 @@ const useCampaignForm = (
 
       await mutation.mutate(formData);
     },
-    // validators: {
-    //   onSubmit: ({ value }) => {
-    //     if ([...value.playerIds, ...value.pendingPlayerIds].length < 1) {
-    //       return 'You must invite or have a minimum of one active player to create or update this campaign';
-    //     }
-    //     return undefined;
-    //   },
-    // },
   });
 
   return campaignForm;

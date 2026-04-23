@@ -29,7 +29,6 @@ import ItemCard from './ItemCard';
 import CharacterIcon from './icons/CharacterIcon';
 import CharacterStatBars from './CharacterStatBars';
 import CharacterPicture from './CharacterPicture';
-import useModalStore from 'src/stores/modalStore';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import BtnAuth from './buttons/BtnAuth';
 import NavTabs from './NavTabs';
@@ -42,7 +41,6 @@ const Equipment = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const parts = location.pathname.split('/');
-  const mode = parts[parts.length - 1];
 
   const [active, setActive] = useState<{
     id: null | number;
@@ -59,13 +57,6 @@ const Equipment = () => {
     }
   });
 
-  const setBackgroundPath = useModalStore((state) => state.setBackgroundPath);
-
-  const openInventoryModal = () => {
-    setBackgroundPath(location.pathname);
-    navigate('inventory');
-  };
-
   const toggleActive = (id: number | null, category: string | null) => {
     localStorage.setItem('activeItem', JSON.stringify({ id, category }));
     setActive({ id, category });
@@ -74,11 +65,9 @@ const Equipment = () => {
   const cardRef = useRef(null);
   const activeRef = useRef(null);
 
-  const {
-    filteredCharacter: character,
-    isLoading,
-    isPending,
-  } = useCharacter(Number(characterId));
+  const { filteredCharacter: character, isLoading } = useCharacter(
+    Number(characterId),
+  );
 
   const activeItem = useMemo(() => {
     switch (active?.category) {
@@ -117,20 +106,18 @@ const Equipment = () => {
     }
   }, [active, character]);
 
-  const namePrefix = character?.firstName + ' ' + character?.lastName + "'s";
-
-  if (isLoading || isPending) return <Loading />;
+  if (isLoading) return <Loading />;
 
   return (
     <div className="relative flex w-full max-w-9xl flex-col items-center gap-8">
-      <NavTabs>
+      {/* <NavTabs>
         <Link to="..">
           <BtnAuth>Character Sheet</BtnAuth>
         </Link>
         <Link to="../deployments">
           <BtnAuth>Drones & Vehicles</BtnAuth>
         </Link>
-      </NavTabs>
+      </NavTabs> */}
       <h1 className="text-center">{`${character?.firstName}'s Equipment`}</h1>
       <div className="flex w-full flex-col gap-8 sm:flex-row">
         {character?.picture?.publicId && (
@@ -264,7 +251,6 @@ const Equipment = () => {
             <ItemCard
               key={active.id}
               item={activeItem}
-              mode={mode}
               cardType={mobile ? 'small' : 'large'}
               ownerId={character?.userId}
             />
@@ -276,9 +262,8 @@ const Equipment = () => {
                 <BtnRect
                   ariaLabel="Open inventory"
                   type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    openInventoryModal();
+                  onClick={() => {
+                    navigate('inventory');
                   }}
                 >
                   Open Inventory

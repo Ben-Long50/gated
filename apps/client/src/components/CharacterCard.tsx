@@ -13,9 +13,8 @@ import InsanityIcon from './icons/InsanityIcon';
 import CharacterStatBars from './CharacterStatBars';
 import useCharacter from 'src/hooks/useCharacter';
 import Loading from './Loading';
-import { capitalCase } from 'change-case';
 import ConditionTag from './ConditionTag';
-import { Outlet, useParams } from 'react-router-dom';
+import { Outlet, useLocation, useParams } from 'react-router-dom';
 import { useInView } from 'react-intersection-observer';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
 import CharacterRadialMenu from './radialMenus/characterRadialMenu/CharacterRadialMenu';
@@ -24,8 +23,14 @@ import BtnRect from './buttons/BtnRect';
 import useCreateTemplateCharacterMutation from 'src/hooks/useCreateTemplateCharacterMutation/useCreateTemplateCharacterMutation';
 import useDeleteCharacterMutation from 'src/hooks/useDeleteCharacterMutation/useDeleteCharacterMutation';
 import Icon from '@mdi/react';
-import { mdiAlphaTCircleOutline, mdiStorefrontOutline } from '@mdi/js';
+import {
+  mdiAlphaGCircleOutline,
+  mdiAlphaSCircleOutline,
+  mdiAlphaTCircleOutline,
+} from '@mdi/js';
 import { CampaignContext } from 'src/contexts/CampaignContext';
+import constructName from 'src/utils/constructName';
+import NpcTypeList from './NpcTypeList';
 
 const CharacterCard = ({ characterId }: { characterId: number }) => {
   const { gameMaster } = useContext(CampaignContext);
@@ -33,6 +38,8 @@ const CharacterCard = ({ characterId }: { characterId: number }) => {
   const { mobile } = useContext(LayoutContext);
   const { conditionId } = useParams();
   const [cardWidth, setCardWidth] = useState(0);
+  const location = useLocation();
+  const parts = location.pathname.split('/');
 
   const { filteredCharacter: character, isLoading } = useCharacter(characterId);
 
@@ -50,10 +57,6 @@ const CharacterCard = ({ characterId }: { characterId: number }) => {
     triggerOnce: true,
     threshold: 0.1,
   });
-
-  const characterName = character?.lastName
-    ? character?.firstName + ' ' + character?.lastName
-    : character?.firstName;
 
   const containerRef = useRef(null);
 
@@ -139,21 +142,8 @@ const CharacterCard = ({ characterId }: { characterId: number }) => {
             </div>
             <div className="relative col-span-2 col-start-2 row-start-1 flex h-full w-full flex-col justify-between gap-4 p-4 md:gap-6 md:p-6">
               <div className="flex w-full items-center justify-between gap-4">
-                <ArrowHeader2 title={characterName} />
-                {character?.npcTypes?.includes('shop') && (
-                  <Icon
-                    className="text-primary"
-                    path={mdiStorefrontOutline}
-                    size={1.25}
-                  />
-                )}
-                {character?.npcTypes?.includes('template') && (
-                  <Icon
-                    className="text-primary"
-                    path={mdiAlphaTCircleOutline}
-                    size={1.25}
-                  />
-                )}
+                <ArrowHeader2 title={constructName(character)} />
+                <NpcTypeList npcTypes={character?.npcTypes} />
                 {!mobile && (
                   <div className="flex grow flex-wrap items-center justify-start gap-1">
                     {character?.conditions?.map((condition) => (
@@ -163,7 +153,7 @@ const CharacterCard = ({ characterId }: { characterId: number }) => {
                           condition={condition}
                         />
                         {Number(conditionId) === condition.id && (
-                          <Outlet context={{ condition }} />
+                          <Outlet context={{ condition, parts }} />
                         )}
                       </Fragment>
                     ))}

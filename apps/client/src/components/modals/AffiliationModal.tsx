@@ -12,19 +12,14 @@ const AffiliationModal = () => {
 
   return (
     <Modal className="h-full">
-      {parts.includes('affiliations') && <Outlet />}
+      {parts.includes('affiliations') && <Outlet context={{ parts }} />}
       <BtnRect
         className="w-full"
         type="button"
         ariaLabel="Submit conditions"
-        onClick={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
-          if (!backgroundPath) {
-            navigate('..', { replace: true });
-          } else {
+        onClick={() => {
+          if (backgroundPath) {
             navigate(backgroundPath, { replace: true });
-            navigate(-1);
           }
         }}
       >

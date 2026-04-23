@@ -37,8 +37,7 @@ export const WeaponControls = ({
               ? () =>
                   editItemStat.mutate({
                     itemId: weaponId,
-                    stat: 'currentAmmoCount',
-                    value: -1,
+                    stats: { currentAmmoCount: -1 },
                   })
               : null
           }
@@ -56,13 +55,14 @@ export const WeaponControls = ({
                 ? () => {
                     editItemStat.mutate({
                       itemId: weaponId,
-                      stat: 'currentAmmoCount',
-                      value: stats.magCapacity - stats.currentAmmoCount,
+                      stats: {
+                        currentAmmoCount:
+                          stats.magCapacity - stats.currentAmmoCount,
+                      },
                     });
                     editItemStat.mutate({
                       itemId: weaponId,
-                      stat: 'currentMagCount',
-                      value: -1,
+                      stats: { currentMagCount: -1 },
                     });
                   }
                 : null
@@ -78,8 +78,7 @@ export const WeaponControls = ({
               ? () =>
                   editItemStat.mutate({
                     itemId: weaponId,
-                    stat: 'currentAmmoCount',
-                    value: stats.salvo * -1,
+                    stats: { currentAmmoCount: stats.salvo * -1 },
                   })
               : null
           }
@@ -98,13 +97,16 @@ export const WeaponControls = ({
                 ? () => {
                     editItemStat.mutate({
                       itemId: weaponId,
-                      stat: 'currentAmmoCount',
-                      value: stats.magCapacity - stats.currentAmmoCount,
+                      stats: {
+                        currentAmmoCount:
+                          stats.magCapacity - stats.currentAmmoCount,
+                      },
                     });
                     editItemStat.mutate({
                       itemId: weaponId,
-                      stat: 'currentMagCount',
-                      value: stats.magCount - stats.currentMagCount,
+                      stats: {
+                        currentMagCount: stats.magCount - stats.currentMagCount,
+                      },
                     });
                   }
                 : null
@@ -139,8 +141,7 @@ export const ArmorControls = ({
               ? () =>
                   editItemStat.mutate({
                     itemId: armorId,
-                    stat: 'currentBlock',
-                    value: -1,
+                    stats: { currentBlock: -1 },
                   })
               : null
           }
@@ -155,8 +156,7 @@ export const ArmorControls = ({
               ? () =>
                   editItemStat.mutate({
                     itemId: armorId,
-                    stat: 'currentBlock',
-                    value: stats.block - stats.currentBlock,
+                    stats: { currentBlock: stats.block - stats.currentBlock },
                   })
               : null
           }
@@ -171,8 +171,7 @@ export const ArmorControls = ({
               ? () =>
                   editItemStat.mutate({
                     itemId: armorId,
-                    stat: 'currentPower',
-                    value: -1,
+                    stats: { currentPower: -1 },
                   })
               : null
           }
@@ -187,11 +186,12 @@ export const ArmorControls = ({
               ? () =>
                   editItemStat.mutate({
                     itemId: armorId,
-                    stat: 'currentPower',
-                    value:
-                      stats.power - stats.currentPower < 3
-                        ? stats.power - stats.currentPower
-                        : 3,
+                    stats: {
+                      currentPower:
+                        stats.power - stats.currentPower < 3
+                          ? stats.power - stats.currentPower
+                          : 3,
+                    },
                   })
               : null
           }
@@ -225,8 +225,7 @@ export const CyberneticControls = ({
               ? () =>
                   editItemStat.mutate({
                     itemId: cyberneticId,
-                    stat: 'currentPower',
-                    value: -1,
+                    stats: { currentPower: -1 },
                   })
               : null
           }
@@ -242,11 +241,12 @@ export const CyberneticControls = ({
               ? () =>
                   editItemStat.mutate({
                     itemId: cyberneticId,
-                    stat: 'currentPower',
-                    value:
-                      stats.power - stats.currentPower < 3
-                        ? stats.power - stats.currentPower
-                        : 3,
+                    stats: {
+                      currentPower:
+                        stats.power - stats.currentPower < 3
+                          ? stats.power - stats.currentPower
+                          : 3,
+                    },
                   })
               : null
           }
@@ -280,8 +280,7 @@ export const VehicleControls = ({
               ? () =>
                   editItemStat.mutate({
                     itemId: vehicleId,
-                    stat: 'currentHull',
-                    value: -1,
+                    stats: { currentHull: -1 },
                   })
               : null
           }
@@ -296,8 +295,7 @@ export const VehicleControls = ({
               ? () =>
                   editItemStat.mutate({
                     itemId: vehicleId,
-                    stat: 'currentHull',
-                    value: stats.hull - stats.currentHull,
+                    stats: { currentHull: stats.hull - stats.currentHull },
                   })
               : null
           }
@@ -312,8 +310,7 @@ export const VehicleControls = ({
               ? () =>
                   editItemStat.mutate({
                     itemId: vehicleId,
-                    stat: 'currentCargo',
-                    value: -1,
+                    stats: { currentCargo: -1 },
                   })
               : null
           }
@@ -328,8 +325,7 @@ export const VehicleControls = ({
               ? () =>
                   editItemStat.mutate({
                     itemId: vehicleId,
-                    stat: 'currentCargo',
-                    value: 1,
+                    stats: { currentCargo: 1 },
                   })
               : null
           }
@@ -344,8 +340,7 @@ export const VehicleControls = ({
               ? () =>
                   editItemStat.mutate({
                     itemId: vehicleId,
-                    stat: 'currentPass',
-                    value: -1,
+                    stats: { currentPass: -1 },
                   })
               : null
           }
@@ -360,8 +355,7 @@ export const VehicleControls = ({
               ? () =>
                   editItemStat.mutate({
                     itemId: vehicleId,
-                    stat: 'currentPass',
-                    value: 1,
+                    stats: { currentPass: 1 },
                   })
               : null
           }
@@ -395,8 +389,7 @@ export const DroneControls = ({
               ? () =>
                   editItemStat.mutate({
                     itemId: droneId,
-                    stat: 'currentHull',
-                    value: -1,
+                    stats: { currentHull: -1 },
                   })
               : null
           }
@@ -411,8 +404,7 @@ export const DroneControls = ({
               ? () =>
                   editItemStat.mutate({
                     itemId: droneId,
-                    stat: 'currentHull',
-                    value: stats.hull - stats.currentHull,
+                    stats: { currentHull: stats.hull - stats.currentHull },
                   })
               : null
           }
@@ -427,8 +419,7 @@ export const DroneControls = ({
               ? () =>
                   editItemStat.mutate({
                     itemId: droneId,
-                    stat: 'currentPower',
-                    value: -1,
+                    stats: { currentPower: -1 },
                   })
               : null
           }
@@ -443,11 +434,12 @@ export const DroneControls = ({
               ? () =>
                   editItemStat.mutate({
                     itemId: droneId,
-                    stat: 'currentPower',
-                    value:
-                      stats.power - stats.currentPower < 3
-                        ? stats.power - stats.currentPower
-                        : 3,
+                    stats: {
+                      currentPower:
+                        stats.power - stats.currentPower < 3
+                          ? stats.power - stats.currentPower
+                          : 3,
+                    },
                   })
               : null
           }
@@ -481,8 +473,7 @@ export const ItemControls = ({
               ? () =>
                   editItemStat.mutate({
                     itemId: itemId,
-                    stat: 'currentPower',
-                    value: -1,
+                    stats: { currentPower: -1 },
                   })
               : null
           }
@@ -497,11 +488,12 @@ export const ItemControls = ({
               ? () =>
                   editItemStat.mutate({
                     itemId: itemId,
-                    stat: 'currentPower',
-                    value:
-                      stats.power - stats.currentPower < 3
-                        ? stats.power - stats.currentPower
-                        : 3,
+                    stats: {
+                      currentPower:
+                        stats.power - stats.currentPower < 3
+                          ? stats.power - stats.currentPower
+                          : 3,
+                    },
                   })
               : null
           }

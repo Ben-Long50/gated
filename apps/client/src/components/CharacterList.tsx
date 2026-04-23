@@ -16,7 +16,6 @@ import useCharacters from 'src/hooks/useCharacters';
 import InputField from './InputField';
 import Icon from '@mdi/react';
 import { mdiSync } from '@mdi/js';
-import { Campaign } from 'src/types/campaign';
 import { useSearchParams, useParams } from 'react-router-dom';
 
 const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {

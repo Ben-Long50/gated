@@ -66,18 +66,12 @@ const CharacterForm = () => {
       <ArrowHeader2 title="Character Information" />
       <characterForm.Field
         name="playerCharacter"
-        validators={{
-          onSubmit: ({ value }) =>
-            typeof value !== 'boolean'
-              ? 'You must choose whether this character is a playable character'
-              : undefined,
-        }}
         listeners={{
           onChange: ({ value }) => {
             if (value) {
               characterForm.setFieldValue('npcTypes', null);
             } else if (!value) {
-              characterForm.setFieldValue('npcTypes', ['']);
+              characterForm.setFieldValue('npcTypes', []);
             }
           },
         }}
@@ -117,6 +111,9 @@ const CharacterForm = () => {
             field={field}
             label="Campaign"
             options={campaigns}
+            onChange={(campaign) => {
+              field.handleChange(campaign.id);
+            }}
           />
         )}
       </characterForm.Field>
@@ -129,15 +126,7 @@ const CharacterForm = () => {
           sizeInfo={{ aspectRatio: '1/1', maxHeight: '', minHeight: '' }}
         />
         <div className="flex w-full flex-col gap-8 max-sm:col-span-2">
-          <characterForm.Field
-            name="firstName"
-            validators={{
-              onChange: ({ value }) =>
-                value.length < 2
-                  ? 'First name must be at least 2 characters long'
-                  : undefined,
-            }}
-          >
+          <characterForm.Field name="firstName">
             {(field) => <InputField label="First name" field={field} />}
           </characterForm.Field>
           <characterForm.Field name="lastName">
@@ -236,19 +225,7 @@ const CharacterForm = () => {
                 <EquipIcon className="text-secondary size-8" />
               </StatBar>
               <div className="col-span-4 flex w-full items-center gap-8">
-                <characterForm.Field
-                  name="stats.permanentInjuries"
-                  validators={{
-                    onChange: ({ value }) => {
-                      if (value > 5) {
-                        return 'Cannot exceed 5 injuries';
-                      } else if (value < 0) {
-                        return 'Injuries cannot be lower than 0';
-                      }
-                      return undefined;
-                    },
-                  }}
-                >
+                <characterForm.Field name="stats.permanentInjuries">
                   {(field) => (
                     <InputField
                       className="w-full"
@@ -258,19 +235,7 @@ const CharacterForm = () => {
                     />
                   )}
                 </characterForm.Field>
-                <characterForm.Field
-                  name="stats.permanentInsanities"
-                  validators={{
-                    onChange: ({ value }) => {
-                      if (value > 5) {
-                        return 'Cannot exceed 5 insanities';
-                      } else if (value < 0) {
-                        return 'Insanities cannot be lower than 0';
-                      }
-                      return undefined;
-                    },
-                  }}
-                >
+                <characterForm.Field name="stats.permanentInsanities">
                   {(field) => (
                     <InputField
                       className="w-full"
@@ -343,22 +308,7 @@ const CharacterForm = () => {
 
       <Divider />
       <ArrowHeader2 title="Attributes and skills" />
-      <div className="flex w-full flex-col gap-3 border-l-2 border-gray-400 border-opacity-50 pl-4">
-        <p className="text-secondary">
-          Click the squares next to the attributes and skills below to allocate
-          points. A new character starts with 6 attribute and 10 skill points to
-          distribute. Stat bonuses are awarded for allocating to the following
-          skills (changes to these values are reflected in the "Character
-          Information" section above):
-        </p>
-        <ul className="text-tertiary flex flex-col gap-1">
-          <li className="text-secondary">Chromebits — 2 point of Cyber</li>
-          <li className="text-secondary">Mysticism — 2 point of Sanity</li>
-          <li className="text-secondary">Assault — 1 point of Speed</li>
-          <li className="text-secondary">
-            Threshold — 2 point of Health and 2 point of Equip
-          </li>
-        </ul>
+      <div className="flex w-full flex-col gap-4 border-l-2 border-gray-400 border-opacity-50 pl-4">
         <characterForm.Subscribe
           selector={(state) => [
             state.values.attributes,
@@ -385,15 +335,13 @@ const CharacterForm = () => {
               <>
                 <p className="flex justify-between">
                   <span className="text-tertiary">
-                    Unallocated attribute points
+                    Starting Attribute Points
                   </span>
-                  <span className="text-xl">{6 - attributePoints}</span>
+                  <span className="text-xl">{attributePoints} / 6</span>
                 </p>
                 <p className="flex justify-between">
-                  <span className="text-tertiary">
-                    Unallocated skill points
-                  </span>
-                  <span className="text-xl">{10 - skillPoints}</span>
+                  <span className="text-tertiary">Starting Skill Points</span>
+                  <span className="text-xl">{skillPoints} / 12</span>
                 </p>
               </>
             );

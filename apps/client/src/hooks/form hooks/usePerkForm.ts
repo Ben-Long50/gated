@@ -11,11 +11,11 @@ const usePerkForm = (
 
   const perkForm = useForm({
     defaultValues: {
-      id: perk?.id || null,
-      name: perk?.name || '',
-      description: perk?.description || '',
-      modifiers: perk?.modifiers || {},
-      attributes: perk?.attributes || emptyAttributeTree,
+      id: perk?.id ?? null,
+      name: perk?.name ?? '',
+      description: perk?.description ?? '',
+      modifiers: perk?.modifiers ?? {},
+      attributes: perk?.attributes ?? emptyAttributeTree,
     },
     onSubmit: async ({ value }) => {
       await mutation.mutate(value);

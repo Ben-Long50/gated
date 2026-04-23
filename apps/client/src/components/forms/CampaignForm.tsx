@@ -1,13 +1,9 @@
-import { useState } from 'react';
 import InputField from '../InputField';
 import Loading from '../Loading';
 import FormLayout from '../../layouts/FormLayout';
-import InputFieldBasic from '../InputFieldBasic';
 import { User } from 'src/types/user';
-import { useParams } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import LexicalEditor from '../lexical/LexicalEditor';
-import useUsersQuery from '../../hooks/useUsersQuery/useUsersQuery';
-import ItemCardSmall from '../ItemCardSmall';
 import useCreateCampaignMutation from '../../hooks/useCreateCampaignMutation/useCreateCampaignMutation';
 import ArrowHeader2 from '../ArrowHeader2';
 import AffiliationBar from '../AffiliationBar';
@@ -18,26 +14,40 @@ import PictureField from '../formFields/PictureField';
 import AccountPicture from '../AccountPicture';
 import InputSelectField from '../InputSelectField';
 import useCampaignForm from 'src/hooks/form hooks/useCampaignForm';
+import useUserQueries from 'src/hooks/user hooks/useUserQueries';
+import { useStore } from '@tanstack/react-form';
+import BtnAuth from '../buttons/BtnAuth';
+import ArrowHeader4 from '../ArrowHeader4';
 
 const CampaignForm = () => {
   const { campaignId } = useParams();
-  const [nameQuery, setNameQuery] = useState('');
+  const navigate = useNavigate();
+  const location = useLocation();
+  const parts = location.pathname.split('/');
 
-  const createCampaign = useCreateCampaignMutation(Number(campaignId));
+  const createCampaign = useCreateCampaignMutation();
 
   const deleteCampaign = useDeleteCampaignMutation(Number(campaignId));
 
   const { data: campaign, isLoading } = useCampaignQuery(Number(campaignId));
 
-  const {
-    data: users,
-    isLoading: usersLoading,
-    isPending: usersPending,
-  } = useUsersQuery(nameQuery);
-
   const campaignForm = useCampaignForm(createCampaign, campaign);
 
-  if (isLoading) return <Loading />;
+  const playerIds = useStore(
+    campaignForm.store,
+    (state) => state.values.playerIds,
+  );
+  const pendingPlayerIds = useStore(
+    campaignForm.store,
+    (state) => state.values.pendingPlayerIds,
+  );
+
+  const { data: players } = useUserQueries(playerIds);
+  const { data: pendingPlayers } = useUserQueries(pendingPlayerIds);
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <FormLayout
@@ -48,30 +58,14 @@ const CampaignForm = () => {
       deleteMutation={deleteCampaign}
     >
       <ArrowHeader2 title="Campaign Information" />
-      <campaignForm.Field
-        name="name"
-        validators={{
-          onChange: ({ value }) =>
-            value.length < 2
-              ? 'Campaign name must be at least 2 characters long'
-              : undefined,
-        }}
-      >
+      <campaignForm.Field name="name">
         {(field) => (
           <InputField className="grow" label="Campaign name" field={field} />
         )}
       </campaignForm.Field>
-      <campaignForm.Field
-        name="location"
-        validators={{
-          onChange: ({ value }) =>
-            value.length < 2
-              ? 'Campaign location name must be at least 2 characters long'
-              : undefined,
-        }}
-      >
+      <campaignForm.Field name="location">
         {(field) => (
-          <InputField label="Campaign location (city name)" field={field} />
+          <InputField label="Campaign location (City Name)" field={field} />
         )}
       </campaignForm.Field>
       <PictureField
@@ -90,13 +84,7 @@ const CampaignForm = () => {
             {field.state.value.map((_, i: number) => {
               return (
                 <div className="flex w-full flex-col gap-4" key={i}>
-                  <campaignForm.Field
-                    name={`factions[${i}].factionType`}
-                    validators={{
-                      onSubmit: ({ value }) =>
-                        !value ? 'Select a faction type' : undefined,
-                    }}
-                  >
+                  <campaignForm.Field name={`factions[${i}].factionType`}>
                     {(subfield) => (
                       <InputSelectField
                         className="w-full"
@@ -111,15 +99,7 @@ const CampaignForm = () => {
                       />
                     )}
                   </campaignForm.Field>
-                  <campaignForm.Field
-                    name={`factions[${i}].name`}
-                    validators={{
-                      onSubmit: ({ value }) =>
-                        !value
-                          ? 'Create a unique name for this faction'
-                          : undefined,
-                    }}
-                  >
+                  <campaignForm.Field name={`factions[${i}].name`}>
                     {(subfield) => (
                       <InputField field={subfield} label="Faction name" />
                     )}
@@ -132,24 +112,14 @@ const CampaignForm = () => {
       </campaignForm.Field>
       {!campaignId && (
         <>
-          <Divider />
-          <ArrowHeader2 title="Starting Faction Affiliation" />
+          <p>Starting Faction Affiliation</p>
           <campaignForm.Field name="affiliation">
             {(field) => <AffiliationBar field={field} />}
           </campaignForm.Field>
-
           <div className="flex flex-col gap-8">
             <Divider />
             <ArrowHeader2 title="Session 0 Briefing" />
-            <campaignForm.Field
-              name="briefing"
-              validators={{
-                onChange: ({ value }) =>
-                  value.html.length < 20
-                    ? 'Section content has not met the minimum length requirement'
-                    : undefined,
-              }}
-            >
+            <campaignForm.Field name="briefing">
               {(field) => (
                 <>
                   <LexicalEditor field={field} />
@@ -169,169 +139,46 @@ const CampaignForm = () => {
           </div>
         </>
       )}
-      <div className="flex flex-col gap-8">
-        <Divider />
-        <ArrowHeader2 title="Invite Players" />
-        <InputFieldBasic
-          label="Search users"
-          onChange={(value: string) => {
-            setNameQuery(value);
-          }}
-        />
-        <campaignForm.Subscribe
-          selector={(state) => [
-            state.values.players,
-            state.values.pendingPlayers,
-          ]}
-        >
-          {([players, pendingPlayers]) => {
-            if ([...players, ...pendingPlayers].length > 0) {
-              return <ArrowHeader2 title="Selected Players" />;
-            }
-            return null;
-          }}
-        </campaignForm.Subscribe>
+      <Divider />
+      <ArrowHeader2 title="Selected Players" />
+      {[...playerIds, ...pendingPlayerIds].length > 0 && (
         <div className="flex flex-col gap-4">
-          <campaignForm.Field name="players">
-            {(field) => {
-              const playerArray = field.state.value;
-
-              return (
-                <>
-                  {playerArray.map((user: User) => (
-                    <div className="flex items-center gap-4" key={user.id}>
-                      <ItemCardSmall
-                        heading={
-                          <div className="flex w-full items-center justify-between">
-                            <div className="flex items-center gap-8">
-                              <AccountPicture
-                                className="opacity-50"
-                                user={user}
-                              />
-                              <h3>{user.username}</h3>
-                            </div>
-                          </div>
-                        }
-                      />
-                      <input
-                        className="size-8"
-                        type="checkbox"
-                        checked={true}
-                        onChange={() => {
-                          field.handleChange((prev: User[]) => {
-                            if (
-                              prev.some((player: User) => player.id === user.id)
-                            ) {
-                              return prev.filter(
-                                (player: User) => player.id !== user.id,
-                              );
-                            } else {
-                              return [...prev, user];
-                            }
-                          });
-                        }}
-                      />
-                    </div>
-                  ))}
-                </>
-              );
-            }}
-          </campaignForm.Field>
-          <campaignForm.Field name="pendingPlayers">
-            {(field) => {
-              const playerArray = field.state.value;
-
-              return (
-                <>
-                  {playerArray.map((user: User) => (
-                    <div className="flex items-center gap-4" key={user.id}>
-                      <ItemCardSmall
-                        heading={
-                          <div className="flex w-full items-center justify-between">
-                            <div className="flex items-center gap-8">
-                              <AccountPicture
-                                className="opacity-50"
-                                user={user}
-                              />
-                              <h3>{user.username}</h3>
-                              <p className="text-tertiary">(Pending)</p>
-                            </div>
-                          </div>
-                        }
-                      />
-                      <input
-                        className="size-8"
-                        type="checkbox"
-                        checked={true}
-                        onChange={() => {
-                          field.handleChange((prev: User[]) => {
-                            if (
-                              prev.some((player: User) => player.id === user.id)
-                            ) {
-                              return prev.filter(
-                                (player: User) => player.id !== user.id,
-                              );
-                            } else {
-                              return [...prev, user];
-                            }
-                          });
-                        }}
-                      />
-                    </div>
-                  ))}
-                  {field.state.value.length > 0 && <Divider />}
-                  {usersLoading || usersPending ? (
-                    <Loading />
-                  ) : (
-                    users?.map((user: User) => {
-                      const status = playerArray.some(
-                        (player: User) => player.id === user.id,
-                      );
-                      return (
-                        <div className="flex items-center gap-4" key={user.id}>
-                          <ItemCardSmall
-                            heading={
-                              <div className="flex w-full items-center justify-between">
-                                <div className="flex items-center gap-8">
-                                  <AccountPicture
-                                    className="opacity-50"
-                                    user={user}
-                                  />
-                                  <h3>{user.username}</h3>
-                                </div>
-                              </div>
-                            }
-                          />
-                          <input
-                            className="size-8"
-                            type="checkbox"
-                            checked={status}
-                            onChange={() => {
-                              field.handleChange((prev: User[]) => {
-                                if (
-                                  prev.some(
-                                    (player: User) => player.id === user.id,
-                                  )
-                                ) {
-                                  return prev.filter(
-                                    (player: User) => player.id !== user.id,
-                                  );
-                                } else {
-                                  return [...prev, user];
-                                }
-                              });
-                            }}
-                          />
-                        </div>
-                      );
-                    })
-                  )}
-                </>
-              );
-            }}
-          </campaignForm.Field>
+          {players
+            .filter((p) => p != null)
+            .map((player: User) => (
+              <div className="flex w-full items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <AccountPicture user={player} />
+                  <ArrowHeader4
+                    className="text-primary"
+                    title={player.username}
+                  />
+                </div>
+                <p>Confirmed</p>
+              </div>
+            ))}
+          {pendingPlayers
+            .filter((p) => p != null)
+            .map((player: User) => (
+              <div className="flex w-full items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <AccountPicture user={player} />
+                  <ArrowHeader4
+                    className="text-primary"
+                    title={player.username}
+                  />
+                </div>
+                <p className="text-tertiary">Pending</p>
+              </div>
+            ))}
         </div>
-      </div>
+      )}
+      {parts.includes('managePlayers') && (
+        <Outlet context={{ form: campaignForm }} />
+      )}
+      <BtnAuth onClick={() => navigate('managePlayers')}>
+        Select Campaign Players
+      </BtnAuth>
     </FormLayout>
   );
 };

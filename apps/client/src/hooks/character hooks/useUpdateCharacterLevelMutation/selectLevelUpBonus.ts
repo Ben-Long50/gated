@@ -5,7 +5,7 @@ import { Perk } from 'src/types/perk';
 
 const selectLevelUpBonus = async (
   characterId: number,
-  bonus: { level: number; attributes?: AttributeTree; perks?: Perk[] },
+  bonus: { level: number; attributes?: AttributeTree; perkIds?: number[] },
 ) => {
   try {
     const response = await fetch(

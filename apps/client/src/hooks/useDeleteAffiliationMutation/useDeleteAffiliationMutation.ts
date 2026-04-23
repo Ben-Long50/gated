@@ -1,33 +1,20 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import deleteAction from './deleteAffiliation';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
-const useDeleteAffiliationMutation = (
-  affiliationId: number,
-  setFormMessage: (message: string) => void,
-  factionId?: number,
-  characterId?: number,
-) => {
-  const queryClient = useQueryClient();
+const useDeleteAffiliationMutation = (affiliationId: number) => {
   const navigate = useNavigate();
   return useMutation({
     mutationFn: () => {
       return deleteAction(affiliationId);
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      toast.success(data.message);
       navigate(-1);
-      queryClient.invalidateQueries({
-        queryKey: ['affiliation', affiliationId],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['faction', factionId],
-      });
-      return queryClient.invalidateQueries({
-        queryKey: ['character', characterId],
-      });
     },
-    onError: (error) => {
-      setFormMessage(error.message);
+    onError: (data) => {
+      toast.error(data.message);
     },
     throwOnError: false,
   });

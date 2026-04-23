@@ -8,25 +8,13 @@ const useCreateSessionMutation = (campaignId: number, sessionId?: number) => {
     mutationFn: (formData: FormData) => {
       return createSession(formData, campaignId);
     },
-    onSuccess: () => {
-      const message = sessionId
-        ? 'Session successfully updated'
-        : 'Session successfully created';
+    onSuccess: (data) => {
+      toast.success(data.message);
 
-      toast(message);
-
-      if (sessionId) {
-        queryClient.invalidateQueries({
-          queryKey: ['session', sessionId],
-        });
-      }
-
-      return queryClient.invalidateQueries({
-        queryKey: ['campaign', campaignId],
-      });
+      queryClient.setQueryData(['session', sessionId], data.session);
     },
     onError: (data) => {
-      toast(data.message);
+      toast.error(data.message);
     },
     throwOnError: false,
   });

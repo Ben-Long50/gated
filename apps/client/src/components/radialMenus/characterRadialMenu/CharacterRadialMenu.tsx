@@ -1,6 +1,6 @@
 import { Character } from 'src/types/character';
 import ConditionIcon from '../../icons/ConditionIcon';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import EquipmentIcon from '../../icons/EquipmentIcon';
 import CharacterIcon from '../../icons/CharacterIcon';
 import { useContext } from 'react';
@@ -9,7 +9,6 @@ import HangarIcon from '../../icons/HangarIcon';
 import ProfitsIcon from '../../icons/ProfitsIcon';
 import AffiliationIcon from '../../icons/AffiliationIcon';
 import ShopIcon from '../../icons/ShopIcon';
-import useModalStore from 'src/stores/modalStore';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
 import ProfitRadialMenu from './ProfitRadialMenu';
 import RadialMenu from '../RadialMenu';
@@ -24,7 +23,7 @@ const CharacterRadialMenu = ({
   containerRef: ReactNode;
 }) => {
   const { user } = useContext(AuthContext);
-  const { campaignId } = useParams();
+  const { campaignId, characterId } = useParams();
   const location = useLocation();
   const parts = location.pathname.split('/');
   const navigate = useNavigate();
@@ -39,33 +38,17 @@ const CharacterRadialMenu = ({
       )
     : null;
 
-  const setBackgroundPath = useModalStore((state) => state.setBackgroundPath);
-
   const setMenuOpen = useRadialMenuStore((state) => state.setMenuOpen);
   const setMenu = useRadialMenuStore((state) => state.setMenu);
   const menuType = useRadialMenuStore((state) => state.menuType);
 
   const path = (() => {
     if (parts.includes('characters')) {
-      return `${character.id}`;
+      return `${character.id}/menu`;
     } else {
-      return `characters/${character.id}`;
+      return `characters/${character.id}/menu`;
     }
   })();
-
-  const openConditionModal = () => {
-    setBackgroundPath(location.pathname);
-    navigate(`${path}/conditions`);
-  };
-
-  const openShopModal = () => {
-    setBackgroundPath(location.pathname);
-    if (character.npcTypes?.includes('shop') && character.userId !== user?.id) {
-      navigate(`characters/${userCharacter?.id}/shop/${character.id}/all`);
-    } else {
-      navigate(`${path}/shop/global/weapons`);
-    }
-  };
 
   const userPermissions =
     character?.userId === user?.id || character?.campaign?.ownerId === user?.id
@@ -75,8 +58,7 @@ const CharacterRadialMenu = ({
             element: (
               <div
                 onClick={() => {
-                  openConditionModal();
-                  setMenuOpen(false);
+                  navigate(`${path}/conditions`);
                 }}
               >
                 <ConditionIcon className="text-inherit" />
@@ -107,8 +89,16 @@ const CharacterRadialMenu = ({
             element: (
               <div
                 onClick={() => {
-                  openShopModal();
-                  setMenuOpen(false);
+                  if (
+                    character.npcTypes?.includes('shop') &&
+                    character.userId !== user?.id
+                  ) {
+                    navigate(
+                      `characters/${userCharacter?.id}/shop/${character.id}?category=all`,
+                    );
+                  } else {
+                    navigate(`${path}/shop/global?category=weapon`);
+                  }
                 }}
               >
                 <ShopIcon className="text-inherit" />
@@ -134,66 +124,71 @@ const CharacterRadialMenu = ({
     );
 
   return (
-    <RadialMenu
-      elementId={character.id}
-      containerRef={containerRef}
-      array={[
-        {
-          label: 'Character Sheet',
-          element: (
-            <div
-              onClick={() => {
-                navigate(`${path}`);
-                setMenuOpen(false);
-              }}
-            >
-              <CharacterIcon className="text-inherit" />
-            </div>
-          ),
-        },
-        {
-          label: 'Equipment',
-          element: (
-            <div
-              onClick={() => {
-                navigate(`${path}/equipment`);
-                setMenuOpen(false);
-              }}
-            >
-              <EquipmentIcon className="text-inherit" />
-            </div>
-          ),
-        },
-        {
-          label: 'Drones & Vehicles',
-          element: (
-            <div
-              onClick={() => {
-                navigate(`${path}/deployments`);
-                setMenuOpen(false);
-              }}
-            >
-              <HangarIcon className="text-inherit" />
-            </div>
-          ),
-        },
+    <>
+      {Number(characterId) === character.id && parts.includes('menu') && (
+        <Outlet context={{ parts }} />
+      )}
+      <RadialMenu
+        elementId={character.id}
+        containerRef={containerRef}
+        array={[
+          {
+            label: 'Character Sheet',
+            element: (
+              <div
+                onClick={() => {
+                  navigate(`${path}`);
+                  setMenuOpen(false);
+                }}
+              >
+                <CharacterIcon className="text-inherit" />
+              </div>
+            ),
+          },
+          {
+            label: 'Equipment',
+            element: (
+              <div
+                onClick={() => {
+                  navigate(`${path}/equipment`);
+                  setMenuOpen(false);
+                }}
+              >
+                <EquipmentIcon className="text-inherit" />
+              </div>
+            ),
+          },
+          {
+            label: 'Drones & Vehicles',
+            element: (
+              <div
+                onClick={() => {
+                  navigate(`${path}/deployments`);
+                  setMenuOpen(false);
+                }}
+              >
+                <HangarIcon className="text-inherit" />
+              </div>
+            ),
+          },
 
-        {
-          label: 'Affiliations',
-          element: (
-            <div
-              onClick={() => {
-                setMenu('affiliation', 'large', character.id);
-              }}
-            >
-              <AffiliationIcon className="text-inherit" />
-            </div>
-          ),
-        },
-        ...userPermissions,
-        ...shop,
-      ]}
-    />
+          {
+            label: 'Affiliations',
+            element: (
+              <div
+                onClick={() => {
+                  setMenu('affiliation', 'large', character.id);
+                }}
+              >
+                <AffiliationIcon className="text-inherit" />
+              </div>
+            ),
+          },
+          ...userPermissions,
+          ...shop,
+        ]}
+      />
+    </>
   );
 };
 

@@ -110,8 +110,7 @@ const SigninForm = () => {
         </div>
         <div className="grid grid-cols-2 gap-4">
           <BtnAuth
-            onClick={(e) => {
-              e.preventDefault();
+            onClick={() => {
               googleSignin();
             }}
           >
@@ -123,8 +122,7 @@ const SigninForm = () => {
             Google
           </BtnAuth>
           <BtnAuth
-            onClick={(e) => {
-              e.preventDefault();
+            onClick={() => {
               facebookSignin();
             }}
           >

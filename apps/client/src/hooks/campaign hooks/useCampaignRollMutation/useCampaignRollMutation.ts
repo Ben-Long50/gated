@@ -6,10 +6,10 @@ import { Action } from '@cloudinary/url-gen/internal/Action';
 const useRollActionMutation = (campaignId: number) => {
   return useMutation({
     mutationFn: (rollData: {
-      character: Character;
-      action: Action;
+      characterId: number;
+      actionId: number;
       modifiers: string[];
-      extraDice: number;
+      extraDice: number | null;
     }) => {
       return campaignRoll(campaignId, rollData);
     },

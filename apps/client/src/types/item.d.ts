@@ -17,7 +17,7 @@ interface Item {
   equipped: boolean;
   available: boolean;
   description: string;
-  stats: Stats;
+  stats: Record<string, number>;
   modifiedStats?: Stats;
   keywords: KeywordReference[];
   modifiedKeywords: KeywordReference[];
@@ -25,7 +25,10 @@ interface Item {
   itemLinkReference?: LinkReference;
   baseItemId: number | null;
   baseItem: Item | null;
-  characterInventory?: { character: { campaignId: number } };
+  characterInventory?: {
+    character: { campaignId: number };
+    characterId: number;
+  };
 }
 
 interface LinkReference {

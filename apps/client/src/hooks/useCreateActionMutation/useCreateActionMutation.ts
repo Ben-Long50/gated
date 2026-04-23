@@ -13,14 +13,14 @@ const useCreateActionMutation = (actionId?: number) => {
         ? 'Action successfully updated'
         : 'Action successfully created';
 
-      toast(message);
+      toast.success(data.message);
 
       return queryClient.invalidateQueries({
         queryKey: ['actions'],
       });
     },
     onError: (data) => {
-      toast(data.message);
+      toast.error(data.message);
     },
     throwOnError: false,
   });

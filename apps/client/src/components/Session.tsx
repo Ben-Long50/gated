@@ -1,25 +1,25 @@
 import { useContext } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import Loading from './Loading';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import useSessionQuery from '../hooks/useSessionQuery/useSessionQuery';
 import { format } from 'date-fns';
 import { Character } from 'src/types/character';
 import ArrowHeader3 from './ArrowHeader3';
 import Divider from './Divider';
 import useCampaignQuery from '../hooks/useCampaignQuery/useCampaignQuery';
-import BtnRect from './buttons/BtnRect';
 import { LayoutContext } from '../contexts/LayoutContext';
 import CoverPicture from './CoverPicture';
 import { capitalCase } from 'change-case';
 import CharacterPictureRound from './CharacterPictureRound';
-import BtnIcon from './buttons/BtnIcon';
 import NoteIcon from './icons/NoteIcon';
+import BtnAuth from './buttons/BtnAuth';
 
 const Session = () => {
   const { user } = useContext(AuthContext);
   const { mobile } = useContext(LayoutContext);
   const { campaignId, sessionId } = useParams();
+  const navigate = useNavigate();
 
   const {
     data: session,
@@ -27,6 +27,7 @@ const Session = () => {
     isPending: sessionPending,
     isError,
   } = useSessionQuery(Number(campaignId), Number(sessionId));
+  console.log(session);
 
   const {
     data: campaign,
@@ -118,11 +119,7 @@ const Session = () => {
           dangerouslySetInnerHTML={{ __html: session.briefing.html }}
         />
         {campaign && campaign.ownerId === user.id && (
-          <Link className="self-end" to={`update`}>
-            <button className="text-accent hover:underline">
-              Edit Session
-            </button>
-          </Link>
+          <BtnAuth onClick={() => navigate('update')}>Edit Session</BtnAuth>
         )}
       </div>
     </>

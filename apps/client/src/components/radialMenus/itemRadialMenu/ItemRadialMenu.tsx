@@ -6,7 +6,6 @@ import WeaponIcon from '../../icons/WeaponIcon';
 import Icon from '@mdi/react';
 import { mdiCardTextOutline } from '@mdi/js';
 import { AuthContext } from 'src/contexts/AuthContext';
-import useModalStore from 'src/stores/modalStore';
 import RadialMenu from '../RadialMenu';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
 
@@ -18,28 +17,11 @@ const ItemRadialMenu = ({
   containerRef: ReactNode;
 }) => {
   const { user } = useContext(AuthContext);
-  const [conditionModal, setConditionModal] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const parts = location.pathname.split('/');
 
-  const setBackgroundPath = useModalStore((state) => state.setBackgroundPath);
-
   const setMenuOpen = useRadialMenuStore((state) => state.setMenuOpen);
-
-  const openConditionModal = () => {
-    if (!conditionModal) {
-      setBackgroundPath(location.pathname);
-      if (parts?.includes('inventory')) {
-        navigate(`${item?.id}/conditions`);
-      } else {
-        navigate(`${item?.itemTypes[0]}s/${item?.id}/conditions`);
-      }
-    } else {
-      setBackgroundPath(null);
-    }
-    setConditionModal(!conditionModal);
-  };
 
   const detailsPath = (() => {
     if (parts.includes('equipment') || parts.includes('deployments')) {
@@ -64,12 +46,12 @@ const ItemRadialMenu = ({
             <div
               onClick={() => {
                 if (item.userId === user?.id) {
-                  openConditionModal();
+                  navigate(`${item?.id}/conditions`);
                   setMenuOpen(false);
                 }
               }}
             >
-              {parts.includes('conditions') && <Outlet />}
+              {parts.includes('conditions') && <Outlet context={{ parts }} />}
               <ConditionIcon className="size-8 text-inherit" />
             </div>
           ),

@@ -4,7 +4,6 @@ import Icon from '@mdi/react';
 import { mdiClose } from '@mdi/js';
 import ArrowHeader2 from '../ArrowHeader2';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import useModalStore from 'src/stores/modalStore';
 import useKeywords from 'src/hooks/useKeywords';
 import BtnAuth from '../buttons/BtnAuth';
 
@@ -21,17 +20,18 @@ const KeywordLinkField = ({
   const location = useLocation();
   const parts = location.pathname.split('/');
 
-  const setBackgroundPath = useModalStore((state) => state.setBackgroundPath);
-
-  const openKeywordLinkModal = () => {
-    setBackgroundPath(location.pathname);
-    navigate('traits');
-  };
-
   const { keywords: baseKeywords } = useKeywords();
 
   return (
     <>
+      <BtnAuth
+        className="w-full min-w-48"
+        onClick={() => {
+          navigate('traits');
+        }}
+      >
+        Link Traits
+      </BtnAuth>
       <form.Subscribe selector={(state: FormState) => state.values.keywords}>
         {(keywords: { keywordId: number; value?: number }[]) => (
           <>
@@ -42,7 +42,7 @@ const KeywordLinkField = ({
               {(field) => (
                 <>
                   {parts[parts.length - 1] === 'traits' && (
-                    <Outlet context={{ field }} />
+                    <Outlet context={{ field, parts }} />
                   )}
                   {keywords.length > 0 && (
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -121,17 +121,6 @@ const KeywordLinkField = ({
           </>
         )}
       </form.Subscribe>
-      <BtnAuth
-        className="w-full min-w-48"
-        ariaLabel="Open link trait modal"
-        type="button"
-        onClick={(e) => {
-          e.preventDefault();
-          openKeywordLinkModal();
-        }}
-      >
-        Link Traits
-      </BtnAuth>
     </>
   );
 };

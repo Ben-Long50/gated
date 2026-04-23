@@ -18,6 +18,7 @@ import ModificationIcon from '../icons/ModificationIcon';
 import DroneIcon from '../icons/DroneIcon';
 import PotionIcon from '../icons/PotionIcon';
 import PropertyIcon from '../icons/PropertyIcon';
+import AdminIcon from '../icons/AdminIcon';
 
 const CodexLinks = () => {
   const { user } = useContext(AuthContext);
@@ -57,12 +58,6 @@ const CodexLinks = () => {
           title="Consumable Weapons"
           path="codex/items?category=weapon&include=Consumable&include=Light Consumable&exclude=Vehicle Weapon&exclude=Drone Weapon"
         />
-        {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
-          <SubLinkSidebar
-            title="Create a New Weapon"
-            path="codex/items/create?category=weapon"
-          />
-        )}
       </LinkListSidebar>
       <LinkListSidebar
         icon={
@@ -83,12 +78,6 @@ const CodexLinks = () => {
           title="Cloak Armor"
           path="codex/items?category=armor&include=Cloak"
         />
-        {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
-          <SubLinkSidebar
-            title="Create New Armor"
-            path="codex/items/create?category=armor"
-          />
-        )}
       </LinkListSidebar>
       <LinkListSidebar
         icon={
@@ -104,12 +93,6 @@ const CodexLinks = () => {
           title="Mutations"
           path="codex/items?category=mutation"
         />
-        {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
-          <SubLinkSidebar
-            title="Create a New Augmentation"
-            path="codex/items/create?category=cybernetic"
-          />
-        )}
       </LinkListSidebar>
       <LinkListSidebar
         icon={
@@ -125,14 +108,6 @@ const CodexLinks = () => {
           title="Vehicle Weapons"
           path="codex/items/?category=weapon&include=Vehicle Weapon"
         />
-        {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
-          <>
-            <SubLinkSidebar
-              title="Create a New Vehicle"
-              path="codex/items/create?category=vehicle"
-            />
-          </>
-        )}
       </LinkListSidebar>
       <LinkListSidebar
         icon={
@@ -145,14 +120,6 @@ const CodexLinks = () => {
           title="Drone Weapons"
           path="codex/items/?category=weapon&include=Drone Weapon"
         />
-        {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
-          <>
-            <SubLinkSidebar
-              title="Create a New Drone"
-              path="codex/items/create?category=drone"
-            />
-          </>
-        )}
       </LinkListSidebar>
       <LinkListSidebar
         icon={
@@ -164,14 +131,6 @@ const CodexLinks = () => {
           title="All Modifications"
           path="codex/items?category=modifiaction"
         />
-        {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
-          <>
-            <SubLinkSidebar
-              title="Create a New Modification"
-              path="codex/items/create?category=modification"
-            />
-          </>
-        )}
       </LinkListSidebar>
       <LinkListSidebar
         icon={
@@ -183,14 +142,6 @@ const CodexLinks = () => {
           title="All Reusables"
           path="codex/items?category=reusable"
         />
-        {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
-          <>
-            <SubLinkSidebar
-              title="Create a New Reusable"
-              path="codex/items/create?category=reusable"
-            />
-          </>
-        )}
       </LinkListSidebar>
       <LinkListSidebar
         icon={
@@ -202,14 +153,6 @@ const CodexLinks = () => {
           title="All Consumables"
           path="codex/items?category=consumable"
         />
-        {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
-          <>
-            <SubLinkSidebar
-              title="Create a New Consumable"
-              path="codex/items/create?category=consumable"
-            />
-          </>
-        )}
       </LinkListSidebar>
       <LinkListSidebar
         icon={
@@ -218,14 +161,6 @@ const CodexLinks = () => {
         title="Properties"
       >
         <SubLinkSidebar title="All Properties" path="codex/properties" />
-        {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
-          <>
-            <SubLinkSidebar
-              title="Create a New Property"
-              path="codex/properties/create"
-            />
-          </>
-        )}
       </LinkListSidebar>
       <LinkListSidebar
         icon={
@@ -234,9 +169,6 @@ const CodexLinks = () => {
         title="Perks"
       >
         <SubLinkSidebar title="All Perks" path="codex/perks" />
-        {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
-          <SubLinkSidebar title="Create a New Perk" path="codex/perks/create" />
-        )}
       </LinkListSidebar>
       <LinkListSidebar
         icon={
@@ -245,12 +177,6 @@ const CodexLinks = () => {
         title="Traits"
       >
         <SubLinkSidebar title="All Traits" path="codex/keywords" />
-        {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
-          <SubLinkSidebar
-            title="Create a New Trait"
-            path="codex/keywords/create"
-          />
-        )}
       </LinkListSidebar>
       <LinkListSidebar
         icon={
@@ -259,12 +185,6 @@ const CodexLinks = () => {
         title="Actions"
       >
         <SubLinkSidebar title="All Actions" path="codex/actions" />
-        {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
-          <SubLinkSidebar
-            title="Create a New Action"
-            path="codex/actions/create"
-          />
-        )}
       </LinkListSidebar>
       <LinkListSidebar
         icon={
@@ -273,13 +193,37 @@ const CodexLinks = () => {
         title="Conditions"
       >
         <SubLinkSidebar title="All conditions" path="codex/conditions" />
-        {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
+      </LinkListSidebar>
+      {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
+        <LinkListSidebar
+          title="Admin Codex Tools"
+          icon={
+            <AdminIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+          }
+        >
           <SubLinkSidebar
-            title="Create a New Condition"
+            title="Create a New Base Item"
+            path="codex/items/create"
+          />
+          <SubLinkSidebar
+            title="Create a New Base Property"
+            path="codex/properties/create"
+          />
+          <SubLinkSidebar title="Create a New Perk" path="codex/perks/create" />
+          <SubLinkSidebar
+            title="Create a New Base Trait"
+            path="codex/keywords/create"
+          />
+          <SubLinkSidebar
+            title="Create a New Base Action"
+            path="codex/actions/create"
+          />
+          <SubLinkSidebar
+            title="Create a New Base Condition"
             path="codex/conditions/create"
           />
-        )}
-      </LinkListSidebar>
+        </LinkListSidebar>
+      )}
     </>
   );
 };

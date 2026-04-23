@@ -1,28 +1,20 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import createCampaign from './createCampaign';
-import { socket } from 'src/socket';
 import { toast } from 'react-toastify';
 
-const useCreateCampaignMutation = (campaignId?: number) => {
+const useCreateCampaignMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (formData: FormData) => {
       return createCampaign(formData);
     },
-    onSuccess: () => {
-      const message = campaignId
-        ? 'Campaign successfully updated'
-        : 'Campaign successfully created';
+    onSuccess: (data) => {
+      toast.success(data.message);
 
-      toast(message);
-
-      socket.emit('globalCampaign', campaignId);
-      return queryClient.invalidateQueries({
-        queryKey: ['campaign', campaignId],
-      });
+      queryClient.setQueryData(['campaign', data.campaign.id], data.campaign);
     },
     onError: (data) => {
-      toast(data.message);
+      toast.error(data.message);
     },
     throwOnError: false,
   });

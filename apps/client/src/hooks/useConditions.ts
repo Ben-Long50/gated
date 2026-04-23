@@ -1,6 +1,5 @@
-import { useContext, useState } from 'react';
-import { AuthContext } from '../contexts/AuthContext';
-import useConditionsQuery from './useConditionsQuery/useActionsQuery';
+import { useState } from 'react';
+import useConditionsQuery from './useConditionsQuery/useConditionsQuery';
 import { Condition } from 'src/types/condition';
 
 const useConditions = (conditionList?: Condition[]) => {
@@ -32,6 +31,7 @@ const useConditions = (conditionList?: Condition[]) => {
 
   const resetList = () => {
     setQuery('');
+    setCategory('');
   };
 
   return {

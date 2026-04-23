@@ -27,7 +27,7 @@ const ActionForm = () => {
   )[0];
 
   const createAction = useCreateActionMutation(Number(actionId));
-  const deleteAction = useDeleteActionMutation();
+  const deleteAction = useDeleteActionMutation(Number(actionId));
 
   const { emptyAttributeTree } = useAttributeTree();
 

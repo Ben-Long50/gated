@@ -5,14 +5,11 @@ import {
   mdiTrashCanOutline,
 } from '@mdi/js';
 import Icon from '@mdi/react';
-import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from 'src/contexts/AuthContext';
 import useCharacterConditionStacksMutation from 'src/hooks/item stat hooks/useCharacterConditionStacksMutation/useCharacterConditionStacksMutation';
 import useItemConditionStacksMutation from 'src/hooks/item stat hooks/useItemConditionStacksMutation/useItemConditionStacksMutation';
 import useDeleteCharacterConditionMutation from 'src/hooks/useDeleteCharacterConditionMutation/useDeleteCharacterConditionMutation';
 import useDeleteItemConditionMutation from 'src/hooks/useDeleteItemConditionMutation/useDeleteItemConditionMutation';
-import useModalStore from 'src/stores/modalStore';
 import { ConditionReference } from 'src/types/condition';
 import RadialMenu from './RadialMenu';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
@@ -26,14 +23,7 @@ const ConditionRadialMenu = ({
 }) => {
   const navigate = useNavigate();
 
-  const setBackgroundPath = useModalStore((state) => state.setBackgroundPath);
-
   const setMenuOpen = useRadialMenuStore((state) => state.setMenuOpen);
-
-  const openDescriptionModal = () => {
-    setBackgroundPath(location.pathname);
-    navigate(`conditions/${condition.id}`);
-  };
 
   const editItemConditionStacks = useItemConditionStacksMutation(
     condition?.id,
@@ -107,7 +97,7 @@ const ConditionRadialMenu = ({
           element: (
             <div
               onClick={() => {
-                openDescriptionModal();
+                navigate(`conditions/${condition.id}`);
                 setMenuOpen(false);
               }}
             >

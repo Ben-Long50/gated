@@ -32,34 +32,18 @@ const AttributeCard = ({
             <div key={index}>
               {mobile ? (
                 index < points ? (
-                  <Icon
-                    key={index}
-                    path={mdiCircle}
-                    size={0.7}
-                    color={accentPrimary}
-                  />
+                  <Icon path={mdiCircle} size={0.7} color={accentPrimary} />
                 ) : (
                   <Icon
-                    key={index}
                     path={mdiCircleOutline}
                     size={0.7}
                     color={accentPrimary}
                   />
                 )
               ) : index < points ? (
-                <Icon
-                  key={index}
-                  path={mdiSquare}
-                  size={1}
-                  color={accentPrimary}
-                />
+                <Icon path={mdiSquare} size={1} color={accentPrimary} />
               ) : (
-                <Icon
-                  key={index}
-                  path={mdiSquareOutline}
-                  size={1}
-                  color={accentPrimary}
-                />
+                <Icon path={mdiSquareOutline} size={1} color={accentPrimary} />
               )}
             </div>
           ))}
@@ -80,14 +64,12 @@ const AttributeCard = ({
                     {mobile ? (
                       index < points ? (
                         <Icon
-                          key={index}
                           className="text-primary"
                           path={mdiCircle}
                           size={0.7}
                         />
                       ) : (
                         <Icon
-                          key={index}
                           className="text-tertiary"
                           path={mdiCircleOutline}
                           size={0.7}
@@ -95,14 +77,12 @@ const AttributeCard = ({
                       )
                     ) : index < points ? (
                       <Icon
-                        key={index}
                         path={mdiSquare}
                         size={1}
                         className="text-primary"
                       />
                     ) : (
                       <Icon
-                        key={index}
                         path={mdiSquareOutline}
                         size={1}
                         className="text-tertiary"

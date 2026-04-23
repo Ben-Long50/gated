@@ -8,11 +8,11 @@ const useKeywordForm = (
 ) => {
   const keywordForm = useForm({
     defaultValues: {
-      id: keyword?.id || null,
-      name: keyword?.name || '',
-      description: keyword?.description || '',
-      keywordType: keyword?.keywordType || '',
-      gpCost: keyword?.gpCost || null,
+      id: keyword?.id ?? null,
+      name: keyword?.name ?? '',
+      description: keyword?.description ?? '',
+      keywordType: keyword?.keywordType ?? '',
+      gpCost: keyword?.gpCost ?? null,
     },
     onSubmit: async ({ value }) => {
       await mutation.mutate(value);

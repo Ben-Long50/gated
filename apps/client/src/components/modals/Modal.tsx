@@ -2,32 +2,33 @@ import RootPortal from '../../layouts/RootPortal';
 import { ReactNode, useEffect } from 'react';
 import BtnIcon from '../buttons/BtnIcon';
 import { mdiClose } from '@mdi/js';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import useModalStore from 'src/stores/modalStore';
 import Divider from '../Divider';
+import useRouteHistoryStore from 'src/stores/routeHistoryStore';
 
 const Modal = ({
   children,
   button,
   errors,
   className,
-  path,
 }: {
   children: ReactNode;
   button?: ReactNode;
   errors?: ReactNode;
   className?: string;
-  path?: string;
 }) => {
   const navigate = useNavigate();
   const backgroundPath = useModalStore((state) => state.backgroundPath);
 
+  const getLastRoute = useRouteHistoryStore((state) => state.getLastRoute);
+
   const setBackgroundPath = useModalStore((state) => state.setBackgroundPath);
 
   useEffect(() => {
-    if (path) {
-      setBackgroundPath(path);
-    }
+    const lastRoute = getLastRoute();
+
+    setBackgroundPath(lastRoute);
 
     document.documentElement.classList.add('no-scroll');
 
@@ -50,11 +51,8 @@ const Modal = ({
           <BtnIcon
             active={true}
             onClick={() => {
-              if (!backgroundPath) {
-                navigate(-1);
-              } else {
+              if (backgroundPath) {
                 navigate(backgroundPath, { replace: true });
-                navigate(-1);
               }
             }}
             path={mdiClose}

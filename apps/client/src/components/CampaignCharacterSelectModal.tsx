@@ -1,0 +1,116 @@
+import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
+import BtnRect from './buttons/BtnRect';
+import Modal from './modals/Modal';
+import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
+import useCharacters from 'src/hooks/useCharacters';
+import Loading from './Loading';
+import InputFieldBasic from './InputFieldBasic';
+import { Character } from 'src/types/character';
+import CharacterCardSmall from './CharacterCardSmall';
+import { Fragment } from 'react/jsx-runtime';
+import Divider from './Divider';
+
+const CampaignCharacterSelectModal = () => {
+  const { campaignId, gangId } = useParams();
+  const navigate = useNavigate();
+
+  const { form } = useOutletContext();
+
+  const { data: campaign } = useCampaignQuery(Number(campaignId));
+
+  const {
+    characters,
+    filterByQuery,
+    isLoading: charactersLoading,
+  } = useCharacters(
+    campaign?.characters.map((character) => character.id) || [],
+  );
+
+  if (charactersLoading) return <Loading />;
+
+  return (
+    <Modal
+      button={
+        <BtnRect
+          ariaLabel="Select characters"
+          onClick={gangId ? () => form.handleSubmit() : () => navigate('..')}
+        >
+          Confirm Selection
+        </BtnRect>
+      }
+    >
+      <h1>Select Gang Characters</h1>
+      <InputFieldBasic
+        className="w-full"
+        label="Search Characters"
+        type="string"
+        onChange={(value) => filterByQuery(value)}
+      />
+      <div className="grid w-full grid-cols-[8fr_1fr_1fr] items-center gap-x-4 sm:gap-x-8">
+        <h4>Character</h4>
+        <h4 className="justify-self-center">Leader</h4>
+        <h4 className="justify-self-center">Member</h4>
+        <Divider className="col-span-3 opacity-50" />
+        {characters
+          .filter((character) => character != null)
+          .map((character: Character) => (
+            <Fragment key={character.id}>
+              <CharacterCardSmall
+                className="mb-4 grow sm:mb-8"
+                characterList={true}
+                characterId={character.id}
+                expanding={false}
+                active={false}
+              />
+              <form.Field name="leaderIds">
+                {(field) => (
+                  <input
+                    className="size-6 justify-self-center"
+                    type="checkbox"
+                    checked={field.state.value.some(
+                      (id: number) => character.id === id,
+                    )}
+                    onChange={() => {
+                      field.handleChange((prev: number[]) => {
+                        if (prev.some((id: number) => character.id === id)) {
+                          return prev.filter(
+                            (id: number) => character.id !== id,
+                          );
+                        } else {
+                          return [...prev, character.id];
+                        }
+                      });
+                    }}
+                  />
+                )}
+              </form.Field>
+              <form.Field name="characterIds">
+                {(field) => (
+                  <input
+                    className="size-6 justify-self-center"
+                    type="checkbox"
+                    checked={field.state.value.some(
+                      (id: number) => character.id === id,
+                    )}
+                    onChange={() => {
+                      field.handleChange((prev: number[]) => {
+                        if (prev.some((id: number) => character.id === id)) {
+                          return prev.filter(
+                            (id: number) => character.id !== id,
+                          );
+                        } else {
+                          return [...prev, character.id];
+                        }
+                      });
+                    }}
+                  />
+                )}
+              </form.Field>
+            </Fragment>
+          ))}
+      </div>
+    </Modal>
+  );
+};
+
+export default CampaignCharacterSelectModal;

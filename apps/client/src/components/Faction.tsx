@@ -2,7 +2,6 @@ import { useContext, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import Loading from './Loading';
-import useFactionQuery from '../hooks/useFactionQuery/useFactionQuery';
 import ArrowHeader2 from './ArrowHeader2';
 import BtnRect from './buttons/BtnRect';
 import Divider from './Divider';
@@ -11,7 +10,7 @@ import BtnAuth from './buttons/BtnAuth';
 import AffiliationCard from './AffiliationCard';
 import CoverPicture from './CoverPicture';
 import useAffiliationQueries from 'src/hooks/useAffiliationQueries/useAffiliationQueries';
-import Campaign from './Campaign';
+import useFactionQuery from 'src/hooks/faction hooks/useFactionQuery';
 
 const Faction = () => {
   const { user } = useContext(AuthContext);
@@ -49,16 +48,17 @@ const Faction = () => {
 
   return (
     <>
-      {faction.picture?.imageUrl && <CoverPicture picture={faction.picture} />}
+      {faction?.picture?.imageUrl && (
+        <CoverPicture picture={faction?.picture} />
+      )}
       <div className="flex w-full max-w-5xl flex-col gap-8">
         <div className="timing flex w-full items-center justify-between">
           <h1 className="w-full text-center font-zen text-4xl md:text-5xl">
-            {faction.name}
+            {faction?.name}
           </h1>
         </div>
         <div className="grid grid-cols-2 gap-4 self-start">
           <BtnAuth
-            className="px-8"
             onClick={() => {
               backgroundRef.current?.scrollIntoView({ behavior: 'smooth' });
             }}
@@ -66,7 +66,6 @@ const Faction = () => {
             Background
           </BtnAuth>
           <BtnAuth
-            className="px-8"
             onClick={() => {
               affiliationRef.current?.scrollIntoView({ behavior: 'smooth' });
             }}
@@ -75,13 +74,13 @@ const Faction = () => {
           </BtnAuth>
         </div>
         <Divider />
-        {faction.background?.html && (
+        {faction?.background?.html && (
           <>
             <div
               ref={backgroundRef}
               id="quill-display"
               className="ql-editor whitespace-pre-wrap"
-              dangerouslySetInnerHTML={{ __html: faction.background.html }}
+              dangerouslySetInnerHTML={{ __html: faction?.background.html }}
             />
             <Divider />
           </>
@@ -114,7 +113,7 @@ const Faction = () => {
             </>
           )}
         </div>
-        {user?.id === faction.campaign.ownerId && (
+        {user?.id === faction?.campaign.ownerId && (
           <Link className="w-full" to={`update`}>
             <BtnRect
               ariaLabel="Update faction information"

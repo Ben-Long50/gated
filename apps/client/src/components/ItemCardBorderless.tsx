@@ -154,7 +154,7 @@ const ItemCardBorderless = ({
                           condition={condition}
                         />
                         {Number(conditionId) === condition.id && (
-                          <Outlet context={{ condition }} />
+                          <Outlet context={{ condition, parts }} />
                         )}
                       </Fragment>
                     ))}
@@ -178,7 +178,7 @@ const ItemCardBorderless = ({
                         <Fragment key={keyword.id}>
                           <KeywordTag key={keyword.id} keyword={keyword} />
                           {Number(traitId) === keyword.id && (
-                            <Outlet context={{ keyword }} />
+                            <Outlet context={{ keyword, parts }} />
                           )}
                         </Fragment>
                       );

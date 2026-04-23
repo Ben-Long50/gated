@@ -13,14 +13,14 @@ const useCreateConditionMutation = (conditionId?: number) => {
         ? 'Condition successfully updated'
         : 'Condition successfully created';
 
-      toast(message);
+      toast.success(data.message);
 
       return queryClient.invalidateQueries({
         queryKey: ['conditions'],
       });
     },
     onError: (data) => {
-      toast(data.message);
+      toast.error(data.message);
     },
     throwOnError: false,
   });

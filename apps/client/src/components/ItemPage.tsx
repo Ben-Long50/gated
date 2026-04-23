@@ -47,8 +47,6 @@ const ItemPage = () => {
 
   const cardRef = useRef(null);
 
-  const setBackgroundPath = useModalStore((state) => state.setBackgroundPath);
-
   const { item, isLoading } = useItem(Number(itemId));
 
   const linkedWeapons =
@@ -105,7 +103,7 @@ const ItemPage = () => {
                 <Fragment key={condition.id}>
                   <ConditionTag key={condition.id} condition={condition} />
                   {Number(conditionId) === condition.id && (
-                    <Outlet context={{ condition }} />
+                    <Outlet context={{ condition, parts }} />
                   )}
                 </Fragment>
               ))}
@@ -309,7 +307,7 @@ const ItemPage = () => {
               </>
             )}
           </button>
-          {parts.includes('update') && <Outlet context={{ item }} />}
+          {parts.includes('update') && <Outlet context={{ item, parts }} />}
         </div>
       )}
 
@@ -325,11 +323,7 @@ const ItemPage = () => {
         </BtnRect>
       )}
       {(parts.includes('inventory') || parts.includes('equipment')) && (
-        <Link
-          className="w-full self-end"
-          to="upgrade"
-          onClick={() => setBackgroundPath(`${location.pathname}/upgrade`)}
-        >
+        <Link className="w-full self-end" to="upgrade">
           <BtnRect ariaLabel="Navigate to modify weapon form" type="button">
             {'Upgrade ' + item.name}
           </BtnRect>

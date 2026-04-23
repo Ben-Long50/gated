@@ -8,7 +8,6 @@ import BtnIcon from '../buttons/BtnIcon';
 import InputField from '../InputField';
 import { mdiSync } from '@mdi/js';
 import InputSelectField from '../InputSelectField';
-import Divider from '../Divider';
 import BtnRect from '../buttons/BtnRect';
 import ThemeContainer from '../ThemeContainer';
 import { ThemeContext } from 'src/contexts/ThemeContext';
@@ -22,7 +21,7 @@ const ModifierModal = () => {
 
   const backgroundPath = useModalStore((state) => state.backgroundPath);
 
-  const { form, field } = useOutletContext() || {};
+  const { form } = useOutletContext() || {};
 
   const characterStats = [
     'maxHealth',
@@ -90,7 +89,20 @@ const ModifierModal = () => {
   const stats = tab === 'character' ? characterStats : itemStats;
 
   return (
-    <Modal>
+    <Modal
+      button={
+        <BtnRect
+          ariaLabel="Close"
+          onClick={() => {
+            if (backgroundPath) {
+              navigate(backgroundPath, { replace: true });
+            }
+          }}
+        >
+          Close
+        </BtnRect>
+      }
+    >
       <h1>Stat Modifiers</h1>
       <div className="flex w-full flex-col">
         <div className="mb-8 grid w-full grid-cols-2 gap-4 sm:gap-8">
@@ -118,115 +130,102 @@ const ModifierModal = () => {
         >
           <div className="flex w-full flex-col gap-8 p-4 sm:p-8">
             <ArrowHeader2 title={capitalCase(tab) + ' Stats'} />
-            <div>
-              {stats.map((stat, index) => {
-                const checked = field.state.value[stat] !== undefined;
-                return (
-                  <>
-                    <div
-                      key={stat}
-                      className="flex w-full items-center justify-between gap-4"
-                    >
-                      <h3>{capitalCase(stat)}</h3>
-                      {checked && (
-                        <form.Field key={stat} name={`modifiers[${stat}]`}>
-                          {(subfield) =>
-                            inputType === 'number' ? (
-                              <div className="ml-auto flex items-center gap-4">
-                                <BtnIcon
-                                  active={true}
-                                  path={mdiSync}
-                                  onClick={() => {
-                                    setInputType('skill');
-                                    subfield.handleChange('chromebits');
-                                  }}
-                                />
-                                <InputField
-                                  className="max-w-80"
-                                  type="number"
-                                  label={`${capitalCase(stat)} Value`}
-                                  field={subfield}
-                                />
-                              </div>
-                            ) : (
-                              <div className="ml-auto flex items-center gap-4">
-                                <BtnIcon
-                                  active={true}
-                                  path={mdiSync}
-                                  onClick={() => {
-                                    setInputType('number');
-                                    subfield.handleChange(1);
-                                  }}
-                                />
-                                <InputSelectField
-                                  className="max-w-80"
-                                  label={`${capitalCase(stat)} Value`}
-                                  field={subfield}
-                                  options={[
-                                    'chromebits',
-                                    'hardwired',
-                                    'motorized',
-                                    'networked',
-                                    'gestalt',
-                                    'outerworld',
-                                    'mysticism',
-                                    'godhead',
-                                    'barter',
-                                    'rhetoric',
-                                    'erudition',
-                                    'treatment',
-                                    'assault',
-                                    'shooting',
-                                    'subterfuge',
-                                    'threshold',
-                                  ]}
-                                />
-                              </div>
-                            )
-                          }
-                        </form.Field>
-                      )}
-                      <input
-                        type="checkbox"
-                        checked={checked}
-                        className="size-7 shrink-0"
-                        onChange={() => {
-                          if (checked) {
-                            const { [stat]: _, ...rest } = field.state.value;
-                            field.handleChange(rest);
-                          } else {
-                            field.handleChange((prev) => ({
-                              ...prev,
-                              [stat]: 1,
-                            }));
-                          }
-                        }}
-                      />
-                    </div>
-                    {index < stats.length - 1 && <Divider />}
-                  </>
-                );
-              })}
-            </div>
+            <form.Field name="modifiers">
+              {(field) => (
+                <div className="flex flex-col gap-6">
+                  {stats.map((stat, index) => {
+                    const checked = field.state.value[stat] !== undefined;
+                    return (
+                      <>
+                        <div
+                          key={stat}
+                          className="flex w-full items-center justify-between gap-4"
+                        >
+                          <p>{capitalCase(stat)}</p>
+                          {checked && (
+                            <form.Field key={stat} name={`modifiers[${stat}]`}>
+                              {(subfield) =>
+                                inputType === 'number' ? (
+                                  <div className="ml-auto flex items-center gap-4">
+                                    <BtnIcon
+                                      active={true}
+                                      path={mdiSync}
+                                      onClick={() => {
+                                        setInputType('skill');
+                                        subfield.handleChange('chromebits');
+                                      }}
+                                    />
+                                    <InputField
+                                      className="max-w-80"
+                                      type="number"
+                                      label={`${capitalCase(stat)} Value`}
+                                      field={subfield}
+                                    />
+                                  </div>
+                                ) : (
+                                  <div className="ml-auto flex items-center gap-4">
+                                    <BtnIcon
+                                      active={true}
+                                      path={mdiSync}
+                                      onClick={() => {
+                                        setInputType('number');
+                                        subfield.handleChange(1);
+                                      }}
+                                    />
+                                    <InputSelectField
+                                      className="max-w-80"
+                                      label={`${capitalCase(stat)} Value`}
+                                      field={subfield}
+                                      options={[
+                                        'chromebits',
+                                        'hardwired',
+                                        'motorized',
+                                        'networked',
+                                        'gestalt',
+                                        'outerworld',
+                                        'mysticism',
+                                        'godhead',
+                                        'barter',
+                                        'rhetoric',
+                                        'erudition',
+                                        'treatment',
+                                        'assault',
+                                        'shooting',
+                                        'subterfuge',
+                                        'threshold',
+                                      ]}
+                                    />
+                                  </div>
+                                )
+                              }
+                            </form.Field>
+                          )}
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            className="size-7 shrink-0"
+                            onChange={() => {
+                              if (checked) {
+                                const { [stat]: _, ...rest } =
+                                  field.state.value;
+                                field.handleChange(rest);
+                              } else {
+                                field.handleChange((prev) => ({
+                                  ...prev,
+                                  [stat]: 1,
+                                }));
+                              }
+                            }}
+                          />
+                        </div>
+                      </>
+                    );
+                  })}
+                </div>
+              )}
+            </form.Field>
           </div>
         </ThemeContainer>
-        <BtnRect
-          ariaLabel="Close"
-          type="button"
-          className="mt-4"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (!backgroundPath) {
-              navigate('..', { replace: true });
-            } else {
-              navigate(backgroundPath, { replace: true });
-              navigate(-1);
-            }
-          }}
-        >
-          Close
-        </BtnRect>
       </div>
     </Modal>
   );

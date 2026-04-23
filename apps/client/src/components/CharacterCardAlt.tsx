@@ -15,7 +15,7 @@ import useCharacter from 'src/hooks/useCharacter';
 import Loading from './Loading';
 import { capitalCase } from 'change-case';
 import ConditionTag from './ConditionTag';
-import { Outlet, useParams } from 'react-router-dom';
+import { Outlet, useLocation, useParams } from 'react-router-dom';
 import { useInView } from 'react-intersection-observer';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
 import CharacterRadialMenu from './radialMenus/characterRadialMenu/CharacterRadialMenu';
@@ -33,6 +33,8 @@ const CharacterCardAlt = ({ characterId }: { characterId: number }) => {
   const { mobile } = useContext(LayoutContext);
   const { conditionId } = useParams();
   const [cardWidth, setCardWidth] = useState(0);
+  const location = useLocation();
+  const parts = location.pathname.split('/');
 
   const { filteredCharacter: character, isLoading } = useCharacter(characterId);
 
@@ -160,7 +162,7 @@ const CharacterCardAlt = ({ characterId }: { characterId: number }) => {
                           condition={condition}
                         />
                         {Number(conditionId) === condition.id && (
-                          <Outlet context={{ condition }} />
+                          <Outlet context={{ condition, parts }} />
                         )}
                       </Fragment>
                     ))}

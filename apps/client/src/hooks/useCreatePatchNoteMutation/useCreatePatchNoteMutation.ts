@@ -13,7 +13,7 @@ const useCreatePatchNoteMutation = (patchNoteId?: number) => {
         ? 'Patch note successfully updated'
         : 'Patch note successfully created';
 
-      toast(message);
+      toast.success(data.message);
 
       return queryClient.invalidateQueries({
         queryKey: ['patchNotes'],
@@ -21,7 +21,7 @@ const useCreatePatchNoteMutation = (patchNoteId?: number) => {
       });
     },
     onError: (data) => {
-      toast(data.message);
+      toast.error(data.message);
     },
     throwOnError: false,
   });

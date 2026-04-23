@@ -1,17 +1,14 @@
 import { mdiCartPlus } from '@mdi/js';
-import { useContext } from 'react';
-import { AuthContext } from '../contexts/AuthContext';
 import useEditCartMutation from '../hooks/useEditCartMutation/useEditCartMutation';
 import BtnIcon from './buttons/BtnIcon';
-import { Character } from 'src/types/character';
+import { useParams } from 'react-router-dom';
+import useCharacterQuery from 'src/hooks/useCharacterQuery/useCharacterQuery';
 
-const CartButton = ({
-  character,
-  itemId,
-}: {
-  character: Character;
-  itemId: number;
-}) => {
+const CartButton = ({ itemId }: { itemId: number }) => {
+  const { characterId } = useParams();
+
+  const { data: character } = useCharacterQuery(Number(characterId));
+
   const editCart = useEditCartMutation(
     character?.id,
     character?.characterCart?.id,
@@ -20,7 +17,7 @@ const CartButton = ({
   return (
     <BtnIcon
       path={mdiCartPlus}
-      active={character ? true : false}
+      active={!!characterId}
       onClick={() => {
         editCart.mutate({
           itemId,

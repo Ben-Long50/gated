@@ -13,7 +13,7 @@ const useCreateKeywordMutation = (keywordId?: number) => {
         ? 'Keyword successfully updated'
         : 'Keyword successfully created';
 
-      toast(message);
+      toast.success(data.message);
 
       return queryClient.invalidateQueries({
         queryKey: ['keywords'],
@@ -21,7 +21,7 @@ const useCreateKeywordMutation = (keywordId?: number) => {
       });
     },
     onError: (data) => {
-      toast(data.message);
+      toast.error(data.message);
     },
     throwOnError: false,
   });

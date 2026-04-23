@@ -1,6 +1,7 @@
 import { create, keyResolver, windowScheduler } from '@yornaath/batshit';
 import handleResponse from '../handleResponse';
 import apiUrl from 'src/utils/configureUrl';
+import { Affiliation } from 'src/types/faction';
 
 const getAffiliation = create({
   fetcher: async (affiliationIds: number[]) => {
@@ -11,7 +12,7 @@ const getAffiliation = create({
         credentials: 'include',
       },
     );
-    const data = await handleResponse(response);
+    const data: Affiliation[] = await handleResponse(response);
 
     return data;
   },

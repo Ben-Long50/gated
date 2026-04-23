@@ -14,7 +14,7 @@ const BtnRect = ({
   ariaLabel: string;
   type?: 'submit' | 'reset' | 'button' | undefined;
   active?: boolean;
-  onClick?: (e: MouseEvent) => void;
+  onClick?: () => void;
   children: ReactNode;
 }) => {
   const [hover, setHover] = useState(false);
@@ -37,9 +37,10 @@ const BtnRect = ({
         onClick={
           onClick
             ? (e) => {
+                e.preventDefault();
                 e.stopPropagation();
                 if (active && onClick) {
-                  onClick(e);
+                  onClick();
                 }
               }
             : undefined

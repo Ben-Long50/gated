@@ -8,10 +8,10 @@ const useConditionForm = (
 ) => {
   const conditionForm = useForm({
     defaultValues: {
-      id: condition?.id || null,
-      name: condition?.name || '',
-      type: condition?.conditionType || '',
-      description: condition?.description || '',
+      id: condition?.id ?? null,
+      name: condition?.name ?? '',
+      type: condition?.conditionType ?? '',
+      description: condition?.description ?? '',
     },
     onSubmit: async ({ value }) => {
       await mutation.mutate(value);

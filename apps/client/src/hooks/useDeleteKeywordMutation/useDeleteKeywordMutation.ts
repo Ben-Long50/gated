@@ -19,7 +19,7 @@ const useDeleteKeywordMutation = (keywordId: number) => {
       });
     },
     onError: (data) => {
-      toast(data.message);
+      toast.error(data.message);
     },
     throwOnError: false,
   });

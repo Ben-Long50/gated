@@ -13,23 +13,24 @@ const useItemUpgradeForm = (
 
   const itemUpgradeForm = useForm({
     defaultValues: {
-      id: item?.id || null,
-      name: item?.name || '',
-      grade: item?.grade || 1,
-      description: item?.description || '',
+      id: item?.id ?? null,
+      name: item?.name ?? '',
+      grade: item?.grade ?? 1,
+      description: item?.description ?? '',
       pictureFile: null as File | null,
-      picture: item?.picture || {
-        imageUrl: '',
-        publicId: '',
-        position: { x: 50, y: 50 },
+      picture: {
+        imageUrl: item?.picture.imageUrl ?? '',
+        publicId: item?.picture.publicId ?? '',
+        position: item?.picture.position ?? { x: 50, y: 50 },
       },
       modifiedStats: { ...emptyStats, ...item?.modifiedStats },
       keywords:
         item?.modifiedKeywords.map((keyword) => ({
           keywordId: keyword.keyword.id,
           value: keyword.value,
-        })) || ([] as { keywordId: number; value: number | null }[]),
+        })) ?? ([] as { keywordId: number; value: number | null }[]),
       upgradePrice: 0,
+      characterId: item?.characterInventory?.characterId ?? null,
     },
     onSubmit: async ({ value }) => {
       const filteredStats = Object.fromEntries(

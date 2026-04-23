@@ -1,23 +1,23 @@
-import FormLayout from '../../layouts/FormLayout';
 import { useParams } from 'react-router-dom';
 import LexicalEditor from '../lexical/LexicalEditor';
 import useCreateNotesMutation from '../../hooks/useCreateNotesMutation/useCreateNotesMutation';
 import useNotesForm from 'src/hooks/form hooks/useNotesForm';
+import BtnRect from '../buttons/BtnRect';
+import { Notes } from 'src/types/campaign';
 
-const NotesForm = () => {
-  const { notesId } = useParams();
+const NotesForm = ({
+  notes,
+  setEditModeId,
+}: {
+  notes?: Notes;
+  setEditModeId: (value: number | null) => void;
+}) => {
+  const createNotes = useCreateNotesMutation(setEditModeId);
 
-  const createNotes = useCreateNotesMutation(Number(notesId));
-
-  const notesForm = useNotesForm(createNotes);
+  const notesForm = useNotesForm(createNotes, notes);
 
   return (
-    <FormLayout
-      label="Notes"
-      form={notesForm}
-      itemId={notesId}
-      createMutation={createNotes}
-    >
+    <div className="flex w-full flex-col gap-8">
       <notesForm.Field name="content">
         {(field) => (
           <>
@@ -35,7 +35,13 @@ const NotesForm = () => {
           </>
         )}
       </notesForm.Field>
-    </FormLayout>
+      <BtnRect
+        ariaLabel="Update Notes"
+        onClick={() => notesForm.handleSubmit()}
+      >
+        Update Notes
+      </BtnRect>
+    </div>
   );
 };
 

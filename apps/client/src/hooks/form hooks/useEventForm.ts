@@ -12,13 +12,13 @@ const useEventForm = (
 
   const eventForm = useForm({
     defaultValues: {
-      id: event?.id || null,
-      characterId: event?.characterId || null,
-      name: event?.name || '',
-      description: event?.description || '',
-      month: event?.month || month,
-      day: event?.day || Number(day),
-      time: event?.time || { hour: 0, minute: 0, second: 0 },
+      id: event?.id ?? null,
+      characterId: event?.characterId ?? null,
+      name: event?.name ?? '',
+      description: event?.description ?? '',
+      month: event?.month ?? month,
+      day: event?.day ?? Number(day),
+      time: event?.time ?? { hour: 0, minute: 0, second: 0 },
     },
     onSubmit: ({ value }) => {
       const filteredData = filterFormData(value);

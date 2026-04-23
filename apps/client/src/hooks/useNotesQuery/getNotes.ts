@@ -1,15 +1,12 @@
 import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const getNotes = async (campaignId: number, characterId: number) => {
+const getNotes = async (characterId: number) => {
   try {
-    const response = await fetch(
-      `${apiUrl}/campaigns/${campaignId}/characters/${characterId}/notes`,
-      {
-        method: 'GET',
-        credentials: 'include',
-      },
-    );
+    const response = await fetch(`${apiUrl}/characters/${characterId}/notes`, {
+      method: 'GET',
+      credentials: 'include',
+    });
     const data = await handleResponse(response);
 
     return data;

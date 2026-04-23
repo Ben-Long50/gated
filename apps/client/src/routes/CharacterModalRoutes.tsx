@@ -4,7 +4,7 @@ import Cart from 'src/components/Cart';
 import CharacterAffiliations from 'src/components/CharacterAffiliations';
 import ConditionModal from 'src/components/modals/ConditionModal';
 import Items from 'src/components/Items';
-import ShopModal from 'src/components/modals/ShopModal';
+import Shop from 'src/components/Shop';
 import AffiliationModal from 'src/components/modals/AffiliationModal';
 import DescriptionModal from 'src/components/modals/DescriptionModal';
 import ItemPage from 'src/components/ItemPage';
@@ -19,12 +19,12 @@ const CharacterModalRoutes = () => {
         <Route path="create" element={<AffiliationForm />} />
       </Route>
       <Route path="shop">
-        <Route path="global" element={<ShopModal />}>
+        <Route path="global" element={<Shop />}>
           <Route path="cart" element={<Cart />} />
           <Route path=":category" element={<Items />} />
           <Route path=":category/:itemId" element={<ItemPage />} />
         </Route>
-        <Route path=":shopId" element={<ShopModal />}>
+        <Route path=":shopId" element={<Shop />}>
           <Route path="cart" element={<Cart />} />
           <Route path=":category" element={<Items />} />
           <Route path=":category/:itemId" element={<ItemPage />} />

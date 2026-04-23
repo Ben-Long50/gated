@@ -10,17 +10,17 @@ const useDeleteConditionMutation = (conditionId: number) => {
     mutationFn: () => {
       return deleteCondition(conditionId);
     },
-    onSuccess: () => {
-      toast('Condition successfully deleted');
+    onSuccess: (data) => {
+      toast.success(data.message);
 
-      navigate('/glam/codex/conditions');
+      navigate(-1);
 
-      return queryClient.invalidateQueries({
-        queryKey: ['conditions'],
+      return queryClient.removeQueries({
+        queryKey: ['condition', conditionId],
       });
     },
     onError: (data) => {
-      toast(data.message);
+      toast.error(data.message);
     },
     throwOnError: false,
   });

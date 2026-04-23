@@ -1,12 +1,20 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import createCharacterCondition from './createCharacterCondition';
-import { socket } from 'src/socket';
 import { Character } from 'src/types/character';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import useModalStore from 'src/stores/modalStore';
 
 const useCreateCharacterConditionMutation = (characterId: number) => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  const backgroundPath = useModalStore((state) => state.backgroundPath);
+
   return useMutation({
-    mutationFn: (formData: { conditionId: number; stacks?: number }[]) => {
+    mutationFn: (
+      formData: { conditionId: number; stacks: number | null }[],
+    ) => {
       return createCharacterCondition(characterId, formData);
     },
 
@@ -39,15 +47,22 @@ const useCreateCharacterConditionMutation = (characterId: number) => {
       return { prevCharacterData };
     },
 
-    onSuccess: (_, __, context) => {
-      socket.emit('character', {
-        characterId,
-        campaignId: context.prevCharacterData?.campaignId,
-      });
-      return queryClient.invalidateQueries({
-        queryKey: ['character', characterId],
-      });
+    onSuccess: (data) => {
+      toast.success(data.message);
+
+      queryClient.setQueryData(
+        ['character', data.character.id],
+        data.character,
+      );
+
+      if (backgroundPath) {
+        navigate(backgroundPath, { replace: true });
+      }
     },
+    onError: (data) => {
+      toast.error(data.message);
+    },
+
     throwOnError: false,
   });
 };

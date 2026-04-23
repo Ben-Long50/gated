@@ -120,6 +120,7 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
             actions: availableReactions,
             category,
             form: actionForm,
+            parts,
           }}
         />
       )}

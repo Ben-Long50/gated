@@ -7,7 +7,7 @@ import ThemeContainer from './ThemeContainer';
 import ItemPicture from './ItemPicture';
 import { Item } from 'src/types/item';
 import ItemRadialMenu from './radialMenus/itemRadialMenu/ItemRadialMenu';
-import { Link, Outlet, useParams } from 'react-router-dom';
+import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
 import Icon from '@mdi/react';
 import { mdiLinkBoxVariantOutline } from '@mdi/js';
 import KeywordTag from './KeywordTag';
@@ -25,6 +25,8 @@ const LinkedItemCard = ({
 }) => {
   const { traitId, conditionId } = useParams();
   const { accentPrimary } = useContext(ThemeContext);
+  const location = useLocation();
+  const parts = location.pathname.split('/');
 
   const containerRef = useRef(null);
 
@@ -87,7 +89,7 @@ const LinkedItemCard = ({
                   <Fragment key={condition.id}>
                     <ConditionTag key={condition.id} condition={condition} />
                     {Number(conditionId) === condition.id && (
-                      <Outlet context={{ condition }} />
+                      <Outlet context={{ condition, parts }} />
                     )}
                   </Fragment>
                 ))}
@@ -99,7 +101,7 @@ const LinkedItemCard = ({
                   <Fragment key={keyword.id}>
                     <KeywordTag key={keyword.id} keyword={keyword} />
                     {Number(traitId) === keyword.id && (
-                      <Outlet context={{ keyword }} />
+                      <Outlet context={{ keyword, parts }} />
                     )}
                   </Fragment>
                 );

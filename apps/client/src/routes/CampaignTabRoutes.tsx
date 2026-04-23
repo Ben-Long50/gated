@@ -34,13 +34,14 @@ import EncounterFormMap from 'src/components/encounterComponents/EncounterFormMa
 import EncounterFormInfo from 'src/components/encounterComponents/EncounterFormInfo';
 import ResetModal from 'src/components/encounterComponents/ResetModal';
 import GangForm from 'src/components/forms/GangForm';
-import CharacterSelectModal from 'src/components/CharacterSelectModal';
 import Gangs from 'src/components/Gangs';
 import GangPage from 'src/components/GangPage';
 import ReputationPointModal from 'src/components/ReputationPointModal';
 import LevelNodeModal from 'src/components/LevelNodeModal';
 import CharacterLevelsModal from 'src/components/CharacterLevelsModal';
 import GangProfitsModal from 'src/components/GangProfitsModal';
+import PlayerSelectModal from 'src/components/modals/PlayerSelectModal';
+import CampaignCharacterSelectModal from 'src/components/CampaignCharacterSelectModal';
 
 const CampaignTabRoutes = () => {
   return (
@@ -56,16 +57,12 @@ const CampaignTabRoutes = () => {
           <Route path="calendar/:month/:day" element={<CalendarModal />} />
           <Route path="calendar/:month/:day/newEvent" element={<EventForm />} />
         </Route>
-        <Route
-          path="update"
-          element={<CampaignForm title="Update" mode="update" />}
-        />
+        <Route path="update" element={<CampaignForm />}>
+          <Route path="managePlayers" element={<PlayerSelectModal />} />
+        </Route>
         <Route path="factions/:factionId">
           <Route index element={<Faction />} />
-          <Route
-            path="update"
-            element={<FactionForm title="Update" mode="update" />}
-          />
+          <Route path="update" element={<FactionForm />} />
         </Route>
         <Route path="characters">
           <Route path="" element={<CampaignCharacterList />}>
@@ -89,11 +86,14 @@ const CampaignTabRoutes = () => {
             <Route path="distributeProfits" element={<GangProfitsModal />} />
             <Route
               path="manageGangCharacters"
-              element={<CharacterSelectModal />}
+              element={<CampaignCharacterSelectModal />}
             />
           </Route>
           <Route path="create" element={<GangForm />}>
-            <Route path="characterSelect" element={<CharacterSelectModal />} />
+            <Route
+              path="characterSelect"
+              element={<CampaignCharacterSelectModal />}
+            />
           </Route>
         </Route>
         {SessionRoutes()}
@@ -142,10 +142,9 @@ const CampaignTabRoutes = () => {
           <Route path="rollResults" element={<RollModal />} />
         </Route>
       </Route>
-      <Route
-        path="create"
-        element={<CampaignForm title="Create" mode="create" />}
-      />
+      <Route path="create" element={<CampaignForm />}>
+        <Route path="managePlayers" element={<PlayerSelectModal />} />
+      </Route>
       <Route path="rollSimulator" element={<RollSimulator />}>
         <Route path="rollResults" element={<RollModal />} />
       </Route>

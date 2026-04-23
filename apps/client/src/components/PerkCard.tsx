@@ -1,39 +1,41 @@
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
-import { Perk } from 'src/types/perk';
 import ItemCardSmall from './ItemCardSmall';
 import ArrowHeader4 from './ArrowHeader4';
 import ThemeContainer from './ThemeContainer';
 import { capitalCase } from 'change-case';
-import { FieldApi } from '@tanstack/react-form';
+import { FormApi } from '@tanstack/react-form';
 import AttributeListSmall from './AttributeListSmall';
 import AttributeList from './AttributeList';
+import usePerkQuery from 'src/hooks/usePerkQuery/usePerkQuery';
 
 const PerkCard = ({
-  perk,
-  mode,
+  perkId,
   expanded,
-  perkIds,
-  field,
+  form,
 }: {
-  perk: Perk;
-  mode?: string;
+  perkId: number;
   expanded?: boolean;
-  perkIds?: number[];
-  field?: FieldApi;
+  form?: FormApi;
 }) => {
   const { user } = useContext(AuthContext);
 
-  const attributes = Object.entries(perk.attributes)
-    .map(([attribute, { points }]) => [attribute, points])
-    .filter(([_, points]) => points > 0);
+  const { data: perk } = usePerkQuery(perkId);
 
-  const skills = Object.values(perk.attributes).flatMap(({ skills }) =>
-    Object.entries(skills)
-      .map(([skill, points]) => [skill, points.points])
-      .filter(([_, points]) => points > 0),
-  );
+  const attributes = perk?.attributes
+    ? Object.entries(perk?.attributes)
+        .map(([attribute, { points }]) => [attribute, points])
+        .filter(([_, points]) => points > 0)
+    : [];
+
+  const skills = perk?.attributes
+    ? Object.values(perk.attributes).flatMap(({ skills }) =>
+        Object.entries(skills)
+          .map(([skill, points]) => [skill, points.points])
+          .filter(([_, points]) => points > 0),
+      )
+    : [];
 
   return (
     <div className="flex items-center gap-4">
@@ -41,27 +43,30 @@ const PerkCard = ({
         expanded={expanded}
         heading={
           <div className="flex w-full items-center justify-between gap-4 pr-3">
-            <h3>{perk.name}</h3>
-            <AttributeListSmall attributeTree={perk.attributes} />
-            {mode === 'codex' &&
-              ((mode === 'codex' && user?.role === 'ADMIN') ||
-                (mode === 'codex' && user?.role === 'SUPERADMIN')) && (
-                <Link to={`/glam/codex/perks/${perk.id}/update`}>
-                  <button className="text-accent hover:underline">Edit</button>
-                </Link>
-              )}
+            <h3>{perk?.name}</h3>
+            {perk?.attributes && (
+              <AttributeListSmall attributeTree={perk?.attributes} />
+            )}
+            {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
+              <Link to={`/glam/codex/perks/${perk?.id}/update`}>
+                <button className="text-accent hover:underline">Edit</button>
+              </Link>
+            )}
           </div>
         }
       >
         {attributes.length === 0 && skills.length === 0 ? (
-          <ArrowHeader4 title="No skill requirements" />
+          <ArrowHeader4
+            className="text-primary"
+            title="No skill requirements"
+          />
         ) : (
-          <AttributeList attributeTree={perk.attributes} />
+          perk?.attributes && <AttributeList attributeTree={perk?.attributes} />
         )}
-        <p className="text-secondary">{perk.description}</p>
-        {perk.modifiers && (
+        <p className="text-secondary">{perk?.description}</p>
+        {perk?.modifiers && (
           <div className="flex flex-col gap-4">
-            {Object.entries(perk.modifiers).map(([stat, value], index) => (
+            {Object.entries(perk?.modifiers).map(([stat, value], index) => (
               <ThemeContainer
                 key={index}
                 borderColor="transparent"
@@ -80,21 +85,25 @@ const PerkCard = ({
           </div>
         )}
       </ItemCardSmall>
-      {mode === 'form' && (
-        <input
-          className="size-6"
-          type="checkbox"
-          checked={perkIds?.includes(perk.id)}
-          onChange={() => {
-            if (!perkIds?.includes(perk.id)) {
-              field.handleChange([...field.state.value, perk]);
-            } else {
-              field.handleChange(
-                field.state.value.filter((item: Perk) => item.id !== perk.id),
-              );
-            }
-          }}
-        />
+      {form && (
+        <form.Field name="perkIds">
+          {(field) => (
+            <input
+              className="size-6"
+              type="checkbox"
+              checked={field.state.value.includes(perk?.id)}
+              onChange={() => {
+                if (!field.state.value.includes(perk?.id)) {
+                  field.handleChange([...field.state.value, perk?.id]);
+                } else {
+                  field.handleChange(
+                    field.state.value.filter((id: number) => id !== perk?.id),
+                  );
+                }
+              }}
+            />
+          )}
+        </form.Field>
       )}
     </div>
   );

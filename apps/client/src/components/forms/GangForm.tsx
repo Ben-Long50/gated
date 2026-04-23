@@ -2,7 +2,7 @@ import BtnRect from '../buttons/BtnRect';
 import InputField from '../InputField';
 import Loading from '../Loading';
 import FormLayout from '../../layouts/FormLayout';
-import { Outlet, useNavigate, useParams } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import LexicalEditor from '../lexical/LexicalEditor';
 import ArrowHeader2 from '../ArrowHeader2';
 import Divider from '../Divider';
@@ -18,6 +18,8 @@ import useGangForm from 'src/hooks/form hooks/useGangForm';
 const GangForm = () => {
   const { campaignId, gangId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const parts = location.pathname.split('/');
 
   const { data: campaign, isLoading: campaignLoading } = useCampaignQuery(
     Number(campaignId),
@@ -153,7 +155,7 @@ const GangForm = () => {
           Select Gang Characters
         </BtnRect>
       </div>
-      <Outlet context={{ form: gangForm }} />
+      <Outlet context={{ form: gangForm, parts }} />
     </FormLayout>
   );
 };

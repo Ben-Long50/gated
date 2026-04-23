@@ -10,17 +10,17 @@ const useDeleteItemMutation = (itemId: number) => {
     mutationFn: () => {
       return deleteItem(itemId);
     },
-    onSuccess: () => {
-      toast('Item successfully deleted');
+    onSuccess: (data) => {
+      toast.success(data.message);
 
-      navigate(-2);
+      navigate(-1);
 
       return queryClient.removeQueries({
         queryKey: ['item', itemId],
       });
     },
     onError: (data) => {
-      toast(data.message);
+      toast.error(data.message);
     },
     throwOnError: false,
   });

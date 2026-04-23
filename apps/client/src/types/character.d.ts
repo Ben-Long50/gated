@@ -15,7 +15,7 @@ interface Character {
   level: number;
   picture: Picture;
   profits: number;
-  stats: CharacterStats;
+  stats: Record<string, number>;
   height: number;
   weight: number;
   age: number;

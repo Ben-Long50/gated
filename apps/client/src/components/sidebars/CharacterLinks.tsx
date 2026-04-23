@@ -12,6 +12,7 @@ import EquipmentIcon from '../icons/EquipmentIcon';
 import DroneIcon from '../icons/DroneIcon';
 import VehicleIcon from '../icons/VehicleIcon';
 import ProgressionIcon from '../icons/ProgressionIcon';
+import ShopIcon from '../icons/ShopIcon';
 
 const CharacterLinks = () => {
   const { characterId } = useParams();
@@ -67,6 +68,13 @@ const CharacterLinks = () => {
           <InventoryIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         path={`/glam/characters/${character?.id}/inventory`}
+      />
+      <LinkSidebar
+        title="Shop"
+        icon={
+          <ShopIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+        }
+        path={`/glam/characters/${character?.id}/shop/global?category=weapon`}
       />
     </>
   );

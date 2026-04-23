@@ -18,15 +18,8 @@ const AffiliationRadialMenu = ({
   const location = useLocation();
   const parts = location.pathname.split('/');
 
-  const setBackgroundPath = useModalStore((state) => state.setBackgroundPath);
-
   const setMenu = useRadialMenuStore((state) => state.setMenu);
   const setMenuOpen = useRadialMenuStore((state) => state.setMenuOpen);
-
-  const openAffiliationModal = () => {
-    setBackgroundPath(location.pathname);
-    navigate(`${path}/affiliations`);
-  };
 
   const path = (() => {
     if (parts.includes('characters')) {
@@ -71,7 +64,7 @@ const AffiliationRadialMenu = ({
           element: (
             <div
               onClick={() => {
-                openAffiliationModal();
+                navigate(`${path}/affiliations`);
                 setMenuOpen(false);
               }}
             >

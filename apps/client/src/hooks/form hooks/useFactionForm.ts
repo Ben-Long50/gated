@@ -9,17 +9,17 @@ const useFactionForm = (
 ) => {
   const factionForm = useForm({
     defaultValues: {
-      id: faction?.id || 0,
-      name: faction?.name || '',
-      factionType: faction?.factionType || '',
+      id: faction?.id ?? 0,
+      name: faction?.name ?? '',
+      factionType: faction?.factionType ?? '',
       pictureFile: null as File | null,
-      picture: faction?.picture || {
-        imageUrl: '',
-        publicId: '',
-        position: { x: 50, y: 50 },
+      picture: {
+        imageUrl: faction?.picture.imageUrl ?? '',
+        publicId: faction?.picture.publicId ?? '',
+        position: faction?.picture.position ?? { x: 50, y: 50 },
       },
       background:
-        faction?.background || ({} as { html: string; nodes: string }),
+        faction?.background ?? ({} as { html: string; nodes: string }),
     },
 
     onSubmit: async ({ value }) => {

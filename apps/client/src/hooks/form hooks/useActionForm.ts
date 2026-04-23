@@ -9,38 +9,38 @@ const useActionForm = (
 ) => {
   const actionForm = useForm({
     defaultValues: {
-      id: action?.id || 0,
-      name: action?.name || '',
+      id: action?.id ?? 0,
+      name: action?.name ?? '',
       costs: {
-        currentActions: action?.costs?.currentActions || null,
-        currentReactions: action?.costs?.currentReactions || null,
-        currentPower: action?.costs?.currentPower || null,
-        currentHealth: action?.costs?.currentHealth || null,
-        currentSanity: action?.costs?.currentSanity || null,
-        wyrmShells: action?.costs?.wyrmShells || null,
-        currentAmmoCount: action?.costs?.currentAmmoCount || null,
+        currentActions: action?.costs?.currentActions ?? null,
+        currentReactions: action?.costs?.currentReactions ?? null,
+        currentPower: action?.costs?.currentPower ?? null,
+        currentHealth: action?.costs?.currentHealth ?? null,
+        currentSanity: action?.costs?.currentSanity ?? null,
+        wyrmShells: action?.costs?.wyrmShells ?? null,
+        currentAmmoCount: action?.costs?.currentAmmoCount ?? null,
       },
       roll:
-        action?.roll ||
+        action?.roll ??
         ([] as {
           attribute: string;
           skill: string;
         }[]),
-      actionType: action?.actionType || '',
-      actionSubtypes: action?.actionSubtypes || ([] as string[]),
+      actionType: action?.actionType ?? '',
+      actionSubtypes: action?.actionSubtypes ?? ([] as string[]),
       duration:
-        action?.duration ||
+        action?.duration ??
         (null as { unit: string; value: number | null } | null),
       cooldown:
-        action?.cooldown ||
+        action?.cooldown ??
         (null as { unit: string; value: number | null } | null),
-      description: action?.description || '',
-      modifiers: action?.modifiers || (null as object | null),
+      description: action?.description ?? '',
+      modifiers: action?.modifiers ?? ({} as Record<string, number>),
       keywords:
         action?.keywordModifiers.map((keyword) => ({
           keywordId: keyword.keyword.id,
           value: keyword.value,
-        })) || ([] as { keywordId: number; value: number | null }[]),
+        })) ?? ([] as { keywordId: number; value: number | null }[]),
     },
     onSubmit: async ({ value }) => {
       const filteredSubtypes = value.actionSubtypes.filter(

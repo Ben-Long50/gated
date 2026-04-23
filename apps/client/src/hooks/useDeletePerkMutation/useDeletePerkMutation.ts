@@ -10,21 +10,16 @@ const useDeletePerkMutation = (perkId: number) => {
     mutationFn: () => {
       return deletePerk(perkId);
     },
-    onSuccess: () => {
-      toast('Perk deleted successfully');
+    onSuccess: (data) => {
+      toast.success(data.message);
       navigate('/glam/codex/perks');
 
       queryClient.removeQueries({
         queryKey: ['perk', perkId],
       });
-
-      return queryClient.invalidateQueries({
-        queryKey: ['perks'],
-        exact: false,
-      });
     },
     onError: (data) => {
-      toast(data.message);
+      toast.error(data.message);
     },
     throwOnError: false,
   });

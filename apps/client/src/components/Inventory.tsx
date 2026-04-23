@@ -10,6 +10,7 @@ import VehicleIcon from './icons/VehicleIcon';
 import WeaponIcon from './icons/WeaponIcon';
 import {
   Outlet,
+  useLocation,
   useNavigate,
   useParams,
   useSearchParams,
@@ -27,6 +28,8 @@ const Inventory = () => {
   const { characterId } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const parts = location.pathname.split('/');
 
   const { filteredCharacter: character, isLoading } = useCharacter(
     Number(characterId),
@@ -139,10 +142,10 @@ const Inventory = () => {
                   e.preventDefault();
                   handleDoubleClick(item);
                 }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleClick(item);
-                }}
+                // onClick={(e) => {
+                //   e.preventDefault();
+                //   handleClick(item);
+                // }}
               >
                 {item.equipped === true && (
                   <div className="absolute inset-0 flex items-center justify-center bg-slate-950 bg-opacity-65">
@@ -174,7 +177,7 @@ const Inventory = () => {
       <p className="text-tertiary text-right">
         (Double click to equip / unequip)
       </p>
-      <Outlet />
+      <Outlet context={{ parts }} />
     </div>
   );
 };

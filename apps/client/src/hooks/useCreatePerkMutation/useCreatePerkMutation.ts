@@ -14,7 +14,7 @@ const useCreatePerkMutation = (perkId?: number) => {
         ? 'Perk successfully updated'
         : 'Perk successfully created';
 
-      toast(message);
+      toast.success(data.message);
 
       queryClient.invalidateQueries({
         queryKey: ['perk', perkId],
@@ -26,7 +26,7 @@ const useCreatePerkMutation = (perkId?: number) => {
       });
     },
     onError: (data) => {
-      toast(data.message);
+      toast.error(data.message);
     },
     throwOnError: false,
   });

@@ -133,7 +133,7 @@ const EncounterList = () => {
                   )}
                 </div>
                 {encounter.map.id === Number(mapId) && (
-                  <Outlet context={{ name: encounter.map.name }} />
+                  <Outlet context={{ name: encounter.map.name, parts }} />
                 )}
               </Fragment>
             );

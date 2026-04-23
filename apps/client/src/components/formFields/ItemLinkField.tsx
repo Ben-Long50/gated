@@ -24,7 +24,7 @@ const ItemLinkField = ({ form }: { form: FormApi }) => {
       <form.Field name="itemIds">
         {(field) => (
           <>
-            {parts.includes('links') && <Outlet context={{ field }} />}
+            {parts.includes('links') && <Outlet context={{ field, parts }} />}
             {isLoading ? (
               <Loading />
             ) : (

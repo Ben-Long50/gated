@@ -32,23 +32,7 @@ const ResetModal = () => {
 
       resetCharacterStat.mutate({
         characterId: character?.id,
-        stat: 'currentActions',
-        value: value.currentActions,
-      });
-      resetCharacterStat.mutate({
-        characterId: character?.id,
-        stat: 'currentReactions',
-        value: value.currentReactions,
-      });
-      resetCharacterStat.mutate({
-        characterId: character?.id,
-        stat: 'currentHands',
-        value: value.currentHands,
-      });
-      resetCharacterStat.mutate({
-        characterId: character?.id,
-        stat: 'currentFeet',
-        value: value.currentFeet,
+        stats: value,
       });
     },
   });

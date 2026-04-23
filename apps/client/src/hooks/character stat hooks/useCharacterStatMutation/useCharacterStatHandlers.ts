@@ -11,8 +11,7 @@ const useCharacterStatHandlers = (characterId: number) => {
     if (value + character.stats.currentHealth <= 0) {
       editCharacterStat.mutate({
         characterId: character.id,
-        stat: 'currentHealth',
-        value: character.stats.currentHealth * -1,
+        stats: { currentHealth: character.stats.currentHealth * -1 },
       });
     } else if (
       value + character?.stats.currentHealth >=
@@ -20,14 +19,15 @@ const useCharacterStatHandlers = (characterId: number) => {
     ) {
       editCharacterStat.mutate({
         characterId: character.id,
-        stat: 'currentHealth',
-        value: character.stats.maxHealth - character.stats.currentHealth,
+        stats: {
+          currentHealth:
+            character.stats.maxHealth - character.stats.currentHealth,
+        },
       });
     } else {
       editCharacterStat.mutate({
         characterId: character.id,
-        stat: 'currentHealth',
-        value,
+        stats: { currentHealth: value },
       });
     }
   };
@@ -37,8 +37,7 @@ const useCharacterStatHandlers = (characterId: number) => {
     if (value + character.stats.currentSanity <= 0) {
       editCharacterStat.mutate({
         characterId: character.id,
-        stat: 'currentSanity',
-        value: character.stats.currentSanity * -1,
+        stats: { currentSanity: character.stats.currentSanity * -1 },
       });
     } else if (
       value + character.stats.currentSanity >=
@@ -46,14 +45,15 @@ const useCharacterStatHandlers = (characterId: number) => {
     ) {
       editCharacterStat.mutate({
         characterId: character.id,
-        stat: 'currentSanity',
-        value: character.stats.maxSanity - character.stats.currentSanity,
+        stats: {
+          currentSanity:
+            character.stats.maxSanity - character.stats.currentSanity,
+        },
       });
     } else {
       editCharacterStat.mutate({
         characterId: character.id,
-        stat: 'currentSanity',
-        value,
+        stats: { currentSanity: value },
       });
     }
   };
@@ -68,14 +68,15 @@ const useCharacterStatHandlers = (characterId: number) => {
     ) {
       editCharacterStat.mutate({
         characterId: character.id,
-        stat: 'currentActions',
-        value: character.stats.actions - character.stats.currentActions,
+        stats: {
+          currentActions:
+            character.stats.actions - character.stats.currentActions,
+        },
       });
     } else {
       editCharacterStat.mutate({
         characterId: character.id,
-        stat: 'currentActions',
-        value,
+        stats: { currentActions: value },
       });
     }
   };
@@ -90,14 +91,15 @@ const useCharacterStatHandlers = (characterId: number) => {
     ) {
       editCharacterStat.mutate({
         characterId: character.id,
-        stat: 'currentReactions',
-        value: character.stats.reactions - character.stats.currentReactions,
+        stats: {
+          currentReactions:
+            character.stats.reactions - character.stats.currentReactions,
+        },
       });
     } else {
       editCharacterStat.mutate({
         characterId: character.id,
-        stat: 'currentReactions',
-        value,
+        stats: { currentReactions: value },
       });
     }
   };

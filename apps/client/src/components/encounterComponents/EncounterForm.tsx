@@ -1,12 +1,14 @@
 import useMaps from 'src/hooks/useMaps';
 import useCreateCombatMutation from 'src/hooks/encounter hooks/useCreateCombatMutation/useCreateCombatMutation';
-import { Outlet, useParams } from 'react-router-dom';
+import { Outlet, useLocation, useParams } from 'react-router-dom';
 import { useForm } from '@tanstack/react-form';
 import Loading from '../Loading';
 
 const EncounterForm = () => {
   const { campaignId } = useParams();
   const { maps, isLoading } = useMaps(false, 'map');
+  const location = useLocation();
+  const parts = location.pathname.split('/');
 
   const createEncounter = useCreateCombatMutation(Number(campaignId));
 
@@ -35,7 +37,7 @@ const EncounterForm = () => {
   return (
     <div className="flex max-h-full w-full flex-col items-center gap-8">
       <h1>Create Encounter</h1>
-      <Outlet context={{ maps, form: encounterForm, createEncounter }} />
+      <Outlet context={{ maps, form: encounterForm, createEncounter, parts }} />
     </div>
   );
 };

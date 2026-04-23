@@ -4,6 +4,8 @@ import Icon from '@mdi/react';
 import {
   mdiCircle,
   mdiCircleOutline,
+  mdiMinus,
+  mdiPlus,
   mdiSquare,
   mdiSquareOutline,
 } from '@mdi/js';
@@ -12,7 +14,8 @@ import { LayoutContext } from 'src/contexts/LayoutContext';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import { FormApi } from '@tanstack/react-form';
 import { AttributeTree } from 'src/types/attributeTree';
-import { getAttributeValue, getSkillValue } from 'src/utils/getUsedPoints';
+import BtnIcon from '../buttons/BtnIcon';
+import useAttributeTree from 'src/hooks/useAttributeTree';
 
 const AttributeField = ({
   form,
@@ -32,6 +35,9 @@ const AttributeField = ({
   const { mobile } = useContext(LayoutContext);
   const { accentPrimary } = useContext(ThemeContext);
 
+  const { getAttributePoints, getSkillPoints } =
+    useAttributeTree(attributeTree);
+
   return (
     <form.Field name="attributes">
       {(field) => (
@@ -45,78 +51,71 @@ const AttributeField = ({
                     <div className="flex w-full items-center justify-between gap-8">
                       <ArrowHeader3 title={capitalCase(attribute)} />
                       <div className="flex gap-2 sm:gap-4">
-                        {Array.from({ length: 4 }).map((_, index) => {
-                          const attributeValue = attributeTree
-                            ? getAttributeValue(attributeTree, attribute)
-                            : null;
-
-                          return (
-                            <button
+                        <BtnIcon
+                          path={mdiMinus}
+                          active={
+                            attributeDecrease ||
+                            subfield.state.value.points >
+                              getAttributePoints(attribute)
+                          }
+                          onClick={() => {
+                            if (subfield.state.value.points > 0) {
+                              subfield.handleChange({
+                                ...subfield.state.value,
+                                points: subfield.state.value.points - 1,
+                              });
+                            }
+                          }}
+                        />
+                        {Array.from({ length: 4 }).map((_, index) =>
+                          mobile ? (
+                            index < subfield.state.value.points ? (
+                              <Icon
+                                key={index}
+                                path={mdiCircle}
+                                size={0.7}
+                                color={accentPrimary}
+                              />
+                            ) : (
+                              <Icon
+                                key={index}
+                                path={mdiCircleOutline}
+                                size={0.7}
+                                color={accentPrimary}
+                              />
+                            )
+                          ) : index < subfield.state.value.points ? (
+                            <Icon
                               key={index}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                if (
-                                  attributeIncrease &&
-                                  subfield.state.value.points <= index + 1
-                                ) {
-                                  subfield.handleChange({
-                                    ...subfield.state.value,
-                                    points:
-                                      index === 0 &&
-                                      subfield.state.value.points === 1
-                                        ? 0
-                                        : index + 1,
-                                  });
-                                }
-                                if (
-                                  attributeDecrease &&
-                                  subfield.state.value.points >= index + 1
-                                ) {
-                                  subfield.handleChange({
-                                    ...subfield.state.value,
-                                    points:
-                                      index === 0 &&
-                                      subfield.state.value.points === 1
-                                        ? 0
-                                        : index + 1,
-                                  });
-                                }
-                              }}
-                            >
-                              {mobile ? (
-                                index < subfield.state.value.points ? (
-                                  <Icon
-                                    key={index}
-                                    path={mdiCircle}
-                                    size={0.7}
-                                    color={accentPrimary}
-                                  />
-                                ) : (
-                                  <Icon
-                                    key={index}
-                                    path={mdiCircleOutline}
-                                    size={0.7}
-                                    color={accentPrimary}
-                                  />
-                                )
-                              ) : index < subfield.state.value.points ? (
-                                <Icon
-                                  key={index}
-                                  path={mdiSquare}
-                                  size={1}
-                                  color={accentPrimary}
-                                />
-                              ) : (
-                                <Icon
-                                  key={index}
-                                  path={mdiSquareOutline}
-                                  size={1}
-                                  color={accentPrimary}
-                                />
-                              )}
-                            </button>
-                          );
-                        })}
+                              path={mdiSquare}
+                              size={1}
+                              color={accentPrimary}
+                            />
+                          ) : (
+                            <Icon
+                              key={index}
+                              path={mdiSquareOutline}
+                              size={1}
+                              color={accentPrimary}
+                            />
+                          ),
+                        )}
+                        <BtnIcon
+                          path={mdiPlus}
+                          active={
+                            attributeIncrease ||
+                            getAttributePoints(attribute) >
+                              subfield.state.value.points
+                          }
+                          onClick={() => {
+                            if (subfield.state.value.points < 4) {
+                              subfield.handleChange({
+                                ...subfield.state.value,
+                                points: subfield.state.value.points + 1,
+                              });
+                            }
+                          }}
+                        />
                       </div>
                     </div>
                     <div>
@@ -134,89 +133,70 @@ const AttributeField = ({
                               >
                                 {(subSubfield) => (
                                   <div className="flex gap-2 sm:gap-4">
+                                    <BtnIcon
+                                      path={mdiMinus}
+                                      active={
+                                        skillDecrease ||
+                                        getSkillPoints(skill) <
+                                          subSubfield.state.value
+                                      }
+                                      onClick={() => {
+                                        if (subSubfield.state.value > 0) {
+                                          subSubfield.handleChange(
+                                            subSubfield.state.value - 1,
+                                          );
+                                        }
+                                      }}
+                                    />
                                     {Array.from({ length: 4 }).map(
-                                      (_, index) => {
-                                        const skillValue = attributeTree
-                                          ? getSkillValue(
-                                              attributeTree,
-                                              attribute,
-                                              skill,
-                                            )
-                                          : null;
-
-                                        return (
-                                          <button
+                                      (_, index) =>
+                                        mobile ? (
+                                          index < subSubfield.state.value ? (
+                                            <Icon
+                                              className="text-primary"
+                                              key={index}
+                                              path={mdiCircle}
+                                              size={0.7}
+                                            />
+                                          ) : (
+                                            <Icon
+                                              className="text-tertiary"
+                                              key={index}
+                                              path={mdiCircleOutline}
+                                              size={0.7}
+                                            />
+                                          )
+                                        ) : index < subSubfield.state.value ? (
+                                          <Icon
+                                            className="text-primary"
                                             key={index}
-                                            onClick={(e) => {
-                                              e.preventDefault();
-                                              if (
-                                                (skillIncrease &&
-                                                  !skillValue) ||
-                                                (skillIncrease &&
-                                                  skillValue <= index + 1)
-                                              ) {
-                                                subSubfield.handleChange(
-                                                  index === 0 &&
-                                                    subSubfield.state.value ===
-                                                      1
-                                                    ? 0
-                                                    : index + 1,
-                                                );
-                                              }
-
-                                              if (
-                                                (skillDecrease &&
-                                                  !skillValue) ||
-                                                (skillDecrease &&
-                                                  skillValue >= index + 1)
-                                              ) {
-                                                subSubfield.handleChange(
-                                                  index === 0 &&
-                                                    subSubfield.state.value ===
-                                                      1
-                                                    ? 0
-                                                    : index + 1,
-                                                );
-                                              }
-                                            }}
-                                          >
-                                            {mobile ? (
-                                              index <
-                                              subSubfield.state.value ? (
-                                                <Icon
-                                                  className="text-primary"
-                                                  key={index}
-                                                  path={mdiCircle}
-                                                  size={0.7}
-                                                />
-                                              ) : (
-                                                <Icon
-                                                  className="text-tertiary"
-                                                  key={index}
-                                                  path={mdiCircleOutline}
-                                                  size={0.7}
-                                                />
-                                              )
-                                            ) : index <
-                                              subSubfield.state.value ? (
-                                              <Icon
-                                                className="text-primary"
-                                                key={index}
-                                                path={mdiSquare}
-                                                size={1}
-                                              />
-                                            ) : (
-                                              <Icon
-                                                className="text-tertiary"
-                                                key={index}
-                                                path={mdiSquareOutline}
-                                                size={1}
-                                              />
-                                            )}
-                                          </button>
-                                        );
-                                      },
+                                            path={mdiSquare}
+                                            size={1}
+                                          />
+                                        ) : (
+                                          <Icon
+                                            className="text-tertiary"
+                                            key={index}
+                                            path={mdiSquareOutline}
+                                            size={1}
+                                          />
+                                        ),
                                     )}
+                                    <BtnIcon
+                                      path={mdiPlus}
+                                      active={
+                                        skillIncrease ||
+                                        getSkillPoints(skill) <
+                                          subSubfield.state.value
+                                      }
+                                      onClick={() => {
+                                        if (subSubfield.state.value < 4) {
+                                          subSubfield.handleChange(
+                                            subSubfield.state.value + 1,
+                                          );
+                                        }
+                                      }}
+                                    />
                                   </div>
                                 )}
                               </form.Field>

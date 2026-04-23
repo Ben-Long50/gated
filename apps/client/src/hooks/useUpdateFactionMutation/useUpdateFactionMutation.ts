@@ -8,15 +8,13 @@ const useUpdateFactionMutation = (campaignId: number, factionId: number) => {
     mutationFn: (formData: FormData) => {
       return updateFaction(formData, campaignId, factionId);
     },
-    onSuccess: () => {
-      toast('Faction successfully updated');
+    onSuccess: (data) => {
+      toast.success(data.message);
 
-      return queryClient.invalidateQueries({
-        queryKey: ['faction', factionId],
-      });
+      return queryClient.setQueryData(['faction', factionId], data.faction);
     },
     onError: (data) => {
-      toast(data.message);
+      toast.error(data.message);
     },
     throwOnError: false,
   });

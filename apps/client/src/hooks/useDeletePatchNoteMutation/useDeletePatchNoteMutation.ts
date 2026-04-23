@@ -10,17 +10,17 @@ const useDeletePatchNoteMutation = (patchNoteId: number) => {
     mutationFn: () => {
       return deletePatchNote(patchNoteId);
     },
-    onSuccess: () => {
-      toast('Patch note successfully deleted');
+    onSuccess: (data) => {
+      toast.success(data.message);
+
       navigate('/glam/codex');
 
-      return queryClient.invalidateQueries({
-        queryKey: ['patchNotes'],
-        exact: false,
+      return queryClient.removeQueries({
+        queryKey: ['patchNote', patchNoteId],
       });
     },
     onError: (data) => {
-      toast(data.message);
+      toast.error(data.message);
     },
     throwOnError: false,
   });

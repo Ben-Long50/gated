@@ -3,7 +3,6 @@ import ArrowHeader2 from '../ArrowHeader2';
 import { capitalCase } from 'change-case';
 import ThemeContainer from '../ThemeContainer';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import useModalStore from 'src/stores/modalStore';
 import BtnAuth from '../buttons/BtnAuth';
 
 const ModifierField = ({ form }: { form: FormApi }) => {
@@ -11,16 +10,16 @@ const ModifierField = ({ form }: { form: FormApi }) => {
   const location = useLocation();
   const parts = location.pathname.split('/');
 
-  const setBackgroundPath = useModalStore((state) => state.setBackgroundPath);
-
-  const openModifierModal = () => {
-    setBackgroundPath(location.pathname);
-    navigate('modifiers');
-  };
-
   return (
     <>
-      <BtnAuth onClick={() => openModifierModal()}>Add Stat Modifiers</BtnAuth>
+      <BtnAuth
+        className="w-full min-w-48"
+        onClick={() => {
+          navigate('modifiers');
+        }}
+      >
+        Add Stat Modifiers
+      </BtnAuth>
       <form.Field name="modifiers">
         {(field) => {
           const modifiedStats = Object.entries(field.state.value) || [];
@@ -28,7 +27,7 @@ const ModifierField = ({ form }: { form: FormApi }) => {
           return (
             <>
               {parts[parts.length - 1] === 'modifiers' && (
-                <Outlet context={{ form, field }} />
+                <Outlet context={{ form, parts }} />
               )}
               {modifiedStats.length > 0 && (
                 <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2">

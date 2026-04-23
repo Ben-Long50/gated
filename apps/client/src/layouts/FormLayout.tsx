@@ -86,12 +86,12 @@ const FormLayout = ({
               `Create ${label}`
             )}
           </BtnRect>
-          <BtnAuth className="ml-auto w-full" onClick={() => form.reset()}>
+          <BtnAuth className="w-full" onClick={() => form.reset()}>
             Reset Form
           </BtnAuth>
           {itemId && (
             <BtnAuth
-              className="ml-auto w-1/3"
+              className="w-full"
               onClick={() => deleteMutation?.mutate(Number(itemId))}
             >
               Delete

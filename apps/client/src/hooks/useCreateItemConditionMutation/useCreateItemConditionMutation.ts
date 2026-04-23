@@ -1,15 +1,23 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import createItemCondition from './createItemCondition';
-import { socket } from 'src/socket';
 import { Item } from 'src/types/item';
+import { useNavigate } from 'react-router-dom';
+import useModalStore from 'src/stores/modalStore';
+import { toast } from 'react-toastify';
 
 const useCreateItemConditionMutation = (
   itemId: number,
   characterId: number,
 ) => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  const backgroundPath = useModalStore((state) => state.backgroundPath);
+
   return useMutation({
-    mutationFn: (formData: { conditionId: number; stacks?: number }[]) => {
+    mutationFn: (
+      formData: { conditionId: number; stacks: number | null }[],
+    ) => {
       return createItemCondition(itemId, formData);
     },
 
@@ -40,15 +48,17 @@ const useCreateItemConditionMutation = (
       return { prevItemData };
     },
 
-    onSuccess: (_, __, context) => {
-      socket.emit('item', {
-        itemId,
-        campaignId:
-          context.prevItemData?.characterInventory?.character.campaignId,
-      });
-      return queryClient.invalidateQueries({
-        queryKey: ['item', itemId],
-      });
+    onSuccess: (data) => {
+      toast.success(data.message);
+
+      queryClient.setQueryData(['item', data.item.id], data.item);
+
+      if (backgroundPath) {
+        navigate(backgroundPath, { replace: true });
+      }
+    },
+    onError: (data) => {
+      toast.error(data.message);
     },
     throwOnError: false,
   });

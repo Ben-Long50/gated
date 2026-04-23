@@ -1,35 +1,27 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useParams } from 'react-router-dom';
 import deleteCharacter from './deleteCharacter';
-import { useContext } from 'react';
-import { AuthContext } from '../../contexts/AuthContext';
-import { socket } from 'src/socket';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const useDeleteCharacterMutation = (characterId: number) => {
-  const { user } = useContext(AuthContext);
-  const { campaignId } = useParams();
-
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   return useMutation({
     mutationFn: () => {
       return deleteCharacter(characterId);
     },
-    onSuccess: () => {
-      toast('Character successfully deleted');
-      if (campaignId) {
-        queryClient.invalidateQueries({
-          queryKey: ['campaign', Number(campaignId)],
-        });
-        socket.emit('campaign', Number(campaignId));
-      }
-      queryClient.invalidateQueries({
-        queryKey: ['user', user.id],
+    onSuccess: (data) => {
+      toast.success(data.message);
+
+      navigate(-1);
+
+      queryClient.removeQueries({
+        queryKey: ['character', characterId],
       });
     },
     onError: (data) => {
-      toast(data.message);
+      toast.error(data.message);
     },
     throwOnError: false,
   });

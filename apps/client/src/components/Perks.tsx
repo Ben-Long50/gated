@@ -3,7 +3,7 @@ import { useContext } from 'react';
 import usePerks from '../hooks/usePerks';
 import ThemeContainer from './ThemeContainer';
 import { ThemeContext } from '../contexts/ThemeContext';
-import { FieldApi, useForm } from '@tanstack/react-form';
+import { FormApi, useForm } from '@tanstack/react-form';
 import InputField from './InputField';
 import Loading from './Loading';
 import ArrowHeader2 from './ArrowHeader2';
@@ -15,21 +15,15 @@ import {
 } from 'src/types/attributeTree';
 import Icon from '@mdi/react';
 import { mdiSync } from '@mdi/js';
-import { useLocation } from 'react-router-dom';
 
 const Perks = ({
-  field,
-  forcedMode,
+  form,
   attributeTree,
 }: {
-  field?: FieldApi;
-  forcedMode?: string;
+  form?: FormApi;
   attributeTree?: AttributeTree;
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
-  const location = useLocation();
-  const parts = location.pathname.split('/').filter(Boolean);
-  const mode = forcedMode || parts[parts.length - 2];
 
   const perks = usePerks(attributeTree);
 
@@ -46,7 +40,7 @@ const Perks = ({
     },
   });
 
-  if (perks.isLoading || perks.isPending) {
+  if (perks.isLoading) {
     return <Loading />;
   }
 
@@ -137,7 +131,7 @@ const Perks = ({
         className="w-full"
         borderColor={accentPrimary}
       >
-        <PerkList perkTree={perks.filteredPerkTree} mode={mode} field={field} />
+        <PerkList perkTree={perks.filteredPerkTree} form={form} />
       </ThemeContainer>
     </div>
   );

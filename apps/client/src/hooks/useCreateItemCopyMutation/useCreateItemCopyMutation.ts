@@ -8,11 +8,13 @@ const useCreateItemCopyMutation = (itemId: number) => {
     mutationFn: () => {
       return createItem(itemId);
     },
-    onSuccess: () => {
-      toast('Item successfully copied');
+    onSuccess: (data) => {
+      toast.success(data.message);
+
+      queryClient.setQueryData(['item', data.item.id], data.item);
     },
     onError: (data) => {
-      toast(data.message);
+      toast.error(data.message);
     },
     throwOnError: false,
   });

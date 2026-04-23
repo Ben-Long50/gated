@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import editCart from './editCart';
 import { useRef } from 'react';
 import { Character } from 'src/types/character';
+import { toast } from 'react-toastify';
 
 const useEditCartMutation = (characterId: number, cartId: number) => {
   const queryClient = useQueryClient();
@@ -22,11 +23,11 @@ const useEditCartMutation = (characterId: number, cartId: number) => {
 
           updateBuffer.current = 0;
 
-          await editCart(characterId, cartId, {
+          const character = await editCart(characterId, cartId, {
             itemId: formData.itemId,
             value: finalValue,
           });
-          resolve(finalValue);
+          resolve(character);
         }, 1000);
       });
     },
@@ -93,10 +94,13 @@ const useEditCartMutation = (characterId: number, cartId: number) => {
       return { prevCharacterData };
     },
 
-    onSuccess: () => {
-      return queryClient.invalidateQueries({
-        queryKey: ['character', characterId],
-      });
+    onSuccess: (data) => {
+      toast.success(data.message);
+
+      queryClient.setQueryData(['character', characterId], data.character);
+    },
+    onError: (data) => {
+      toast.error(data.message);
     },
     throwOnError: false,
   });

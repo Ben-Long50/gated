@@ -13,12 +13,11 @@ import ResumeForm from 'src/components/forms/ResumeForm';
 import InventoryModal from 'src/components/modals/InventoryModal';
 import NpcPreferenceModal from 'src/components/modals/NpcPreferenceModal';
 import PerkLinkModal from 'src/components/modals/PerkLinkModal';
-import ItemUpgradeTutorialModal from 'src/components/modals/tutorials/ItemUpgradeTutorialModal';
 import KeywordLinkModal from 'src/components/modals/KeywordLinkModal';
 import ItemUpdateModal from 'src/components/modals/ItemUpdateModal';
 import ConditionModal from 'src/components/modals/ConditionModal';
 import DescriptionModal from 'src/components/modals/DescriptionModal';
-import ShopModal from 'src/components/modals/ShopModal';
+import Shop from 'src/components/Shop';
 import Items from 'src/components/Items';
 import AffiliationModal from 'src/components/modals/AffiliationModal';
 import Modal from 'src/components/modals/Modal';
@@ -41,14 +40,11 @@ const CharacterRoutes = () => {
         <Route path="create" element={<AffiliationForm />} />
       </Route>
       <Route path="shop">
-        <Route path="global" element={<ShopModal />}>
+        <Route path="global" element={<Shop />}>
           <Route path="cart" element={<Cart />} />
-          <Route path=":category" element={<Items />}>
-            <Route path="traits/:traitId" element={<DescriptionModal />} />
-          </Route>
-          <Route path=":category/:itemId" element={<ItemPage />} />
+          <Route path="items/:itemId" element={<ItemPage />} />
         </Route>
-        <Route path=":shopId" element={<ShopModal />}>
+        <Route path=":shopId" element={<Shop />}>
           <Route path="cart" element={<Cart />} />
           <Route path=":category" element={<Items />}>
             <Route path="traits/:traitId" element={<DescriptionModal />} />

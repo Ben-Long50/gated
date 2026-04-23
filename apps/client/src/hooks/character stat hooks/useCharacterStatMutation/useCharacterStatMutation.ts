@@ -1,8 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Character, CharacterStats } from 'src/types/character';
+import { Character } from 'src/types/character';
 import { useRef } from 'react';
-import { socket } from '../../../socket';
 import editCharacterStat from './editCharacterStat';
+import combineObjects from 'src/utils/combineObjects';
+import { toast } from 'react-toastify';
 
 const useCharacterStatMutation = () => {
   const queryClient = useQueryClient();
@@ -12,8 +13,7 @@ const useCharacterStatMutation = () => {
   const editCharacterStatMutation = useMutation({
     mutationFn: async (data: {
       characterId: number;
-      stat: keyof CharacterStats;
-      value: number;
+      stats: Record<string, number>;
     }) => {
       if (timeoutRef.current.get(data.characterId)) {
         clearTimeout(timeoutRef.current.get(data.characterId));
@@ -23,15 +23,7 @@ const useCharacterStatMutation = () => {
 
       updateBuffer.current.set(
         data.characterId,
-        prevBuffer && prevBuffer[data.stat]
-          ? {
-              ...prevBuffer,
-              [data.stat]: prevBuffer[data.stat] + data.value,
-            }
-          : {
-              ...prevBuffer,
-              [data.stat]: data.value,
-            },
+        combineObjects(prevBuffer, data.stats),
       );
 
       return new Promise((resolve) => {
@@ -40,9 +32,12 @@ const useCharacterStatMutation = () => {
 
           updateBuffer.current = new Map();
 
-          await editCharacterStat(data.characterId, data.stat, finalValue);
+          const characterData = await editCharacterStat(
+            data.characterId,
+            finalValue,
+          );
 
-          resolve(finalValue);
+          resolve(characterData);
         }, 1000);
 
         timeoutRef.current.set(data.characterId, timer);
@@ -56,55 +51,27 @@ const useCharacterStatMutation = () => {
         ['character', data.characterId],
       );
 
-      let adjustedValue = prevCharacterData.stats[data.stat] + data.value;
-
-      if (adjustedValue < 0) {
-        adjustedValue = 0;
-      }
-
-      switch (data.stat) {
-        case 'currentHealth':
-          if (
-            prevCharacterData?.stats.maxHealth &&
-            adjustedValue > prevCharacterData?.stats.maxHealth
-          ) {
-            adjustedValue = prevCharacterData?.stats.maxHealth;
-          }
-          break;
-        case 'currentSanity':
-          if (
-            prevCharacterData?.stats.maxSanity &&
-            adjustedValue > prevCharacterData?.stats.maxSanity
-          ) {
-            adjustedValue = prevCharacterData?.stats.maxSanity;
-          }
-          break;
-        default:
-          break;
-      }
-
       queryClient.setQueryData(
         ['character', data.characterId],
         (prev: Character) => ({
           ...prev,
-          stats: {
-            ...prev.stats,
-            [data.stat]: adjustedValue,
-          },
+          stats: combineObjects(prev.stats, data.stats),
         }),
       );
 
       return { prevCharacterData };
     },
 
-    onSuccess: (_, data, context) => {
-      socket.emit('character', {
-        characterId: data.characterId,
-        campaignId: context.prevCharacterData?.campaignId,
-      });
-      return queryClient.invalidateQueries({
-        queryKey: ['character', data.characterId],
-      });
+    onSuccess: (data) => {
+      toast.success(data.message);
+
+      queryClient.setQueryData(
+        ['character', data.character.id],
+        data.character,
+      );
+    },
+    onError: (data) => {
+      toast.error(data.message);
     },
     throwOnError: false,
   });

@@ -8,23 +8,16 @@ const KeywordLinkModal = () => {
   const { field } = useOutletContext() || {};
   const navigate = useNavigate();
 
-  const { backgroundPath } = useModalStore((state) => state.backgroundPath);
+  const backgroundPath = useModalStore((state) => state.backgroundPath);
 
   return (
     <Modal
       button={
         <BtnRect
-          type="button"
           ariaLabel="Close"
-          className="w-full"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (!backgroundPath) {
-              navigate('..', { replace: true });
-            } else {
+          onClick={() => {
+            if (backgroundPath) {
               navigate(backgroundPath, { replace: true });
-              navigate(-1);
             }
           }}
         >

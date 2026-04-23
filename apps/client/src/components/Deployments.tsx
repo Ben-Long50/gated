@@ -47,23 +47,14 @@ const Deployments = () => {
     }
   });
 
-  const setBackgroundPath = useModalStore((state) => state.setBackgroundPath);
-
-  const openInventoryModal = () => {
-    setBackgroundPath(location.pathname);
-    navigate('inventory');
-  };
-
   const toggleActive = (id: number | null, category: string | null) => {
     localStorage.setItem('activeDeployment', JSON.stringify({ id, category }));
     setActive({ id, category });
   };
 
-  const {
-    filteredCharacter: character,
-    isLoading,
-    isPending,
-  } = useCharacter(Number(characterId));
+  const { filteredCharacter: character, isLoading } = useCharacter(
+    Number(characterId),
+  );
 
   const activeItem = useMemo(() => {
     switch (active?.category) {
@@ -94,20 +85,20 @@ const Deployments = () => {
     );
   }, [activeItem, character]);
 
-  if (isLoading || isPending) return <Loading />;
+  if (isLoading) return <Loading />;
 
   if (!character) return <h1>Character not found</h1>;
 
   return (
     <div className="relative flex w-full max-w-9xl flex-col items-center gap-8">
-      <NavTabs>
+      {/* <NavTabs>
         <Link to="..">
           <BtnAuth>Character Sheet</BtnAuth>
         </Link>
         <Link to="../equipment">
           <BtnAuth>Equipment</BtnAuth>
         </Link>
-      </NavTabs>
+      </NavTabs> */}
       <div className="flex items-center gap-4">
         <h1 className="text-center">Deployment</h1>
         {activeItem && <ArrowHeader1 title={activeItem.name} />}
@@ -146,9 +137,8 @@ const Deployments = () => {
                 <BtnRect
                   ariaLabel="Open inventory"
                   type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    openInventoryModal();
+                  onClick={() => {
+                    navigate('inventory');
                   }}
                 >
                   Open Garage

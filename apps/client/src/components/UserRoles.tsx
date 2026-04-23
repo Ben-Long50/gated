@@ -7,12 +7,12 @@ import ArrowHeader2 from './ArrowHeader2';
 import InputSelectField from './InputSelectField';
 import Icon from '@mdi/react';
 import { mdiContentSaveOutline, mdiSync } from '@mdi/js';
-import useUsersQuery from '../hooks/useUsersQuery/useUsersQuery';
+import useUsersQuery from '../hooks/user hooks/useUsersByUsernameQuery';
 import { AuthContext } from '../contexts/AuthContext';
 import InputFieldBasic from './InputFieldBasic';
 import AccountPicture from './AccountPicture';
 import { User } from 'src/types/user';
-import useUpdateUserRoleMutation from '../hooks/useUpdateUserRoleMutation/useUpdateUserRoleMutation';
+import useUpdateUserRoleMutation from '../hooks/user hooks/useUpdateUserRoleMutation';
 import FormLayout from '../layouts/FormLayout';
 
 const UserRoleForm = ({

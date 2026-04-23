@@ -4,7 +4,6 @@ import ArrowHeader3 from './ArrowHeader3';
 import ThemeContainer from './ThemeContainer';
 import { useContext } from 'react';
 import { ThemeContext } from '../contexts/ThemeContext';
-import { AuthContext } from '../contexts/AuthContext';
 import Loading from './Loading';
 import BtnRect from './buttons/BtnRect';
 import DieIcon from './icons/DieIcon';
@@ -16,19 +15,14 @@ import useCampaignQuery from '../hooks/useCampaignQuery/useCampaignQuery';
 import useCampaignRollMutation from '../hooks/campaign hooks/useCampaignRollMutation/useCampaignRollMutation';
 import { LayoutContext } from '../contexts/LayoutContext';
 import { capitalCase } from 'change-case';
-import useModalStore from 'src/stores/modalStore';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import calculateDiceCount from 'src/utils/calculateDiceCount';
-import ArrowHeader2 from './ArrowHeader2';
-import { Character } from 'src/types/character';
-import { Action } from 'src/types/action';
 import useCharacterQueries from 'src/hooks/useCharactersQuery/useCharacterQueries';
 
 const RollSimulator = () => {
-  const { user } = useContext(AuthContext);
   const { mobile } = useContext(LayoutContext);
   const { accentPrimary } = useContext(ThemeContext);
-  const { rolls, rolling, rollComplete } = useContext(CampaignContext);
+  const { rolls, rolling } = useContext(CampaignContext);
   const navigate = useNavigate();
   const location = useLocation();
   const parts = location.pathname.split('/');
@@ -41,44 +35,32 @@ const RollSimulator = () => {
   const campaignRoll = useCampaignRollMutation(Number(campaignId));
 
   const { characters } = useCharacterQueries(
-    campaign?.characters.map((character) => character.id),
+    campaign?.characters.map((character) => character.id) || [],
   );
 
   const { filteredActions: actions } = useActions();
 
-  const setBackgroundPath = useModalStore((state) => state.setBackgroundPath);
-
-  const openRollModal = () => {
-    setBackgroundPath(location.pathname);
-    navigate('rollResults');
-  };
-
   const rollForm = useForm({
     defaultValues: {
-      character: null as Character | null,
-      action: null as Action | null,
+      characterId: null as number | null,
+      actionId: null as number | null,
       modifiers: [] as string[],
-      extraDice: null,
+      extraDice: null as number | null,
     },
     onSubmit: ({ value }) => {
-      campaignRoll.mutate({
-        character: value.character,
-        action: value.action,
-        modifiers: value.modifiers,
-        extraDice: value.extraDice,
-      });
-      openRollModal();
+      campaignRoll.mutate(value);
+      navigate('rollResults');
     },
     validators: {
       onSubmit: ({ value }) => {
         const errors = [];
-        if (!value.character) {
+        if (!value.characterId) {
           errors.push('Select a character');
         }
-        if (!value.action) {
+        if (!value.actionId) {
           errors.push('Select an action');
         }
-        return errors.length > 0 ? errors.join(', ') : undefined;
+        return errors.length > 0 ? errors.join(',') : undefined;
       },
     },
   });
@@ -95,13 +77,14 @@ const RollSimulator = () => {
         chamfer="medium"
       >
         <div className={`flex w-full flex-col gap-8 p-4`}>
-          <rollForm.Field name="character">
+          <rollForm.Field name="characterId">
             {(field) => (
               <div className="flex w-full flex-col gap-8">
                 <InputSelectField
                   field={field}
-                  options={characters}
+                  options={characters || []}
                   label="Character"
+                  onChange={(e) => field.handleChange(e.target.value.id)}
                 />
               </div>
             )}
@@ -110,12 +93,13 @@ const RollSimulator = () => {
             className={`${mobile ? 'row-span-1' : 'col-start-2 row-start-1 row-end-3'} mb-auto flex flex-col items-start justify-start gap-8`}
           >
             <ArrowHeader3 title="Roll Options" />
-            <rollForm.Field name="action">
+            <rollForm.Field name="actionId">
               {(field) => (
                 <InputSelectField
                   options={actions || []}
                   label="Action"
                   field={field}
+                  onChange={(e) => field.handleChange(e.target.value.id)}
                 />
               )}
             </rollForm.Field>
@@ -241,7 +225,7 @@ const RollSimulator = () => {
         </div>
       </ThemeContainer>
       {parts.includes('rollSimulator') && (
-        <Outlet context={{ rolls, rolling, rollForm }} />
+        <Outlet context={{ rolls, rolling, rollForm, parts }} />
       )}
     </div>
   );

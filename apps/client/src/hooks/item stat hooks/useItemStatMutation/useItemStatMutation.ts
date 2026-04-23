@@ -1,8 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRef } from 'react';
-import { Item, Stats } from 'src/types/item';
-import { socket } from 'src/socket';
+import { Item } from 'src/types/item';
 import editItemStat from './editItemStat';
+import combineObjects from 'src/utils/combineObjects';
+import { toast } from 'react-toastify';
 
 const useItemStatMutation = () => {
   const queryClient = useQueryClient();
@@ -10,40 +11,32 @@ const useItemStatMutation = () => {
   const timeoutRef = useRef(new Map());
 
   return useMutation({
-    mutationFn: (data: {
-      itemId: number;
-      stat: keyof Stats;
-      value: number;
-    }) => {
+    mutationFn: (data: { itemId: number; stats: Record<string, number> }) => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current.get(data.itemId));
       }
+
+      console.log(data.stats);
 
       const prevBuffer = updateBuffer.current.get(data.itemId);
 
       updateBuffer.current.set(
         data.itemId,
-        prevBuffer && prevBuffer[data.stat]
-          ? {
-              ...prevBuffer,
-              [data.stat]: prevBuffer[data.stat] + data.value,
-            }
-          : {
-              ...prevBuffer,
-              [data.stat]: data.value,
-            },
+        combineObjects(prevBuffer, data.stats),
       );
 
       return new Promise((resolve) => {
         const timer = setTimeout(async () => {
           const finalValue = updateBuffer.current.get(data.itemId);
 
+          console.log(finalValue);
+
           updateBuffer.current = new Map();
 
-          await editItemStat(data.itemId, data.stat, finalValue);
+          const itemData = await editItemStat(data.itemId, finalValue);
 
           clearTimeout(timeoutRef.current.get(data.itemId));
-          resolve(finalValue);
+          resolve(itemData);
         }, 1000);
 
         timeoutRef.current.set(data.itemId, timer);
@@ -58,36 +51,20 @@ const useItemStatMutation = () => {
         data.itemId,
       ]);
 
-      let adjustedValue = prevItemData.stats[data.stat] + data.value;
-
-      if (adjustedValue < 0) {
-        adjustedValue = 0;
-      }
-
-      const newItemData = queryClient.setQueryData(
-        ['item', data.itemId],
-        (prev: Item) => ({
-          ...prev,
-          stats: {
-            ...prev.stats,
-            [data.stat]: adjustedValue,
-          },
-        }),
-      ) as Item;
-
-      console.log(newItemData);
+      queryClient.setQueryData(['item', data.itemId], (prev: Item) => ({
+        ...prev,
+        stats: combineObjects(prev.stats, data.stats),
+      })) as Item;
 
       return { prevItemData };
     },
-    onSuccess: (_, data, context) => {
-      socket.emit('item', {
-        itemId: data.itemId,
-        campaignId:
-          context.prevItemData?.characterInventory?.character.campaignId,
-      });
-      return queryClient.invalidateQueries({
-        queryKey: ['item', data.itemId],
-      });
+    onSuccess: (data) => {
+      toast.success(data.message);
+
+      queryClient.setQueryData(['item', data.item.id], data.item);
+    },
+    onError: (data) => {
+      toast.error(data.message);
     },
     throwOnError: false,
   });

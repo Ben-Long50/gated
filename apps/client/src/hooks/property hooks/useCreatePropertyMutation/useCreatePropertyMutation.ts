@@ -13,14 +13,14 @@ const useCreatePropertyMutation = (propertyId?: number) => {
         ? 'Property successfully updated'
         : 'Property successfully created';
 
-      toast(message);
+      toast.success(data.message);
 
       return queryClient.invalidateQueries({
         queryKey: ['properties'],
       });
     },
     onError: (data) => {
-      toast(data.message);
+      toast.error(data.message);
     },
     throwOnError: false,
   });

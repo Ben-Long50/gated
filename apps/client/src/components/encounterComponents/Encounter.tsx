@@ -374,6 +374,7 @@ const Encounter = () => {
         <Outlet
           context={{
             campaign,
+            parts,
           }}
         />
       )}

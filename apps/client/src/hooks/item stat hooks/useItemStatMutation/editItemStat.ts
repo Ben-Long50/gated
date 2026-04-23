@@ -1,7 +1,7 @@
 import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../../handleResponse';
 
-const editItemStat = async (itemId: number, stat: string, value: number) => {
+const editItemStat = async (itemId: number, stats: Record<string, number>) => {
   try {
     const response = await fetch(`${apiUrl}/items/${itemId}/stats`, {
       method: 'PATCH',
@@ -9,7 +9,7 @@ const editItemStat = async (itemId: number, stat: string, value: number) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ stat, value }),
+      body: JSON.stringify(stats),
     });
     const data = await handleResponse(response);
 

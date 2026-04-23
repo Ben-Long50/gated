@@ -3,8 +3,7 @@ import handleResponse from '../../handleResponse';
 
 const resetCharacterStat = async (
   characterId: number,
-  stat: string,
-  value: number,
+  stats: Record<string, number>,
 ) => {
   try {
     const response = await fetch(
@@ -15,10 +14,7 @@ const resetCharacterStat = async (
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          stat,
-          value,
-        }),
+        body: JSON.stringify(stats),
       },
     );
     const data = await handleResponse(response);

@@ -2,11 +2,10 @@ import { FormApi, FormState } from '@tanstack/react-form';
 import BtnRect from '../buttons/BtnRect';
 import Icon from '@mdi/react';
 import { mdiClose } from '@mdi/js';
-import { Perk } from 'src/types/perk';
 import PerkCard from '../PerkCard';
 import { AttributeTree } from 'src/types/attributeTree';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import useModalStore from 'src/stores/modalStore';
+import BtnAuth from '../buttons/BtnAuth';
 
 const PerkLinkField = ({
   form,
@@ -19,33 +18,34 @@ const PerkLinkField = ({
   const location = useLocation();
   const parts = location.pathname.split('/');
 
-  const setBackgroundPath = useModalStore((state) => state.setBackgroundPath);
-
-  const openPerkLinkModal = () => {
-    setBackgroundPath(location.pathname);
-    navigate('perks');
-  };
-
   return (
     <>
-      <form.Subscribe selector={(state: FormState) => state.values.perks}>
-        {(perks: Perk[]) => (
+      <BtnAuth
+        className="w-full min-w-48"
+        onClick={() => {
+          navigate('perks');
+        }}
+      >
+        Link Perks
+      </BtnAuth>
+      <form.Subscribe selector={(state: FormState) => state.values.perkIds}>
+        {(perkIds: number[]) => (
           <>
             <form.Field name="perks">
               {(field) => (
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   {parts[parts.length - 1] === 'perks' && (
-                    <Outlet context={{ field, attributeTree }} />
+                    <Outlet context={{ form, attributeTree, parts }} />
                   )}
-                  {perks.map((perk: Perk) => {
+                  {perkIds.map((perkId: number) => {
                     return (
-                      <div className="flex items-center gap-2" key={perk.id}>
-                        <PerkCard perk={perk} key={perk.id} />
+                      <div className="flex items-center gap-2" key={perkId}>
+                        <PerkCard perkId={perkId} />
                         <button
                           onClick={() => {
                             field.handleChange(
                               field.state.value.filter(
-                                (item: Perk) => item.id !== perk.id,
+                                (id: number) => id !== perkId,
                               ),
                             );
                           }}
@@ -64,17 +64,6 @@ const PerkLinkField = ({
           </>
         )}
       </form.Subscribe>
-      <BtnRect
-        className="w-1/3 min-w-48 self-end"
-        ariaLabel="Open link trait modal"
-        type="button"
-        onClick={(e) => {
-          e.preventDefault();
-          openPerkLinkModal();
-        }}
-      >
-        Link Perks
-      </BtnRect>
     </>
   );
 };

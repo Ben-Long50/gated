@@ -1,4 +1,4 @@
-import { Outlet, useNavigate, useParams } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import CoverPicture from './CoverPicture';
 import { capitalCase } from 'change-case';
 import Loading from './Loading';
@@ -17,13 +17,14 @@ import StatBar from './StatBar';
 import BtnRect from './buttons/BtnRect';
 import ArrowHeader2 from './ArrowHeader2';
 import { useForm } from '@tanstack/react-form';
-import useCreateGangMutation from 'src/hooks/gang hooks/useCreateGangMutation/useCreateGangMutation';
 import useUpdateGangCharactersMutation from 'src/hooks/gang hooks/updateGangCharactersMutation/useUpdateGangCharactersMutation';
 
 const GangPage = () => {
   const { accentPrimary } = useContext(ThemeContext);
   const { campaignId, gangId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const parts = location.pathname.split('/');
 
   const {
     gang,
@@ -192,7 +193,7 @@ const GangPage = () => {
           </div>
         </div>
       </div>
-      <Outlet context={{ gang, form: gangCharactersForm }} />
+      <Outlet context={{ gang, form: gangCharactersForm, parts }} />
     </>
   );
 };

@@ -7,9 +7,7 @@ import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import { useContext, useState } from 'react';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
-import { AuthContext } from 'src/contexts/AuthContext';
 import Loading from './Loading';
-import useModalStore from 'src/stores/modalStore';
 import BtnIcon from './buttons/BtnIcon';
 import { Month } from 'src/types/campaign';
 import Divider from './Divider';
@@ -36,18 +34,6 @@ const Calendar = () => {
   ];
 
   const colorValue = accentPrimary.concat('80');
-
-  const setBackgroundPath = useModalStore((state) => state.setBackgroundPath);
-
-  const openCalendarModal = (month: string, day: number) => {
-    setBackgroundPath(location.pathname);
-    navigate(`calendar/${month}/${day}`);
-  };
-
-  const openTimeModal = () => {
-    setBackgroundPath(location.pathname);
-    navigate(`calendar/time`);
-  };
 
   const { data: campaign, isLoading: campaignLoading } = useCampaignQuery(
     Number(campaignId),
@@ -77,10 +63,16 @@ const Calendar = () => {
             <h2>{campaign?.date.day}</h2>
           </div>
           <div className="flex items-center gap-4">
-            <button onClick={() => openTimeModal()}>
-              <h2>{format(time, 'HH:mm:ss')}</h2>
+            <button
+              onClick={() => {
+                navigate(`calendar/time`);
+              }}
+            >
+              <h2>{time ? format(time, 'HH:mm:ss') : ''}</h2>
             </button>
-            {parts.includes('time') && <Outlet context={campaign?.time} />}
+            {parts.includes('time') && (
+              <Outlet context={{ time: campaign?.time, parts }} />
+            )}
             <BtnIcon path={mdiPlay} active={true} onClick={() => {}} />
           </div>
         </div>
@@ -126,7 +118,9 @@ const Calendar = () => {
                   }}
                   onMouseEnter={() => setHoveredIndex(index)}
                   onMouseLeave={() => setHoveredIndex(null)}
-                  onClick={() => openCalendarModal(month, index + 1)}
+                  onClick={() => {
+                    navigate(`calendar/${month}/${day}`);
+                  }}
                 >
                   <p className="absolute right-0.5 top-0.5 text-right text-xs">
                     {index + 1}
@@ -156,7 +150,7 @@ const Calendar = () => {
                       </div>
                     ))}
                   {parts.includes('calendar') && Number(day) === index + 1 && (
-                    <Outlet context={{ eventArray }} />
+                    <Outlet context={{ eventArray, parts }} />
                   )}
                 </button>
               );

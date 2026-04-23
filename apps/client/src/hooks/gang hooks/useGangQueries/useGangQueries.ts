@@ -1,5 +1,6 @@
 import { useQueries } from '@tanstack/react-query';
 import getGang from '../useGangQuery/getGang';
+import { Gang } from 'src/types/gang';
 
 const useGangQueries = (gangIds: number[]) => {
   return useQueries<Gang[]>({

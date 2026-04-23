@@ -26,6 +26,7 @@ import PerkCard from './PerkCard';
 import AttributeList from './AttributeList';
 import getLevelBonusData from 'src/utils/getLevelBonusData';
 import { Perk } from 'src/types/perk';
+import usePerkQueries from 'src/hooks/usePerkQueries/usePerkQueries';
 
 const ProgressionPage = () => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -41,6 +42,8 @@ const ProgressionPage = () => {
     isLoading,
     isPending,
   } = useCharacter(Number(characterId));
+
+  usePerkQueries(character?.perks?.map((perk) => perk.id) || []);
 
   if (isLoading || isPending) {
     return <Loading />;
@@ -235,7 +238,7 @@ const ProgressionPage = () => {
                       <p>Legacy level up bonuses are not displayed</p>
                     ) : null}
                     {characterLevelBonus ? (
-                      <div className="bg-primary shadow-color mt-2 flex flex-col gap-4 p-4">
+                      <div className="flex flex-col gap-4 p-4">
                         {characterLevelBonus &&
                           characterLevelBonus.attributes && (
                             <AttributeList
@@ -245,7 +248,7 @@ const ProgressionPage = () => {
                         {characterLevelBonus &&
                           characterLevelBonus.perks &&
                           characterLevelBonus.perks.map((perk: Perk) => (
-                            <PerkCard perk={perk} />
+                            <PerkCard perkId={perk.id} />
                           ))}
                       </div>
                     ) : null}
@@ -355,7 +358,7 @@ const ProgressionPage = () => {
           })}
         </div>
       </ThemeContainer>
-      {parts.includes('levelBonus') && <Outlet />}
+      {parts.includes('levelBonus') && <Outlet context={{ parts }} />}
     </div>
   );
 };

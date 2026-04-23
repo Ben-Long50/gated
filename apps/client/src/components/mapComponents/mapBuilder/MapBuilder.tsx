@@ -31,6 +31,7 @@ import MapHeader from '../map/MapHeader';
 import TilePicker from './TilePicker';
 import ArrowHeader4 from 'src/components/ArrowHeader4';
 import { capitalCase } from 'change-case';
+import useMapForm from 'src/hooks/form hooks/useMapForm';
 
 const MapBuilder = () => {
   const { mobile } = useContext(LayoutContext);
@@ -106,66 +107,7 @@ const MapBuilder = () => {
 
   const createMap = useCreateMapMutation(Number(campaignId), Number(mapId));
 
-  const defaultWidth = map?.width ?? 24;
-  const defaultHeight = map?.height ?? 14;
-
-  const mapForm = useForm({
-    defaultValues: {
-      id: map?.id || null,
-      type: map?.type || ('map' as MapType),
-      draft: map?.draft ?? true,
-      name: map?.name || '',
-      description: map?.description || '',
-      width: map?.width || defaultWidth,
-      height: map?.height || defaultHeight,
-      baseColor: map?.baseColor || 'black',
-      layerCount: map?.layerCount || 1,
-      layers: map?.layers || [
-        {
-          name: 'Layer 1',
-          id: 1,
-          hidden: false,
-          componentCount: 0,
-          components: [],
-        },
-      ],
-      picture: null as null | File,
-      publicId: map?.picture.publicId || '',
-    },
-    onSubmit: async ({ value }) => {
-      console.log(value);
-
-      if (mapRef.current) {
-        const canvas = await html2canvas(mapRef.current);
-
-        const blob = await new Promise<Blob | null>((resolve) => {
-          canvas.toBlob((blob) => resolve(blob), 'image/png');
-        });
-
-        if (!blob) return;
-
-        const fileName = value.name.split(' ').join('_').toLowerCase();
-
-        const file = new File([blob], `${fileName}.png`, { type: 'image/png' });
-        value.picture = file;
-      }
-
-      const formData = new FormData();
-
-      const { publicId, ...data } = value;
-
-      Object.entries(data).forEach(([key, value]) => {
-        if (key === 'picture' && value instanceof File) {
-          formData.append(key, value);
-        } else {
-          formData.append(key, JSON.stringify(value));
-        }
-      });
-
-      createMap.mutate(formData);
-      localStorage.removeItem('mapDraft');
-    },
-  });
+  const mapForm = useMapForm(createMap, mapRef, map);
 
   const handleAddLayer = () => {
     const currentLayers = mapForm.getFieldValue('layers');

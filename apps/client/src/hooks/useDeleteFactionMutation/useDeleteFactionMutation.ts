@@ -10,21 +10,17 @@ const useDeleteFactionMutation = (campaignId: number, factionId: number) => {
     mutationFn: () => {
       return deleteFaction(campaignId, factionId);
     },
-    onSuccess: () => {
-      toast('Faction successfully deleted');
+    onSuccess: (data) => {
+      toast.success(data.message);
 
       navigate(`/glam/campaigns/${campaignId}`);
 
-      queryClient.invalidateQueries({
+      queryClient.removeQueries({
         queryKey: ['faction', factionId],
-      });
-
-      return queryClient.invalidateQueries({
-        queryKey: ['campaign', campaignId],
       });
     },
     onError: (data) => {
-      toast(data.message);
+      toast.error(data.message);
     },
     throwOnError: false,
   });

@@ -10,20 +10,15 @@ const useDeleteCampaignMutation = (campaignId: number) => {
     mutationFn: () => {
       return deleteCampaign(campaignId);
     },
-    onSuccess: () => {
-      toast('Campaign successfully deleted');
+    onSuccess: (data) => {
+      toast.success(data.message);
 
       navigate('/glam/campaigns');
 
       queryClient.removeQueries({ queryKey: ['campaign', campaignId] });
-
-      return queryClient.invalidateQueries({
-        queryKey: ['campaigns'],
-        exact: false,
-      });
     },
     onError: (data) => {
-      toast(data.message);
+      toast.error(data.message);
     },
     throwOnError: false,
   });

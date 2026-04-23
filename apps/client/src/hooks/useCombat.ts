@@ -10,7 +10,6 @@ import useCharacter from './useCharacter';
 import useResetCharacterStatMutation from './character stat hooks/useResetCharacterStatMutation/useResetCharacterStatMutation';
 import { useQueryClient } from '@tanstack/react-query';
 import { Character } from 'src/types/character';
-import useCharacterStatHandlers from './character stat hooks/useCharacterStatMutation/useCharacterStatHandlers';
 import useCombatStore from 'src/stores/combatStore';
 import useAdvanceTurnMutation from './encounter hooks/useAdvanceTurnMutation/useAdvanceTurnMutation';
 import useRollActionMutation from './encounter hooks/useRollActionMutation/useRollActionMutation';
@@ -202,8 +201,6 @@ const useCombat = () => {
     }
   }, [combat?.turnPosition, activeCharacter, gameMaster, user.id]);
 
-  const setItem = useCombatStore((state) => state.setItem);
-
   const resetCharacterStat = useResetCharacterStatMutation();
 
   const encounterPermissions = useMemo(
@@ -250,13 +247,10 @@ const useCombat = () => {
       ) {
         resetCharacterStat.mutate({
           characterId: character.id,
-          stat: 'currentHands',
-          value: character.stats.hands,
-        });
-        resetCharacterStat.mutate({
-          characterId: character.id,
-          stat: 'currentFeet',
-          value: character.stats.feet,
+          stats: {
+            currentHands: character.stats.hands,
+            currentFeet: character.stats.feet,
+          },
         });
       }
     }
@@ -271,23 +265,12 @@ const useCombat = () => {
     ) {
       resetCharacterStat.mutate({
         characterId: nextCharacter.id,
-        stat: 'currentActions',
-        value: nextCharacter.stats.actions,
-      });
-      resetCharacterStat.mutate({
-        characterId: nextCharacter.id,
-        stat: 'currentReactions',
-        value: nextCharacter.stats.reactions,
-      });
-      resetCharacterStat.mutate({
-        characterId: nextCharacter.id,
-        stat: 'currentHands',
-        value: nextCharacter.stats.hands,
-      });
-      resetCharacterStat.mutate({
-        characterId: nextCharacter.id,
-        stat: 'currentFeet',
-        value: nextCharacter.stats.feet,
+        stats: {
+          currentActions: nextCharacter.stats.actions,
+          currentReactions: nextCharacter.stats.reactions,
+          currentHands: nextCharacter.stats.hands,
+          currentFeet: nextCharacter.stats.feet,
+        },
       });
     }
 

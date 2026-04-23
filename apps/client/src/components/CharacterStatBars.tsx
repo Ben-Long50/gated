@@ -35,8 +35,7 @@ const CharacterStatBars = ({
           mutation={(value: number) => {
             editCharacterStat.mutate({
               characterId,
-              stat: 'currentHealth',
-              value,
+              stats: { currentHealth: value },
             });
           }}
           mode="adjustable"
@@ -57,8 +56,7 @@ const CharacterStatBars = ({
           mutation={(value: number) => {
             editCharacterStat.mutate({
               characterId,
-              stat: 'currentSanity',
-              value,
+              stats: { currentSanity: value },
             });
           }}
           mode="adjustable"

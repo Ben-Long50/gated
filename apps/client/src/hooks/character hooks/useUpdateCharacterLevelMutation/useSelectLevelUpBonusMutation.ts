@@ -1,6 +1,4 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { socket } from 'src/socket';
-import { Character } from 'src/types/character';
 import selectLevelUpBonus from './selectLevelUpBonus';
 import { AttributeTree } from 'src/types/attributeTree';
 import { Perk } from 'src/types/perk';
@@ -14,28 +12,13 @@ const useSelectLevelUpBonusMutation = (characterId: number) => {
     mutationFn: (bonus: {
       level: number;
       attributes?: AttributeTree;
-      perks?: Perk[];
+      perkIds?: number[];
     }) => selectLevelUpBonus(characterId, bonus),
 
-    onSuccess: () => {
-      const character = queryClient.getQueryData([
-        'character',
-        characterId,
-      ]) as Character;
+    onSuccess: (data) => {
+      queryClient.setQueryData(['character', characterId], data.character);
 
       navigate('..');
-
-      if (character) {
-        socket.emit('character', {
-          characterId,
-          campaignId: character.campaignId,
-        });
-        return queryClient.invalidateQueries({
-          queryKey: ['character', characterId],
-        });
-      } else {
-        return;
-      }
     },
     throwOnError: false,
   });

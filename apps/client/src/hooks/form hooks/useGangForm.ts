@@ -12,22 +12,22 @@ const useGangForm = (
 
   const gangForm = useForm({
     defaultValues: {
-      id: gang?.id || null,
-      name: gang?.name || '',
-      profits: gang?.profits || null,
+      id: gang?.id ?? null,
+      name: gang?.name ?? '',
+      profits: gang?.profits ?? null,
       pictureFile: null as File | null,
-      picture: gang?.picture || {
-        imageUrl: '',
-        publicId: '',
-        position: { x: 50, y: 50 },
+      picture: {
+        imageUrl: gang?.picture.imageUrl ?? '',
+        publicId: gang?.picture.publicId ?? '',
+        position: gang?.picture.position ?? { x: 50, y: 50 },
       },
       background: {} as { html: string; nodes: string },
-      campaignId: gang?.campaignId || Number(campaignId),
-      factionId: gang?.factionId || null,
+      campaignId: gang?.campaignId ?? Number(campaignId),
+      factionId: gang?.factionId ?? null,
       leaderIds:
-        gang?.leaders.map((character) => character.id) || ([] as number[]),
+        gang?.leaders.map((character) => character.id) ?? ([] as number[]),
       characterIds:
-        gang?.characters.map((character) => character.id) || ([] as number[]),
+        gang?.characters.map((character) => character.id) ?? ([] as number[]),
     },
 
     onSubmit: async ({ value }) => {

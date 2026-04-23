@@ -3,6 +3,7 @@ import createCharacter from './createCharacter';
 import { toast } from 'react-toastify';
 import { useContext } from 'react';
 import { AuthContext } from 'src/contexts/AuthContext';
+import { User } from 'src/types/user';
 
 const useCreateCharacterMutation = () => {
   const { user } = useContext(AuthContext);
@@ -11,15 +12,28 @@ const useCreateCharacterMutation = () => {
     mutationFn: (formData: FormData) => {
       return createCharacter(formData);
     },
-    onSuccess: () => {
-      toast('Successfully created character');
+    onSuccess: (data) => {
+      toast.success(data.message);
 
-      return queryClient.invalidateQueries({
-        queryKey: ['user', user.id],
-      });
+      queryClient.setQueryData(
+        ['character', data.character.id],
+        data.character,
+      );
+
+      const prevUser: User | undefined = queryClient.getQueryData([
+        'user',
+        user.id,
+      ]);
+
+      if (prevUser) {
+        queryClient.setQueryData(['user', user.id], {
+          ...prevUser,
+          characters: [...prevUser.characters, { id: data.character.id }],
+        });
+      }
     },
     onError: (data) => {
-      toast(data.message);
+      toast.error(data.message);
     },
     throwOnError: false,
   });
