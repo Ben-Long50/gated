@@ -1,11 +1,4 @@
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react';
+import { createContext, ReactNode, useContext, useEffect, useRef } from 'react';
 import { socket } from '../socket';
 import { useQueryClient } from '@tanstack/react-query';
 import { AuthContext } from './AuthContext';
@@ -51,16 +44,16 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
 
   const { campaigns, isLoading } = useCampaignQueries(userCampaignIds);
 
-  const activeCampaigns = useMemo(
-    () => campaigns?.filter((campaign) => campaign?.active),
-    [campaigns],
-  );
+  const activeCampaigns =
+    campaigns?.filter((campaign) => campaign?.active) || [];
 
-  const { activeEncounters, inactiveEncounters } = useCombatQueries(
-    activeCampaigns.flatMap((campaign) =>
-      campaign?.encounters.map((encounter) => encounter.id),
-    ),
-  );
+  const encounterIds = activeCampaigns
+    ?.filter((campaign) => campaign != null)
+    .flatMap((campaign) => campaign.encounters.map((encounter) => encounter.id))
+    .filter((encounterId) => encounterId != null);
+
+  const { activeEncounters, inactiveEncounters } =
+    useCombatQueries(encounterIds);
 
   const activeCampaignRef = useRef<number[]>([]);
 
