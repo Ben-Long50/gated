@@ -15,6 +15,6 @@ export const AffiliationInput = z
         ((_f = (_e = data.characterIds) === null || _e === void 0 ? void 0 : _e.length) !== null && _f !== void 0 ? _f : 0);
     return total === 2;
 }, {
-    message: 'You may only have two entities associated with a single affiliation',
+    error: 'You may only have two entities associated with a single affiliation',
     path: ['factionIds'],
 });

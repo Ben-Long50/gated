@@ -1,6 +1,6 @@
 import express from 'express';
-import authentication from '../middleware/authentication';
-import affiliationController from '../controllers/affiliationController';
+import authentication from '../middleware/authentication.js';
+import affiliationController from '../controllers/affiliationController.js';
 
 const router = express.Router();
 
@@ -33,3 +33,5 @@ router.delete(
   authentication.authenticate,
   affiliationController.deleteAffiliation,
 );
+
+export default router;

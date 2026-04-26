@@ -4,6 +4,19 @@ import { AffiliationInput } from '../validation/affiliationSchema.js';
 import handleControllerError from './handleControllerError.js';
 
 const affiliationController = {
+  getBatchAffiliations: async (req: Request, res: Response) => {
+    try {
+      const affiliationIds = (req.query.ids as string).split(',').map(Number);
+
+      const affiliations =
+        await affiliationServices.getBatchAffiliations(affiliationIds);
+
+      res.status(200).json(affiliations);
+    } catch (error: any) {
+      handleControllerError(res, error);
+    }
+  },
+
   getAffiliationById: async (req: Request, res: Response) => {
     try {
       const affiliation = await affiliationServices.getAffiliationById(
@@ -11,25 +24,6 @@ const affiliationController = {
       );
 
       res.status(200).json(affiliation);
-    } catch (error: any) {
-      console.error(error.message);
-      if (error instanceof Error) {
-        res.status(500).json({ error: error.message });
-      }
-    }
-  },
-
-  getBatchAffiliations: async (req: Request, res: Response) => {
-    try {
-      if (!req.user) {
-        throw new Error('Could not find authenticated user');
-      }
-      const affiliationIds = (req.query.ids as string).split(',').map(Number);
-
-      const affiliations =
-        await affiliationServices.getBatchAffiliations(affiliationIds);
-
-      res.status(200).json(affiliations);
     } catch (error: any) {
       handleControllerError(res, error);
     }
@@ -47,11 +41,7 @@ const affiliationController = {
         message: 'Successfully created affiliation',
       });
     } catch (error: any) {
-      console.error(error.message);
-
-      if (error instanceof Error) {
-        res.status(500).json({ error: error.message });
-      }
+      handleControllerError(res, error);
     }
   },
 
@@ -67,10 +57,7 @@ const affiliationController = {
         message: 'Successfully updated affiliation value',
       });
     } catch (error: any) {
-      console.error(error.message);
-      if (error instanceof Error) {
-        res.status(500).json({ error: error.message });
-      }
+      handleControllerError(res, error);
     }
   },
 
@@ -82,10 +69,7 @@ const affiliationController = {
 
       res.status(200).json({ message: 'Successfully deleted affiliation' });
     } catch (error: any) {
-      console.error(error.message);
-      if (error instanceof Error) {
-        res.status(500).json({ error: error.message });
-      }
+      handleControllerError(res, error);
     }
   },
 };

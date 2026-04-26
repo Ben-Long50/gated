@@ -19,7 +19,7 @@ export const AffiliationInput = z
       return total === 2;
     },
     {
-      message:
+      error:
         'You may only have two entities associated with a single affiliation',
       path: ['factionIds'],
     },

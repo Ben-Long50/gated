@@ -28,6 +28,7 @@ import characterStatRouter from './routes/characterStatRoutes.js';
 import propertyRouter from './routes/propertyRoutes.js';
 import notesRouter from './routes/notesRoutes.js';
 import mapRouter from './routes/mapRoutes.js';
+import affiliationRouter from './routes/affiliationRoutes.js';
 import './passport/passport.js';
 import { NextFunction } from 'express-serve-static-core';
 
@@ -77,6 +78,7 @@ app.use('/', keywordRouter);
 app.use('/', actionRouter);
 app.use('/', factionRouter);
 app.use('/', gangRouter);
+app.use('/', affiliationRouter);
 app.use('/', itemRouter);
 app.use('/', conditionRouter);
 app.use('/', patchNoteRouter);
