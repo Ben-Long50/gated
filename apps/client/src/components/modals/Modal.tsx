@@ -46,7 +46,7 @@ const Modal = ({
         }}
       >
         <div
-          className={`${className} flex flex-col items-center gap-4 p-4 sm:gap-8 sm:p-8`}
+          className={`${className} flex flex-col items-center gap-4 p-8 pb-4`}
         >
           <BtnIcon
             active={true}

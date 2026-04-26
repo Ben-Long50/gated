@@ -1,23 +1,20 @@
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import Affiliations from './Affiliations';
-import { useContext } from 'react';
-import { AuthContext } from 'src/contexts/AuthContext';
+import { useContext, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Loading from './Loading';
 import ThemeContainer from './ThemeContainer';
 import { ThemeContext } from 'src/contexts/ThemeContext';
-import { useForm, useStore } from '@tanstack/react-form';
 import InputSelectField from './InputSelectField';
 import useAffiliationQueries from 'src/hooks/useAffiliationQueries/useAffiliationQueries';
 import Icon from '@mdi/react';
 import { mdiSync } from '@mdi/js';
-import { Faction } from 'src/types/faction';
-import { Character } from 'src/types/character';
 import ArrowHeader3 from './ArrowHeader3';
 
 const CampaignAffiliations = () => {
   const { accentPrimary } = useContext(ThemeContext);
   const { campaignId } = useParams();
+  const [entity, setEntity] = useState<any>(null);
 
   const { data: campaign, isLoading: campaignLoading } = useCampaignQuery(
     Number(campaignId),
@@ -28,26 +25,13 @@ const CampaignAffiliations = () => {
       campaign?.affiliations.map((affiliation) => affiliation.id) || [],
     );
 
-  const searchForm = useForm({
-    defaultValues: {
-      entity: '',
-    },
-    onSubmit: () => {
-      searchForm.reset();
-    },
-  });
-
-  const entity = useStore(searchForm.store, (state) => state.values.entity);
-
   const filteredAffiliations = entity
-    ? affiliations?.filter(
-        (affiliation) =>
-          affiliation?.factions?.some(
-            (faction: Faction) => faction.id === entity.id,
-          ) ||
-          affiliation?.characters?.some(
-            (character: Character) => character.id === entity.id,
-          ),
+    ? affiliations?.filter((affiliation) =>
+        [
+          ...affiliation?.factions,
+          ...affiliation?.gangs,
+          ...affiliation?.characters,
+        ].some((e: any) => e.name === entity.name),
       )
     : affiliations;
 
@@ -69,27 +53,23 @@ const CampaignAffiliations = () => {
           </div>
 
           <div className="flex w-full items-center gap-4">
-            <searchForm.Field name="entity">
-              {(field) => (
-                <InputSelectField
-                  field={field}
-                  label="Select Entity"
-                  options={[
-                    ...(campaign?.factions.sort((a, b) =>
-                      a.name.localeCompare(b.name),
-                    ) || []),
-                    ...(campaign?.characters.sort((a, b) =>
-                      a.firstName.localeCompare(b.firstName),
-                    ) || []),
-                  ]}
-                />
-              )}
-            </searchForm.Field>
+            <InputSelectField
+              label="Select Entity"
+              options={[
+                ...(campaign?.factions.sort((a, b) =>
+                  a.name.localeCompare(b.name),
+                ) || []),
+                ...(campaign?.characters.sort((a, b) =>
+                  a.firstName.localeCompare(b.firstName),
+                ) || []),
+              ]}
+              onChange={(entity) => setEntity(entity)}
+            />
             <button
               className="text-accent bg-tertiary shadow-color group z-10 grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
               onClick={(e) => {
                 e.preventDefault();
-                searchForm.reset();
+                setEntity(null);
               }}
             >
               <Icon
@@ -100,11 +80,7 @@ const CampaignAffiliations = () => {
           </div>
         </form>
       </ThemeContainer>
-      <searchForm.Subscribe selector={(state) => state.values.entity}>
-        {(entity) => (
-          <Affiliations affiliations={filteredAffiliations} entity={entity} />
-        )}
-      </searchForm.Subscribe>
+      <Affiliations affiliations={filteredAffiliations} entity={entity} />
     </div>
   );
 };

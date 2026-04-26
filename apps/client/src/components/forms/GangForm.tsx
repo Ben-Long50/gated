@@ -14,6 +14,7 @@ import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import CharacterCardSmall from '../CharacterCardSmall';
 import ArrowHeader3 from '../ArrowHeader3';
 import useGangForm from 'src/hooks/form hooks/useGangForm';
+import BtnAuth from '../buttons/BtnAuth';
 
 const GangForm = () => {
   const { campaignId, gangId } = useParams();
@@ -36,15 +37,7 @@ const GangForm = () => {
   return (
     <FormLayout label="Gang" form={gangForm} createMutation={createGang}>
       <ArrowHeader2 title="Gang Information" />
-      <gangForm.Field
-        name="name"
-        validators={{
-          onChange: ({ value }) =>
-            value.length < 2
-              ? 'Gang name must be at least 2 characters long'
-              : undefined,
-        }}
-      >
+      <gangForm.Field name="name">
         {(field) => (
           <InputField className="grow" label="Gang Name" field={field} />
         )}
@@ -75,15 +68,7 @@ const GangForm = () => {
       <Divider />
       <div className="flex flex-col gap-4">
         <ArrowHeader2 title="Gang Background" />
-        <gangForm.Field
-          name="background"
-          validators={{
-            onChange: ({ value }) =>
-              value.html.length < 20
-                ? 'Section content has not met the minimum length requirement'
-                : undefined,
-          }}
-        >
+        <gangForm.Field name="background">
           {(field) => (
             <>
               <LexicalEditor field={field} />
@@ -148,12 +133,9 @@ const GangForm = () => {
             </gangForm.Subscribe>
           </div>
         </div>
-        <BtnRect
-          ariaLabel="Open character select window"
-          onClick={() => navigate('characterSelect')}
-        >
+        <BtnAuth onClick={() => navigate('characterSelect')}>
           Select Gang Characters
-        </BtnRect>
+        </BtnAuth>
       </div>
       <Outlet context={{ form: gangForm, parts }} />
     </FormLayout>

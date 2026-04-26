@@ -2,12 +2,9 @@ import useCharacter from 'src/hooks/useCharacter';
 import CharacterPictureRound from './CharacterPictureRound';
 import Loading from './Loading';
 import ArrowHeader4 from './ArrowHeader4';
-import useMapStore from 'src/stores/mapStore';
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import CharacterRadialMenu from './radialMenus/characterRadialMenu/CharacterRadialMenu';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
-import PassIcon from './icons/PassIcon';
-import CrownIcon from './icons/CrownIcon';
 import constructName from 'src/utils/constructName';
 
 const CharacterCardXSmall = ({

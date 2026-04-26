@@ -41,7 +41,9 @@ import LevelNodeModal from 'src/components/LevelNodeModal';
 import CharacterLevelsModal from 'src/components/CharacterLevelsModal';
 import GangProfitsModal from 'src/components/GangProfitsModal';
 import PlayerSelectModal from 'src/components/modals/PlayerSelectModal';
-import CampaignCharacterSelectModal from 'src/components/CampaignCharacterSelectModal';
+import GangCharacterSelectModal from 'src/components/CampaignCharacterSelectModal';
+import AffiliationForm from 'src/components/forms/AffiliationForm';
+import AffiliationEntitySelectModal from 'src/components/modals/AffiliationEntitySelectModal';
 
 const CampaignTabRoutes = () => {
   return (
@@ -86,13 +88,13 @@ const CampaignTabRoutes = () => {
             <Route path="distributeProfits" element={<GangProfitsModal />} />
             <Route
               path="manageGangCharacters"
-              element={<CampaignCharacterSelectModal />}
+              element={<GangCharacterSelectModal />}
             />
           </Route>
           <Route path="create" element={<GangForm />}>
             <Route
               path="characterSelect"
-              element={<CampaignCharacterSelectModal />}
+              element={<GangCharacterSelectModal />}
             />
           </Route>
         </Route>
@@ -138,6 +140,12 @@ const CampaignTabRoutes = () => {
           <Route path="completed" element={<EncounterList />} />
         </Route>
         <Route path="affiliations" element={<CampaignAffiliations />} />
+        <Route path="affiliations/create" element={<AffiliationForm />}>
+          <Route
+            path="selectEntities"
+            element={<AffiliationEntitySelectModal />}
+          />
+        </Route>
         <Route path="rollSimulator" element={<RollSimulator />}>
           <Route path="rollResults" element={<RollModal />} />
         </Route>

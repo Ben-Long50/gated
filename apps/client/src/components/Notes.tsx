@@ -49,8 +49,6 @@ const Notes = () => {
           (notes) => notes.sessionId === session.id,
         );
 
-        console.log(notes);
-
         return (
           <div className="bg-primary shadow-color flex flex-col gap-2 rounded-lg p-4 shadow-lg sm:p-8">
             <div className="flex w-full items-start justify-between gap-4">

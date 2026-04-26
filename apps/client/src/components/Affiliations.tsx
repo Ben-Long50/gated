@@ -2,6 +2,7 @@ import ArrowHeader2 from './ArrowHeader2';
 import { Affiliation, Faction } from 'src/types/faction';
 import AffiliationCard from './AffiliationCard';
 import { Character } from 'src/types/character';
+import constructName from 'src/utils/constructName';
 
 const Affiliations = ({
   affiliations,
@@ -15,22 +16,21 @@ const Affiliations = ({
       affiliations?.filter(
         (affiliation: Affiliation) => affiliation?.factions.length > 0,
       ) || [],
-    gangAffiliations: [],
+    gangAffiliations:
+      affiliations?.filter(
+        (affiliation: Affiliation) => affiliation?.gangs.length > 0,
+      ) || [],
     characterAffiliations:
       affiliations?.filter(
         (affiliation: Affiliation) => affiliation?.characters.length > 1,
       ) || [],
   };
 
-  const entityName = entity.firstName
-    ? entity.firstName + ' ' + entity.lastName
-    : entity.name;
-
   if (affiliations.length === 0) {
     return (
       <div className="flex max-w-4xl flex-col items-center gap-8">
         <h3 className="text-center">
-          {`${entityName} does not have any affiliations. Get to work and make some friends... or enemies.`}
+          {`${constructName(entity)} does not have any affiliations. Get to work and make some friends... or enemies.`}
         </h3>
       </div>
     );

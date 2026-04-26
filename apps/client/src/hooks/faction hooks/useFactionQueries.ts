@@ -7,7 +7,7 @@ const useFactionQueries = (factionIds: number[]) => {
     queries: factionIds.map((factionId) => ({
       queryKey: ['faction', factionId],
       queryFn: () => getFaction.fetch(factionId),
-      enabled: !!factionIds,
+      enabled: !!factionId,
     })),
     combine: (results) => {
       return {

@@ -4,7 +4,7 @@ import { Affiliation } from 'src/types/faction';
 
 const createAffiliation = async (formData: Affiliation) => {
   try {
-    const response = await fetch(`${apiUrl}/affiliations/create`, {
+    const response = await fetch(`${apiUrl}/affiliations`, {
       method: 'POST',
       credentials: 'include',
       headers: {

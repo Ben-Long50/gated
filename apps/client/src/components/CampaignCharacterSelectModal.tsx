@@ -6,11 +6,11 @@ import useCharacters from 'src/hooks/useCharacters';
 import Loading from './Loading';
 import InputFieldBasic from './InputFieldBasic';
 import { Character } from 'src/types/character';
-import CharacterCardSmall from './CharacterCardSmall';
 import { Fragment } from 'react/jsx-runtime';
 import Divider from './Divider';
+import CharacterCardXSmall from './CharacterCardXSmall';
 
-const CampaignCharacterSelectModal = () => {
+const GangCharacterSelectModal = () => {
   const { campaignId, gangId } = useParams();
   const navigate = useNavigate();
 
@@ -46,7 +46,7 @@ const CampaignCharacterSelectModal = () => {
         type="string"
         onChange={(value) => filterByQuery(value)}
       />
-      <div className="grid w-full grid-cols-[8fr_1fr_1fr] items-center gap-x-4 sm:gap-x-8">
+      <div className="grid w-full grid-cols-[8fr_1fr_1fr] items-center gap-4">
         <h4>Character</h4>
         <h4 className="justify-self-center">Leader</h4>
         <h4 className="justify-self-center">Member</h4>
@@ -55,11 +55,10 @@ const CampaignCharacterSelectModal = () => {
           .filter((character) => character != null)
           .map((character: Character) => (
             <Fragment key={character.id}>
-              <CharacterCardSmall
-                className="mb-4 grow sm:mb-8"
+              <CharacterCardXSmall
+                menu={false}
                 characterList={true}
                 characterId={character.id}
-                expanding={false}
                 active={false}
               />
               <form.Field name="leaderIds">
@@ -113,4 +112,4 @@ const CampaignCharacterSelectModal = () => {
   );
 };
 
-export default CampaignCharacterSelectModal;
+export default GangCharacterSelectModal;

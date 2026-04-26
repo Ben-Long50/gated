@@ -179,13 +179,22 @@ const CampaignLinks = () => {
               />
             ))}
           </LinkListSidebar>
-          <LinkSidebar
+          <LinkListSidebar
             title="Affiliations"
             icon={
               <AffiliationIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
             }
-            path={`campaigns/${campaignId}/affiliations`}
-          />
+          >
+            <SubLinkSidebar
+              title="Affiliations"
+              path={`campaigns/${campaignId}/affiliations`}
+            />
+            <SubLinkSidebar
+              title="Create an Affiliation"
+              path={`campaigns/${campaignId}/affiliations/create`}
+            />
+          </LinkListSidebar>
+
           <LinkSidebar
             title="Roll Simulator"
             icon={
