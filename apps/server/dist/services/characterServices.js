@@ -188,7 +188,7 @@ const characterServices = {
     },
     createCharacter: async (formData, userId, template) => {
         try {
-            const stats = Object.assign(Object.assign({}, formData.stats), { currentActions: 3, currentReactions: 1, currentHands: 2, injuries: 0, insanities: 0 });
+            const stats = Object.assign(Object.assign({}, formData.stats), { currentActions: 3, currentReactions: 1, currentHands: 2, currentFeet: 2, injuries: 0, insanities: 0 });
             const { perkIds } = formData, data = __rest(formData, ["perkIds"]);
             const character = await prisma.character.create({
                 data: Object.assign(Object.assign({}, data), { stats,

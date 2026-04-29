@@ -207,6 +207,7 @@ const characterServices = {
         currentActions: 3,
         currentReactions: 1,
         currentHands: 2,
+        currentFeet: 2,
         injuries: 0,
         insanities: 0,
       };
