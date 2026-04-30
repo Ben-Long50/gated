@@ -17,7 +17,7 @@ export const LastName = z
 export const Description = z
     .string()
     .min(10, 'Description must be at least 10 characters')
-    .max(250, 'Description must be under 250 characters');
+    .max(1000, 'Description must be under 250 characters');
 export const PictureFile = z.file().optional();
 export const Picture = z
     .object({
