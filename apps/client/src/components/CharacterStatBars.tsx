@@ -34,8 +34,8 @@ const CharacterStatBars = ({
           cardWidth={cardWidth}
           mutation={(value: number) => {
             if (
-              stats.currentHealth < stats.maxHealth &&
-              stats.currentHealth > 0
+              (value > 0 && stats.currentHealth < stats.maxHealth) ||
+              (value < 0 && stats.currentHealth > 0)
             ) {
               editCharacterStat.mutate({
                 characterId,
@@ -60,8 +60,8 @@ const CharacterStatBars = ({
           cardWidth={cardWidth}
           mutation={(value: number) => {
             if (
-              stats.currentSanity < stats.maxSanity &&
-              stats.currentSanity > 0
+              (value > 0 && stats.currentSanity < stats.maxSanity) ||
+              (value < 0 && stats.currentSanity > 0)
             ) {
               editCharacterStat.mutate({
                 characterId,
