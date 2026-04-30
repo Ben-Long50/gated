@@ -94,14 +94,7 @@ const useItemForm = (
 
       value.stats = { ...filteredStats };
 
-      const { keywords, ...rest } = value;
-
-      const data = {
-        ...rest,
-        keywordIds: value.keywords,
-      };
-
-      const formData = constructFormData(data);
+      const formData = constructFormData(value);
       await mutation.mutate(formData);
     },
   });
