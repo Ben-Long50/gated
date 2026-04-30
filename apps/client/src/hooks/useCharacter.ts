@@ -41,7 +41,9 @@ const useCharacter = (characterId: number) => {
         ),
         augmentations: items?.filter(
           (item) =>
-            item?.itemTypes.includes('augmentation') && item?.equipped === true,
+            (item?.itemTypes.includes('cybernetic') ||
+              item?.itemTypes.includes('mutation')) &&
+            item?.equipped === true,
         ),
         vehicles: items?.filter(
           (item) =>

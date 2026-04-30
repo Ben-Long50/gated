@@ -3,14 +3,15 @@ import getItems from '../useItemsQuery/getItems';
 
 const useAllItemsQuery = () => {
   const categories = [
-    'weapons',
-    'armors',
-    'augmentations',
-    'vehicles',
-    'drones',
-    'modifications',
-    'consumables',
-    'reusables',
+    'weapon',
+    'armor',
+    'cybernetic',
+    'mutation',
+    'vehicle',
+    'drone',
+    'modification',
+    'consumable',
+    'reusable',
   ];
 
   return useQueries({

@@ -15,8 +15,10 @@ const useInventory = (inventory: CharacterInventory) => {
               item?.itemTypes.includes('weapon'),
             ),
             armors: items?.filter((item) => item?.itemTypes.includes('armor')),
-            augmentations: items?.filter((item) =>
-              item?.itemTypes.includes('augmentation'),
+            augmentations: items?.filter(
+              (item) =>
+                item?.itemTypes.includes('cybernetic') ||
+                item?.itemTypes.includes('mutation'),
             ),
             vehicles: items?.filter((item) =>
               item?.itemTypes.includes('vehicle'),
@@ -51,7 +53,8 @@ const useInventory = (inventory: CharacterInventory) => {
             ),
             augmentations: items?.filter(
               (item) =>
-                item?.itemTypes.includes('augmentation') &&
+                (item?.itemTypes.includes('cybernetic') ||
+                  item?.itemTypes.includes('mutation')) &&
                 item?.equipped === true,
             ),
             vehicles: items?.filter(
