@@ -1,21 +1,9 @@
 const handleResponse = async (response) => {
-  if (response.status === 401) {
-    throw new Error(`${response.statusText}. Sign in to complete this action`);
-  } else if (response.status === 429) {
-    throw new Error(`${response.statusText}. Too many requests`);
-  } else if (response.status === 400) {
-    const data = await response.json();
-    const errorMessages = data.errors?.map(
-      (err: { msg: string }) => err.msg,
-    ) || ['Bad Request'];
-    throw errorMessages;
-  }
-  if (!response.ok) {
-    const data = await response.json();
+  const data = await response.json();
 
+  if (!response.ok) {
     throw new Error(`${data.error}`);
   }
-  const data = await response.json();
 
   return data;
 };

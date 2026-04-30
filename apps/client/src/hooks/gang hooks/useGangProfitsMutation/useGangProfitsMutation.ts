@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRef } from 'react';
-import { socket } from '../../../socket';
 import editProfits from './editGangProfits';
 import { Gang } from 'src/types/gang';
+import { toast } from 'react-toastify';
 
 const useGangProfitsMutation = (campaignId: number, gangId: number) => {
   const queryClient = useQueryClient();
@@ -17,13 +17,18 @@ const useGangProfitsMutation = (campaignId: number, gangId: number) => {
 
       updateBuffer.current += value;
 
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         timeoutRef.current = setTimeout(async () => {
-          const finalValue = updateBuffer.current;
+          try {
+            const finalValue = updateBuffer.current;
+            updateBuffer.current = 0;
 
-          updateBuffer.current = 0;
-          await editProfits(campaignId, gangId, finalValue);
-          resolve(finalValue);
+            const result = await editProfits(campaignId, gangId, finalValue);
+
+            resolve(result);
+          } catch (error) {
+            reject(error);
+          }
         }, 1000);
       });
     },
@@ -44,14 +49,18 @@ const useGangProfitsMutation = (campaignId: number, gangId: number) => {
       return { prevGangData };
     },
 
-    onSuccess: (_, __, context) => {
-      socket.emit('gang', {
-        gangId,
-        campaignId: context.prevGangData?.campaignId,
-      });
-      return queryClient.invalidateQueries({
-        queryKey: ['gang', gangId],
-      });
+    onSuccess: (data) => {
+      toast.success(data.message);
+
+      queryClient.setQueryData(['gang', data.gang.id], data.gang);
+    },
+    onError: (data, __, context) => {
+      toast.error(data.message);
+
+      queryClient.setQueryData(
+        ['gang', context?.prevGangData?.id],
+        context?.prevGangData,
+      );
     },
     throwOnError: false,
   });

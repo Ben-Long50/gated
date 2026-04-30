@@ -1,11 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Gang } from 'src/types/gang';
-import { useNavigate } from 'react-router-dom';
 import allocateLevelNodes from './allocateLevelNodes';
+import { toast } from 'react-toastify';
 
 const useAllocateLevelNodesMutation = (campaignId: number, gangId: number) => {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
 
   return useMutation({
     mutationFn: (data: {
@@ -17,12 +16,15 @@ const useAllocateLevelNodesMutation = (campaignId: number, gangId: number) => {
     onMutate(value) {
       queryClient.cancelQueries({ queryKey: ['gang', gangId] });
 
-      const prevGang = queryClient.getQueryData(['gang', gangId]) as Gang;
+      const prevGangData: Gang | undefined = queryClient.getQueryData([
+        'gang',
+        gangId,
+      ]);
 
-      if (prevGang) {
+      if (prevGangData) {
         queryClient.setQueryData(['gang', gangId], () => ({
-          ...prevGang,
-          gangSessionBonuses: prevGang.gangSessionBonuses.map((bonus) =>
+          ...prevGangData,
+          gangSessionBonuses: prevGangData.gangSessionBonuses.map((bonus) =>
             bonus.gangId === gangId && bonus.sessionId === value.sessionId
               ? { ...bonus, levelNodeBonus: value.bonus }
               : bonus,
@@ -30,13 +32,20 @@ const useAllocateLevelNodesMutation = (campaignId: number, gangId: number) => {
         }));
       }
 
-      return prevGang;
+      return { prevGangData };
     },
-    onSuccess: () => {
-      navigate('..');
-      return queryClient.invalidateQueries({
-        queryKey: ['gang', gangId],
-      });
+    onSuccess: (data) => {
+      toast.success(data.message);
+
+      queryClient.setQueryData(['gang', data.gang.id], data.gang);
+    },
+    onError: (data, __, context) => {
+      toast.error(data.message);
+
+      queryClient.setQueryData(
+        ['gang', context?.prevGangData?.id],
+        context?.prevGangData,
+      );
     },
     throwOnError: false,
   });

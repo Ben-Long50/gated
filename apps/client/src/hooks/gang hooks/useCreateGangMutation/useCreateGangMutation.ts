@@ -12,6 +12,12 @@ const useCreateGangMutation = (campaignId: number, gangId?: number) => {
       toast.success(data.message);
 
       queryClient.setQueryData(['gang', gangId], data.gang);
+
+      if (!gangId) {
+        queryClient.invalidateQueries({
+          queryKey: ['campaign', data.gang.campaignId],
+        });
+      }
     },
     onError: (data) => {
       toast.error(data.message);

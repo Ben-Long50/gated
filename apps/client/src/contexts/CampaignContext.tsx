@@ -159,6 +159,10 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       });
     });
 
+    socket.on('updateGang', (data) => {
+      queryClient.setQueryData(['gang', data.gang.id], data.gang);
+    });
+
     socket.on('gang', (gangId) => {
       queryClient.invalidateQueries({
         queryKey: ['gang', gangId],

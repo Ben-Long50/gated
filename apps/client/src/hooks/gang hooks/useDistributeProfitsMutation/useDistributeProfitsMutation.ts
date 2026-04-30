@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Character } from 'src/types/character';
 import { useRef } from 'react';
-import { socket } from '../../../socket';
 import distributeProfits from './distributeProfits';
 import { Gang } from 'src/types/gang';
+import { toast } from 'react-toastify';
 
 const useDistributeProfitsMutation = (campaignId: number, gangId: number) => {
   const queryClient = useQueryClient();
@@ -24,13 +24,23 @@ const useDistributeProfitsMutation = (campaignId: number, gangId: number) => {
 
       updateBuffer.current += value;
 
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         timeoutRef.current = setTimeout(async () => {
-          const finalValue = updateBuffer.current;
+          try {
+            const finalValue = updateBuffer.current;
+            updateBuffer.current = 0;
 
-          updateBuffer.current = 0;
-          await distributeProfits(campaignId, gangId, characterId, finalValue);
-          resolve(finalValue);
+            const result = await distributeProfits(
+              campaignId,
+              gangId,
+              characterId,
+              finalValue,
+            );
+
+            resolve(result);
+          } catch (error) {
+            reject(error);
+          }
         }, 1000);
       });
     },
@@ -67,17 +77,28 @@ const useDistributeProfitsMutation = (campaignId: number, gangId: number) => {
       return { prevCharacterData, prevGangData };
     },
 
-    onSuccess: (_, data, context) => {
-      socket.emit('character', {
-        characterId: data.characterId,
-        campaignId: context.prevCharacterData?.campaignId,
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['gang', gangId],
-      });
-      return queryClient.invalidateQueries({
-        queryKey: ['character', data.characterId],
-      });
+    onSuccess: (data) => {
+      toast.success(data.message);
+
+      queryClient.setQueryData(['gang', data.gang.id], data.gang);
+
+      queryClient.setQueryData(
+        ['character', data.character.id],
+        data.character,
+      );
+    },
+    onError: (data, __, context) => {
+      toast.error(data.message);
+
+      queryClient.setQueryData(
+        ['gang', context?.prevGangData?.id],
+        context?.prevGangData,
+      );
+
+      queryClient.setQueryData(
+        ['character', context?.prevCharacterData?.id],
+        context?.prevCharacterData,
+      );
     },
     throwOnError: false,
   });
