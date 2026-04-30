@@ -25,7 +25,7 @@ const ItemForm = () => {
 
   const { data: item } = useItemQuery(Number(itemId));
 
-  const createItem = useCreateItemMutation(Number(itemId));
+  const createItem = useCreateItemMutation();
 
   const createItemCopy = useCreateItemCopyMutation(Number(itemId));
 
