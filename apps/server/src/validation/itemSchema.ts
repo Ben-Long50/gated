@@ -22,10 +22,12 @@ export const ItemInput = z.object({
   itemIds: z.array(z.number().int()).optional(),
   actionIds: z.array(z.number().int()).optional(),
   keywords: z.array(
-    z.object({
-      keywordId: z.number().int(),
-      value: z.number().int().nonnegative().nullable(),
-    }),
+    z
+      .object({
+        keywordId: z.number().int(),
+        value: z.number().int().nonnegative().nullable(),
+      })
+      .optional(),
   ),
 });
 
@@ -39,10 +41,12 @@ export const ItemUpgradeInput = z.object({
   upgradePrice: z.number().int().nonnegative(),
   modifiedStats: ItemStats,
   keywords: z.array(
-    z.object({
-      keywordId: z.number().int(),
-      value: z.number().int().nonnegative().nullable(),
-    }),
+    z
+      .object({
+        keywordId: z.number().int(),
+        value: z.number().int().nonnegative().nullable(),
+      })
+      .optional(),
   ),
   characterId: z.number().int().nonnegative(),
 });
