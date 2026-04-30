@@ -11,8 +11,9 @@ const campaignAuthentication = {
             res
                 .status(403)
                 .json({ error: 'Only the Game Master can perform this function' });
+            return;
         }
-        return next();
+        next();
     },
     //Only allows access to the campaign data if the user is a part of the campaign in any way
     filterCampaigns: async (req, res, next) => {

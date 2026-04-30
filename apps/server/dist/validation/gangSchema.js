@@ -3,7 +3,6 @@ import { Description, Name, Picture, PictureFile, RichText, } from './fieldSchem
 export const GangInput = z.object({
     id: z.number().int().optional(),
     name: Name,
-    profits: z.number().int().nonnegative(),
     pictureFile: PictureFile,
     picture: Picture,
     background: RichText,

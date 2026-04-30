@@ -24,6 +24,7 @@ const authentication = {
     } catch (error: any) {
       if (error instanceof Error) {
         res.status(500).json({ error: error.message });
+
         return;
       }
     }
@@ -40,9 +41,10 @@ const authentication = {
       res.status(403).json({
         error: 'You do not have the required permissions to use this function',
       });
+
       return;
     }
-    return next();
+    next();
   },
 
   authenticateAdmin: (req: Request, res: Response, next: NextFunction) => {
@@ -54,9 +56,10 @@ const authentication = {
       res.status(403).json({
         error: 'You do not have the required permissions to use this function',
       });
+
       return;
     }
-    return next();
+    next();
   },
 
   authenticateUser: (req: Request, res: Response, next: NextFunction) => {
@@ -68,9 +71,10 @@ const authentication = {
       res.status(403).json({
         error: 'You do not have the required permissions to use this function',
       });
+
       return;
     }
-    return next();
+    next();
   },
 
   authenticateItemModification: async (
@@ -104,9 +108,10 @@ const authentication = {
       res.status(403).json({
         error: 'You do not have the required permissions to modify this item',
       });
+
       return;
     }
-    return next();
+    next();
   },
 };
 

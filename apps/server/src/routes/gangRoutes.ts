@@ -18,49 +18,49 @@ router.get(
 );
 
 router.post(
-  '/gangs',
+  '/campaigns/:campaignId/gangs',
   authentication.authenticate,
   campaignAuthentication.validateGameMaster,
   gangController.createGang,
 );
 
 router.patch(
-  '/gangs/:gangId/characters',
+  '/campaigns/:campaignId/gangs/:gangId/characters',
   authentication.authenticate,
   campaignAuthentication.validateGameMaster,
   gangController.updateGangCharacters,
 );
 
 router.patch(
-  '/gangs/:gangId/characters/:characterId/profits',
+  '/campaigns/:campaignId/gangs/:gangId/characters/:characterId/profits',
   authentication.authenticate,
   campaignAuthentication.validateGameMaster,
   gangController.distributeProfits,
 );
 
 router.patch(
-  '/gangs/:gangId/profits',
+  '/campaigns/:campaignId/gangs/:gangId/profits',
   authentication.authenticate,
   campaignAuthentication.validateGameMaster,
   gangController.editGangProfits,
 );
 
 router.post(
-  '/gangs/:gangId/reputation',
+  '/campaigns/:campaignId/gangs/:gangId/reputation',
   authentication.authenticate,
   campaignAuthentication.validateGameMaster,
   gangController.allocateReputation,
 );
 
 router.post(
-  '/gangs/:gangId/levelNodes',
+  '/campaigns/:campaignId/gangs/:gangId/levelNodes',
   authentication.authenticate,
   campaignAuthentication.validateGameMaster,
   gangController.allocateLevelNodes,
 );
 
 router.delete(
-  '/gangs/:gangId',
+  '/campaigns/:campaignId/gangs/:gangId',
   authentication.authenticate,
   campaignAuthentication.validateGameMaster,
   gangController.deleteGang,

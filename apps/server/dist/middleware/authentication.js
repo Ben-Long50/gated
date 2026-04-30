@@ -36,7 +36,7 @@ const authentication = {
             });
             return;
         }
-        return next();
+        next();
     },
     authenticateAdmin: (req, res, next) => {
         const allowedRoles = ['SUPERADMIN', 'ADMIN'];
@@ -50,7 +50,7 @@ const authentication = {
             });
             return;
         }
-        return next();
+        next();
     },
     authenticateUser: (req, res, next) => {
         const allowedRoles = ['SUPERADMIN', 'ADMIN', 'USER'];
@@ -64,7 +64,7 @@ const authentication = {
             });
             return;
         }
-        return next();
+        next();
     },
     authenticateItemModification: async (req, res, next) => {
         var _a, _b;
@@ -92,7 +92,7 @@ const authentication = {
             });
             return;
         }
-        return next();
+        next();
     },
 };
 export default authentication;

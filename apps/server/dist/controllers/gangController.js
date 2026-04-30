@@ -5,6 +5,8 @@ import gangServices from '../services/gangServices.js';
 import { GangInput, GangSessionBonusInput } from '../validation/gangSchema.js';
 import z from 'zod';
 import handleControllerError from './handleControllerError.js';
+import constructName from '../utils/constructName.js';
+import { getIO } from '../sockets/socket.js';
 const gangController = {
     getBatchGangs: async (req, res) => {
         try {
@@ -66,6 +68,8 @@ const gangController = {
             })
                 .parse(req.body);
             const gang = await gangServices.updateGangCharacters(Number(req.params.gangId), validatedCharacters);
+            const io = getIO();
+            io.to(`campaign ${gang.campaignId}`).emit('updateGang', { gang });
             res.status(200).json({
                 gang,
                 message: `Successfully updated ${gang.name} characters`,
@@ -78,10 +82,12 @@ const gangController = {
     allocateReputation: async (req, res) => {
         try {
             const validatedGangSessionBonus = GangSessionBonusInput.parse(req.body.bonus);
-            await gangServices.allocateReputation(Number(req.params.gangId), req.body.sessionId, validatedGangSessionBonus);
+            const gang = await gangServices.allocateReputation(Number(req.params.gangId), req.body.sessionId, validatedGangSessionBonus);
+            const io = getIO();
+            io.to(`campaign ${gang.campaignId}`).emit('updateGang', { gang });
             res
                 .status(200)
-                .json({ messagee: 'Successfully updated gang reputation' });
+                .json({ gang, messagee: 'Successfully updated gang reputation' });
         }
         catch (error) {
             handleControllerError(res, error);
@@ -90,10 +96,12 @@ const gangController = {
     allocateLevelNodes: async (req, res) => {
         try {
             const validatedLevelNodeBonus = GangSessionBonusInput.parse(req.body.bonus);
-            await gangServices.allocateLevelNodes(Number(req.params.gangId), req.body.sessionId, validatedLevelNodeBonus);
+            const gang = await gangServices.allocateLevelNodes(Number(req.params.gangId), req.body.sessionId, validatedLevelNodeBonus);
+            const io = getIO();
+            io.to(`campaign ${gang.campaignId}`).emit('updateGang', { gang });
             res
                 .status(200)
-                .json({ messagee: 'Successfully updated gang reputation' });
+                .json({ gang, messagee: 'Successfully updated gang reputation' });
         }
         catch (error) {
             handleControllerError(res, error);
@@ -101,10 +109,13 @@ const gangController = {
     },
     editGangProfits: async (req, res) => {
         try {
-            await gangServices.editGangProfits(Number(req.params.gangId), Number(req.body.value));
-            res
-                .status(200)
-                .json({ message: `Changed current gang profits by ${req.body.value}` });
+            const gang = await gangServices.editGangProfits(Number(req.params.gangId), Number(req.body.value));
+            const io = getIO();
+            io.to(`campaign ${gang.campaignId}`).emit('updateGang', { gang });
+            res.status(200).json({
+                gang,
+                message: `Changed current gang profits by ${req.body.value}`,
+            });
         }
         catch (error) {
             handleControllerError(res, error);
@@ -113,8 +124,15 @@ const gangController = {
     distributeProfits: async (req, res) => {
         try {
             const { gang, character } = await gangServices.distributeProfits(Number(req.params.gangId), Number(req.params.characterId), Number(req.body.value));
+            const io = getIO();
+            io.to(`campaign ${gang.campaignId}`).emit('updateGang', { gang });
+            io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
+                character,
+            });
             res.status(200).json({
-                message: `Distributed ${req.body.value} profits from ${gang.name} to ${character.firstName + ' ' + character.lastName}`,
+                gang,
+                character,
+                message: `Distributed ${req.body.value} profits from ${gang.name} to ${constructName(character)}`,
             });
         }
         catch (error) {

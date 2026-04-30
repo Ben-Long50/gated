@@ -21,9 +21,11 @@ const campaignAuthentication = {
       res
         .status(403)
         .json({ error: 'Only the Game Master can perform this function' });
+
+      return;
     }
 
-    return next();
+    next();
   },
 
   //Only allows access to the campaign data if the user is a part of the campaign in any way
@@ -63,6 +65,7 @@ const campaignAuthentication = {
         error:
           'Either you do not belong to the campaign/campaigns you are trying to access or they do not exist',
       });
+
       return;
     }
 

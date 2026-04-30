@@ -146,22 +146,31 @@ const gangServices = {
     bonus: GangSessionBonusInput,
   ) => {
     try {
-      await prisma.gangSessionBonus.upsert({
-        where: {
-          gangId_sessionId: {
-            gangId,
-            sessionId,
+      const gang = await prisma.gang.update({
+        where: { id: gangId },
+        data: {
+          gangSessionBonuses: {
+            upsert: {
+              where: {
+                gangId_sessionId: {
+                  gangId,
+                  sessionId,
+                },
+              },
+              update: {
+                reputationBonus: bonus,
+              },
+              create: {
+                sessionId,
+                reputationBonus: bonus,
+              },
+            },
           },
         },
-        update: {
-          reputationBonus: bonus,
-        },
-        create: {
-          gangId,
-          sessionId,
-          reputationBonus: bonus,
-        },
+        include: gangInclude,
       });
+
+      return gang;
     } catch (error: any) {
       console.error(error);
       throw new Error('Failed to allocate reputation bonus');
@@ -174,22 +183,31 @@ const gangServices = {
     bonus: GangSessionBonusInput,
   ) => {
     try {
-      await prisma.gangSessionBonus.upsert({
-        where: {
-          gangId_sessionId: {
-            gangId,
-            sessionId,
+      const gang = await prisma.gang.update({
+        where: { id: gangId },
+        data: {
+          gangSessionBonuses: {
+            upsert: {
+              where: {
+                gangId_sessionId: {
+                  gangId,
+                  sessionId,
+                },
+              },
+              update: {
+                levelNodeBonus: bonus,
+              },
+              create: {
+                sessionId,
+                levelNodeBonus: bonus,
+              },
+            },
           },
         },
-        update: {
-          levelNodeBonus: bonus,
-        },
-        create: {
-          gangId,
-          sessionId,
-          levelNodeBonus: bonus,
-        },
+        include: gangInclude,
       });
+
+      return gang;
     } catch (error: any) {
       console.error(error);
       throw new Error('Failed to allocate level node bonus');
@@ -198,14 +216,17 @@ const gangServices = {
 
   editGangProfits: async (gangId: number, value: number) => {
     try {
-      await prisma.gang.update({
+      const gang = await prisma.gang.update({
         where: {
           id: gangId,
         },
         data: {
           profits: { increment: value },
         },
+        include: gangInclude,
       });
+
+      return gang;
     } catch (error: any) {
       console.error(error);
       throw new Error('Failed to update current gang profits');

@@ -54,10 +54,11 @@ const itemServices = {
         where: category
           ? {
               characterInventory: null,
+              baseItemId: null,
               itemLinkId: null,
               itemTypes: { hasSome: category },
             }
-          : { characterInventory: null, itemLinkId: null },
+          : { characterInventory: null, baseItemId: null, itemLinkId: null },
         include: itemInclude,
         orderBy: { name: 'asc' },
       });
