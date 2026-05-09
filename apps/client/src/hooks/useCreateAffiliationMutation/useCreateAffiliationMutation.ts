@@ -9,6 +9,8 @@ const useCreateAffiliationMutation = () => {
   return useMutation({
     mutationFn: (formData: Affiliation) => createAffiliation(formData),
     onSuccess: (data) => {
+      console.log(data.message);
+
       toast.success(data.message);
 
       return queryClient.invalidateQueries({

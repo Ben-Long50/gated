@@ -7,7 +7,6 @@ const useCampaignQuery = (campaignId: number) => {
     queryKey: ['campaign', campaignId],
     queryFn: () => getCampaign.fetch(campaignId),
     enabled: !!campaignId,
-    throwOnError: false,
   });
 };
 

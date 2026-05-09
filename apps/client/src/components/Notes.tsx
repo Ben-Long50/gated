@@ -81,7 +81,11 @@ const Notes = () => {
                 )}
               </div>
             ) : (
-              <NotesForm notes={notes} setEditModeId={setEditModeId} />
+              <NotesForm
+                sessionId={session.id}
+                notes={notes}
+                setEditModeId={setEditModeId}
+              />
             )}
           </div>
         );

@@ -11,7 +11,6 @@ import AccountLinks from '../components/sidebars/AccountLinks';
 import useNavigationStore from 'src/stores/navbarStore';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import DieIcon from 'src/components/icons/DieIcon';
-import RollModal from 'src/components/modals/RollModal';
 import CharacterLinks from 'src/components/sidebars/CharacterLinks';
 import { ToastContainer } from 'react-toastify';
 

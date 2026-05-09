@@ -2,11 +2,10 @@ import RootPortal from '../../layouts/RootPortal';
 import { ReactNode, useEffect } from 'react';
 import BtnIcon from '../buttons/BtnIcon';
 import { mdiClose } from '@mdi/js';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import useModalStore from 'src/stores/modalStore';
 import Divider from '../Divider';
 import useRouteHistoryStore from 'src/stores/routeHistoryStore';
-import { ToastContainer } from 'react-toastify';
 
 const Modal = ({
   children,
@@ -69,16 +68,6 @@ const Modal = ({
           </div>
         )}
       </div>
-      <ToastContainer
-        position="bottom-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick={true}
-        rtl={false}
-        pauseOnFocusLoss
-        theme="dark"
-      />
     </RootPortal>
   );
 };

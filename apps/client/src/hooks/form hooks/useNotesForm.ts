@@ -5,16 +5,17 @@ import { Notes } from 'src/types/campaign';
 import { filterFormData } from './constructFormData';
 
 const useNotesForm = (
+  sessionId: number,
   mutation: UseMutationResult<any, Error, any>,
   notes?: Notes,
 ) => {
-  const { characterId, sessionId } = useParams();
+  const { characterId } = useParams();
 
   const notesForm = useForm({
     defaultValues: {
       id: notes?.id ?? null,
       characterId: notes?.characterId ?? Number(characterId),
-      sessionId: notes?.sessionId ?? Number(sessionId),
+      sessionId: sessionId,
       content: notes?.content ?? ({} as { html: string; nodes: object }),
     },
 

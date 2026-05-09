@@ -112,7 +112,7 @@ const CharacterCard = ({ characterId }: { characterId: number }) => {
               character={character}
               containerRef={containerRef}
             />
-            <div className="col-span-2 col-start-1 row-start-1 flex aspect-square h-full w-[300px] items-center overflow-hidden rounded-bl clip-6">
+            <div className="col-span-2 col-start-1 row-start-1 flex aspect-video h-full w-[350px] items-center overflow-hidden rounded-bl clip-6">
               <CloudinaryImage
                 className={`${awol && 'grayscale'}`}
                 publicId={character?.picture?.publicId}

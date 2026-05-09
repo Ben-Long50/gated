@@ -13,7 +13,6 @@ import InsanityIcon from './icons/InsanityIcon';
 import CharacterStatBars from './CharacterStatBars';
 import useCharacter from 'src/hooks/useCharacter';
 import Loading from './Loading';
-import { capitalCase } from 'change-case';
 import ConditionTag from './ConditionTag';
 import { Outlet, useLocation, useParams } from 'react-router-dom';
 import { useInView } from 'react-intersection-observer';
@@ -26,6 +25,7 @@ import useDeleteCharacterMutation from 'src/hooks/useDeleteCharacterMutation/use
 import Icon from '@mdi/react';
 import { mdiAlphaTCircleOutline, mdiStorefrontOutline } from '@mdi/js';
 import { CampaignContext } from 'src/contexts/CampaignContext';
+import constructName from 'src/utils/constructName';
 
 const CharacterCardAlt = ({ characterId }: { characterId: number }) => {
   const { gameMaster } = useContext(CampaignContext);
@@ -53,9 +53,7 @@ const CharacterCardAlt = ({ characterId }: { characterId: number }) => {
     threshold: 0.1,
   });
 
-  const characterName = character?.lastName
-    ? character?.firstName + ' ' + character?.lastName
-    : character?.firstName;
+  const characterName = constructName(character);
 
   const containerRef = useRef(null);
 
@@ -111,14 +109,14 @@ const CharacterCardAlt = ({ characterId }: { characterId: number }) => {
               character={character}
               containerRef={containerRef}
             />
-            <div className="col-span-2 col-start-1 row-start-1 flex aspect-square h-full w-[300px] items-center overflow-hidden rounded-bl clip-6">
+            <div className="col-span-2 col-start-1 row-start-1 flex aspect-square h-full w-full items-center overflow-hidden rounded-bl rounded-tr clip-6">
               <CloudinaryImage
                 className={`${awol && 'grayscale'}`}
                 publicId={character?.picture?.publicId}
                 position={character?.picture?.position}
                 style={{
                   maskImage:
-                    'linear-gradient(to right, black 0%, transparent 90%',
+                    'linear-gradient(to bottom, black 0%, transparent 90%',
                 }}
               />
               {(awol || insane) && (
@@ -153,25 +151,23 @@ const CharacterCardAlt = ({ characterId }: { characterId: number }) => {
                     size={1.25}
                   />
                 )}
-                {!mobile && (
-                  <div className="flex grow flex-wrap items-center justify-start gap-1">
-                    {character?.conditions?.map((condition) => (
-                      <Fragment key={condition.id}>
-                        <ConditionTag
-                          key={condition.id}
-                          condition={condition}
-                        />
-                        {Number(conditionId) === condition.id && (
-                          <Outlet context={{ condition, parts }} />
-                        )}
-                      </Fragment>
-                    ))}
-                  </div>
-                )}
+
                 <p className="!text-accent flex size-8 shrink-0 items-center justify-center text-3xl font-semibold sm:pt-1">
                   {character?.level}
                 </p>
               </div>
+              {!mobile && (
+                <div className="flex grow flex-wrap items-center justify-start gap-1">
+                  {character?.conditions?.map((condition) => (
+                    <Fragment key={condition.id}>
+                      <ConditionTag key={condition.id} condition={condition} />
+                      {Number(conditionId) === condition.id && (
+                        <Outlet context={{ condition, parts }} />
+                      )}
+                    </Fragment>
+                  ))}
+                </div>
+              )}
               {character?.location && (
                 <div className="flex gap-4">
                   <LocationIcon className="text-accent size-6" />

@@ -13,9 +13,7 @@ const useCreateNotesMutation = (
       characterId: number;
       sessionId: number;
       content: { html: string; nodes: object };
-    }) => {
-      return createNotes(formData);
-    },
+    }) => createNotes(formData),
     onSuccess: (data) => {
       toast.success(data.message);
 

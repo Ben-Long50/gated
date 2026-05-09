@@ -5,7 +5,6 @@ import BtnRect from './buttons/BtnRect';
 import { Link } from 'react-router-dom';
 import Loading from './Loading';
 import ThemeContainer from './ThemeContainer';
-import { useForm } from '@tanstack/react-form';
 import { Character } from 'src/types/character';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { AuthContext } from '../contexts/AuthContext';
@@ -15,7 +14,13 @@ import useCampaignsQuery from 'src/hooks/useCampaignsQuery/useCampaignsQuery';
 import useCharacters from 'src/hooks/useCharacters';
 import InputField from './InputField';
 import Icon from '@mdi/react';
-import { mdiSync } from '@mdi/js';
+import {
+  mdiCropSquare,
+  mdiGrid,
+  mdiGridLarge,
+  mdiSquare,
+  mdiSync,
+} from '@mdi/js';
 import { useSearchParams, useParams } from 'react-router-dom';
 
 const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
@@ -48,14 +53,6 @@ const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
     ? campaigns?.filter((campaign) => campaign.id === Number(campaignId))
     : campaigns || [];
 
-  const searchForm = useForm({
-    defaultValues: {
-      campaignId: null as number | null,
-      query: '' as string,
-    },
-    onSubmit: ({ value }) => {},
-  });
-
   if (isLoading) {
     return <Loading />;
   }
@@ -72,41 +69,31 @@ const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
           <div className="grid w-full items-center gap-4 max-sm:grid-flow-row sm:grid-flow-col sm:gap-8">
             <ArrowHeader2 title="Character Options" />
           </div>
-          {availableCampaigns?.length > 1 && (
-            <searchForm.Field name="campaignId">
-              {(field) => (
-                <InputSelectField
-                  field={field}
-                  label="Filter By Campaign"
-                  options={availableCampaigns}
-                  onChange={() => filterByCampaign(field.state.value.id)}
-                />
-              )}
-            </searchForm.Field>
+          {availableCampaigns && availableCampaigns?.length > 1 && (
+            <InputSelectField
+              label="Filter By Campaign"
+              options={availableCampaigns}
+              onChange={(campaign) => filterByCampaign(campaign.id)}
+            />
           )}
           <div className="flex w-full items-center gap-4">
-            <searchForm.Field name="query">
-              {(field) => (
-                <InputField
-                  field={field}
-                  className="w-full"
-                  label="Search Characters"
-                  onChange={() => filterByQuery(field.state.value)}
-                />
-              )}
-            </searchForm.Field>
+            <InputField
+              className="w-full"
+              label="Search Characters"
+              onChange={(query) => filterByQuery(query)}
+            />
+
             <button
               className="text-accent bg-tertiary shadow-color group grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
               onClick={(e) => {
                 e.preventDefault();
-                searchForm.reset();
                 filterByCampaign(null);
                 filterByQuery('');
               }}
             >
               <Icon
                 path={mdiSync}
-                className="text-secondary group-hover:text-accent timing"
+                className="text-tertiary group-hover:text-accent timing"
               />
             </button>
             <button
@@ -121,8 +108,8 @@ const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
               }}
             >
               <Icon
-                path={mdiSync}
-                className="text-secondary group-hover:text-accent timing"
+                path={cardType === 'large' ? mdiGrid : mdiCropSquare}
+                className="text-tertiary group-hover:text-accent timing"
               />
             </button>
           </div>

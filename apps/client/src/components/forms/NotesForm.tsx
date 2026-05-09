@@ -6,15 +6,17 @@ import BtnRect from '../buttons/BtnRect';
 import { Notes } from 'src/types/campaign';
 
 const NotesForm = ({
+  sessionId,
   notes,
   setEditModeId,
 }: {
+  sessionId: number;
   notes?: Notes;
   setEditModeId: (value: number | null) => void;
 }) => {
   const createNotes = useCreateNotesMutation(setEditModeId);
 
-  const notesForm = useNotesForm(createNotes, notes);
+  const notesForm = useNotesForm(sessionId, createNotes, notes);
 
   return (
     <div className="flex w-full flex-col gap-8">

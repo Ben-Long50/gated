@@ -24,7 +24,7 @@ const ArrowHeader2 = ({
         size={0.5}
         rotate={reverse ? 90 : -90}
       />
-      <h2 className="!text-inherit">{title}</h2>
+      <h2 className="line-clamp-2 !text-inherit">{title}</h2>
     </div>
   );
 };
