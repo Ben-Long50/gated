@@ -11,6 +11,12 @@ router.patch(
   campaignController.joinCampaign,
 );
 
+router.patch(
+  '/campaigns/:campaignId/pendingPlayers',
+  authentication.authenticate,
+  campaignController.rejectCampaign,
+);
+
 router.get(
   '/campaigns',
   authentication.authenticate,

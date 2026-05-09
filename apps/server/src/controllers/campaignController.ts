@@ -239,6 +239,31 @@ const campaignController = {
     }
   },
 
+  rejectCampaign: async (req: Request, res: Response) => {
+    try {
+      if (!req.user) {
+        res
+          .status(401)
+          .json({ error: 'You must be signed in to use this function' });
+        return;
+      }
+
+      const campaign = await campaignServices.rejectCampaign(
+        Number(req.params.campaignId),
+        req.user.id,
+      );
+
+      res
+        .status(200)
+        .json({
+          campaign,
+          message: `Successfully rejected the invite to ${campaign.name}`,
+        });
+    } catch (error: any) {
+      handleControllerError(res, error);
+    }
+  },
+
   deleteCampaign: async (req: Request, res: Response) => {
     try {
       if (!req.user) {

@@ -4,6 +4,7 @@ import campaignController from '../controllers/campaignController.js';
 import campaignAuthentication from '../middleware/campaignAuthentication.js';
 const router = express.Router();
 router.patch('/campaigns/:campaignId/players', authentication.authenticate, campaignController.joinCampaign);
+router.patch('/campaigns/:campaignId/pendingPlayers', authentication.authenticate, campaignController.rejectCampaign);
 router.get('/campaigns', authentication.authenticate, campaignController.getCampaigns);
 router.get('/campaigns/batch', authentication.authenticate, campaignAuthentication.filterCampaigns, campaignController.getBatchCampaigns);
 router.get('/campaigns/:campaignId', authentication.authenticate, campaignAuthentication.filterCampaigns, campaignController.getCampaignById);

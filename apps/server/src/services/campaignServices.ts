@@ -9,8 +9,8 @@ import { Date, Time } from '../validation/fieldSchemas.js';
 
 const campaignInclude = {
   sessions: true,
-  players: { orderBy: { firstName: 'desc' as const } },
-  pendingPlayers: { orderBy: { firstName: 'desc' as const } },
+  players: { orderBy: { username: 'asc' as const } },
+  pendingPlayers: { orderBy: { username: 'asc' as const } },
   factions: { select: { id: true, name: true, factionType: true } },
   gangs: { select: { id: true, name: true } },
   characters: {
@@ -467,12 +467,30 @@ const campaignServices = {
     try {
       const campaign = await prisma.campaign.update({
         where: {
-          id: Number(campaignId),
-          pendingPlayers: { some: { id: userId } },
+          id: campaignId,
         },
         data: {
           pendingPlayers: { disconnect: { id: userId } },
           players: { connect: { id: userId } },
+        },
+        include: campaignInclude,
+      });
+
+      return campaign;
+    } catch (error: any) {
+      console.error(error);
+      throw new Error('Failed to join campaign');
+    }
+  },
+
+  rejectCampaign: async (campaignId: number, userId: number) => {
+    try {
+      const campaign = await prisma.campaign.update({
+        where: {
+          id: campaignId,
+        },
+        data: {
+          pendingPlayers: { disconnect: { id: userId } },
         },
         include: campaignInclude,
       });

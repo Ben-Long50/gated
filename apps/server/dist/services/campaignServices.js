@@ -15,8 +15,8 @@ import { calculateRoll } from '../utils/rollUtilities.js';
 import constructCalendar from '../utils/constructCalendar.js';
 const campaignInclude = {
     sessions: true,
-    players: { orderBy: { firstName: 'desc' } },
-    pendingPlayers: { orderBy: { firstName: 'desc' } },
+    players: { orderBy: { username: 'asc' } },
+    pendingPlayers: { orderBy: { username: 'asc' } },
     factions: { select: { id: true, name: true, factionType: true } },
     gangs: { select: { id: true, name: true } },
     characters: {
@@ -373,12 +373,29 @@ const campaignServices = {
         try {
             const campaign = await prisma.campaign.update({
                 where: {
-                    id: Number(campaignId),
-                    pendingPlayers: { some: { id: userId } },
+                    id: campaignId,
                 },
                 data: {
                     pendingPlayers: { disconnect: { id: userId } },
                     players: { connect: { id: userId } },
+                },
+                include: campaignInclude,
+            });
+            return campaign;
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to join campaign');
+        }
+    },
+    rejectCampaign: async (campaignId, userId) => {
+        try {
+            const campaign = await prisma.campaign.update({
+                where: {
+                    id: campaignId,
+                },
+                data: {
+                    pendingPlayers: { disconnect: { id: userId } },
                 },
                 include: campaignInclude,
             });
