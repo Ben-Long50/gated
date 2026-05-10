@@ -28,10 +28,15 @@ const CharacterLinks = () => {
   return (
     <>
       <LinkSidebar
-        title="Character Sheet"
+        title="Character Dashboard"
         icon={
           <CharacterIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
         }
+        path={`/glam/characters`}
+      />
+      <LinkSidebar
+        title={constructName(character)}
+        icon={<CharacterPictureRound character={character} />}
         path={`/glam/characters/${character?.id}`}
       />
       <LinkSidebar

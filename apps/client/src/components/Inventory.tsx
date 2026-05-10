@@ -1,4 +1,3 @@
-import useItems from 'src/hooks/useItems';
 import BtnAuth from './buttons/BtnAuth';
 import Divider from './Divider';
 import ArmorIcon from './icons/ArmorIcon';
@@ -95,8 +94,8 @@ const Inventory = () => {
           <ArmorIcon className="size-8" />
         </BtnAuth>
         <BtnAuth
-          active={category === 'augmentation'}
-          onClick={() => handleTab('augmentation')}
+          active={category === 'cybernetic'}
+          onClick={() => handleTab('cybernetic')}
         >
           <CyberIcon className="size-8" />
         </BtnAuth>
