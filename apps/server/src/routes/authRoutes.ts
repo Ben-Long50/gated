@@ -75,7 +75,7 @@ router.get(
       sameSite: process.env.SAME_SITE,
       maxAge: 1000 * 60 * 60 * 24,
     });
-    const redirectUrl = `${process.env.CLIENT_URL}/glam/codex`;
+    const redirectUrl = `${process.env.CLIENT_URL}/glam/codex?tab=equipment`;
     res.redirect(redirectUrl);
   },
 );
@@ -96,7 +96,7 @@ router.get(
       sameSite: process.env.SAME_SITE,
       maxAge: 1000 * 60 * 60 * 24,
     });
-    const redirectUrl = `${process.env.CLIENT_URL}/glam/codex`;
+    const redirectUrl = `${process.env.CLIENT_URL}/glam/codex?tab=equipment`;
     res.redirect(redirectUrl);
   },
 );
