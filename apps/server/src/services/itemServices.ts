@@ -126,43 +126,54 @@ const itemServices = {
         },
       ];
 
-      const itemPromises = [];
-      const characterPromises = [];
-
-      for (const data of itemData) {
-        const count = await prisma.item.count({
-          where: { ...data, baseItemId: null },
-        });
-
-        const position = Math.random() * count;
-
-        itemPromises.push(
-          prisma.item.findFirst({
+      const itemCounts = await Promise.all(
+        itemData.map((data) =>
+          prisma.item.count({
             where: { ...data, baseItemId: null },
-            skip: position,
-            select: { picture: true },
           }),
-        );
-      }
+        ),
+      );
 
-      for (const data of characterData) {
-        const count = await prisma.character.count({
-          where: data,
-        });
-
-        const position = Math.random() * count;
-
-        characterPromises.push(
-          prisma.character.findFirst({
+      const characterCounts = await Promise.all(
+        characterData.map((data) =>
+          prisma.character.count({
             where: data,
-            skip: position,
-            select: { picture: true },
           }),
-        );
-      }
+        ),
+      );
 
-      const items = await Promise.all(itemPromises);
-      const characters = await Promise.all(characterPromises);
+      const itemPromises = itemData.map((data, index) => {
+        const count = itemCounts[index];
+
+        if (count === 0) {
+          return null;
+        }
+
+        return prisma.item.findFirst({
+          where: { ...data, baseItemId: null },
+          skip: Math.floor(Math.random() * count),
+          select: { picture: true },
+        });
+      });
+
+      const characterPromises = characterData.map((data, index) => {
+        const count = characterCounts[index];
+
+        if (count === 0) {
+          return null;
+        }
+
+        return prisma.character.findFirst({
+          where: data,
+          skip: Math.floor(Math.random() * count),
+          select: { picture: true },
+        });
+      });
+
+      const [items, characters] = await Promise.all([
+        Promise.all(itemPromises),
+        Promise.all(characterPromises),
+      ]);
 
       return { items, characters };
     } catch (error: any) {

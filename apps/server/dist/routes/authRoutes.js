@@ -52,7 +52,7 @@ router.get('/auth/google/callback', passport.authenticate('google', {
         sameSite: process.env.SAME_SITE,
         maxAge: 1000 * 60 * 60 * 24,
     });
-    const redirectUrl = `${process.env.CLIENT_URL}/glam/codex`;
+    const redirectUrl = `${process.env.CLIENT_URL}/glam/codex?tab=equipment`;
     res.redirect(redirectUrl);
 });
 router.get('/auth/facebook', passport.authenticate('facebook'));
@@ -66,7 +66,7 @@ router.get('/auth/facebook/callback', passport.authenticate('facebook', {
         sameSite: process.env.SAME_SITE,
         maxAge: 1000 * 60 * 60 * 24,
     });
-    const redirectUrl = `${process.env.CLIENT_URL}/glam/codex`;
+    const redirectUrl = `${process.env.CLIENT_URL}/glam/codex?tab=equipment`;
     res.redirect(redirectUrl);
 });
 router.get('/auth/failure', (_req, res) => {
