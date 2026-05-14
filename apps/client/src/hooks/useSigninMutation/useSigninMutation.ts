@@ -11,7 +11,7 @@ const useSigninMutation = (setErrors: (errors: string[]) => void) => {
     },
     onSuccess: () => {
       queryClient.clear();
-      navigate('/glam/codex');
+      navigate('/glam/codex?tab=equipment');
     },
     onError: (error: string[]) => {
       setErrors(error);
