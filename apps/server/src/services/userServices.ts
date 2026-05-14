@@ -22,7 +22,22 @@ const userServices = {
           lastName: true,
           role: true,
           profilePicture: true,
-          characters: { select: { id: true }, orderBy: { firstName: 'asc' } },
+          characters: {
+            select: {
+              id: true,
+              playerCharacter: true,
+              characterInventory: {
+                include: {
+                  _count: {
+                    select: {
+                      items: true,
+                    },
+                  },
+                },
+              },
+            },
+            orderBy: { firstName: 'asc' },
+          },
           ownerCampaigns: { select: { id: true } },
           playerCampaigns: { select: { id: true } },
           pendingCampaigns: { select: { id: true } },

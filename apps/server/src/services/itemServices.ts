@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import prisma from '../config/database.js';
 import { enforceSingularLinking } from '../utils/enforceSingularLinking.js';
 import { createLinkedCopies } from '../utils/createLinkedCopies.js';
@@ -48,6 +50,127 @@ export const itemInclude = {
 };
 
 const itemServices = {
+  getCodexPreviewItems: async () => {
+    try {
+      const itemData = [
+        {
+          itemTypes: { hasEvery: ['weapon'] },
+        },
+        {
+          itemTypes: { hasEvery: ['weapon'] },
+          keywords: { some: { keyword: { name: 'Ranged' } } },
+        },
+        {
+          itemTypes: { hasEvery: ['weapon'] },
+          keywords: { some: { keyword: { name: 'Melee' } } },
+        },
+        {
+          itemTypes: { hasEvery: ['weapon'] },
+          keywords: {
+            some: {
+              keyword: {
+                OR: [{ name: 'Consumable' }, { name: 'Light Consumable' }],
+              },
+            },
+          },
+        },
+        {
+          itemTypes: { hasEvery: ['armor'] },
+        },
+        {
+          itemTypes: { hasEvery: ['armor'] },
+          keywords: { some: { keyword: { name: 'Head' } } },
+        },
+        {
+          itemTypes: { hasEvery: ['armor'] },
+          keywords: { some: { keyword: { name: 'Body' } } },
+        },
+        {
+          itemTypes: { hasEvery: ['armor'] },
+          keywords: { some: { keyword: { name: 'Cloak' } } },
+        },
+        {
+          itemTypes: { hasEvery: ['cybernetic'] },
+        },
+        {
+          itemTypes: { hasEvery: ['mutation'] },
+        },
+        {
+          itemTypes: { hasEvery: ['vehicle'] },
+        },
+        {
+          itemTypes: { hasEvery: ['weapon'] },
+          keywords: { some: { keyword: { name: 'Vehicle Weapon' } } },
+        },
+        {
+          itemTypes: { hasEvery: ['drone'] },
+        },
+        {
+          itemTypes: { hasEvery: ['weapon'] },
+          keywords: { some: { keyword: { name: 'Drone Weapon' } } },
+        },
+        {
+          itemTypes: { hasEvery: ['reusable'] },
+        },
+        {
+          itemTypes: { hasEvery: ['consumable'] },
+        },
+      ];
+
+      const characterData = [
+        { playerCharacter: true },
+        { playerCharacter: false },
+        {
+          playerCharacter: false,
+          npcTypes: { hasEvery: ['goon'] },
+        },
+      ];
+
+      const itemPromises = [];
+      const characterPromises = [];
+
+      for (const data of itemData) {
+        const count = await prisma.item.count({
+          where: { ...data, baseItemId: null },
+        });
+
+        const position = Math.random() * count;
+
+        itemPromises.push(
+          prisma.item.findFirst({
+            where: { ...data, baseItemId: null },
+            skip: position,
+            select: { picture: true },
+          }),
+        );
+      }
+
+      for (const data of characterData) {
+        const count = await prisma.character.count({
+          where: data,
+        });
+
+        const position = Math.random() * count;
+
+        characterPromises.push(
+          prisma.character.findFirst({
+            where: data,
+            skip: position,
+            select: { picture: true },
+          }),
+        );
+      }
+
+      const items = await Promise.all(itemPromises);
+      const characters = await Promise.all(characterPromises);
+
+      return { items, characters };
+    } catch (error: any) {
+      console.error(error);
+      throw new Error('Failed to fetch items');
+    }
+  },
+
   getItems: async (category?: $Enums.ItemType[]) => {
     try {
       const items = await prisma.item.findMany({

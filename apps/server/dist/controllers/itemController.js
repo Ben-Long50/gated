@@ -5,6 +5,15 @@ import parseRequestBody from '../utils/parseRequestBody.js';
 import { ItemInput, ItemUpgradeInput } from '../validation/itemSchema.js';
 import handleControllerError from './handleControllerError.js';
 const itemController = {
+    getCodexPreviewItems: async (_, res) => {
+        try {
+            const { items, characters } = await itemServices.getCodexPreviewItems();
+            res.status(200).json({ items, characters });
+        }
+        catch (error) {
+            handleControllerError(res, error);
+        }
+    },
     getItems: async (req, res) => {
         try {
             const category = req.params.category.slice(0, -1);

@@ -8,6 +8,16 @@ import { ItemInput, ItemUpgradeInput } from '../validation/itemSchema.js';
 import handleControllerError from './handleControllerError.js';
 
 const itemController = {
+  getCodexPreviewItems: async (_: Request, res: Response) => {
+    try {
+      const { items, characters } = await itemServices.getCodexPreviewItems();
+
+      res.status(200).json({ items, characters });
+    } catch (error: any) {
+      handleControllerError(res, error);
+    }
+  },
+
   getItems: async (req: Request, res: Response) => {
     try {
       const category = req.params.category.slice(0, -1) as ItemType;

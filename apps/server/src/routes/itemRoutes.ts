@@ -6,6 +6,8 @@ import conditionController from '../controllers/conditionController.js';
 
 const router = express.Router();
 
+router.get('/items/codex', itemController.getCodexPreviewItems);
+
 router.get('/items', authentication.authenticate, itemController.getBatchItems);
 
 router.get(

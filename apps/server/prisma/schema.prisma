@@ -336,7 +336,7 @@ model Character {
   preferences           Json?
   location              Location?
   locationId            Int?
-  active                Boolean                       @default(false)
+  base                  Boolean                       @default(false)
   pushCounter           Int                           @default(0)
   perks                 Perk[]                        @relation("CharacterToPerk")
   campaign              Campaign?                     @relation(fields: [campaignId], references: [id])
