@@ -22,6 +22,7 @@ import useCharacter from 'src/hooks/useCharacter';
 import Loading from './Loading';
 import { Item } from 'src/types/item';
 import { useRef } from 'react';
+import NavTabs from './NavTabs';
 
 const Inventory = () => {
   const { characterId } = useParams();
@@ -75,9 +76,9 @@ const Inventory = () => {
   };
 
   return (
-    <div className="flex h-full w-full max-w-6xl flex-col gap-4">
+    <div className="flex h-full w-full max-w-7xl flex-col gap-4">
       <h1 className="mb-4 text-center">{`${character?.firstName}'s Inventory`}</h1>
-      <div className="grid grid-flow-col gap-2 sm:gap-4">
+      <NavTabs>
         <BtnAuth active={!category} onClick={() => handleTab(null)}>
           All
         </BtnAuth>
@@ -123,7 +124,7 @@ const Inventory = () => {
         >
           <DroneIcon className="size-8" />
         </BtnAuth>
-      </div>
+      </NavTabs>
       <Divider className="col-span-2 opacity-50" />
       {isLoading ? (
         <Loading />

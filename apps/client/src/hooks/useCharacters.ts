@@ -16,9 +16,10 @@ const useCharacters = (
   const sortedCharacters = characters?.filter((character) => {
     if (!character) return false;
 
-    const matchesType = playerCharacter
-      ? character.playerCharacter === playerCharacter
-      : true;
+    const matchesType =
+      playerCharacter != null
+        ? character.playerCharacter === playerCharacter
+        : true;
 
     const matchesNpcType =
       npcTypes && npcTypes.length > 0

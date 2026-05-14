@@ -30,7 +30,6 @@ import { Item } from 'src/types/item';
 import LinkedItemCard from './LinkedItemCard';
 import LinkedActionCard from './LinkedActionCard';
 import ItemRadialMenu from './radialMenus/itemRadialMenu/ItemRadialMenu';
-import useModalStore from 'src/stores/modalStore';
 import ConditionTag from './ConditionTag';
 import ExpandingList from './ExpandingList';
 import useItem from 'src/hooks/useItem';

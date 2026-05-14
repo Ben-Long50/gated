@@ -44,11 +44,12 @@ import PlayerSelectModal from 'src/components/modals/PlayerSelectModal';
 import GangCharacterSelectModal from 'src/components/CampaignCharacterSelectModal';
 import AffiliationForm from 'src/components/forms/AffiliationForm';
 import AffiliationEntitySelectModal from 'src/components/modals/AffiliationEntitySelectModal';
+import CampaignDashboard from 'src/components/CampaignDashboard';
 
 const CampaignTabRoutes = () => {
   return (
     <Route path="campaigns">
-      <Route path="" element={<Campaigns />} />
+      <Route path="" element={<CampaignDashboard />} />
       <Route path=":campaignId">
         <Route path="" element={<Campaign />}>
           <Route

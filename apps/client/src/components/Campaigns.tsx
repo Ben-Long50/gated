@@ -7,15 +7,17 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { User } from 'src/types/user';
 import { capitalCase } from 'change-case';
 import { CampaignContext } from 'src/contexts/CampaignContext';
+import BtnAuth from './buttons/BtnAuth';
+import NavTabs from './NavTabs';
 
 const Campaigns = () => {
   const { user } = useContext(AuthContext);
   const { campaigns } = useContext(CampaignContext);
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const campaignType = searchParams.get('campaignType') || 'all';
 
-  let campaignList;
+  let campaignList = [];
 
   switch (campaignType) {
     case 'owner':
@@ -43,32 +45,52 @@ const Campaigns = () => {
       break;
   }
 
-  if (!campaigns || campaignList.length === 0) {
-    return (
-      <div className="flex w-full max-w-5xl flex-col items-center gap-8">
-        <h1>{capitalCase(campaignType) + ' Campaigns'}</h1>
-        <h3 className="text-center">
-          No campaigns found. If you want to be the game master of an upcoming
-          campaign, head to the campaign creation page. Otherwise wait for
-          another user to invite you to their own campaign.
-        </h3>
-        <Link to="/glam/campaigns/create">
-          <BtnRect ariaLabel="navigate to create campaign" type="button">
-            Create Campaign
-          </BtnRect>
-        </Link>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex w-full max-w-6xl flex-col items-center gap-6 sm:gap-8">
-      <h1>{capitalCase(campaignType) + ' Campaigns'}</h1>
-      <div className="flex w-full flex-col gap-8">
-        {campaignList?.map((campaign: Campaign) => (
+    <div className="flex w-full flex-col gap-8">
+      <NavTabs>
+        <BtnAuth
+          active={campaignType === 'all'}
+          onClick={() => setSearchParams({ campaignType: 'all' })}
+        >
+          All
+        </BtnAuth>
+        <BtnAuth
+          active={campaignType === 'owner'}
+          onClick={() => setSearchParams({ campaignType: 'owner' })}
+        >
+          Owner
+        </BtnAuth>
+        <BtnAuth
+          active={campaignType === 'player'}
+          onClick={() => setSearchParams({ campaignType: 'player' })}
+        >
+          Player
+        </BtnAuth>
+        <BtnAuth
+          active={campaignType === 'pending'}
+          onClick={() => setSearchParams({ campaignType: 'pending' })}
+        >
+          Pending
+        </BtnAuth>
+      </NavTabs>
+      {campaignList.length > 0 ? (
+        campaignList?.map((campaign: Campaign) => (
           <CampaignCard key={campaign.id} campaign={campaign} />
-        ))}
-      </div>
+        ))
+      ) : (
+        <div className="flex flex-col gap-8">
+          <p className="text-center">
+            No campaigns found. If you want to be the game master of an upcoming
+            campaign, head to the campaign creation page. Otherwise wait for
+            another user to invite you to their own campaign.
+          </p>
+          <Link to="/glam/campaigns/create">
+            <BtnRect ariaLabel="navigate to create campaign" type="button">
+              Create Campaign
+            </BtnRect>
+          </Link>
+        </div>
+      )}
     </div>
   );
 };

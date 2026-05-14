@@ -11,7 +11,6 @@ import KeywordForm from 'src/components/forms/KeywordForm';
 import Keywords from 'src/components/Keywords';
 import KeywordLinkModal from 'src/components/modals/KeywordLinkModal';
 import ModifierModal from 'src/components/modals/ModifierModal';
-import PatchNotes from 'src/components/PatchNotes';
 import PatchNoteForm from 'src/components/forms/PatchNotesForm';
 import PerkForm from 'src/components/forms/PerkForm';
 import Perks from 'src/components/Perks';
@@ -20,13 +19,14 @@ import DescriptionModal from 'src/components/modals/DescriptionModal';
 import ItemPage from 'src/components/ItemPage';
 import Properties from 'src/components/Properties';
 import PropertyForm from 'src/components/forms/PropertyForm';
+import CodexDashboard from 'src/components/CodexDashboard';
 
 const CodexTabRoutes = () => {
   return (
     <Route path="codex">
+      <Route index element={<CodexDashboard />} />
       <Route path="search" element={<CodexSearch />} />
       <Route path="search/:category/:itemId" element={<ItemPage />} />
-      <Route index element={<PatchNotes />} />
       <Route path="patchNotes">
         <Route path="create" element={<PatchNoteForm />} />
         <Route path=":patchNoteId/update" element={<PatchNoteForm />} />

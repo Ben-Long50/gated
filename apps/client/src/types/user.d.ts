@@ -1,11 +1,11 @@
 export interface User {
-  id?: number;
+  id: number | null;
   username: string;
-  firstName?: string;
-  lastName?: string;
+  firstName: string;
+  lastName: string;
   profilePicture?: string;
-  email?: string;
-  characters: { id: number }[];
+  role: 'GUEST' | 'USER' | 'PROUSER' | 'ADMIN' | 'SUPERADMIN';
+  characters: { id: number; playerCharacter: boolean }[];
   ownerCampaigns: { id: number }[];
   pendingCampaigns: { id: number }[];
   playerCampaigns: { id: number }[];

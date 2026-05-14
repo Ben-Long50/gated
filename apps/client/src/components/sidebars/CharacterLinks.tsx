@@ -1,7 +1,5 @@
 import constructName from 'src/utils/constructName';
 import CharacterIcon from '../icons/CharacterIcon';
-import LinkListSidebar from './LinkListSidebar';
-import SubLinkSidebar from './SubLinkSidebar';
 import Loading from '../Loading';
 import LinkSidebar from './LinkSidebar';
 import CharacterPictureRound from '../CharacterPictureRound';

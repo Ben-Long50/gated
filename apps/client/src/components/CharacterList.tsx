@@ -8,26 +8,22 @@ import ThemeContainer from './ThemeContainer';
 import { Character } from 'src/types/character';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { AuthContext } from '../contexts/AuthContext';
-import ArrowHeader2 from './ArrowHeader2';
 import InputSelectField from './InputSelectField';
 import useCampaignsQuery from 'src/hooks/useCampaignsQuery/useCampaignsQuery';
 import useCharacters from 'src/hooks/useCharacters';
 import InputField from './InputField';
 import Icon from '@mdi/react';
-import {
-  mdiCropSquare,
-  mdiGrid,
-  mdiGridLarge,
-  mdiSquare,
-  mdiSync,
-} from '@mdi/js';
+import { mdiCropSquare, mdiGrid, mdiSync } from '@mdi/js';
 import { useSearchParams, useParams } from 'react-router-dom';
+import BtnAuth from './buttons/BtnAuth';
+import ArrowHeader3 from './ArrowHeader3';
+import NavTabs from './NavTabs';
 
 const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
   const { user } = useContext(AuthContext);
   const { accentPrimary } = useContext(ThemeContext);
   const { campaignId } = useParams();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [cardType, setCardType] = useState<'large' | 'small'>('large');
 
   const characterType = searchParams.get('characterType');
@@ -58,17 +54,33 @@ const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
   }
 
   return (
-    <div className="flex w-full max-w-7xl flex-col items-center gap-8">
-      <h1 className="text-center">Characters</h1>
+    <>
+      <NavTabs>
+        <BtnAuth active={!characterType} onClick={() => setSearchParams({})}>
+          All
+        </BtnAuth>
+        <BtnAuth
+          active={characterType === 'playerCharacter'}
+          onClick={() => setSearchParams({ characterType: 'playerCharacter' })}
+        >
+          Player Characters
+        </BtnAuth>
+        <BtnAuth
+          active={characterType === 'nonPlayerCharacter'}
+          onClick={() =>
+            setSearchParams({ characterType: 'nonPlayerCharacter' })
+          }
+        >
+          Non-Player Characters
+        </BtnAuth>
+      </NavTabs>
       <ThemeContainer
         className={`ml-auto w-full`}
         chamfer="medium"
         borderColor={accentPrimary}
       >
-        <form className="flex w-full flex-col gap-4 p-4">
-          <div className="grid w-full items-center gap-4 max-sm:grid-flow-row sm:grid-flow-col sm:gap-8">
-            <ArrowHeader2 title="Character Options" />
-          </div>
+        <div className="padding flex w-full flex-col gap-4">
+          <ArrowHeader3 title="Character Options" />
           {availableCampaigns && availableCampaigns?.length > 1 && (
             <InputSelectField
               label="Filter By Campaign"
@@ -113,36 +125,31 @@ const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
               />
             </button>
           </div>
-        </form>
+        </div>
       </ThemeContainer>
       {!characters || characters?.length === 0 ? (
-        <div className="flex w-full flex-col items-center justify-center gap-8">
+        <>
           <h1 className="text-center">No Characters Found</h1>
           <Link to="create">
             <BtnRect ariaLabel="Create character" type="button">
               Character creator
             </BtnRect>
           </Link>
-        </div>
+        </>
       ) : (
         <div
           className={`${cardType === 'large' ? 'grid-cols-1' : 'grid-cols-3'} grid w-full gap-10`}
         >
-          {characters
-            ?.filter((character) => character !== undefined)
-            .map((character: Character) =>
-              cardType === 'large' ? (
-                <CharacterCard key={character.id} characterId={character.id} />
-              ) : (
-                <CharacterCardAlt
-                  key={character.id}
-                  characterId={character.id}
-                />
-              ),
-            )}
+          {characters.map((character: Character) =>
+            cardType === 'large' ? (
+              <CharacterCard key={character.id} characterId={character.id} />
+            ) : (
+              <CharacterCardAlt key={character.id} characterId={character.id} />
+            ),
+          )}
         </div>
       )}
-    </div>
+    </>
   );
 };
 

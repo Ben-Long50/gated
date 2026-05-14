@@ -32,6 +32,7 @@ import CharacterPicture from './CharacterPicture';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import BtnAuth from './buttons/BtnAuth';
 import NavTabs from './NavTabs';
+import InventoryIcon from './icons/InventoryIcon';
 
 const Equipment = () => {
   const { user } = useContext(AuthContext);
@@ -110,14 +111,6 @@ const Equipment = () => {
 
   return (
     <div className="relative flex w-full max-w-9xl flex-col items-center gap-8">
-      {/* <NavTabs>
-        <Link to="..">
-          <BtnAuth>Character Sheet</BtnAuth>
-        </Link>
-        <Link to="../deployments">
-          <BtnAuth>Drones & Vehicles</BtnAuth>
-        </Link>
-      </NavTabs> */}
       <h1 className="text-center">{`${character?.firstName}'s Equipment`}</h1>
       <div className="flex w-full flex-col gap-8 sm:flex-row">
         {character?.picture?.publicId && (
@@ -145,7 +138,7 @@ const Equipment = () => {
       </div>
       <div className="flex w-full flex-col justify-start gap-8">
         <ThemeContainer chamfer="medium" borderColor={accentPrimary}>
-          <div className="flex h-full w-full flex-col gap-4 p-4 pr-6">
+          <div className="padding flex h-full w-full flex-col gap-4">
             <ArrowHeader3 title="Character Stats" />
             <div className="grid w-full grid-cols-4 gap-4">
               <div className="bg-secondary flex items-center justify-between gap-2 rounded-md p-2 shadow-md shadow-black">
@@ -259,34 +252,26 @@ const Equipment = () => {
             <ArrowHeader2 title="Equipped Items" />
             {character?.userId === user?.id && (
               <>
-                <BtnRect
-                  ariaLabel="Open inventory"
+                <button
+                  className="bg-secondary shadow-color hover:border-accent timing group rounded-md border-2 border-transparent p-2"
                   type="button"
                   onClick={() => {
                     navigate('inventory');
                   }}
                 >
-                  Open Inventory
-                </BtnRect>
+                  <InventoryIcon className="text-primary group-hover:text-accent size-10" />
+                </button>
                 {parts.includes('inventory') && (
                   <Outlet context={{ activeItem, toggleActive }} />
                 )}
               </>
             )}
           </div>
-          <ThemeContainer
-            chamfer="medium"
-            borderColor={accentPrimary}
-            overflowHidden={true}
-          >
-            <div className="p-4">
-              <EquipmentList
-                equipment={character?.equipment}
-                active={active}
-                toggleActive={toggleActive}
-              />
-            </div>
-          </ThemeContainer>
+          <EquipmentList
+            equipment={character?.equipment}
+            active={active}
+            toggleActive={toggleActive}
+          />
         </div>
       </div>
     </div>

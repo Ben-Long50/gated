@@ -113,7 +113,7 @@ const Navbar = ({
           </BtnNavbar>
         </Link>
         <Divider />
-        <Link className="w-full p-2" to="codex">
+        <Link className="w-full p-2" to="codex?tab=equipment">
           <BtnNavbar
             className="w-full text-left"
             onClick={() => {
@@ -150,10 +150,10 @@ const Navbar = ({
         </h2>
       </Link>
       <div className="relative flex items-center justify-items-end gap-10">
-        <Link to="social/characters">
+        {/* <Link to="social/characters">
           <BtnNavbar className="bg-primary">Social</BtnNavbar>
-        </Link>
-        <Link to="codex">
+        </Link> */}
+        <Link to="codex?tab=equipment">
           <BtnNavbar className="bg-primary">Codex</BtnNavbar>
         </Link>
         <Link to="campaigns">
