@@ -57,7 +57,6 @@ const CampaignDashboard = () => {
           </div>
         </div>
       </ThemeContainer>
-      <Divider />
       <Campaigns />
     </div>
   );

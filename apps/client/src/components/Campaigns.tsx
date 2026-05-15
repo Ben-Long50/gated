@@ -9,6 +9,7 @@ import { capitalCase } from 'change-case';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import BtnAuth from './buttons/BtnAuth';
 import NavTabs from './NavTabs';
+import Divider from './Divider';
 
 const Campaigns = () => {
   const { user } = useContext(AuthContext);
@@ -46,7 +47,7 @@ const Campaigns = () => {
   }
 
   return (
-    <div className="flex w-full flex-col gap-8">
+    <div className="bg-base shadow-color flex w-full flex-col gap-4 rounded-lg p-4 shadow-lg sm:p-8">
       <NavTabs>
         <BtnAuth
           active={campaignType === 'all'}
@@ -73,10 +74,14 @@ const Campaigns = () => {
           Pending
         </BtnAuth>
       </NavTabs>
+      <Divider />
+
       {campaignList.length > 0 ? (
-        campaignList?.map((campaign: Campaign) => (
-          <CampaignCard key={campaign.id} campaign={campaign} />
-        ))
+        <div className="flex flex-col gap-8">
+          {campaignList?.map((campaign: Campaign) => (
+            <CampaignCard key={campaign.id} campaign={campaign} />
+          ))}
+        </div>
       ) : (
         <div className="flex flex-col gap-8">
           <p className="text-center">

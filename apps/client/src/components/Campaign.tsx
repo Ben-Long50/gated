@@ -51,7 +51,7 @@ const Campaign = () => {
       {campaign?.picture?.imageUrl && (
         <CoverPicture picture={campaign?.picture} />
       )}
-      <div className="flex w-full max-w-7xl flex-col items-center gap-8">
+      <div className="flex w-full max-w-8xl flex-col items-center gap-8">
         <h1 className="w-full text-center font-zen text-4xl sm:text-5xl">
           {capitalCase(campaign?.name)}
         </h1>

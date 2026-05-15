@@ -142,63 +142,65 @@ const CodexDashboard = () => {
   return (
     <div className="flex w-full max-w-8xl flex-col items-center gap-8">
       <h1 className="text-center">Codex</h1>
-      <NavTabs>
-        <BtnAuth
-          active={tab === 'equipment'}
-          onClick={() => setSearchParams({ tab: 'equipment' })}
-        >
-          Equipment
-        </BtnAuth>
-        <BtnAuth
-          active={tab === 'characters'}
-          onClick={() => setSearchParams({ tab: 'characters' })}
-        >
-          Characters
-        </BtnAuth>
-        <BtnAuth
-          active={tab === 'gameplay'}
-          onClick={() => setSearchParams({ tab: 'gameplay' })}
-        >
-          Gameplay
-        </BtnAuth>
-      </NavTabs>
-      <Divider />
-      {isLoading ? (
-        <Loading />
-      ) : (
-        <>
-          {tab === 'equipment' && (
-            <div className="grid w-full grid-cols-5 gap-4 sm:gap-6">
-              {items &&
-                equipmentLinks.map((link, index) => (
-                  <CodexCard
-                    key={index}
-                    label={link.label}
-                    publicId={items[index].picture.publicId}
-                    path={link.path}
-                  />
-                ))}
-            </div>
-          )}
-          {tab === 'characters' && (
-            <div className="grid w-full grid-cols-5 gap-4">
-              {characters &&
-                characterLinks.map((link, index) => (
-                  <CodexCard
-                    key={index}
-                    label={link.label}
-                    publicId={
-                      characters[index]
-                        ? characters[index].picture.publicId
-                        : ''
-                    }
-                    path={link.path}
-                  />
-                ))}
-            </div>
-          )}
-        </>
-      )}
+      <div className="bg-base shadow-color flex w-full flex-col gap-4 rounded-lg p-4 shadow-lg sm:p-8">
+        <NavTabs>
+          <BtnAuth
+            active={tab === 'equipment'}
+            onClick={() => setSearchParams({ tab: 'equipment' })}
+          >
+            Equipment
+          </BtnAuth>
+          <BtnAuth
+            active={tab === 'characters'}
+            onClick={() => setSearchParams({ tab: 'characters' })}
+          >
+            Characters
+          </BtnAuth>
+          <BtnAuth
+            active={tab === 'gameplay'}
+            onClick={() => setSearchParams({ tab: 'gameplay' })}
+          >
+            Gameplay
+          </BtnAuth>
+        </NavTabs>
+        <Divider />
+        {isLoading ? (
+          <Loading />
+        ) : (
+          <>
+            {tab === 'equipment' && (
+              <div className="grid w-full grid-cols-5 gap-4 sm:gap-6">
+                {items &&
+                  equipmentLinks.map((link, index) => (
+                    <CodexCard
+                      key={index}
+                      label={link.label}
+                      publicId={items[index].picture.publicId}
+                      path={link.path}
+                    />
+                  ))}
+              </div>
+            )}
+            {tab === 'characters' && (
+              <div className="grid w-full grid-cols-5 gap-4">
+                {characters &&
+                  characterLinks.map((link, index) => (
+                    <CodexCard
+                      key={index}
+                      label={link.label}
+                      publicId={
+                        characters[index]
+                          ? characters[index].picture.publicId
+                          : ''
+                      }
+                      path={link.path}
+                    />
+                  ))}
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 };

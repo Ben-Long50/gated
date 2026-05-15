@@ -127,7 +127,7 @@
     @apply transition-all duration-300 ease-in-out md:duration-300;
   }
   h1 {
-    @apply text-primary text-3xl font-semibold tracking-widest lg:text-4xl;
+    @apply text-primary font-zen text-3xl font-semibold tracking-widest lg:text-5xl;
   }
   h2 {
     @apply text-primary text-2xl font-semibold tracking-widest lg:text-3xl;

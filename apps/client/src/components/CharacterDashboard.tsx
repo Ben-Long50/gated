@@ -95,7 +95,6 @@ const CharacterDashboard = () => {
           </div>
         </div>
       </ThemeContainer>
-      <Divider />
       <CharacterList />
     </div>
   );
