@@ -5,6 +5,7 @@ import PerkLinkModal from 'src/components/modals/PerkLinkModal';
 import CharacterRoutes from './CharacterRoutes';
 import CharacterMenuRoutes from './CharacterMenuRoutes';
 import CharacterDashboard from 'src/components/CharacterDashboard';
+import PictureLibraryModal from 'src/components/modals/PictureLibraryModal';
 
 const CharacterTabRoutes = () => {
   return (
@@ -13,6 +14,7 @@ const CharacterTabRoutes = () => {
         {CharacterMenuRoutes()}
       </Route>
       <Route path="create" element={<CharacterForm />}>
+        <Route path="library" element={<PictureLibraryModal />} />
         <Route path="perks" element={<PerkLinkModal />} />
         <Route path="npcPreferences" element={<NpcPreferenceModal />} />
       </Route>

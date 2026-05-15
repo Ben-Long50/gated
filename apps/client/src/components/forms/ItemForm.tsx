@@ -126,7 +126,11 @@ const ItemForm = () => {
         />
         <itemForm.Field name="description">
           {(field) => (
-            <TextAreaField label={'Item Description'} field={field} />
+            <TextAreaField
+              label={'Item Description'}
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
+            />
           )}
         </itemForm.Field>
       </div>

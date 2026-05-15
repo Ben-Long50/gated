@@ -53,7 +53,13 @@ const EventForm = () => {
             },
           }}
         >
-          {(field) => <TextAreaField label="Event Description" field={field} />}
+          {(field) => (
+            <TextAreaField
+              label="Event Description"
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
+            />
+          )}
         </eventForm.Field>
         <div className="grid grid-rows-[auto_auto] gap-4 sm:grid-cols-2 sm:gap-8">
           <div className="flex flex-col items-center justify-between gap-3">

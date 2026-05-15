@@ -59,7 +59,7 @@ const Modal = ({
           {children}
         </div>
         {(button || errors) && (
-          <div className="bg-primary sticky bottom-0 flex w-full flex-col gap-4 px-4 pb-4 sm:px-8 sm:pb-8">
+          <div className="bg-base sticky bottom-0 flex w-full flex-col gap-4 px-4 pb-4 sm:px-8 sm:pb-8">
             <Divider />
             {errors}
             {button}

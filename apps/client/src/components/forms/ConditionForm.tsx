@@ -67,7 +67,11 @@ const ConditionForm = () => {
         }}
       >
         {(field) => (
-          <TextAreaField label="Condition Description" field={field} />
+          <TextAreaField
+            label="Condition Description"
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
+          />
         )}
       </conditionForm.Field>
     </FormLayout>

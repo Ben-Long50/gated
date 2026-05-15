@@ -44,7 +44,8 @@ const ErrorReport = () => {
               <TextAreaField
                 className="h-60 w-full"
                 label="Describe the error"
-                field={field}
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
               />
             )}
           </errorReportForm.Field>

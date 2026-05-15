@@ -98,7 +98,11 @@ const PropertyForm = () => {
           }}
         >
           {(field) => (
-            <TextAreaField label={'Property Description'} field={field} />
+            <TextAreaField
+              label={'Property Description'}
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
+            />
           )}
         </propertyForm.Field>
       </div>

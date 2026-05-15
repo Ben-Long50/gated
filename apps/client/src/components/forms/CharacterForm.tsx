@@ -120,45 +120,43 @@ const CharacterForm = () => {
       <NpcPreferenceField form={characterForm} />
       <Divider />
       <ArrowHeader2 title="Character Information" />
-      <div className="grid w-full gap-8 max-sm:col-span-2 max-sm:grid-flow-row sm:grid-cols-2">
-        <PictureField
-          form={characterForm}
-          sizeInfo={{ aspectRatio: '1/1', maxHeight: '', minHeight: '' }}
-        />
-        <div className="flex w-full flex-col gap-8 max-sm:col-span-2">
+      <div className="flex w-full flex-col gap-8">
+        <div className="grid w-full grid-cols-2 gap-4">
           <characterForm.Field name="firstName">
             {(field) => <InputField label="First name" field={field} />}
           </characterForm.Field>
           <characterForm.Field name="lastName">
             {(field) => <InputField label="Last name" field={field} />}
           </characterForm.Field>
-          <div className="grid grid-cols-2 gap-8">
-            <characterForm.Field name="height">
-              {(field) => (
-                <InputField type="number" label="Height (in)" field={field} />
-              )}
-            </characterForm.Field>
-            <characterForm.Field name="weight">
-              {(field) => (
-                <InputField type="number" label="Weight (lbs)" field={field} />
-              )}
-            </characterForm.Field>
-            <characterForm.Field name="age">
-              {(field) => (
-                <InputField type="number" label="Age (yrs)" field={field} />
-              )}
-            </characterForm.Field>
-            <characterForm.Field name="sex">
-              {(field) => (
-                <InputSelectField
-                  field={field}
-                  label="Sex"
-                  options={['male', 'female']}
-                />
-              )}
-            </characterForm.Field>
-          </div>
+          <characterForm.Field name="height">
+            {(field) => (
+              <InputField type="number" label="Height (in)" field={field} />
+            )}
+          </characterForm.Field>
+          <characterForm.Field name="weight">
+            {(field) => (
+              <InputField type="number" label="Weight (lbs)" field={field} />
+            )}
+          </characterForm.Field>
+          <characterForm.Field name="age">
+            {(field) => (
+              <InputField type="number" label="Age (yrs)" field={field} />
+            )}
+          </characterForm.Field>
+          <characterForm.Field name="sex">
+            {(field) => (
+              <InputSelectField
+                field={field}
+                label="Sex"
+                options={['male', 'female']}
+              />
+            )}
+          </characterForm.Field>
         </div>
+        <PictureField
+          form={characterForm}
+          sizeInfo={{ aspectRatio: '1/1', maxHeight: '', minHeight: '' }}
+        />
       </div>
       <characterForm.Subscribe selector={(state) => state.values.attributes}>
         {(attributes) => (
@@ -224,37 +222,32 @@ const CharacterForm = () => {
               >
                 <EquipIcon className="text-secondary size-8" />
               </StatBar>
-              <div className="col-span-4 flex w-full items-center gap-8">
-                <characterForm.Field name="stats.permanentInjuries">
-                  {(field) => (
-                    <InputField
-                      className="w-full"
-                      type="number"
-                      label="Max Injuries"
-                      field={field}
-                    />
-                  )}
-                </characterForm.Field>
-                <characterForm.Field name="stats.permanentInsanities">
-                  {(field) => (
-                    <InputField
-                      className="w-full"
-                      type="number"
-                      label="Max Insanities"
-                      field={field}
-                    />
-                  )}
-                </characterForm.Field>
-              </div>
             </div>
-
+            <div className="col-span-4 flex w-full items-center gap-8">
+              <characterForm.Field name="stats.permanentInjuries">
+                {(field) => (
+                  <InputField
+                    className="w-full"
+                    type="number"
+                    label="Max Injuries"
+                    field={field}
+                  />
+                )}
+              </characterForm.Field>
+              <characterForm.Field name="stats.permanentInsanities">
+                {(field) => (
+                  <InputField
+                    className="w-full"
+                    type="number"
+                    label="Max Insanities"
+                    field={field}
+                  />
+                )}
+              </characterForm.Field>
+            </div>
             <div className="flex flex-wrap justify-around gap-6">
               <div className="flex flex-col items-center gap-2" key={'speed'}>
-                {layoutSize !== 'xsmall' && (
-                  <h3 className="text-primary text-xl font-semibold tracking-widest">
-                    Speed
-                  </h3>
-                )}
+                {layoutSize !== 'xsmall' && <p>Speed</p>}
                 <div className="flex items-center justify-center gap-2">
                   <SpeedIcon className="text-secondary size-8" />
                   <p className="text-secondary text-xl sm:pt-1 sm:text-2xl">
@@ -263,11 +256,7 @@ const CharacterForm = () => {
                 </div>
               </div>
               <div className="flex flex-col items-center gap-2" key={'evasion'}>
-                {layoutSize !== 'xsmall' && (
-                  <h3 className="text-primary text-xl font-semibold tracking-widest">
-                    Evasion
-                  </h3>
-                )}
+                {layoutSize !== 'xsmall' && <p>Evasion</p>}
                 <div className="flex items-center justify-center gap-2">
                   <EvasionIcon className="text-secondary size-8" />
                   <p className="text-secondary text-xl sm:pt-1 sm:text-2xl">
@@ -276,11 +265,7 @@ const CharacterForm = () => {
                 </div>
               </div>
               <div className="flex flex-col items-center gap-2" key={'armor'}>
-                {layoutSize !== 'xsmall' && (
-                  <h3 className="text-primary text-xl font-semibold tracking-widest">
-                    Armor
-                  </h3>
-                )}
+                {layoutSize !== 'xsmall' && <p>Armor</p>}
                 <div className="flex items-center justify-center gap-2">
                   <ArmorIcon className="text-secondary size-8" />
                   <p className="text-secondary text-xl sm:pt-1 sm:text-2xl">
@@ -289,11 +274,7 @@ const CharacterForm = () => {
                 </div>
               </div>
               <div className="flex flex-col items-center gap-2" key={'ward'}>
-                {layoutSize !== 'xsmall' && (
-                  <h3 className="text-primary text-xl font-semibold tracking-widest sm:text-2xl">
-                    Ward
-                  </h3>
-                )}
+                {layoutSize !== 'xsmall' && <p>Ward</p>}
                 <div className="flex items-center justify-center gap-2">
                   <WardIcon className="text-secondary size-8" />
                   <p className="text-secondary text-xl sm:pt-1 sm:text-2xl">

@@ -9,4 +9,5 @@ export interface User {
   ownerCampaigns: { id: number }[];
   pendingCampaigns: { id: number }[];
   playerCampaigns: { id: number }[];
+  generatedPictures: { imageUrl: string; publicId: string }[];
 }

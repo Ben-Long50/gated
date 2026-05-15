@@ -26,7 +26,13 @@ const MapSaveModal = () => {
           {(field) => <InputField field={field} label="Name" />}
         </form.Field>
         <form.Field name="description">
-          {(field) => <TextAreaField field={field} label="Description" />}
+          {(field) => (
+            <TextAreaField
+              label="Description"
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
+            />
+          )}
         </form.Field>
         <form.Field name="draft">
           {(field) => (

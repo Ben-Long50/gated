@@ -53,7 +53,8 @@ const KeywordForm = () => {
           <TextAreaField
             className="w-full"
             label="Trait Description"
-            field={field}
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
           />
         )}
       </keywordForm.Field>

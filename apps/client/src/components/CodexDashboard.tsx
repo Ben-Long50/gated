@@ -1,56 +1,50 @@
-import { Link, useSearchParams } from 'react-router-dom';
-import ArrowHeader2 from './ArrowHeader2';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Divider from './Divider';
 import useCodexPreviewItemsQuery from 'src/hooks/useCodexPreviewItemsQuery/useCodexPreviewItemsQuery';
 import Loading from './Loading';
 import CloudinaryImage from './CloudinaryImage';
-import EquipmentIcon from './icons/EquipmentIcon';
 import Icon from '@mdi/react';
 import { mdiImage } from '@mdi/js';
-import CharacterIcon from './icons/CharacterIcon';
 import BtnAuth from './buttons/BtnAuth';
-import { useState } from 'react';
-import { capitalCase } from 'change-case';
 import NavTabs from './NavTabs';
 
-const CodexCard = ({
+export const CodexCard = ({
   label,
-  path,
+  onClick,
   publicId,
 }: {
-  label: string;
-  path: string;
+  label?: string;
+  onClick?: () => void;
   publicId: string;
 }) => {
   return (
-    <Link className="w-full" to={path}>
-      <button className="bg-primary hover:border-accent timing shadow-color group w-full overflow-hidden rounded-md border-2 border-zinc-800 pb-4">
-        {publicId ? (
-          <CloudinaryImage
-            className="timing aspect-square w-full origin-bottom group-hover:scale-105"
-            publicId={publicId}
-            style={{
-              maskImage: 'linear-gradient(to bottom, black 0%, transparent 90%',
-            }}
-          />
-        ) : (
-          <div className="flex aspect-square w-full items-center justify-center">
-            <Icon
-              className="text-tertiary opacity-50"
-              path={mdiImage}
-              size={4}
-            />
-          </div>
-        )}
-        <p className="group-hover:text-accent timing">{label}</p>
-      </button>
-    </Link>
+    <button
+      className={`${label && 'pb-4'} bg-primary hover:border-accent timing shadow-color group w-full overflow-hidden rounded-md border-2 border-zinc-800`}
+      onClick={onClick}
+    >
+      {publicId ? (
+        <CloudinaryImage
+          className="timing aspect-square w-full origin-bottom group-hover:scale-105"
+          publicId={publicId}
+          style={{
+            maskImage:
+              label && 'linear-gradient(to bottom, black 0%, transparent 90%',
+          }}
+        />
+      ) : (
+        <div className="flex aspect-square w-full items-center justify-center">
+          <Icon className="text-tertiary opacity-50" path={mdiImage} size={4} />
+        </div>
+      )}
+      {label && <p className="group-hover:text-accent timing">{label}</p>}
+    </button>
   );
 };
 
 const CodexDashboard = () => {
   const { data, isLoading } = useCodexPreviewItemsQuery();
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const tab = searchParams.get('tab');
 
@@ -176,7 +170,7 @@ const CodexDashboard = () => {
                       key={index}
                       label={link.label}
                       publicId={items[index].picture.publicId}
-                      path={link.path}
+                      onClick={() => navigate(link.path)}
                     />
                   ))}
               </div>
@@ -193,7 +187,7 @@ const CodexDashboard = () => {
                           ? characters[index].picture.publicId
                           : ''
                       }
-                      path={link.path}
+                      onClick={() => navigate(link.path)}
                     />
                   ))}
               </div>

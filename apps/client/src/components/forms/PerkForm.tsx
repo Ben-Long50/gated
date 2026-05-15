@@ -54,7 +54,8 @@ const PerkForm = () => {
           <TextAreaField
             className="h-40 w-full"
             label="Perk description"
-            field={field}
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
           />
         )}
       </perkForm.Field>
