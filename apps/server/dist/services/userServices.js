@@ -14,6 +14,7 @@ const userServices = {
                     lastName: true,
                     role: true,
                     profilePicture: true,
+                    generatedPictures: true,
                     characters: {
                         select: {
                             id: true,
@@ -197,6 +198,22 @@ const userServices = {
                 where: { id: userId },
                 data: userData,
             });
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to update account information');
+        }
+    },
+    addUserGeneratedPicture: async (picture, userId) => {
+        try {
+            await prisma.user.update({
+                where: { id: userId },
+                data: {
+                    generatedPictures: { create: picture },
+                    generationCount: { increment: 1 },
+                },
+            });
+            return picture;
         }
         catch (error) {
             console.error(error);

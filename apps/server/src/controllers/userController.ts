@@ -107,6 +107,28 @@ const userController = {
     }
   },
 
+  addUserGeneratedPicture: async (req: Request, res: Response) => {
+    try {
+      if (!req.user) {
+        res
+          .send(401)
+          .json({ message: 'You must be signed in to complete this user' });
+        return;
+      }
+
+      const picture = await userServices.addUserGeneratedPicture(
+        req.body.picture,
+        req.user.id,
+      );
+
+      res
+        .status(200)
+        .json({ picture, message: 'Successfully generated and saved image' });
+    } catch (error: any) {
+      handleControllerError(res, error);
+    }
+  },
+
   updateUserRole: async (req: Request, res: Response) => {
     try {
       const validatedRole = UserRole.parse(req.body.role);

@@ -22,6 +22,7 @@ const userServices = {
           lastName: true,
           role: true,
           profilePicture: true,
+          generatedPictures: true,
           characters: {
             select: {
               id: true,
@@ -208,6 +209,26 @@ const userServices = {
         where: { id: userId },
         data: userData,
       });
+    } catch (error: any) {
+      console.error(error);
+      throw new Error('Failed to update account information');
+    }
+  },
+
+  addUserGeneratedPicture: async (
+    picture: { imageUrl: string; publicId: string },
+    userId: number,
+  ) => {
+    try {
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          generatedPictures: { create: picture },
+          generationCount: { increment: 1 },
+        },
+      });
+
+      return picture;
     } catch (error: any) {
       console.error(error);
       throw new Error('Failed to update account information');

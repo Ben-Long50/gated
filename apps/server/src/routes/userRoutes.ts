@@ -1,6 +1,8 @@
 import express from 'express';
 import userController from '../controllers/userController.js';
 import authentication from '../middleware/authentication.js';
+import { generateBFLPicture } from '../middleware/pictureGenerationMiddleware.js';
+import { uploadGeneratedPictureToCloudinary } from '../utils/cloudinary.js';
 
 const router = express.Router();
 
@@ -26,6 +28,15 @@ router.get(
   '/users/:userId',
   authentication.authenticate,
   userController.getUserById,
+);
+
+router.post(
+  '/users/generate',
+  authentication.authenticate,
+  authentication.authenticateSuperadmin,
+  generateBFLPicture,
+  uploadGeneratedPictureToCloudinary,
+  userController.addUserGeneratedPicture,
 );
 
 router.post('/users', authentication.authenticate, userController.createUser);

@@ -9,26 +9,37 @@ datasource db {
 }
 
 model User {
-  id                    Int            @id @default(autoincrement())
-  username              String         @unique
+  id                    Int                @id @default(autoincrement())
+  username              String             @unique
   firstName             String
   lastName              String
   profilePicture        String?
-  googleId              String?        @unique
-  facebookId            String?        @unique
-  email                 String         @unique
+  googleId              String?            @unique
+  facebookId            String?            @unique
+  email                 String             @unique
   password              String?
-  role                  UserRole       @default(USER)
-  createdAt             DateTime       @default(now())
+  role                  UserRole           @default(USER)
+  createdAt             DateTime           @default(now())
+  generatedPictures     GeneratedPicture[]
+  generationCount       Int                @default(0)
   characters            Character[]
   item                  Item[]
   errorReports          Error[]
-  ownerCampaigns        Campaign[]     @relation("owner")
-  pendingCampaigns      Campaign[]     @relation("pending")
-  playerCampaigns       Campaign[]     @relation("player")
-  receivedNotifications Notification[] @relation("received")
-  sentNotifications     Notification[] @relation("sent")
+  ownerCampaigns        Campaign[]         @relation("owner")
+  pendingCampaigns      Campaign[]         @relation("pending")
+  playerCampaigns       Campaign[]         @relation("player")
+  receivedNotifications Notification[]     @relation("received")
+  sentNotifications     Notification[]     @relation("sent")
   maps                  Map[]
+}
+
+model GeneratedPicture {
+  id       Int    @id @default(autoincrement())
+  imageUrl String
+  publicId String
+
+  user   User? @relation(fields: [userId], references: [id])
+  userId Int?
 }
 
 model Campaign {
