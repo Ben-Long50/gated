@@ -55,7 +55,7 @@ const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
   }
 
   return (
-    <div className="bg-base shadow-color flex w-full flex-col gap-4 rounded-lg p-4 shadow-lg sm:p-8">
+    <>
       <NavTabs>
         <BtnAuth active={!characterType} onClick={() => setSearchParams({})}>
           All
@@ -77,59 +77,54 @@ const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
       </NavTabs>
       <Divider />
       <div className="flex flex-col gap-8">
-        <ThemeContainer
-          className={`ml-auto w-full`}
-          chamfer="medium"
-          borderColor={accentPrimary}
-        >
-          <div className="padding flex w-full flex-col gap-4">
-            <ArrowHeader3 title="Character Options" />
-            {availableCampaigns && availableCampaigns?.length > 1 && (
-              <InputSelectField
-                label="Filter By Campaign"
-                options={availableCampaigns}
-                onChange={(campaign) => filterByCampaign(campaign.id)}
-              />
-            )}
-            <div className="flex w-full items-center gap-4">
-              <InputField
-                className="w-full"
-                label="Search Characters"
-                onChange={(query) => filterByQuery(query)}
-              />
+        <div className="flex w-full flex-col gap-4">
+          <ArrowHeader3 title="Character Options" />
+          {availableCampaigns && availableCampaigns?.length > 1 && (
+            <InputSelectField
+              label="Filter By Campaign"
+              options={availableCampaigns}
+              onChange={(campaign) => filterByCampaign(campaign.id)}
+            />
+          )}
+          <div className="flex w-full items-center gap-4">
+            <InputField
+              className="w-full"
+              label="Search Characters"
+              onChange={(query) => filterByQuery(query)}
+            />
 
-              <button
-                className="text-accent bg-tertiary shadow-color group grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
-                onClick={(e) => {
-                  e.preventDefault();
-                  filterByCampaign(null);
-                  filterByQuery('');
-                }}
-              >
-                <Icon
-                  path={mdiSync}
-                  className="text-tertiary group-hover:text-accent timing"
-                />
-              </button>
-              <button
-                className="text-accent bg-tertiary shadow-color group grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (cardType === 'large') {
-                    setCardType('small');
-                  } else if (cardType === 'small') {
-                    setCardType('large');
-                  }
-                }}
-              >
-                <Icon
-                  path={cardType === 'large' ? mdiGrid : mdiCropSquare}
-                  className="text-tertiary group-hover:text-accent timing"
-                />
-              </button>
-            </div>
+            <button
+              className="text-accent bg-tertiary shadow-color group grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
+              onClick={(e) => {
+                e.preventDefault();
+                filterByCampaign(null);
+                filterByQuery('');
+              }}
+            >
+              <Icon
+                path={mdiSync}
+                className="text-tertiary group-hover:text-accent timing"
+              />
+            </button>
+            <button
+              className="text-accent bg-tertiary shadow-color group grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
+              onClick={(e) => {
+                e.preventDefault();
+                if (cardType === 'large') {
+                  setCardType('small');
+                } else if (cardType === 'small') {
+                  setCardType('large');
+                }
+              }}
+            >
+              <Icon
+                path={cardType === 'large' ? mdiGrid : mdiCropSquare}
+                className="text-tertiary group-hover:text-accent timing"
+              />
+            </button>
           </div>
-        </ThemeContainer>
+        </div>
+
         {!characters || characters?.length === 0 ? (
           <>
             <h1 className="text-center">No Characters Found</h1>
@@ -156,7 +151,7 @@ const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 };
 

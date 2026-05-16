@@ -1,12 +1,13 @@
 import { AdvancedImage, lazyload, responsive } from '@cloudinary/react';
 import { Cloudinary } from '@cloudinary/url-gen';
+import { ReactNode } from 'react';
 
 type Position = {
   x: number;
   y: number;
 };
 
-const CloudinaryImage = ({
+const CloudinaryPicture = ({
   publicId,
   position,
   className,
@@ -46,4 +47,4 @@ const CloudinaryImage = ({
   );
 };
 
-export default CloudinaryImage;
+export default CloudinaryPicture;

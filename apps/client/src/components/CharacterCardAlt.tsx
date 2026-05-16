@@ -6,7 +6,7 @@ import WardIcon from './icons/WardIcon';
 import ArmorIcon from './icons/ArmorIcon';
 import EvasionIcon from './icons/EvasionIcon';
 import SpeedIcon from './icons/SpeedIcon';
-import CloudinaryImage from './CloudinaryImage';
+import CloudinaryPicture from './CloudinaryPicture';
 import ArrowHeader2 from './ArrowHeader2';
 import InjuryIcon from './icons/InjuryIcon';
 import InsanityIcon from './icons/InsanityIcon';
@@ -110,7 +110,7 @@ const CharacterCardAlt = ({ characterId }: { characterId: number }) => {
               containerRef={containerRef}
             />
             <div className="col-span-2 col-start-1 row-start-1 flex aspect-square h-full w-full items-center overflow-hidden rounded-bl rounded-tr clip-6">
-              <CloudinaryImage
+              <CloudinaryPicture
                 className={`${awol && 'grayscale'}`}
                 publicId={character?.picture?.publicId}
                 position={character?.picture?.position}

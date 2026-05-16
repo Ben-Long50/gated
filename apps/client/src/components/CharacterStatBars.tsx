@@ -7,6 +7,15 @@ import SanityIcon from './icons/SanityIcon';
 import CyberIcon from './icons/CyberIcon';
 import { CharacterStats } from 'src/types/character';
 import useCharacterStatMutation from 'src/hooks/character stat hooks/useCharacterStatMutation/useCharacterStatMutation';
+import InjuryIcon from './icons/InjuryIcon';
+import InsanityIcon from './icons/InsanityIcon';
+import Icon from '@mdi/react';
+import { mdiCircleOutline } from '@mdi/js';
+import BlockIcon from './icons/BlockIcon';
+import WardIcon from './icons/WardIcon';
+import ArmorIcon from './icons/ArmorIcon';
+import SpeedIcon from './icons/SpeedIcon';
+import EvasionIcon from './icons/EvasionIcon';
 
 const CharacterStatBars = ({
   stats,
@@ -96,8 +105,114 @@ const CharacterStatBars = ({
           color={statColorMap['Equip']}
           cardWidth={cardWidth}
         >
-          <EquipIcon className="text-secondary size-8" />
+          <EquipIcon className="text-secondary text-blue size-8" />
         </StatBar>
+      )}
+      {stats.speed != undefined && (
+        <StatBar
+          title="Speed"
+          current={stats.speed}
+          color={statColorMap['SPD']}
+          cardWidth={cardWidth}
+        >
+          <SpeedIcon className="text-secondary text-blue size-8" />
+        </StatBar>
+      )}
+      {stats.evasion != undefined && (
+        <StatBar
+          title="Evasion"
+          current={stats.evasion}
+          color={statColorMap['EV']}
+          cardWidth={cardWidth}
+        >
+          <EvasionIcon className="text-secondary text-blue size-8" />
+        </StatBar>
+      )}
+      {stats.equippedArmor > 0 && (
+        <StatBar
+          title="Armor"
+          current={stats.armor}
+          total={stats.equippedArmor}
+          color={statColorMap['AV']}
+          cardWidth={cardWidth}
+        >
+          <ArmorIcon className="text-secondary text-blue size-8" />
+        </StatBar>
+      )}
+      {stats.equippedWard > 0 && (
+        <StatBar
+          title="Ward"
+          current={stats.ward}
+          total={stats.equippedWard}
+          color={statColorMap['WV']}
+          cardWidth={cardWidth}
+        >
+          <WardIcon className="text-secondary text-blue size-8" />
+        </StatBar>
+      )}
+      {stats.blockPoints > 0 && (
+        <StatBar
+          title="Block Points"
+          current={stats.currentBlockPoints}
+          total={stats.blockPoints}
+          color={statColorMap['BP']}
+          cardWidth={cardWidth}
+        >
+          <BlockIcon className="text-secondary text-blue size-8" />
+        </StatBar>
+      )}
+
+      {stats.permanentInjuries !== undefined && (
+        <>
+          <h4>Insanities</h4>
+          <InjuryIcon className="text-secondary size-8" />
+          <div
+            className={`col-span-2 flex grow items-center gap-2 justify-self-end`}
+          >
+            {Array.from({
+              length: stats.permanentInjuries,
+            }).map((_, index) =>
+              index < stats.injuries ? (
+                <InjuryIcon
+                  key={index}
+                  className="text-secondary size-7 shrink-0 sm:size-8"
+                />
+              ) : (
+                <Icon
+                  path={mdiCircleOutline}
+                  key={index}
+                  className="text-tertiary size-7 shrink-0 p-1 sm:size-8"
+                />
+              ),
+            )}
+          </div>
+        </>
+      )}
+      {stats.permanentInsanities !== undefined && (
+        <>
+          <h4>Insanities</h4>
+          <InsanityIcon className="text-secondary size-8" />
+          <div
+            className={`col-span-2 flex grow items-center gap-2 justify-self-end`}
+          >
+            {Array.from({
+              length: stats.permanentInsanities,
+            }).map((_, index) =>
+              index < stats.insanities ? (
+                <InsanityIcon
+                  key={index}
+                  className="text-secondary size-7 shrink-0 sm:size-8"
+                />
+              ) : (
+                <Icon
+                  path={mdiCircleOutline}
+                  key={index}
+                  className="text-tertiary size-7 shrink-0 p-1 sm:size-8"
+                />
+              ),
+            )}
+          </div>
+        </>
       )}
     </>
   );

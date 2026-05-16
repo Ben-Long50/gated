@@ -112,9 +112,9 @@ const ActionCard = ({
             <ItemCardSmall
               key={index}
               className={`${index !== action.keywordModifiers.length - 1 && 'mr-1'} bg-tertiary`}
-              heading={<h4>{keyword.keyword.name}</h4>}
+              heading={<h4>{keyword.keyword?.name}</h4>}
             >
-              <p>{keyword.keyword.description}</p>
+              <p>{keyword.keyword?.description}</p>
             </ItemCardSmall>
           ))}
         {description2 && <p>{description2}</p>}

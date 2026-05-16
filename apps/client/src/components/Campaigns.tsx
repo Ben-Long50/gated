@@ -47,7 +47,7 @@ const Campaigns = () => {
   }
 
   return (
-    <div className="bg-base shadow-color flex w-full flex-col gap-4 rounded-lg p-4 shadow-lg sm:p-8">
+    <>
       <NavTabs>
         <BtnAuth
           active={campaignType === 'all'}
@@ -96,7 +96,7 @@ const Campaigns = () => {
           </Link>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

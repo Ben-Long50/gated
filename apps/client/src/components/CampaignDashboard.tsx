@@ -1,11 +1,11 @@
 import { useContext } from 'react';
 import { AuthContext } from 'src/contexts/AuthContext';
 import userLimits from 'src/utils/userLimits';
-import ThemeContainer from './ThemeContainer';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import ArrowHeader3 from './ArrowHeader3';
 import Divider from './Divider';
 import Campaigns from './Campaigns';
+import Container from './Container';
 
 const CampaignDashboard = () => {
   const { user } = useContext(AuthContext);
@@ -22,12 +22,8 @@ const CampaignDashboard = () => {
   return (
     <div className="flex w-full max-w-8xl flex-col items-center gap-8">
       <h1>Camaigns</h1>
-      <ThemeContainer
-        className="w-full"
-        borderColor={accentPrimary}
-        chamfer="medium"
-      >
-        <div className="padding flex w-full flex-col gap-4">
+      <Container>
+        <div className="flex w-full flex-col gap-4">
           <ArrowHeader3 title="Campaign Limits" />
           <div className="flex items-center justify-between gap-4">
             <p>Membership Level</p>
@@ -56,8 +52,9 @@ const CampaignDashboard = () => {
             <p>{pendingCampaignCount}</p>
           </div>
         </div>
-      </ThemeContainer>
-      <Campaigns />
+        <Divider />
+        <Campaigns />
+      </Container>
     </div>
   );
 };

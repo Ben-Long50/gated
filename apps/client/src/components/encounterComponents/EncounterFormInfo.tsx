@@ -1,6 +1,6 @@
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import ArrowHeader2 from '../ArrowHeader2';
-import CloudinaryImage from '../CloudinaryImage';
+import CloudinaryPicture from '../CloudinaryPicture';
 import { Map } from 'src/types/map';
 import ArrowHeader3 from '../ArrowHeader3';
 
@@ -35,7 +35,7 @@ const EncounterFormInfo = () => {
                     <p>{`${map.width} x ${map.height}`}</p>
                   </div>
                   <div className="flex h-80 w-full items-center justify-center">
-                    <CloudinaryImage
+                    <CloudinaryPicture
                       className="border-accent overflow-hidden rounded border"
                       publicId={map.picture.publicId}
                     />

@@ -286,7 +286,6 @@ const CharacterForm = () => {
           </>
         )}
       </characterForm.Subscribe>
-
       <Divider />
       <ArrowHeader2 title="Attributes and skills" />
       <div className="flex w-full flex-col gap-4 border-l-2 border-gray-400 border-opacity-50 pl-4">

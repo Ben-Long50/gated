@@ -1,16 +1,18 @@
-import { useContext } from 'react';
+import { ReactNode, useContext } from 'react';
 import ThemeContainer from './ThemeContainer';
 import { ThemeContext } from '../contexts/ThemeContext';
-import CloudinaryImage from './CloudinaryImage';
 import { Character } from 'src/types/character';
 import InjuryIcon from './icons/InjuryIcon';
 import InsanityIcon from './icons/InsanityIcon';
+import CloudinaryPicture from './CloudinaryPicture';
 
 const CharacterPicture = ({
   character,
+  children,
   className,
 }: {
   character: Character;
+  children?: ReactNode;
   className?: string;
 }) => {
   const { accentPrimary, statColorMap } = useContext(ThemeContext);
@@ -27,12 +29,12 @@ const CharacterPicture = ({
 
   return (
     <ThemeContainer
-      className="aspect-square"
+      className="relative aspect-square"
       chamfer="medium"
       borderColor={accentPrimary}
       overflowHidden={true}
     >
-      <CloudinaryImage
+      <CloudinaryPicture
         className={`${className}`}
         publicId={character?.picture?.publicId}
         position={character?.picture?.position}
@@ -59,6 +61,7 @@ const CharacterPicture = ({
           }}
         />
       )}
+      {children}
     </ThemeContainer>
   );
 };

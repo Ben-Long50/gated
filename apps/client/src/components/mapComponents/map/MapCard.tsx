@@ -3,7 +3,7 @@ import Icon from '@mdi/react';
 import { useNavigate } from 'react-router-dom';
 import ArrowHeader3 from 'src/components/ArrowHeader3';
 import CharacterPictureRound from 'src/components/CharacterPictureRound';
-import CloudinaryImage from 'src/components/CloudinaryImage';
+import CloudinaryPicture from 'src/components/CloudinaryPicture';
 import useMap from 'src/hooks/useMap';
 
 const MapCard = ({ mapId }: { mapId: number }) => {
@@ -71,7 +71,7 @@ const MapCard = ({ mapId }: { mapId: number }) => {
       </div>
 
       <div className="flex h-80 w-full items-center justify-center">
-        <CloudinaryImage
+        <CloudinaryPicture
           className="border-accent overflow-hidden rounded border"
           publicId={map.picture.publicId}
         />

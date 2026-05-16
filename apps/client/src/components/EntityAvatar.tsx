@@ -1,5 +1,5 @@
 import { CSSProperties, useContext } from 'react';
-import CloudinaryImage from './CloudinaryImage';
+import CloudinaryPicture from './CloudinaryPicture';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import constructName from 'src/utils/constructName';
 import { Gang } from 'src/types/gang';
@@ -26,7 +26,7 @@ const EntityAvater = ({
         style={style}
       >
         {entity?.picture?.imageUrl ? (
-          <CloudinaryImage
+          <CloudinaryPicture
             publicId={entity?.picture?.publicId}
             position={entity?.picture?.position}
           />

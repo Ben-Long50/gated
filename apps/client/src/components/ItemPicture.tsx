@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import ThemeContainer from './ThemeContainer';
 import { ThemeContext } from '../contexts/ThemeContext';
-import CloudinaryImage from './CloudinaryImage';
+import CloudinaryPicture from './CloudinaryPicture';
 import { Item } from 'src/types/item';
 
 const ItemPicture = ({
@@ -25,7 +25,7 @@ const ItemPicture = ({
           backgroundImage: `radial-gradient(circle, transparent 65%, ${rarityColorMap[item.rarity]} 100%)`,
         }}
       />
-      <CloudinaryImage
+      <CloudinaryPicture
         className="timing w-full clip-6"
         position={item.picture?.position}
         publicId={item.picture?.publicId}

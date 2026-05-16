@@ -5,7 +5,7 @@ import Loading from '../Loading';
 import ItemCardSmall from '../ItemCardSmall';
 import BtnRect from '../buttons/BtnRect';
 import Divider from '../Divider';
-import CloudinaryImage from '../CloudinaryImage';
+import CloudinaryPicture from '../CloudinaryPicture';
 import useCombatQueries from 'src/hooks/encounter hooks/useCombatQueries/useCombatQueries';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import CharacterCardSmall from '../CharacterCardSmall';
@@ -80,7 +80,7 @@ const EncounterList = () => {
                   <div className="grid grid-cols-2 gap-8">
                     <div className="col-span-2 flex w-full flex-col items-start gap-4">
                       <ArrowHeader3 title={encounter.map.name} />
-                      <CloudinaryImage
+                      <CloudinaryPicture
                         className="border-accent max-h-80 overflow-hidden rounded border"
                         publicId={encounter.map.picture.publicId}
                       />

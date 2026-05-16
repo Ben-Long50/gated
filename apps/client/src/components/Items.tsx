@@ -15,6 +15,7 @@ import InputSelectField from './InputSelectField';
 import { capitalCase } from 'change-case';
 import ItemCard from './ItemCard';
 import BtnAuth from './buttons/BtnAuth';
+import Divider from './Divider';
 
 const Items = ({
   itemList,
@@ -74,8 +75,10 @@ const Items = ({
   });
 
   return (
-    <div className="flex w-full max-w-6xl flex-col items-center gap-8">
-      <h1 className="text-center">{capitalCase(itemCategory)}s</h1>
+    <div className="flex w-full max-w-6xl flex-col items-start gap-8">
+      <ArrowHeader2
+        title={itemCategory ? `${capitalCase(itemCategory)}s` : ''}
+      />
       {mode && mode === 'form' && (
         <div className="flex w-full gap-4">
           <BtnAuth
@@ -107,120 +110,114 @@ const Items = ({
           </BtnAuth>
         </div>
       )}
-      <ThemeContainer
-        className={`ml-auto w-full`}
-        chamfer="medium"
-        borderColor={accentPrimary}
-      >
-        <div className="flex flex-col gap-4 p-4">
-          <div className="grid w-full grid-cols-2 items-center justify-between gap-4">
-            <ArrowHeader2 title="Filter Options" />
-            <searchForm.Field name="category">
-              {(field) => (
-                <InputSelectField
-                  field={field}
-                  label="Trait"
-                  options={filteredKeywords || []}
-                  onChange={() => {
-                    filterByCategory(field.state.value);
-                  }}
-                />
-              )}
-            </searchForm.Field>
-            <searchForm.Field name="priceFilter">
-              {(field) => (
-                <InputSelectField
-                  className="w-full"
-                  label={`Filter By Price`}
-                  field={field}
-                  options={['lowToHigh', 'highToLow']}
-                  onChange={() => {
-                    filterByPrice(field.state.value);
-                  }}
-                />
-              )}
-            </searchForm.Field>
-            <searchForm.Field name="rarity">
-              {(field) => (
-                <InputSelectField
-                  className="w-full"
-                  label={`Rarity`}
-                  field={field}
-                  options={[
-                    'common',
-                    'uncommon',
-                    'rare',
-                    'blackMarket',
-                    'artifact',
-                  ]}
-                  onChange={() => {
-                    filterByRarity(field.state.value);
-                  }}
-                />
-              )}
-            </searchForm.Field>
-          </div>
-          <div className="flex items-center gap-4">
-            <searchForm.Field name="query">
-              {(field) => (
-                <InputField
-                  className="w-full"
-                  label={
-                    itemCategory
-                      ? `Search ${capitalCase(itemCategory)}`
-                      : 'Search All'
-                  }
-                  field={field}
-                  onChange={() => {
-                    filterByQuery(field.state.value);
-                  }}
-                />
-              )}
-            </searchForm.Field>
-            {!mobile && (
-              <>
-                <button
-                  className="text-accent bg-tertiary shadow-color group grid size-12 shrink-0 place-items-center rounded-md p-0.5 shadow-md hover:underline"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setCardType('large');
-                  }}
-                >
-                  <Icon
-                    path={mdiCropSquare}
-                    className={`${cardType === 'large' && 'text-accent'} text-secondary group-hover:text-accent timing`}
-                  />
-                </button>
-                <button
-                  className="text-accent bg-tertiary shadow-color group grid size-12 shrink-0 place-items-center rounded-md p-2 shadow-md hover:underline"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setCardType('small');
-                  }}
-                >
-                  <Icon
-                    path={mdiGrid}
-                    className={`${cardType === 'small' && 'text-accent'} text-secondary group-hover:text-accent timing`}
-                  />
-                </button>
-              </>
-            )}
-            <button
-              className="text-accent bg-tertiary shadow-color group grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
-              onClick={(e) => {
-                e.preventDefault();
-                searchForm.reset();
-                searchForm.handleSubmit();
-              }}
-            >
-              <Icon
-                path={mdiSync}
-                className="text-secondary group-hover:text-accent timing"
+      <div className="flex w-full flex-col gap-4">
+        <div className="grid w-full grid-cols-3 items-center justify-between gap-4">
+          <searchForm.Field name="category">
+            {(field) => (
+              <InputSelectField
+                field={field}
+                label="Trait"
+                options={filteredKeywords || []}
+                onChange={() => {
+                  filterByCategory(field.state.value);
+                }}
               />
-            </button>
-          </div>
+            )}
+          </searchForm.Field>
+          <searchForm.Field name="priceFilter">
+            {(field) => (
+              <InputSelectField
+                className="w-full"
+                label="Price"
+                field={field}
+                options={['lowToHigh', 'highToLow']}
+                onChange={() => {
+                  filterByPrice(field.state.value);
+                }}
+              />
+            )}
+          </searchForm.Field>
+          <searchForm.Field name="rarity">
+            {(field) => (
+              <InputSelectField
+                className="w-full"
+                label={`Rarity`}
+                field={field}
+                options={[
+                  'common',
+                  'uncommon',
+                  'rare',
+                  'blackMarket',
+                  'artifact',
+                ]}
+                onChange={() => {
+                  filterByRarity(field.state.value);
+                }}
+              />
+            )}
+          </searchForm.Field>
         </div>
-      </ThemeContainer>
+        <div className="flex items-center gap-4">
+          <searchForm.Field name="query">
+            {(field) => (
+              <InputField
+                className="w-full"
+                label={
+                  itemCategory
+                    ? `Search ${capitalCase(itemCategory)}`
+                    : 'Search All'
+                }
+                field={field}
+                onChange={() => {
+                  filterByQuery(field.state.value);
+                }}
+              />
+            )}
+          </searchForm.Field>
+          {!mobile && (
+            <>
+              <button
+                className="text-accent bg-tertiary shadow-color group grid size-12 shrink-0 place-items-center rounded-md p-0.5 shadow-md hover:underline"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setCardType('large');
+                }}
+              >
+                <Icon
+                  path={mdiCropSquare}
+                  className={`${cardType === 'large' && 'text-accent'} text-secondary group-hover:text-accent timing`}
+                />
+              </button>
+              <button
+                className="text-accent bg-tertiary shadow-color group grid size-12 shrink-0 place-items-center rounded-md p-2 shadow-md hover:underline"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setCardType('small');
+                }}
+              >
+                <Icon
+                  path={mdiGrid}
+                  className={`${cardType === 'small' && 'text-accent'} text-secondary group-hover:text-accent timing`}
+                />
+              </button>
+            </>
+          )}
+          <button
+            className="text-accent bg-tertiary shadow-color group grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
+            onClick={(e) => {
+              e.preventDefault();
+              searchForm.reset();
+              searchForm.handleSubmit();
+            }}
+          >
+            <Icon
+              path={mdiSync}
+              className="text-secondary group-hover:text-accent timing"
+            />
+          </button>
+        </div>
+      </div>
+      <Divider />
       <div
         className={`${cardType === 'small' ? 'grid-cols-[repeat(auto-fit,_minmax(350px,_1fr))] gap-4' : 'grid-cols-1 gap-8'} grid w-full`}
       >

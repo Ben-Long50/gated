@@ -11,7 +11,7 @@ import ArrowHeader2 from './ArrowHeader2';
 import ArrowHeader3 from './ArrowHeader3';
 import { AuthContext } from 'src/contexts/AuthContext';
 import userLimits from 'src/utils/userLimits';
-import CloudinaryImage from './CloudinaryImage';
+import CloudinaryPicture from './CloudinaryPicture';
 import Divider from './Divider';
 
 const CampaignCard = ({ campaign }: { campaign: Campaign }) => {
@@ -29,7 +29,7 @@ const CampaignCard = ({ campaign }: { campaign: Campaign }) => {
     >
       <div className="relative grid w-full cursor-pointer select-none grid-cols-[1fr_1fr_4fr]">
         <div className="-z-10 col-span-2 col-start-1 row-start-1">
-          <CloudinaryImage
+          <CloudinaryPicture
             publicId={campaign?.picture?.publicId}
             position={campaign?.picture?.position}
             style={{

@@ -7,6 +7,7 @@ import { ThemeContext } from 'src/contexts/ThemeContext';
 import ArrowHeader3 from './ArrowHeader3';
 import Divider from './Divider';
 import ArrowHeader4 from './ArrowHeader4';
+import Container from './Container';
 
 const CharacterDashboard = () => {
   const { user } = useContext(AuthContext);
@@ -43,12 +44,8 @@ const CharacterDashboard = () => {
   return (
     <div className="flex w-full max-w-8xl flex-col items-center gap-8">
       <h1 className="text-center">Characters</h1>
-      <ThemeContainer
-        className="w-full"
-        borderColor={accentPrimary}
-        chamfer="medium"
-      >
-        <div className="padding flex w-full flex-col gap-4">
+      <Container>
+        <div className="flex w-full flex-col gap-4">
           <ArrowHeader3 title="Character Limits" />
           <div className="flex items-center justify-between gap-4">
             <p>Membership Level</p>
@@ -94,8 +91,9 @@ const CharacterDashboard = () => {
             </p>
           </div>
         </div>
-      </ThemeContainer>
-      <CharacterList />
+        <Divider />
+        <CharacterList />
+      </Container>
     </div>
   );
 };

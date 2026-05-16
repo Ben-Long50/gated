@@ -44,9 +44,41 @@ const calculateCharacterStats = (
       return sum;
     }, 0) || 0;
 
+  const equippedArmor =
+    armors.reduce((sum: number, armor) => {
+      if (armor.stats && armor.stats.armor) {
+        return sum + armor.stats.armor;
+      }
+      return sum;
+    }, 0) || 0;
+
+  const blockPoints =
+    armors.reduce((sum: number, armor) => {
+      if (armor.stats && armor.stats.block) {
+        return sum + armor.stats.block;
+      }
+      return sum;
+    }, 0) || 0;
+
+  const currentBlockPoints =
+    armors.reduce((sum: number, armor) => {
+      if (armor.stats && armor.stats.block) {
+        return sum + armor.stats.currentBlock;
+      }
+      return sum;
+    }, 0) || 0;
+
   const wardValue =
     armors.reduce((sum: number, armor) => {
       if (armor.stats && armor.stats.ward && armor.stats.currentBlock) {
+        return sum + armor.stats.ward;
+      }
+      return sum;
+    }, 0) || 0;
+
+  const equippedWard =
+    armors.reduce((sum: number, armor) => {
+      if (armor.stats && armor.stats.ward) {
         return sum + armor.stats.ward;
       }
       return sum;
@@ -72,8 +104,12 @@ const calculateCharacterStats = (
     maxEquip: 10 + attributeTree?.violence.skills.threshold.points * 2,
     maxCyber: 5 + attributeTree?.cybernetica.skills.chromebits.points * 2,
     speed: 4 + attributeTree?.violence.skills.assault.points * 1,
-    armor: 0 + armorValue,
-    ward: 0 + wardValue,
+    armor: armorValue,
+    equippedArmor,
+    blockPoints,
+    currentBlockPoints,
+    ward: wardValue,
+    equippedWard,
     evasion: 1,
     weight: 0 + nonArmorWeight + armorWeight,
     cyber: 0 + equippedCyber,

@@ -171,98 +171,91 @@ const CodexSearch = () => {
 
   return (
     <div className="flex w-full max-w-6xl flex-col items-center gap-6 sm:gap-8">
-      <h1>Search Codex</h1>
-      <ThemeContainer
-        className={`ml-auto w-full`}
-        chamfer="medium"
-        borderColor={accentPrimary}
-      >
-        <form className="flex w-full flex-col gap-4 p-4">
-          <div className="grid w-full grid-cols-2 gap-4 sm:gap-8">
-            <ArrowHeader2 title="Filter Options" />
-            <searchForm.Field name="keyword">
-              {(field) => (
-                <InputSelectField
-                  field={field}
-                  label="Trait"
-                  options={keywordList}
-                  onChange={() => {
-                    setCategory(field.state.value);
-                  }}
-                />
-              )}
-            </searchForm.Field>
-          </div>
-          <searchForm.Field name="nameQuery">
+      <div className="flex w-full flex-col gap-4">
+        <div className="grid w-full grid-cols-2 gap-4 sm:gap-8">
+          <ArrowHeader2 title="Filter Options" />
+          <searchForm.Field name="keyword">
             {(field) => (
-              <InputField
-                label="Search by Name"
+              <InputSelectField
                 field={field}
+                label="Trait"
+                options={keywordList}
                 onChange={() => {
-                  filterByNameQuery(field.state.value);
+                  setCategory(field.state.value);
                 }}
               />
             )}
           </searchForm.Field>
-          <div className="flex items-end gap-4">
-            <searchForm.Field name="descriptionQuery">
-              {(field) => (
-                <InputField
-                  className="w-full"
-                  label="Search by Description"
-                  field={field}
-                  onChange={() => {
-                    filterByDescriptionQuery(field.state.value);
-                  }}
-                />
-              )}
-            </searchForm.Field>
-            {!mobile && (
-              <>
-                <button
-                  className="text-accent bg-tertiary shadow-color group z-10 grid size-12 shrink-0 place-items-center rounded-md p-0.5 shadow-md hover:underline"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setCardType('large');
-                  }}
-                >
-                  <Icon
-                    path={mdiCropSquare}
-                    className={`${cardType === 'large' && 'text-accent'} text-secondary group-hover:text-accent timing`}
-                  />
-                </button>
-                <button
-                  className="text-accent bg-tertiary shadow-color group z-10 grid size-12 shrink-0 place-items-center rounded-md p-2 shadow-md hover:underline"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setCardType('small');
-                  }}
-                >
-                  <Icon
-                    path={mdiGrid}
-                    className={`${cardType === 'small' && 'text-accent'} text-secondary group-hover:text-accent timing`}
-                  />
-                </button>
-              </>
-            )}
-            <button
-              className="text-accent bg-tertiary shadow-color group z-10 grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
-              onClick={(e) => {
-                e.preventDefault();
-                searchForm.reset();
-                setCategory('');
-                setNameQuery(null);
-                setDescriptionQuery(null);
+        </div>
+        <searchForm.Field name="nameQuery">
+          {(field) => (
+            <InputField
+              label="Search by Name"
+              field={field}
+              onChange={() => {
+                filterByNameQuery(field.state.value);
               }}
-            >
-              <Icon
-                path={mdiSync}
-                className="text-secondary group-hover:text-accent timing"
+            />
+          )}
+        </searchForm.Field>
+        <div className="flex items-end gap-4">
+          <searchForm.Field name="descriptionQuery">
+            {(field) => (
+              <InputField
+                className="w-full"
+                label="Search by Description"
+                field={field}
+                onChange={() => {
+                  filterByDescriptionQuery(field.state.value);
+                }}
               />
-            </button>
-          </div>
-        </form>
-      </ThemeContainer>
+            )}
+          </searchForm.Field>
+          {!mobile && (
+            <>
+              <button
+                className="text-accent bg-tertiary shadow-color group z-10 grid size-12 shrink-0 place-items-center rounded-md p-0.5 shadow-md hover:underline"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setCardType('large');
+                }}
+              >
+                <Icon
+                  path={mdiCropSquare}
+                  className={`${cardType === 'large' && 'text-accent'} text-secondary group-hover:text-accent timing`}
+                />
+              </button>
+              <button
+                className="text-accent bg-tertiary shadow-color group z-10 grid size-12 shrink-0 place-items-center rounded-md p-2 shadow-md hover:underline"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setCardType('small');
+                }}
+              >
+                <Icon
+                  path={mdiGrid}
+                  className={`${cardType === 'small' && 'text-accent'} text-secondary group-hover:text-accent timing`}
+                />
+              </button>
+            </>
+          )}
+          <button
+            className="text-accent bg-tertiary shadow-color group z-10 grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
+            onClick={(e) => {
+              e.preventDefault();
+              searchForm.reset();
+              setCategory('');
+              setNameQuery(null);
+              setDescriptionQuery(null);
+            }}
+          >
+            <Icon
+              path={mdiSync}
+              className="text-secondary group-hover:text-accent timing"
+            />
+          </button>
+        </div>
+      </div>
       {isLoading || isPending || filtering ? (
         <Loading />
       ) : [
@@ -272,7 +265,7 @@ const CodexSearch = () => {
           ...filteredActions,
           ...filteredConditions,
         ].length === 0 ? (
-        <h1>No Codex Items Found</h1>
+        <h2>No Codex Items Found</h2>
       ) : (
         <>
           {filteredItems.length > 0 && (

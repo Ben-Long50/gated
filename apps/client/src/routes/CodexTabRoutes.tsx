@@ -20,91 +20,217 @@ import ItemPage from 'src/components/ItemPage';
 import Properties from 'src/components/Properties';
 import PropertyForm from 'src/components/forms/PropertyForm';
 import CodexDashboard from 'src/components/CodexDashboard';
+import Page from 'src/components/Page';
 
 const CodexTabRoutes = () => {
   return (
     <Route path="codex">
       <Route index element={<CodexDashboard />} />
-      <Route path="search" element={<CodexSearch />} />
+      <Route
+        path="search"
+        element={
+          <Page title="Search Codex">
+            <CodexSearch />
+          </Page>
+        }
+      />
       <Route path="search/:category/:itemId" element={<ItemPage />} />
       <Route path="patchNotes">
         <Route path="create" element={<PatchNoteForm />} />
         <Route path=":patchNoteId/update" element={<PatchNoteForm />} />
       </Route>
       <Route path="items">
-        <Route path="" element={<Items />}>
+        <Route
+          path=""
+          element={
+            <Page title="Items">
+              <Items />
+            </Page>
+          }
+        >
           <Route
             path="conditions/:conditionId"
             element={<DescriptionModal />}
           />
           <Route path="traits/:traitId" element={<DescriptionModal />} />
         </Route>
-        <Route path=":itemId" element={<ItemPage />}>
+        <Route
+          path=":itemId"
+          element={
+            <Page>
+              <ItemPage />
+            </Page>
+          }
+        >
           <Route
             path="conditions/:conditionId"
             element={<DescriptionModal />}
           />
           <Route path="traits/:traitId" element={<DescriptionModal />} />
         </Route>
-        <Route path="create" element={<ItemForm />}>
+        <Route
+          path="create"
+          element={
+            <Page title="Create Item">
+              <ItemForm />
+            </Page>
+          }
+        >
           <Route path="traits" element={<KeywordLinkModal />} />
           <Route path="links" element={<ItemLinkModal />} />
           <Route path="actions" element={<ActionLinkModal />} />
         </Route>
-        <Route path=":itemId/update" element={<ItemForm />}>
+        <Route
+          path=":itemId/update"
+          element={
+            <Page title="Update Item">
+              <ItemForm />
+            </Page>
+          }
+        >
           <Route path="traits" element={<KeywordLinkModal />} />
           <Route path="links" element={<ItemLinkModal />} />
           <Route path="actions" element={<ActionLinkModal />} />
         </Route>
       </Route>
       <Route path="properties">
-        <Route index element={<Properties key="properties" />} />
-        <Route path="create" element={<PropertyForm key="create perk" />} />
+        <Route
+          index
+          element={
+            <Page title="Properties">
+              <Properties key="properties" />
+            </Page>
+          }
+        />
+        <Route
+          path="create"
+          element={
+            <Page title="Create Property">
+              <PropertyForm />
+            </Page>
+          }
+        />
         <Route
           path=":propertyId/update"
-          element={<PropertyForm key="update perk" />}
+          element={
+            <Page title="Update Property">
+              <PropertyForm />
+            </Page>
+          }
         />
       </Route>
       <Route path="perks">
-        <Route index element={<Perks key="perks" />} />
-        <Route path="create" element={<PerkForm key="create perk" />}>
+        <Route
+          index
+          element={
+            <Page title="Perks">
+              <Perks />
+            </Page>
+          }
+        />
+        <Route
+          path="create"
+          element={
+            <Page title="Create Perk">
+              <PerkForm />
+            </Page>
+          }
+        >
           <Route path="modifiers" element={<ModifierModal />} />
         </Route>
-        <Route path=":perkId/update" element={<PerkForm key="update perk" />}>
+        <Route
+          path=":perkId/update"
+          element={
+            <Page title="Update Perk">
+              <PerkForm />
+            </Page>
+          }
+        >
           <Route path="modifiers" element={<ModifierModal />} />
         </Route>
       </Route>
       <Route path="keywords">
-        <Route index element={<Keywords key="keywords" />} />
-        <Route path="create" element={<KeywordForm key="create keyword" />} />
+        <Route
+          index
+          element={
+            <Page title="Traits">
+              <Keywords />
+            </Page>
+          }
+        />
+        <Route
+          path="create"
+          element={
+            <Page title="Create Trait">
+              <KeywordForm />
+            </Page>
+          }
+        />
         <Route
           path=":keywordId/update"
-          element={<KeywordForm key="update keyword" />}
+          element={
+            <Page title="Update Trait">
+              <KeywordForm />
+            </Page>
+          }
         />
       </Route>
       <Route path="actions">
-        <Route index element={<Actions key="actions" />} />
-        <Route path="create" element={<ActionForm key="create action" />}>
+        <Route
+          index
+          element={
+            <Page title="Actions">
+              <Actions />
+            </Page>
+          }
+        />
+        <Route
+          path="create"
+          element={
+            <Page title="Create Action">
+              <ActionForm />
+            </Page>
+          }
+        >
           <Route path="traits" element={<KeywordLinkModal />} />
           <Route path="modifiers" element={<ModifierModal />} />
         </Route>
         <Route
           path=":actionId/update"
-          element={<ActionForm key="update action" />}
+          element={
+            <Page title="Update Action">
+              <ActionForm />
+            </Page>
+          }
         >
           <Route path="traits" element={<KeywordLinkModal />} />
           <Route path="modifiers" element={<ModifierModal />} />
         </Route>
       </Route>
       <Route path="conditions">
-        <Route index element={<Conditions key="conditions" />} />
+        <Route
+          index
+          element={
+            <Page title="Conditions">
+              <Conditions />
+            </Page>
+          }
+        />
         <Route
           path="create"
-          element={<ConditionForm key="create condition" />}
+          element={
+            <Page title="Create Condition">
+              <ConditionForm />
+            </Page>
+          }
         />
         <Route
           path=":conditionId/update"
-          element={<ConditionForm key="update condition" />}
+          element={
+            <Page title="Update Condition">
+              <ConditionForm />
+            </Page>
+          }
         />
       </Route>
     </Route>

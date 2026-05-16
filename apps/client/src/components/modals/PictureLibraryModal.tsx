@@ -4,8 +4,8 @@ import Modal from './Modal';
 import useModalStore from 'src/stores/modalStore';
 import { useContext } from 'react';
 import { AuthContext } from 'src/contexts/AuthContext';
-import { CodexCard } from '../CodexDashboard';
 import Divider from '../Divider';
+import { PictureCard } from '../PictureCard';
 
 const PictureLibraryModal = () => {
   const { user } = useContext(AuthContext);
@@ -34,7 +34,7 @@ const PictureLibraryModal = () => {
       <div className="grid w-full grid-cols-5 gap-4 sm:gap-6">
         {user.generatedPictures.map(
           (picture: { imageUrl: string; publicId: string }, index: number) => (
-            <CodexCard
+            <PictureCard
               key={index}
               publicId={picture.publicId}
               onClick={() => {

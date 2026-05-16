@@ -1,5 +1,5 @@
 import { CSSProperties, useContext } from 'react';
-import CloudinaryImage from './CloudinaryImage';
+import CloudinaryPicture from './CloudinaryPicture';
 import { Character } from 'src/types/character';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import InjuryIcon from './icons/InjuryIcon';
@@ -37,7 +37,7 @@ const CharacterPictureRound = ({
         style={style}
       >
         {character?.picture?.imageUrl ? (
-          <CloudinaryImage
+          <CloudinaryPicture
             className={`${(awol || insane) && 'grayscale'}`}
             publicId={character?.picture?.publicId}
             position={character?.picture?.position}

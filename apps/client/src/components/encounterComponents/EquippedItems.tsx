@@ -1,7 +1,7 @@
 import useCharacter from 'src/hooks/useCharacter';
 import Loading from '../Loading';
 import { useContext, useRef } from 'react';
-import CloudinaryImage from '../CloudinaryImage';
+import CloudinaryPicture from '../CloudinaryPicture';
 import { Item } from 'src/types/item';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import useCombatStore from 'src/stores/combatStore';
@@ -130,7 +130,7 @@ const EquippedItems = ({
                     backgroundImage: `radial-gradient(circle, transparent 65%, ${rarityColorMap[equipment.rarity]} 100%)`,
                   }}
                 />
-                <CloudinaryImage
+                <CloudinaryPicture
                   className={`${!equipment.available && 'opacity-50'} `}
                   publicId={equipment.picture?.publicId}
                 />

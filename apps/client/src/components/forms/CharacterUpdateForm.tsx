@@ -125,53 +125,43 @@ const CharacterUpdateForm = () => {
       <NpcPreferenceField form={characterUpdateForm} />
       <Divider />
       <ArrowHeader2 title="Character Information" />
-      <div className="grid w-full gap-8 max-sm:col-span-2 max-sm:grid-flow-row sm:grid-cols-2">
-        <PictureField
-          form={characterUpdateForm}
-          sizeInfo={{
-            aspectRatio: '1/1',
-            maxHeight: '',
-            minHeight: '',
-          }}
-        />
-        <div className="flex w-full flex-col gap-8">
+      <div className="flex w-full flex-col gap-8">
+        <div className="grid w-full grid-cols-2 gap-4">
           <characterUpdateForm.Field name="firstName">
-            {(field) => (
-              <InputField className="w-full" label="First name" field={field} />
-            )}
+            {(field) => <InputField label="First name" field={field} />}
           </characterUpdateForm.Field>
           <characterUpdateForm.Field name="lastName">
+            {(field) => <InputField label="Last name" field={field} />}
+          </characterUpdateForm.Field>
+          <characterUpdateForm.Field name="height">
             {(field) => (
-              <InputField className="w-full" label="Last name" field={field} />
+              <InputField type="number" label="Height (in)" field={field} />
             )}
           </characterUpdateForm.Field>
-          <div className="grid grid-cols-2 gap-4 sm:gap-8">
-            <characterUpdateForm.Field name="height">
-              {(field) => (
-                <InputField type="number" label="Height (in)" field={field} />
-              )}
-            </characterUpdateForm.Field>
-            <characterUpdateForm.Field name="weight">
-              {(field) => (
-                <InputField type="number" label="Weight (lbs)" field={field} />
-              )}
-            </characterUpdateForm.Field>
-            <characterUpdateForm.Field name="age">
-              {(field) => (
-                <InputField type="number" label="Age (yrs)" field={field} />
-              )}
-            </characterUpdateForm.Field>
-            <characterUpdateForm.Field name="sex">
-              {(field) => (
-                <InputSelectField
-                  label="Sex"
-                  field={field}
-                  options={['male', 'female']}
-                />
-              )}
-            </characterUpdateForm.Field>
-          </div>
+          <characterUpdateForm.Field name="weight">
+            {(field) => (
+              <InputField type="number" label="Weight (lbs)" field={field} />
+            )}
+          </characterUpdateForm.Field>
+          <characterUpdateForm.Field name="age">
+            {(field) => (
+              <InputField type="number" label="Age (yrs)" field={field} />
+            )}
+          </characterUpdateForm.Field>
+          <characterUpdateForm.Field name="sex">
+            {(field) => (
+              <InputSelectField
+                label="Sex"
+                field={field}
+                options={['male', 'female']}
+              />
+            )}
+          </characterUpdateForm.Field>
         </div>
+        <PictureField
+          form={characterUpdateForm}
+          sizeInfo={{ aspectRatio: '1/1', maxHeight: '', minHeight: '' }}
+        />
       </div>
       <StatBarContainer>
         {character?.stats.currentHealth !== undefined && (

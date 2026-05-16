@@ -7,6 +7,9 @@ import BtnAuth from './buttons/BtnAuth';
 import { LayoutContext } from '../contexts/LayoutContext';
 import useCharacter from 'src/hooks/useCharacter';
 import Divider from './Divider';
+import constructName from 'src/utils/constructName';
+import NpcTypeList from './NpcTypeList';
+import ArrowHeader2 from './ArrowHeader2';
 
 const Resume = () => {
   const { user } = useContext(AuthContext);
@@ -45,12 +48,20 @@ const Resume = () => {
   }
 
   return (
-    <div className="flex w-full max-w-5xl flex-col gap-4">
-      <h1 className="text-center">
-        {character?.firstName + ' ' + character?.lastName + "'s Resume"}
-      </h1>
+    <>
+      <div className="flex w-full items-center justify-between gap-4">
+        <div className="flex items-center justify-start gap-4">
+          <h2 className="text-5xl font-bold tracking-widest">
+            {constructName(character)}
+          </h2>
+          <NpcTypeList npcTypes={character?.npcTypes} />
+        </div>
+        <p className="!text-accent text-5xl font-bold tracking-widest">
+          {character?.level}
+        </p>
+      </div>
       <div
-        className={`${mobile ? 'grid-rows-3 gap-2' : 'grid-cols-3 gap-8'} grid`}
+        className={`${mobile ? 'grid-rows-3 gap-2' : 'grid-cols-3 gap-4'} grid`}
       >
         <BtnAuth onClick={() => setResume('Backstory')}>Backstory</BtnAuth>
         <BtnAuth onClick={() => setResume('First Taste')}>First Taste</BtnAuth>
@@ -59,7 +70,7 @@ const Resume = () => {
         </BtnAuth>
       </div>
       <Divider />
-      <h1 className="text-center">{resume}</h1>
+      <ArrowHeader2 title={resume} className="text-center" />
       {content ? (
         <>
           <div
@@ -76,14 +87,18 @@ const Resume = () => {
           )}
         </>
       ) : character?.userId === user?.id ? (
-        <div className="flex flex-col items-center gap-8">
-          <h3 className="text-center">
+        <div className="flex w-full flex-col items-start gap-8">
+          <p>
             You have not created a {resume.toLowerCase()} resume entry for{' '}
             {character?.firstName + ' ' + character?.lastName}. Click the button
             below to create one.
-          </h3>
-          <Link to="../resume/update">
-            <BtnRect type="button" ariaLabel={'Create ' + resume}>
+          </p>
+          <Link className="w-full" to="../resume/update">
+            <BtnRect
+              className="w-full"
+              type="button"
+              ariaLabel={'Create ' + resume}
+            >
               Update {resume}
             </BtnRect>
           </Link>
@@ -95,7 +110,7 @@ const Resume = () => {
           created.
         </h3>
       )}
-    </div>
+    </>
   );
 };
 

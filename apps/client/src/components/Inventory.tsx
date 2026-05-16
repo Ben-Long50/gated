@@ -23,6 +23,7 @@ import Loading from './Loading';
 import { Item } from 'src/types/item';
 import { useRef } from 'react';
 import NavTabs from './NavTabs';
+import CharacterHeader from './CharacterHeader';
 
 const Inventory = () => {
   const { characterId } = useParams();
@@ -76,8 +77,8 @@ const Inventory = () => {
   };
 
   return (
-    <div className="flex h-full w-full max-w-7xl flex-col gap-4">
-      <h1 className="mb-4 text-center">{`${character?.firstName}'s Inventory`}</h1>
+    <>
+      <CharacterHeader character={character} />
       <NavTabs>
         <BtnAuth active={!category} onClick={() => handleTab(null)}>
           All
@@ -178,7 +179,7 @@ const Inventory = () => {
         (Double click to equip / unequip)
       </p>
       <Outlet context={{ parts }} />
-    </div>
+    </>
   );
 };
 

@@ -27,6 +27,8 @@ import AttributeList from './AttributeList';
 import getLevelBonusData from 'src/utils/getLevelBonusData';
 import { Perk } from 'src/types/perk';
 import usePerkQueries from 'src/hooks/usePerkQueries/usePerkQueries';
+import NpcTypeList from './NpcTypeList';
+import CharacterHeader from './CharacterHeader';
 
 const ProgressionPage = () => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -50,38 +52,8 @@ const ProgressionPage = () => {
   }
 
   return (
-    <div className="text-primary flex w-full max-w-5xl flex-col gap-8">
-      <div className="flex flex-col items-center justify-between gap-8 lg:flex-row">
-        <div className="flex w-full items-center gap-4">
-          <ThemeContainer
-            className="w-full grow"
-            chamfer="small"
-            borderColor={accentPrimary}
-          >
-            <div className="flex h-full w-full items-center justify-between gap-4 p-4">
-              <div className="flex items-center justify-start gap-4">
-                <ArrowHeader1 title={constructName(character)} />
-                {character?.npcTypes?.includes('shop') && (
-                  <Icon
-                    className="text-primary"
-                    path={mdiStorefrontOutline}
-                    size={1.5}
-                  />
-                )}
-                {character?.npcTypes?.includes('template') && (
-                  <Icon
-                    className="text-primary"
-                    path={mdiAlphaTCircleOutline}
-                    size={1.5}
-                  />
-                )}
-              </div>
-
-              <h1 className="!text-accent">Level {character?.level}</h1>
-            </div>
-          </ThemeContainer>
-        </div>
-      </div>
+    <>
+      <CharacterHeader character={character} />
       <div className="grid gap-8 max-sm:grid-flow-row sm:grid-cols-[1fr,_2fr]">
         {character?.picture.imageUrl && (
           <CharacterPicture character={character} />
@@ -91,28 +63,28 @@ const ProgressionPage = () => {
             <ArrowHeader3 title="Available Points" />
             <Divider className="!my-0 opacity-50" />
             <div className="flex w-full items-center justify-between gap-2">
-              <ArrowHeader4 title="Attribute Points" />
+              <ArrowHeader4 className="text-primary" title="Attribute Points" />
               <p>
                 {character?.stats.usedAttributePoints} /{' '}
                 {character?.stats.attributePoints}
               </p>
             </div>
             <div className="flex w-full items-center justify-between gap-2">
-              <ArrowHeader4 title="Skill Points" />
+              <ArrowHeader4 className="text-primary" title="Skill Points" />
               <p>
                 {character?.stats.usedSkillPoints} /{' '}
                 {character?.stats.skillPoints}
               </p>
             </div>
             <div className="flex w-full items-center justify-between gap-2">
-              <ArrowHeader4 title="Perks" />
+              <ArrowHeader4 className="text-primary" title="Perks" />
               <p>
                 {character?.stats.usedPerkPoints} /{' '}
                 {character?.stats.perkPoints}
               </p>
             </div>
             <div className="flex w-full items-center justify-between gap-2">
-              <ArrowHeader4 title="Master Perks" />
+              <ArrowHeader4 className="text-primary" title="Master Perks" />
               <p>
                 {character?.stats.usedMasterPerkPoints} /{' '}
                 {character?.stats.masterPerkPoints}
@@ -145,136 +117,14 @@ const ProgressionPage = () => {
           </div>
         </ThemeContainer>
       </div>
-      <ThemeContainer chamfer="medium" borderColor={accentPrimary}>
-        <div className="flex flex-col gap-4 p-4">
-          <ExpandingList title="Level Bonuses" className="flex flex-col gap-4">
-            {Array.from({ length: character?.level }).map((_, index) => {
-              const level = index + 1;
+      <div className="flex flex-col gap-4">
+        <ExpandingList title="Level Bonuses" className="flex flex-col gap-4">
+          {Array.from({ length: character?.level }).map((_, index) => {
+            const level = index + 1;
 
-              const characterLevelBonus = character.characterLevelBonuses.find(
-                (bonus) => bonus.level === level,
-              );
-
-              const {
-                levelUpAttributePoints,
-                levelUpSkillPoints,
-                levelUpPerkPoints,
-                levelUpMasterPerkPoints,
-                levelBonusUsed,
-              } = getLevelBonusData(character, level);
-
-              return (
-                <div className="flex items-center gap-4">
-                  <ItemCardSmall
-                    key={index}
-                    heading={
-                      <div className="mr-4 flex w-full items-center justify-between gap-4">
-                        <ArrowHeader4 title={level} className="w-12" />
-                        {levelBonusUsed ? (
-                          level > character.level ? (
-                            <Icon
-                              path={mdiCloseCircleOutline}
-                              size={1}
-                              className="text-error mr-auto"
-                            />
-                          ) : (
-                            <Icon
-                              path={mdiCheckCircleOutline}
-                              size={1}
-                              className="text-accent mr-auto"
-                            />
-                          )
-                        ) : (
-                          <Icon
-                            path={mdiCircleOutline}
-                            size={1}
-                            className="mr-auto"
-                          />
-                        )}
-                        <div className="flex flex-col gap-1">
-                          {levelUpAttributePoints +
-                            levelUpSkillPoints +
-                            levelUpPerkPoints +
-                            levelUpMasterPerkPoints <=
-                            0 && <p>No Bonuses</p>}
-                          {levelUpAttributePoints > 0 && (
-                            <div className="flex items-start justify-between gap-4">
-                              <p className="grow">Attribute Points</p>
-                              <p className="size-6 text-center">
-                                {levelUpAttributePoints}
-                              </p>
-                            </div>
-                          )}
-                          {levelUpSkillPoints > 0 && (
-                            <div className="flex items-start justify-between gap-4">
-                              <p className="grow">Skill Points</p>
-                              <p className="size-6 text-center">
-                                {levelUpSkillPoints}
-                              </p>
-                            </div>
-                          )}
-                          {levelUpPerkPoints > 0 && (
-                            <div className="flex items-start justify-between gap-4">
-                              <p className="grow">Perks</p>
-                              <p className="size-6 text-center">
-                                {levelUpPerkPoints}
-                              </p>
-                            </div>
-                          )}
-                          {levelUpMasterPerkPoints > 0 && (
-                            <div className="flex items-start justify-between gap-4">
-                              <p className="grow">Master Perks</p>
-                              <p className="size-6 text-center">
-                                {levelUpMasterPerkPoints}
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    }
-                  >
-                    {!levelBonusUsed && <p>Select a level up bonus</p>}
-                    {levelBonusUsed && !characterLevelBonus ? (
-                      <p>Legacy level up bonuses are not displayed</p>
-                    ) : null}
-                    {characterLevelBonus ? (
-                      <div className="flex flex-col gap-4 p-4">
-                        {characterLevelBonus &&
-                          characterLevelBonus.attributes && (
-                            <AttributeList
-                              attributeTree={characterLevelBonus.attributes}
-                            />
-                          )}
-                        {characterLevelBonus &&
-                          characterLevelBonus.perks &&
-                          characterLevelBonus.perks.map((perk: Perk) => (
-                            <PerkCard perkId={perk.id} />
-                          ))}
-                      </div>
-                    ) : null}
-                  </ItemCardSmall>
-                  {!levelBonusUsed && (
-                    <BtnRect
-                      className="w-80"
-                      ariaLabel="Select level up bonus"
-                      onClick={() => navigate(`levelBonus?level=${level}`)}
-                    >
-                      Select Level Up Bonus
-                    </BtnRect>
-                  )}
-                </div>
-              );
-            })}
-          </ExpandingList>
-          {character?.level < 12 && (
-            <div className="flex w-full items-center gap-4">
-              <Divider />
-              <h4 className="whitespace-nowrap text-center">Next Level</h4>
-              <Divider />
-            </div>
-          )}
-          {Array.from({ length: 12 - character?.level }).map((_, index) => {
-            const level = index + 1 + character?.level;
+            const characterLevelBonus = character.characterLevelBonuses.find(
+              (bonus) => bonus.level === level,
+            );
 
             const {
               levelUpAttributePoints,
@@ -285,81 +135,201 @@ const ProgressionPage = () => {
             } = getLevelBonusData(character, level);
 
             return (
-              <ItemCardSmall
-                className="pointer-events-none"
-                key={index}
-                heading={
-                  <div className="flex w-full items-start justify-between gap-4">
-                    <ArrowHeader4 title={level} className="w-12" />
-                    {levelBonusUsed ? (
-                      level > character.level ? (
-                        <Icon
-                          path={mdiCloseCircleOutline}
-                          size={1}
-                          className="text-error mr-auto"
-                        />
+              <div className="flex items-center gap-4">
+                <ItemCardSmall
+                  key={index}
+                  heading={
+                    <div className="mr-4 flex w-full items-center justify-between gap-4">
+                      <ArrowHeader4 title={level} className="w-12" />
+                      {levelBonusUsed ? (
+                        level > character.level ? (
+                          <Icon
+                            path={mdiCloseCircleOutline}
+                            size={1}
+                            className="text-error mr-auto"
+                          />
+                        ) : (
+                          <Icon
+                            path={mdiCheckCircleOutline}
+                            size={1}
+                            className="text-accent mr-auto"
+                          />
+                        )
                       ) : (
                         <Icon
-                          path={mdiCheckCircleOutline}
+                          path={mdiCircleOutline}
                           size={1}
-                          className="text-accent mr-auto"
+                          className="mr-auto"
                         />
-                      )
-                    ) : (
-                      <Icon
-                        path={mdiCircleOutline}
-                        size={1}
-                        className="mr-auto"
-                      />
-                    )}
-                    <div className="flex flex-col gap-1">
-                      {levelUpAttributePoints +
-                        levelUpSkillPoints +
-                        levelUpPerkPoints +
-                        levelUpMasterPerkPoints <=
-                        0 && <p>No Bonuses</p>}
-                      {levelUpAttributePoints > 0 && (
-                        <div className="flex items-start justify-between gap-4">
-                          <p className="grow">Attribute Points</p>
-                          <p className="size-6 text-center">
-                            {levelUpAttributePoints}
-                          </p>
-                        </div>
                       )}
-                      {levelUpSkillPoints > 0 && (
-                        <div className="flex items-start justify-between gap-4">
-                          <p className="grow">Skill Points</p>
-                          <p className="size-6 text-center">
-                            {levelUpSkillPoints}
-                          </p>
-                        </div>
-                      )}
-                      {levelUpPerkPoints > 0 && (
-                        <div className="flex items-start justify-between gap-4">
-                          <p className="grow">Perks</p>
-                          <p className="size-6 text-center">
-                            {levelUpPerkPoints}
-                          </p>
-                        </div>
-                      )}
-                      {levelUpMasterPerkPoints > 0 && (
-                        <div className="flex items-start justify-between gap-4">
-                          <p className="grow">Master Perks</p>
-                          <p className="size-6 text-center">
-                            {levelUpMasterPerkPoints}
-                          </p>
-                        </div>
-                      )}
+                      <div className="flex flex-col gap-1">
+                        {levelUpAttributePoints +
+                          levelUpSkillPoints +
+                          levelUpPerkPoints +
+                          levelUpMasterPerkPoints <=
+                          0 && <p>No Bonuses</p>}
+                        {levelUpAttributePoints > 0 && (
+                          <div className="flex items-start justify-between gap-4">
+                            <p className="grow">Attribute Points</p>
+                            <p className="size-6 text-center">
+                              {levelUpAttributePoints}
+                            </p>
+                          </div>
+                        )}
+                        {levelUpSkillPoints > 0 && (
+                          <div className="flex items-start justify-between gap-4">
+                            <p className="grow">Skill Points</p>
+                            <p className="size-6 text-center">
+                              {levelUpSkillPoints}
+                            </p>
+                          </div>
+                        )}
+                        {levelUpPerkPoints > 0 && (
+                          <div className="flex items-start justify-between gap-4">
+                            <p className="grow">Perks</p>
+                            <p className="size-6 text-center">
+                              {levelUpPerkPoints}
+                            </p>
+                          </div>
+                        )}
+                        {levelUpMasterPerkPoints > 0 && (
+                          <div className="flex items-start justify-between gap-4">
+                            <p className="grow">Master Perks</p>
+                            <p className="size-6 text-center">
+                              {levelUpMasterPerkPoints}
+                            </p>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                }
-              />
+                  }
+                >
+                  {!levelBonusUsed && <p>Select a level up bonus</p>}
+                  {levelBonusUsed && !characterLevelBonus ? (
+                    <p>Legacy level up bonuses are not displayed</p>
+                  ) : null}
+                  {characterLevelBonus ? (
+                    <div className="flex flex-col gap-4 p-4">
+                      {characterLevelBonus &&
+                        characterLevelBonus.attributes && (
+                          <AttributeList
+                            attributeTree={characterLevelBonus.attributes}
+                          />
+                        )}
+                      {characterLevelBonus &&
+                        characterLevelBonus.perks &&
+                        characterLevelBonus.perks.map((perk: Perk) => (
+                          <PerkCard perkId={perk.id} />
+                        ))}
+                    </div>
+                  ) : null}
+                </ItemCardSmall>
+                {!levelBonusUsed && (
+                  <BtnRect
+                    className="w-80"
+                    ariaLabel="Select level up bonus"
+                    onClick={() => navigate(`levelBonus?level=${level}`)}
+                  >
+                    Select Level Up Bonus
+                  </BtnRect>
+                )}
+              </div>
             );
           })}
-        </div>
-      </ThemeContainer>
+        </ExpandingList>
+        {character?.level < 12 && (
+          <div className="flex w-full items-center gap-4">
+            <Divider />
+            <h4 className="whitespace-nowrap text-center">Next Level</h4>
+            <Divider />
+          </div>
+        )}
+        {Array.from({ length: 12 - character?.level }).map((_, index) => {
+          const level = index + 1 + character?.level;
+
+          const {
+            levelUpAttributePoints,
+            levelUpSkillPoints,
+            levelUpPerkPoints,
+            levelUpMasterPerkPoints,
+            levelBonusUsed,
+          } = getLevelBonusData(character, level);
+
+          return (
+            <ItemCardSmall
+              className="pointer-events-none"
+              key={index}
+              heading={
+                <div className="flex w-full items-start justify-between gap-4">
+                  <ArrowHeader4 title={level} className="w-12" />
+                  {levelBonusUsed ? (
+                    level > character.level ? (
+                      <Icon
+                        path={mdiCloseCircleOutline}
+                        size={1}
+                        className="text-error mr-auto"
+                      />
+                    ) : (
+                      <Icon
+                        path={mdiCheckCircleOutline}
+                        size={1}
+                        className="text-accent mr-auto"
+                      />
+                    )
+                  ) : (
+                    <Icon
+                      path={mdiCircleOutline}
+                      size={1}
+                      className="mr-auto"
+                    />
+                  )}
+                  <div className="flex flex-col gap-1">
+                    {levelUpAttributePoints +
+                      levelUpSkillPoints +
+                      levelUpPerkPoints +
+                      levelUpMasterPerkPoints <=
+                      0 && <p>No Bonuses</p>}
+                    {levelUpAttributePoints > 0 && (
+                      <div className="flex items-start justify-between gap-4">
+                        <p className="grow">Attribute Points</p>
+                        <p className="size-6 text-center">
+                          {levelUpAttributePoints}
+                        </p>
+                      </div>
+                    )}
+                    {levelUpSkillPoints > 0 && (
+                      <div className="flex items-start justify-between gap-4">
+                        <p className="grow">Skill Points</p>
+                        <p className="size-6 text-center">
+                          {levelUpSkillPoints}
+                        </p>
+                      </div>
+                    )}
+                    {levelUpPerkPoints > 0 && (
+                      <div className="flex items-start justify-between gap-4">
+                        <p className="grow">Perks</p>
+                        <p className="size-6 text-center">
+                          {levelUpPerkPoints}
+                        </p>
+                      </div>
+                    )}
+                    {levelUpMasterPerkPoints > 0 && (
+                      <div className="flex items-start justify-between gap-4">
+                        <p className="grow">Master Perks</p>
+                        <p className="size-6 text-center">
+                          {levelUpMasterPerkPoints}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              }
+            />
+          );
+        })}
+      </div>
       {parts.includes('levelBonus') && <Outlet context={{ parts }} />}
-    </div>
+    </>
   );
 };
 

@@ -24,14 +24,29 @@ import Modal from 'src/components/modals/Modal';
 import ItemPage from 'src/components/ItemPage';
 import ProgressionPage from 'src/components/ProgressionPage';
 import LevelBonusModal from 'src/components/LevelBonusModal';
+import Page from 'src/components/Page';
 
 const CharacterRoutes = () => {
   return (
     <Route path=":characterId">
-      <Route path="" element={<CharacterSheet />}>
+      <Route
+        path=""
+        element={
+          <Page title="Character Sheet">
+            <CharacterSheet />
+          </Page>
+        }
+      >
         <Route path="conditions/:conditionId" element={<DescriptionModal />} />
       </Route>
-      <Route path="progression" element={<ProgressionPage />}>
+      <Route
+        path="progression"
+        element={
+          <Page title="Progression">
+            <ProgressionPage />
+          </Page>
+        }
+      >
         <Route path="levelBonus" element={<LevelBonusModal />} />
       </Route>
       <Route path="conditions" element={<ConditionModal />} />
@@ -40,11 +55,25 @@ const CharacterRoutes = () => {
         <Route path="create" element={<AffiliationForm />} />
       </Route>
       <Route path="shop">
-        <Route path="global" element={<Shop />}>
+        <Route
+          path="global"
+          element={
+            <Page title="Shop">
+              <Shop />
+            </Page>
+          }
+        >
           <Route path="cart" element={<Cart />} />
           <Route path="items/:itemId" element={<ItemPage />} />
         </Route>
-        <Route path=":shopId" element={<Shop />}>
+        <Route
+          path=":shopId"
+          element={
+            <Page title="Shop">
+              <Shop />
+            </Page>
+          }
+        >
           <Route path="cart" element={<Cart />} />
           <Route path=":category" element={<Items />}>
             <Route path="traits/:traitId" element={<DescriptionModal />} />
@@ -52,28 +81,77 @@ const CharacterRoutes = () => {
           <Route path=":category/:itemId" element={<ItemPage />} />
         </Route>
       </Route>
-      <Route path="update" element={<CharacterUpdateForm />}>
+      <Route
+        path="update"
+        element={
+          <Page title="Update Character">
+            <CharacterUpdateForm />
+          </Page>
+        }
+      >
         <Route path="perks" element={<PerkLinkModal />} />
         <Route path="npcPreferences" element={<NpcPreferenceModal />} />
       </Route>
       <Route path="cart" element={<Cart />} />
-      <Route path="resume" element={<Resume />} />
-      <Route path="resume/update" element={<ResumeForm />} />
-      <Route path="equipment" element={<Equipment />}>
+      <Route
+        path="resume"
+        element={
+          <Page title="Resume">
+            <Resume />
+          </Page>
+        }
+      />
+      <Route
+        path="resume/update"
+        element={
+          <Page title="Update Resume">
+            <ResumeForm />
+          </Page>
+        }
+      />
+      <Route
+        path="equipment"
+        element={
+          <Page title="Equipment">
+            <Equipment />
+          </Page>
+        }
+      >
         <Route path="inventory" element={<InventoryModal />} />
         <Route path="items/:itemId/conditions" element={<ConditionModal />} />
         <Route path="conditions/:conditionId" element={<DescriptionModal />} />
         <Route path="traits/:traitId" element={<DescriptionModal />} />
       </Route>
-      <Route path="drones" element={<Items />}>
+      <Route
+        path="drones"
+        element={
+          <Page title="Drones">
+            <Items />
+          </Page>
+        }
+      >
         <Route path="conditions/:conditionId" element={<DescriptionModal />} />
         <Route path="traits/:traitId" element={<DescriptionModal />} />
       </Route>
-      <Route path="vehicles" element={<Items />}>
+      <Route
+        path="vehicles"
+        element={
+          <Page title="Vehicles">
+            <Items />
+          </Page>
+        }
+      >
         <Route path="conditions/:conditionId" element={<DescriptionModal />} />
         <Route path="traits/:traitId" element={<DescriptionModal />} />
       </Route>
-      <Route path="inventory" element={<Inventory />}>
+      <Route
+        path="inventory"
+        element={
+          <Page title="Inventory">
+            <Inventory />
+          </Page>
+        }
+      >
         <Route
           path="items/:itemId"
           element={

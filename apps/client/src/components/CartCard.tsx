@@ -5,7 +5,7 @@ import { ThemeContext } from 'src/contexts/ThemeContext';
 import useEditCartMutation from 'src/hooks/useEditCartMutation/useEditCartMutation';
 import { AuthContext } from 'src/contexts/AuthContext';
 import BtnIcon from './buttons/BtnIcon';
-import CloudinaryImage from './CloudinaryImage';
+import CloudinaryPicture from './CloudinaryPicture';
 
 const CartCard = ({
   className,
@@ -42,7 +42,7 @@ const CartCard = ({
               className="group relative size-24 shrink-0 overflow-hidden pl-1"
               style={{ backgroundColor: rarityColorMap[item?.rarity] }}
             >
-              <CloudinaryImage
+              <CloudinaryPicture
                 className=""
                 publicId={item?.picture?.publicId}
                 position={item?.picture?.position}

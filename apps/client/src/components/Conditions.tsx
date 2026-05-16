@@ -1,8 +1,5 @@
-import { useContext } from 'react';
-import ThemeContainer from './ThemeContainer';
-import { ThemeContext } from '../contexts/ThemeContext';
 import InputField from './InputField';
-import { FormApi, useForm } from '@tanstack/react-form';
+import { FormApi } from '@tanstack/react-form';
 import Loading from './Loading';
 import useConditions from '../hooks/useConditions';
 import ConditionCard from './ConditionCard';
@@ -11,18 +8,15 @@ import InputSelectField from './InputSelectField';
 import Icon from '@mdi/react';
 import { mdiSync } from '@mdi/js';
 import { Condition } from 'src/types/condition';
+import Divider from './Divider';
 
 const Conditions = ({
-  title,
   form,
   conditionList,
 }: {
-  title?: string;
   form?: FormApi;
   conditionList?: Condition[];
 }) => {
-  const { accentPrimary } = useContext(ThemeContext);
-
   const {
     filteredConditions: conditions,
     isLoading,
@@ -36,67 +30,55 @@ const Conditions = ({
   }
 
   return (
-    <div className="flex w-full max-w-5xl flex-col items-center gap-6 sm:gap-8">
-      <h1 className="text-center">{title || 'Conditions'}</h1>
-      <ThemeContainer
-        className={`ml-auto w-full`}
-        chamfer="medium"
-        borderColor={accentPrimary}
-      >
-        <form className="flex w-full flex-col gap-4 p-4">
-          <div className="grid w-full grid-cols-2 gap-4 sm:gap-8">
-            <ArrowHeader2 title="Filter Options" />
-            <InputSelectField
-              label="Condition Type"
-              options={['character', 'item']}
-              onChange={(value) => {
-                filterByCategory(value);
-              }}
+    <>
+      <div className="flex w-full flex-col gap-4">
+        <div className="grid w-full grid-cols-2 gap-4 sm:gap-8">
+          <ArrowHeader2 title="Filter Options" />
+          <InputSelectField
+            label="Condition Type"
+            options={['character', 'item']}
+            onChange={(value) => {
+              filterByCategory(value);
+            }}
+          />
+        </div>
+        <div className="flex items-end gap-4">
+          <InputField
+            className="w-full"
+            label="Search Conditions"
+            onChange={(value: string) => {
+              filterByQuery(value);
+            }}
+          />
+          <button
+            className="text-accent bg-tertiary shadow-color group grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
+            onClick={(e) => {
+              e.preventDefault();
+              resetList();
+            }}
+          >
+            <Icon
+              path={mdiSync}
+              className="text-secondary group-hover:text-accent timing"
             />
-          </div>
-          <div className="flex items-end gap-4">
-            <InputField
-              className="w-full"
-              label="Search Conditions"
-              onChange={(value: string) => {
-                filterByQuery(value);
-              }}
-            />
-            <button
-              className="text-accent bg-tertiary shadow-color group grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
-              onClick={(e) => {
-                e.preventDefault();
-                resetList();
-              }}
-            >
-              <Icon
-                path={mdiSync}
-                className="text-secondary group-hover:text-accent timing"
+          </button>
+        </div>
+      </div>
+      <Divider />
+      <div className="flex w-full flex-col gap-8">
+        <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-4 md:grid md:grid-cols-2">
+            {conditions?.map((condition) => (
+              <ConditionCard
+                key={condition.id}
+                form={form}
+                condition={condition}
               />
-            </button>
-          </div>
-        </form>
-      </ThemeContainer>
-      <ThemeContainer
-        chamfer="medium"
-        className="w-full"
-        borderColor={accentPrimary}
-      >
-        <div className="flex w-full flex-col gap-8 p-4 sm:p-8">
-          <div className="flex flex-col gap-8">
-            <div className="flex flex-col gap-4 md:grid md:grid-cols-2">
-              {conditions?.map((condition) => (
-                <ConditionCard
-                  key={condition.id}
-                  form={form}
-                  condition={condition}
-                />
-              ))}
-            </div>
+            ))}
           </div>
         </div>
-      </ThemeContainer>
-    </div>
+      </div>
+    </>
   );
 };
 

@@ -15,7 +15,7 @@ import Divider from '../../Divider';
 import ArrowHeader3 from '../../ArrowHeader3';
 import BtnAuth from 'src/components/buttons/BtnAuth';
 import useMaps from 'src/hooks/useMaps';
-import CloudinaryImage from 'src/components/CloudinaryImage';
+import CloudinaryPicture from 'src/components/CloudinaryPicture';
 import TilePicker from './TilePicker';
 import useMapFavoriteStore from 'src/stores/mapFavoriteStore';
 
@@ -319,7 +319,7 @@ const TileListModal = () => {
                   <p>{`${component.width} x ${component.height}`}</p>
                 </div>
                 <div className="flex w-full items-center justify-center">
-                  <CloudinaryImage
+                  <CloudinaryPicture
                     className="border-accent aspect-square overflow-hidden rounded border"
                     publicId={component.picture.publicId}
                   />

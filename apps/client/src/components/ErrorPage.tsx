@@ -1,6 +1,6 @@
 import { useNavigate, useRouteError } from 'react-router-dom';
 import BtnRect from './buttons/BtnRect';
-import CloudinaryImage from './CloudinaryImage';
+import CloudinaryPicture from './CloudinaryPicture';
 
 const ErrorPage = () => {
   const error = useRouteError();
@@ -15,7 +15,7 @@ const ErrorPage = () => {
           </p>
         </div>
         <div className="aspect-square !w-full max-w-[300px] overflow-hidden rounded-full shadow-lg shadow-zinc-950 sm:max-w-[500px]">
-          <CloudinaryImage publicId={'error_page_image_ugfdxr.jpg'} />
+          <CloudinaryPicture publicId={'error_page_image_ugfdxr.jpg'} />
         </div>
 
         <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-8">

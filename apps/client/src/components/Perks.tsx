@@ -15,6 +15,7 @@ import {
 } from 'src/types/attributeTree';
 import Icon from '@mdi/react';
 import { mdiSync } from '@mdi/js';
+import Divider from './Divider';
 
 const Perks = ({
   form,
@@ -45,95 +46,82 @@ const Perks = ({
   }
 
   return (
-    <div className="flex w-full max-w-5xl flex-col items-center gap-6 sm:gap-8">
-      <ThemeContainer
-        className="w-full"
-        chamfer="medium"
-        borderColor={accentPrimary}
-      >
-        <form className="flex w-full flex-col gap-4 p-4">
-          <div className="grid w-full grid-cols-2 items-center justify-between gap-4 sm:grid-cols-3 sm:gap-8">
-            <ArrowHeader2 title="Filter Options" />
-            <searchForm.Field name="attribute">
-              {(field) => (
-                <InputSelectField
-                  field={field}
-                  label="Attribute"
-                  options={[
-                    '',
-                    'general',
-                    'cybernetica',
-                    'esoterica',
-                    'peace',
-                    'violence',
-                  ]}
-                  onChange={() => {
-                    perks.filterByAttribute(field.state.value);
-                    perks.filterBySkill('');
-                  }}
-                />
-              )}
-            </searchForm.Field>
-            <searchForm.Subscribe
-              selector={(state) => [state.values.attribute]}
-            >
-              {([selectedAttribute]) => (
-                <searchForm.Field name="skill">
-                  {(field) => (
-                    <InputSelectField
-                      field={field}
-                      label="Skill"
-                      options={
-                        selectedAttribute
-                          ? Object.keys(perks.emptyTree[selectedAttribute])
-                          : []
-                      }
-                      onChange={() => {
-                        perks.filterBySkill(field.state.value);
-                      }}
-                    />
-                  )}
-                </searchForm.Field>
-              )}
-            </searchForm.Subscribe>
-          </div>
-          <div className="flex items-end gap-4">
-            <searchForm.Field name="query">
-              {(field) => (
-                <InputField
-                  label="Search perks"
-                  className="w-full"
-                  field={field}
-                  onChange={() => {
-                    perks.filterPerks(field.state.value);
-                  }}
-                />
-              )}
-            </searchForm.Field>
-            <button
-              className="text-accent bg-tertiary shadow-color group z-10 grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
-              onClick={(e) => {
-                e.preventDefault();
-                searchForm.reset();
-                searchForm.handleSubmit();
-              }}
-            >
-              <Icon
-                path={mdiSync}
-                className="text-secondary group-hover:text-accent timing"
+    <>
+      <div className="flex w-full flex-col gap-4">
+        <div className="grid w-full grid-cols-2 items-center justify-between gap-4 sm:grid-cols-3 sm:gap-8">
+          <ArrowHeader2 title="Filter Options" />
+          <searchForm.Field name="attribute">
+            {(field) => (
+              <InputSelectField
+                field={field}
+                label="Attribute"
+                options={[
+                  '',
+                  'general',
+                  'cybernetica',
+                  'esoterica',
+                  'peace',
+                  'violence',
+                ]}
+                onChange={() => {
+                  perks.filterByAttribute(field.state.value);
+                  perks.filterBySkill('');
+                }}
               />
-            </button>
-          </div>
-        </form>
-      </ThemeContainer>
-      <ThemeContainer
-        chamfer="medium"
-        className="w-full"
-        borderColor={accentPrimary}
-      >
-        <PerkList perkTree={perks.filteredPerkTree} form={form} />
-      </ThemeContainer>
-    </div>
+            )}
+          </searchForm.Field>
+          <searchForm.Subscribe selector={(state) => [state.values.attribute]}>
+            {([selectedAttribute]) => (
+              <searchForm.Field name="skill">
+                {(field) => (
+                  <InputSelectField
+                    field={field}
+                    label="Skill"
+                    options={
+                      selectedAttribute
+                        ? Object.keys(perks.emptyTree[selectedAttribute])
+                        : []
+                    }
+                    onChange={() => {
+                      perks.filterBySkill(field.state.value);
+                    }}
+                  />
+                )}
+              </searchForm.Field>
+            )}
+          </searchForm.Subscribe>
+        </div>
+        <div className="flex items-end gap-4">
+          <searchForm.Field name="query">
+            {(field) => (
+              <InputField
+                label="Search perks"
+                className="w-full"
+                field={field}
+                onChange={() => {
+                  perks.filterPerks(field.state.value);
+                }}
+              />
+            )}
+          </searchForm.Field>
+          <button
+            className="text-accent bg-tertiary shadow-color group z-10 grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
+            onClick={(e) => {
+              e.preventDefault();
+              searchForm.reset();
+              searchForm.handleSubmit();
+            }}
+          >
+            <Icon
+              path={mdiSync}
+              className="text-secondary group-hover:text-accent timing"
+            />
+          </button>
+        </div>
+      </div>
+      <Divider />
+      <PerkList perkTree={perks.filteredPerkTree} form={form} />
+    </>
   );
 };
 

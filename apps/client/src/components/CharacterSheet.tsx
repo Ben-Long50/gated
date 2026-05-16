@@ -2,26 +2,14 @@ import { Fragment, useContext, useState } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import ThemeContainer from './ThemeContainer';
 import { ThemeContext } from '../contexts/ThemeContext';
-import {
-  mdiAlphaTCircleOutline,
-  mdiCircleOutline,
-  mdiStorefrontOutline,
-  mdiTriangleDown,
-} from '@mdi/js';
+import { mdiTriangleDown } from '@mdi/js';
 import Icon from '@mdi/react';
 import PerkCard from './PerkCard';
 import AttributeCard from './AttributeCard';
 import { LayoutContext } from '../contexts/LayoutContext';
-import EvasionIcon from './icons/EvasionIcon';
-import ArmorIcon from './icons/ArmorIcon';
-import WardIcon from './icons/WardIcon';
-import SpeedIcon from './icons/SpeedIcon';
 import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
 import BtnRect from './buttons/BtnRect';
-import InjuryIcon from './icons/InjuryIcon';
-import InsanityIcon from './icons/InsanityIcon';
 import Loading from './Loading';
-import ArrowHeader1 from './ArrowHeader1';
 import ArrowHeader3 from './ArrowHeader3';
 import Divider from './Divider';
 import BtnAuth from './buttons/BtnAuth';
@@ -31,11 +19,11 @@ import CharacterStatBars from './CharacterStatBars';
 import { capitalCase } from 'change-case';
 import ConditionTag from './ConditionTag';
 import ExpandingList from './ExpandingList';
-import NavTabs from './NavTabs';
 import ArrowHeader4 from './ArrowHeader4';
 import StatBarContainer from './StatBarContainer';
 import constructName from 'src/utils/constructName';
 import NpcTypeList from './NpcTypeList';
+import CharacterHeader from './CharacterHeader';
 
 const CharacterSheet = () => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -47,53 +35,24 @@ const CharacterSheet = () => {
 
   const [infoVisibility, setInfoVisibility] = useState(mobile ? false : true);
 
-  const {
-    filteredCharacter: character,
-    isLoading,
-    isPending,
-  } = useCharacter(Number(characterId));
+  const { filteredCharacter: character, isLoading } = useCharacter(
+    Number(characterId),
+  );
 
   const height =
     typeof character?.height === 'number'
       ? `${Math.floor(character?.height / 12)}' ${character?.height % 12}"`
       : character?.height;
 
-  if (isLoading || isPending) {
+  if (isLoading) {
     return <Loading />;
   }
 
   return (
-    <div className="text-primary flex w-full max-w-5xl flex-col gap-8">
-      {/* <NavTabs>
-        <Link to="equipment">
-          <BtnAuth>Equipment</BtnAuth>
-        </Link>
-        <Link to="deployments">
-          <BtnAuth>Drones & Vehicles</BtnAuth>
-        </Link>
-      </NavTabs> */}
-      <div className="flex flex-col items-center justify-between gap-8 lg:flex-row">
-        <div className="flex w-full items-center gap-4">
-          <ThemeContainer
-            className="w-full grow"
-            chamfer="small"
-            borderColor={accentPrimary}
-          >
-            <div className="flex h-full w-full items-center justify-between gap-4 p-4">
-              <div className="flex items-center justify-start gap-4">
-                <ArrowHeader1 title={constructName(character)} />
-                <NpcTypeList npcTypes={character?.npcTypes} />
-              </div>
-
-              <h1 className="!text-accent">{character?.level}</h1>
-            </div>
-          </ThemeContainer>
-          <div className="flex flex-col items-center gap-1">
-            <h3 className="text-xl">Profits</h3>
-            <p className="text-xl">{character?.profits}p</p>
-          </div>
-        </div>
-        <div className="flex w-full items-center justify-evenly gap-2 sm:gap-8 lg:w-auto lg:justify-center">
+    <>
+      <div className="grid grid-cols-2 items-center justify-between gap-8">
+        <CharacterHeader character={character} />
+        <div className="flex w-full items-center justify-end gap-2 sm:gap-8 lg:w-auto">
           <div className="flex flex-col items-center gap-1">
             <h3 className="text-primary text-xl font-semibold tracking-widest">
               Height
@@ -118,11 +77,31 @@ const CharacterSheet = () => {
             </h3>
             <p className="text-xl">{capitalCase(character?.sex)}</p>
           </div>
+          <div className="flex flex-col items-center gap-1">
+            <h3 className="text-xl">Profits</h3>
+            <p className="text-xl">{character?.profits}p</p>
+          </div>
         </div>
       </div>
+      <Divider />
       <div className="grid gap-8 max-sm:grid-flow-row sm:grid-cols-2">
         {character?.picture.imageUrl && (
-          <CharacterPicture character={character} />
+          <CharacterPicture className="relative" character={character}>
+            {character?.conditions.length > 0 && (
+              <div
+                className={`absolute bottom-2 left-2 flex grow flex-wrap items-center justify-start gap-1`}
+              >
+                {character?.conditions?.map((condition) => (
+                  <Fragment key={condition.id}>
+                    <ConditionTag key={condition.id} condition={condition} />
+                    {characterId && Number(conditionId) === condition.id && (
+                      <Outlet context={{ condition, parts }} />
+                    )}
+                  </Fragment>
+                ))}
+              </div>
+            )}
+          </CharacterPicture>
         )}
         <ThemeContainer
           chamfer="medium"
@@ -146,7 +125,12 @@ const CharacterSheet = () => {
                 <div className="grid grid-cols-[auto_auto_1fr] items-center gap-x-8 gap-y-4">
                   <>
                     <h4>Character Type</h4>
-                    <Icon path={mdiTriangleDown} size={0.375} rotate={-90} />
+                    <Icon
+                      className="text-primary"
+                      path={mdiTriangleDown}
+                      size={0.375}
+                      rotate={-90}
+                    />
                     {character?.playerCharacter ? (
                       <p>Player Character</p>
                     ) : (
@@ -156,7 +140,12 @@ const CharacterSheet = () => {
                   {character ? (
                     <>
                       <h4>Campaign</h4>
-                      <Icon path={mdiTriangleDown} size={0.375} rotate={-90} />
+                      <Icon
+                        className="text-primary"
+                        path={mdiTriangleDown}
+                        size={0.375}
+                        rotate={-90}
+                      />
                       <p>{character?.campaign?.name || 'N/A'}</p>
                     </>
                   ) : (
@@ -165,7 +154,12 @@ const CharacterSheet = () => {
                   {character ? (
                     <>
                       <h4>Gang</h4>
-                      <Icon path={mdiTriangleDown} size={0.375} rotate={-90} />
+                      <Icon
+                        className="text-primary"
+                        path={mdiTriangleDown}
+                        size={0.375}
+                        rotate={-90}
+                      />
                       <p>{character?.gang?.name || 'N/A'}</p>
                     </>
                   ) : (
@@ -187,196 +181,75 @@ const CharacterSheet = () => {
           </div>
         </ThemeContainer>
       </div>
-      {character?.conditions.length > 0 && (
-        <div className={`flex grow flex-wrap items-center justify-start gap-1`}>
-          {character?.conditions?.map((condition) => (
-            <Fragment key={condition.id}>
-              <ConditionTag key={condition.id} condition={condition} />
-              {characterId && Number(conditionId) === condition.id && (
-                <Outlet context={{ condition, parts }} />
-              )}
-            </Fragment>
-          ))}
-        </div>
-      )}
+
       <StatBarContainer>
         <CharacterStatBars
-          stats={{
-            maxHealth: character?.stats.maxHealth,
-            maxSanity: character?.stats.maxSanity,
-            currentHealth: character?.stats.currentHealth,
-            currentSanity: character?.stats.currentSanity,
-            maxCyber: character?.stats.maxCyber,
-            cyber: character?.stats.cyber,
-            weight: character?.stats.weight,
-            maxEquip: character?.stats.maxEquip,
-          }}
+          stats={character?.stats}
           characterId={character.id}
         />
       </StatBarContainer>
-      <div className="flex flex-col gap-8">
-        <ThemeContainer chamfer="medium" borderColor={accentPrimary}>
-          <div className="flex flex-wrap justify-center gap-8 px-8 py-4 lg:justify-between lg:pl-10">
-            <div className="flex flex-wrap justify-around gap-6">
-              <div className="flex flex-col items-center justify-between gap-2">
-                <h3 className="text-primary text-xl font-semibold tracking-widest">
-                  Speed
-                </h3>
-                <div className="flex items-center justify-center gap-4">
-                  <SpeedIcon className="size-8" />
-                  <p className="text-secondary text-xl sm:pt-1 sm:text-2xl">
-                    {character?.stats.speed}
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col items-center justify-between gap-2">
-                <h3 className="text-primary text-xl font-semibold tracking-widest">
-                  Evasion
-                </h3>
-                <div className="flex items-center justify-center gap-4">
-                  <EvasionIcon className="size-8" />
-                  <p className="text-secondary text-xl sm:pt-1 sm:text-2xl">
-                    {character?.stats.evasion}
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col items-center justify-between gap-2">
-                <h3 className="text-primary text-xl font-semibold tracking-widest">
-                  Armor
-                </h3>
-                <div className="flex items-center justify-center gap-4">
-                  <ArmorIcon className="size-8" />
-                  <p className="text-secondary text-xl sm:pt-1 sm:text-2xl">
-                    {character?.stats.armor}
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col items-center justify-between gap-2">
-                <h3 className="text-primary text-xl font-semibold tracking-widest">
-                  Ward
-                </h3>
-                <div className="flex items-center justify-center gap-4">
-                  <WardIcon className="text-secondary size-8" />
-                  <p className="text-secondary text-xl sm:pt-1 sm:text-2xl">
-                    {character?.stats.ward}
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center justify-center gap-8 max-sm:flex-wrap">
-              <div className="flex flex-col items-center gap-2">
-                <h3 className="text-primary whitespace-nowrap text-xl font-semibold tracking-widest">
-                  Injuries
-                </h3>
-                <div className="flex items-center gap-2">
-                  {Array.from({
-                    length: character?.stats.permanentInjuries,
-                  }).map((_, index) =>
-                    index < character?.stats.injuries ? (
-                      <InjuryIcon key={index} className="size-8" />
-                    ) : (
-                      <Icon
-                        key={index}
-                        className="text-gray-400"
-                        path={mdiCircleOutline}
-                        size={1}
-                      />
-                    ),
-                  )}
-                </div>
-              </div>
-              <div className="flex flex-col items-center gap-2">
-                <h3 className="text-primary whitespace-nowrap text-xl font-semibold tracking-widest">
-                  Insanities
-                </h3>
-                <div className="flex items-center gap-2">
-                  {Array.from({
-                    length: character?.stats.permanentInsanities,
-                  }).map((_, index) =>
-                    index < character?.stats.insanities ? (
-                      <InsanityIcon key={index} className="size-7" />
-                    ) : (
-                      <Icon
-                        key={index}
-                        className="text-gray-400"
-                        path={mdiCircleOutline}
-                        size={1}
-                      />
-                    ),
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </ThemeContainer>
-        <ThemeContainer chamfer="medium" borderColor={accentPrimary}>
-          <div className="flex items-center justify-around p-4">
-            <div className="flex flex-col items-center gap-2">
-              <ArrowHeader4 title="Attribute Points" />
-              <p>
-                {character?.stats.usedAttributePoints} /{' '}
-                {character?.stats.attributePoints}
-              </p>
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <ArrowHeader4 title="Skill Points" />
-              <p>
-                {character?.stats.usedSkillPoints} /{' '}
-                {character?.stats.skillPoints}
-              </p>
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <ArrowHeader4 title="Perks" />
-              <p>
-                {character?.stats.usedPerkPoints} /{' '}
-                {character?.stats.perkPoints}
-              </p>
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <ArrowHeader4 title="Master Perks" />
-              <p>
-                {character?.stats.usedMasterPerkPoints} /{' '}
-                {character?.stats.masterPerkPoints}
-              </p>
-            </div>
-          </div>
-        </ThemeContainer>
-        <div className="mb-auto flex w-full grow flex-col gap-6 lg:grid lg:grid-cols-2 lg:grid-rows-2 lg:gap-10">
-          {Object.entries(character?.attributes)
-            .sort(([a], [b]) => a.localeCompare(b))
-            .map(([attribute, { points, skills }]) => (
-              <ThemeContainer
-                key={attribute}
-                chamfer="medium"
-                borderColor={accentPrimary}
-              >
-                <div className="p-4">
-                  <AttributeCard
-                    attribute={attribute}
-                    points={points}
-                    skills={skills}
-                  />
-                </div>
-              </ThemeContainer>
-            ))}
+      <Divider />
+      <div className="grid grid-cols-2 items-center justify-around gap-4">
+        <div className="bg-secondary flex items-center justify-between gap-2 rounded-md p-4 shadow-md shadow-black">
+          <ArrowHeader4 className="text-primary" title="Attribute Points" />
+          <p>
+            {character?.stats.usedAttributePoints} /{' '}
+            {character?.stats.attributePoints}
+          </p>
+        </div>
+        <div className="bg-secondary flex items-center justify-between gap-2 rounded-md p-4 shadow-md shadow-black">
+          <ArrowHeader4 className="text-primary" title="Skill Points" />
+          <p>
+            {character?.stats.usedSkillPoints} / {character?.stats.skillPoints}
+          </p>
+        </div>
+        <div className="bg-secondary flex items-center justify-between gap-2 rounded-md p-4 shadow-md shadow-black">
+          <ArrowHeader4 className="text-primary" title="Perks" />
+          <p>
+            {character?.stats.usedPerkPoints} / {character?.stats.perkPoints}
+          </p>
+        </div>
+        <div className="bg-secondary flex items-center justify-between gap-2 rounded-md p-4 shadow-md shadow-black">
+          <ArrowHeader4 className="text-primary" title="Master Perks" />
+          <p>
+            {character?.stats.usedMasterPerkPoints} /{' '}
+            {character?.stats.masterPerkPoints}
+          </p>
         </div>
       </div>
-      <ThemeContainer chamfer="medium" borderColor={accentPrimary}>
-        <div className="p-4">
-          <ExpandingList
-            title="Perks"
-            className="grid grid-cols-1 gap-4 md:grid-cols-2"
-          >
-            {character?.perks ? (
-              character?.perks.map((perk) => (
-                <PerkCard key={perk.id} perkId={perk.id} />
-              ))
-            ) : (
-              <h2 className="pl-6">???</h2>
-            )}
-          </ExpandingList>
-        </div>
-      </ThemeContainer>
+      <div className="mb-auto flex w-full grow flex-col gap-6 lg:grid lg:grid-cols-2 lg:grid-rows-2 lg:gap-10">
+        {Object.entries(character?.attributes)
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([attribute, { points, skills }]) => (
+            <ThemeContainer
+              key={attribute}
+              chamfer="medium"
+              borderColor={accentPrimary}
+            >
+              <div className="p-4">
+                <AttributeCard
+                  attribute={attribute}
+                  points={points}
+                  skills={skills}
+                />
+              </div>
+            </ThemeContainer>
+          ))}
+      </div>
+      <Divider />
+      <ExpandingList
+        title="Perks"
+        className="grid grid-cols-1 gap-4 md:grid-cols-2"
+      >
+        {character?.perks ? (
+          character?.perks.map((perk) => (
+            <PerkCard key={perk.id} perkId={perk.id} />
+          ))
+        ) : (
+          <h2 className="pl-6">???</h2>
+        )}
+      </ExpandingList>
+      <Divider />
       {user?.id === character.userId && (
         <Link to={`update`}>
           <BtnRect
@@ -388,7 +261,7 @@ const CharacterSheet = () => {
           </BtnRect>
         </Link>
       )}
-    </div>
+    </>
   );
 };
 
