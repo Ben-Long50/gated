@@ -4,8 +4,6 @@ import CharacterList from './CharacterList';
 const SocialCharacters = () => {
   const { data: characters } = useSocialCharactersQuery();
 
-  console.log(characters);
-
   return (
     <CharacterList
       characterIds={characters?.map((character) => character.id)}

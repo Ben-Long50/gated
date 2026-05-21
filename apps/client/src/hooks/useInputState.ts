@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 
-const useInputState = (value: string, errors?: string[]) => {
+const useInputState = (value: string | number, errors?: string[]) => {
   const { accentPrimary, errorPrimary } = useContext(ThemeContext);
 
   const activeState = {
@@ -28,9 +28,11 @@ const useInputState = (value: string, errors?: string[]) => {
   const [focus, setFocus] = useState(false);
 
   const handleBorder = () => {
+    const length = value ? value.toString().length : 0;
+
     if (errors && errors.length > 0) {
       setFieldState(errorState);
-    } else if (focus || value.length > 0) {
+    } else if (focus || length > 0) {
       setFieldState(activeState);
     } else {
       setFieldState(inactiveState);

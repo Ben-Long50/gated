@@ -38,8 +38,14 @@ const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
   const characterIdList =
     characterIds || user.characters.map((character) => character.id);
 
-  const { characters, query, setQuery, setCampaignId, isLoading } =
-    useCharacters(characterIdList, playerCharacter, npcTypes);
+  const {
+    characters,
+    query,
+    campaignId: selectedCampaignId,
+    setQuery,
+    setCampaignId,
+    isLoading,
+  } = useCharacters(characterIdList, playerCharacter, npcTypes);
 
   const { data: campaigns } = useCampaignsQuery();
 
@@ -80,8 +86,8 @@ const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
             <InputSelectField
               label="Filter By Campaign"
               options={availableCampaigns}
-              value={campaignId}
-              onChange={(campaign) => setCampaignId(campaign.id)}
+              value={selectedCampaignId}
+              onChange={(value) => setCampaignId(value.id)}
             />
           )}
           <div className="flex w-full items-center gap-4">

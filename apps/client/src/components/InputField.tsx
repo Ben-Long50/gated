@@ -19,14 +19,14 @@ const InputField = ({
   const { fieldState, setFocus } = useInputState(value, errors);
 
   return (
-    <div className={`${className}`}>
+    <div className={`${className} w-full`}>
       <ThemeContainer
-        className={`${className} ml-auto`}
+        className="w-full"
         chamfer="small"
         borderColor={fieldState.border}
       >
         <input
-          className={`${className} ${fieldState.field} text-secondary timing focus:bg-primary scrollbar-secondary-2 h-full min-h-[250px] w-full grow rounded-none pb-2 pl-4 pt-3 text-xl outline-none clip-4`}
+          className={`${fieldState.field} timing w-full grow rounded-bl rounded-tr pb-2 pl-4 pt-3 text-xl outline-none clip-4`}
           type={type}
           value={value}
           onFocus={() => {

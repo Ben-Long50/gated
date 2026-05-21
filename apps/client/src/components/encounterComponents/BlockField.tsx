@@ -68,8 +68,6 @@ const BlockField = ({
         .sort((a: Item, b: Item) => b.stats.armor - a.stats.armor)
     : [];
 
-  console.log(armor);
-
   const wardArmor = target
     ? Object.values(target?.equipment)
         .flatMap((items) => items.flatMap((item) => calculateItemStats(item)))

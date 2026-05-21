@@ -46,6 +46,7 @@ const useCharacters = (
   return {
     characters: filteredCharacters,
     query,
+    campaignId,
     setQuery,
     setCampaignId,
     isLoading: charactersLoading,

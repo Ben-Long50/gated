@@ -16,8 +16,6 @@ const useItemStatMutation = () => {
         clearTimeout(timeoutRef.current.get(data.itemId));
       }
 
-      console.log(data.stats);
-
       const prevBuffer = updateBuffer.current.get(data.itemId);
 
       updateBuffer.current.set(
@@ -28,8 +26,6 @@ const useItemStatMutation = () => {
       return new Promise((resolve) => {
         const timer = setTimeout(async () => {
           const finalValue = updateBuffer.current.get(data.itemId);
-
-          console.log(finalValue);
 
           updateBuffer.current = new Map();
 

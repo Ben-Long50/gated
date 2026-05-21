@@ -52,10 +52,6 @@ const KeywordLinkField = ({
                             (k) => k.id === keyword.keywordId,
                           );
 
-                          console.log(keyword);
-
-                          console.log(baseKeyword);
-
                           return (
                             <div
                               className="flex items-center"

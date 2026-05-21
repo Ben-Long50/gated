@@ -27,7 +27,6 @@ const Session = () => {
     isPending: sessionPending,
     isError,
   } = useSessionQuery(Number(campaignId), Number(sessionId));
-  console.log(session);
 
   const {
     data: campaign,

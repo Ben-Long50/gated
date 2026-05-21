@@ -17,14 +17,14 @@ const TextAreaField = ({
   const { fieldState, setFocus } = useInputState(value, errors);
 
   return (
-    <div className="h-full min-h-[250px] grow">
+    <div className={`${className} h-full min-h-[250px]`}>
       <ThemeContainer
         chamfer="small"
-        className={`mx-auto h-full w-full flex-col`}
+        className="w-full"
         borderColor={fieldState.border}
       >
         <textarea
-          className={`${className} ${fieldState.field} text-secondary timing focus:bg-primary scrollbar-secondary-2 h-full min-h-[250px] w-full grow rounded-none pb-2 pl-4 pt-3 text-xl outline-none clip-4`}
+          className={`${fieldState.field} timing scrollbar-secondary-2 h-full w-full grow rounded-bl rounded-tr pb-2 pl-4 pt-3 text-xl outline-none clip-4`}
           value={value}
           onFocus={() => {
             setFocus(true);

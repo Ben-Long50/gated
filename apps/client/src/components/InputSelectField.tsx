@@ -25,7 +25,12 @@ const InputSelectField = ({
   className?: string;
   reverse?: boolean;
 }) => {
-  const { fieldState, focus, setFocus } = useInputState(value, errors);
+  let displayValue =
+    typeof value === 'number'
+      ? constructName(options.find((option) => option.id === value))
+      : constructName(value);
+
+  const { fieldState, focus, setFocus } = useInputState(displayValue, errors);
   const [query, setQuery] = useState('');
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -33,7 +38,6 @@ const InputSelectField = ({
 
   const handleValue = (newValue: any) => {
     if (inputRef.current) {
-      inputRef.current.value = newValue;
       onChange(newValue);
 
       setFocus(false);
@@ -58,24 +62,19 @@ const InputSelectField = ({
       constructName(entity).toLowerCase().includes(query.toLowerCase()),
     ) || [];
 
-  let displayValue =
-    typeof value === 'number'
-      ? constructName(options.find((option) => option.id === value))
-      : constructName(value);
-
   return (
     <div
       ref={selectRef}
       className={`${className} timing relative flex w-full items-center`}
     >
       <ThemeContainer
-        className="grow"
+        className="w-full"
         chamfer="small"
         borderColor={fieldState.border}
       >
         <input
           ref={inputRef}
-          className={`${className} ${fieldState.field} text-secondary timing focus:bg-primary scrollbar-secondary-2 h-full min-h-[250px] w-full grow rounded-none pb-2 pl-4 pt-3 text-xl outline-none clip-4`}
+          className={`${fieldState.field} timing w-full grow rounded-bl rounded-tr pb-2 pl-4 pt-3 text-xl outline-none clip-4`}
           value={displayValue}
           onFocus={() => {
             setFocus(true);
@@ -114,7 +113,6 @@ const InputSelectField = ({
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={(e) => {
                   e.preventDefault();
-                  e.stopPropagation();
                   handleValue(option);
                 }}
               >

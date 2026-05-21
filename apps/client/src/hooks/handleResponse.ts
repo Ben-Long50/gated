@@ -3,7 +3,6 @@ const handleResponse = async (response) => {
 
   if (!response.ok) {
     console.error(data.error);
-    console.log(data);
 
     throw new Error(`${data.error}`);
   }

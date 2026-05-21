@@ -155,8 +155,6 @@ const ItemUpgradeForm = () => {
           <itemUpgradeForm.Field name="modifiedStats">
             {(field) =>
               Object.keys(field.state.value).map((stat) => {
-                console.log(field.state.value);
-
                 return (
                   <itemUpgradeForm.Field
                     name={`modifiedStats[${stat}]`}

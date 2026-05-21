@@ -19,7 +19,6 @@ const generatePicture = async (prompt: string) => {
     if (error instanceof Error) {
       console.error(error.message);
     }
-    console.log(error);
 
     throw error;
   }

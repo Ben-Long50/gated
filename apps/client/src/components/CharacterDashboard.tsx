@@ -2,8 +2,6 @@ import { useContext } from 'react';
 import CharacterList from './CharacterList';
 import { AuthContext } from 'src/contexts/AuthContext';
 import userLimits from 'src/utils/userLimits';
-import ThemeContainer from './ThemeContainer';
-import { ThemeContext } from 'src/contexts/ThemeContext';
 import ArrowHeader3 from './ArrowHeader3';
 import Divider from './Divider';
 import ArrowHeader4 from './ArrowHeader4';
@@ -11,15 +9,12 @@ import Container from './Container';
 
 const CharacterDashboard = () => {
   const { user } = useContext(AuthContext);
-  const { accentPrimary } = useContext(ThemeContext);
 
   const limits = userLimits[user.role];
 
   const playerCharacters = user.characters.filter(
     (character) => character.playerCharacter,
   );
-
-  console.log(user);
 
   const playerCharacterItemCount = playerCharacters.reduce(
     (sum, character) =>
