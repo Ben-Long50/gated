@@ -42,7 +42,11 @@ const PropertyForm = () => {
           }}
         >
           {(field) => (
-            <InputField className="grow" label="Property Name" field={field} />
+            <InputField
+              label="Property Name"
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
+            />
           )}
         </propertyForm.Field>
         <propertyForm.Field
@@ -61,7 +65,8 @@ const PropertyForm = () => {
               className="max-w-28"
               type="number"
               label="GP Price"
-              field={field}
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
             />
           )}
         </propertyForm.Field>
@@ -78,8 +83,9 @@ const PropertyForm = () => {
         {(field) => (
           <InputSelectField
             label="Property Type"
-            field={field}
             options={['property', 'districtUpgrade']}
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
           />
         )}
       </propertyForm.Field>

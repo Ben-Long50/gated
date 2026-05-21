@@ -9,7 +9,7 @@ import Icon from '@mdi/react';
 import { mdiContentSaveOutline, mdiSync } from '@mdi/js';
 import useUsersQuery from '../hooks/user hooks/useUsersByUsernameQuery';
 import { AuthContext } from '../contexts/AuthContext';
-import InputFieldBasic from './InputFieldBasic';
+import InputField from './InputField';
 import AccountPicture from './AccountPicture';
 import { User } from 'src/types/user';
 import useUpdateUserRoleMutation from '../hooks/user hooks/useUpdateUserRoleMutation';
@@ -57,9 +57,10 @@ const UserRoleForm = ({
           <roleForm.Field name="role">
             {(field) => (
               <InputSelectField
-                field={field}
                 label="Role"
                 options={['SUPERADMIN', 'ADMIN', 'USER', 'GUEST']}
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
               />
             )}
           </roleForm.Field>
@@ -97,13 +98,10 @@ const UserRoles = () => {
         <form className="flex flex-col gap-4 p-4">
           <ArrowHeader2 title="Filter Options" />
           <div className="flex items-center gap-4">
-            <InputFieldBasic
-              className="w-full"
-              type="text"
-              name="Search Users"
+            <InputField
               label="Search Users"
               value={query}
-              onChange={(value: string) => {
+              onChange={(value) => {
                 setQuery(value);
               }}
             />

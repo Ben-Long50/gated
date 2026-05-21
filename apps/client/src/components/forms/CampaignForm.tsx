@@ -60,12 +60,20 @@ const CampaignForm = () => {
       <ArrowHeader2 title="Campaign Information" />
       <campaignForm.Field name="name">
         {(field) => (
-          <InputField className="grow" label="Campaign name" field={field} />
+          <InputField
+            label="Campaign name"
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
+          />
         )}
       </campaignForm.Field>
       <campaignForm.Field name="location">
         {(field) => (
-          <InputField label="Campaign location (City Name)" field={field} />
+          <InputField
+            label="Campaign location (City Name)"
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
+          />
         )}
       </campaignForm.Field>
       <PictureField
@@ -87,21 +95,25 @@ const CampaignForm = () => {
                   <campaignForm.Field name={`factions[${i}].factionType`}>
                     {(subfield) => (
                       <InputSelectField
-                        className="w-full"
                         label="Faction type"
-                        field={subfield}
                         options={[
                           'churchOfElShaddai',
                           'corporateHoldouts',
                           'federalReservists',
                           'noblebloods',
                         ]}
+                        value={subfield.state.value}
+                        onChange={(value) => subfield.handleChange(value)}
                       />
                     )}
                   </campaignForm.Field>
                   <campaignForm.Field name={`factions[${i}].name`}>
                     {(subfield) => (
-                      <InputField field={subfield} label="Faction name" />
+                      <InputField
+                        label="Faction name"
+                        value={field.state.value}
+                        onChange={(value) => field.handleChange(value)}
+                      />
                     )}
                   </campaignForm.Field>
                 </div>

@@ -43,7 +43,13 @@ const EncounterFormMap = () => {
                   : undefined,
             }}
           >
-            {(field) => <InputField field={field} label="Encounter Name" />}
+            {(field) => (
+              <InputField
+                label="Encounter Name"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
+            )}
           </form.Field>
           <BtnRect
             className="group"

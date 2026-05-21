@@ -38,7 +38,13 @@ const KeywordForm = () => {
               : undefined,
         }}
       >
-        {(field) => <InputField label="Trait Name" field={field} />}
+        {(field) => (
+          <InputField
+            label="Trait Name"
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
+          />
+        )}
       </keywordForm.Field>
       <keywordForm.Field
         name="description"
@@ -76,8 +82,9 @@ const KeywordForm = () => {
                 'hardwired',
                 'networked',
               ]}
-              field={field}
               label="Trait Type"
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
             />
           )}
         </keywordForm.Field>
@@ -89,7 +96,12 @@ const KeywordForm = () => {
           }}
         >
           {(field) => (
-            <InputField field={field} type="number" label="GP Cost" />
+            <InputField
+              type="number"
+              label="GP Cost"
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
+            />
           )}
         </keywordForm.Field>
       </div>

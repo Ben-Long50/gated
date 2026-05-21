@@ -22,19 +22,11 @@ const useCampaignCharacters = (characterIds: number[]) => {
       (character) => character?.playerCharacter === false,
     ) || [];
 
-  const filterByQuery = (query: string) => {
-    setQuery(query);
-  };
-
-  const resetList = () => {
-    setQuery('');
-  };
-
   return {
     playerCharacters,
     nonPlayerCharacters,
-    filterByQuery,
-    resetList,
+    query,
+    setQuery,
     isLoading,
   };
 };

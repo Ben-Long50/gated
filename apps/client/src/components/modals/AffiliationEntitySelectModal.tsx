@@ -4,7 +4,6 @@ import { Character } from 'src/types/character';
 import { useState } from 'react';
 import Modal from './Modal';
 import BtnRect from '../buttons/BtnRect';
-import InputFieldBasic from '../InputFieldBasic';
 import BtnAuth from '../buttons/BtnAuth';
 import Divider from '../Divider';
 import { capitalCase } from 'change-case';
@@ -95,12 +94,6 @@ const AffiliationEntitySelectModal = () => {
           Characters
         </BtnAuth>
       </div>
-      <InputFieldBasic
-        className="w-full"
-        label={`Search ${capitalCase(tab)}s`}
-        type="string"
-        onChange={(value) => filterByQuery(value)}
-      />
       <Divider className="col-span-3 opacity-50" />
       <div className="flex w-full flex-col items-center gap-4 overflow-y-auto">
         {tab === 'faction' &&

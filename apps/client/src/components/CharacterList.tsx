@@ -4,9 +4,7 @@ import CharacterCardAlt from './CharacterCardAlt';
 import BtnRect from './buttons/BtnRect';
 import { Link } from 'react-router-dom';
 import Loading from './Loading';
-import ThemeContainer from './ThemeContainer';
 import { Character } from 'src/types/character';
-import { ThemeContext } from '../contexts/ThemeContext';
 import { AuthContext } from '../contexts/AuthContext';
 import InputSelectField from './InputSelectField';
 import useCampaignsQuery from 'src/hooks/useCampaignsQuery/useCampaignsQuery';
@@ -22,7 +20,6 @@ import Divider from './Divider';
 
 const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
   const { user } = useContext(AuthContext);
-  const { accentPrimary } = useContext(ThemeContext);
   const { campaignId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const [cardType, setCardType] = useState<'large' | 'small'>('large');
@@ -41,7 +38,7 @@ const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
   const characterIdList =
     characterIds || user.characters.map((character) => character.id);
 
-  const { characters, filterByCampaign, filterByQuery, isLoading } =
+  const { characters, query, setQuery, setCampaignId, isLoading } =
     useCharacters(characterIdList, playerCharacter, npcTypes);
 
   const { data: campaigns } = useCampaignsQuery();
@@ -83,22 +80,23 @@ const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
             <InputSelectField
               label="Filter By Campaign"
               options={availableCampaigns}
-              onChange={(campaign) => filterByCampaign(campaign.id)}
+              value={campaignId}
+              onChange={(campaign) => setCampaignId(campaign.id)}
             />
           )}
           <div className="flex w-full items-center gap-4">
             <InputField
-              className="w-full"
               label="Search Characters"
-              onChange={(query) => filterByQuery(query)}
+              value={query}
+              onChange={(value) => setQuery(value)}
             />
 
             <button
               className="text-accent bg-tertiary shadow-color group grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
               onClick={(e) => {
                 e.preventDefault();
-                filterByCampaign(null);
-                filterByQuery('');
+                setCampaignId(null);
+                setQuery('');
               }}
             >
               <Icon

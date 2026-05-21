@@ -164,9 +164,10 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
           >
             {(field) => (
               <InputSelectField
-                field={field}
                 label="Reactions"
                 options={availableReactions}
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value.id)}
               />
             )}
           </actionForm.Field>
@@ -331,9 +332,10 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
                           <actionForm.Field name="extraDice">
                             {(field) => (
                               <InputField
-                                field={field}
                                 label="Extra Dice"
                                 type="number"
+                                value={field.state.value}
+                                onChange={(value) => field.handleChange(value)}
                               />
                             )}
                           </actionForm.Field>

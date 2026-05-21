@@ -111,10 +111,10 @@ const CharacterOptions = ({
             className={`${visible ? 'max-h-24' : 'max-h-0 overflow-hidden'} timing flex w-full items-center gap-4`}
           >
             <InputSelectField
-              ref={inputRef}
               label="Switch Character"
               reverse={true}
               options={characters}
+              value={controlledCharacterId}
               onChange={(value) => {
                 setControlledCharacterId(value.id);
                 setItem(null);

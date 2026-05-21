@@ -16,7 +16,7 @@ const useBaseItems = ({
   excludedKeywords?: string[];
   subcategory?: string;
 }) => {
-  const { data: items, isLoading, isPending } = useItemsQuery(category);
+  const { data: items, isLoading } = useItemsQuery(category);
 
   const list = itemList || items;
 
@@ -124,36 +124,18 @@ const useBaseItems = ({
     [query, priceFilter, rarity, category, itemCategory, categorizedItems],
   );
 
-  const filterByQuery = (newQuery: string) => {
-    setQuery(newQuery);
-  };
-
-  const filterByPrice = (direction: string) => {
-    setPriceFilter(direction);
-  };
-
-  const filterByRarity = (rarity: string) => {
-    setRarity(rarity);
-  };
-
-  const filterByCategory = (newCategory: string) => {
-    setItemCategory(newCategory);
-  };
-
-  const resetList = () => {
-    setQuery('');
-  };
-
   return {
-    filteredItems,
-    filteredKeywords,
-    filterByQuery,
-    filterByCategory,
-    filterByPrice,
-    filterByRarity,
-    resetList,
+    items: filteredItems,
+    keywords: filteredKeywords,
+    query,
+    category,
+    priceFilter,
+    rarity,
+    setQuery,
+    setItemCategory,
+    setPriceFilter,
+    setRarity,
     isLoading,
-    isPending,
   };
 };
 

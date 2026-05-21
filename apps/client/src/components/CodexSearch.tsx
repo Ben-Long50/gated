@@ -1,7 +1,5 @@
 import { useForm } from '@tanstack/react-form';
-import ThemeContainer from './ThemeContainer';
 import { useContext, useEffect, useRef, useState } from 'react';
-import { ThemeContext } from '../contexts/ThemeContext';
 import InputField from './InputField';
 import { Keyword } from 'src/types/keyword';
 import Loading from './Loading';
@@ -19,7 +17,6 @@ import Icon from '@mdi/react';
 import { mdiCropSquare, mdiGrid, mdiSync } from '@mdi/js';
 import { LayoutContext } from '../contexts/LayoutContext';
 import ItemCard from './ItemCard';
-import { AuthContext } from 'src/contexts/AuthContext';
 import { Item } from 'src/types/item';
 import { Action } from 'src/types/action';
 import { Condition } from 'src/types/condition';
@@ -27,11 +24,10 @@ import useAllItemsQuery from 'src/hooks/useAllItemsQuery/useAllItemsQuery';
 import { camelCase } from 'change-case';
 
 const CodexSearch = () => {
-  const { accentPrimary } = useContext(ThemeContext);
   const { mobile } = useContext(LayoutContext);
 
-  const [nameQuery, setNameQuery] = useState<string | null>(null);
-  const [descriptionQuery, setDescriptionQuery] = useState<string | null>(null);
+  const [nameQuery, setNameQuery] = useState('');
+  const [descriptionQuery, setDescriptionQuery] = useState('');
   const [category, setCategory] = useState('');
   const [cardType, setCardType] = useState<'small' | 'large'>(() =>
     mobile ? 'small' : 'large',
@@ -145,72 +141,47 @@ const CodexSearch = () => {
 
     descriptionTimerRef.current = setTimeout(() => {
       if (!nameQuery && !query && !category) {
-        setDescriptionQuery(null);
+        setDescriptionQuery('');
       } else {
         setDescriptionQuery(query);
       }
       if ((query && !nameQuery) || (category && !nameQuery)) {
         setNameQuery('');
       } else if (!nameQuery) {
-        setNameQuery(null);
+        setNameQuery('');
       }
     }, 1000);
   };
-
-  const searchForm = useForm({
-    defaultValues: {
-      keyword: '',
-      nameQuery: '',
-      descriptionQuery: '',
-    },
-    onSubmit: ({ value }) => {
-      filterByNameQuery(value.nameQuery);
-      filterByDescriptionQuery(value.descriptionQuery);
-    },
-  });
 
   return (
     <div className="flex w-full max-w-6xl flex-col items-center gap-6 sm:gap-8">
       <div className="flex w-full flex-col gap-4">
         <div className="grid w-full grid-cols-2 gap-4 sm:gap-8">
           <ArrowHeader2 title="Filter Options" />
-          <searchForm.Field name="keyword">
-            {(field) => (
-              <InputSelectField
-                field={field}
-                label="Trait"
-                options={keywordList}
-                onChange={() => {
-                  setCategory(field.state.value);
-                }}
-              />
-            )}
-          </searchForm.Field>
+          <InputSelectField
+            label="Trait"
+            options={keywordList}
+            value={category}
+            onChange={(value) => {
+              setCategory(value);
+            }}
+          />
         </div>
-        <searchForm.Field name="nameQuery">
-          {(field) => (
-            <InputField
-              label="Search by Name"
-              field={field}
-              onChange={() => {
-                filterByNameQuery(field.state.value);
-              }}
-            />
-          )}
-        </searchForm.Field>
+        <InputField
+          label="Search by Name"
+          value={nameQuery}
+          onChange={(value) => {
+            filterByNameQuery(value);
+          }}
+        />
         <div className="flex items-end gap-4">
-          <searchForm.Field name="descriptionQuery">
-            {(field) => (
-              <InputField
-                className="w-full"
-                label="Search by Description"
-                field={field}
-                onChange={() => {
-                  filterByDescriptionQuery(field.state.value);
-                }}
-              />
-            )}
-          </searchForm.Field>
+          <InputField
+            label="Search by Description"
+            value={descriptionQuery}
+            onChange={(value) => {
+              filterByDescriptionQuery(value);
+            }}
+          />
           {!mobile && (
             <>
               <button
@@ -243,10 +214,9 @@ const CodexSearch = () => {
             className="text-accent bg-tertiary shadow-color group z-10 grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
             onClick={(e) => {
               e.preventDefault();
-              searchForm.reset();
               setCategory('');
-              setNameQuery(null);
-              setDescriptionQuery(null);
+              setNameQuery('');
+              setDescriptionQuery('');
             }}
           >
             <Icon
@@ -333,7 +303,6 @@ const CodexSearch = () => {
                     <ConditionCard
                       key={'condition' + index}
                       condition={condition}
-                      mode="codex"
                     />
                   );
                 })}

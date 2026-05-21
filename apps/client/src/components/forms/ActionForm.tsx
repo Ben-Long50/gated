@@ -44,7 +44,11 @@ const ActionForm = () => {
       <ArrowHeader2 title="Action Information" />
       <actionForm.Field name="name">
         {(field) => (
-          <InputField className="grow" label="Action name" field={field} />
+          <InputField
+            label="Action name"
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
+          />
         )}
       </actionForm.Field>
       <actionForm.Field name="actionType">
@@ -52,7 +56,8 @@ const ActionForm = () => {
           <InputSelectField
             options={['action', 'extendedAction', 'reaction', 'passive']}
             label="Action Type"
-            field={field}
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
           />
         )}
       </actionForm.Field>
@@ -75,7 +80,8 @@ const ActionForm = () => {
                         <InputSelectField
                           options={Object.keys(emptyAttributeTree)}
                           label="Attribute"
-                          field={field}
+                          value={field.state.value}
+                          onChange={(value) => field.handleChange(value)}
                         />
                       )}
                     </actionForm.Field>
@@ -95,7 +101,8 @@ const ActionForm = () => {
                                     : []
                                 }
                                 label="Skill"
-                                field={field}
+                                value={field.state.value}
+                                onChange={(value) => field.handleChange(value)}
                               />
                             );
                           }}
@@ -138,7 +145,8 @@ const ActionForm = () => {
                           <InputSelectField
                             options={['attack', 'movement', 'upkeep', 'unique']}
                             label="Action Subtype"
-                            field={subField}
+                            value={field.state.value}
+                            onChange={(value) => field.handleChange(value)}
                           />
                         );
                       }}
@@ -184,7 +192,8 @@ const ActionForm = () => {
                       'session',
                     ]}
                     label="Effect Duration"
-                    field={field}
+                    value={field.state.value}
+                    onChange={(value) => field.handleChange(value)}
                   />
                 )}
               </actionForm.Field>
@@ -200,7 +209,8 @@ const ActionForm = () => {
                     className="w-full max-w-28"
                     type="number"
                     label="Dur. Value"
-                    field={field}
+                    value={field.state.value}
+                    onChange={(value) => field.handleChange(value)}
                   />
                 )}
               </actionForm.Field>
@@ -234,7 +244,8 @@ const ActionForm = () => {
                       'session',
                     ]}
                     label="Cooldown Duration"
-                    field={field}
+                    value={field.state.value}
+                    onChange={(value) => field.handleChange(value)}
                   />
                 )}
               </actionForm.Field>
@@ -250,7 +261,8 @@ const ActionForm = () => {
                     className="w-full max-w-28"
                     type="number"
                     label="Cd. Value"
-                    field={field}
+                    value={field.state.value}
+                    onChange={(value) => field.handleChange(value)}
                   />
                 )}
               </actionForm.Field>
@@ -280,70 +292,70 @@ const ActionForm = () => {
         <actionForm.Field name="costs.currentActions">
           {(field) => (
             <InputField
-              className="grow"
               type="number"
               label="Actions"
-              field={field}
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
             />
           )}
         </actionForm.Field>
         <actionForm.Field name="costs.currentReactions">
           {(field) => (
             <InputField
-              className="grow"
               type="number"
               label="Reactions"
-              field={field}
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
             />
           )}
         </actionForm.Field>
         <actionForm.Field name="costs.currentPower">
           {(field) => (
             <InputField
-              className="grow"
               type="number"
               label="Power"
-              field={field}
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
             />
           )}
         </actionForm.Field>
         <actionForm.Field name="costs.currentHealth">
           {(field) => (
             <InputField
-              className="grow"
               type="number"
               label="Health"
-              field={field}
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
             />
           )}
         </actionForm.Field>
         <actionForm.Field name="costs.currentSanity">
           {(field) => (
             <InputField
-              className="grow"
               type="number"
               label="Sanity"
-              field={field}
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
             />
           )}
         </actionForm.Field>
         <actionForm.Field name="costs.wyrmShells">
           {(field) => (
             <InputField
-              className="grow"
               type="number"
               label="Wyrm Shells"
-              field={field}
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
             />
           )}
         </actionForm.Field>
         <actionForm.Field name="costs.currentAmmoCount">
           {(field) => (
             <InputField
-              className="grow"
               type="number"
               label="Ammunition"
-              field={field}
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
             />
           )}
         </actionForm.Field>

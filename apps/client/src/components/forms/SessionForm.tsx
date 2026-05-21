@@ -42,11 +42,21 @@ const SessionForm = () => {
       <ArrowHeader2 title="Session Information" />
       <sessionForm.Field name="name">
         {(field) => (
-          <InputField className="grow" label="Session Name" field={field} />
+          <InputField
+            label="Session Name"
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
+          />
         )}
       </sessionForm.Field>
       <sessionForm.Field name="location">
-        {(field) => <InputField label="Session Location" field={field} />}
+        {(field) => (
+          <InputField
+            label="Session Location"
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
+          />
+        )}
       </sessionForm.Field>
       <PictureField
         form={sessionForm}

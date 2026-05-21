@@ -108,12 +108,10 @@ const CharacterForm = () => {
       <characterForm.Field name="campaignId">
         {(field) => (
           <InputSelectField
-            field={field}
             label="Campaign"
-            options={campaigns}
-            onChange={(campaign) => {
-              field.handleChange(campaign.id);
-            }}
+            options={campaigns || []}
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value.id)}
           />
         )}
       </characterForm.Field>
@@ -123,32 +121,60 @@ const CharacterForm = () => {
       <div className="flex w-full flex-col gap-8">
         <div className="grid w-full grid-cols-2 gap-4">
           <characterForm.Field name="firstName">
-            {(field) => <InputField label="First name" field={field} />}
+            {(field) => (
+              <InputField
+                label="First name"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
+            )}
           </characterForm.Field>
           <characterForm.Field name="lastName">
-            {(field) => <InputField label="Last name" field={field} />}
+            {(field) => (
+              <InputField
+                label="Last name"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
+            )}
           </characterForm.Field>
           <characterForm.Field name="height">
             {(field) => (
-              <InputField type="number" label="Height (in)" field={field} />
+              <InputField
+                type="number"
+                label="Height (in)"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
             )}
           </characterForm.Field>
           <characterForm.Field name="weight">
             {(field) => (
-              <InputField type="number" label="Weight (lbs)" field={field} />
+              <InputField
+                type="number"
+                label="Weight (lbs)"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
             )}
           </characterForm.Field>
           <characterForm.Field name="age">
             {(field) => (
-              <InputField type="number" label="Age (yrs)" field={field} />
+              <InputField
+                type="number"
+                label="Age (yrs)"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
             )}
           </characterForm.Field>
           <characterForm.Field name="sex">
             {(field) => (
               <InputSelectField
-                field={field}
                 label="Sex"
                 options={['male', 'female']}
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
               />
             )}
           </characterForm.Field>
@@ -227,20 +253,20 @@ const CharacterForm = () => {
               <characterForm.Field name="stats.permanentInjuries">
                 {(field) => (
                   <InputField
-                    className="w-full"
                     type="number"
                     label="Max Injuries"
-                    field={field}
+                    value={field.state.value}
+                    onChange={(value) => field.handleChange(value)}
                   />
                 )}
               </characterForm.Field>
               <characterForm.Field name="stats.permanentInsanities">
                 {(field) => (
                   <InputField
-                    className="w-full"
                     type="number"
                     label="Max Insanities"
-                    field={field}
+                    value={field.state.value}
+                    onChange={(value) => field.handleChange(value)}
                   />
                 )}
               </characterForm.Field>

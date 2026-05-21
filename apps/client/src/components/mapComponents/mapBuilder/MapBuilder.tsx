@@ -571,12 +571,22 @@ const MapBuilder = () => {
             >
               <mapForm.Field name="width">
                 {(field) => (
-                  <InputField field={field} type="number" label="Map Width" />
+                  <InputField
+                    type="number"
+                    label="Map Width"
+                    value={field.state.value}
+                    onChange={(value) => field.handleChange(value)}
+                  />
                 )}
               </mapForm.Field>
               <mapForm.Field name="height">
                 {(field) => (
-                  <InputField field={field} type="number" label="Map Height" />
+                  <InputField
+                    type="number"
+                    label="Map Height"
+                    value={field.state.value}
+                    onChange={(value) => field.handleChange(value)}
+                  />
                 )}
               </mapForm.Field>
               <mapForm.Field name="baseColor">

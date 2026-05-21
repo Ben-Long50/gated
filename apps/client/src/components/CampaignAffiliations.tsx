@@ -63,6 +63,7 @@ const CampaignAffiliations = () => {
                   a.firstName.localeCompare(b.firstName),
                 ) || []),
               ]}
+              value={entity}
               onChange={(entity) => setEntity(entity)}
             />
             <button

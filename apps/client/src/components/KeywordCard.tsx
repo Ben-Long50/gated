@@ -1,9 +1,9 @@
-import { ReactNode, useContext } from 'react';
+import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import { Keyword, KeywordReference } from 'src/types/keyword';
 import ItemCardSmall from './ItemCardSmall';
-import InputFieldBasic from './InputFieldBasic';
+import InputField from './InputField';
 import { FieldApi } from '@tanstack/react-form';
 
 const KeywordCard = ({
@@ -45,9 +45,8 @@ const KeywordCard = ({
                 onClick={(e) => e.stopPropagation()}
               >
                 {activeKeyword && (
-                  <InputFieldBasic
+                  <InputField
                     className="max-w-20 shrink-0"
-                    name="value"
                     type="number"
                     label="Value"
                     value={activeKeyword.value}

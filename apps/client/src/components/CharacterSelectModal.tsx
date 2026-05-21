@@ -3,9 +3,8 @@ import BtnRect from './buttons/BtnRect';
 import Modal from './modals/Modal';
 import useCharacters from 'src/hooks/useCharacters';
 import Loading from './Loading';
-import InputFieldBasic from './InputFieldBasic';
+import InputField from './InputField';
 import { Character } from 'src/types/character';
-import CharacterCardSmall from './CharacterCardSmall';
 import Divider from './Divider';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import CharacterCardXSmall from './CharacterCardXSmall';
@@ -20,7 +19,8 @@ const CharacterSelectModal = () => {
 
   const {
     characters,
-    filterByQuery,
+    query,
+    setQuery,
     isLoading: charactersLoading,
   } = useCharacters(
     campaign?.characters.map((character) => character.id) || [],
@@ -40,11 +40,10 @@ const CharacterSelectModal = () => {
       }
     >
       <h1>Select Session Characters</h1>
-      <InputFieldBasic
-        className="w-full"
+      <InputField
         label="Search Characters"
-        type="string"
-        onChange={(value) => filterByQuery(value)}
+        value={query}
+        onChange={(value) => setQuery(value)}
       />
       <Divider className="col-span-3 opacity-50" />
       <div className="flex w-full flex-col gap-4">

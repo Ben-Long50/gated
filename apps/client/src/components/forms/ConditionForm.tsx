@@ -38,7 +38,11 @@ const ConditionForm = () => {
         }}
       >
         {(field) => (
-          <InputField className="grow" label="Condition Name" field={field} />
+          <InputField
+            label="Condition Name"
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
+          />
         )}
       </conditionForm.Field>
       <conditionForm.Field
@@ -50,10 +54,10 @@ const ConditionForm = () => {
       >
         {(field) => (
           <InputSelectField
-            className="grow"
             label="Condition Type"
-            field={field}
             options={['character', 'item']}
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
           />
         )}
       </conditionForm.Field>

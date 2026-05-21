@@ -1,11 +1,10 @@
-import { useContext, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import usePerksQuery from './usePerksQuery/usePerksQuery';
-import { AuthContext } from '../contexts/AuthContext';
 import { Perk, PerkTree } from '../types/perk';
 import { AttributeTree } from '../types/attributeTree';
 
 const usePerks = (attributeTree?: AttributeTree) => {
-  const { data: perks, isLoading, isPending } = usePerksQuery();
+  const { data: perks, isLoading } = usePerksQuery();
 
   const [query, setQuery] = useState('');
   const [attributeQuery, setAttributeQuery] = useState('');
@@ -111,34 +110,18 @@ const usePerks = (attributeTree?: AttributeTree) => {
     [perkTree, attributeQuery, skillQuery, query],
   );
 
-  const filterPerks = (query: string) => {
-    setQuery(query);
-  };
-
-  const filterByAttribute = (newAttribute: string) => {
-    setAttributeQuery(newAttribute);
-  };
-
-  const filterBySkill = (newSkill: string) => {
-    setSkillQuery(newSkill);
-  };
-
-  const resetPerks = () => {
-    setAttributeQuery('');
-    setQuery('');
-  };
-
   return {
     perks,
     perkTree,
-    emptyTree,
     filteredPerkTree,
-    filterPerks,
-    filterByAttribute,
-    filterBySkill,
-    resetPerks,
+    emptyTree,
+    query,
+    attributeQuery,
+    skillQuery,
+    setQuery,
+    setAttributeQuery,
+    setSkillQuery,
     isLoading,
-    isPending,
   };
 };
 

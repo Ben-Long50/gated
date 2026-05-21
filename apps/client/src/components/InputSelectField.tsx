@@ -1,103 +1,43 @@
-import {
-  RefObject,
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ThemeContainer from './ThemeContainer';
-import { ThemeContext } from '../contexts/ThemeContext';
-import { FieldApi } from '@tanstack/react-form';
-import { Action } from 'src/types/action';
 import { mdiChevronDown, mdiSync } from '@mdi/js';
 import Icon from '@mdi/react';
-import InputFieldBasic from './InputFieldBasic';
+import InputField from './InputField';
 import Divider from './Divider';
-import { Character } from 'src/types/character';
-import { Keyword } from 'src/types/keyword';
 import BtnIcon from './buttons/BtnIcon';
-import { Campaign } from 'src/types/campaign';
 import constructName from 'src/utils/constructName';
-
-type onChangeArg = Character | Action | Keyword | Campaign | string;
+import useInputState from 'src/hooks/useInputState';
 
 const InputSelectField = ({
-  ref,
-  field,
-  onChange,
-  label,
-  className,
   options,
-  initialValue,
+  label,
+  value,
+  onChange,
+  errors,
+  className,
   reverse,
 }: {
-  ref?: RefObject<HTMLDivElement>;
-  field?: FieldApi;
-  label: string;
   options: any[];
-  initialValue?: string;
-  onChange?: (value: onChangeArg) => void;
+  label: string;
+  value: string;
+  onChange: (value: any) => void;
+  errors?: string[];
   className?: string;
   reverse?: boolean;
 }) => {
-  const [fieldColor, setFieldColor] = useState({
-    border: 'transparent',
-    background: 'bg-zinc-300 dark:bg-zinc-700',
-  });
-  const [focus, setFocus] = useState(false);
-  const { accentPrimary, errorPrimary } = useContext(ThemeContext);
+  const { fieldState, focus, setFocus } = useInputState(value, errors);
   const [query, setQuery] = useState('');
-  const [value, setValue] = useState(field ? field.state.value : initialValue);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const selectRef = useRef<HTMLDivElement>(null);
 
-  const handleValue = (newValue: onChangeArg) => {
+  const handleValue = (newValue: any) => {
     if (inputRef.current) {
       inputRef.current.value = newValue;
-      setValue(newValue);
-      if (onChange) {
-        onChange(newValue);
-      } else if (field) {
-        field.handleChange(newValue);
-      }
+      onChange(newValue);
 
       setFocus(false);
-      if (inputRef.current) {
-        inputRef.current.blur();
-      }
-    }
-  };
-
-  const name = field ? field.name : label.toLowerCase();
-  const errors = field ? field.state.meta.errors : [];
-  const isPristine = field ? field.state.meta.isPristine : false;
-  const isTouched = field
-    ? field.state.meta.isTouched
-    : false || value || focus;
-
-  const handleBorder = () => {
-    if (isTouched || (focus && errors?.length === 0)) {
-      setFieldColor({
-        border: accentPrimary,
-        background: 'bg-primary',
-      });
-    } else if (!value && errors?.length === 0 && !focus) {
-      setFieldColor({
-        border: 'transparent',
-        background: 'bg-zinc-300 dark:bg-zinc-700',
-      });
-    } else if (errors?.length > 0) {
-      setFieldColor({
-        border: errorPrimary,
-        background: 'bg-primary',
-      });
-    } else if (value) {
-      setFieldColor({
-        border: accentPrimary,
-        background: 'bg-primary',
-      });
+      inputRef.current.blur();
     }
   };
 
@@ -113,10 +53,6 @@ const InputSelectField = ({
     return () => document.removeEventListener('click', minimizeSelect);
   }, []);
 
-  useEffect(() => {
-    handleBorder();
-  }, [focus, field?.state]);
-
   const filteredOptions =
     options?.filter((entity) =>
       constructName(entity).toLowerCase().includes(query.toLowerCase()),
@@ -124,11 +60,7 @@ const InputSelectField = ({
 
   let displayValue =
     typeof value === 'number'
-      ? constructName(
-          options.find(
-            (option) => option.id === field.state.value || option.id === value,
-          ),
-        )
+      ? constructName(options.find((option) => option.id === value))
       : constructName(value);
 
   return (
@@ -139,44 +71,36 @@ const InputSelectField = ({
       <ThemeContainer
         className="grow"
         chamfer="small"
-        borderColor={fieldColor.border}
+        borderColor={fieldState.border}
       >
         <input
           ref={inputRef}
-          className={`${fieldColor.border} ${fieldColor.background} text-secondary timing relative w-full rounded-none pb-2 pl-4 pr-2 pt-3 outline-none clip-4`}
-          name={name}
-          id={name}
+          className={`${className} ${fieldState.field} text-secondary timing focus:bg-primary scrollbar-secondary-2 h-full min-h-[250px] w-full grow rounded-none pb-2 pl-4 pt-3 text-xl outline-none clip-4`}
           value={displayValue}
           onFocus={() => {
             setFocus(true);
           }}
-          onChange={() => {
-            handleBorder();
-          }}
           readOnly
         />
         <label
-          htmlFor={name}
-          className={` ${errors?.length > 0 ? 'text-error' : ''} ${isTouched || value ? 'bg-primary text-accent -translate-y-6' : 'text-gray-400'} timing absolute left-5 top-3.5 transform cursor-text transition-all`}
+          className={` ${fieldState.label} timing absolute left-5 top-3.5 transform cursor-text`}
         >
           {label}
         </label>
         <div
-          ref={ref}
           className={`${focus ? 'max-h-96 py-3' : 'max-h-0'} ${!reverse ? 'top-full translate-y-2' : 'bottom-full -translate-y-5'} bg-secondary timing absolute left-0 z-10 flex w-full flex-col items-start overflow-hidden rounded-md px-3 shadow-lg shadow-zinc-950`}
         >
           <div className="flex w-full items-center gap-4">
-            <InputFieldBasic
-              className="w-full"
+            <InputField
               label="Search"
               value={query}
-              onChange={(value: string) => setQuery(value)}
+              onChange={(value) => setQuery(value)}
             />
             <BtnIcon
               path={mdiSync}
               active={true}
               onClick={() => {
-                handleValue('');
+                setQuery('');
               }}
             />
           </div>
@@ -212,7 +136,6 @@ const InputSelectField = ({
           />
         </button>
       </ThemeContainer>
-
       {errors &&
         errors?.map((error: string) => (
           <p

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Character } from 'src/types/character';
 import useCharacterQueries from './useCharactersQuery/useCharacterQueries';
+import { set } from 'date-fns';
 
 const useCharacters = (
   characterIds: number[],
@@ -42,23 +43,11 @@ const useCharacters = (
         return characterName?.toLowerCase().includes(query.toLowerCase());
       }) ?? []);
 
-  const filterByQuery = (query: string) => {
-    setQuery(query);
-  };
-
-  const filterByCampaign = (campaignId: number | null) => {
-    setCampaignId(campaignId);
-  };
-
-  const resetList = () => {
-    setQuery('');
-  };
-
   return {
     characters: filteredCharacters,
-    filterByQuery,
-    filterByCampaign,
-    resetList,
+    query,
+    setQuery,
+    setCampaignId,
     isLoading: charactersLoading,
   };
 };

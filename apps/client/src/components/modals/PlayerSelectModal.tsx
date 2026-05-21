@@ -2,7 +2,7 @@ import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { Fragment } from 'react/jsx-runtime';
 import Modal from './Modal';
 import BtnRect from '../buttons/BtnRect';
-import InputFieldBasic from '../InputFieldBasic';
+import InputField from '../InputField';
 import Divider from '../Divider';
 import { User } from 'src/types/user';
 import useUsersByUsernameQuery from 'src/hooks/user hooks/useUsersByUsernameQuery';
@@ -32,11 +32,9 @@ const PlayerSelectModal = () => {
       }
     >
       <h1>Select Campaign Players</h1>
-      <InputFieldBasic
-        className="w-full"
+      <InputField
         label="Search Players"
         value={query}
-        type="string"
         onChange={(value) => setQuery(value)}
       />
       <div className="grid w-full grid-cols-[8fr_1fr_1fr] items-center gap-x-4">

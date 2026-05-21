@@ -21,24 +21,12 @@ const useConditions = (conditionList?: Condition[]) => {
           condition.name.toLowerCase().includes(query.toLowerCase()),
         ) ?? []);
 
-  const filterByQuery = (query: string) => {
-    setQuery(query);
-  };
-
-  const filterByCategory = (query: string) => {
-    setCategory(query);
-  };
-
-  const resetList = () => {
-    setQuery('');
-    setCategory('');
-  };
-
   return {
     filteredConditions,
-    filterByQuery,
-    filterByCategory,
-    resetList,
+    query,
+    category,
+    setQuery,
+    setCategory,
     isLoading,
     isPending,
   };

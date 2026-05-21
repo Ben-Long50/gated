@@ -1,4 +1,3 @@
-import { useForm } from '@tanstack/react-form';
 import FormLayout from '../layouts/FormLayout';
 import InputField from './InputField';
 import useCreateErrorReportMutation from '../hooks/useCreateErrorReportMutation/useCreateErrorReportMutation';
@@ -27,7 +26,13 @@ const ErrorReport = () => {
                 value.length < 2 ? 'You gotta have a title' : undefined,
             }}
           >
-            {(field) => <InputField label="Title" field={field} />}
+            {(field) => (
+              <InputField
+                label="Title"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
+            )}
           </errorReportForm.Field>
           <errorReportForm.Field
             name="content"

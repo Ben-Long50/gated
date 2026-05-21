@@ -5,7 +5,6 @@ import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import AffiliationBar from '../AffiliationBar';
 import { Faction } from 'src/types/faction';
 import useCreateAffiliationMutation from '../../hooks/useCreateAffiliationMutation/useCreateAffiliationMutation';
-import InputSelectField from '../InputSelectField';
 import { LayoutContext } from '../../contexts/LayoutContext';
 import useAffiliationQuery from '../../hooks/useAffiliationQuery/useAffiliationQuery';
 import useDeleteAffiliationMutation from '../../hooks/useDeleteAffiliationMutation/useDeleteAffiliationMutation';
@@ -16,8 +15,6 @@ import useCharacterQueries from 'src/hooks/useCharactersQuery/useCharacterQuerie
 import useFactionQueries from 'src/hooks/faction hooks/useFactionQueries';
 import { Gang } from 'src/types/gang';
 import { Character } from 'src/types/character';
-import { useStore } from '@tanstack/react-form';
-import CharacterCardXSmall from '../CharacterCardXSmall';
 import BtnAuth from '../buttons/BtnAuth';
 import EntityCard from '../EntityCard';
 

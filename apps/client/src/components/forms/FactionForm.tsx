@@ -53,7 +53,11 @@ const FactionForm = () => {
         }}
       >
         {(field) => (
-          <InputField className="grow" label="Faction name" field={field} />
+          <InputField
+            label="Faction name"
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
+          />
         )}
       </factionForm.Field>
       <PictureField

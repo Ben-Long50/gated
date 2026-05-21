@@ -19,10 +19,11 @@ const Conditions = ({
 }) => {
   const {
     filteredConditions: conditions,
+    query,
+    category,
+    setQuery,
+    setCategory,
     isLoading,
-    filterByCategory,
-    filterByQuery,
-    resetList,
   } = useConditions(conditionList);
 
   if (isLoading) {
@@ -37,24 +38,26 @@ const Conditions = ({
           <InputSelectField
             label="Condition Type"
             options={['character', 'item']}
+            value={category}
             onChange={(value) => {
-              filterByCategory(value);
+              setCategory(value);
             }}
           />
         </div>
         <div className="flex items-end gap-4">
           <InputField
-            className="w-full"
             label="Search Conditions"
-            onChange={(value: string) => {
-              filterByQuery(value);
+            value={query}
+            onChange={(value) => {
+              setQuery(value);
             }}
           />
           <button
             className="text-accent bg-tertiary shadow-color group grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
             onClick={(e) => {
               e.preventDefault();
-              resetList();
+              setQuery('');
+              setCategory('');
             }}
           >
             <Icon

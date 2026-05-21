@@ -187,9 +187,9 @@ const LevelNodeModal = () => {
       >
         {(field) => (
           <InputSelectField
-            field={field}
             label="Session"
             options={campaign?.sessions || []}
+            value={field.state.value}
             onChange={(value) => field.handleChange(value.id)}
           />
         )}

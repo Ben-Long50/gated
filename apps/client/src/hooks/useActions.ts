@@ -20,9 +20,7 @@ const useActions = (
 
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState(initialCategory || '');
-  // const [subCategory, setSubCategory] = useState(initialSubcategory || '');
-
-  const subCategory = initialSubcategory || '';
+  const [subCategory, setSubCategory] = useState(initialSubcategory || '');
 
   const filteredActions =
     category.length > 0
@@ -48,29 +46,14 @@ const useActions = (
             action.name.toLowerCase().includes(query.toLowerCase()),
           ) ?? []);
 
-  const filterByQuery = (query: string) => {
-    setQuery(query);
-  };
-
-  const filterByCategory = (category: string) => {
-    setCategory(category);
-  };
-
-  const filterBySubCategory = (subCategory: string) => {
-    setSubCategory(subCategory);
-  };
-
-  const resetList = () => {
-    setQuery('');
-  };
-
   return {
-    filteredActions,
+    actions: filteredActions,
+    query,
     category,
-    filterByQuery,
-    filterByCategory,
-    filterBySubCategory,
-    resetList,
+    subCategory,
+    setQuery,
+    setCategory,
+    setSubCategory,
     isLoading,
     isPending,
   };

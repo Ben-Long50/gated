@@ -39,7 +39,13 @@ const EventForm = () => {
             },
           }}
         >
-          {(field) => <InputField label="Event Name" field={field} />}
+          {(field) => (
+            <InputField
+              label="Event Name"
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
+            />
+          )}
         </eventForm.Field>
         <eventForm.Field
           name="description"

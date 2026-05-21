@@ -116,9 +116,9 @@ const ItemUpgradeForm = () => {
             >
               {(field) => (
                 <InputField
-                  className="grow"
-                  label={`Item Name`}
-                  field={field}
+                  label="Item Name"
+                  value={field.state.value}
+                  onChange={(value) => field.handleChange(value)}
                 />
               )}
             </itemUpgradeForm.Field>

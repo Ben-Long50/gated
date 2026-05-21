@@ -84,9 +84,10 @@ const CharacterAffiliations = () => {
             <searchForm.Field name="entity">
               {(field) => (
                 <InputSelectField
-                  field={field}
                   label="Select Entity"
                   options={otherEntities}
+                  value={field.state.value}
+                  onChange={(value) => field.handleChange(value)}
                 />
               )}
             </searchForm.Field>

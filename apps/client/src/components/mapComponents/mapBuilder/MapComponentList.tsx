@@ -9,7 +9,7 @@ import { useState } from 'react';
 import ArrowHeader3 from '../../ArrowHeader3';
 import Divider from '../../Divider';
 import { capitalCase } from 'change-case';
-import InputFieldBasic from '../../InputFieldBasic';
+import InputField from '../../InputField';
 import BtnRect from '../../buttons/BtnRect';
 
 const MapComponentList = ({
@@ -37,7 +37,7 @@ const MapComponentList = ({
   ) => void;
 }) => {
   const [editId, setEditId] = useState<number | null>(null);
-  const [newComponentName, setNewComponentName] = useState<string | null>(null);
+  const [newComponentName, setNewComponentName] = useState<string>('');
 
   const activeLayer = layers.find((layer) => layer.id === activeLayerId);
 
@@ -66,11 +66,9 @@ const MapComponentList = ({
             >
               {editId === component.id ? (
                 <>
-                  <InputFieldBasic
-                    className="w-full"
+                  <InputField
                     label="Component Name"
-                    type="string"
-                    value={component.name}
+                    value={component.name || newComponentName}
                     onChange={(value) => setNewComponentName(value)}
                   />
                   <button

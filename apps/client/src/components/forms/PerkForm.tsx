@@ -39,7 +39,13 @@ const PerkForm = () => {
               : undefined,
         }}
       >
-        {(field) => <InputField label="Perk name" field={field} />}
+        {(field) => (
+          <InputField
+            label="Perk Name"
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
+          />
+        )}
       </perkForm.Field>
       <perkForm.Field
         name="description"

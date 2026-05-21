@@ -1,6 +1,5 @@
-import { useContext, useEffect, useState } from 'react';
 import ThemeContainer from './ThemeContainer';
-import { ThemeContext } from '../contexts/ThemeContext';
+import useInputState from 'src/hooks/useInputState';
 
 const TextAreaField = ({
   label,
@@ -15,44 +14,7 @@ const TextAreaField = ({
   errors?: string[];
   className?: string;
 }) => {
-  const { accentPrimary, errorPrimary } = useContext(ThemeContext);
-
-  const activeState = {
-    border: accentPrimary,
-    field: 'bg-primary',
-    label: 'bg-primary text-accent -translate-y-6',
-  };
-  const inactiveState = {
-    border: 'transparent',
-    field: 'bg-zinc-300 dark:bg-zinc-700',
-    label: 'text-gray-400',
-  };
-  const errorState = {
-    border: errorPrimary,
-    field: 'bg-primary',
-    label: 'text-error',
-  };
-
-  const [fieldState, setFieldState] = useState({
-    border: 'transparent',
-    field: 'bg-zinc-300 dark:bg-zinc-700',
-    label: 'text-tertiary',
-  });
-  const [focus, setFocus] = useState(false);
-
-  const handleBorder = () => {
-    if (errors && errors.length > 0) {
-      setFieldState(errorState);
-    } else if (focus || value.length > 0) {
-      setFieldState(activeState);
-    } else {
-      setFieldState(inactiveState);
-    }
-  };
-
-  useEffect(() => {
-    handleBorder();
-  }, [focus, value]);
+  const { fieldState, setFocus } = useInputState(value, errors);
 
   return (
     <div className="h-full min-h-[250px] grow">

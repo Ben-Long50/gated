@@ -39,7 +39,11 @@ const GangForm = () => {
       <ArrowHeader2 title="Gang Information" />
       <gangForm.Field name="name">
         {(field) => (
-          <InputField className="grow" label="Gang Name" field={field} />
+          <InputField
+            label="Gang Name"
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
+          />
         )}
       </gangForm.Field>
       <PictureField
@@ -56,11 +60,10 @@ const GangForm = () => {
         <gangForm.Field name="factionId" mode="array">
           {(field) => (
             <InputSelectField
-              className="w-full"
               label="Factions"
-              field={field}
               options={campaign?.factions || []}
-              onChange={(faction) => field.handleChange(faction.id)}
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value.id)}
             />
           )}
         </gangForm.Field>

@@ -1,8 +1,6 @@
 import { useContext, useState } from 'react';
-import ThemeContainer from './ThemeContainer';
-import { ThemeContext } from '../contexts/ThemeContext';
 import InputField from './InputField';
-import { FieldApi, useForm } from '@tanstack/react-form';
+import { FieldApi } from '@tanstack/react-form';
 import Loading from './Loading';
 import useBaseItems from '../hooks/useBaseItems';
 import { Item } from 'src/types/item';
@@ -27,7 +25,6 @@ const Items = ({
   toggleFormLink?: (itemId: number) => void;
 }) => {
   const { mobile } = useContext(LayoutContext);
-  const { accentPrimary } = useContext(ThemeContext);
   const [searchParams, setSearchParams] = useSearchParams();
 
   const { categorizedShopItems } = useOutletContext() || {};
@@ -45,33 +42,22 @@ const Items = ({
   const itemCategory = mode && mode === 'form' ? linkCategory : category;
 
   const {
-    filteredItems: items,
-    filterByCategory,
-    filterByPrice,
-    filterByQuery,
-    filterByRarity,
-    filteredKeywords,
+    items,
+    keywords,
+    query,
+    category: filterCategory,
+    priceFilter,
+    rarity,
+    setQuery,
+    setItemCategory,
+    setPriceFilter,
+    setRarity,
     isLoading,
   } = useBaseItems({
     category: itemCategory,
     itemList: categorizedShopItems || itemList || undefined,
     includedKeywords: include.length > 0 ? include : undefined,
     excludedKeywords: exclude.length > 0 ? exclude : undefined,
-  });
-
-  const searchForm = useForm({
-    defaultValues: {
-      category: '',
-      query: '',
-      priceFilter: '',
-      rarity: '',
-    },
-    onSubmit: () => {
-      filterByCategory('');
-      filterByPrice('');
-      filterByRarity('');
-      filterByQuery('');
-    },
   });
 
   return (
@@ -112,68 +98,43 @@ const Items = ({
       )}
       <div className="flex w-full flex-col gap-4">
         <div className="grid w-full grid-cols-3 items-center justify-between gap-4">
-          <searchForm.Field name="category">
-            {(field) => (
-              <InputSelectField
-                field={field}
-                label="Trait"
-                options={filteredKeywords || []}
-                onChange={() => {
-                  filterByCategory(field.state.value);
-                }}
-              />
-            )}
-          </searchForm.Field>
-          <searchForm.Field name="priceFilter">
-            {(field) => (
-              <InputSelectField
-                className="w-full"
-                label="Price"
-                field={field}
-                options={['lowToHigh', 'highToLow']}
-                onChange={() => {
-                  filterByPrice(field.state.value);
-                }}
-              />
-            )}
-          </searchForm.Field>
-          <searchForm.Field name="rarity">
-            {(field) => (
-              <InputSelectField
-                className="w-full"
-                label={`Rarity`}
-                field={field}
-                options={[
-                  'common',
-                  'uncommon',
-                  'rare',
-                  'blackMarket',
-                  'artifact',
-                ]}
-                onChange={() => {
-                  filterByRarity(field.state.value);
-                }}
-              />
-            )}
-          </searchForm.Field>
+          <InputSelectField
+            label="Trait"
+            options={keywords || []}
+            value={filterCategory}
+            onChange={(value) => {
+              setItemCategory(value);
+            }}
+          />
+          <InputSelectField
+            label="Price"
+            options={['lowToHigh', 'highToLow']}
+            value={priceFilter}
+            onChange={(value) => {
+              setPriceFilter(value);
+            }}
+          />
+          <InputSelectField
+            label={`Rarity`}
+            options={['common', 'uncommon', 'rare', 'blackMarket', 'artifact']}
+            value={rarity}
+            onChange={(value) => {
+              setRarity(value);
+            }}
+          />
         </div>
         <div className="flex items-center gap-4">
-          <searchForm.Field name="query">
-            {(field) => (
-              <InputField
-                className="w-full"
-                label={
-                  itemCategory
-                    ? `Search ${capitalCase(itemCategory)}`
-                    : 'Search All'
-                }
-                field={field}
-                onChange={() => {
-                  filterByQuery(field.state.value);
-                }}
-              />
-            )}
-          </searchForm.Field>
+          <InputField
+            label={
+              itemCategory
+                ? `Search ${capitalCase(itemCategory)}`
+                : 'Search All'
+            }
+            value={query}
+            onChange={(value) => {
+              setQuery(value);
+            }}
+          />
           {!mobile && (
             <>
               <button
@@ -206,8 +167,10 @@ const Items = ({
             className="text-accent bg-tertiary shadow-color group grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
             onClick={(e) => {
               e.preventDefault();
-              searchForm.reset();
-              searchForm.handleSubmit();
+              setQuery('');
+              setItemCategory(category);
+              setPriceFilter('');
+              setRarity('');
             }}
           >
             <Icon

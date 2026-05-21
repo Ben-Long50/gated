@@ -198,7 +198,8 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
           <InputSelectField
             label="Action Category"
             options={['attack', 'movement', 'unique']}
-            field={field}
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
           />
         )}
       </actionForm.Field>
@@ -212,9 +213,10 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
       >
         {(field) => (
           <InputSelectField
-            field={field}
             label="Actions"
             options={actionList}
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value.id)}
           />
         )}
       </actionForm.Field>
@@ -367,9 +369,10 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
                       <actionForm.Field name="extraDice">
                         {(field) => (
                           <InputField
-                            field={field}
                             label="Extra Dice"
                             type="number"
+                            value={field.state.value}
+                            onChange={(value) => field.handleChange(value)}
                           />
                         )}
                       </actionForm.Field>

@@ -36,7 +36,11 @@ const PatchNoteForm = () => {
           }}
         >
           {(field) => (
-            <InputField className="w-full" label="Title" field={field} />
+            <InputField
+              label="Title"
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
+            />
           )}
         </patchNoteForm.Field>
         <patchNoteForm.Field
@@ -51,7 +55,8 @@ const PatchNoteForm = () => {
               className="w-24"
               type="number"
               label="Version"
-              field={field}
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
             />
           )}
         </patchNoteForm.Field>

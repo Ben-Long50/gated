@@ -1,52 +1,25 @@
-import { useContext } from 'react';
-import ThemeContainer from './ThemeContainer';
-import { ThemeContext } from '../contexts/ThemeContext';
 import KeywordCard from './KeywordCard';
 import useKeywords from '../hooks/useKeywords';
 import InputField from './InputField';
-import { FieldApi, useForm } from '@tanstack/react-form';
+import { FieldApi } from '@tanstack/react-form';
 import Loading from './Loading';
 import ArrowHeader2 from './ArrowHeader2';
 import InputSelectField from './InputSelectField';
 import Icon from '@mdi/react';
 import { mdiSync } from '@mdi/js';
 import { KeywordReference } from 'src/types/keyword';
-import { useLocation } from 'react-router-dom';
 import { capitalCase } from 'change-case';
 import ExpandingList from './ExpandingList';
 import Divider from './Divider';
+import { useSearchParams } from 'react-router-dom';
 
-const Keywords = ({
-  title,
-  forcedMode,
-  field,
-}: {
-  title?: string;
-  forcedMode?: string;
-  field?: FieldApi;
-}) => {
-  const { accentPrimary } = useContext(ThemeContext);
-  const location = useLocation();
-  const parts = location.pathname.split('/').filter(Boolean);
-  const mode = forcedMode || parts[parts.length - 2];
+const Keywords = ({ field }: { field?: FieldApi }) => {
+  const { keywords, query, category, setQuery, setCategory, isLoading } =
+    useKeywords();
 
-  const {
-    filteredKeywords: keywords,
-    filterByQuery,
-    filterByCategory,
-    isLoading,
-  } = useKeywords();
+  const [searchParams] = useSearchParams();
 
-  const searchForm = useForm({
-    defaultValues: {
-      query: '',
-      category: '',
-    },
-    onSubmit: () => {
-      filterByQuery('');
-      filterByCategory('');
-    },
-  });
+  const mode = searchParams.get('mode');
 
   if (isLoading) {
     return <Loading />;
@@ -57,46 +30,38 @@ const Keywords = ({
       <div className="flex w-full flex-col gap-4">
         <div className="grid w-full grid-cols-2 gap-4 sm:gap-8">
           <ArrowHeader2 title="Filter Options" />
-          <searchForm.Field name="category">
-            {(field) => (
-              <InputSelectField
-                label="Trait Type"
-                options={[
-                  '',
-                  'weapon',
-                  'armor',
-                  'vehicle',
-                  'chromebits',
-                  'hardwired',
-                  'networked',
-                ]}
-                field={field}
-                onChange={() => {
-                  filterByCategory(field.state.value);
-                }}
-              />
-            )}
-          </searchForm.Field>
+
+          <InputSelectField
+            label="Trait Type"
+            options={[
+              '',
+              'weapon',
+              'armor',
+              'vehicle',
+              'chromebits',
+              'hardwired',
+              'networked',
+            ]}
+            value={category}
+            onChange={(value) => {
+              setCategory(value);
+            }}
+          />
         </div>
         <div className="flex items-end gap-4">
-          <searchForm.Field name="query">
-            {(field) => (
-              <InputField
-                className="w-full"
-                label="Search Traits"
-                field={field}
-                onChange={() => {
-                  filterByQuery(field.state.value);
-                }}
-              />
-            )}
-          </searchForm.Field>
+          <InputField
+            label="Search Traits"
+            value={query}
+            onChange={(value) => {
+              setQuery(value);
+            }}
+          />
           <button
             className="text-accent bg-tertiary shadow-color group z-10 grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
             onClick={(e) => {
               e.preventDefault();
-              searchForm.reset();
-              searchForm.handleSubmit();
+              setQuery('');
+              setCategory('');
             }}
           >
             <Icon
@@ -108,36 +73,31 @@ const Keywords = ({
       </div>
       <Divider />
       <div className="flex w-full flex-col gap-8">
-        <searchForm.Subscribe selector={(state) => state.values.category}>
-          {(category) => (
-            <ExpandingList
-              title={
-                category.length > 0
-                  ? capitalCase(category) + ' Traits'
-                  : 'All Traits'
-              }
-              className="flex flex-col gap-4 md:grid md:grid-cols-2"
-            >
-              {keywords?.map((keyword) => {
-                const activeKeyword =
-                  mode === 'form'
-                    ? field.state.value?.find(
-                        (item: KeywordReference) =>
-                          item.keywordId === keyword.id,
-                      )
-                    : null;
-                return (
-                  <KeywordCard
-                    mode={mode}
-                    keyword={keyword}
-                    activeKeyword={activeKeyword}
-                    field={field}
-                  />
-                );
-              })}
-            </ExpandingList>
-          )}
-        </searchForm.Subscribe>
+        <ExpandingList
+          title={
+            category.length > 0
+              ? capitalCase(category) + ' Traits'
+              : 'All Traits'
+          }
+          className="flex flex-col gap-4 md:grid md:grid-cols-2"
+        >
+          {keywords?.map((keyword) => {
+            const activeKeyword =
+              mode === 'form'
+                ? field.state.value?.find(
+                    (item: KeywordReference) => item.keywordId === keyword.id,
+                  )
+                : null;
+            return (
+              <KeywordCard
+                mode={mode}
+                keyword={keyword}
+                activeKeyword={activeKeyword}
+                field={field}
+              />
+            );
+          })}
+        </ExpandingList>
       </div>
     </>
   );

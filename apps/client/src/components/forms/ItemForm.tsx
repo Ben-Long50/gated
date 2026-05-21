@@ -46,7 +46,11 @@ const ItemForm = () => {
         <div className="flex w-full gap-4">
           <itemForm.Field name="name">
             {(field) => (
-              <InputField className="grow" label={'Item Name'} field={field} />
+              <InputField
+                label={'Item Name'}
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
             )}
           </itemForm.Field>
           <itemForm.Field name="price">
@@ -55,7 +59,8 @@ const ItemForm = () => {
                 className="max-w-28"
                 type="number"
                 label="Price"
-                field={field}
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
               />
             )}
           </itemForm.Field>
@@ -68,7 +73,8 @@ const ItemForm = () => {
                 className="w-full max-w-28"
                 type="number"
                 label="Grade"
-                field={field}
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
               />
             )}
           </itemForm.Field>
@@ -83,7 +89,6 @@ const ItemForm = () => {
                   {(subfield) => (
                     <InputSelectField
                       label="Item Type"
-                      field={subfield}
                       options={[
                         'weapon',
                         'armor',
@@ -95,6 +100,8 @@ const ItemForm = () => {
                         'reusable',
                         'consumable',
                       ]}
+                      value={subfield.state.value}
+                      onChange={(value) => subfield.handleChange(value)}
                     />
                   )}
                 </itemForm.Field>

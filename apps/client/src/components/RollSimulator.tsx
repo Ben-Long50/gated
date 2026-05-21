@@ -81,10 +81,10 @@ const RollSimulator = () => {
             {(field) => (
               <div className="flex w-full flex-col gap-8">
                 <InputSelectField
-                  field={field}
                   options={characters || []}
                   label="Character"
-                  onChange={(e) => field.handleChange(e.target.value.id)}
+                  value={field.state.value}
+                  onChange={(value) => field.handleChange(value.id)}
                 />
               </div>
             )}
@@ -98,8 +98,8 @@ const RollSimulator = () => {
                 <InputSelectField
                   options={actions || []}
                   label="Action"
-                  field={field}
-                  onChange={(e) => field.handleChange(e.target.value.id)}
+                  value={field.state.value}
+                  onChange={(value) => field.handleChange(value.id)}
                 />
               )}
             </rollForm.Field>
@@ -153,10 +153,11 @@ const RollSimulator = () => {
             <rollForm.Field name="extraDice">
               {(field) => (
                 <InputField
-                  className="w-full"
                   field={field}
                   type="number"
                   label="Extra Dice"
+                  value={field.state.value}
+                  onChange={(value) => field.handleChange(value)}
                 />
               )}
             </rollForm.Field>

@@ -56,7 +56,13 @@ const SignupForm = () => {
                   : undefined,
             }}
           >
-            {(field) => <InputField label="Username" field={field} />}
+            {(field) => (
+              <InputField
+                label="Username"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
+            )}
           </signupForm.Field>
           <signupForm.Field
             name="firstName"
@@ -67,7 +73,13 @@ const SignupForm = () => {
                   : undefined,
             }}
           >
-            {(field) => <InputField label="First Name" field={field} />}
+            {(field) => (
+              <InputField
+                label="First Name"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
+            )}
           </signupForm.Field>
           <signupForm.Field
             name="lastName"
@@ -78,7 +90,13 @@ const SignupForm = () => {
                   : undefined,
             }}
           >
-            {(field) => <InputField label="Last Name" field={field} />}
+            {(field) => (
+              <InputField
+                label="Last Name"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
+            )}
           </signupForm.Field>
           <signupForm.Field
             name="email"
@@ -89,7 +107,14 @@ const SignupForm = () => {
                   : 'Email must be in a valid email format',
             }}
           >
-            {(field) => <InputField label="Email" field={field} />}
+            {(field) => (
+              <InputField
+                label="Email"
+                type="email"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
+            )}
           </signupForm.Field>
           <signupForm.Field
             name="password"
@@ -101,7 +126,12 @@ const SignupForm = () => {
             }}
           >
             {(field) => (
-              <InputField type="password" label="Password" field={field} />
+              <InputField
+                type="password"
+                label="Password"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
             )}
           </signupForm.Field>
           <signupForm.Field
@@ -117,7 +147,8 @@ const SignupForm = () => {
               <InputField
                 type="password"
                 label="Confirm Password"
-                field={field}
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
               />
             )}
           </signupForm.Field>

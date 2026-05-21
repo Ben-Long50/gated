@@ -36,7 +36,11 @@ const AccountSettingsForm = () => {
         }}
       >
         {(field) => (
-          <InputField className="grow" label="Username" field={field} />
+          <InputField
+            label="Username"
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
+          />
         )}
       </accountSettingsForm.Field>
       <accountSettingsForm.Field
@@ -49,7 +53,11 @@ const AccountSettingsForm = () => {
         }}
       >
         {(field) => (
-          <InputField className="grow" label="First Name" field={field} />
+          <InputField
+            label="First Name"
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
+          />
         )}
       </accountSettingsForm.Field>
       <accountSettingsForm.Field
@@ -62,7 +70,11 @@ const AccountSettingsForm = () => {
         }}
       >
         {(field) => (
-          <InputField className="grow" label="Last Name" field={field} />
+          <InputField
+            label="Last Name"
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
+          />
         )}
       </accountSettingsForm.Field>
       <accountSettingsForm.Field
@@ -74,10 +86,10 @@ const AccountSettingsForm = () => {
       >
         {(field) => (
           <InputField
-            className="grow"
             label="Email"
             type="email"
-            field={field}
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
           />
         )}
       </accountSettingsForm.Field>
@@ -92,10 +104,10 @@ const AccountSettingsForm = () => {
       >
         {(field) => (
           <InputField
-            className="grow"
             label="Password"
             type="password"
-            field={field}
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
           />
         )}
       </accountSettingsForm.Field>

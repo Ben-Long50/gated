@@ -16,14 +16,21 @@ const MapSaveModal = () => {
         <form.Field name="type">
           {(field) => (
             <InputSelectField
-              field={field}
               label="Map Type"
               options={['map', 'component']}
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
             />
           )}
         </form.Field>
         <form.Field name="name">
-          {(field) => <InputField field={field} label="Name" />}
+          {(field) => (
+            <InputField
+              label="Name"
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
+            />
+          )}
         </form.Field>
         <form.Field name="description">
           {(field) => (

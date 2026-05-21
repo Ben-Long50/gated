@@ -12,8 +12,9 @@ const RarityField = ({ form }: { form: FormApi }) => {
       {(field) => (
         <InputSelectField
           label={'Item Rarity'}
-          field={field}
           options={['common', 'uncommon', 'rare', 'blackMarket', 'artifact']}
+          value={field.state.value}
+          onChange={(value) => field.handleChange(value)}
         />
       )}
     </form.Field>

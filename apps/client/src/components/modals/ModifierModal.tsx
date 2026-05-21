@@ -159,7 +159,10 @@ const ModifierModal = () => {
                                       className="max-w-80"
                                       type="number"
                                       label={`${capitalCase(stat)} Value`}
-                                      field={subfield}
+                                      value={subfield.state.value}
+                                      onChange={(value) =>
+                                        subfield.handleChange(value)
+                                      }
                                     />
                                   </div>
                                 ) : (
@@ -175,7 +178,6 @@ const ModifierModal = () => {
                                     <InputSelectField
                                       className="max-w-80"
                                       label={`${capitalCase(stat)} Value`}
-                                      field={subfield}
                                       options={[
                                         'chromebits',
                                         'hardwired',
@@ -194,6 +196,10 @@ const ModifierModal = () => {
                                         'subterfuge',
                                         'threshold',
                                       ]}
+                                      value={subfield.state.value}
+                                      onChange={(value) =>
+                                        subfield.handleChange(value)
+                                      }
                                     />
                                   </div>
                                 )

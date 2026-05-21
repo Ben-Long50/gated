@@ -112,13 +112,10 @@ const CharacterUpdateForm = () => {
       <characterUpdateForm.Field name="campaignId">
         {(field) => (
           <InputSelectField
-            className="w-full"
-            field={field}
             label="Campaign"
-            options={campaigns}
-            onChange={(campaign) => {
-              field.handleChange(campaign.id);
-            }}
+            options={campaigns || []}
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value.id)}
           />
         )}
       </characterUpdateForm.Field>
@@ -128,32 +125,60 @@ const CharacterUpdateForm = () => {
       <div className="flex w-full flex-col gap-8">
         <div className="grid w-full grid-cols-2 gap-4">
           <characterUpdateForm.Field name="firstName">
-            {(field) => <InputField label="First name" field={field} />}
+            {(field) => (
+              <InputField
+                label="First name"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
+            )}
           </characterUpdateForm.Field>
           <characterUpdateForm.Field name="lastName">
-            {(field) => <InputField label="Last name" field={field} />}
+            {(field) => (
+              <InputField
+                label="Last name"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
+            )}
           </characterUpdateForm.Field>
           <characterUpdateForm.Field name="height">
             {(field) => (
-              <InputField type="number" label="Height (in)" field={field} />
+              <InputField
+                type="number"
+                label="Height (in)"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
             )}
           </characterUpdateForm.Field>
           <characterUpdateForm.Field name="weight">
             {(field) => (
-              <InputField type="number" label="Weight (lbs)" field={field} />
+              <InputField
+                type="number"
+                label="Weight (lbs)"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
             )}
           </characterUpdateForm.Field>
           <characterUpdateForm.Field name="age">
             {(field) => (
-              <InputField type="number" label="Age (yrs)" field={field} />
+              <InputField
+                type="number"
+                label="Age (yrs)"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
             )}
           </characterUpdateForm.Field>
           <characterUpdateForm.Field name="sex">
             {(field) => (
               <InputSelectField
                 label="Sex"
-                field={field}
                 options={['male', 'female']}
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
               />
             )}
           </characterUpdateForm.Field>
@@ -350,10 +375,10 @@ const CharacterUpdateForm = () => {
         >
           {(field) => (
             <InputField
-              className="w-full"
               type="number"
               label="Max Injuries"
-              field={field}
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
             />
           )}
         </characterUpdateForm.Field>
@@ -370,10 +395,10 @@ const CharacterUpdateForm = () => {
         >
           {(field) => (
             <InputField
-              className="w-full"
               type="number"
               label="Max Insanities"
-              field={field}
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
             />
           )}
         </characterUpdateForm.Field>

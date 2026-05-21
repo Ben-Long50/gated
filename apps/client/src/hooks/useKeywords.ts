@@ -1,10 +1,9 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import useKeywordsQuery from './useKeywordsQuery/useKeywordsQuery';
-import { AuthContext } from '../contexts/AuthContext';
 import { Keyword } from '../types/keyword';
 
 const useKeywords = (initialCategory?: string) => {
-  const { data: keywords, isLoading, isPending } = useKeywordsQuery();
+  const { data: keywords, isLoading } = useKeywordsQuery();
 
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState(initialCategory || '');
@@ -20,26 +19,13 @@ const useKeywords = (initialCategory?: string) => {
           keyword.name.toLowerCase().includes(query.toLowerCase()),
         ) ?? []);
 
-  const filterByQuery = (query: string) => {
-    setQuery(query);
-  };
-
-  const filterByCategory = (category: string) => {
-    setCategory(category);
-  };
-
-  const resetList = () => {
-    setQuery('');
-  };
-
   return {
-    keywords,
-    filteredKeywords,
-    filterByQuery,
-    filterByCategory,
-    resetList,
+    keywords: filteredKeywords,
+    query,
+    category,
+    setQuery,
+    setCategory,
     isLoading,
-    isPending,
   };
 };
 

@@ -4,7 +4,7 @@ import Modal from './modals/Modal';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import useCharacters from 'src/hooks/useCharacters';
 import Loading from './Loading';
-import InputFieldBasic from './InputFieldBasic';
+import InputField from './InputField';
 import { Character } from 'src/types/character';
 import { Fragment } from 'react/jsx-runtime';
 import Divider from './Divider';
@@ -20,7 +20,8 @@ const GangCharacterSelectModal = () => {
 
   const {
     characters,
-    filterByQuery,
+    query,
+    setQuery,
     isLoading: charactersLoading,
   } = useCharacters(
     campaign?.characters.map((character) => character.id) || [],
@@ -40,11 +41,10 @@ const GangCharacterSelectModal = () => {
       }
     >
       <h1>Select Gang Characters</h1>
-      <InputFieldBasic
-        className="w-full"
+      <InputField
         label="Search Characters"
-        type="string"
-        onChange={(value) => filterByQuery(value)}
+        value={query}
+        onChange={(value) => setQuery(value)}
       />
       <div className="grid w-full grid-cols-[8fr_1fr_1fr] items-center gap-4">
         <h4>Character</h4>

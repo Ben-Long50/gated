@@ -4,7 +4,7 @@ import { AuthContext } from '../contexts/AuthContext';
 import { Condition } from 'src/types/condition';
 import ItemCardSmall from './ItemCardSmall';
 import { FormApi } from '@tanstack/react-form';
-import InputFieldBasic from './InputFieldBasic';
+import InputField from './InputField';
 
 const ConditionCard = ({
   condition,
@@ -41,13 +41,12 @@ const ConditionCard = ({
 
                   return (
                     conditionData && (
-                      <InputFieldBasic
+                      <InputField
                         className="max-w-20 shrink-0"
-                        name="value"
                         type="number"
                         label="Stacks"
                         value={conditionData.stacks}
-                        onChange={(stacks: number | string) => {
+                        onChange={(stacks) => {
                           const updatedValue = field.state.value.map(
                             (c: {
                               conditionId: number;

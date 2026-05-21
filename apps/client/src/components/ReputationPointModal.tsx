@@ -9,7 +9,7 @@ import { mdiCheck, mdiClose } from '@mdi/js';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import { sentenceCase } from 'change-case';
 import BtnAuth from './buttons/BtnAuth';
-import InputFieldBasic from './InputFieldBasic';
+import InputField from './InputField';
 import { useState } from 'react';
 import Icon from '@mdi/react';
 import useAllocateReputationMutation from 'src/hooks/gang hooks/useAllocateReputationMutation/useAllocateReputationMutation';
@@ -200,9 +200,9 @@ const ReputationPointModal = () => {
       >
         {(field) => (
           <InputSelectField
-            field={field}
             label="Session"
             options={campaign?.sessions || []}
+            value={field.state.value}
             onChange={(value) => field.handleChange(value.id)}
           />
         )}
@@ -228,10 +228,8 @@ const ReputationPointModal = () => {
                     </BtnAuth>
                   ))}
                   <div className="flex w-full items-center gap-4">
-                    <InputFieldBasic
-                      className="grow"
+                    <InputField
                       label="Custom Description"
-                      type="string"
                       value={customDescription.get(index) || null}
                       onChange={(value) => {
                         const descriptionMap = customDescription;

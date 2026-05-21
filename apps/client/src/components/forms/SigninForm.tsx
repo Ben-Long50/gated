@@ -73,7 +73,14 @@ const SigninForm = () => {
                   : 'Email must be in a valid email format',
             }}
           >
-            {(field) => <InputField label="Email" field={field} />}
+            {(field) => (
+              <InputField
+                label="Email"
+                type="email"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
+            )}
           </signinForm.Field>
           <signinForm.Field
             name="password"
@@ -85,7 +92,12 @@ const SigninForm = () => {
             }}
           >
             {(field) => (
-              <InputField type="password" label="Password" field={field} />
+              <InputField
+                type="password"
+                label="Password"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
             )}
           </signinForm.Field>
         </div>

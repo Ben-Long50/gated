@@ -28,17 +28,12 @@ const CampaignCharacterList = () => {
   const {
     playerCharacters,
     nonPlayerCharacters,
-    filterByQuery,
+    query,
+    setQuery,
     isLoading: charactersLoading,
   } = useCampaignCharacters(
     campaign?.characters.map((character) => character.id) || [],
   );
-
-  const searchForm = useForm({
-    defaultValues: {
-      query: '' as string,
-    },
-  });
 
   const isLoading = campaignLoading || charactersLoading;
 
@@ -56,22 +51,16 @@ const CampaignCharacterList = () => {
         <div className="flex w-full flex-col items-start gap-4 p-4">
           <ArrowHeader2 title="Search Characters" />
           <div className="flex w-full gap-4">
-            <searchForm.Field name="query">
-              {(field) => (
-                <InputField
-                  field={field}
-                  className="w-full"
-                  label="Search Characters"
-                  onChange={() => filterByQuery(field.state.value)}
-                />
-              )}
-            </searchForm.Field>
+            <InputField
+              label="Search Characters"
+              value={query}
+              onChange={(value) => setQuery(value)}
+            />
             <button
               className="text-accent bg-tertiary shadow-color group grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
               onClick={(e) => {
                 e.preventDefault();
-                searchForm.reset();
-                filterByQuery('');
+                setQuery('');
               }}
             >
               <Icon

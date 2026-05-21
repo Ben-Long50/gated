@@ -15,7 +15,7 @@ import ArrowHeader3 from '../../ArrowHeader3';
 import Divider from '../../Divider';
 import { capitalCase } from 'change-case';
 import BtnRect from '../../buttons/BtnRect';
-import InputFieldBasic from '../../InputFieldBasic';
+import InputField from '../../InputField';
 import ArrowHeader4 from '../../ArrowHeader4';
 import { DndContext, useDraggable, useDroppable } from '@dnd-kit/core';
 
@@ -203,11 +203,9 @@ const LayerListItem = ({
         >
           {editId === layer.id ? (
             <>
-              <InputFieldBasic
-                className="w-full"
+              <InputField
                 label="Layer Name"
-                type="string"
-                value={layer.name}
+                value={layer.name || newLayerName}
                 onChange={(value) => setNewLayerName(value)}
               />
               <button
