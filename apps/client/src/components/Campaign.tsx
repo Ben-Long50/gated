@@ -172,10 +172,11 @@ const Campaign = () => {
                     className="timing flex w-full items-center justify-between gap-4"
                     onClick={() => navigate(`sessions/${session.id}`)}
                   >
-                    <div className="flex w-full items-center gap-4">
-                      <EntityAvater entity={session} />
-
-                      <p className="font-semibold">{session.name}</p>
+                    <div className="flex w-full items-center justify-between gap-4">
+                      <div className="flex items-center justify-start gap-4">
+                        <EntityAvater entity={session} />
+                        <p className="font-semibold">{session.name}</p>
+                      </div>
                       <p className="text-right">
                         {format(session.createdAt, 'PP')}
                       </p>

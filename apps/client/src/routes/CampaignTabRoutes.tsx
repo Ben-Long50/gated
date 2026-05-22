@@ -162,14 +162,28 @@ const CampaignTabRoutes = () => {
             element={<AffiliationEntitySelectModal />}
           />
         </Route>
-        <Route path="rollSimulator" element={<RollSimulator />}>
+        <Route
+          path="rollSimulator"
+          element={
+            <Page title="Roll Simulator">
+              <RollSimulator />
+            </Page>
+          }
+        >
           <Route path="rollResults" element={<RollModal />} />
         </Route>
       </Route>
       <Route path="create" element={<CampaignForm />}>
         <Route path="managePlayers" element={<PlayerSelectModal />} />
       </Route>
-      <Route path="rollSimulator" element={<RollSimulator />}>
+      <Route
+        path="rollSimulator"
+        element={
+          <Page title="Roll Simulator">
+            <RollSimulator />
+          </Page>
+        }
+      >
         <Route path="rollResults" element={<RollModal />} />
       </Route>
     </Route>

@@ -59,7 +59,7 @@ const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
 
   return (
     <>
-      <NavTabs>
+      <NavTabs className="grid-cols-3">
         <BtnAuth active={!characterType} onClick={() => setSearchParams({})}>
           All
         </BtnAuth>

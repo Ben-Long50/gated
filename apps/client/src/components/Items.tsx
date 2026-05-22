@@ -61,7 +61,7 @@ const Items = ({
   });
 
   return (
-    <div className="flex w-full max-w-6xl flex-col items-start gap-8">
+    <div className="flex w-full flex-col items-start gap-8">
       <ArrowHeader2
         title={itemCategory ? `${capitalCase(itemCategory)}s` : ''}
       />

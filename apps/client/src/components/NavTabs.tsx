@@ -1,8 +1,16 @@
 import { ReactNode } from 'react';
 
-const NavTabs = ({ children }: { children: ReactNode }) => {
+const NavTabs = ({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) => {
   return (
-    <div className="grid w-full grid-flow-col items-center gap-4">
+    <div
+      className={`${className} grid w-full grid-flow-col items-center gap-4`}
+    >
       {children}
     </div>
   );
