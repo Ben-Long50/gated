@@ -1,5 +1,5 @@
 import { FormApi, useStore } from '@tanstack/react-form';
-import InputField from '../InputField';
+import InputField from './InputField';
 import ArrowHeader2 from '../ArrowHeader2';
 import Divider from '../Divider';
 

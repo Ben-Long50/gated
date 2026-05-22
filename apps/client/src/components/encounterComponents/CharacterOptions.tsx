@@ -14,7 +14,7 @@ import { CampaignContext } from 'src/contexts/CampaignContext';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import HandIcon from '../icons/HandIcon';
 import { socket } from 'src/socket';
-import InputSelectField from '../InputSelectField';
+import InputSelectField from '../formFields/InputSelectField';
 import useCharacterQueries from 'src/hooks/useCharactersQuery/useCharacterQueries';
 import useCombatStore from 'src/stores/combatStore';
 import { EncounterContext } from 'src/contexts/EncounterContext';

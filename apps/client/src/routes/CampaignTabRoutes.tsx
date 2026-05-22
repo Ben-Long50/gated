@@ -45,13 +45,28 @@ import GangCharacterSelectModal from 'src/components/CampaignCharacterSelectModa
 import AffiliationForm from 'src/components/forms/AffiliationForm';
 import AffiliationEntitySelectModal from 'src/components/modals/AffiliationEntitySelectModal';
 import CampaignDashboard from 'src/components/CampaignDashboard';
+import Page from 'src/components/Page';
 
 const CampaignTabRoutes = () => {
   return (
     <Route path="campaigns">
-      <Route path="" element={<CampaignDashboard />} />
+      <Route
+        path=""
+        element={
+          <Page title="Campaigns">
+            <CampaignDashboard />
+          </Page>
+        }
+      />
       <Route path=":campaignId">
-        <Route path="" element={<Campaign />}>
+        <Route
+          path=""
+          element={
+            <Page>
+              <Campaign />
+            </Page>
+          }
+        >
           <Route
             path="conditions/:conditionId"
             element={<DescriptionModal />}

@@ -1,5 +1,5 @@
 import { FormApi } from '@tanstack/react-form';
-import InputSelectField from '../InputSelectField';
+import InputSelectField from './InputSelectField';
 
 const RarityField = ({ form }: { form: FormApi }) => {
   return (

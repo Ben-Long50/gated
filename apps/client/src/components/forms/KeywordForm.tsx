@@ -1,11 +1,11 @@
-import InputField from '../InputField';
-import TextAreaField from '../TextAreaField';
+import InputField from '../formFields/InputField';
+import TextAreaField from '../formFields/TextAreaField';
 import useCreateKeywordMutation from '../../hooks/useCreateKeywordMutation/useCreateKeywordMutation';
 import FormLayout from '../../layouts/FormLayout';
 import { useParams } from 'react-router-dom';
 import useDeleteKeywordMutation from '../../hooks/useDeleteKeywordMutation/useDeleteKeywordMutation';
 import ArrowHeader2 from '../ArrowHeader2';
-import InputSelectField from '../InputSelectField';
+import InputSelectField from '../formFields/InputSelectField';
 import useKeywordForm from 'src/hooks/form hooks/useKeywordForm';
 import useKeywordQuery from 'src/hooks/useKeywordQuery/useKeywordQuery';
 

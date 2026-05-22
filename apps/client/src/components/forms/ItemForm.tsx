@@ -1,6 +1,6 @@
-import InputField from '../InputField';
-import InputSelectField from '../InputSelectField';
-import TextAreaField from '../TextAreaField';
+import InputField from '../formFields/InputField';
+import InputSelectField from '../formFields/InputSelectField';
+import TextAreaField from '../formFields/TextAreaField';
 import FormLayout from '../../layouts/FormLayout';
 import { useParams } from 'react-router-dom';
 import ArrowHeader2 from '../ArrowHeader2';

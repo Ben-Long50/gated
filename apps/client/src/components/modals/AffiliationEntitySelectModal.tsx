@@ -14,6 +14,7 @@ import useCharacterQueries from 'src/hooks/useCharactersQuery/useCharacterQuerie
 import Loading from '../Loading';
 import { Faction } from 'src/types/faction';
 import { Gang } from 'src/types/gang';
+import InputFieldCheckbox from '../formFields/InputFieldCheckbox';
 
 const AffiliationEntitySelectModal = () => {
   const { campaignId, gangId } = useParams();
@@ -107,20 +108,17 @@ const AffiliationEntitySelectModal = () => {
                 <EntityCard entity={faction} />
                 <form.Field name="factionIds">
                   {(field) => (
-                    <input
-                      className="size-6 justify-self-center"
-                      type="checkbox"
+                    <InputFieldCheckbox
+                      value={faction.id}
                       checked={field.state.value.some(
                         (id: number) => faction.id === id,
                       )}
-                      onChange={() => {
+                      onChange={(value) => {
                         field.handleChange((prev: number[]) => {
-                          if (prev.some((id: number) => faction.id === id)) {
-                            return prev.filter(
-                              (id: number) => faction.id !== id,
-                            );
+                          if (prev.some((id: number) => value === id)) {
+                            return prev.filter((id: number) => value !== id);
                           } else {
-                            return [...prev, faction.id];
+                            return [...prev, value];
                           }
                         });
                       }}
@@ -140,18 +138,17 @@ const AffiliationEntitySelectModal = () => {
                 <EntityCard entity={gang} />
                 <form.Field name="gangIds">
                   {(field) => (
-                    <input
-                      className="size-6 justify-self-center"
-                      type="checkbox"
+                    <InputFieldCheckbox
+                      value={gang.id}
                       checked={field.state.value.some(
                         (id: number) => gang.id === id,
                       )}
-                      onChange={() => {
+                      onChange={(value) => {
                         field.handleChange((prev: number[]) => {
-                          if (prev.some((id: number) => gang.id === id)) {
-                            return prev.filter((id: number) => gang.id !== id);
+                          if (prev.some((id: number) => value === id)) {
+                            return prev.filter((id: number) => value !== id);
                           } else {
-                            return [...prev, gang.id];
+                            return [...prev, value];
                           }
                         });
                       }}
@@ -171,20 +168,17 @@ const AffiliationEntitySelectModal = () => {
                 <EntityCard entity={character} />
                 <form.Field name="characterIds">
                   {(field) => (
-                    <input
-                      className="size-6 justify-self-center"
-                      type="checkbox"
+                    <InputFieldCheckbox
+                      value={character.id}
                       checked={field.state.value.some(
                         (id: number) => character.id === id,
                       )}
-                      onChange={() => {
+                      onChange={(value) => {
                         field.handleChange((prev: number[]) => {
-                          if (prev.some((id: number) => character.id === id)) {
-                            return prev.filter(
-                              (id: number) => character.id !== id,
-                            );
+                          if (prev.some((id: number) => value === id)) {
+                            return prev.filter((id: number) => value !== id);
                           } else {
-                            return [...prev, character.id];
+                            return [...prev, value];
                           }
                         });
                       }}

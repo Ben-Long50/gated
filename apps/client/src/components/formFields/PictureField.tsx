@@ -5,7 +5,7 @@ import { ThemeContext } from 'src/contexts/ThemeContext';
 import Icon from '@mdi/react';
 import { mdiCloseBox, mdiImagePlus } from '@mdi/js';
 import useGeneratePictureMutation from 'src/hooks/useGeneratePictureMutation/useGeneratePictureMutation';
-import TextAreaField from '../TextAreaField';
+import TextAreaField from './TextAreaField';
 import BtnRect from '../buttons/BtnRect';
 import Loading from '../Loading';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';

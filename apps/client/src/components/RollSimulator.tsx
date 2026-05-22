@@ -7,9 +7,9 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import Loading from './Loading';
 import BtnRect from './buttons/BtnRect';
 import DieIcon from './icons/DieIcon';
-import InputFieldCheckbox from './InputFieldCheckbox';
-import InputField from './InputField';
-import InputSelectField from './InputSelectField';
+import InputFieldCheckbox from './formFields/InputFieldCheckbox';
+import InputField from './formFields/InputField';
+import InputSelectField from './formFields/InputSelectField';
 import { Outlet, useParams, useNavigate, useLocation } from 'react-router-dom';
 import useCampaignQuery from '../hooks/useCampaignQuery/useCampaignQuery';
 import useCampaignRollMutation from '../hooks/campaign hooks/useCampaignRollMutation/useCampaignRollMutation';
@@ -126,11 +126,10 @@ const RollSimulator = () => {
                         {modifiers.map((modifier) => (
                           <InputFieldCheckbox
                             key={modifier}
-                            field={field}
                             label={capitalCase(modifier)}
                             value={modifier}
                             checked={field.state.value.includes(modifier)}
-                            onChange={(value: string) => {
+                            onChange={(value) => {
                               if (field.state.value.includes(value)) {
                                 rollForm.setFieldValue('modifiers', (prev) =>
                                   prev.filter((modifier) => modifier !== value),

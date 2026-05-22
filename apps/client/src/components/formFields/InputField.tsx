@@ -1,30 +1,33 @@
-import ThemeContainer from './ThemeContainer';
+import ThemeContainer from '../ThemeContainer';
 import useInputState from 'src/hooks/useInputState';
 
-const TextAreaField = ({
+const InputField = ({
   label,
   value,
   onChange,
+  type = 'text',
   errors,
   className,
 }: {
   label: string;
-  value: string;
-  onChange: (value: string) => void;
+  value: string | number;
+  onChange: (value: string | number) => void;
+  type?: 'text' | 'number' | 'email' | 'password';
   errors?: string[];
   className?: string;
 }) => {
   const { fieldState, setFocus } = useInputState(value, errors);
 
   return (
-    <div className={`${className} h-full min-h-[250px]`}>
+    <div className={`${className} w-full`}>
       <ThemeContainer
-        chamfer="small"
         className="w-full"
+        chamfer="small"
         borderColor={fieldState.border}
       >
-        <textarea
-          className={`${fieldState.field} timing scrollbar-secondary-2 h-full w-full grow rounded-bl rounded-tr pb-2 pl-4 pt-3 text-xl outline-none clip-4`}
+        <input
+          className={`${fieldState.field} timing w-full grow rounded-bl rounded-tr pb-2 pl-4 pt-3 text-xl outline-none clip-4`}
+          type={type}
           value={value}
           onFocus={() => {
             setFocus(true);
@@ -33,7 +36,9 @@ const TextAreaField = ({
             setFocus(false);
           }}
           onChange={(e) => {
-            onChange(e.target.value);
+            onChange(
+              type === 'number' ? Number(e.target.value) : e.target.value,
+            );
           }}
         />
         <label
@@ -56,4 +61,4 @@ const TextAreaField = ({
   );
 };
 
-export default TextAreaField;
+export default InputField;

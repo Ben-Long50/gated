@@ -1,10 +1,10 @@
-import TextAreaField from '../TextAreaField';
-import InputField from '../InputField';
+import TextAreaField from '../formFields/TextAreaField';
+import InputField from '../formFields/InputField';
 import useCreateConditionMutation from '../../hooks/useCreateConditionMutation/useCreateConditionMutation';
 import useDeleteConditionMutation from '../../hooks/useDeleteConditionMutation/useDeleteConditionMutation';
 import FormLayout from '../../layouts/FormLayout';
 import ArrowHeader2 from '../ArrowHeader2';
-import InputSelectField from '../InputSelectField';
+import InputSelectField from '../formFields/InputSelectField';
 import useConditionForm from 'src/hooks/form hooks/useConditionForm';
 import useConditionQuery from 'src/hooks/useConditionQuery/useConditionQuery';
 import { useParams } from 'react-router-dom';

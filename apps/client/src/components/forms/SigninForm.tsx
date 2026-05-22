@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useContext, useEffect, useState } from 'react';
-import InputField from '../InputField';
+import InputField from '../formFields/InputField';
 import BtnRect from '../buttons/BtnRect';
 import Icon from '@mdi/react';
 import { mdiFacebook, mdiGoogle } from '@mdi/js';

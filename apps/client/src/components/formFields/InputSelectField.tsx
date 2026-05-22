@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import ThemeContainer from './ThemeContainer';
+import ThemeContainer from '../ThemeContainer';
 import { mdiChevronDown, mdiSync } from '@mdi/js';
 import Icon from '@mdi/react';
 import InputField from './InputField';
-import Divider from './Divider';
-import BtnIcon from './buttons/BtnIcon';
+import Divider from '../Divider';
+import BtnIcon from '../buttons/BtnIcon';
 import constructName from 'src/utils/constructName';
 import useInputState from 'src/hooks/useInputState';
 

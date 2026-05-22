@@ -7,7 +7,6 @@ const ThemeContainer = ({
   borderColor,
   chamfer,
   children,
-  bgImageUrl,
   overflowHidden,
 }: {
   className?: string;
@@ -15,7 +14,6 @@ const ThemeContainer = ({
   borderColor: string;
   chamfer: 'small' | 'medium' | 'large';
   children: ReactNode;
-  bgImageUrl?: string;
   overflowHidden?: boolean;
 }) => {
   const radiusMap = {
@@ -35,13 +33,9 @@ const ThemeContainer = ({
       className={`${className} ${radiusMap[chamfer]} shadow-color relative shadow-lg`}
       style={style}
     >
-      <ThemeBorder
-        borderColor={borderColor}
-        bgImageUrl={bgImageUrl}
-        chamfer={chamfer}
-      />
+      <ThemeBorder borderColor={borderColor} chamfer={chamfer} />
       <div
-        className={`${!!overflowHidden && `overflow-hidden ${chamferMapBg[chamfer]}`} relative h-full`}
+        className={`${!!overflowHidden && `overflow-hidden ${chamferMapBg[chamfer]}`} relative h-full w-full`}
       >
         {children}
       </div>

@@ -9,7 +9,7 @@ import { useState } from 'react';
 import ArrowHeader3 from '../../ArrowHeader3';
 import Divider from '../../Divider';
 import { capitalCase } from 'change-case';
-import InputField from '../../InputField';
+import InputField from '../../formFields/InputField';
 import BtnRect from '../../buttons/BtnRect';
 
 const MapComponentList = ({

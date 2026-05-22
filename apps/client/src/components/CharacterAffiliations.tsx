@@ -5,7 +5,7 @@ import Loading from './Loading';
 import ThemeContainer from './ThemeContainer';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import { useForm, useStore } from '@tanstack/react-form';
-import InputSelectField from './InputSelectField';
+import InputSelectField from './formFields/InputSelectField';
 import useAffiliationQueries from 'src/hooks/useAffiliationQueries/useAffiliationQueries';
 import Icon from '@mdi/react';
 import { mdiSync } from '@mdi/js';

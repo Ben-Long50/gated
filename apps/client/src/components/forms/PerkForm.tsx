@@ -1,5 +1,5 @@
-import InputField from '../InputField';
-import TextAreaField from '../TextAreaField';
+import InputField from '../formFields/InputField';
+import TextAreaField from '../formFields/TextAreaField';
 import useCreatePerkMutation from '../../hooks/useCreatePerkMutation/useCreatePerkMutation';
 import FormLayout from '../../layouts/FormLayout';
 import { useParams } from 'react-router-dom';

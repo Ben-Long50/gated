@@ -1,10 +1,10 @@
 import KeywordCard from './KeywordCard';
 import useKeywords from '../hooks/useKeywords';
-import InputField from './InputField';
+import InputField from './formFields/InputField';
 import { FieldApi } from '@tanstack/react-form';
 import Loading from './Loading';
 import ArrowHeader2 from './ArrowHeader2';
-import InputSelectField from './InputSelectField';
+import InputSelectField from './formFields/InputSelectField';
 import Icon from '@mdi/react';
 import { mdiSync } from '@mdi/js';
 import { KeywordReference } from 'src/types/keyword';

@@ -1,6 +1,6 @@
 import { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import InputField from '../InputField';
+import InputField from '../formFields/InputField';
 import BtnRect from '../buttons/BtnRect';
 import { ThemeContext } from '../../contexts/ThemeContext';
 import ThemeContainer from '../ThemeContainer';

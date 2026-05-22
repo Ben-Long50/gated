@@ -1,10 +1,11 @@
 import { useOutletContext } from 'react-router-dom';
 import Modal from '../../modals/Modal';
-import InputField from '../../InputField';
-import InputSelectField from '../../InputSelectField';
-import TextAreaField from '../../TextAreaField';
+import InputField from '../../formFields/InputField';
+import InputSelectField from '../../formFields/InputSelectField';
+import TextAreaField from '../../formFields/TextAreaField';
 import BtnRect from '../../buttons/BtnRect';
 import Loading from '../../Loading';
+import InputFieldCheckbox from 'src/components/formFields/InputFieldCheckbox';
 
 const MapSaveModal = () => {
   const { form, isPending } = useOutletContext() || {};
@@ -43,22 +44,14 @@ const MapSaveModal = () => {
         </form.Field>
         <form.Field name="draft">
           {(field) => (
-            <label
-              htmlFor="draft"
-              className="text-secondary flex items-center justify-between border-x-2 border-gray-400 border-opacity-50 px-4"
-            >
-              <h4>Draft</h4>
-              <input
-                className="size-6"
-                id="draft"
-                name="draft"
-                type="checkbox"
-                checked={field.state.value}
-                onChange={() => {
-                  field.handleChange((prev: boolean) => !prev);
-                }}
-              />
-            </label>
+            <InputFieldCheckbox
+              label="Draft"
+              value={field.state.value}
+              checked={field.state.value}
+              onChange={() => {
+                field.handleChange((prev: boolean) => !prev);
+              }}
+            />
           )}
         </form.Field>
         <BtnRect

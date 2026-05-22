@@ -1,7 +1,7 @@
 import FormLayout from '../layouts/FormLayout';
-import InputField from './InputField';
+import InputField from './formFields/InputField';
 import useCreateErrorReportMutation from '../hooks/useCreateErrorReportMutation/useCreateErrorReportMutation';
-import TextAreaField from './TextAreaField';
+import TextAreaField from './formFields/TextAreaField';
 import ArrowHeader2 from './ArrowHeader2';
 import useErrorReportForm from 'src/hooks/form hooks/useErrorReportForm';
 

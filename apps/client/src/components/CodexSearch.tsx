@@ -1,6 +1,6 @@
 import { useForm } from '@tanstack/react-form';
 import { useContext, useEffect, useRef, useState } from 'react';
-import InputField from './InputField';
+import InputField from './formFields/InputField';
 import { Keyword } from 'src/types/keyword';
 import Loading from './Loading';
 import useKeywords from '../hooks/useKeywords';
@@ -12,7 +12,7 @@ import useConditions from '../hooks/useConditions';
 import ActionCard from './ActionCard';
 import ConditionCard from './ConditionCard';
 import ArrowHeader2 from './ArrowHeader2';
-import InputSelectField from './InputSelectField';
+import InputSelectField from './formFields/InputSelectField';
 import Icon from '@mdi/react';
 import { mdiCropSquare, mdiGrid, mdiSync } from '@mdi/js';
 import { LayoutContext } from '../contexts/LayoutContext';

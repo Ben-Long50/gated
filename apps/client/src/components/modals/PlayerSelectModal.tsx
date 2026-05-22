@@ -2,7 +2,7 @@ import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { Fragment } from 'react/jsx-runtime';
 import Modal from './Modal';
 import BtnRect from '../buttons/BtnRect';
-import InputField from '../InputField';
+import InputField from '../formFields/InputField';
 import Divider from '../Divider';
 import { User } from 'src/types/user';
 import useUsersByUsernameQuery from 'src/hooks/user hooks/useUsersByUsernameQuery';
@@ -10,6 +10,7 @@ import { useState } from 'react';
 import Loading from '../Loading';
 import AccountPicture from '../AccountPicture';
 import ArrowHeader4 from '../ArrowHeader4';
+import InputFieldCheckbox from '../formFields/InputFieldCheckbox';
 
 const PlayerSelectModal = () => {
   const { gangId } = useParams();
@@ -57,18 +58,17 @@ const PlayerSelectModal = () => {
               </div>
               <form.Field name="pendingPlayerIds">
                 {(field) => (
-                  <input
-                    className="size-6 justify-self-center"
-                    type="checkbox"
+                  <InputFieldCheckbox
+                    value={user.id}
                     checked={field.state.value.some(
                       (id: number) => user.id === id,
                     )}
-                    onChange={() => {
+                    onChange={(value) => {
                       field.handleChange((prev: number[]) => {
-                        if (prev.some((id: number) => user.id === id)) {
-                          return prev.filter((id: number) => user.id !== id);
+                        if (prev.some((id: number) => value === id)) {
+                          return prev.filter((id: number) => value !== id);
                         } else {
-                          return [...prev, user.id];
+                          return [...prev, value];
                         }
                       });
                     }}
@@ -77,18 +77,17 @@ const PlayerSelectModal = () => {
               </form.Field>
               <form.Field name="playerIds">
                 {(field) => (
-                  <input
-                    className="size-6 justify-self-center"
-                    type="checkbox"
+                  <InputFieldCheckbox
+                    value={user.id}
                     checked={field.state.value.some(
                       (id: number) => user.id === id,
                     )}
-                    onChange={() => {
+                    onChange={(value) => {
                       field.handleChange((prev: number[]) => {
-                        if (prev.some((id: number) => user.id === id)) {
-                          return prev.filter((id: number) => user.id !== id);
+                        if (prev.some((id: number) => value === id)) {
+                          return prev.filter((id: number) => value !== id);
                         } else {
-                          return [...prev, user.id];
+                          return [...prev, value];
                         }
                       });
                     }}

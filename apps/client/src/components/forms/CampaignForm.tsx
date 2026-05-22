@@ -1,4 +1,4 @@
-import InputField from '../InputField';
+import InputField from '../formFields/InputField';
 import Loading from '../Loading';
 import FormLayout from '../../layouts/FormLayout';
 import { User } from 'src/types/user';
@@ -12,7 +12,7 @@ import useCampaignQuery from '../../hooks/useCampaignQuery/useCampaignQuery';
 import useDeleteCampaignMutation from '../../hooks/useDeleteCampaignMutation/useDeleteCampaignMutation';
 import PictureField from '../formFields/PictureField';
 import AccountPicture from '../AccountPicture';
-import InputSelectField from '../InputSelectField';
+import InputSelectField from '../formFields/InputSelectField';
 import useCampaignForm from 'src/hooks/form hooks/useCampaignForm';
 import useUserQueries from 'src/hooks/user hooks/useUserQueries';
 import { useStore } from '@tanstack/react-form';

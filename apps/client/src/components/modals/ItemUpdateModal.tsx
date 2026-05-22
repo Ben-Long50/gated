@@ -21,6 +21,7 @@ import useModalStore from 'src/stores/modalStore';
 import ExpandingList from '../ExpandingList';
 import KeywordCard from '../KeywordCard';
 import { KeywordReference } from 'src/types/keyword';
+import InputFieldCheckbox from '../formFields/InputFieldCheckbox';
 
 const ItemUpdateModal = () => {
   const { characterId } = useParams();
@@ -235,122 +236,98 @@ const ItemUpdateModal = () => {
         <div className="flex flex-col gap-4 border-x-2 border-gray-400 border-opacity-50 px-4">
           <itemUpdateForm.Field name="name">
             {(field) => (
-              <div className="flex items-center justify-between">
-                <h4>Name</h4>
-                <input
-                  className="size-6"
-                  type="checkbox"
-                  checked={!!field.state.value}
-                  onChange={(e) => {
-                    e.stopPropagation();
-                    if (field.state.value) {
-                      field.handleChange(null);
-                    } else {
-                      field.handleChange(baseItem.name);
-                    }
-                  }}
-                />
-              </div>
+              <InputFieldCheckbox
+                label="Name"
+                value={baseItem.name}
+                checked={!!field.state.value}
+                onChange={(value) => {
+                  if (field.state.value) {
+                    field.handleChange(null);
+                  } else {
+                    field.handleChange(value);
+                  }
+                }}
+              />
             )}
           </itemUpdateForm.Field>
           <itemUpdateForm.Field name="description">
             {(field) => (
-              <div className="flex items-center justify-between">
-                <h4>Description</h4>
-                <input
-                  className="size-6"
-                  type="checkbox"
-                  checked={!!field.state.value}
-                  onChange={(e) => {
-                    e.stopPropagation();
-                    if (field.state.value) {
-                      field.handleChange(null);
-                    } else {
-                      field.handleChange(baseItem.description);
-                    }
-                  }}
-                />
-              </div>
+              <InputFieldCheckbox
+                label="Description"
+                value={baseItem.description}
+                checked={!!field.state.value}
+                onChange={(value) => {
+                  if (field.state.value) {
+                    field.handleChange(null);
+                  } else {
+                    field.handleChange(value);
+                  }
+                }}
+              />
             )}
           </itemUpdateForm.Field>
           <itemUpdateForm.Field name="picture">
             {(field) => (
-              <div className="flex items-center justify-between">
-                <h4>Picture</h4>
-                <input
-                  className="size-6"
-                  type="checkbox"
-                  checked={!!field.state.value}
-                  onChange={(e) => {
-                    e.stopPropagation();
-                    if (field.state.value) {
-                      field.handleChange(null);
-                    } else {
-                      field.handleChange(baseItem.picture);
-                    }
-                  }}
-                />
-              </div>
+              <InputFieldCheckbox
+                label="Picture"
+                value={baseItem.picture}
+                checked={!!field.state.value}
+                onChange={(value) => {
+                  if (field.state.value) {
+                    field.handleChange(null);
+                  } else {
+                    field.handleChange(value);
+                  }
+                }}
+              />
             )}
           </itemUpdateForm.Field>
           <itemUpdateForm.Field name="price">
             {(field) => (
-              <div className="flex items-center justify-between">
-                <h4>Price</h4>
-                <input
-                  className="size-6"
-                  type="checkbox"
-                  checked={!!field.state.value}
-                  onChange={(e) => {
-                    e.stopPropagation();
-                    if (field.state.value) {
-                      field.handleChange(null);
-                    } else {
-                      field.handleChange(baseItem.price);
-                    }
-                  }}
-                />
-              </div>
+              <InputFieldCheckbox
+                label="Price"
+                value={baseItem.price}
+                checked={!!field.state.value}
+                onChange={(value) => {
+                  if (field.state.value) {
+                    field.handleChange(null);
+                  } else {
+                    field.handleChange(value);
+                  }
+                }}
+              />
             )}
           </itemUpdateForm.Field>
           <itemUpdateForm.Field name="stats">
             {(field) => (
-              <div className="flex items-center justify-between">
-                <h4>Stats</h4>
-                <input
-                  className="size-6"
-                  type="checkbox"
-                  checked={!!field.state.value}
-                  onChange={(e) => {
-                    e.stopPropagation();
-                    if (field.state.value) {
-                      field.handleChange(null);
-                    } else {
-                      field.handleChange(baseItem.stats);
-                    }
-                  }}
-                />
-              </div>
+              <InputFieldCheckbox
+                label="Stats"
+                value={baseItem.stats}
+                checked={!!field.state.value}
+                onChange={(value) => {
+                  if (field.state.value) {
+                    field.handleChange(null);
+                  } else {
+                    field.handleChange(value);
+                  }
+                }}
+              />
             )}
           </itemUpdateForm.Field>
           <itemUpdateForm.Field name="keywords">
             {(field) => (
-              <div className="flex items-center justify-between">
-                <h4>Traits</h4>
-                <input
-                  className="size-6"
-                  type="checkbox"
-                  checked={!!field.state.value}
-                  onChange={(e) => {
-                    e.stopPropagation();
-                    if (field.state.value) {
-                      field.handleChange(null);
-                    } else {
-                      field.handleChange(baseItem.keywords);
-                    }
-                  }}
-                />
-              </div>
+              <InputFieldCheckbox
+                label="Traits"
+                value={baseItem.keywords}
+                checked={!!field.state.value}
+                onChange={(value) => {
+                  if (field.state.value) {
+                    field.handleChange(null);
+                  } else {
+                    field.handleChange(value);
+                  }
+                }}
+              />
             )}
           </itemUpdateForm.Field>
         </div>

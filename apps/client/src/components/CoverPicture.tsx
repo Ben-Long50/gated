@@ -1,24 +1,10 @@
-import { ReactNode } from 'react';
-import useNavigationStore from 'src/stores/navbarStore';
 import { Picture } from 'src/types/picture';
 
-const CoverPicture = ({
-  picture,
-  children,
-}: {
-  picture: Picture;
-  children?: ReactNode;
-}) => {
-  const navbarHeight = useNavigationStore((store) => store.navbarHeight);
-
+const CoverPicture = ({ picture }: { picture: Picture }) => {
   return (
-    <div
-      className="shadow-color fixed -z-10 mx-auto flex h-[400px] w-full max-w-9xl justify-center overflow-hidden shadow-lg sm:h-[500px] xl:rounded-b-xl"
-      style={{ top: navbarHeight }}
-    >
-      <div className="absolute inset-0 w-full bg-white opacity-70 dark:bg-black dark:opacity-70" />
+    <div className="shadow-color absolute left-0 right-0 top-0 flex aspect-video items-center justify-center overflow-hidden shadow-lg">
       <img
-        className="w-full border-opacity-50 object-cover object-center filter"
+        className="w-full"
         src={`${picture?.imageUrl}`}
         alt="Cover image"
         style={{
@@ -27,7 +13,7 @@ const CoverPicture = ({
             : '50% 50%',
         }}
       />
-      {children}
+      <div className="absolute inset-0 bg-black/40" />
     </div>
   );
 };

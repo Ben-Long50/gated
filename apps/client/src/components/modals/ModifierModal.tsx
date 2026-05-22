@@ -5,13 +5,14 @@ import Modal from './Modal';
 import BtnAuth from '../buttons/BtnAuth';
 import { capitalCase } from 'change-case';
 import BtnIcon from '../buttons/BtnIcon';
-import InputField from '../InputField';
+import InputField from '../formFields/InputField';
 import { mdiSync } from '@mdi/js';
-import InputSelectField from '../InputSelectField';
+import InputSelectField from '../formFields/InputSelectField';
 import BtnRect from '../buttons/BtnRect';
 import ThemeContainer from '../ThemeContainer';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import ArrowHeader2 from '../ArrowHeader2';
+import InputFieldCheckbox from '../formFields/InputFieldCheckbox';
 
 const ModifierModal = () => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -133,15 +134,29 @@ const ModifierModal = () => {
             <form.Field name="modifiers">
               {(field) => (
                 <div className="flex flex-col gap-6">
-                  {stats.map((stat, index) => {
+                  {stats.map((stat) => {
                     const checked = field.state.value[stat] !== undefined;
+
                     return (
                       <>
-                        <div
-                          key={stat}
-                          className="flex w-full items-center justify-between gap-4"
-                        >
-                          <p>{capitalCase(stat)}</p>
+                        <div key={stat} className="flex w-full flex-col gap-4">
+                          <InputFieldCheckbox
+                            label={capitalCase(stat)}
+                            value={stat}
+                            checked={checked}
+                            onChange={(value) => {
+                              if (checked) {
+                                const { [value]: _, ...rest } =
+                                  field.state.value;
+                                field.handleChange(rest);
+                              } else {
+                                field.handleChange((prev) => ({
+                                  ...prev,
+                                  [value]: 1,
+                                }));
+                              }
+                            }}
+                          />
                           {checked && (
                             <form.Field key={stat} name={`modifiers[${stat}]`}>
                               {(subfield) =>
@@ -206,23 +221,6 @@ const ModifierModal = () => {
                               }
                             </form.Field>
                           )}
-                          <input
-                            type="checkbox"
-                            checked={checked}
-                            className="size-7 shrink-0"
-                            onChange={() => {
-                              if (checked) {
-                                const { [stat]: _, ...rest } =
-                                  field.state.value;
-                                field.handleChange(rest);
-                              } else {
-                                field.handleChange((prev) => ({
-                                  ...prev,
-                                  [stat]: 1,
-                                }));
-                              }
-                            }}
-                          />
                         </div>
                       </>
                     );

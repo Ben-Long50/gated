@@ -6,6 +6,7 @@ import useNavigationStore from 'src/stores/navbarStore';
 import MapLayerList from './MapLayerList';
 import MapComponentList from './MapComponentList';
 import { FieldApi } from '@tanstack/react-form';
+import InputFieldCheckbox from 'src/components/formFields/InputFieldCheckbox';
 
 const MapBuilderSidebar = ({
   children,
@@ -112,15 +113,12 @@ const MapBuilderSidebar = ({
         )}
         <div className="mb-4 flex items-center justify-between">
           <p>Quick Tile Picker</p>
-          <input
-            type="checkbox"
-            className="size-6"
-            onChange={(e) => {
-              if (e.target.checked) {
-                setQuickTilePicker(true);
-              } else {
-                setQuickTilePicker(false);
-              }
+          <InputFieldCheckbox
+            label="Quick Tile Picker"
+            value={quickTilePicker}
+            checked={quickTilePicker}
+            onChange={(value) => {
+              setQuickTilePicker(!value);
             }}
           />
         </div>

@@ -1,5 +1,5 @@
 import BtnRect from '../buttons/BtnRect';
-import InputField from '../InputField';
+import InputField from '../formFields/InputField';
 import Loading from '../Loading';
 import FormLayout from '../../layouts/FormLayout';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -7,7 +7,7 @@ import LexicalEditor from '../lexical/LexicalEditor';
 import ArrowHeader2 from '../ArrowHeader2';
 import Divider from '../Divider';
 import PictureField from '../formFields/PictureField';
-import InputSelectField from '../InputSelectField';
+import InputSelectField from '../formFields/InputSelectField';
 import useCreateGangMutation from 'src/hooks/gang hooks/useCreateGangMutation/useCreateGangMutation';
 import useGangQuery from 'src/hooks/gang hooks/useGangQuery/useGangQuery';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';

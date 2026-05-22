@@ -15,7 +15,7 @@ import ArrowHeader3 from '../../ArrowHeader3';
 import Divider from '../../Divider';
 import { capitalCase } from 'change-case';
 import BtnRect from '../../buttons/BtnRect';
-import InputField from '../../InputField';
+import InputField from '../../formFields/InputField';
 import ArrowHeader4 from '../../ArrowHeader4';
 import { DndContext, useDraggable, useDroppable } from '@dnd-kit/core';
 

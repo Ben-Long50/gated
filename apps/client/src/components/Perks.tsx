@@ -1,10 +1,10 @@
 import PerkList from './PerkList';
 import usePerks from '../hooks/usePerks';
 import { FormApi } from '@tanstack/react-form';
-import InputField from './InputField';
+import InputField from './formFields/InputField';
 import Loading from './Loading';
 import ArrowHeader2 from './ArrowHeader2';
-import InputSelectField from './InputSelectField';
+import InputSelectField from './formFields/InputSelectField';
 import { AttributeTree } from 'src/types/attributeTree';
 import Icon from '@mdi/react';
 import { mdiSync } from '@mdi/js';

@@ -1,4 +1,4 @@
-import InputField from '../InputField';
+import InputField from '../formFields/InputField';
 import Loading from '../Loading';
 import FormLayout from '../../layouts/FormLayout';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';

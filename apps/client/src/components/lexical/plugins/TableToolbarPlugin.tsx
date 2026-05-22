@@ -3,7 +3,7 @@ import { ToolbarButton } from '../LexicalToolbar';
 import { useState } from 'react';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { mdiTable } from '@mdi/js';
-import InputField from '../../InputField';
+import InputField from '../../formFields/InputField';
 import { INSERT_TABLE_COMMAND } from '@lexical/table';
 
 const TableToolbarPlugin = (props: { iconSize: number }): JSX.Element => {

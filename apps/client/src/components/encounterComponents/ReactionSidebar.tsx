@@ -1,11 +1,11 @@
 import useActions from 'src/hooks/useActions';
-import InputSelectField from '../InputSelectField';
+import InputSelectField from '../formFields/InputSelectField';
 import useCharacter from 'src/hooks/useCharacter';
 import BtnRect from '../buttons/BtnRect';
 import CharacterPictureRound from '../CharacterPictureRound';
 import ActionStatBars from '../ActionStatBars';
 import ArrowHeader4 from '../ArrowHeader4';
-import InputFieldCheckbox from '../InputFieldCheckbox';
+import InputFieldCheckbox from '../formFields/InputFieldCheckbox';
 import { camelCase, capitalCase } from 'change-case';
 import ArrowHeader3 from '../ArrowHeader3';
 import Icon from '@mdi/react';
@@ -23,7 +23,7 @@ import reactionFuncs from 'src/utils/reactionFuncs';
 import isInRange from './encounterUtils/isInRange';
 import calculateCosts from 'src/utils/calculateCosts';
 import Divider from '../Divider';
-import InputField from '../InputField';
+import InputField from '../formFields/InputField';
 import { useQueryClient } from '@tanstack/react-query';
 import { Action } from 'src/types/action';
 

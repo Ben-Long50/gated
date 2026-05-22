@@ -1,5 +1,5 @@
 import { useContext, useRef } from 'react';
-import InputField from '../InputField';
+import InputField from '../formFields/InputField';
 import { ThemeContext } from '../../contexts/ThemeContext';
 import { ValidationError } from '@tanstack/react-form';
 import StatBar from '../StatBar';
@@ -13,12 +13,12 @@ import useUpdateCharacterMutation from '../../hooks/useCharacterUpdateMutation/u
 import useDeleteCharacterMutation from '../../hooks/useDeleteCharacterMutation/useDeleteCharacterMutation';
 import Loading from '../Loading';
 import FormLayout from '../../layouts/FormLayout';
-import InputFieldRadio from '../InputFieldRadio';
+import InputFieldRadio from '../formFields/InputFieldRadio';
 import ArrowHeader2 from '../ArrowHeader2';
 import Divider from '../Divider';
 import StatBarContainer from '../StatBarContainer';
 import useCampaignsQuery from '../../hooks/useCampaignsQuery/useCampaignsQuery';
-import InputSelectField from '../InputSelectField';
+import InputSelectField from '../formFields/InputSelectField';
 import InjuryIcon from '../icons/InjuryIcon';
 import InsanityIcon from '../icons/InsanityIcon';
 import NpcPreferenceField from '../formFields/NpcPreferenceField';
@@ -86,13 +86,13 @@ const CharacterUpdateForm = () => {
           <>
             <InputFieldRadio
               label="Player Character"
-              field={field}
+              value={true}
               checked={field.state.value === true}
               onChange={() => field.handleChange(true)}
             />
             <InputFieldRadio
               label="Non-player Character"
-              field={field}
+              value={false}
               checked={field.state.value === false}
               onChange={() => field.handleChange(false)}
             />
@@ -115,7 +115,7 @@ const CharacterUpdateForm = () => {
             label="Campaign"
             options={campaigns || []}
             value={field.state.value}
-            onChange={(value) => field.handleChange(value.id)}
+            onChange={() => field.handleChange(value.id)}
           />
         )}
       </characterUpdateForm.Field>

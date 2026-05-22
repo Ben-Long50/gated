@@ -1,5 +1,5 @@
 import { useContext, useRef } from 'react';
-import InputField from '../InputField';
+import InputField from '../formFields/InputField';
 import { useStore, ValidationError } from '@tanstack/react-form';
 import useAttributeTree from '../../hooks/useAttributeTree';
 import StatBar from '../StatBar';
@@ -19,8 +19,8 @@ import { SortedInventory } from 'src/types/character';
 import useCampaignsQuery from '../../hooks/useCampaignsQuery/useCampaignsQuery';
 import ArrowHeader2 from '../ArrowHeader2';
 import Divider from '../Divider';
-import InputFieldRadio from '../InputFieldRadio';
-import InputSelectField from '../InputSelectField';
+import InputFieldRadio from '../formFields/InputFieldRadio';
+import InputSelectField from '../formFields/InputSelectField';
 import PerkLinkField from '../formFields/PerkLinkField';
 import NpcPreferenceField from '../formFields/NpcPreferenceField';
 import PictureField from '../formFields/PictureField';
@@ -80,7 +80,7 @@ const CharacterForm = () => {
           <>
             <InputFieldRadio
               label="Player Character"
-              field={field}
+              value={true}
               checked={field.state.value === true}
               onChange={() => {
                 field.handleChange(true);
@@ -88,7 +88,7 @@ const CharacterForm = () => {
             />
             <InputFieldRadio
               label="Non-player Character"
-              field={field}
+              value={false}
               checked={field.state.value === false}
               onChange={() => field.handleChange(false)}
             />

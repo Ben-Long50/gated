@@ -5,7 +5,7 @@ import ThemeContainer from '../ThemeContainer';
 import Loading from '../Loading';
 import { useContext, useEffect } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
-import InputField from '../InputField';
+import InputField from '../formFields/InputField';
 import useMap from 'src/hooks/useMap';
 
 const EncounterFormMap = () => {

@@ -4,6 +4,9 @@ import Modal from './Modal';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import useModalStore from 'src/stores/modalStore';
 import ArrowHeader2 from '../ArrowHeader2';
+import InputFieldCheckbox from '../formFields/InputFieldCheckbox';
+import BtnAuth from '../buttons/BtnAuth';
+import Divider from '../Divider';
 
 const NpcPreferenceModal = () => {
   const navigate = useNavigate();
@@ -35,21 +38,13 @@ const NpcPreferenceModal = () => {
         }}
       >
         <h1>NPC Preferences</h1>
-        <p className="text-tertiary border-l-2 border-gray-400 border-opacity-50 pl-4">
-          Set your visibility preferences for this NPC. These options will
-          determine how much of this NPC's information is viewable by players
-          when interacting with them. If a box is checked, that means players
-          can see that information.
-        </p>
-
-        <div className="flex w-full flex-col gap-8 p-4 sm:p-8">
-          <ArrowHeader2 title="Preferences" />
+        <Divider />
+        <div className="flex w-full flex-col gap-8">
+          <ArrowHeader2 title="Visibility to Players" />
           <div className="flex w-full justify-between">
-            <button
-              className="text-accent text-base hover:underline"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
+            <BtnAuth
+              className="min-w-56"
+              onClick={() => {
                 form.setFieldValue('preferences', () => {
                   const currentValues = form.getFieldValue('preferences');
                   return Object.fromEntries(
@@ -62,12 +57,10 @@ const NpcPreferenceModal = () => {
               }}
             >
               Check All
-            </button>
-            <button
-              className="text-accent text-base hover:underline"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
+            </BtnAuth>
+            <BtnAuth
+              className="min-w-56"
+              onClick={() => {
                 form.setFieldValue('preferences', () => {
                   const currentValues = form.getFieldValue('preferences');
                   return Object.fromEntries(
@@ -80,36 +73,22 @@ const NpcPreferenceModal = () => {
               }}
             >
               Uncheck All
-            </button>
+            </BtnAuth>
           </div>
           <div className="flex w-full flex-col gap-4">
             <form.Subscribe selector={(state) => state.values.preferences}>
               {(preferences) =>
-                Object.keys(preferences).map((key, index) => (
+                Object.keys(preferences).map((key) => (
                   <form.Field key={key} name={`preferences.${key}`}>
                     {(field) => (
-                      <>
-                        <label
-                          className="flex w-full items-center justify-between"
-                          htmlFor={key}
-                        >
-                          <p
-                            className={`${field.state.value ? 'text-accent' : 'text-secondary'}`}
-                          >
-                            {capitalCase(key)}
-                          </p>
-                          <input
-                            id={key}
-                            className="size-7"
-                            name={key}
-                            type="checkbox"
-                            checked={field.state.value}
-                            onChange={() => {
-                              field.handleChange(!field.state.value);
-                            }}
-                          />
-                        </label>
-                      </>
+                      <InputFieldCheckbox
+                        label={capitalCase(key)}
+                        value={field.state.value}
+                        checked={field.state.value}
+                        onChange={() => {
+                          field.handleChange((prev) => !prev);
+                        }}
+                      />
                     )}
                   </form.Field>
                 ))

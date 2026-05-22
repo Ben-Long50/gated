@@ -1,16 +1,17 @@
-import InputField from './InputField';
+import InputField from './formFields/InputField';
 import { FieldApi } from '@tanstack/react-form';
 import useActions from '../hooks/useActions';
 import ActionCard from './ActionCard';
 import Loading from './Loading';
 import ArrowHeader2 from './ArrowHeader2';
-import InputSelectField from './InputSelectField';
+import InputSelectField from './formFields/InputSelectField';
 import Icon from '@mdi/react';
 import { mdiSync } from '@mdi/js';
 import { ItemObject } from 'src/types/global';
 import { useSearchParams } from 'react-router-dom';
 import Divider from './Divider';
 import { capitalCase } from 'change-case';
+import InputFieldCheckbox from './formFields/InputFieldCheckbox';
 
 const Actions = ({
   field,
@@ -94,17 +95,16 @@ const Actions = ({
               <div key={action.id} className="flex items-center gap-4">
                 <ActionCard action={action} />
                 {mode === 'form' && (
-                  <input
-                    className="size-8"
-                    type="checkbox"
-                    onChange={() => {
-                      if (toggleFormLink) {
-                        toggleFormLink(action.id);
-                      }
-                    }}
+                  <InputFieldCheckbox
+                    value={action.id}
                     checked={field.state.value.some(
                       (actionId: number) => actionId === action.id,
                     )}
+                    onChange={(value) => {
+                      if (toggleFormLink) {
+                        toggleFormLink(value);
+                      }
+                    }}
                   />
                 )}
               </div>

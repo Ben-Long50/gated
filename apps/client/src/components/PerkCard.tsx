@@ -9,6 +9,7 @@ import { FormApi } from '@tanstack/react-form';
 import AttributeListSmall from './AttributeListSmall';
 import AttributeList from './AttributeList';
 import usePerkQuery from 'src/hooks/usePerkQuery/usePerkQuery';
+import InputFieldCheckbox from './formFields/InputFieldCheckbox';
 
 const PerkCard = ({
   perkId,
@@ -88,16 +89,15 @@ const PerkCard = ({
       {form && (
         <form.Field name="perkIds">
           {(field) => (
-            <input
-              className="size-6"
-              type="checkbox"
+            <InputFieldCheckbox
+              value={perk?.id}
               checked={field.state.value.includes(perk?.id)}
-              onChange={() => {
-                if (!field.state.value.includes(perk?.id)) {
-                  field.handleChange([...field.state.value, perk?.id]);
+              onChange={(value) => {
+                if (!field.state.value.includes(value)) {
+                  field.handleChange([...field.state.value, value]);
                 } else {
                   field.handleChange(
-                    field.state.value.filter((id: number) => id !== perk?.id),
+                    field.state.value.filter((id: number) => id !== value),
                   );
                 }
               }}

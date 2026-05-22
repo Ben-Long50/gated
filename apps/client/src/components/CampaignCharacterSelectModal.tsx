@@ -4,11 +4,12 @@ import Modal from './modals/Modal';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import useCharacters from 'src/hooks/useCharacters';
 import Loading from './Loading';
-import InputField from './InputField';
+import InputField from './formFields/InputField';
 import { Character } from 'src/types/character';
 import { Fragment } from 'react/jsx-runtime';
 import Divider from './Divider';
 import CharacterCardXSmall from './CharacterCardXSmall';
+import InputFieldCheckbox from './formFields/InputFieldCheckbox';
 
 const GangCharacterSelectModal = () => {
   const { campaignId, gangId } = useParams();
@@ -63,20 +64,17 @@ const GangCharacterSelectModal = () => {
               />
               <form.Field name="leaderIds">
                 {(field) => (
-                  <input
-                    className="size-6 justify-self-center"
-                    type="checkbox"
+                  <InputFieldCheckbox
+                    value={character.id}
                     checked={field.state.value.some(
                       (id: number) => character.id === id,
                     )}
-                    onChange={() => {
+                    onChange={(value) => {
                       field.handleChange((prev: number[]) => {
-                        if (prev.some((id: number) => character.id === id)) {
-                          return prev.filter(
-                            (id: number) => character.id !== id,
-                          );
+                        if (prev.some((id: number) => value === id)) {
+                          return prev.filter((id: number) => value !== id);
                         } else {
-                          return [...prev, character.id];
+                          return [...prev, value];
                         }
                       });
                     }}
@@ -85,20 +83,17 @@ const GangCharacterSelectModal = () => {
               </form.Field>
               <form.Field name="characterIds">
                 {(field) => (
-                  <input
-                    className="size-6 justify-self-center"
-                    type="checkbox"
+                  <InputFieldCheckbox
+                    value={character.id}
                     checked={field.state.value.some(
                       (id: number) => character.id === id,
                     )}
-                    onChange={() => {
+                    onChange={(value) => {
                       field.handleChange((prev: number[]) => {
-                        if (prev.some((id: number) => character.id === id)) {
-                          return prev.filter(
-                            (id: number) => character.id !== id,
-                          );
+                        if (prev.some((id: number) => value === id)) {
+                          return prev.filter((id: number) => value !== id);
                         } else {
-                          return [...prev, character.id];
+                          return [...prev, value];
                         }
                       });
                     }}

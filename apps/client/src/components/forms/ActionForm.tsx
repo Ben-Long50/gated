@@ -1,5 +1,5 @@
-import InputField from '../InputField';
-import TextAreaField from '../TextAreaField';
+import InputField from '../formFields/InputField';
+import TextAreaField from '../formFields/TextAreaField';
 import useAttributeTree from '../../hooks/useAttributeTree';
 import Icon from '@mdi/react';
 import { mdiClose } from '@mdi/js';
@@ -12,7 +12,7 @@ import { Action } from 'src/types/action';
 import Divider from '../Divider';
 import ArrowHeader2 from '../ArrowHeader2';
 import ModifierField from '../formFields/ModifierField';
-import InputSelectField from '../InputSelectField';
+import InputSelectField from '../formFields/InputSelectField';
 import KeywordLinkField from '../formFields/KeywordLinkField';
 import useActionForm from 'src/hooks/form hooks/useActionForm';
 import BtnAuth from '../buttons/BtnAuth';

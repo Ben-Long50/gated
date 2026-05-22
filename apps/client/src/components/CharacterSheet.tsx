@@ -251,12 +251,8 @@ const CharacterSheet = () => {
       </ExpandingList>
       <Divider />
       {user?.id === character.userId && (
-        <Link to={`update`}>
-          <BtnRect
-            type="button"
-            ariaLabel="Update character information"
-            className="sm:w-1/2 sm:justify-self-end"
-          >
+        <Link className="w-full" to={`update`}>
+          <BtnRect type="button" ariaLabel="Update character information">
             Update character info
           </BtnRect>
         </Link>

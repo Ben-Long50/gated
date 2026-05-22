@@ -1,6 +1,6 @@
-import InputField from '../InputField';
+import InputField from '../formFields/InputField';
 import { useParams } from 'react-router-dom';
-import TextAreaField from '../TextAreaField';
+import TextAreaField from '../formFields/TextAreaField';
 import { capitalCase } from 'change-case';
 import { mdiCircle } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -10,6 +10,7 @@ import { useState } from 'react';
 import TimeField from '../formFields/TimeField';
 import useEventForm from 'src/hooks/form hooks/useEventForm';
 import FormLayout from 'src/layouts/FormLayout';
+import InputFieldRadio from '../formFields/InputFieldRadio';
 
 const EventForm = () => {
   const { campaignId, month, day } = useParams();
@@ -71,45 +72,27 @@ const EventForm = () => {
           <div className="flex flex-col items-center justify-between gap-3">
             <h3 className="w-full text-left">Event Time</h3>
             <hr className="w-full border border-gray-400 border-opacity-50" />
-            <div className="flex w-full items-center justify-between gap-4">
-              <label htmlFor="allDay">
-                <p>All Day</p>
-              </label>
-              <input
-                id="allDay"
-                name="time"
-                type="radio"
-                className="size-6"
-                checked={timeType === 'allDay'}
-                onChange={(e) => {
-                  if (e.target.checked) {
-                    setTimeType('allDay');
-                    eventForm.setFieldValue('time', {
-                      hour: 0,
-                      minute: 0,
-                      second: 0,
-                    });
-                  }
-                }}
-              />
-            </div>
-            <div className="flex w-full items-center justify-between gap-4">
-              <label htmlFor="setTime">
-                <p>Set Time</p>
-              </label>
-              <input
-                id="setTime"
-                name="time"
-                type="radio"
-                className="size-6"
-                checked={timeType === 'setTime'}
-                onChange={(e) => {
-                  if (e.target.checked) {
-                    setTimeType('setTime');
-                  }
-                }}
-              />
-            </div>
+            <InputFieldRadio
+              label="All Day"
+              value={'allDay'}
+              checked={timeType === 'allDay'}
+              onChange={(value) => {
+                setTimeType(value);
+                eventForm.setFieldValue('time', {
+                  hour: 0,
+                  minute: 0,
+                  second: 0,
+                });
+              }}
+            />
+            <InputFieldRadio
+              label="Set Time"
+              value="setTime"
+              checked={timeType === 'setTime'}
+              onChange={(value) => {
+                setTimeType(value);
+              }}
+            />
           </div>
           <div
             className={`${timeType === 'allDay' && 'pointer-events-none opacity-50'}`}

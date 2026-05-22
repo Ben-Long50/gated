@@ -1,11 +1,11 @@
 import { useContext, useState } from 'react';
-import { Link, Outlet, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import Loading from './Loading';
 import useCampaignQuery from '../hooks/useCampaignQuery/useCampaignQuery';
 import { ThemeContext } from '../contexts/ThemeContext';
 import Icon from '@mdi/react';
-import { mdiCircle, mdiCrown } from '@mdi/js';
+import { mdiCrown } from '@mdi/js';
 import { format } from 'date-fns';
 import LocationIcon from './icons/LocationIcon';
 import { Session } from 'src/types/campaign';
@@ -20,14 +20,13 @@ import useJoinCampaignMutation from '../hooks/useJoinCampaignMutation/useJoinCam
 import ArrowHeader3 from './ArrowHeader3';
 import CoverPicture from './CoverPicture';
 import { capitalCase } from 'change-case';
-import { LayoutContext } from 'src/contexts/LayoutContext';
 import Calendar from './Calendar';
 import CharacterList from './CharacterList';
 import useRejectCampaignMutation from 'src/hooks/useRejectCampaignMutation/useRejectCampaignMutation';
+import EntityAvater from './EntityAvatar';
 
 const Campaign = () => {
   const { user } = useContext(AuthContext);
-  const { mobile } = useContext(LayoutContext);
   const { campaignId } = useParams();
   const { accentPrimary } = useContext(ThemeContext);
   const navigate = useNavigate();
@@ -147,67 +146,63 @@ const Campaign = () => {
         <div className={`mt-14 flex w-full flex-col gap-4 sm:mt-28`}>
           <Calendar />
           <Divider className="col-span-2" />
-          <ThemeContainer borderColor={accentPrimary} chamfer="medium">
-            <div className="flex flex-col gap-4 p-4 sm:p-8">
-              <div className="grid grid-cols-2 gap-4">
-                <BtnAuth
-                  active={tab === 'sessions'}
-                  onClick={() => setTab('sessions')}
-                >
-                  Sessions
-                </BtnAuth>
-                <BtnAuth
-                  active={tab === 'factions'}
-                  onClick={() => setTab('factions')}
-                >
-                  Factions
-                </BtnAuth>
-              </div>
-              <Divider />
-              <div className="scrollbar-primary-2 flex max-h-80 w-full flex-col gap-4 overflow-y-auto px-0.5 py-2">
-                {tab === 'sessions' && (
-                  <>
-                    {campaign?.sessions.map((session: Session) => (
-                      <BtnAuth
-                        key={session.id}
-                        className="timing flex w-full items-center justify-between gap-4"
-                        onClick={() => navigate(`sessions/${session.id}`)}
-                      >
-                        <ArrowHeader3 title={session.name} />
-                        <p className="text-right">
-                          {format(session.createdAt, 'PP')}
-                        </p>
-                      </BtnAuth>
-                    ))}
-                  </>
-                )}
-                {tab === 'factions' && (
-                  <>
-                    {campaign?.factions.map((faction: Faction) => (
-                      <Link
-                        className="w-full"
-                        key={faction.id}
-                        to={`factions/${faction.id}`}
-                      >
-                        <BtnAuth className="timing flex w-full items-center justify-between p-4">
-                          <div className="flex items-center gap-4">
-                            {faction.picture?.imageUrl && (
-                              <img
-                                className="shadow-color size-16 rounded-full object-cover shadow"
-                                src={faction.picture?.imageUrl}
-                                alt={faction.name + "'s picture"}
-                              />
-                            )}
-                            <ArrowHeader3 title={faction.name} />
-                          </div>
-                        </BtnAuth>
-                      </Link>
-                    ))}
-                  </>
-                )}
-              </div>
-            </div>
-          </ThemeContainer>
+
+          <div className="grid grid-cols-2 gap-4">
+            <BtnAuth
+              active={tab === 'sessions'}
+              onClick={() => setTab('sessions')}
+            >
+              Sessions
+            </BtnAuth>
+            <BtnAuth
+              active={tab === 'factions'}
+              onClick={() => setTab('factions')}
+            >
+              Factions
+            </BtnAuth>
+          </div>
+          <Divider />
+          <ArrowHeader3 title={capitalCase(tab)} />
+          <div className="scrollbar-primary-2 flex max-h-80 w-full flex-col gap-4 overflow-y-auto px-0.5 py-2">
+            {tab === 'sessions' && (
+              <>
+                {campaign?.sessions.map((session: Session) => (
+                  <BtnAuth
+                    key={session.id}
+                    className="timing flex w-full items-center justify-between gap-4"
+                    onClick={() => navigate(`sessions/${session.id}`)}
+                  >
+                    <div className="flex w-full items-center gap-4">
+                      <EntityAvater entity={session} />
+
+                      <p className="font-semibold">{session.name}</p>
+                      <p className="text-right">
+                        {format(session.createdAt, 'PP')}
+                      </p>
+                    </div>
+                  </BtnAuth>
+                ))}
+              </>
+            )}
+            {tab === 'factions' && (
+              <>
+                {campaign?.factions.map((faction: Faction) => (
+                  <BtnAuth
+                    key={faction.id}
+                    className="timing flex w-full items-center justify-between"
+                    onClick={() => navigate(`factions/${faction.id}`)}
+                  >
+                    <div className="flex w-full items-center gap-4">
+                      <EntityAvater entity={faction} />
+                      <p className="font-semibold !text-inherit">
+                        {faction.name}
+                      </p>
+                    </div>
+                  </BtnAuth>
+                ))}
+              </>
+            )}
+          </div>
           <Divider className="col-span-2" />
           <CharacterList
             characterIds={campaign?.characters.map((character) => character.id)}

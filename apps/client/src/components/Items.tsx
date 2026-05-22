@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import InputField from './InputField';
+import InputField from './formFields/InputField';
 import { FieldApi } from '@tanstack/react-form';
 import Loading from './Loading';
 import useBaseItems from '../hooks/useBaseItems';
@@ -9,7 +9,7 @@ import { LayoutContext } from '../contexts/LayoutContext';
 import Icon from '@mdi/react';
 import { mdiCropSquare, mdiGrid, mdiLinkVariant, mdiSync } from '@mdi/js';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
-import InputSelectField from './InputSelectField';
+import InputSelectField from './formFields/InputSelectField';
 import { capitalCase } from 'change-case';
 import ItemCard from './ItemCard';
 import BtnAuth from './buttons/BtnAuth';

@@ -4,7 +4,8 @@ import { AuthContext } from '../contexts/AuthContext';
 import { Condition } from 'src/types/condition';
 import ItemCardSmall from './ItemCardSmall';
 import { FormApi } from '@tanstack/react-form';
-import InputField from './InputField';
+import InputField from './formFields/InputField';
+import InputFieldCheckbox from './formFields/InputFieldCheckbox';
 
 const ConditionCard = ({
   condition,
@@ -80,21 +81,20 @@ const ConditionCard = ({
               null;
 
             return (
-              <input
-                className="size-6"
-                type="checkbox"
+              <InputFieldCheckbox
+                value={condition.id}
                 checked={conditionData}
-                onChange={() => {
+                onChange={(value) => {
                   if (!conditionData) {
                     field.handleChange([
                       ...field.state.value,
-                      { conditionId: condition.id, stacks: null },
+                      { conditionId: value, stacks: null },
                     ]);
                   } else {
                     field.handleChange(
                       field.state.value.filter(
                         (c: { conditionId: number; stacks: number | null }) =>
-                          c.conditionId !== condition.id,
+                          c.conditionId !== value,
                       ),
                     );
                   }

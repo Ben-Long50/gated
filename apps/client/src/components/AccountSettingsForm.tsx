@@ -1,5 +1,5 @@
 import Loading from './Loading';
-import InputField from './InputField';
+import InputField from './formFields/InputField';
 import FormLayout from '../layouts/FormLayout';
 import ArrowHeader2 from './ArrowHeader2';
 import useUpdateAccountMutation from '../hooks/useUpdateAccountMutation/useUpdateAccountMutation';

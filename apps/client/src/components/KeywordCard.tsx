@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import { Keyword, KeywordReference } from 'src/types/keyword';
 import ItemCardSmall from './ItemCardSmall';
-import InputField from './InputField';
+import InputField from './formFields/InputField';
 import { FieldApi } from '@tanstack/react-form';
+import InputFieldCheckbox from './formFields/InputFieldCheckbox';
 
 const KeywordCard = ({
   keyword,
@@ -72,21 +73,17 @@ const KeywordCard = ({
         <p className="text-secondary">{keyword.description}</p>
       </ItemCardSmall>
       {mode === 'form' && (
-        <input
-          className="size-6 shrink-0"
-          type="checkbox"
+        <InputFieldCheckbox
+          value={keyword.id}
           checked={!!activeKeyword}
-          onChange={() => {
+          onChange={(value) => {
             if (!activeKeyword) {
-              field.handleChange([
-                ...field.state.value,
-                { keywordId: keyword.id },
-              ]);
+              field.handleChange([...field.state.value, { keywordId: value }]);
             } else {
               field.handleChange(
                 field.state.value?.filter(
                   (item: { keywordId: number; value?: number }) =>
-                    item.keywordId !== keyword.id,
+                    item.keywordId !== value,
                 ),
               );
             }

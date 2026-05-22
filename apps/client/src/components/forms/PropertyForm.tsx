@@ -1,12 +1,12 @@
-import InputField from '../InputField';
+import InputField from '../formFields/InputField';
 import Loading from '../Loading';
 import { useParams } from 'react-router-dom';
 import ArrowHeader2 from '../ArrowHeader2';
 import PictureField from '../formFields/PictureField';
-import TextAreaField from '../TextAreaField';
+import TextAreaField from '../formFields/TextAreaField';
 import useCreatePropertyMutation from 'src/hooks/property hooks/useCreatePropertyMutation/useCreatePropertyMutation';
 import usePropertyQuery from 'src/hooks/property hooks/usePropertyQuery/usePropertyQuery';
-import InputSelectField from '../InputSelectField';
+import InputSelectField from '../formFields/InputSelectField';
 import usePropertyForm from 'src/hooks/form hooks/usePropertyForm';
 import FormLayout from 'src/layouts/FormLayout';
 

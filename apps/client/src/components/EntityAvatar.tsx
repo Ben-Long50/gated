@@ -5,13 +5,14 @@ import constructName from 'src/utils/constructName';
 import { Gang } from 'src/types/gang';
 import { Faction } from 'src/types/faction';
 import { Character } from 'src/types/character';
+import { Campaign, Session } from 'src/types/campaign';
 
 const EntityAvater = ({
   entity,
   className,
   style,
 }: {
-  entity: Faction | Gang | Character;
+  entity: Campaign | Session | Faction | Gang | Character;
   className?: string;
   style?: CSSProperties;
 }) => {

@@ -3,6 +3,7 @@ import BtnRect from '../buttons/BtnRect';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { capitalCase } from 'change-case';
 import ArrowHeader3 from '../ArrowHeader3';
+import InputFieldCheckbox from './InputFieldCheckbox';
 
 const NpcPreferenceField = ({ form }: { form: FormApi }) => {
   const navigate = useNavigate();
@@ -25,20 +26,19 @@ const NpcPreferenceField = ({ form }: { form: FormApi }) => {
                   <ArrowHeader3 title="Npc Types" />
                   {npcTypes.map((type) => (
                     <div className="flex items-center justify-between">
-                      <p>{capitalCase(type)}</p>
-                      <input
-                        type="checkbox"
-                        className="size-7"
+                      <InputFieldCheckbox
+                        label={capitalCase(type)}
+                        value={type}
                         checked={field.state.value.includes(type)}
-                        onChange={() => {
-                          if (field.state.value.includes(type)) {
+                        onChange={(value) => {
+                          if (field.state.value.includes(value)) {
                             field.handleChange(
                               field.state.value.filter(
-                                (t: string) => t !== type,
+                                (t: string) => t !== value,
                               ),
                             );
                           } else {
-                            field.handleChange([...field.state.value, type]);
+                            field.handleChange([...field.state.value, value]);
                           }
                         }}
                       />

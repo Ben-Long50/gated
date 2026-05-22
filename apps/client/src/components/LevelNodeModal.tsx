@@ -3,13 +3,14 @@ import BtnRect from './buttons/BtnRect';
 import Modal from './modals/Modal';
 import Divider from './Divider';
 import ArrowHeader3 from './ArrowHeader3';
-import InputSelectField from './InputSelectField';
+import InputSelectField from './formFields/InputSelectField';
 import { useParams } from 'react-router-dom';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import { sentenceCase } from 'change-case';
 import useAllocateLevelNodesMutation from 'src/hooks/gang hooks/useAllocateLevelNodesMutation/useAllocateLevelNodesMutation';
 import useGang from 'src/hooks/useGang';
 import Loading from './Loading';
+import InputFieldCheckbox from './formFields/InputFieldCheckbox';
 
 const LevelNodeModal = () => {
   const { campaignId, gangId } = useParams();
@@ -199,31 +200,28 @@ const LevelNodeModal = () => {
           <div className="flex w-full flex-col gap-8">
             <ArrowHeader3 title="Level Node Bonuses" />
             {reputationBonusData.map((bonus) => (
-              <div className="flex w-full items-center justify-between gap-8">
-                <p>{sentenceCase(bonus.description)}</p>
-                <input
-                  type="checkbox"
-                  className="size-7 shrink-0"
-                  checked={field.state.value.some(
-                    (b) => b.description === bonus.description,
-                  )}
-                  onChange={() => {
-                    if (
-                      field.state.value.some(
-                        (b) => b.description === bonus.description,
-                      )
-                    ) {
-                      field.handleChange(
-                        field.state.value.filter(
-                          (b) => b.description !== bonus.description,
-                        ),
-                      );
-                    } else {
-                      field.handleChange([...field.state.value, bonus]);
-                    }
-                  }}
-                />
-              </div>
+              <InputFieldCheckbox
+                label={sentenceCase(bonus.description)}
+                value={bonus}
+                checked={field.state.value.some(
+                  (b) => b.description === bonus.description,
+                )}
+                onChange={(value) => {
+                  if (
+                    field.state.value.some(
+                      (b) => b.description === value.description,
+                    )
+                  ) {
+                    field.handleChange(
+                      field.state.value.filter(
+                        (b) => b.description !== value.description,
+                      ),
+                    );
+                  } else {
+                    field.handleChange([...field.state.value, value]);
+                  }
+                }}
+              />
             ))}
           </div>
         )}

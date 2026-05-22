@@ -3,11 +3,12 @@ import BtnRect from './buttons/BtnRect';
 import Modal from './modals/Modal';
 import useCharacters from 'src/hooks/useCharacters';
 import Loading from './Loading';
-import InputField from './InputField';
+import InputField from './formFields/InputField';
 import { Character } from 'src/types/character';
 import Divider from './Divider';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import CharacterCardXSmall from './CharacterCardXSmall';
+import InputFieldCheckbox from './formFields/InputFieldCheckbox';
 
 const CharacterSelectModal = () => {
   const { campaignId, gangId } = useParams();
@@ -61,20 +62,17 @@ const CharacterSelectModal = () => {
               />
               <form.Field name="characterIds">
                 {(field) => (
-                  <input
-                    className="size-6 justify-self-center"
-                    type="checkbox"
+                  <InputFieldCheckbox
+                    value={character.id}
                     checked={field.state.value.some(
                       (id: number) => character.id === id,
                     )}
-                    onChange={() => {
+                    onChange={(value) => {
                       field.handleChange((prev: number[]) => {
-                        if (prev.some((id: number) => character.id === id)) {
-                          return prev.filter(
-                            (id: number) => character.id !== id,
-                          );
+                        if (prev.some((id: number) => value === id)) {
+                          return prev.filter((id: number) => value !== id);
                         } else {
-                          return [...prev, character.id];
+                          return [...prev, value];
                         }
                       });
                     }}

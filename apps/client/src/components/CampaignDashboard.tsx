@@ -1,7 +1,6 @@
 import { useContext } from 'react';
 import { AuthContext } from 'src/contexts/AuthContext';
 import userLimits from 'src/utils/userLimits';
-import { ThemeContext } from 'src/contexts/ThemeContext';
 import ArrowHeader3 from './ArrowHeader3';
 import Divider from './Divider';
 import Campaigns from './Campaigns';
@@ -9,7 +8,6 @@ import Container from './Container';
 
 const CampaignDashboard = () => {
   const { user } = useContext(AuthContext);
-  const { accentPrimary } = useContext(ThemeContext);
 
   const limits = userLimits[user.role];
 
@@ -20,42 +18,39 @@ const CampaignDashboard = () => {
   const pendingCampaignCount = user.pendingCampaigns.length;
 
   return (
-    <div className="flex w-full max-w-8xl flex-col items-center gap-8">
-      <h1>Camaigns</h1>
-      <Container>
-        <div className="flex w-full flex-col gap-4">
-          <ArrowHeader3 title="Campaign Limits" />
-          <div className="flex items-center justify-between gap-4">
-            <p>Membership Level</p>
-            <p>{limits.roleName}</p>
-          </div>
-          <Divider />
-          <div className="flex items-center justify-between gap-4">
-            <p>Owner Campaigns</p>
-            <p>
-              {ownerCampaignCount} / {limits.ownerCampaigns}
-            </p>
-          </div>
-          <div className="flex items-center justify-between gap-4">
-            <p>Campaign Player Limit</p>
-            <p>{limits.campaignPlayers}</p>
-          </div>
-          <Divider />
-          <div className="flex items-center justify-between gap-4">
-            <p>Player Campaigns</p>
-            <p>
-              {playerCamapignCount} / {limits.playerCampaigns}
-            </p>
-          </div>
-          <div className="flex items-center justify-between gap-4">
-            <p>Pending Campaigns</p>
-            <p>{pendingCampaignCount}</p>
-          </div>
+    <>
+      <div className="flex w-full flex-col gap-4">
+        <ArrowHeader3 title="Campaign Limits" />
+        <div className="flex items-center justify-between gap-4">
+          <p>Membership Level</p>
+          <p>{limits.roleName}</p>
         </div>
         <Divider />
-        <Campaigns />
-      </Container>
-    </div>
+        <div className="flex items-center justify-between gap-4">
+          <p>Owner Campaigns</p>
+          <p>
+            {ownerCampaignCount} / {limits.ownerCampaigns}
+          </p>
+        </div>
+        <div className="flex items-center justify-between gap-4">
+          <p>Campaign Player Limit</p>
+          <p>{limits.campaignPlayers}</p>
+        </div>
+        <Divider />
+        <div className="flex items-center justify-between gap-4">
+          <p>Player Campaigns</p>
+          <p>
+            {playerCamapignCount} / {limits.playerCampaigns}
+          </p>
+        </div>
+        <div className="flex items-center justify-between gap-4">
+          <p>Pending Campaigns</p>
+          <p>{pendingCampaignCount}</p>
+        </div>
+      </div>
+      <Divider />
+      <Campaigns />
+    </>
   );
 };
 

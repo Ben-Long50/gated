@@ -7,7 +7,7 @@ import useCampaignCharacters from 'src/hooks/useCampaignCharacters';
 import { useForm } from '@tanstack/react-form';
 import Icon from '@mdi/react';
 import { mdiSync } from '@mdi/js';
-import InputField from './InputField';
+import InputField from './formFields/InputField';
 import ArrowHeader1 from './ArrowHeader1';
 import ThemeContainer from './ThemeContainer';
 import { useContext } from 'react';

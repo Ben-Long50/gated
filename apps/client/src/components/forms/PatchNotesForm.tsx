@@ -1,6 +1,6 @@
 import FormLayout from '../../layouts/FormLayout';
 import { useParams } from 'react-router-dom';
-import InputField from '../InputField';
+import InputField from '../formFields/InputField';
 import LexicalEditor from '../lexical/LexicalEditor';
 import useCreatePatchNoteMutation from '../../hooks/useCreatePatchNoteMutation/useCreatePatchNoteMutation';
 import useDeletePatchNoteMutation from '../../hooks/useDeletePatchNoteMutation/useDeletePatchNoteMutation';
