@@ -38,7 +38,7 @@ import Gangs from 'src/components/Gangs';
 import GangPage from 'src/components/GangPage';
 import ReputationPointModal from 'src/components/ReputationPointModal';
 import LevelNodeModal from 'src/components/LevelNodeModal';
-import CharacterLevelsModal from 'src/components/CharacterLevelsModal';
+import CharacterLevelsModal from 'src/components/characterComponents/CharacterLevelsModal';
 import GangProfitsModal from 'src/components/GangProfitsModal';
 import PlayerSelectModal from 'src/components/modals/PlayerSelectModal';
 import GangCharacterSelectModal from 'src/components/CampaignCharacterSelectModal';
@@ -62,7 +62,7 @@ const CampaignTabRoutes = () => {
         <Route
           path=""
           element={
-            <Page>
+            <Page title="Campaign">
               <Campaign />
             </Page>
           }

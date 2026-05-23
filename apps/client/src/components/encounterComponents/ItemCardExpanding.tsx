@@ -1,5 +1,5 @@
 import useItemQuery from 'src/hooks/useItemQuery/useItemQuery';
-import CharacterPictureRound from '../CharacterPictureRound';
+import CharacterPictureRound from '../characterComponents/CharacterPictureRound';
 import ItemCardSmall from '../ItemCardSmall';
 import ArrowHeader3 from '../ArrowHeader3';
 import StatBars from '../StatBars';

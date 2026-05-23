@@ -1,9 +1,9 @@
 import { Character } from 'src/types/character';
-import ThemeContainer from './ThemeContainer';
+import ThemeContainer from '../ThemeContainer';
 import { useContext } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
-import ArrowHeader3 from './ArrowHeader3';
-import Divider from './Divider';
+import ArrowHeader3 from '../ArrowHeader3';
+import Divider from '../Divider';
 import CharacterCardSmall from './CharacterCardSmall';
 
 const CharacterListSmall = ({

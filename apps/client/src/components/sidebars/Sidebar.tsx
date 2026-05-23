@@ -3,7 +3,7 @@ import LinkSidebar from './LinkSidebar';
 import { LayoutContext } from '../../contexts/LayoutContext';
 import { mdiCartOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import CharacterPictureRound from '../CharacterPictureRound';
+import CharacterPictureRound from '../characterComponents/CharacterPictureRound';
 import { AuthContext } from 'src/contexts/AuthContext';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import useNavigationStore from 'src/stores/navbarStore';

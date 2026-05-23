@@ -1,5 +1,5 @@
 import useSocialCharactersQuery from 'src/hooks/social hooks/useCharactersQuery/useSocialCharactersQuery';
-import CharacterList from './CharacterList';
+import CharacterList from './characterComponents/CharacterList';
 
 const SocialCharacters = () => {
   const { data: characters } = useSocialCharactersQuery();

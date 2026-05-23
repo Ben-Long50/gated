@@ -5,7 +5,7 @@ import ArrowHeader2 from './ArrowHeader2';
 import Divider from './Divider';
 import ArrowHeader3 from './ArrowHeader3';
 import { Character } from 'src/types/character';
-import CharacterCardXSmall from './CharacterCardXSmall';
+import CharacterCardXSmall from './characterComponents/CharacterCardXSmall';
 import BtnIcon from './buttons/BtnIcon';
 import { mdiMinus, mdiPlus } from '@mdi/js';
 import useDistributeProfitsMutation from 'src/hooks/gang hooks/useDistributeProfitsMutation/useDistributeProfitsMutation';

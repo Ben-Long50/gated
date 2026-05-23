@@ -7,7 +7,7 @@ import { AuthContext } from 'src/contexts/AuthContext';
 import useCharacters from 'src/hooks/useCharacters';
 import Loading from '../Loading';
 import LinkSidebar from './LinkSidebar';
-import CharacterPictureRound from '../CharacterPictureRound';
+import CharacterPictureRound from '../characterComponents/CharacterPictureRound';
 import { useSearchParams } from 'react-router-dom';
 import CreateCharacterIcon from '../icons/CreateCharacterIcon';
 

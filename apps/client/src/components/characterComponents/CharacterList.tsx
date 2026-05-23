@@ -1,22 +1,22 @@
 import { useContext, useState } from 'react';
 import CharacterCard from './CharacterCard';
 import CharacterCardAlt from './CharacterCardAlt';
-import BtnRect from './buttons/BtnRect';
+import BtnRect from '../buttons/BtnRect';
 import { Link } from 'react-router-dom';
-import Loading from './Loading';
+import Loading from '../Loading';
 import { Character } from 'src/types/character';
-import { AuthContext } from '../contexts/AuthContext';
-import InputSelectField from './formFields/InputSelectField';
+import { AuthContext } from '../../contexts/AuthContext';
+import InputSelectField from '../formFields/InputSelectField';
 import useCampaignsQuery from 'src/hooks/useCampaignsQuery/useCampaignsQuery';
 import useCharacters from 'src/hooks/useCharacters';
-import InputField from './formFields/InputField';
+import InputField from '../formFields/InputField';
 import Icon from '@mdi/react';
 import { mdiCropSquare, mdiGrid, mdiSync } from '@mdi/js';
 import { useSearchParams, useParams } from 'react-router-dom';
-import BtnAuth from './buttons/BtnAuth';
-import ArrowHeader3 from './ArrowHeader3';
-import NavTabs from './NavTabs';
-import Divider from './Divider';
+import BtnAuth from '../buttons/BtnAuth';
+import ArrowHeader3 from '../ArrowHeader3';
+import NavTabs from '../NavTabs';
+import Divider from '../Divider';
 
 const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
   const { user } = useContext(AuthContext);
@@ -78,10 +78,8 @@ const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
           Non-Player Characters
         </BtnAuth>
       </NavTabs>
-      <Divider />
       <div className="flex flex-col gap-8">
         <div className="flex w-full flex-col gap-4">
-          <ArrowHeader3 title="Character Options" />
           {availableCampaigns && availableCampaigns?.length > 1 && (
             <InputSelectField
               label="Filter By Campaign"

@@ -1,36 +1,31 @@
 import { useContext } from 'react';
-import ThemeContainer from './ThemeContainer';
-import { ThemeContext } from '../contexts/ThemeContext';
+import ThemeContainer from '../ThemeContainer';
+import { ThemeContext } from '../../contexts/ThemeContext';
 import {
-  mdiAlphaTCircleOutline,
   mdiCheckCircleOutline,
   mdiCircleOutline,
   mdiCloseCircleOutline,
-  mdiStorefrontOutline,
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
-import BtnRect from './buttons/BtnRect';
-import Loading from './Loading';
-import ArrowHeader1 from './ArrowHeader1';
-import ArrowHeader3 from './ArrowHeader3';
-import Divider from './Divider';
+import BtnRect from '../buttons/BtnRect';
+import Loading from '../Loading';
+import ArrowHeader3 from '../ArrowHeader3';
+import Divider from '../Divider';
 import useCharacter from 'src/hooks/useCharacter';
 import CharacterPicture from './CharacterPicture';
-import ExpandingList from './ExpandingList';
-import ArrowHeader4 from './ArrowHeader4';
-import ItemCardSmall from './ItemCardSmall';
+import ExpandingList from '../ExpandingList';
+import ArrowHeader4 from '../ArrowHeader4';
+import ItemCardSmall from '../ItemCardSmall';
 import updateCharacterLevelMutation from 'src/hooks/character hooks/useUpdateCharacterLevelMutation/useUpdateCharacterLevelMutation';
-import constructName from 'src/utils/constructName';
-import PerkCard from './PerkCard';
-import AttributeList from './AttributeList';
+import PerkCard from '../PerkCard';
+import AttributeList from '../AttributeList';
 import getLevelBonusData from 'src/utils/getLevelBonusData';
 import { Perk } from 'src/types/perk';
 import usePerkQueries from 'src/hooks/usePerkQueries/usePerkQueries';
-import NpcTypeList from './NpcTypeList';
 import CharacterHeader from './CharacterHeader';
 
-const ProgressionPage = () => {
+const CharacterProgressionPage = () => {
   const { accentPrimary } = useContext(ThemeContext);
   const { characterId } = useParams();
   const navigate = useNavigate();
@@ -333,4 +328,4 @@ const ProgressionPage = () => {
   );
 };
 
-export default ProgressionPage;
+export default CharacterProgressionPage;

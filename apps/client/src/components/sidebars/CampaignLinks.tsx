@@ -23,7 +23,7 @@ import CombatIcon from '../icons/CombatIcon';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import PassIcon from '../icons/PassIcon';
 import { Gang } from 'src/types/gang';
-import CharacterPictureRound from '../CharacterPictureRound';
+import CharacterPictureRound from '../characterComponents/CharacterPictureRound';
 import constructName from 'src/utils/constructName';
 
 const CampaignLinks = () => {

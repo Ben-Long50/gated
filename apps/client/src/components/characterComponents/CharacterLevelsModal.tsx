@@ -1,12 +1,12 @@
 import { useParams } from 'react-router-dom';
-import Modal from './modals/Modal';
+import Modal from '../modals/Modal';
 import useGang from 'src/hooks/useGang';
-import ArrowHeader2 from './ArrowHeader2';
-import Divider from './Divider';
-import ArrowHeader3 from './ArrowHeader3';
+import ArrowHeader2 from '../ArrowHeader2';
+import Divider from '../Divider';
+import ArrowHeader3 from '../ArrowHeader3';
 import { Character } from 'src/types/character';
 import CharacterCardXSmall from './CharacterCardXSmall';
-import BtnRect from './buttons/BtnRect';
+import BtnRect from '../buttons/BtnRect';
 import useUpdateCharacterLevelMutation from 'src/hooks/character hooks/useUpdateCharacterLevelMutation/useUpdateCharacterLevelMutation';
 
 const CharacterLevelsModal = () => {

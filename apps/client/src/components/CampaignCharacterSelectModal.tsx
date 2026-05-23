@@ -8,7 +8,7 @@ import InputField from './formFields/InputField';
 import { Character } from 'src/types/character';
 import { Fragment } from 'react/jsx-runtime';
 import Divider from './Divider';
-import CharacterCardXSmall from './CharacterCardXSmall';
+import CharacterCardXSmall from './characterComponents/CharacterCardXSmall';
 import InputFieldCheckbox from './formFields/InputFieldCheckbox';
 
 const GangCharacterSelectModal = () => {

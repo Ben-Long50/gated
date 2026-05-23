@@ -1,4 +1,4 @@
-import CharacterPictureRound from '../../CharacterPictureRound';
+import CharacterPictureRound from '../../characterComponents/CharacterPictureRound';
 import useCharacter from 'src/hooks/useCharacter';
 import Loading from '../../Loading';
 import { useDraggable } from '@dnd-kit/core';

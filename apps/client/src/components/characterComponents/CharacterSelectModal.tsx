@@ -1,14 +1,14 @@
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
-import BtnRect from './buttons/BtnRect';
-import Modal from './modals/Modal';
+import BtnRect from '../buttons/BtnRect';
+import Modal from '../modals/Modal';
 import useCharacters from 'src/hooks/useCharacters';
-import Loading from './Loading';
-import InputField from './formFields/InputField';
+import Loading from '../Loading';
+import InputField from '../formFields/InputField';
 import { Character } from 'src/types/character';
-import Divider from './Divider';
+import Divider from '../Divider';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import CharacterCardXSmall from './CharacterCardXSmall';
-import InputFieldCheckbox from './formFields/InputFieldCheckbox';
+import InputFieldCheckbox from '../formFields/InputFieldCheckbox';
 
 const CharacterSelectModal = () => {
   const { campaignId, gangId } = useParams();

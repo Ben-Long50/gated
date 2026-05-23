@@ -1,20 +1,18 @@
 import useCharacter from 'src/hooks/useCharacter';
 import CharacterPictureRound from './CharacterPictureRound';
 import CharacterStatBars from './CharacterStatBars';
-import Loading from './Loading';
-import ArrowHeader4 from './ArrowHeader4';
-import WardIcon from './icons/WardIcon';
-import SpeedIcon from './icons/SpeedIcon';
-import EvasionIcon from './icons/EvasionIcon';
-import ArmorIcon from './icons/ArmorIcon';
+import Loading from '../Loading';
+import ArrowHeader4 from '../ArrowHeader4';
+import WardIcon from '../icons/WardIcon';
+import SpeedIcon from '../icons/SpeedIcon';
+import EvasionIcon from '../icons/EvasionIcon';
+import ArmorIcon from '../icons/ArmorIcon';
 import useMapStore from 'src/stores/mapStore';
 import { motion } from 'motion/react';
-import ConditionTag from './ConditionTag';
+import ConditionTag from '../ConditionTag';
 import { useLayoutEffect, useRef, useState } from 'react';
-import CharacterRadialMenu from './radialMenus/characterRadialMenu/CharacterRadialMenu';
+import CharacterRadialMenu from '../radialMenus/characterRadialMenu/CharacterRadialMenu';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
-import PassIcon from './icons/PassIcon';
-import CrownIcon from './icons/CrownIcon';
 import Icon from '@mdi/react';
 import { mdiCrown } from '@mdi/js';
 

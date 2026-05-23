@@ -2,7 +2,7 @@ import { Route } from 'react-router-dom';
 import AffiliationForm from 'src/components/forms/AffiliationForm';
 import Cart from 'src/components/Cart';
 import CharacterAffiliations from 'src/components/CharacterAffiliations';
-import CharacterSheet from 'src/components/CharacterSheet';
+import CharacterSheet from 'src/components/characterComponents/CharacterSheet';
 import CharacterUpdateForm from 'src/components/forms/CharacterUpdateForm';
 import Deployments from 'src/components/Deployments';
 import Equipment from 'src/components/Equipment';

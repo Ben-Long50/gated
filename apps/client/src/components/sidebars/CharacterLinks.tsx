@@ -2,7 +2,7 @@ import constructName from 'src/utils/constructName';
 import CharacterIcon from '../icons/CharacterIcon';
 import Loading from '../Loading';
 import LinkSidebar from './LinkSidebar';
-import CharacterPictureRound from '../CharacterPictureRound';
+import CharacterPictureRound from '../characterComponents/CharacterPictureRound';
 import { useParams } from 'react-router-dom';
 import useCharacter from 'src/hooks/useCharacter';
 import InventoryIcon from '../icons/InventoryIcon';

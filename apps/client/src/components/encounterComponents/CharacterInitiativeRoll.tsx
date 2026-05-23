@@ -1,5 +1,5 @@
 import useCharacter from 'src/hooks/useCharacter';
-import CharacterPictureRound from '../CharacterPictureRound';
+import CharacterPictureRound from '../characterComponents/CharacterPictureRound';
 import ArrowHeader3 from '../ArrowHeader3';
 import Die from './Die';
 import { useContext, useEffect, useState } from 'react';

@@ -1,6 +1,6 @@
 import { Route } from 'react-router-dom';
 import Cart from 'src/components/Cart';
-import CharacterSheet from 'src/components/CharacterSheet';
+import CharacterSheet from 'src/components/characterComponents/CharacterSheet';
 import CharacterUpdateForm from 'src/components/forms/CharacterUpdateForm';
 import Notes from 'src/components/Notes';
 import NotesForm from 'src/components/forms/NotesForm';
@@ -8,7 +8,7 @@ import Resume from 'src/components/Resume';
 import ResumeForm from 'src/components/forms/ResumeForm';
 import Session from 'src/components/Session';
 import SessionForm from 'src/components/forms/SessionForm';
-import CharacterSelectModal from 'src/components/CharacterSelectModal';
+import CharacterSelectModal from 'src/components/characterComponents/CharacterSelectModal';
 
 const SessionRoutes = () => {
   return (

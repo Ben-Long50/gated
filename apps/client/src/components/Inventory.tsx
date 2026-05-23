@@ -23,7 +23,7 @@ import Loading from './Loading';
 import { Item } from 'src/types/item';
 import { useRef } from 'react';
 import NavTabs from './NavTabs';
-import CharacterHeader from './CharacterHeader';
+import CharacterHeader from './characterComponents/CharacterHeader';
 
 const Inventory = () => {
   const { characterId } = useParams();

@@ -1,21 +1,21 @@
 import { useContext } from 'react';
-import EquipIcon from './icons/EquipIcon';
-import StatBar from './StatBar';
-import { ThemeContext } from '../contexts/ThemeContext';
-import HealthIcon from './icons/HealthIcon';
-import SanityIcon from './icons/SanityIcon';
-import CyberIcon from './icons/CyberIcon';
+import EquipIcon from '../icons/EquipIcon';
+import StatBar from '../StatBar';
+import { ThemeContext } from '../../contexts/ThemeContext';
+import HealthIcon from '../icons/HealthIcon';
+import SanityIcon from '../icons/SanityIcon';
+import CyberIcon from '../icons/CyberIcon';
 import { CharacterStats } from 'src/types/character';
 import useCharacterStatMutation from 'src/hooks/character stat hooks/useCharacterStatMutation/useCharacterStatMutation';
-import InjuryIcon from './icons/InjuryIcon';
-import InsanityIcon from './icons/InsanityIcon';
+import InjuryIcon from '../icons/InjuryIcon';
+import InsanityIcon from '../icons/InsanityIcon';
 import Icon from '@mdi/react';
 import { mdiCircleOutline } from '@mdi/js';
-import BlockIcon from './icons/BlockIcon';
-import WardIcon from './icons/WardIcon';
-import ArmorIcon from './icons/ArmorIcon';
-import SpeedIcon from './icons/SpeedIcon';
-import EvasionIcon from './icons/EvasionIcon';
+import BlockIcon from '../icons/BlockIcon';
+import WardIcon from '../icons/WardIcon';
+import ArmorIcon from '../icons/ArmorIcon';
+import SpeedIcon from '../icons/SpeedIcon';
+import EvasionIcon from '../icons/EvasionIcon';
 
 const CharacterStatBars = ({
   stats,

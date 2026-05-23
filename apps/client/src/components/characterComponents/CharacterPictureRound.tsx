@@ -1,9 +1,9 @@
 import { CSSProperties, useContext } from 'react';
-import CloudinaryPicture from './CloudinaryPicture';
+import CloudinaryPicture from '../CloudinaryPicture';
 import { Character } from 'src/types/character';
 import { ThemeContext } from 'src/contexts/ThemeContext';
-import InjuryIcon from './icons/InjuryIcon';
-import InsanityIcon from './icons/InsanityIcon';
+import InjuryIcon from '../icons/InjuryIcon';
+import InsanityIcon from '../icons/InsanityIcon';
 import Icon from '@mdi/react';
 import { mdiAlphaTCircleOutline } from '@mdi/js';
 

@@ -8,7 +8,7 @@ import { useParams } from 'react-router-dom';
 import Divider from '../../Divider';
 import ArrowHeader3 from '../../ArrowHeader3';
 import { CampaignContext } from 'src/contexts/CampaignContext';
-import CharacterLocationCard from '../../CharacterLocationCard';
+import CharacterLocationCard from '../../characterComponents/CharacterLocationCard';
 import useDeleteCharacterLocationMutation from 'src/hooks/useDeleteCharacterLocationMutation/useDeleteCharacterLocationMutation';
 import Loading from 'src/components/Loading';
 

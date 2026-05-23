@@ -11,7 +11,7 @@ import InputSelectField from '../formFields/InputSelectField';
 import useCreateGangMutation from 'src/hooks/gang hooks/useCreateGangMutation/useCreateGangMutation';
 import useGangQuery from 'src/hooks/gang hooks/useGangQuery/useGangQuery';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
-import CharacterCardSmall from '../CharacterCardSmall';
+import CharacterCardSmall from '../characterComponents/CharacterCardSmall';
 import ArrowHeader3 from '../ArrowHeader3';
 import useGangForm from 'src/hooks/form hooks/useGangForm';
 import BtnAuth from '../buttons/BtnAuth';

@@ -4,7 +4,7 @@ import NpcPreferenceModal from 'src/components/modals/NpcPreferenceModal';
 import PerkLinkModal from 'src/components/modals/PerkLinkModal';
 import CharacterRoutes from './CharacterRoutes';
 import CharacterMenuRoutes from './CharacterMenuRoutes';
-import CharacterDashboard from 'src/components/CharacterDashboard';
+import CharacterDashboard from 'src/components/characterComponents/CharacterDashboard';
 import PictureLibraryModal from 'src/components/modals/PictureLibraryModal';
 import Page from 'src/components/Page';
 

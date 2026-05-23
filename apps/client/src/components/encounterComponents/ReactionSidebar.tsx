@@ -2,7 +2,7 @@ import useActions from 'src/hooks/useActions';
 import InputSelectField from '../formFields/InputSelectField';
 import useCharacter from 'src/hooks/useCharacter';
 import BtnRect from '../buttons/BtnRect';
-import CharacterPictureRound from '../CharacterPictureRound';
+import CharacterPictureRound from '../characterComponents/CharacterPictureRound';
 import ActionStatBars from '../ActionStatBars';
 import ArrowHeader4 from '../ArrowHeader4';
 import InputFieldCheckbox from '../formFields/InputFieldCheckbox';

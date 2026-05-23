@@ -6,7 +6,7 @@ import ItemCardSmall from '../ItemCardSmall';
 import Icon from '@mdi/react';
 import { mdiTriangleDown } from '@mdi/js';
 import ActionIcon from '../icons/ActionIcon';
-import CharacterPictureRound from '../CharacterPictureRound';
+import CharacterPictureRound from '../characterComponents/CharacterPictureRound';
 import ReactionIcon from '../icons/ReactionIcon';
 import parsePhaseAction from 'src/utils/parsePhaseAction';
 import { Fragment } from 'react/jsx-runtime';

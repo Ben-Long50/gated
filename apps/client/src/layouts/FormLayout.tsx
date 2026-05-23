@@ -7,7 +7,7 @@ import BtnAuth from 'src/components/buttons/BtnAuth';
 import Loading from 'src/components/Loading';
 import BtnRect from 'src/components/buttons/BtnRect';
 import Divider from 'src/components/Divider';
-import CharacterHeader from 'src/components/CharacterHeader';
+import CharacterHeader from 'src/components/characterComponents/CharacterHeader';
 
 type MutationType<TData = any, TVariables = any> = UseMutationResult<
   TData,

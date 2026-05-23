@@ -26,12 +26,12 @@ import ArrowHeader2 from './ArrowHeader2';
 import useCharacter from 'src/hooks/useCharacter';
 import ItemCard from './ItemCard';
 import CharacterIcon from './icons/CharacterIcon';
-import CharacterStatBars from './CharacterStatBars';
-import CharacterPicture from './CharacterPicture';
+import CharacterStatBars from './characterComponents/CharacterStatBars';
+import CharacterPicture from './characterComponents/CharacterPicture';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import InventoryIcon from './icons/InventoryIcon';
 import StatBarContainer from './StatBarContainer';
-import CharacterHeader from './CharacterHeader';
+import CharacterHeader from './characterComponents/CharacterHeader';
 
 const Equipment = () => {
   const { user } = useContext(AuthContext);

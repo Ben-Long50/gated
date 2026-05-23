@@ -1,11 +1,11 @@
 import useCharacter from 'src/hooks/useCharacter';
 import CharacterPictureRound from './CharacterPictureRound';
-import Loading from './Loading';
-import ArrowHeader4 from './ArrowHeader4';
+import Loading from '../Loading';
+import ArrowHeader4 from '../ArrowHeader4';
 import { useRef } from 'react';
-import CharacterRadialMenu from './radialMenus/characterRadialMenu/CharacterRadialMenu';
+import CharacterRadialMenu from '../radialMenus/characterRadialMenu/CharacterRadialMenu';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
-import LocationIcon from './icons/LocationIcon';
+import LocationIcon from '../icons/LocationIcon';
 import { useDraggable } from '@dnd-kit/core';
 
 const CharacterLocationCard = ({

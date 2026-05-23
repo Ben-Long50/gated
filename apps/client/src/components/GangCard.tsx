@@ -4,7 +4,7 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import BtnRect from './buttons/BtnRect';
 import { Link } from 'react-router-dom';
 import { Character } from 'src/types/character';
-import CharacterCardSmall from './CharacterCardSmall';
+import CharacterCardSmall from './characterComponents/CharacterCardSmall';
 import ArrowHeader2 from './ArrowHeader2';
 import Divider from './Divider';
 import ArrowHeader3 from './ArrowHeader3';

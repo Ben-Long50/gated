@@ -10,7 +10,7 @@ import useSessionQuery from '../../hooks/useSessionQuery/useSessionQuery';
 import PictureField from '../formFields/PictureField';
 import useSessionForm from 'src/hooks/form hooks/useSessionForm';
 import BtnAuth from '../buttons/BtnAuth';
-import CharacterCardXSmall from '../CharacterCardXSmall';
+import CharacterCardXSmall from '../characterComponents/CharacterCardXSmall';
 
 const SessionForm = () => {
   const { campaignId, sessionId } = useParams();

@@ -5,7 +5,7 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import AffiliationBar from './AffiliationBar';
 import AffiliationIcon from './icons/AffiliationIcon';
 import { LayoutContext } from '../contexts/LayoutContext';
-import CharacterPictureRound from './CharacterPictureRound';
+import CharacterPictureRound from './characterComponents/CharacterPictureRound';
 import ArrowHeader4 from './ArrowHeader4';
 import useAffiliationValueMutation from 'src/hooks/useAffiliationValueMutation/useAffiliationValueMutation';
 import { AuthContext } from 'src/contexts/AuthContext';

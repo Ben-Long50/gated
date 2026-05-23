@@ -11,7 +11,7 @@ import useCampaignQuery from '../hooks/useCampaignQuery/useCampaignQuery';
 import { LayoutContext } from '../contexts/LayoutContext';
 import CoverPicture from './CoverPicture';
 import { capitalCase } from 'change-case';
-import CharacterPictureRound from './CharacterPictureRound';
+import CharacterPictureRound from './characterComponents/CharacterPictureRound';
 import NoteIcon from './icons/NoteIcon';
 import BtnAuth from './buttons/BtnAuth';
 

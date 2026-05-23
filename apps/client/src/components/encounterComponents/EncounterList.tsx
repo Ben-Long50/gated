@@ -8,7 +8,7 @@ import Divider from '../Divider';
 import CloudinaryPicture from '../CloudinaryPicture';
 import useCombatQueries from 'src/hooks/encounter hooks/useCombatQueries/useCombatQueries';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
-import CharacterCardSmall from '../CharacterCardSmall';
+import CharacterCardSmall from '../characterComponents/CharacterCardSmall';
 import ArrowHeader3 from '../ArrowHeader3';
 import { socket } from 'src/socket';
 import { CampaignContext } from 'src/contexts/CampaignContext';

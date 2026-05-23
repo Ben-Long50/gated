@@ -7,7 +7,7 @@ import Divider from './Divider';
 import ThemeContainer from './ThemeContainer';
 import { useContext } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
-import CharacterListSmall from './CharacterListSmall';
+import CharacterListSmall from './characterComponents/CharacterListSmall';
 import { Map } from 'src/types/map';
 import ReputationBar from './ReputationBar';
 import useGang from 'src/hooks/useGang';

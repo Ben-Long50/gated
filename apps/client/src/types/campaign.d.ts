@@ -12,6 +12,7 @@ interface Campaign {
   ownerId: number;
   owner: User;
   date: { month: Month; day: number };
+  time: { hour: number; minute: number; second: number };
   calendar: Calendar;
   name: string;
   location: string;

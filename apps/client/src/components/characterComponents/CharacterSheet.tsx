@@ -1,28 +1,28 @@
 import { Fragment, useContext, useState } from 'react';
-import { AuthContext } from '../contexts/AuthContext';
-import ThemeContainer from './ThemeContainer';
-import { ThemeContext } from '../contexts/ThemeContext';
+import { AuthContext } from '../../contexts/AuthContext';
+import ThemeContainer from '../ThemeContainer';
+import { ThemeContext } from '../../contexts/ThemeContext';
 import { mdiTriangleDown } from '@mdi/js';
 import Icon from '@mdi/react';
-import PerkCard from './PerkCard';
-import AttributeCard from './AttributeCard';
-import { LayoutContext } from '../contexts/LayoutContext';
+import PerkCard from '../PerkCard';
+import AttributeCard from '../AttributeCard';
+import { LayoutContext } from '../../contexts/LayoutContext';
 import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
-import BtnRect from './buttons/BtnRect';
-import Loading from './Loading';
-import ArrowHeader3 from './ArrowHeader3';
-import Divider from './Divider';
-import BtnAuth from './buttons/BtnAuth';
+import BtnRect from '../buttons/BtnRect';
+import Loading from '../Loading';
+import ArrowHeader3 from '../ArrowHeader3';
+import Divider from '../Divider';
+import BtnAuth from '../buttons/BtnAuth';
 import useCharacter from 'src/hooks/useCharacter';
 import CharacterPicture from './CharacterPicture';
 import CharacterStatBars from './CharacterStatBars';
 import { capitalCase } from 'change-case';
-import ConditionTag from './ConditionTag';
-import ExpandingList from './ExpandingList';
-import ArrowHeader4 from './ArrowHeader4';
-import StatBarContainer from './StatBarContainer';
+import ConditionTag from '../ConditionTag';
+import ExpandingList from '../ExpandingList';
+import ArrowHeader4 from '../ArrowHeader4';
+import StatBarContainer from '../StatBarContainer';
 import constructName from 'src/utils/constructName';
-import NpcTypeList from './NpcTypeList';
+import NpcTypeList from '../NpcTypeList';
 import CharacterHeader from './CharacterHeader';
 
 const CharacterSheet = () => {
@@ -50,9 +50,9 @@ const CharacterSheet = () => {
 
   return (
     <>
-      <div className="grid grid-cols-2 items-center justify-between gap-8">
+      <div className="flex items-center justify-between gap-8">
         <CharacterHeader character={character} />
-        <div className="flex w-full items-center justify-end gap-2 sm:gap-8 lg:w-auto">
+        <div className="flex w-full grow items-center justify-end gap-2 sm:gap-8">
           <div className="flex flex-col items-center gap-1">
             <h3 className="text-primary text-xl font-semibold tracking-widest">
               Height

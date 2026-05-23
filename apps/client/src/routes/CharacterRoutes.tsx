@@ -2,9 +2,8 @@ import { Route } from 'react-router-dom';
 import AffiliationForm from 'src/components/forms/AffiliationForm';
 import Cart from 'src/components/Cart';
 import CharacterAffiliations from 'src/components/CharacterAffiliations';
-import CharacterSheet from 'src/components/CharacterSheet';
+import CharacterSheet from 'src/components/characterComponents/CharacterSheet';
 import CharacterUpdateForm from 'src/components/forms/CharacterUpdateForm';
-import Deployments from 'src/components/Deployments';
 import Equipment from 'src/components/Equipment';
 import Inventory from 'src/components/Inventory';
 import ItemUpgradeForm from 'src/components/forms/ItemUpgradeForm';
@@ -22,9 +21,9 @@ import Items from 'src/components/Items';
 import AffiliationModal from 'src/components/modals/AffiliationModal';
 import Modal from 'src/components/modals/Modal';
 import ItemPage from 'src/components/ItemPage';
-import ProgressionPage from 'src/components/ProgressionPage';
 import LevelBonusModal from 'src/components/LevelBonusModal';
 import Page from 'src/components/Page';
+import CharacterProgressionPage from 'src/components/characterComponents/CharacterProgressionPage';
 
 const CharacterRoutes = () => {
   return (
@@ -43,7 +42,7 @@ const CharacterRoutes = () => {
         path="progression"
         element={
           <Page title="Progression">
-            <ProgressionPage />
+            <CharacterProgressionPage />
           </Page>
         }
       >

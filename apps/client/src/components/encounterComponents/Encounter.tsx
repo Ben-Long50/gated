@@ -4,7 +4,7 @@ import Loading from '../Loading';
 import { mdiChevronDown, mdiCrown, mdiQueueFirstInLastOut } from '@mdi/js';
 import Icon from '@mdi/react';
 import EncounterGrid from './EncounterGrid';
-import CharacterCardSmall from '../CharacterCardSmall';
+import CharacterCardSmall from '../characterComponents/CharacterCardSmall';
 import CharacterOptions from './CharacterOptions';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import ActionSidebar from './ActionSidebar';

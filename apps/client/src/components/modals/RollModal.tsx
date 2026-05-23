@@ -4,7 +4,7 @@ import BtnRect from '../buttons/BtnRect';
 import Die from '../encounterComponents/Die';
 import ArrowHeader3 from '../ArrowHeader3';
 import constructName from 'src/utils/constructName';
-import CharacterPictureRound from '../CharacterPictureRound';
+import CharacterPictureRound from '../characterComponents/CharacterPictureRound';
 import Divider from '../Divider';
 import { capitalCase } from 'change-case';
 import { useContext } from 'react';

@@ -13,7 +13,6 @@ import { Faction } from 'src/types/faction';
 import { Character } from 'src/types/character';
 import ArrowHeader3 from './ArrowHeader3';
 import useCharacterQuery from 'src/hooks/useCharacterQuery/useCharacterQuery';
-import BtnRect from './buttons/BtnRect';
 import BtnAuth from './buttons/BtnAuth';
 
 const CharacterAffiliations = () => {

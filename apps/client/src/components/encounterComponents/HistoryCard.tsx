@@ -1,5 +1,5 @@
 import { capitalCase } from 'change-case';
-import CharacterPictureRound from '../CharacterPictureRound';
+import CharacterPictureRound from '../characterComponents/CharacterPictureRound';
 import Die from './Die';
 import { PhaseHistory } from 'src/types/encounter';
 

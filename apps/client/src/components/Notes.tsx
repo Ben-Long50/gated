@@ -9,7 +9,7 @@ import useCharacterQuery from '../hooks/useCharacterQuery/useCharacterQuery';
 import ArrowHeader3 from './ArrowHeader3';
 import NotesForm from './forms/NotesForm';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
-import CharacterPictureRound from './CharacterPictureRound';
+import CharacterPictureRound from './characterComponents/CharacterPictureRound';
 import BtnAuth from './buttons/BtnAuth';
 import constructName from 'src/utils/constructName';
 

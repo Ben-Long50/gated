@@ -1,4 +1,4 @@
-import CharacterCard from './CharacterCard';
+import CharacterCard from './characterComponents/CharacterCard';
 import { useParams, useSearchParams } from 'react-router-dom';
 import Loading from './Loading';
 import { Character } from 'src/types/character';

@@ -1,5 +1,5 @@
 import useCharacter from 'src/hooks/useCharacter';
-import CharacterPictureRound from '../CharacterPictureRound';
+import CharacterPictureRound from '../characterComponents/CharacterPictureRound';
 import ArrowHeader4 from '../ArrowHeader4';
 
 const CharacterName = ({ characterId }: { characterId: number }) => {

@@ -1,12 +1,12 @@
 import useCharacter from 'src/hooks/useCharacter';
-import CharacterPictureRound from '../CharacterPictureRound';
+import CharacterPictureRound from '../characterComponents/CharacterPictureRound';
 import ArrowHeader3 from '../ArrowHeader3';
 import { useContext, useRef, useState } from 'react';
 import EquippedItems from './EquippedItems';
 import BtnRect from '../buttons/BtnRect';
 import ActionIcon from '../icons/ActionIcon';
 import ReactionIcon from '../icons/ReactionIcon';
-import CharacterStatBars from '../CharacterStatBars';
+import CharacterStatBars from '../characterComponents/CharacterStatBars';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import ThemeContainer from '../ThemeContainer';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';

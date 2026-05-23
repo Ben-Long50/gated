@@ -9,7 +9,7 @@ import VehicleIcon from './icons/VehicleIcon';
 import DroneIcon from './icons/DroneIcon';
 import Icon from '@mdi/react';
 import { mdiCartOutline } from '@mdi/js';
-import CharacterPictureRound from './CharacterPictureRound';
+import CharacterPictureRound from './characterComponents/CharacterPictureRound';
 import ShopIcon from './icons/ShopIcon';
 import { useParams, useSearchParams } from 'react-router-dom';
 import useCharacter from 'src/hooks/useCharacter';
@@ -44,7 +44,7 @@ const Shop = () => {
     : null;
 
   return (
-    <div className="relative flex w-full max-w-6xl flex-col gap-8">
+    <div className="relative flex w-full flex-col gap-8">
       <div className="absolute left-2 top-2 flex items-center gap-4 sm:left-4 sm:top-4">
         <button
           className="group relative"
