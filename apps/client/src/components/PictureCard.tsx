@@ -1,19 +1,27 @@
 import { mdiImage } from '@mdi/js';
 import Icon from '@mdi/react';
 import CloudinaryPicture from './CloudinaryPicture';
+import { CSSProperties, ReactNode } from 'react';
 
 export const PictureCard = ({
   label,
   onClick,
   publicId,
+  className,
+  style,
+  children,
 }: {
   label?: string;
   onClick?: () => void;
   publicId: string;
+  className: string;
+  style: CSSProperties;
+  children: ReactNode;
 }) => {
   return (
     <button
-      className={`${label && 'pb-4'} bg-primary hover:border-accent timing shadow-color group flex w-full flex-col items-center overflow-hidden rounded-md border-2 border-zinc-800`}
+      className={`${className} ${label && 'pb-2'} bg-primary hover:border-accent timing shadow-color group flex w-full flex-col items-center overflow-hidden rounded-md border-2 border-zinc-800`}
+      style={style}
       onClick={onClick}
     >
       {publicId ? (
@@ -30,7 +38,8 @@ export const PictureCard = ({
           <Icon className="text-tertiary opacity-50" path={mdiImage} size={4} />
         </div>
       )}
-      {label && <p className="group-hover:text-accent timing">{label}</p>}
+      {children}
+      {label && <p className="group-hover:text-accent timing px-2">{label}</p>}
     </button>
   );
 };

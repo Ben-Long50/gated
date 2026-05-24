@@ -22,7 +22,7 @@ const IconBtnSmall = ({
     >
       {cloneElement(children, {
         className:
-          'timing text-tertiary group-hover:text-accent group-hover:bg-primary size-8',
+          'timing text-tertiary group-hover:text-accent group-hover:bg-primary size-7',
       })}
     </button>
   );

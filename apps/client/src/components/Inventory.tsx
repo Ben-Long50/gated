@@ -24,6 +24,7 @@ import { Item } from 'src/types/item';
 import { useRef } from 'react';
 import NavTabs from './NavTabs';
 import CharacterHeader from './characterComponents/CharacterHeader';
+import { PictureCard } from './PictureCard';
 
 const Inventory = () => {
   const { characterId } = useParams();
@@ -135,40 +136,25 @@ const Inventory = () => {
         >
           {items ? (
             items.map((item, index) => (
-              <div
-                className="group relative h-full cursor-pointer select-none overflow-hidden rounded-bl rounded-tr pl-1 clip-4"
-                style={{ backgroundColor: rarityColorMap[item.rarity] }}
+              <PictureCard
+                className="group relative border-opacity-50 hover:border-opacity-100"
+                label={item.name}
+                publicId={item.picture.publicId}
+                style={{ borderColor: rarityColorMap[item.rarity] }}
                 key={index}
-                onDoubleClick={(e) => {
-                  e.preventDefault();
+                onClick={() => {
+                  navigate(`items/${item.id}`);
                   handleDoubleClick(item);
                 }}
-                // onClick={(e) => {
-                //   e.preventDefault();
-                //   handleClick(item);
-                // }}
               >
                 {item.equipped === true && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-slate-950 bg-opacity-65">
-                    <Icon
-                      className="text-tertiary group-hover:text-secondary h-full"
-                      path={mdiCheckCircle}
-                      size={3}
-                    />
-                  </div>
-                )}
-                {item.picture?.imageUrl ? (
-                  <img
-                    className="aspect-square size-full"
-                    src={item.picture?.imageUrl}
-                    alt={item.name}
+                  <Icon
+                    className="timing text-tertiary group-hover:text-secondary absolute left-1 top-1"
+                    path={mdiCheckCircle}
+                    size={1.5}
                   />
-                ) : (
-                  <div className="bg-tertiary aspect-square h-full p-1 hover:opacity-80">
-                    <p className="my-auto text-center text-base">{item.name}</p>
-                  </div>
                 )}
-              </div>
+              </PictureCard>
             ))
           ) : (
             <h2 className="pl-4">???</h2>
