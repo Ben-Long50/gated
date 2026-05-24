@@ -1,4 +1,3 @@
-import BtnRect from '../buttons/BtnRect';
 import InputField from '../formFields/InputField';
 import Loading from '../Loading';
 import FormLayout from '../../layouts/FormLayout';
@@ -12,7 +11,6 @@ import useCreateGangMutation from 'src/hooks/gang hooks/useCreateGangMutation/us
 import useGangQuery from 'src/hooks/gang hooks/useGangQuery/useGangQuery';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import CharacterCardSmall from '../characterComponents/CharacterCardSmall';
-import ArrowHeader3 from '../ArrowHeader3';
 import useGangForm from 'src/hooks/form hooks/useGangForm';
 import BtnAuth from '../buttons/BtnAuth';
 
@@ -49,7 +47,7 @@ const GangForm = () => {
       <PictureField
         form={gangForm}
         sizeInfo={{
-          aspectRatio: '10/3',
+          aspectRatio: '3/1',
           maxHeight: '',
           minHeight: '',
         }}
@@ -92,31 +90,23 @@ const GangForm = () => {
       <Divider />
       <div className="flex flex-col gap-8">
         <ArrowHeader2 title="Gang Characters" />
-        <div className="bg-secondary shadow-color rounded-md p-4 shadow-md">
-          <ArrowHeader3 title="Leaders" />
-          <Divider />
-          <div className="flex w-full flex-col gap-4 sm:gap-8">
-            <gangForm.Subscribe selector={(state) => state.values.leaderIds}>
-              {(leaders) =>
-                leaders.length > 0 ? (
-                  leaders.map((id: number) => (
-                    <CharacterCardSmall
-                      characterList={true}
-                      characterId={id}
-                      expanding={false}
-                      active={false}
-                    />
-                  ))
-                ) : (
-                  <h4>N/A</h4>
-                )
-              }
-            </gangForm.Subscribe>
-          </div>
-        </div>
-        <div className="bg-secondary shadow-color rounded-md p-4 shadow-md">
-          <ArrowHeader3 title="Members" />
-          <Divider />
+        <div className="flex w-full flex-col gap-4 sm:gap-8">
+          <gangForm.Subscribe selector={(state) => state.values.leaderIds}>
+            {(leaders) =>
+              leaders.length > 0 ? (
+                leaders.map((id: number) => (
+                  <CharacterCardSmall
+                    characterList={true}
+                    characterId={id}
+                    expanding={false}
+                    active={false}
+                  />
+                ))
+              ) : (
+                <h4>N/A</h4>
+              )
+            }
+          </gangForm.Subscribe>
           <div className="flex w-full flex-col gap-4 sm:gap-8">
             <gangForm.Subscribe selector={(state) => state.values.characterIds}>
               {(characters) =>

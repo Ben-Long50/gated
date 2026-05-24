@@ -7,17 +7,19 @@ import Loading from './Loading';
 import InputField from './formFields/InputField';
 import { Character } from 'src/types/character';
 import { Fragment } from 'react/jsx-runtime';
-import Divider from './Divider';
 import CharacterCardXSmall from './characterComponents/CharacterCardXSmall';
 import InputFieldCheckbox from './formFields/InputFieldCheckbox';
+import useModalStore from 'src/stores/modalStore';
 
 const GangCharacterSelectModal = () => {
-  const { campaignId, gangId } = useParams();
+  const { campaignId } = useParams();
   const navigate = useNavigate();
 
   const { form } = useOutletContext();
 
   const { data: campaign } = useCampaignQuery(Number(campaignId));
+
+  const backgroundPath = useModalStore((state) => state.backgroundPath);
 
   const {
     characters,
@@ -35,7 +37,11 @@ const GangCharacterSelectModal = () => {
       button={
         <BtnRect
           ariaLabel="Select characters"
-          onClick={gangId ? () => form.handleSubmit() : () => navigate('..')}
+          onClick={() => {
+            if (backgroundPath) {
+              navigate(backgroundPath, { replace: true });
+            }
+          }}
         >
           Confirm Selection
         </BtnRect>
@@ -51,7 +57,6 @@ const GangCharacterSelectModal = () => {
         <h4>Character</h4>
         <h4 className="justify-self-center">Leader</h4>
         <h4 className="justify-self-center">Member</h4>
-        <Divider className="col-span-3 opacity-50" />
         {characters
           .filter((character) => character != null)
           .map((character: Character) => (
@@ -62,44 +67,75 @@ const GangCharacterSelectModal = () => {
                 characterId={character.id}
                 active={false}
               />
-              <form.Field name="leaderIds">
-                {(field) => (
-                  <InputFieldCheckbox
-                    value={character.id}
-                    checked={field.state.value.some(
-                      (id: number) => character.id === id,
-                    )}
-                    onChange={(value) => {
-                      field.handleChange((prev: number[]) => {
-                        if (prev.some((id: number) => value === id)) {
-                          return prev.filter((id: number) => value !== id);
-                        } else {
-                          return [...prev, value];
-                        }
-                      });
-                    }}
-                  />
-                )}
-              </form.Field>
-              <form.Field name="characterIds">
-                {(field) => (
-                  <InputFieldCheckbox
-                    value={character.id}
-                    checked={field.state.value.some(
-                      (id: number) => character.id === id,
-                    )}
-                    onChange={(value) => {
-                      field.handleChange((prev: number[]) => {
-                        if (prev.some((id: number) => value === id)) {
-                          return prev.filter((id: number) => value !== id);
-                        } else {
-                          return [...prev, value];
-                        }
-                      });
-                    }}
-                  />
-                )}
-              </form.Field>
+              <form.Subscribe selector={(state) => state.values.characterIds}>
+                {(characterIds) => {
+                  const inCharacters = characterIds.includes(character.id);
+
+                  return (
+                    <form.Field name="leaderIds">
+                      {(field) => {
+                        console.log(field.state.value);
+
+                        const checked = field.state.value.some(
+                          (id: number) => character.id === id,
+                        );
+
+                        return (
+                          <InputFieldCheckbox
+                            active={!inCharacters}
+                            value={character.id}
+                            checked={field.state.value.some(
+                              (id: number) => character.id === id,
+                            )}
+                            onChange={(value) => {
+                              field.handleChange((prev: number[]) =>
+                                checked
+                                  ? prev.filter(
+                                      (id: number) => Number(value) !== id,
+                                    )
+                                  : [...prev, Number(value)],
+                              );
+                            }}
+                          />
+                        );
+                      }}
+                    </form.Field>
+                  );
+                }}
+              </form.Subscribe>
+
+              <form.Subscribe selector={(state) => state.values.leaderIds}>
+                {(leaderIds) => {
+                  const inLeaders = leaderIds.includes(character.id);
+
+                  return (
+                    <form.Field name="characterIds">
+                      {(field) => {
+                        const checked = field.state.value.some(
+                          (id: number) => character.id === id,
+                        );
+
+                        return (
+                          <InputFieldCheckbox
+                            active={!inLeaders}
+                            value={character.id}
+                            checked={checked}
+                            onChange={(value) => {
+                              field.handleChange((prev: number[]) =>
+                                checked
+                                  ? prev.filter(
+                                      (id: number) => Number(value) !== id,
+                                    )
+                                  : [...prev, Number(value)],
+                              );
+                            }}
+                          />
+                        );
+                      }}
+                    </form.Field>
+                  );
+                }}
+              </form.Subscribe>
             </Fragment>
           ))}
       </div>

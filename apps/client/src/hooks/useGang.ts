@@ -3,9 +3,17 @@ import useGangQuery from './gang hooks/useGangQuery/useGangQuery';
 import calculateReputation from 'src/utils/calculateReputation';
 import calculateLevelNodes from 'src/utils/calculateLevelNodes';
 import useCharacters from './useCharacters';
+import useAffiliationQueries from './useAffiliationQueries/useAffiliationQueries';
+import { Affiliation } from 'src/types/faction';
 
 const useGang = (gangId: number) => {
   const { data: gang, isLoading } = useGangQuery(Number(gangId));
+
+  const { data: affiliations, isLoading: affiliationsLoading } =
+    useAffiliationQueries(
+      gang?.affiliations.map((affiliation: Affiliation) => affiliation.id) ||
+        [],
+    );
 
   const gangCharacters =
     gang?.leaders.length > 0 || gang?.characters.length > 0
@@ -122,6 +130,8 @@ const useGang = (gangId: number) => {
     0,
   );
 
+  const gangLoading = isLoading || affiliationsLoading;
+
   return {
     gang,
     characters,
@@ -132,7 +142,8 @@ const useGang = (gangId: number) => {
     leaderCount,
     memberCount,
     goonCount,
-    gangLoading: isLoading,
+    affiliations,
+    gangLoading,
   };
 };
 

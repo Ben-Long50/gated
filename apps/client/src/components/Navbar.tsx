@@ -1,7 +1,6 @@
 import { RefObject, useContext, useEffect, useLayoutEffect } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
-import BtnNavbar from './buttons/BtnNavbar';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { LayoutContext } from '../contexts/LayoutContext';
 import Icon from '@mdi/react';
 import { mdiBellOutline, mdiMenu, mdiMenuClose, mdiMenuOpen } from '@mdi/js';
@@ -11,11 +10,12 @@ import AccountPicture from './AccountPicture';
 import Divider from './Divider';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import useNavigationStore from 'src/stores/navbarStore';
+import LinkNavbar from './buttons/LinkNavbar';
 
 const Navbar = ({
   navbarRef,
 }: {
-  navbarRef: RefObject<null | HTMLElement>;
+  navbarRef: RefObject<null | HTMLDivElement>;
 }) => {
   const { user } = useContext(AuthContext);
   const { mobile } = useContext(LayoutContext);
@@ -103,83 +103,72 @@ const Navbar = ({
       </div>
       <NavMenuMobile>
         <Link className="w-full p-2" to="campaigns">
-          <BtnNavbar
+          <LinkNavbar
             className="w-full text-left"
             onClick={() => {
               setNavbar(false);
             }}
           >
             Campaigns
-          </BtnNavbar>
+          </LinkNavbar>
         </Link>
         <Divider />
         <Link className="w-full p-2" to="codex?tab=equipment">
-          <BtnNavbar
+          <LinkNavbar
             className="w-full text-left"
             onClick={() => {
               setNavbar(false);
             }}
           >
             Codex
-          </BtnNavbar>
+          </LinkNavbar>
         </Link>
         <Divider />
         <Link className="w-full p-2" to="characters">
-          <BtnNavbar
+          <LinkNavbar
             className="bg-primary text-left"
             onClick={() => {
               setNavbar(false);
             }}
           >
             Characters
-          </BtnNavbar>
+          </LinkNavbar>
         </Link>
       </NavMenuMobile>
     </nav>
   ) : (
-    <nav
+    <div
+      className="fixed left-0 right-0 top-0 z-30 col-span-2 flex justify-center"
       ref={navbarRef}
-      className="bg-primary shadow-color timing fixed top-0 z-30 flex w-full items-center justify-between gap-4 px-4 py-2 shadow-md"
     >
-      <Link to="/glam/codex">
-        <h2
-          className="text-shadow-color text-shadow -mb-2 pt-0.5 font-zen !text-4xl italic text-shadow-x-1 text-shadow-y-1"
-          style={{ color: accentPrimary }}
-        >
-          EDO
-        </h2>
-      </Link>
-      <div className="relative flex items-center justify-items-end gap-10">
-        {/* <Link to="social/characters">
-          <BtnNavbar className="bg-primary">Social</BtnNavbar>
-        </Link> */}
-        <Link to="codex?tab=equipment">
-          <BtnNavbar className="bg-primary">Codex</BtnNavbar>
+      <nav
+        className={`bg-primary timing shadow-color mx-auto mt-4 grid w-full max-w-9xl grid-cols-[1fr_2fr] items-center justify-center gap-4 rounded-md px-8 py-2 shadow-lg`}
+      >
+        <Link to="/glam/codex">
+          <h2
+            className="text-shadow-color text-shadow font-zen !text-4xl italic text-shadow-x-1 text-shadow-y-1"
+            style={{ color: accentPrimary }}
+          >
+            EDO
+          </h2>
         </Link>
-        <Link to="campaigns">
-          <BtnNavbar className="bg-primary">Campaigns</BtnNavbar>
-        </Link>
-        <Link to="characters?excludedNpcType=template">
-          <BtnNavbar className="bg-primary">Characters</BtnNavbar>
-        </Link>
-        <Link className="relative" to={`account/${user?.id}/notifications`}>
-          <Icon path={mdiBellOutline} className="text-secondary size-8" />
-          {/* {user?._count.receivedNotifications > 0 && (
-            <div
-              className="shadow-color absolute -right-1 -top-1 flex size-6 items-center justify-center rounded-full shadow-md"
-              style={{ backgroundColor: accentPrimary }}
-            >
-              <p className="text-sm font-semibold !text-zinc-900 sm:pt-0.5">
-                {user?._count?.receivedNotifications}
-              </p>
-            </div>
-          )} */}
-        </Link>
-        <Link to={`account/${user?.id}`} className="z-10 shrink-0">
-          <AccountPicture user={user} />
-        </Link>
-      </div>
-    </nav>
+        <div className="flex w-full items-center justify-end gap-8">
+          <div className="relative grid grow grid-cols-3 items-center justify-items-end gap-4">
+            <LinkNavbar path="codex?tab=equipment">Codex</LinkNavbar>
+            <LinkNavbar path="campaigns">Campaigns</LinkNavbar>
+            <LinkNavbar path="characters?excludedNpcType=template">
+              Characters
+            </LinkNavbar>
+          </div>
+          <Link className="relative" to={`account/${user?.id}/notifications`}>
+            <Icon path={mdiBellOutline} className="text-secondary size-8" />
+          </Link>
+          <NavLink to={`account/${user?.id}`}>
+            <AccountPicture user={user} />
+          </NavLink>
+        </div>
+      </nav>
+    </div>
   );
 };
 

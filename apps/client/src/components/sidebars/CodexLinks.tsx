@@ -121,79 +121,62 @@ const CodexLinks = () => {
           path="codex/items/?category=weapon&include=Drone Weapon"
         />
       </LinkListSidebar>
-      <LinkListSidebar
+      <LinkSidebar
         icon={
           <ModificationIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         title="Modifications"
-      >
-        <SubLinkSidebar
-          title="All Modifications"
-          path="codex/items?category=modifiaction"
-        />
-      </LinkListSidebar>
-      <LinkListSidebar
+        path="codex/items?category=modifiaction"
+      />
+      <LinkSidebar
         icon={
           <SackIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         title="Reusable Items"
-      >
-        <SubLinkSidebar
-          title="All Reusables"
-          path="codex/items?category=reusable"
-        />
-      </LinkListSidebar>
-      <LinkListSidebar
+        path="codex/items?category=reusable"
+      />
+      <LinkSidebar
         icon={
           <PotionIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         title="Consumable Items"
-      >
-        <SubLinkSidebar
-          title="All Consumables"
-          path="codex/items?category=consumable"
-        />
-      </LinkListSidebar>
-      <LinkListSidebar
+        path="codex/items?category=consumable"
+      />
+      <LinkSidebar
         icon={
           <PropertyIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         title="Properties"
-      >
-        <SubLinkSidebar title="All Properties" path="codex/properties" />
-      </LinkListSidebar>
-      <LinkListSidebar
+        path="codex/properties"
+      />
+      <LinkSidebar
         icon={
           <PerkIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         title="Perks"
-      >
-        <SubLinkSidebar title="All Perks" path="codex/perks" />
-      </LinkListSidebar>
-      <LinkListSidebar
+        path="codex/perks"
+      />
+      <LinkSidebar
         icon={
           <KeywordIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         title="Traits"
-      >
-        <SubLinkSidebar title="All Traits" path="codex/keywords" />
-      </LinkListSidebar>
-      <LinkListSidebar
+        path="codex/keywords"
+      />
+      <LinkSidebar
         icon={
           <ActionIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         title="Actions"
-      >
-        <SubLinkSidebar title="All Actions" path="codex/actions" />
-      </LinkListSidebar>
-      <LinkListSidebar
+        path="codex/actions"
+      />
+      <LinkSidebar
         icon={
           <ConditionIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         title="Conditions"
-      >
-        <SubLinkSidebar title="All conditions" path="codex/conditions" />
-      </LinkListSidebar>
+        path="codex/conditions"
+      />
       {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
         <LinkListSidebar
           title="Admin Codex Tools"

@@ -1,16 +1,18 @@
 import { mdiCheckboxBlankOutline, mdiCheckboxMarkedOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { useRef } from 'react';
+import { ReactNode, useRef } from 'react';
 
 const InputFieldCheckbox = ({
   className,
+  active = true,
   label,
   value,
   checked,
   onChange,
 }: {
   className?: string;
-  label?: string;
+  active?: boolean;
+  label?: ReactNode;
   value: any;
   checked: boolean;
   onChange: (value: any) => void;
@@ -19,7 +21,7 @@ const InputFieldCheckbox = ({
 
   return (
     <div
-      className={`${className} flex w-full items-center justify-between gap-8`}
+      className={`${className} ${label ? 'w-full justify-between' : 'justify-end'} flex items-center gap-8`}
     >
       {label && (
         <label
@@ -29,6 +31,7 @@ const InputFieldCheckbox = ({
         </label>
       )}
       <button
+        className={`${!active && 'pointer-events-none opacity-50'}`}
         onClick={(e) => {
           e.preventDefault();
           inputRef.current?.click();

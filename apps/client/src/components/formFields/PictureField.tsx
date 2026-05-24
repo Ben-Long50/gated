@@ -3,12 +3,14 @@ import ThemeContainer from '../ThemeContainer';
 import { useContext, useEffect, useState } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import Icon from '@mdi/react';
-import { mdiCloseBox, mdiImagePlus } from '@mdi/js';
+import { mdiCloseBox, mdiImagePlus, mdiMinus, mdiPlus } from '@mdi/js';
 import useGeneratePictureMutation from 'src/hooks/useGeneratePictureMutation/useGeneratePictureMutation';
 import TextAreaField from './TextAreaField';
 import BtnRect from '../buttons/BtnRect';
 import Loading from '../Loading';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import ArrowHeader4 from '../ArrowHeader4';
+import IconBtnSmall from '../buttons/IconBtnSmall';
 
 type SizeInfo = {
   aspectRatio: string;
@@ -28,7 +30,6 @@ const PictureField = ({
   const location = useLocation();
   const path = location.pathname.split('/');
 
-  const [aspectRatio, setAspectRatio] = useState(sizeInfo.aspectRatio);
   const [prompt, setPrompt] = useState('');
 
   const generatePicture = useGeneratePictureMutation();
@@ -100,7 +101,7 @@ const PictureField = ({
                   <div
                     className="bg-secondary h-full w-full overflow-hidden bg-black"
                     style={{
-                      aspectRatio,
+                      aspectRatio: sizeInfo.aspectRatio,
                       maxHeight: sizeInfo.maxHeight,
                       minHeight: sizeInfo.minHeight,
                     }}
@@ -130,6 +131,25 @@ const PictureField = ({
               }
             </form.Subscribe>
           </ThemeContainer>
+          <form.Field name="picture.position.y">
+            {(field) => (
+              <div className="flex items-center justify-between gap-4">
+                <IconBtnSmall
+                  active={field.state.value > 0}
+                  onClick={() => field.handleChange((prev) => prev - 10)}
+                >
+                  <Icon path={mdiMinus} />
+                </IconBtnSmall>
+                <p>Vertical Position ({field.state.value})</p>
+                <IconBtnSmall
+                  active={field.state.value < 100}
+                  onClick={() => field.handleChange((prev) => prev + 10)}
+                >
+                  <Icon path={mdiPlus} />
+                </IconBtnSmall>
+              </div>
+            )}
+          </form.Field>
           <BtnRect
             className="group"
             ariaLabel="Generate picture"
@@ -165,61 +185,6 @@ const PictureField = ({
           </BtnRect>
         </div>
       </div>
-      {/* <div className="items-centerv flex w-full flex-col items-start justify-between gap-4">
-        <ArrowHeader4 className="text-primary" title="Aspect Ratio Previews" />
-        <div className="grid w-full grid-cols-3 items-center gap-4">
-          <button
-            className={`${aspectRatio === '1/1' ? 'text-accent' : 'text-tertiary'} bg-tertiary timing hover:text-accent shadow-color rounded-md p-2 text-center font-semibold shadow-md`}
-            onClick={(e) => {
-              e.preventDefault();
-              setAspectRatio('1/1');
-            }}
-          >
-            1 : 1
-          </button>
-          <button
-            className={`${aspectRatio === '5/4' ? 'text-accent' : 'text-tertiary'} bg-tertiary timing hover:text-accent shadow-color rounded-md p-2 text-center font-semibold shadow-md`}
-            onClick={(e) => {
-              e.preventDefault();
-              setAspectRatio('5/4');
-            }}
-          >
-            5 : 4
-          </button>
-          <button
-            className={`${aspectRatio === '10/3' ? 'text-accent' : 'text-tertiary'} bg-tertiary timing hover:text-accent shadow-color rounded-md p-2 text-center font-semibold shadow-md`}
-            onClick={(e) => {
-              e.preventDefault();
-              setAspectRatio('10/3');
-            }}
-          >
-            10 : 3
-          </button>
-        </div>
-      </div>
-      <form.Field name="picture.position.y">
-        {(field) => (
-          <label className="flex flex-col gap-4" htmlFor="position">
-            <div className="flex justify-between">
-              <ArrowHeader4
-                className="text-primary"
-                title="Picture Position (Vertical)"
-              />
-              <h4>{field.state.value}%</h4>
-            </div>
-            <input
-              id="position"
-              name="picture.position.y"
-              className="w-full"
-              onChange={(e) => field.handleChange(Number(e.target.value))}
-              value={field.state.value}
-              type="range"
-              min={0}
-              max={100}
-            />
-          </label>
-        )}
-      </form.Field> */}
     </div>
   );
 };

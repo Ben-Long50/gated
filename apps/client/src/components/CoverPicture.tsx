@@ -1,20 +1,13 @@
 import { RefObject } from 'react';
 import { Picture } from 'src/types/picture';
 
-const CoverPicture = ({
-  ref,
-  picture,
-}: {
-  ref: RefObject;
-  picture: Picture;
-}) => {
+const CoverPicture = ({ picture }: { picture: Picture }) => {
   return (
     <div
-      ref={ref}
-      className="shadow-color absolute left-0 right-0 top-0 flex aspect-video items-center justify-center overflow-hidden shadow-lg"
+      className="shadow-color relative -mx-8 -mt-8 flex items-center justify-center overflow-hidden shadow-lg"
       style={{
         maskImage: 'linear-gradient(to top, black 0%, transparent 90%',
-        aspectRatio: 24 / 8,
+        aspectRatio: 3 / 1,
       }}
     >
       <img

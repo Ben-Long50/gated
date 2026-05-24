@@ -1,9 +1,7 @@
 import { useForm } from '@tanstack/react-form';
 import useActions from '../hooks/useActions';
 import ArrowHeader3 from './ArrowHeader3';
-import ThemeContainer from './ThemeContainer';
 import { useContext } from 'react';
-import { ThemeContext } from '../contexts/ThemeContext';
 import Loading from './Loading';
 import BtnRect from './buttons/BtnRect';
 import DieIcon from './icons/DieIcon';
@@ -21,7 +19,6 @@ import useCharacterQueries from 'src/hooks/useCharactersQuery/useCharacterQuerie
 
 const RollSimulator = () => {
   const { mobile } = useContext(LayoutContext);
-  const { accentPrimary } = useContext(ThemeContext);
   const { rolls, rolling } = useContext(CampaignContext);
   const navigate = useNavigate();
   const location = useLocation();
@@ -84,7 +81,6 @@ const RollSimulator = () => {
       <div
         className={`${mobile ? 'row-span-1' : 'col-start-2 row-start-1 row-end-3'} mb-auto flex flex-col items-start justify-start gap-8`}
       >
-        <ArrowHeader3 title="Roll Options" />
         <rollForm.Field name="actionId">
           {(field) => (
             <InputSelectField
@@ -95,52 +91,45 @@ const RollSimulator = () => {
             />
           )}
         </rollForm.Field>
-        <ThemeContainer
-          className="w-full"
-          borderColor={accentPrimary}
-          chamfer="small"
-        >
-          <p className="!text-accent bg-primary absolute -top-2 left-3.5 px-1.5 text-base">
-            Modifiers
-          </p>
-          <div className="relative flex w-full flex-col gap-4 p-4 pt-6">
-            <rollForm.Field name="modifiers">
-              {(field) => {
-                const modifiers = [
-                  'push',
-                  'booming',
-                  'dooming',
-                  'lucky',
-                  'unlucky',
-                ];
-                return (
-                  <>
-                    {modifiers.map((modifier) => (
-                      <InputFieldCheckbox
-                        key={modifier}
-                        label={capitalCase(modifier)}
-                        value={modifier}
-                        checked={field.state.value.includes(modifier)}
-                        onChange={(value) => {
-                          if (field.state.value.includes(value)) {
-                            rollForm.setFieldValue('modifiers', (prev) =>
-                              prev.filter((modifier) => modifier !== value),
-                            );
-                          } else {
-                            rollForm.setFieldValue('modifiers', (prev) => [
-                              ...prev,
-                              value,
-                            ]);
-                          }
-                        }}
-                      />
-                    ))}
-                  </>
-                );
-              }}
-            </rollForm.Field>
-          </div>
-        </ThemeContainer>
+        <ArrowHeader3 title="Roll Modifiers" />
+        <div className="relative flex w-full flex-col gap-4">
+          <rollForm.Field name="modifiers">
+            {(field) => {
+              const modifiers = [
+                'push',
+                'booming',
+                'dooming',
+                'lucky',
+                'unlucky',
+              ];
+              return (
+                <>
+                  {modifiers.map((modifier) => (
+                    <InputFieldCheckbox
+                      key={modifier}
+                      label={capitalCase(modifier)}
+                      value={modifier}
+                      checked={field.state.value.includes(modifier)}
+                      onChange={(value) => {
+                        if (field.state.value.includes(value)) {
+                          rollForm.setFieldValue('modifiers', (prev) =>
+                            prev.filter((modifier) => modifier !== value),
+                          );
+                        } else {
+                          rollForm.setFieldValue('modifiers', (prev) => [
+                            ...prev,
+                            value,
+                          ]);
+                        }
+                      }}
+                    />
+                  ))}
+                </>
+              );
+            }}
+          </rollForm.Field>
+        </div>
+
         <rollForm.Field name="extraDice">
           {(field) => (
             <InputField

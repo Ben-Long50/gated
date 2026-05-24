@@ -38,14 +38,18 @@ const LinkListSidebar = ({
   const height = count * 60;
 
   return (
-    <div className={`timing relative flex flex-col clip-4`}>
-      <button
-        className="text-primary group z-10 flex items-center"
-        onClick={(e) => {
-          e.stopPropagation();
-          setDetailsOpen(!detailsOpen);
-        }}
-      >
+    <div
+      className={`timing relative flex flex-col clip-4`}
+      onMouseEnter={(e) => {
+        e.stopPropagation();
+        setDetailsOpen(true);
+      }}
+      onMouseLeave={(e) => {
+        e.stopPropagation();
+        setDetailsOpen(false);
+      }}
+    >
+      <div className="text-primary group z-10 flex items-center">
         {icon}
         {
           <div
@@ -65,7 +69,7 @@ const LinkListSidebar = ({
             </span>
           </div>
         }
-      </button>
+      </div>
       <div
         className={`timing flex flex-col gap-4`}
         style={

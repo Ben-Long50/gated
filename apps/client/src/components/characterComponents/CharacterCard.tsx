@@ -22,12 +22,6 @@ import LocationIcon from '../icons/LocationIcon';
 import BtnRect from '../buttons/BtnRect';
 import useCreateTemplateCharacterMutation from 'src/hooks/useCreateTemplateCharacterMutation/useCreateTemplateCharacterMutation';
 import useDeleteCharacterMutation from 'src/hooks/useDeleteCharacterMutation/useDeleteCharacterMutation';
-import Icon from '@mdi/react';
-import {
-  mdiAlphaGCircleOutline,
-  mdiAlphaSCircleOutline,
-  mdiAlphaTCircleOutline,
-} from '@mdi/js';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import constructName from 'src/utils/constructName';
 import NpcTypeList from '../NpcTypeList';
@@ -282,40 +276,6 @@ const CharacterCard = ({ characterId }: { characterId: number }) => {
                   </div>
                 </div>
               </div>
-              {gameMaster && (
-                <BtnRect
-                  className="group"
-                  ariaLabel="Create template character"
-                  type="button"
-                  onClick={() => deleteCharacter.mutate()}
-                >
-                  {deleteCharacter.isPending ? (
-                    <Loading
-                      className="group-hover:text-accent dark:text-gray-900"
-                      size={1.15}
-                    />
-                  ) : (
-                    'Delete Character'
-                  )}
-                </BtnRect>
-              )}
-              {character?.npcTypes.includes('template') && (
-                <BtnRect
-                  className="group"
-                  ariaLabel="Create template character"
-                  type="button"
-                  onClick={() => createTemplateCharacter.mutate()}
-                >
-                  {createTemplateCharacter.isPending ? (
-                    <Loading
-                      className="group-hover:text-accent dark:text-gray-900"
-                      size={1.15}
-                    />
-                  ) : (
-                    'Create Copy'
-                  )}
-                </BtnRect>
-              )}
             </div>
           </div>
         </ThemeContainer>

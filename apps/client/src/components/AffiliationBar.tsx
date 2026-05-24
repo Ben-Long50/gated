@@ -62,7 +62,7 @@ const AffiliationBar = ({
               }}
             >
               {affiliationValue === index - 4 && (
-                <div className="absolute right-0 top-0 z-10 -translate-y-2 translate-x-1/2">
+                <div className="absolute right-0 top-0 -translate-y-2 translate-x-1/2">
                   <Icon
                     className="text-accent"
                     path={mdiTriangleDown}
@@ -71,7 +71,7 @@ const AffiliationBar = ({
                 </div>
               )}
               {hoverValue === index && field && (
-                <div className="absolute right-0 top-0 z-10 -translate-y-2 translate-x-1/2">
+                <div className="absolute right-0 top-0 -translate-y-2 translate-x-1/2">
                   <Icon
                     className="text-accent opacity-50"
                     path={mdiTriangleDown}

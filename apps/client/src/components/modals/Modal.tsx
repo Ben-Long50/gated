@@ -45,7 +45,9 @@ const Modal = ({
           e.stopPropagation();
         }}
       >
-        <div className={`${className} flex flex-col items-center gap-4 p-8`}>
+        <div
+          className={`${className} flex flex-col items-center gap-4 p-8 sm:gap-8`}
+        >
           <BtnIcon
             active={true}
             onClick={() => {

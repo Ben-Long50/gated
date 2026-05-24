@@ -1,22 +1,20 @@
 import { Link } from 'react-router-dom';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import InputField from '../formFields/InputField';
 import BtnRect from '../buttons/BtnRect';
 import Icon from '@mdi/react';
 import { mdiFacebook, mdiGoogle } from '@mdi/js';
-import ThemeContainer from '../ThemeContainer';
-import { ThemeContext } from '../../contexts/ThemeContext';
 import BtnAuth from '../buttons/BtnAuth';
 import { useForm } from '@tanstack/react-form';
 import useSigninMutation from '../../hooks/useSigninMutation/useSigninMutation';
 import Loading from '../Loading';
-import ArrowHeader1 from '../ArrowHeader1';
 import apiUrl from 'src/utils/configureUrl';
+import Divider from '../Divider';
+import ArrowHeader1 from '../ArrowHeader1';
+import AuthFormLayout from './AuthFormLayout';
 
 const SigninForm = () => {
   const [errors, setErrors] = useState([]);
-
-  const { accentPrimary } = useContext(ThemeContext);
 
   const signinMutation = useSigninMutation(setErrors);
 
@@ -49,121 +47,108 @@ const SigninForm = () => {
   };
 
   return (
-    <ThemeContainer
-      chamfer="medium"
-      borderColor={accentPrimary}
-      className="mx-auto w-full"
-    >
-      <form
-        className="flex w-full flex-col gap-6 p-4 md:gap-8 md:p-8"
-        onSubmit={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          signinForm.handleSubmit();
-        }}
-      >
-        <ArrowHeader1 title="Sign in" />
-        <div className="flex flex-col gap-4 md:gap-6">
-          <signinForm.Field
-            name="email"
-            validators={{
-              onChange: ({ value }) =>
-                /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
-                  ? undefined
-                  : 'Email must be in a valid email format',
-            }}
-          >
-            {(field) => (
-              <InputField
-                label="Email"
-                type="email"
-                value={field.state.value}
-                onChange={(value) => field.handleChange(value)}
-              />
-            )}
-          </signinForm.Field>
-          <signinForm.Field
-            name="password"
-            validators={{
-              onChange: ({ value }) =>
-                value.length < 8
-                  ? 'Password must be at least 8 characters long'
-                  : undefined,
-            }}
-          >
-            {(field) => (
-              <InputField
-                type="password"
-                label="Password"
-                value={field.state.value}
-                onChange={(value) => field.handleChange(value)}
-              />
-            )}
-          </signinForm.Field>
-        </div>
-        <BtnRect
-          ariaLabel="Submit form"
-          type="submit"
-          className="group w-full min-w-40"
+    <AuthFormLayout form={signinForm}>
+      <ArrowHeader1 className="font-zen" title="Sign in" />
+      <div className="flex flex-col gap-4">
+        <signinForm.Field
+          name="email"
+          validators={{
+            onChange: ({ value }) =>
+              /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+                ? undefined
+                : 'Email must be in a valid email format',
+          }}
         >
-          {signinMutation.isPending ? (
-            <Loading
-              className="group-hover:text-accent dark:text-gray-900"
-              size={1.15}
+          {(field) => (
+            <InputField
+              label="Email"
+              type="email"
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
             />
-          ) : (
-            'Sign in'
           )}
-        </BtnRect>
-        <div className="text-tertiary -my-2 flex items-center">
-          <hr className="grow border-gray-400" />
-          <p className="mx-4 text-gray-400">or</p>
-          <hr className="grow border-gray-400" />
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <BtnAuth
-            onClick={() => {
-              googleSignin();
-            }}
-          >
-            <Icon
-              className="mr-2 stroke-inherit text-inherit"
-              path={mdiGoogle}
-              size={1.5}
+        </signinForm.Field>
+        <signinForm.Field
+          name="password"
+          validators={{
+            onChange: ({ value }) =>
+              value.length < 8
+                ? 'Password must be at least 8 characters long'
+                : undefined,
+          }}
+        >
+          {(field) => (
+            <InputField
+              type="password"
+              label="Password"
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
             />
-            Google
-          </BtnAuth>
-          <BtnAuth
-            onClick={() => {
-              facebookSignin();
-            }}
-          >
-            <Icon
-              className="mr-2 stroke-inherit text-inherit"
-              path={mdiFacebook}
-              size={1.5}
-            />
-            Facebook
-          </BtnAuth>
-        </div>
-        <p className="text-tertiary w-full text-center">
-          Don't have an account?
-          <Link to="/signup">
-            <span className="pl-2 hover:underline">Sign up</span>
-          </Link>
-        </p>
-        {errors?.length > 0 && (
-          <div className="flex flex-col gap-3 self-start">
-            <span className="text-primary">Error creating account:</span>
-            {errors?.map((error, index) => (
-              <p key={index} className="text-error">
-                {error}
-              </p>
-            ))}
-          </div>
+          )}
+        </signinForm.Field>
+      </div>
+      <BtnRect
+        ariaLabel="Submit form"
+        type="submit"
+        className="group w-full min-w-40"
+      >
+        {signinMutation.isPending ? (
+          <Loading
+            className="group-hover:text-accent dark:text-gray-900"
+            size={1.15}
+          />
+        ) : (
+          'Sign in'
         )}
-      </form>
-    </ThemeContainer>
+      </BtnRect>
+      <div className="flex items-center">
+        <Divider />
+        <p className="mx-4 text-gray-400">or</p>
+        <Divider />
+      </div>
+      <div className="grid grid-rows-2 gap-4">
+        <BtnAuth
+          onClick={() => {
+            googleSignin();
+          }}
+        >
+          <Icon
+            className="mr-2 stroke-inherit text-inherit"
+            path={mdiGoogle}
+            size={1.5}
+          />
+          Google
+        </BtnAuth>
+        <BtnAuth
+          onClick={() => {
+            facebookSignin();
+          }}
+        >
+          <Icon
+            className="mr-2 stroke-inherit text-inherit"
+            path={mdiFacebook}
+            size={1.5}
+          />
+          Facebook
+        </BtnAuth>
+      </div>
+      <p className="text-tertiary w-full text-center">
+        Don't have an account?
+        <Link to="/signup">
+          <span className="pl-2 hover:underline">Sign up</span>
+        </Link>
+      </p>
+      {errors?.length > 0 && (
+        <div className="flex flex-col gap-3 self-start">
+          <span className="text-primary">Error creating account:</span>
+          {errors?.map((error, index) => (
+            <p key={index} className="text-error">
+              {error}
+            </p>
+          ))}
+        </div>
+      )}
+    </AuthFormLayout>
   );
 };
 

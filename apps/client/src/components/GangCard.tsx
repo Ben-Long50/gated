@@ -2,88 +2,91 @@ import { useContext } from 'react';
 import ThemeContainer from './ThemeContainer';
 import { ThemeContext } from '../contexts/ThemeContext';
 import BtnRect from './buttons/BtnRect';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Character } from 'src/types/character';
 import CharacterCardSmall from './characterComponents/CharacterCardSmall';
 import ArrowHeader2 from './ArrowHeader2';
 import Divider from './Divider';
 import ArrowHeader3 from './ArrowHeader3';
-import { Gang } from 'src/types/gang';
+import CloudinaryPicture from './CloudinaryPicture';
+import useGang from 'src/hooks/useGang';
+import CharacterCardXSmall from './characterComponents/CharacterCardXSmall';
+import Loading from './Loading';
 
-const GangCard = ({ gang }: { gang: Gang }) => {
+const GangCard = ({ gangId }: { gangId: number }) => {
   const { accentPrimary } = useContext(ThemeContext);
+  const navigate = useNavigate();
 
-  const goonCount = gang.characters.filter(
-    (character: Character) =>
-      character.npcTypes && character.npcTypes.includes('goon'),
-  ).length;
+  const {
+    gang,
+    gangPoints,
+    reputationData,
+    memberCount,
+    goonCount,
+    gangLoading,
+  } = useGang(gangId);
+
+  if (gangLoading) {
+    return <Loading />;
+  }
 
   return (
     <ThemeContainer
       className="w-full"
       chamfer="large"
       borderColor={accentPrimary}
-      bgImageUrl={gang.picture}
       overflowHidden={true}
     >
-      <div className="flex flex-col items-center gap-8 p-6 md:flex-row">
-        <div className="absolute inset-0 bg-white bg-opacity-70 dark:bg-black dark:opacity-80" />
-        <div className="z-10 flex h-full w-full flex-col justify-between gap-4 md:gap-6">
+      <div className="relative grid w-full cursor-pointer select-none grid-cols-[1fr_1fr_4fr]">
+        <div className="-z-10 col-span-2 col-start-1 row-start-1">
+          <CloudinaryPicture
+            publicId={gang?.picture?.publicId}
+            position={gang?.picture?.position}
+            style={{
+              maskImage: 'linear-gradient(to right, black 0%, transparent 90%',
+            }}
+          />
+        </div>
+        <div className="col-span-2 col-start-2 row-start-1 flex h-full w-full flex-col justify-between gap-4 p-8 md:gap-6">
           <div className="flex flex-col gap-4">
             <div className="flex w-full items-center justify-between">
-              <ArrowHeader2 title={gang.name} />
-              <h2 className="!text-accent">
-                <h3 className="!text-accent inline">Gang Level </h3>
-                {gang.level}
-              </h2>
+              <ArrowHeader2 title={gang?.name} />
+              <p className="!text-accent font-zen text-2xl">
+                Level {gang?.level}
+              </p>
             </div>
             <div className="flex w-full items-start justify-between gap-8">
               <div className="flex w-full flex-col items-start gap-2">
-                <p>{`Reputation ${gang.reputation}`}</p>
+                <p>{`Reputation ${reputationData.reputationPoints}`}</p>
+                <p>{`Members ${memberCount}`}</p>
                 <p>{`Goons ${goonCount}`}</p>
               </div>
               <div className="flex w-full flex-col items-end gap-2">
-                <p>{`Gang Points ${gang.gangPoints}`}</p>
-                <p>{`Profits ${gang.profits}`}</p>
+                <p>{`Gang Points ${gangPoints}`}</p>
+                <p>{`Profits ${gang?.profits}`}</p>
               </div>
             </div>
             <Divider />
-            <div className="bg-primary shadow-color rounded-md p-4 shadow-md">
-              <ArrowHeader3 title="Leaders" />
-              <Divider />
-              <div className="flex flex-col gap-4">
-                {gang.leaders.map((character: Character) => (
-                  <CharacterCardSmall
-                    key={character.id}
-                    characterId={character.id}
-                    characterList={true}
-                    expanding={false}
-                    active={false}
-                  />
-                ))}
-              </div>
-            </div>
-            <div className="bg-primary shadow-color rounded-md p-4 shadow-md">
-              <ArrowHeader3 title="Members" />
-              <Divider />
-              <div className="flex flex-col gap-4">
-                {gang.characters.map((character: Character) => (
-                  <CharacterCardSmall
-                    key={character.id}
-                    characterId={character.id}
-                    characterList={true}
-                    expanding={false}
-                    active={false}
-                  />
-                ))}
-              </div>
+            <ArrowHeader3 title="Leaders" />
+            <div className="flex flex-col gap-4">
+              {gang?.leaders.map((character: Character) => (
+                <CharacterCardXSmall
+                  key={character.id}
+                  characterId={character.id}
+                  characterList={true}
+                  active={false}
+                />
+              ))}
             </div>
           </div>
-          <Link to={`${gang.id}`}>
-            <BtnRect ariaLabel="navigate to gang information w-full ">
-              Gang Info
-            </BtnRect>
-          </Link>
+          <BtnRect
+            ariaLabel="navigate to gang information w-full"
+            onClick={() =>
+              navigate(`/glam/campaigns/${gang?.campaignId}/gangs/${gang?.id}`)
+            }
+          >
+            Gang Info
+          </BtnRect>
         </div>
       </div>
     </ThemeContainer>

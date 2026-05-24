@@ -39,7 +39,9 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
     playerCharacters?.filter((character) => character?.userId === user.id) ||
     [];
 
-  const sidebarStyle = sidebar ? 'w-full max-w-96' : 'min-w-0 max-w-[68px]';
+  const sidebarStyle = sidebar
+    ? 'w-full max-w-[370px]'
+    : 'min-w-0 max-w-[68px]';
 
   const mobileSidebarStyle = sidebar
     ? 'w-full max-w-85dvw'
@@ -48,10 +50,10 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
   return (
     <nav
       ref={sidebarRef}
-      className={`${mobile ? mobileSidebarStyle : sidebarStyle} bg-secondary timing fixed z-20 col-start-1 row-start-1 flex overflow-x-hidden border-r`}
+      className={`${mobile ? mobileSidebarStyle : sidebarStyle} timing fixed z-20 col-start-1 row-start-1 ml-4 flex overflow-x-hidden`}
       style={{
-        height: `calc(100dvh - ${navbarHeight}px)`,
-        top: `${navbarHeight}px`,
+        top: mobile ? navbarHeight + 16 : 16,
+        bottom: 16,
         borderColor: accentPrimary,
       }}
       onMouseEnter={() => {
@@ -61,7 +63,7 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
         if (!mobile) setSidebar(false);
       }}
     >
-      <div className="scrollbar-secondary flex grow flex-col gap-4 overflow-y-auto overflow-x-hidden px-2 py-4">
+      <div className="scrollbar-secondary bg-secondary shadow-color flex w-full flex-col gap-4 overflow-y-auto overflow-x-hidden rounded-md px-2 py-4 shadow-lg">
         {activeCampaigns.length > 0 && (
           <LinkListSidebar
             icon={

@@ -11,7 +11,7 @@ const InputField = ({
 }: {
   label: string;
   value: string | number;
-  onChange: (value: string | number) => void;
+  onChange: (value: any) => void;
   type?: 'text' | 'number' | 'email' | 'password';
   errors?: string[];
   className?: string;

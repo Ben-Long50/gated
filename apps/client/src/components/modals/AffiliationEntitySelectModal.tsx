@@ -81,6 +81,7 @@ const AffiliationEntitySelectModal = () => {
       }
     >
       <h1>Select {capitalCase(tab)}s</h1>
+      <Divider />
       <div className="grid w-full grid-cols-3 items-center gap-4">
         <BtnAuth active={tab === 'faction'} onClick={() => setTab('faction')}>
           Factions
@@ -95,7 +96,6 @@ const AffiliationEntitySelectModal = () => {
           Characters
         </BtnAuth>
       </div>
-      <Divider className="col-span-3 opacity-50" />
       <div className="flex w-full flex-col items-center gap-4 overflow-y-auto">
         {tab === 'faction' &&
           factions
@@ -107,23 +107,29 @@ const AffiliationEntitySelectModal = () => {
               >
                 <EntityCard entity={faction} />
                 <form.Field name="factionIds">
-                  {(field) => (
-                    <InputFieldCheckbox
-                      value={faction.id}
-                      checked={field.state.value.some(
-                        (id: number) => faction.id === id,
-                      )}
-                      onChange={(value) => {
-                        field.handleChange((prev: number[]) => {
-                          if (prev.some((id: number) => value === id)) {
-                            return prev.filter((id: number) => value !== id);
-                          } else {
-                            return [...prev, value];
-                          }
-                        });
-                      }}
-                    />
-                  )}
+                  {(field) => {
+                    const checked = field.state.value.some(
+                      (id: number) => faction.id === Number(id),
+                    );
+
+                    return (
+                      <InputFieldCheckbox
+                        value={faction.id}
+                        checked={checked}
+                        onChange={(value) => {
+                          console.log(value);
+
+                          field.handleChange((prev: number[]) =>
+                            checked
+                              ? prev.filter(
+                                  (id: number) => Number(value) !== id,
+                                )
+                              : [...prev, Number(value)],
+                          );
+                        }}
+                      />
+                    );
+                  }}
                 </form.Field>
               </div>
             ))}
@@ -137,23 +143,27 @@ const AffiliationEntitySelectModal = () => {
               >
                 <EntityCard entity={gang} />
                 <form.Field name="gangIds">
-                  {(field) => (
-                    <InputFieldCheckbox
-                      value={gang.id}
-                      checked={field.state.value.some(
-                        (id: number) => gang.id === id,
-                      )}
-                      onChange={(value) => {
-                        field.handleChange((prev: number[]) => {
-                          if (prev.some((id: number) => value === id)) {
-                            return prev.filter((id: number) => value !== id);
-                          } else {
-                            return [...prev, value];
-                          }
-                        });
-                      }}
-                    />
-                  )}
+                  {(field) => {
+                    const checked = field.state.value.some(
+                      (id: number) => gang.id === Number(id),
+                    );
+
+                    return (
+                      <InputFieldCheckbox
+                        value={gang.id}
+                        checked={checked}
+                        onChange={(value) => {
+                          field.handleChange((prev: number[]) =>
+                            checked
+                              ? prev.filter(
+                                  (id: number) => Number(value) !== id,
+                                )
+                              : [...prev, Number(value)],
+                          );
+                        }}
+                      />
+                    );
+                  }}
                 </form.Field>
               </div>
             ))}
@@ -167,23 +177,27 @@ const AffiliationEntitySelectModal = () => {
               >
                 <EntityCard entity={character} />
                 <form.Field name="characterIds">
-                  {(field) => (
-                    <InputFieldCheckbox
-                      value={character.id}
-                      checked={field.state.value.some(
-                        (id: number) => character.id === id,
-                      )}
-                      onChange={(value) => {
-                        field.handleChange((prev: number[]) => {
-                          if (prev.some((id: number) => value === id)) {
-                            return prev.filter((id: number) => value !== id);
-                          } else {
-                            return [...prev, value];
-                          }
-                        });
-                      }}
-                    />
-                  )}
+                  {(field) => {
+                    const checked = field.state.value.some(
+                      (id: number) => character.id === Number(id),
+                    );
+
+                    return (
+                      <InputFieldCheckbox
+                        value={character.id}
+                        checked={checked}
+                        onChange={(value) => {
+                          field.handleChange((prev: number[]) =>
+                            checked
+                              ? prev.filter(
+                                  (id: number) => Number(value) !== id,
+                                )
+                              : [...prev, Number(value)],
+                          );
+                        }}
+                      />
+                    );
+                  }}
                 </form.Field>
               </div>
             ))}

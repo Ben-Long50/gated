@@ -60,6 +60,7 @@ const Calendar = () => {
           {campaign?.time.second}
         </p>
       </div>
+      {campaign?.events.length > 0 ? <p>Events</p> : <p>No upcoming events</p>}
       {(parts.includes('date') || parts.includes('time')) && (
         <Outlet context={{ date: campaign?.date, time: campaign?.time }} />
       )}

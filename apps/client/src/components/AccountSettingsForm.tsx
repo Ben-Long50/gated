@@ -25,7 +25,6 @@ const AccountSettingsForm = () => {
       form={accountSettingsForm}
       createMutation={updateAccount}
     >
-      <ArrowHeader2 title="Account Information" />
       <accountSettingsForm.Field
         name="username"
         validators={{

@@ -1,5 +1,4 @@
-import { useContext, useEffect } from 'react';
-import { AuthContext } from '../contexts/AuthContext';
+import { useEffect } from 'react';
 import NotificationCard from './NotificationCard';
 import useNotificationQuery from '../hooks/useNotificationQuery/useNotificationQuery';
 import Loading from './Loading';
@@ -7,7 +6,7 @@ import { Notification } from 'src/types/notification';
 import useMarkNotificationsReadMutation from 'src/hooks/useMarkNotificationsReadMutation/useMarkNotificationsReadMutation';
 
 const Notifications = () => {
-  const { data: notifications, isLoading, isPending } = useNotificationQuery();
+  const { data: notifications, isLoading } = useNotificationQuery();
 
   const markNotificationsRead = useMarkNotificationsReadMutation();
 
@@ -15,24 +14,18 @@ const Notifications = () => {
     markNotificationsRead.mutate();
   }, []);
 
-  if (isLoading || isPending) return <Loading />;
+  if (isLoading) return <Loading />;
 
-  if (notifications.length === 0) {
-    return (
-      <div className="flex w-full max-w-5xl flex-col items-center justify-start gap-8">
-        <h1>Notificatons</h1>
-        <h3>You're all caught up</h3>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex w-full max-w-5xl flex-col items-center justify-start gap-8">
-      <h1>Notificatons</h1>
+  return notifications.length === 0 ? (
+    <>
+      <p>You're all caught up</p>
+    </>
+  ) : (
+    <>
       {notifications.map((notification: Notification) => (
         <NotificationCard key={notification.id} notification={notification} />
       ))}
-    </div>
+    </>
   );
 };
 

@@ -13,10 +13,7 @@ import InputField from '../formFields/InputField';
 import Icon from '@mdi/react';
 import { mdiCropSquare, mdiGrid, mdiSync } from '@mdi/js';
 import { useSearchParams, useParams } from 'react-router-dom';
-import BtnAuth from '../buttons/BtnAuth';
-import ArrowHeader3 from '../ArrowHeader3';
-import NavTabs from '../NavTabs';
-import Divider from '../Divider';
+import { camelCase, capitalCase } from 'change-case';
 
 const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
   const { user } = useContext(AuthContext);
@@ -59,25 +56,6 @@ const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
 
   return (
     <>
-      <NavTabs className="grid-cols-3">
-        <BtnAuth active={!characterType} onClick={() => setSearchParams({})}>
-          All
-        </BtnAuth>
-        <BtnAuth
-          active={characterType === 'playerCharacter'}
-          onClick={() => setSearchParams({ characterType: 'playerCharacter' })}
-        >
-          Player Characters
-        </BtnAuth>
-        <BtnAuth
-          active={characterType === 'nonPlayerCharacter'}
-          onClick={() =>
-            setSearchParams({ characterType: 'nonPlayerCharacter' })
-          }
-        >
-          Non-Player Characters
-        </BtnAuth>
-      </NavTabs>
       <div className="flex flex-col gap-8">
         <div className="flex w-full flex-col gap-4">
           {availableCampaigns && availableCampaigns?.length > 1 && (
@@ -94,12 +72,20 @@ const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
               value={query}
               onChange={(value) => setQuery(value)}
             />
-
+            <InputSelectField
+              label="Character Type"
+              options={['Player Character', 'Non-player Character']}
+              value={characterType ? capitalCase(characterType) : ''}
+              onChange={(value) =>
+                setSearchParams({ characterType: `${camelCase(value)}` })
+              }
+            />
             <button
               className="text-accent bg-tertiary shadow-color group grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
               onClick={(e) => {
                 e.preventDefault();
                 setCampaignId(null);
+                setSearchParams({});
                 setQuery('');
               }}
             >
@@ -129,7 +115,7 @@ const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
 
         {!characters || characters?.length === 0 ? (
           <>
-            <h1 className="text-center">No Characters Found</h1>
+            <p className="text-center">No Characters Found</p>
             <Link to="create">
               <BtnRect ariaLabel="Create character" type="button">
                 Character creator

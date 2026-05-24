@@ -7,6 +7,11 @@ import { format } from 'date-fns';
 import { ThemeContext } from '../contexts/ThemeContext';
 import ThemeContainer from './ThemeContainer';
 import useDeleteErrorReportMutation from '../hooks/useDeleteErrorReportMutation/useDeleteErrorReportMutation';
+import Divider from './Divider';
+import ArrowHeader3 from './ArrowHeader3';
+import IconBtnSmall from './buttons/IconBtnSmall';
+import { mdiTrashCanOutline } from '@mdi/js';
+import Icon from '@mdi/react';
 
 const ErrorReports = () => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -17,36 +22,29 @@ const ErrorReports = () => {
   if (isLoading || isPending) return <Loading />;
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
-      <h1 className="text-center">Error Reports</h1>
-      {errorReports?.map((report: ErrorReport) => {
-        return (
-          <ThemeContainer
-            key={report.id}
-            className="mb-auto w-full max-w-5xl"
-            chamfer="medium"
-            borderColor={accentPrimary}
-          >
-            <div className="flex flex-col gap-4 p-4">
-              <div className="flex w-full items-end justify-between">
-                <h3 className="pl-4">{report.title}</h3>
-                <p>{report.user.firstName + ' ' + report.user.lastName}</p>
-              </div>
-              <p>{format(report.createdAt, 'PP')}</p>
-              <p>{report.content}</p>
-              <button
-                className="text-accent self-end pr-4 hover:underline"
-                onClick={() => {
-                  deleteErrorReport.mutate(report.id);
-                }}
-              >
-                {deleteErrorReport.isPending ? <Loading size={1} /> : 'Delete'}
-              </button>
+    <>
+      {errorReports?.map((report: ErrorReport, index: number) => (
+        <>
+          <div key={index} className="flex flex-col gap-4">
+            <div className="flex w-full items-end justify-between">
+              <ArrowHeader3 title={report.title} />
+              <p>{report.user.firstName + ' ' + report.user.lastName}</p>
             </div>
-          </ThemeContainer>
-        );
-      })}
-    </div>
+            <p>{format(report.createdAt, 'PP')}</p>
+            <p>{report.content}</p>
+            <IconBtnSmall
+              className="self-end"
+              onClick={() => {
+                deleteErrorReport.mutate(report.id);
+              }}
+            >
+              <Icon path={mdiTrashCanOutline} />
+            </IconBtnSmall>
+          </div>
+          {index + 1 < errorReports.length && <Divider />}
+        </>
+      ))}
+    </>
   );
 };
 

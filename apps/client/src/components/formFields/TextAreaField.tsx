@@ -17,7 +17,7 @@ const TextAreaField = ({
   const { fieldState, setFocus } = useInputState(value, errors);
 
   return (
-    <div className={`${className} h-full min-h-[250px]`}>
+    <div className={`${className} h-full`}>
       <ThemeContainer
         chamfer="small"
         className="size-full"

@@ -4,9 +4,9 @@ import { mdiChevronDown, mdiSync } from '@mdi/js';
 import Icon from '@mdi/react';
 import InputField from './InputField';
 import Divider from '../Divider';
-import BtnIcon from '../buttons/BtnIcon';
 import constructName from 'src/utils/constructName';
 import useInputState from 'src/hooks/useInputState';
+import IconBtnSmall from '../buttons/IconBtnSmall';
 
 const InputSelectField = ({
   options,
@@ -95,13 +95,13 @@ const InputSelectField = ({
               value={query}
               onChange={(value) => setQuery(value)}
             />
-            <BtnIcon
-              path={mdiSync}
-              active={true}
+            <IconBtnSmall
               onClick={() => {
                 setQuery('');
               }}
-            />
+            >
+              <Icon path={mdiSync} />
+            </IconBtnSmall>
           </div>
           <Divider />
           <div className="scrollbar-secondary flex w-full flex-col overflow-y-auto">

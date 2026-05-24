@@ -37,57 +37,59 @@ const Notes = () => {
   }
 
   return (
-    <div className="flex w-full max-w-5xl flex-col gap-8">
+    <div className="flex w-full flex-col gap-8">
       {character && (
         <div className="flex items-center justify-center gap-8">
           <CharacterPictureRound character={character} />
-          <h1 className="text-left">{constructName(character)}'s Notes</h1>
+          <h2 className="font-zen text-4xl">{constructName(character)}</h2>
         </div>
       )}
-      {campaign?.sessions.map((session) => {
+      {campaign?.sessions.map((session, index) => {
         const notes = characterNotes?.find(
           (notes) => notes.sessionId === session.id,
         );
 
         return (
-          <div className="bg-primary shadow-color flex flex-col gap-2 rounded-lg p-4 shadow-lg sm:p-8">
-            <div className="flex w-full items-start justify-between gap-4">
-              <div className="flex items-center gap-4">
+          <>
+            <div className="flex flex-col gap-8">
+              <div className="flex w-full items-start justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <p className="whitespace-nowrap">
+                    {'Session ' + session.sessionNumber}
+                  </p>
+                </div>
                 <p className="whitespace-nowrap">
-                  {'Session ' + session.sessionNumber}
+                  {format(session.createdAt, 'PP')}
                 </p>
               </div>
-              <p className="whitespace-nowrap">
-                {format(session.createdAt, 'PP')}
-              </p>
+              <ArrowHeader3 title={session?.name} />
+              {editModeId !== session.id ? (
+                <div className="flex w-full flex-col gap-6">
+                  {notes ? (
+                    <div
+                      id="quill-display"
+                      className="ql-editor whitespace-pre-wrap"
+                      dangerouslySetInnerHTML={{ __html: notes.content?.html }}
+                    />
+                  ) : (
+                    <p>No notes created</p>
+                  )}
+                  {character?.userId === user?.id && (
+                    <BtnAuth onClick={() => setEditModeId(session.id)}>
+                      {notes ? 'Edit Session Notes' : 'Create Session Notes'}
+                    </BtnAuth>
+                  )}
+                </div>
+              ) : (
+                <NotesForm
+                  sessionId={session.id}
+                  notes={notes}
+                  setEditModeId={setEditModeId}
+                />
+              )}
             </div>
-            <ArrowHeader3 className="mt-2" title={session?.name} />
-            <Divider />
-            {editModeId !== session.id ? (
-              <div className="flex w-full flex-col gap-6">
-                {notes ? (
-                  <div
-                    id="quill-display"
-                    className="ql-editor whitespace-pre-wrap"
-                    dangerouslySetInnerHTML={{ __html: notes.content?.html }}
-                  />
-                ) : (
-                  <p>No notes created</p>
-                )}
-                {character?.userId === user?.id && (
-                  <BtnAuth onClick={() => setEditModeId(session.id)}>
-                    {notes ? 'Edit Session Notes' : 'Create Session Notes'}
-                  </BtnAuth>
-                )}
-              </div>
-            ) : (
-              <NotesForm
-                sessionId={session.id}
-                notes={notes}
-                setEditModeId={setEditModeId}
-              />
-            )}
-          </div>
+            {index + 1 < campaign?.sessions.length && <Divider />}
+          </>
         );
       })}
     </div>

@@ -1,23 +1,22 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { User } from 'src/types/user';
 import updateUserRole from './updateUserRole';
+import { toast } from 'react-toastify';
 
-const useUpdateUserRoleMutation = (
-  setFormMessage: (message: string) => void,
-) => {
+const useUpdateUserRoleMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (formData: Partial<User>) => {
+    mutationFn: (formData: { id: number; role: string }) => {
       return updateUserRole(formData);
     },
-    onSuccess: () => {
-      setFormMessage('Role successfully updated');
+    onSuccess: (data, variables) => {
+      toast.success(data.message);
+
       return queryClient.invalidateQueries({
-        queryKey: ['account'],
+        queryKey: ['user', variables.id],
       });
     },
-    onError: (error) => {
-      setFormMessage(error.message);
+    onError: (data) => {
+      toast.error(data.message);
     },
     throwOnError: false,
   });

@@ -4,10 +4,7 @@ import { capitalCase } from 'change-case';
 import Loading from './Loading';
 import ArrowHeader3 from './ArrowHeader3';
 import Divider from './Divider';
-import ThemeContainer from './ThemeContainer';
-import { useContext } from 'react';
-import { ThemeContext } from 'src/contexts/ThemeContext';
-import CharacterListSmall from './characterComponents/CharacterListSmall';
+import { useState } from 'react';
 import { Map } from 'src/types/map';
 import ReputationBar from './ReputationBar';
 import useGang from 'src/hooks/useGang';
@@ -15,16 +12,19 @@ import BtnAuth from './buttons/BtnAuth';
 import StatBarContainer from './StatBarContainer';
 import StatBar from './StatBar';
 import BtnRect from './buttons/BtnRect';
-import ArrowHeader2 from './ArrowHeader2';
 import { useForm } from '@tanstack/react-form';
 import useUpdateGangCharactersMutation from 'src/hooks/gang hooks/updateGangCharactersMutation/useUpdateGangCharactersMutation';
+import NavTabs from './NavTabs';
+import CharacterList from './characterComponents/CharacterList';
+import Affiliations from './Affiliations';
 
 const GangPage = () => {
-  const { accentPrimary } = useContext(ThemeContext);
   const { campaignId, gangId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const parts = location.pathname.split('/');
+  const [tab, setTab] = useState('information');
+  const [subTab, setSubTab] = useState('characters');
 
   const {
     gang,
@@ -36,6 +36,7 @@ const GangPage = () => {
     leaderCount,
     memberCount,
     goonCount,
+    affiliations,
     gangLoading,
   } = useGang(Number(gangId));
 
@@ -67,24 +68,40 @@ const GangPage = () => {
 
   return (
     <>
-      {gang?.picture?.imageUrl && <CoverPicture picture={gang?.picture} />}
-      <div className="flex w-full max-w-7xl flex-col items-center gap-8">
-        <h1 className="w-full text-center font-zen text-4xl sm:text-5xl">
-          {capitalCase(gang?.name)}
-        </h1>
-        <ThemeContainer
-          className="w-full"
-          chamfer="medium"
-          borderColor={accentPrimary}
+      <CoverPicture picture={gang?.picture} />
+      <div className="absolute left-8 right-8 top-8 flex items-start justify-between gap-8">
+        <h2 className="w-full font-zen text-4xl">{capitalCase(gang?.name)}</h2>
+        <p className="!text-accent whitespace-nowrap font-zen text-4xl">
+          Level {levelData.level}
+        </p>
+      </div>
+      <NavTabs className="grid-cols-3">
+        <BtnAuth
+          active={tab === 'information'}
+          onClick={() => setTab('information')}
         >
-          <div className="flex w-full flex-col gap-4 p-6">
+          Information
+        </BtnAuth>
+        <BtnAuth
+          active={tab === 'background'}
+          onClick={() => setTab('background')}
+        >
+          Background
+        </BtnAuth>
+        <BtnAuth
+          active={tab === 'affiliations'}
+          onClick={() => setTab('affiliations')}
+        >
+          Affiliations
+        </BtnAuth>
+      </NavTabs>
+      {tab === 'information' && (
+        <>
+          {' '}
+          <div className="flex w-full flex-col gap-4">
             <div className="flex flex-col items-center gap-2 px-4">
               <h3>{`Reputation - ${reputationData.description}`}</h3>
               <ReputationBar value={reputationData.reputation} />
-              <div className="flex w-full items-center justify-between gap-8">
-                <ArrowHeader2 className="!text-accent" title="Gang Level" />
-                <h2 className="!text-accent text-4xl">{levelData.level}</h2>
-              </div>
             </div>
             <Divider />
             <div className="flex items-center justify-between">
@@ -160,39 +177,74 @@ const GangPage = () => {
               <BtnAuth onClick={() => navigate('manageGangCharacters')}>
                 Manage Gang Characters
               </BtnAuth>
+              <BtnAuth onClick={() => navigate('')}>
+                Purchase Properties
+              </BtnAuth>
             </div>
           </div>
-        </ThemeContainer>
-        <div className="grid w-full grid-cols-2 gap-8">
-          <div className="flex flex-col gap-8">
-            <CharacterListSmall title="Leaders" characters={gang?.leaders} />
-            <CharacterListSmall title="Members" characters={gang?.characters} />
-          </div>
-          <div className="flex flex-col gap-8">
-            <ThemeContainer chamfer="medium" borderColor={accentPrimary}>
-              <div className="flex flex-col gap-4 p-6">
-                <ArrowHeader3 title="Turf" />
-                {gang?.turf.length === 0 ? (
-                  <h3>N/A</h3>
-                ) : (
-                  gang?.turf.map((map: Map) => (
-                    <ArrowHeader3 title={map.name} />
-                  ))
-                )}
-                <Divider />
-                <ArrowHeader3 title="Properties" />
-                {gang?.properties.length === 0 ? (
-                  <h3>N/A</h3>
-                ) : (
-                  gang?.properties.map((property) => (
-                    <ArrowHeader3 title={property.name} />
-                  ))
-                )}
-              </div>
-            </ThemeContainer>
-          </div>
-        </div>
-      </div>
+          <Divider />
+          <NavTabs className="grid-cols-3">
+            <BtnAuth
+              active={subTab === 'characters'}
+              onClick={() => setTab('characters')}
+            >
+              Characters
+            </BtnAuth>
+            <BtnAuth
+              active={subTab === 'properties'}
+              onClick={() => setTab('properties')}
+            >
+              Properties
+            </BtnAuth>
+            <BtnAuth active={subTab === 'turf'} onClick={() => setTab('turf')}>
+              Turf
+            </BtnAuth>
+          </NavTabs>
+          {subTab === 'characters' && (
+            <CharacterList
+              characterIds={[...gang?.leaders, ...gang?.characters].map(
+                (character) => character.id,
+              )}
+            />
+          )}
+          {subTab === 'properties' && (
+            <div className="flex flex-col gap-4 p-6">
+              <ArrowHeader3 title="Properties" />
+              {gang?.properties.length === 0 ? (
+                <p>No Properties</p>
+              ) : (
+                gang?.properties.map((property) => (
+                  <ArrowHeader3 title={property.name} />
+                ))
+              )}
+            </div>
+          )}
+          {subTab === 'turf' && (
+            <div className="flex flex-col gap-4 p-6">
+              <ArrowHeader3 title="Turf" />
+              {gang?.turf.length === 0 ? (
+                <p>No Turf</p>
+              ) : (
+                gang?.turf.map((map: Map) => <ArrowHeader3 title={map.name} />)
+              )}
+            </div>
+          )}
+        </>
+      )}
+      {tab === 'background' &&
+        (gang?.background ? (
+          <div
+            id="quill-display"
+            className="ql-editor whitespace-pre-wrap"
+            dangerouslySetInnerHTML={{ __html: gang?.background.html }}
+          />
+        ) : (
+          <p className="text-center">No background</p>
+        ))}
+      {tab === 'affiliations' && <Affiliations affiliations={affiliations} />}
+      <BtnRect ariaLabel="Update gang" onClick={() => navigate('update')}>
+        Update Gang
+      </BtnRect>
       <Outlet context={{ gang, form: gangCharactersForm, parts }} />
     </>
   );

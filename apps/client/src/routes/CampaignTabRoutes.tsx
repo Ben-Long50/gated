@@ -71,30 +71,79 @@ const CampaignTabRoutes = () => {
             path="conditions/:conditionId"
             element={<DescriptionModal />}
           />
-          <Route path="calendar/time" element={<TimeModal />} />
-          <Route path="calendar/:month/:day" element={<CalendarModal />} />
-          <Route path="calendar/:month/:day/newEvent" element={<EventForm />} />
+          <Route path="time" element={<TimeModal />} />
+          <Route path="date" element={<CalendarModal />} />
+          <Route path="event" element={<EventForm />} />
         </Route>
-        <Route path="update" element={<CampaignForm />}>
+        <Route
+          path="update"
+          element={
+            <Page title="Update Campaign">
+              <CampaignForm />
+            </Page>
+          }
+        >
           <Route path="managePlayers" element={<PlayerSelectModal />} />
         </Route>
         <Route path="factions/:factionId">
-          <Route index element={<Faction />} />
-          <Route path="update" element={<FactionForm />} />
+          <Route
+            index
+            element={
+              <Page title="Faction">
+                <Faction />
+              </Page>
+            }
+          />
+          <Route
+            path="update"
+            element={
+              <Page title="Update Faction">
+                <FactionForm />
+              </Page>
+            }
+          />
         </Route>
         <Route path="characters">
-          <Route path="" element={<CampaignCharacterList />}>
+          <Route
+            path=""
+            element={
+              <Page title="Campaign Characters">
+                <CampaignCharacterList />
+              </Page>
+            }
+          >
             <Route
               path="conditions/:conditionId"
               element={<DescriptionModal />}
             />
           </Route>
-          <Route path=":characterId/notes" element={<Notes />} />
+          <Route
+            path=":characterId/notes"
+            element={
+              <Page title="Notes">
+                <Notes />
+              </Page>
+            }
+          />
           {CharacterRoutes()}
         </Route>
         <Route path="gangs">
-          <Route path="" element={<Gangs />} />
-          <Route path=":gangId" element={<GangPage />}>
+          <Route
+            path=""
+            element={
+              <Page title="Campaign Gangs">
+                <Gangs />
+              </Page>
+            }
+          />
+          <Route
+            path=":gangId"
+            element={
+              <Page title="Gang">
+                <GangPage />
+              </Page>
+            }
+          >
             <Route
               path="allocateReputation"
               element={<ReputationPointModal />}
@@ -107,7 +156,27 @@ const CampaignTabRoutes = () => {
               element={<GangCharacterSelectModal />}
             />
           </Route>
-          <Route path="create" element={<GangForm />}>
+          <Route
+            path="create"
+            element={
+              <Page title="Create Gang">
+                <GangForm />
+              </Page>
+            }
+          >
+            <Route
+              path="characterSelect"
+              element={<GangCharacterSelectModal />}
+            />
+          </Route>
+          <Route
+            path=":gangId/update"
+            element={
+              <Page title="Update Gang">
+                <GangForm />
+              </Page>
+            }
+          >
             <Route
               path="characterSelect"
               element={<GangCharacterSelectModal />}
@@ -116,17 +185,45 @@ const CampaignTabRoutes = () => {
         </Route>
         {SessionRoutes()}
         <Route path="maps">
-          <Route path="" element={<MapList />} />
-          <Route path=":mapId" element={<Map />}>
+          <Route
+            path=""
+            element={
+              <Page title="Campaign Maps">
+                <MapList />
+              </Page>
+            }
+          />
+          <Route
+            path=":mapId"
+            element={
+              <Page title="Map">
+                <Map />
+              </Page>
+            }
+          >
             <Route path="characters">{CharacterMenuRoutes()}</Route>
             <Route path="initiative" element={<InitiativeModal />} />
           </Route>
           <Route path=":mapId/delete" element={<DeleteModal />} />
-          <Route path="create" element={<MapBuilder key="create" />}>
+          <Route
+            path="create"
+            element={
+              <Page title="Create Map">
+                <MapBuilder />
+              </Page>
+            }
+          >
             <Route path="save" element={<MapSaveModal />} />
             <Route path="tileList" element={<TileListModal />} />
           </Route>
-          <Route path=":mapId/update" element={<MapBuilder key="update" />}>
+          <Route
+            path=":mapId/update"
+            element={
+              <Page title="Update Map">
+                <MapBuilder />
+              </Page>
+            }
+          >
             <Route path="save" element={<MapSaveModal />} />
             <Route path="tileList" element={<TileListModal />} />
           </Route>
@@ -148,15 +245,50 @@ const CampaignTabRoutes = () => {
           </Route>
         </Route>
         <Route path="encounters">
-          <Route path="create" element={<EncounterForm />}>
+          <Route
+            path="create"
+            element={
+              <Page title="Create Encounter">
+                <EncounterForm />
+              </Page>
+            }
+          >
             <Route path="" element={<EncounterFormInfo />} />
             <Route path="maps/:mapId" element={<EncounterFormMap />} />
           </Route>
-          <Route path="pending" element={<EncounterList />} />
-          <Route path="completed" element={<EncounterList />} />
+          <Route
+            path="pending"
+            element={
+              <Page title="Pending Encounters">
+                <EncounterList />
+              </Page>
+            }
+          />
+          <Route
+            path="completed"
+            element={
+              <Page title="Completed Encounters">
+                <EncounterList />
+              </Page>
+            }
+          />
         </Route>
-        <Route path="affiliations" element={<CampaignAffiliations />} />
-        <Route path="affiliations/create" element={<AffiliationForm />}>
+        <Route
+          path="affiliations"
+          element={
+            <Page title="Campaign Affiliations">
+              <CampaignAffiliations />
+            </Page>
+          }
+        />
+        <Route
+          path="affiliations/create"
+          element={
+            <Page title="Create Affiliation">
+              <AffiliationForm />
+            </Page>
+          }
+        >
           <Route
             path="selectEntities"
             element={<AffiliationEntitySelectModal />}
@@ -173,7 +305,14 @@ const CampaignTabRoutes = () => {
           <Route path="rollResults" element={<RollModal />} />
         </Route>
       </Route>
-      <Route path="create" element={<CampaignForm />}>
+      <Route
+        path="create"
+        element={
+          <Page title="Create Campaign">
+            <CampaignForm />
+          </Page>
+        }
+      >
         <Route path="managePlayers" element={<PlayerSelectModal />} />
       </Route>
       <Route
