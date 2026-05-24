@@ -58,7 +58,7 @@ const MainLayout = () => {
         id="portal-root"
         className={`${!mobile && !encounterLayout && 'ml-[68px]'} ${encounterLayout && 'sm:px-[76px] sm:py-1'} relative z-10 col-span-2 col-start-1 row-start-1 flex flex-col items-center px-2 py-4 max-xl:col-start-1 sm:p-8`}
         style={{
-          marginTop: navbarHeight,
+          paddingTop: navbarHeight + 16,
         }}
       >
         {mobile && (

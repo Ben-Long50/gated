@@ -9,6 +9,8 @@ import { mdiTriangleDown } from '@mdi/js';
 import ActionStatBars from './ActionStatBars';
 import { capitalCase } from 'change-case';
 import ThemeContainer from './ThemeContainer';
+import StatBarContainer from './StatBarContainer';
+import CharacterStatBars from './characterComponents/CharacterStatBars';
 
 const ActionCard = ({
   action,
@@ -39,6 +41,7 @@ const ActionCard = ({
           className={`${action.characterInventoryId ? (action.active ? 'opacity-100' : 'opacity-30') : ''} flex w-full items-center justify-between gap-4 pr-2`}
         >
           <h3> {action?.name}</h3>
+          {action.itemLink && <p>{action.itemLink.item.name}</p>}
           {((mode === 'codex' && user?.role === 'ADMIN') ||
             (mode === 'codex' && user?.role === 'SUPERADMIN')) && (
             <Link to={`/glam/codex/actions/${action.id}/update`}>
@@ -86,27 +89,11 @@ const ActionCard = ({
           </div>
         )}
         <p>{description1}</p>
-        {action.modifiers &&
-          Array.from(Object.keys(action.modifiers)).length > 0 && (
-            <div className="flex flex-col gap-4">
-              {Object.entries(action.modifiers).map(([stat, value], index) => (
-                <ThemeContainer
-                  key={index}
-                  borderColor="transparent"
-                  chamfer="small"
-                >
-                  <div className="bg-tertiary flex w-full items-center justify-between p-3 px-4 clip-4">
-                    <h4>{capitalCase(stat)}</h4>
-                    <p
-                      className={`${index !== 0 && 'ml-1'} ${value > 0 || typeof value === 'string' ? 'text-accent' : 'text-error'} mr-1 inline-block font-semibold`}
-                    >
-                      {value}
-                    </p>
-                  </div>
-                </ThemeContainer>
-              ))}
-            </div>
-          )}
+        {action.modifiers && (
+          <StatBarContainer>
+            <CharacterStatBars stats={action.modifiers} />
+          </StatBarContainer>
+        )}
         {action.keywordModifiers?.length > 0 &&
           action.keywordModifiers.map((keyword, index) => (
             <ItemCardSmall

@@ -48,7 +48,7 @@ const CampaignLinks = () => {
         <>
           <LinkSidebar
             icon={
-              <CampaignIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+              <CampaignIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
             }
             title="Create Campaign"
             path="campaigns/create"
@@ -70,13 +70,13 @@ const CampaignLinks = () => {
           <LinkSidebar
             title="Campaign Dashboard"
             icon={
-              <CampaignIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+              <CampaignIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
             }
             path={`/glam/campaigns/${campaignId}`}
           />
           <LinkListSidebar
             icon={
-              <SessionIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+              <SessionIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
             }
             title="Sessions"
           >
@@ -96,7 +96,7 @@ const CampaignLinks = () => {
           </LinkListSidebar>
           <LinkListSidebar
             icon={
-              <CharacterIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+              <CharacterIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
             }
             title="Characters"
           >
@@ -111,7 +111,7 @@ const CampaignLinks = () => {
           </LinkListSidebar>
           <LinkListSidebar
             icon={
-              <PassIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+              <PassIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
             }
             title="Gangs"
           >
@@ -128,7 +128,7 @@ const CampaignLinks = () => {
           </LinkListSidebar>
           <LinkListSidebar
             icon={
-              <MapIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+              <MapIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
             }
             title="Maps"
           >
@@ -151,7 +151,7 @@ const CampaignLinks = () => {
           </LinkListSidebar>
           <LinkListSidebar
             icon={
-              <CombatIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+              <CombatIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
             }
             title="Encounters"
           >
@@ -174,7 +174,7 @@ const CampaignLinks = () => {
           </LinkListSidebar>
           <LinkListSidebar
             icon={
-              <NoteIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+              <NoteIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
             }
             title="Notes"
           >
@@ -189,7 +189,7 @@ const CampaignLinks = () => {
           <LinkListSidebar
             title="Affiliations"
             icon={
-              <AffiliationIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+              <AffiliationIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
             }
           >
             <SubLinkSidebar
@@ -205,14 +205,14 @@ const CampaignLinks = () => {
           <LinkSidebar
             title="Roll Simulator"
             icon={
-              <DieIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+              <DieIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
             }
             path={`campaigns/${campaignId}/rollSimulator`}
           />
           {gameMaster && (
             <LinkListSidebar
               icon={
-                <CrownIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+                <CrownIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
               }
               title="GM Options"
             >

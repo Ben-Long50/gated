@@ -28,7 +28,7 @@ const CharacterLinks = () => {
       <LinkSidebar
         title="Character Dashboard"
         icon={
-          <CharacterIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+          <CharacterIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         path={`/glam/characters`}
       />
@@ -40,42 +40,42 @@ const CharacterLinks = () => {
       <LinkSidebar
         title="Progression"
         icon={
-          <ProgressionIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+          <ProgressionIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         path={`/glam/characters/${character?.id}/progression`}
       />
       <LinkSidebar
         title="Equipment"
         icon={
-          <EquipmentIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+          <EquipmentIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         path={`/glam/characters/${character?.id}/equipment`}
       />
       <LinkSidebar
         title="Drones"
         icon={
-          <DroneIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+          <DroneIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         path={`/glam/characters/${character?.id}/drones`}
       />
       <LinkSidebar
         title="Vehicles"
         icon={
-          <VehicleIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+          <VehicleIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         path={`/glam/characters/${character?.id}/vehicles`}
       />
       <LinkSidebar
         title="Inventory"
         icon={
-          <InventoryIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+          <InventoryIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         path={`/glam/characters/${character?.id}/inventory`}
       />
       <LinkSidebar
         title="Shop"
         icon={
-          <ShopIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+          <ShopIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         path={`/glam/characters/${character?.id}/shop/global?category=weapon`}
       />

@@ -29,7 +29,7 @@ const CodexLinks = () => {
         title="Search Codex"
         icon={
           <Icon
-            className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit"
+            className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit"
             path={mdiMagnify}
             rotate={90}
           />
@@ -38,7 +38,7 @@ const CodexLinks = () => {
       />
       <LinkListSidebar
         icon={
-          <WeaponIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+          <WeaponIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         title="Weapons"
       >
@@ -61,7 +61,7 @@ const CodexLinks = () => {
       </LinkListSidebar>
       <LinkListSidebar
         icon={
-          <ArmorIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+          <ArmorIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         title="Armor"
       >
@@ -81,7 +81,7 @@ const CodexLinks = () => {
       </LinkListSidebar>
       <LinkListSidebar
         icon={
-          <CyberIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+          <CyberIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         title="Augmentations"
       >
@@ -96,7 +96,7 @@ const CodexLinks = () => {
       </LinkListSidebar>
       <LinkListSidebar
         icon={
-          <VehicleIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+          <VehicleIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         title="Vehicles"
       >
@@ -111,7 +111,7 @@ const CodexLinks = () => {
       </LinkListSidebar>
       <LinkListSidebar
         icon={
-          <DroneIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+          <DroneIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         title="Drones"
       >
@@ -123,56 +123,56 @@ const CodexLinks = () => {
       </LinkListSidebar>
       <LinkSidebar
         icon={
-          <ModificationIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+          <ModificationIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         title="Modifications"
         path="codex/items?category=modifiaction"
       />
       <LinkSidebar
         icon={
-          <SackIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+          <SackIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         title="Reusable Items"
         path="codex/items?category=reusable"
       />
       <LinkSidebar
         icon={
-          <PotionIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+          <PotionIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         title="Consumable Items"
         path="codex/items?category=consumable"
       />
       <LinkSidebar
         icon={
-          <PropertyIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+          <PropertyIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         title="Properties"
         path="codex/properties"
       />
       <LinkSidebar
         icon={
-          <PerkIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+          <PerkIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         title="Perks"
         path="codex/perks"
       />
       <LinkSidebar
         icon={
-          <KeywordIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+          <KeywordIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         title="Traits"
         path="codex/keywords"
       />
       <LinkSidebar
         icon={
-          <ActionIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+          <ActionIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         title="Actions"
         path="codex/actions"
       />
       <LinkSidebar
         icon={
-          <ConditionIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+          <ConditionIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         title="Conditions"
         path="codex/conditions"
@@ -181,7 +181,7 @@ const CodexLinks = () => {
         <LinkListSidebar
           title="Admin Codex Tools"
           icon={
-            <AdminIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+            <AdminIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
           }
         >
           <SubLinkSidebar

@@ -65,7 +65,7 @@ const MapBuilderSidebar = ({
 
   return (
     <div
-      className={`${layerSidebar ? 'w-96' : 'w-[72px]'} bg-primary scrollbar-primary-2 timing absolute right-0 top-0 z-10 flex h-full flex-col gap-2 overflow-x-hidden p-3 shadow-md shadow-black`}
+      className={`${layerSidebar ? 'w-96' : 'w-[72px]'} scrollbar-primary-2 timing bg-base shadow-color fixed bottom-0 right-0 top-0 z-10 my-4 mr-4 flex gap-2 overflow-x-hidden rounded-md p-3 shadow-md`}
       onMouseEnter={() => setLayerSidebar(true)}
       onMouseLeave={() => {
         setLayerSidebar(false);
@@ -84,7 +84,7 @@ const MapBuilderSidebar = ({
       )}
 
       <div
-        className={`${layerSidebar ? 'visible translate-x-0 px-4 opacity-100' : 'invisible translate-x-full opacity-0'} timing bg-primary fixed bottom-0 right-0 z-10 flex w-full max-w-96 flex-col rounded py-4 shadow-lg shadow-black`}
+        className={`${layerSidebar ? 'visible max-w-full px-4 opacity-100' : 'invisible max-w-0 opacity-0'} timing bg-base shadow-color absolute bottom-0 right-0 z-10 flex w-full max-w-96 flex-col gap-4 rounded py-4 shadow-lg`}
         style={{ top: navbarHeight }}
       >
         {sidebarMode === 'layer' ? (
@@ -111,17 +111,14 @@ const MapBuilderSidebar = ({
             handleDeleteComponent={handleDeleteComponent}
           />
         )}
-        <div className="mb-4 flex items-center justify-between">
-          <p>Quick Tile Picker</p>
-          <InputFieldCheckbox
-            label="Quick Tile Picker"
-            value={quickTilePicker}
-            checked={quickTilePicker}
-            onChange={(value) => {
-              setQuickTilePicker(!value);
-            }}
-          />
-        </div>
+        <InputFieldCheckbox
+          label="Quick Tile Picker"
+          value={quickTilePicker}
+          checked={quickTilePicker}
+          onChange={() => {
+            setQuickTilePicker((prev) => !prev);
+          }}
+        />
         {children}
       </div>
     </div>

@@ -1,6 +1,5 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import InputField from '../../formFields/InputField';
-import { useForm } from '@tanstack/react-form';
 import Icon from '@mdi/react';
 import {
   mdiCancel,
@@ -16,8 +15,7 @@ import useCreateMapMutation from 'src/hooks/useCreateMapMutation/useCreateMapMut
 import useCampaignMapQuery from 'src/hooks/useCampaignMapQuery/useCampaignMapQuery';
 import Loading from '../../Loading';
 import { LayoutContext } from 'src/contexts/LayoutContext';
-import { Component, Layer, MapType } from 'src/types/map';
-import html2canvas from 'html2canvas';
+import { Component, Layer } from 'src/types/map';
 import MapBuilderSidebar from './MapBuilderSidebar';
 import {
   DndContext,
@@ -489,12 +487,9 @@ const MapBuilder = () => {
 
   return (
     <>
-      <div
-        className={`timing flex h-full w-full flex-col items-center gap-8 pr-16`}
-      >
+      <div className={`timing flex w-full flex-col items-center gap-8`}>
         {!mobile && (
           <MapHeader
-            mapName="Create Map"
             gridDisplay={gridDisplay}
             setGridDisplay={setGridDisplay}
             mapScale={mapScale}
@@ -592,9 +587,9 @@ const MapBuilder = () => {
               <mapForm.Field name="baseColor">
                 {(field) => (
                   <div className="flex items-center justify-between gap-4">
-                    {!mobile && <h4 className="text-tertiary">Base Color</h4>}
+                    {!mobile && <p>Base Color</p>}
                     <label
-                      className="shadow-color size-10 shrink-0 cursor-pointer rounded-full shadow-md"
+                      className="shadow-color size-8 shrink-0 cursor-pointer rounded-full shadow-md"
                       style={{ backgroundColor: field.state.value }}
                       htmlFor="baseColor"
                       onClick={() => colorRef.current?.focus()}

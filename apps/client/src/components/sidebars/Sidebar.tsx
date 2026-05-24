@@ -63,7 +63,7 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
         if (!mobile) setSidebar(false);
       }}
     >
-      <div className="scrollbar-secondary bg-secondary shadow-color flex w-full flex-col gap-4 overflow-y-auto overflow-x-hidden rounded-md px-2 py-4 shadow-lg">
+      <div className="scrollbar-secondary bg-base shadow-color flex w-full flex-col gap-4 overflow-y-auto overflow-x-hidden rounded-md px-2 py-4 shadow-lg">
         {activeCampaigns.length > 0 && (
           <LinkListSidebar
             icon={

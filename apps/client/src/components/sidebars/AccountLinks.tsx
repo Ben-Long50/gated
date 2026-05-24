@@ -26,7 +26,7 @@ const AccountLinks = () => {
         icon={
           <Icon
             path={mdiAccountOutline}
-            className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit"
+            className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit"
           />
         }
         title="Account Settings"
@@ -36,7 +36,7 @@ const AccountLinks = () => {
         icon={
           <Icon
             path={mdiAccountWrenchOutline}
-            className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit"
+            className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit"
           />
         }
         title="Account Preferences"
@@ -46,7 +46,7 @@ const AccountLinks = () => {
         icon={
           <Icon
             path={mdiBellOutline}
-            className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit"
+            className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit"
           />
         }
         title="Notifications"
@@ -56,7 +56,7 @@ const AccountLinks = () => {
           icon={
             <Icon
               path={mdiAccountTieOutline}
-              className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit"
+              className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit"
             />
           }
           title="Admin Tools"
@@ -80,7 +80,7 @@ const AccountLinks = () => {
         icon={
           <Icon
             path={mdiAlertCircleOutline}
-            className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit"
+            className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit"
           />
         }
         title="Create Error Report"
@@ -90,7 +90,7 @@ const AccountLinks = () => {
         icon={
           <Icon
             path={mdiLogout}
-            className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit"
+            className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit"
           />
         }
         title="Sign Out"

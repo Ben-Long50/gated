@@ -1,28 +1,35 @@
 import { mdiImage } from '@mdi/js';
 import Icon from '@mdi/react';
 import CloudinaryPicture from './CloudinaryPicture';
-import { CSSProperties, ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 
 export const PictureCard = ({
   label,
   onClick,
+  onDoubleClick,
+  color,
   publicId,
   className,
-  style,
   children,
 }: {
   label?: string;
   onClick?: () => void;
+  onDoubleClick?: () => void;
+  color?: string;
   publicId: string;
   className: string;
-  style: CSSProperties;
   children: ReactNode;
 }) => {
+  const [hover, setHover] = useState(false);
+
   return (
     <button
-      className={`${className} ${label && 'pb-2'} bg-primary hover:border-accent timing shadow-color group flex w-full flex-col items-center overflow-hidden rounded-md border-2 border-zinc-800`}
-      style={style}
+      className={`${className} ${label && 'pb-2'} ${hover ? 'border-accent border-opacity-100' : 'border-transparent border-opacity-50'} bg-primary timing shadow-color group flex w-full flex-col items-center overflow-hidden rounded-md border-2 border-zinc-800`}
+      style={{ borderColor: hover ? color : `${color}50` }}
       onClick={onClick}
+      onDoubleClick={onDoubleClick}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
     >
       {publicId ? (
         <CloudinaryPicture
@@ -39,7 +46,14 @@ export const PictureCard = ({
         </div>
       )}
       {children}
-      {label && <p className="group-hover:text-accent timing px-2">{label}</p>}
+      {label && (
+        <p
+          style={hover ? { color } : {}}
+          className="group-hover:text-accent timing px-2"
+        >
+          {label}
+        </p>
+      )}
     </button>
   );
 };

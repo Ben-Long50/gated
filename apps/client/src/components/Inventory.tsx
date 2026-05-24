@@ -15,7 +15,7 @@ import {
   useSearchParams,
 } from 'react-router-dom';
 import Icon from '@mdi/react';
-import { mdiCheckCircle } from '@mdi/js';
+import { mdiCheckCircle, mdiCircleOutline } from '@mdi/js';
 import useToggleEquipmentMutation from 'src/hooks/useEquipmentToggleMutation/useEquipmentToggleMutation';
 import rarityColorMap from 'src/utils/rarityColorMap';
 import useCharacter from 'src/hooks/useCharacter';
@@ -25,6 +25,7 @@ import { useRef } from 'react';
 import NavTabs from './NavTabs';
 import CharacterHeader from './characterComponents/CharacterHeader';
 import { PictureCard } from './PictureCard';
+import InventoryCard from './InventoryCard';
 
 const Inventory = () => {
   const { characterId } = useParams();
@@ -43,8 +44,6 @@ const Inventory = () => {
     ? character?.inventory.filter((item) => item.itemTypes.includes(category))
     : character?.inventory;
 
-  const toggleEquipment = useToggleEquipmentMutation();
-
   const handleTab = (newCategory: string | null) => {
     if (!newCategory) {
       navigate('');
@@ -58,28 +57,14 @@ const Inventory = () => {
   const handleClick = (item: Item) => {
     clickTimeout.current = setTimeout(() => {
       navigate(`items/${item.id}`);
-    }, 200);
-  };
-
-  const handleDoubleClick = (item: Item) => {
-    if (clickTimeout.current) {
-      clearTimeout(clickTimeout.current);
       clickTimeout.current = null;
-    }
-
-    if (character) {
-      toggleEquipment.mutate({
-        characterId: character?.id,
-        inventoryId: character?.characterInventory.id,
-        category: item.itemTypes,
-        itemId: item.id,
-      });
-    }
+    }, 200);
   };
 
   return (
     <>
       <CharacterHeader character={character} />
+      <Divider />
       <NavTabs>
         <BtnAuth active={!category} onClick={() => handleTab(null)}>
           All
@@ -127,7 +112,7 @@ const Inventory = () => {
           <DroneIcon className="size-8" />
         </BtnAuth>
       </NavTabs>
-      <Divider className="col-span-2 opacity-50" />
+
       {isLoading ? (
         <Loading />
       ) : (
@@ -135,35 +120,18 @@ const Inventory = () => {
           className={`scrollbar-secondary-2 grid grid-cols-6 gap-2 sm:gap-4`}
         >
           {items ? (
-            items.map((item, index) => (
-              <PictureCard
-                className="group relative border-opacity-50 hover:border-opacity-100"
-                label={item.name}
-                publicId={item.picture.publicId}
-                style={{ borderColor: rarityColorMap[item.rarity] }}
-                key={index}
-                onClick={() => {
-                  navigate(`items/${item.id}`);
-                  handleDoubleClick(item);
-                }}
-              >
-                {item.equipped === true && (
-                  <Icon
-                    className="timing text-tertiary group-hover:text-secondary absolute left-1 top-1"
-                    path={mdiCheckCircle}
-                    size={1.5}
-                  />
-                )}
-              </PictureCard>
+            items.map((item) => (
+              <InventoryCard
+                key={item.id}
+                item={item}
+                onClick={() => handleClick(item)}
+              />
             ))
           ) : (
             <h2 className="pl-4">???</h2>
           )}
         </div>
       )}
-      <p className="text-tertiary text-right">
-        (Double click to equip / unequip)
-      </p>
       <Outlet context={{ parts }} />
     </>
   );

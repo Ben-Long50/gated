@@ -1,46 +1,27 @@
 import { useContext, useMemo, useRef, useState } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import Loading from './Loading';
-import ThemeContainer from './ThemeContainer';
-import { ThemeContext } from '../contexts/ThemeContext';
-import {
-  Link,
-  Outlet,
-  useLocation,
-  useNavigate,
-  useParams,
-} from 'react-router-dom';
-import EvasionIcon from './icons/EvasionIcon';
-import ArmorIcon from './icons/ArmorIcon';
-import WardIcon from './icons/WardIcon';
-import SpeedIcon from './icons/SpeedIcon';
-import InjuryIcon from './icons/InjuryIcon';
-import InsanityIcon from './icons/InsanityIcon';
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import EquipmentList from './EquipmentList';
-import ActionCard from './ActionCard';
-import { Action } from 'src/types/action';
 import { Item } from 'src/types/item';
-import ArrowHeader3 from './ArrowHeader3';
 import Divider from './Divider';
-import ArrowHeader2 from './ArrowHeader2';
 import useCharacter from 'src/hooks/useCharacter';
-import ItemCard from './ItemCard';
-import CharacterIcon from './icons/CharacterIcon';
 import CharacterStatBars from './characterComponents/CharacterStatBars';
 import CharacterPicture from './characterComponents/CharacterPicture';
-import { LayoutContext } from 'src/contexts/LayoutContext';
-import InventoryIcon from './icons/InventoryIcon';
 import StatBarContainer from './StatBarContainer';
 import CharacterHeader from './characterComponents/CharacterHeader';
+import InventoryCard from './InventoryCard';
+import BtnAuth from './buttons/BtnAuth';
+import NavTabs from './NavTabs';
+import ActionCard from './ActionCard';
 
 const Equipment = () => {
   const { user } = useContext(AuthContext);
-  const { mobile } = useContext(LayoutContext);
-  const { accentPrimary } = useContext(ThemeContext);
   const { characterId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const parts = location.pathname.split('/');
+  const [tab, setTab] = useState('equipment');
 
   const [active, setActive] = useState<{
     id: null | number;
@@ -125,38 +106,85 @@ const Equipment = () => {
       </div>
       <Divider />
       <div ref={activeRef} className="col-span-2 flex w-full flex-col gap-8">
-        {activeItem && (
-          <ItemCard
-            key={active.id}
-            item={activeItem}
-            cardType={mobile ? 'small' : 'large'}
-            ownerId={character?.userId}
-          />
-        )}
-        <div className="flex items-center justify-between">
-          <ArrowHeader2 title="Equipped Items" />
+        <NavTabs className="grid-cols-3">
+          <BtnAuth
+            active={tab === 'equipment'}
+            onClick={() => setTab('equipment')}
+          >
+            Equipment
+          </BtnAuth>
+          <BtnAuth active={tab === 'actions'} onClick={() => setTab('actions')}>
+            Unique Actions
+          </BtnAuth>
           {character?.userId === user?.id && (
             <>
-              <button
-                className="bg-secondary shadow-color hover:border-accent timing group rounded-md border-2 border-transparent p-2"
-                type="button"
-                onClick={() => {
-                  navigate('inventory');
-                }}
-              >
-                <InventoryIcon className="text-primary group-hover:text-accent size-10" />
-              </button>
+              <BtnAuth onClick={() => navigate('inventory')}>Inventory</BtnAuth>
               {parts.includes('inventory') && (
                 <Outlet context={{ activeItem, toggleActive }} />
               )}
             </>
           )}
-        </div>
-        <EquipmentList
-          equipment={character?.equipment}
-          active={active}
-          toggleActive={toggleActive}
-        />
+        </NavTabs>
+        {tab === 'equipment' && (
+          <div className="grid grid-cols-5 gap-8">
+            <div className="flex flex-col gap-4">
+              <p className="w-full text-center font-zen text-2xl">Weapons</p>
+              {character?.equipment?.weapons.map((weapon) => (
+                <InventoryCard
+                  item={weapon}
+                  onClick={() => navigate(`inventory/items/${weapon.id}`)}
+                />
+              ))}
+            </div>
+            <div className="flex flex-col gap-4">
+              <p className="w-full text-center font-zen text-2xl">Armors</p>
+              {character?.equipment?.armors.map((armor) => (
+                <InventoryCard
+                  item={armor}
+                  onClick={() => navigate(`inventory/items/${armor.id}`)}
+                />
+              ))}
+            </div>
+            <div className="flex flex-col gap-4">
+              <p className="w-full text-center font-zen text-2xl">
+                Augmentations
+              </p>
+              {character?.equipment?.augmentations.map((augmentation) => (
+                <InventoryCard
+                  item={augmentation}
+                  onClick={() => navigate(`inventory/items/${augmentation.id}`)}
+                />
+              ))}
+            </div>
+            <div className="flex flex-col gap-4">
+              <p className="w-full text-center font-zen text-2xl">Reusables</p>
+              {character?.equipment?.reusables.map((reusable) => (
+                <InventoryCard
+                  item={reusable}
+                  onClick={() => navigate(`inventory/items/${reusable.id}`)}
+                />
+              ))}
+            </div>
+            <div className="flex flex-col gap-4">
+              <p className="w-full text-center font-zen text-2xl">
+                Consumables
+              </p>
+              {character?.equipment?.consumables.map((consumable) => (
+                <InventoryCard
+                  item={consumable}
+                  onClick={() => navigate(`inventory/items/${consumable.id}`)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+        {tab === 'actions' && (
+          <div className="grid grid-cols-2 gap-4">
+            {character?.actions?.map((action) => (
+              <ActionCard key={action.id} action={action} />
+            ))}
+          </div>
+        )}
       </div>
     </>
   );

@@ -24,6 +24,7 @@ import EntityAvater from './EntityAvatar';
 import NavTabs from './NavTabs';
 import GangCard from './GangCard';
 import FactionCard from './FactionCard';
+import CharacterCardSmall from './characterComponents/CharacterCardSmall';
 
 const Campaign = () => {
   const { user } = useContext(AuthContext);
@@ -39,6 +40,11 @@ const Campaign = () => {
   );
 
   const playerIds = campaign?.players.map((player: User) => player.id) || [];
+
+  const playerCharacters = campaign?.characters.filter(
+    (character) => character.playerCharacter,
+  );
+
   const pendingIds =
     campaign?.pendingPlayers.map((player: User) => player.id) || [];
 
@@ -139,27 +145,46 @@ const Campaign = () => {
         </>
       )}
       <Divider />
+      <Calendar />
+      <Divider />
       <div className="grid grid-cols-2 gap-8">
-        <Calendar />
-        <div className="scrollbar-primary-2 flex max-h-80 w-full flex-col gap-4 overflow-y-auto px-0.5 py-2 pr-2">
-          <ArrowHeader3 title="Sessions" />
-          {campaign?.sessions.map((session: Session) => (
-            <BtnAuth
-              key={session.id}
-              className="timing flex w-full items-center justify-between gap-4"
-              onClick={() => navigate(`sessions/${session.id}`)}
-            >
-              <div className="flex w-full items-center justify-between gap-4">
-                <div className="flex items-center justify-start gap-4">
-                  <EntityAvater entity={session} />
-                  <p className="font-semibold">
-                    {session.sessionNumber}. {session.name}
+        <div className="flex w-full flex-col gap-4">
+          <ArrowHeader3 title="Player Characters" />
+          <div className="scrollbar-primary-2 flex max-h-80 w-full flex-col gap-4 overflow-y-auto px-0.5 py-2 pr-2">
+            {playerCharacters?.map((character) => (
+              <CharacterCardSmall
+                key={character.id}
+                characterList={true}
+                expanding={false}
+                active={false}
+                characterId={character.id}
+              />
+            ))}
+          </div>
+        </div>
+        <div className="flex w-full flex-col gap-4">
+          <ArrowHeader3 reverse={true} className="ml-auto" title="Sessions" />
+          <div className="scrollbar-primary-2 flex max-h-80 w-full flex-col gap-4 overflow-y-auto px-0.5 py-2 pr-2">
+            {campaign?.sessions.map((session: Session) => (
+              <BtnAuth
+                key={session.id}
+                className="timing flex w-full items-center justify-between gap-4"
+                onClick={() => navigate(`sessions/${session.id}`)}
+              >
+                <div className="flex w-full items-center justify-between gap-4">
+                  <div className="flex items-center justify-start gap-4">
+                    <EntityAvater entity={session} />
+                    <p className="font-semibold">
+                      {session.sessionNumber}. {session.name}
+                    </p>
+                  </div>
+                  <p className="text-right">
+                    {format(session.createdAt, 'PP')}
                   </p>
                 </div>
-                <p className="text-right">{format(session.createdAt, 'PP')}</p>
-              </div>
-            </BtnAuth>
-          ))}
+              </BtnAuth>
+            ))}
+          </div>
         </div>
       </div>
       <Divider className="col-span-2" />

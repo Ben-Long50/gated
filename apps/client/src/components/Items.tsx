@@ -14,6 +14,7 @@ import { capitalCase } from 'change-case';
 import ItemCard from './ItemCard';
 import BtnAuth from './buttons/BtnAuth';
 import Divider from './Divider';
+import IconBtnMedium from './buttons/IconBtnMedium';
 
 const Items = ({
   itemList,
@@ -62,9 +63,9 @@ const Items = ({
 
   return (
     <div className="flex w-full flex-col items-start gap-8">
-      <ArrowHeader2
-        title={itemCategory ? `${capitalCase(itemCategory)}s` : ''}
-      />
+      <h2 className="font-zen text-4xl">
+        {itemCategory ? `${capitalCase(itemCategory)}s` : ''}
+      </h2>
       {mode && mode === 'form' && (
         <div className="flex w-full gap-4">
           <BtnAuth
@@ -137,50 +138,28 @@ const Items = ({
           />
           {!mobile && (
             <>
-              <button
-                className="text-accent bg-tertiary shadow-color group grid size-12 shrink-0 place-items-center rounded-md p-0.5 shadow-md hover:underline"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setCardType('large');
+              {cardType === 'large'}
+              <IconBtnMedium
+                onClick={() =>
+                  setCardType(cardType === 'large' ? 'small' : 'large')
+                }
+              >
+                <Icon path={cardType === 'large' ? mdiCropSquare : mdiGrid} />
+              </IconBtnMedium>
+              <IconBtnMedium
+                onClick={() => {
+                  setQuery('');
+                  setItemCategory(category);
+                  setPriceFilter('');
+                  setRarity('');
                 }}
               >
-                <Icon
-                  path={mdiCropSquare}
-                  className={`${cardType === 'large' && 'text-accent'} text-secondary group-hover:text-accent timing`}
-                />
-              </button>
-              <button
-                className="text-accent bg-tertiary shadow-color group grid size-12 shrink-0 place-items-center rounded-md p-2 shadow-md hover:underline"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setCardType('small');
-                }}
-              >
-                <Icon
-                  path={mdiGrid}
-                  className={`${cardType === 'small' && 'text-accent'} text-secondary group-hover:text-accent timing`}
-                />
-              </button>
+                <Icon path={mdiSync} />
+              </IconBtnMedium>
             </>
           )}
-          <button
-            className="text-accent bg-tertiary shadow-color group grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
-            onClick={(e) => {
-              e.preventDefault();
-              setQuery('');
-              setItemCategory(category);
-              setPriceFilter('');
-              setRarity('');
-            }}
-          >
-            <Icon
-              path={mdiSync}
-              className="text-secondary group-hover:text-accent timing"
-            />
-          </button>
         </div>
       </div>
-      <Divider />
       <div
         className={`${cardType === 'small' ? 'grid-cols-[repeat(auto-fit,_minmax(350px,_1fr))] gap-4' : 'grid-cols-1 gap-8'} grid w-full`}
       >
@@ -200,13 +179,8 @@ const Items = ({
                 : 0;
 
             return (
-              <div className="flex w-full items-center gap-4">
-                <ItemCard
-                  className="grow"
-                  key={item.id}
-                  item={item}
-                  cardType={cardType}
-                />
+              <div key={item.id} className="flex w-full items-center gap-4">
+                <ItemCard className="grow" item={item} cardType={cardType} />
                 {toggleFormLink && mode === 'form' && (
                   <div className="flex flex-col items-center justify-center gap-2">
                     {linkCount > 0 && <p>{linkCount}</p>}

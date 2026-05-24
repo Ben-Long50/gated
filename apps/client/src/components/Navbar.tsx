@@ -142,7 +142,7 @@ const Navbar = ({
       ref={navbarRef}
     >
       <nav
-        className={`bg-primary timing shadow-color mx-auto mt-4 grid w-full max-w-9xl grid-cols-[1fr_2fr] items-center justify-center gap-4 rounded-md px-8 py-2 shadow-lg`}
+        className={`bg-base timing shadow-color mx-auto mt-4 grid w-full max-w-9xl grid-cols-[1fr_2fr] items-center justify-center gap-4 rounded-md px-8 py-2 shadow-lg`}
       >
         <Link to="/glam/codex">
           <h2

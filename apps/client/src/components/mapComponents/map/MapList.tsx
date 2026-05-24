@@ -23,19 +23,15 @@ const MapList = () => {
   if (isLoading) return <Loading />;
 
   return (
-    <div
-      ref={containerRef}
-      className="flex w-full max-w-7xl flex-col items-center gap-8"
-    >
-      <h1>{capitalCase(mapType || 'draft')}s</h1>
+    <div ref={containerRef} className="flex w-full flex-col items-center gap-8">
       {maps && maps.length === 0 ? (
         <>
-          <h3 className="text-center">
+          <p className="text-center">
             Your campaign has no {capitalCase(mapType)}s. Head to the Map
             Builder to create a new Map or Component
-          </h3>
+          </p>
           <BtnRect
-            className="min-w-80"
+            className="w-full"
             type="button"
             ariaLabel="Navigate to map builder"
             onClick={() => navigate('create')}

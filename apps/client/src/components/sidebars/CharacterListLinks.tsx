@@ -37,7 +37,7 @@ const CharacterListLinks = () => {
     <>
       <LinkListSidebar
         icon={
-          <CharacterIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+          <CharacterIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         title="Character Categories"
       >
@@ -61,7 +61,7 @@ const CharacterListLinks = () => {
       </LinkListSidebar>
       <LinkSidebar
         icon={
-          <CreateCharacterIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+          <CreateCharacterIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         title="Create Character"
         path="characters/create"

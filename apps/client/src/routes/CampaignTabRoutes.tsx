@@ -205,14 +205,7 @@ const CampaignTabRoutes = () => {
             <Route path="initiative" element={<InitiativeModal />} />
           </Route>
           <Route path=":mapId/delete" element={<DeleteModal />} />
-          <Route
-            path="create"
-            element={
-              <Page title="Create Map">
-                <MapBuilder />
-              </Page>
-            }
-          >
+          <Route path="create" element={<MapBuilder />}>
             <Route path="save" element={<MapSaveModal />} />
             <Route path="tileList" element={<TileListModal />} />
           </Route>
