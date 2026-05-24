@@ -37,7 +37,10 @@ export const itemInclude = {
                 },
             },
             actions: {
-                include: { keywordModifiers: { include: { keyword: true } } },
+                include: {
+                    keywordModifiers: { include: { keyword: true } },
+                    itemLink: { select: { item: { select: { name: true } } } },
+                },
             },
         },
     },

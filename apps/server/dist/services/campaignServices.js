@@ -26,6 +26,7 @@ const campaignInclude = {
             lastName: true,
             picture: true,
             userId: true,
+            playerCharacter: true,
         },
         orderBy: { firstName: 'asc' },
     },
