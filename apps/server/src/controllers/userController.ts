@@ -4,6 +4,7 @@ import userServices from '../services/userServices.js';
 import { SignUpInput, UserUpdateInput } from '../validation/authSchema.js';
 import { UserRole } from '../validation/enums.js';
 import handleControllerError from './handleControllerError.js';
+import z from 'zod';
 
 const userController = {
   getAuthenticatedUser: async (req: Request, res: Response) => {
@@ -129,18 +130,22 @@ const userController = {
     }
   },
 
-  updateUserRole: async (req: Request, res: Response) => {
+  updateUserRoles: async (req: Request, res: Response) => {
     try {
-      const validatedRole = UserRole.parse(req.body.role);
+      const UserRoleInput = z.object({
+        id: z.number().int().optional(),
+        role: UserRole,
+      });
 
-      await userServices.updateUserRole(
-        validatedRole,
-        Number(req.params.userId),
+      const validatedRoles = req.body.map(
+        (user: { id: number; role: string }) => UserRoleInput.parse(user),
       );
 
-      res
-        .status(200)
-        .json({ message: 'Successfully updated account information' });
+      console.log(validatedRoles);
+
+      await userServices.updateUserRoles(validatedRoles);
+
+      res.status(200).json({ message: 'Successfully updated user roles' });
     } catch (error: any) {
       handleControllerError(res, error);
     }

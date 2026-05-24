@@ -3,6 +3,7 @@ import { FactionInput } from '../validation/factionSchema.js';
 
 const factionInclude = {
   affiliations: { select: { id: true } },
+  gangs: { select: { name: true } },
   campaign: { select: { ownerId: true } },
 };
 

@@ -103,6 +103,7 @@ const userServices = {
                     id: true,
                     username: true,
                     profilePicture: true,
+                    role: true,
                 },
                 orderBy: { username: 'asc' },
                 take: 20,
@@ -220,12 +221,16 @@ const userServices = {
             throw new Error('Failed to update account information');
         }
     },
-    updateUserRole: async (role, userId) => {
+    updateUserRoles: async (formData) => {
         try {
-            await prisma.user.update({
-                where: { id: userId },
-                data: { role },
-            });
+            const updatePromises = [];
+            for (const user of formData) {
+                updatePromises.push(prisma.user.update({
+                    where: { id: user.id },
+                    data: { role: user.role },
+                }));
+            }
+            await Promise.all(updatePromises);
         }
         catch (error) {
             console.error(error);

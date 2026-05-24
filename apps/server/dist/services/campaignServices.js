@@ -14,7 +14,7 @@ import { getIO } from '../sockets/socket.js';
 import { calculateRoll } from '../utils/rollUtilities.js';
 import constructCalendar from '../utils/constructCalendar.js';
 const campaignInclude = {
-    sessions: true,
+    sessions: { orderBy: { sessionNumber: 'desc' } },
     players: { orderBy: { username: 'asc' } },
     pendingPlayers: { orderBy: { username: 'asc' } },
     factions: { select: { id: true, name: true, factionType: true } },

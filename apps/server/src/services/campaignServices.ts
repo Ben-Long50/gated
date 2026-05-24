@@ -8,7 +8,7 @@ import { EventInput } from '../validation/eventSchema.js';
 import { Date, Time } from '../validation/fieldSchemas.js';
 
 const campaignInclude = {
-  sessions: true,
+  sessions: { orderBy: { sessionNumber: 'desc' as const } },
   players: { orderBy: { username: 'asc' as const } },
   pendingPlayers: { orderBy: { username: 'asc' as const } },
   factions: { select: { id: true, name: true, factionType: true } },

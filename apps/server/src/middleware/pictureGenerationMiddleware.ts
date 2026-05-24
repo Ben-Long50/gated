@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import handleControllerError from '../controllers/handleControllerError.js';
+import { fal } from '@fal-ai/client';
+import z from 'zod';
 
 export const generateCloudflarePicture = async (
   req: Request,
@@ -98,6 +100,52 @@ export const generateBFLPicture = async (
     }
   } catch (error: any) {
     handleControllerError(res, error);
+  }
+
+  next();
+};
+
+export const generatFalPicture = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    // const promptInfo = {
+    //   environment: {
+    //     style:
+    //       'Black and white manga style with a dark and gritty aesthetic like the manga berserk',
+    //     setting:
+    //       'Neo-futuristic cyberpunk city',
+    //   },
+    //   character: {
+    //     firstName: 'Dingus',
+    //     lastName: 'McDingus',
+    //     height: '72 inches',
+    //     weight: '250 pounds',
+    //     sex: 'male',
+    //     age: '40',
+    //   },
+    // };
+
+    const words = req.body.prompt.trim().split(' ').filter(Boolean);
+
+    console.log(words);
+
+    const promptInput = z
+      .array(z.string())
+      .min(20, 'Prompt length must be greater than 20 words');
+
+    const validatedPrompt = promptInput.parse(words);
+
+    const result = await fal.run('fal-ai/flux/schnell', {
+      input: { prompt: validatedPrompt.join(' ') },
+    });
+
+    req.body.generatedPictureUrl = result.data.images[0].url;
+  } catch (error: any) {
+    handleControllerError(res, error);
+    return;
   }
 
   next();

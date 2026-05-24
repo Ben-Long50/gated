@@ -1,7 +1,7 @@
 import express from 'express';
 import userController from '../controllers/userController.js';
 import authentication from '../middleware/authentication.js';
-import { generateBFLPicture } from '../middleware/pictureGenerationMiddleware.js';
+import { generatFalPicture } from '../middleware/pictureGenerationMiddleware.js';
 import { uploadGeneratedPictureToCloudinary } from '../utils/cloudinary.js';
 
 const router = express.Router();
@@ -34,7 +34,7 @@ router.post(
   '/users/generate',
   authentication.authenticate,
   authentication.authenticateSuperadmin,
-  generateBFLPicture,
+  generatFalPicture,
   uploadGeneratedPictureToCloudinary,
   userController.addUserGeneratedPicture,
 );
@@ -44,10 +44,10 @@ router.post('/users', authentication.authenticate, userController.createUser);
 router.put('/users', authentication.authenticate, userController.updateUser);
 
 router.patch(
-  '/users/:userId/role',
+  '/users/role',
   authentication.authenticate,
   authentication.authenticateSuperadmin,
-  userController.updateUserRole,
+  userController.updateUserRoles,
 );
 
 export default router;

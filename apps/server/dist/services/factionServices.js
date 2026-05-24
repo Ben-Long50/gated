@@ -12,6 +12,7 @@ var __rest = (this && this.__rest) || function (s, e) {
 import prisma from '../config/database.js';
 const factionInclude = {
     affiliations: { select: { id: true } },
+    gangs: { select: { name: true } },
     campaign: { select: { ownerId: true } },
 };
 const factionServices = {

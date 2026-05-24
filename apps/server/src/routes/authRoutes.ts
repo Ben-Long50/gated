@@ -3,6 +3,7 @@ import passport from 'passport';
 import userController from '../controllers/userController.js';
 import { sendAuthStatus } from '../passport/passport.js';
 import authentication from '../middleware/authentication.js';
+import cloudinary from '../utils/cloudinary.js';
 
 const router = express.Router();
 
@@ -56,6 +57,20 @@ router.post(
       });
   },
 );
+
+router.get('/auth/picture', async (_req: Request, res: Response) => {
+  const result = await cloudinary.search
+    .expression('folder=gated/scenes')
+    .max_results(100)
+    .execute();
+
+  const random =
+    result.resources[Math.floor(Math.random() * result.resources.length)];
+
+  res.status(200).json({
+    url: random.public_id,
+  });
+});
 
 router.get('/auth/status', sendAuthStatus);
 
