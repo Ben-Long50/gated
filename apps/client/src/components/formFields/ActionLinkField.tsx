@@ -3,11 +3,12 @@ import { Action } from 'src/types/action';
 import ActionCard from '../ActionCard';
 import Icon from '@mdi/react';
 import { mdiLinkVariantOff } from '@mdi/js';
-import ArrowHeader2 from '../ArrowHeader2';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import useActionQueries from 'src/hooks/useActionsQuery/useActionQueries';
 import BtnAuth from '../buttons/BtnAuth';
 import Loading from '../Loading';
+import IconBtnMedium from '../buttons/IconBtnMedium';
+import ArrowHeader3 from '../ArrowHeader3';
 
 const ActionLinkField = ({ form }: { form: FormApi }) => {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ const ActionLinkField = ({ form }: { form: FormApi }) => {
       <form.Subscribe selector={(state) => state.values.actionIds}>
         {(actionIds: number[]) => (
           <>
-            {actionIds.length > 0 && <ArrowHeader2 title="Linked Actions" />}
+            {actionIds.length > 0 && <ArrowHeader3 title="Linked Actions" />}
             <form.Field name="actionIds">
               {(field) => (
                 <>
@@ -38,23 +39,19 @@ const ActionLinkField = ({ form }: { form: FormApi }) => {
                           className="flex items-center gap-4"
                           key={action?.id}
                         >
-                          <ActionCard action={action} mode="form" />
-                          <button
-                            className="shadow-color hover:border-accent timing bg-secondary group rounded border-2 border-transparent p-4"
+                          <ActionCard action={action} />
+                          <IconBtnMedium
                             onClick={() => {
                               field.handleChange(
                                 field.state.value.filter(
-                                  (actionId: number) => actionId !== action?.id,
+                                  (actionId: number) =>
+                                    Number(actionId) !== action?.id,
                                 ),
                               );
                             }}
                           >
-                            <Icon
-                              className="text-primary timing group-hover:text-accent"
-                              path={mdiLinkVariantOff}
-                              size={1.2}
-                            />
-                          </button>
+                            <Icon path={mdiLinkVariantOff} />
+                          </IconBtnMedium>
                         </div>
                       );
                     })
@@ -67,10 +64,7 @@ const ActionLinkField = ({ form }: { form: FormApi }) => {
       </form.Subscribe>
       <BtnAuth
         className="w-full min-w-48"
-        ariaLabel="Open link action modal"
-        type="button"
-        onClick={(e) => {
-          e.preventDefault();
+        onClick={() => {
           navigate('actions?mode=form');
         }}
       >

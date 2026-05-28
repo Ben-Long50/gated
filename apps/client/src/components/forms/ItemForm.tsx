@@ -79,68 +79,71 @@ const ItemForm = () => {
             )}
           </itemForm.Field>
         </div>
-      </div>
-      <itemForm.Field name="itemTypes">
-        {(field) => (
-          <div className="flex w-full flex-col gap-4">
-            {field.state.value.map((_, i) => (
-              <div className="flex w-full items-center gap-4">
-                <itemForm.Field key={i} name={`itemTypes[${i}]`}>
-                  {(subfield) => (
-                    <InputSelectField
-                      label="Item Type"
-                      options={[
-                        'weapon',
-                        'armor',
-                        'cybernetic',
-                        'mutation',
-                        'vehicle',
-                        'drone',
-                        'modification',
-                        'reusable',
-                        'consumable',
-                      ]}
-                      value={subfield.state.value}
-                      onChange={(value) => subfield.handleChange(value)}
-                    />
-                  )}
-                </itemForm.Field>
-                {i > 0 && (
-                  <button onClick={() => field.removeValue(i)} type="button">
-                    <Icon
-                      className="text-tertiary hover:text-accent timing"
-                      path={mdiClose}
-                      size={1.5}
-                    />
-                  </button>
-                )}
-              </div>
-            ))}
-            <BtnAuth
-              onClick={() => {
-                itemForm.setFieldValue('itemTypes', [...field.state.value, '']);
-              }}
-            >
-              Add Item Type
-            </BtnAuth>
-          </div>
-        )}
-      </itemForm.Field>
-      <div className="grid w-full gap-8 max-sm:col-span-2 max-sm:grid-flow-row sm:grid-cols-2">
-        <PictureField
-          form={itemForm}
-          sizeInfo={{ aspectRatio: '1/1', maxHeight: '', minHeight: '' }}
-        />
-        <itemForm.Field name="description">
+
+        <itemForm.Field name="itemTypes">
           {(field) => (
-            <TextAreaField
-              label={'Item Description'}
-              value={field.state.value}
-              onChange={(value) => field.handleChange(value)}
-            />
+            <div className="flex w-full flex-col gap-4">
+              {field.state.value.map((_, i) => (
+                <div className="flex w-full items-center gap-4">
+                  <itemForm.Field key={i} name={`itemTypes[${i}]`}>
+                    {(subfield) => (
+                      <InputSelectField
+                        label="Item Type"
+                        options={[
+                          'weapon',
+                          'armor',
+                          'cybernetic',
+                          'mutation',
+                          'vehicle',
+                          'drone',
+                          'modification',
+                          'reusable',
+                          'consumable',
+                        ]}
+                        value={subfield.state.value}
+                        onChange={(value) => subfield.handleChange(value)}
+                      />
+                    )}
+                  </itemForm.Field>
+                  {i > 0 && (
+                    <button onClick={() => field.removeValue(i)} type="button">
+                      <Icon
+                        className="text-tertiary hover:text-accent timing"
+                        path={mdiClose}
+                        size={1.5}
+                      />
+                    </button>
+                  )}
+                </div>
+              ))}
+              <BtnAuth
+                onClick={() => {
+                  itemForm.setFieldValue('itemTypes', [
+                    ...field.state.value,
+                    '',
+                  ]);
+                }}
+              >
+                Add Item Type
+              </BtnAuth>
+            </div>
           )}
         </itemForm.Field>
       </div>
+      <PictureField
+        form={itemForm}
+        sizeInfo={{ aspectRatio: '1/1', maxHeight: '', minHeight: '' }}
+      />
+      <itemForm.Field name="description">
+        {(field) => (
+          <TextAreaField
+            className="min-h-64"
+            label={'Item Description'}
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
+          />
+        )}
+      </itemForm.Field>
       <StatFields form={itemForm} />
       <div className="flex flex-col gap-4">
         <Divider />

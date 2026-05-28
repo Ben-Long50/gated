@@ -78,12 +78,15 @@ const KeywordCard = ({
           checked={!!activeKeyword}
           onChange={(value) => {
             if (!activeKeyword) {
-              field.handleChange([...field.state.value, { keywordId: value }]);
+              field.handleChange([
+                ...field.state.value,
+                { keywordId: Number(value) },
+              ]);
             } else {
               field.handleChange(
                 field.state.value?.filter(
                   (item: { keywordId: number; value?: number }) =>
-                    item.keywordId !== value,
+                    item.keywordId !== Number(value),
                 ),
               );
             }

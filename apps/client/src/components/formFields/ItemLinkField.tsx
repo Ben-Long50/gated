@@ -1,5 +1,4 @@
 import { FormApi, useStore } from '@tanstack/react-form';
-import ArrowHeader2 from '../ArrowHeader2';
 import { Item } from 'src/types/item';
 import ItemCard from '../ItemCard';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -8,6 +7,8 @@ import Loading from '../Loading';
 import BtnAuth from '../buttons/BtnAuth';
 import Icon from '@mdi/react';
 import { mdiLinkVariantOff } from '@mdi/js';
+import IconBtnMedium from '../buttons/IconBtnMedium';
+import ArrowHeader3 from '../ArrowHeader3';
 
 const ItemLinkField = ({ form }: { form: FormApi }) => {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ const ItemLinkField = ({ form }: { form: FormApi }) => {
 
   return (
     <>
-      {items.length > 0 && <ArrowHeader2 title={'Linked Items'} />}
+      {items.length > 0 && <ArrowHeader3 title={'Linked Items'} />}
       <form.Field name="itemIds">
         {(field) => (
           <>
@@ -32,22 +33,17 @@ const ItemLinkField = ({ form }: { form: FormApi }) => {
                 return (
                   <div key={index} className="flex w-full items-center gap-4">
                     <ItemCard className="grow" item={item} />
-                    <button
-                      className="shadow-color hover:border-accent timing bg-secondary group rounded border-2 border-transparent p-4"
+                    <IconBtnMedium
                       onClick={() => {
                         field.handleChange(
                           field.state.value.filter(
-                            (itemId: number) => itemId !== item?.id,
+                            (itemId: number) => Number(itemId) !== item?.id,
                           ),
                         );
                       }}
                     >
-                      <Icon
-                        className="text-primary timing group-hover:text-accent"
-                        path={mdiLinkVariantOff}
-                        size={1.2}
-                      />
-                    </button>
+                      <Icon path={mdiLinkVariantOff} />
+                    </IconBtnMedium>
                   </div>
                 );
               })
@@ -57,10 +53,7 @@ const ItemLinkField = ({ form }: { form: FormApi }) => {
       </form.Field>
       <BtnAuth
         className="w-full min-w-48"
-        ariaLabel="Open link item modal"
-        type="button"
-        onClick={(e) => {
-          e.preventDefault();
+        onClick={() => {
           navigate('links?linkCategory=weapon&mode=form');
         }}
       >

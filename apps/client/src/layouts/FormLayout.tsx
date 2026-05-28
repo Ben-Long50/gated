@@ -1,13 +1,10 @@
-import { ReactNode, useContext } from 'react';
-import ThemeContainer from '../components/ThemeContainer';
-import { ThemeContext } from '../contexts/ThemeContext';
+import { ReactNode } from 'react';
 import { UseMutationResult } from '@tanstack/react-query';
 import { FormApi, useStore } from '@tanstack/react-form';
 import BtnAuth from 'src/components/buttons/BtnAuth';
 import Loading from 'src/components/Loading';
 import BtnRect from 'src/components/buttons/BtnRect';
 import Divider from 'src/components/Divider';
-import CharacterHeader from 'src/components/characterComponents/CharacterHeader';
 
 type MutationType<TData = any, TVariables = any> = UseMutationResult<
   TData,
@@ -30,8 +27,6 @@ const FormLayout = ({
   createMutation?: MutationType;
   deleteMutation?: MutationType;
 }) => {
-  const { accentPrimary } = useContext(ThemeContext);
-
   const formErrorMap = useStore(form.store, (state) => state.errorMap);
 
   const errorArray = formErrorMap.onSubmit
@@ -42,7 +37,7 @@ const FormLayout = ({
 
   return (
     <form
-      className="flex flex-col gap-8"
+      className="flex w-full flex-col gap-8"
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();

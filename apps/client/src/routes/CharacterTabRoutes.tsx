@@ -7,6 +7,7 @@ import CharacterMenuRoutes from './CharacterMenuRoutes';
 import CharacterDashboard from 'src/components/characterComponents/CharacterDashboard';
 import PictureLibraryModal from 'src/components/modals/PictureLibraryModal';
 import Page from 'src/components/Page';
+import PromptModal from 'src/components/modals/PromptModal';
 
 const CharacterTabRoutes = () => {
   return (
@@ -23,6 +24,7 @@ const CharacterTabRoutes = () => {
         }
       >
         <Route path="library" element={<PictureLibraryModal />} />
+        <Route path="prompt" element={<PromptModal />} />
         <Route path="perks" element={<PerkLinkModal />} />
         <Route path="npcPreferences" element={<NpcPreferenceModal />} />
       </Route>

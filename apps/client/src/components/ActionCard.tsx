@@ -40,8 +40,10 @@ const ActionCard = ({
         <div
           className={`${action.characterInventoryId ? (action.active ? 'opacity-100' : 'opacity-30') : ''} flex w-full items-center justify-between gap-4 pr-2`}
         >
-          <h3> {action?.name}</h3>
-          {action.itemLink && <p>{action.itemLink.item.name}</p>}
+          <h3 className="grow">{action?.name}</h3>
+          {action.itemLink && (
+            <p className="text-right">{action.itemLink.item.name}</p>
+          )}
           {((mode === 'codex' && user?.role === 'ADMIN') ||
             (mode === 'codex' && user?.role === 'SUPERADMIN')) && (
             <Link to={`/glam/codex/actions/${action.id}/update`}>

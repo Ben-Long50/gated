@@ -91,15 +91,17 @@ const Actions = ({
         <ArrowHeader2 title={capitalCase(category)} />
         <div className="flex flex-col gap-4 md:grid md:grid-cols-2">
           {actions?.map((action) => {
+            const checked = field.state.value.some(
+              (actionId: number) => Number(actionId) === action.id,
+            );
+
             return (
               <div key={action.id} className="flex items-center gap-4">
                 <ActionCard action={action} />
                 {mode === 'form' && (
                   <InputFieldCheckbox
                     value={action.id}
-                    checked={field.state.value.some(
-                      (actionId: number) => actionId === action.id,
-                    )}
+                    checked={checked}
                     onChange={(value) => {
                       if (toggleFormLink) {
                         toggleFormLink(value);

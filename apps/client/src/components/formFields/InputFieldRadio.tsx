@@ -1,4 +1,4 @@
-import { mdiCircle, mdiCircleOutline } from '@mdi/js';
+import { mdiCircle, mdiCircleOutline, mdiCircleSlice8 } from '@mdi/js';
 import Icon from '@mdi/react';
 import { useRef } from 'react';
 
@@ -33,7 +33,7 @@ const InputFieldRadio = ({
         }}
       >
         <Icon
-          path={checked ? mdiCircle : mdiCircleOutline}
+          path={checked ? mdiCircleSlice8 : mdiCircleOutline}
           size={1.5}
           className={`${checked ? 'text-accent' : 'text-secondary'}`}
         />

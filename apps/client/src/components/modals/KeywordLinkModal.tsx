@@ -25,7 +25,7 @@ const KeywordLinkModal = () => {
         </BtnRect>
       }
     >
-      <Keywords title="Link Traits" forcedMode="form" field={field} />
+      <Keywords field={field} />
     </Modal>
   );
 };
