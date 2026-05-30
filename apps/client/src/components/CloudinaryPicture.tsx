@@ -1,6 +1,7 @@
 import { AdvancedImage, lazyload, responsive } from '@cloudinary/react';
 import { Cloudinary } from '@cloudinary/url-gen';
-import { ReactNode } from 'react';
+import { mdiImageOutline } from '@mdi/js';
+import Icon from '@mdi/react';
 
 type Position = {
   x: number;
@@ -14,7 +15,7 @@ const CloudinaryPicture = ({
   onClick,
   style,
 }: {
-  publicId: string;
+  publicId?: string;
   position?: Position;
   className?: string;
   onClick?: () => void;
@@ -30,19 +31,28 @@ const CloudinaryPicture = ({
 
   return (
     <div className={`${className} bg-primary h-full w-full`} onClick={onClick}>
-      <AdvancedImage
-        style={{
-          width: '100%',
-          minHeight: '100%',
-          objectFit: 'cover',
-          objectPosition: position
-            ? `${position.x}% ${position.y}%`
-            : '50% 50%',
-          ...style,
-        }}
-        cldImg={responsiveImage}
-        plugins={[responsive({ steps: 100 }), lazyload()]}
-      />
+      {publicId ? (
+        <AdvancedImage
+          style={{
+            width: '100%',
+            minHeight: '100%',
+            objectFit: 'cover',
+            objectPosition: position
+              ? `${position.x}% ${position.y}%`
+              : '50% 50%',
+            ...style,
+          }}
+          cldImg={responsiveImage}
+          plugins={[responsive({ steps: 100 }), lazyload()]}
+        />
+      ) : (
+        <div className="flex aspect-square size-full items-center justify-center">
+          <Icon
+            path={mdiImageOutline}
+            className="text-tertiary w-1/2 max-w-64 opacity-50"
+          />
+        </div>
+      )}
     </div>
   );
 };

@@ -63,6 +63,8 @@ interface CharacterStats {
   weight?: number;
   injuries: number;
   insanities: number;
+  permanentInjuries: number;
+  permanentInsanities: number;
 }
 
 interface CharacterPreferences {

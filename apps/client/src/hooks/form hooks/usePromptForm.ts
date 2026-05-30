@@ -10,19 +10,20 @@ const usePromptForm = (
     defaultValues: {
       setting: '',
       time: 'daytime',
-      height: character.height ?? (null as number | null),
-      weight: character.weight ?? (null as number | null),
-      age: character.age ?? (null as number | null),
+      height: '',
+      age: '',
       sex: character.sex ?? '',
       hair: '',
       build: '',
       outfit: '',
-      cybernetics: '',
-      weapons: '',
+      augmentation: '',
+      weapon: '',
       pose: '',
       pictureCount: 1,
     },
     onSubmit: async ({ value }) => {
+      value = { ...value, sex: character.sex };
+
       await mutation.mutate(value);
     },
   });

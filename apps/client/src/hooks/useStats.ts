@@ -2,120 +2,92 @@ import { AttributeTree } from 'src/types/attributeTree';
 import { Perk } from 'src/types/perk';
 import { CharacterStats, SortedInventory } from 'src/types/character';
 import { Item } from 'src/types/item';
-import { useMemo } from 'react';
 import { Action } from 'src/types/action';
 
-const useStats = (
+const calculateStats = (
   equipment: SortedInventory | null,
   actions: Action[],
   attributeTree: AttributeTree,
   perks?: Perk[],
-  stats?: CharacterStats,
+  characterStats?: CharacterStats,
 ) => {
-  const armorWeight = useMemo(
-    () =>
-      equipment?.armors?.reduce((sum: number, armor: Item) => {
-        if (armor.stats.weight && !armor.stats.currentPower) {
-          return sum + armor.stats.weight;
-        }
-        return sum;
-      }, 0) || 0,
-    [equipment],
-  );
+  const armorWeight =
+    equipment?.armors?.reduce((sum: number, armor: Item) => {
+      if (armor.stats.weight && !armor.stats.currentPower) {
+        return sum + armor.stats.weight;
+      }
+      return sum;
+    }, 0) || 0;
 
-  const nonArmorWeight = useMemo(() => {
-    const itemArray = [
+  const nonArmorWeight =
+    [
       ...(equipment?.weapons || []),
       ...(equipment?.reusables || []),
       ...(equipment?.consumables || []),
-    ];
+    ].reduce((sum: number, item: Item) => {
+      if (item.stats.weight) {
+        return sum + item.stats.weight;
+      }
+      return sum;
+    }, 0) || 0;
 
-    return (
-      itemArray.reduce((sum: number, item: Item) => {
-        if (item.stats.weight) {
-          return sum + item.stats.weight;
-        }
-        return sum;
-      }, 0) || 0
-    );
-  }, [equipment]);
+  const armorValue =
+    equipment?.armors?.reduce((sum: number, armor: Item) => {
+      if (armor.stats.armor && armor.stats.currentBlock) {
+        return sum + armor.stats.armor;
+      }
+      return sum;
+    }, 0) || 0;
 
-  const armorValue = useMemo(
-    () =>
-      equipment?.armors?.reduce((sum: number, armor: Item) => {
-        if (armor.stats.armor && armor.stats.currentBlock) {
-          return sum + armor.stats.armor;
-        }
-        return sum;
-      }, 0) || 0,
-    [equipment],
-  );
+  const wardValue =
+    equipment?.armors?.reduce((sum: number, armor: Item) => {
+      if (armor.stats.ward && armor.stats.currentBlock) {
+        return sum + armor.stats.ward;
+      }
+      return sum;
+    }, 0) || 0;
 
-  const wardValue = useMemo(
-    () =>
-      equipment?.armors?.reduce((sum: number, armor: Item) => {
-        if (armor.stats.ward && armor.stats.currentBlock) {
-          return sum + armor.stats.ward;
-        }
-        return sum;
-      }, 0) || 0,
-    [equipment],
-  );
+  const equippedCyber =
+    equipment?.augmentations?.reduce((sum: number, cybernetic: Item) => {
+      if (cybernetic.stats.cyber) {
+        return sum + cybernetic.stats.cyber;
+      }
+      return sum;
+    }, 0) || 0;
 
-  const equippedCyber = useMemo(
-    () =>
-      equipment?.augmentations?.reduce((sum: number, cybernetic: Item) => {
-        if (cybernetic.stats.cyber) {
-          return sum + cybernetic.stats.cyber;
-        }
-        return sum;
-      }, 0) || 0,
-    [equipment],
-  );
-
-  const baseStats: CharacterStats = useMemo(
-    () => ({
-      maxHealth: 10 + attributeTree?.violence.skills.threshold.points * 2,
-      maxSanity: 5 + attributeTree?.esoterica.skills.mysticism.points * 2,
-      maxEquip: 10 + attributeTree?.violence.skills.threshold.points * 2,
-      maxCyber: 5 + attributeTree?.cybernetica.skills.chromebits.points * 2,
-      speed: 4 + attributeTree?.violence.skills.assault.points * 1,
-      armor: 0 + armorValue,
-      ward: 0 + wardValue,
-      evasion: 1,
-      weight: 0 + nonArmorWeight + armorWeight,
-      cyber: 0 + equippedCyber,
-      permanentInjuries: stats?.permanentInjuries || 5,
-      permanentInsanities: stats?.permanentInsanities || 5,
-      actions: 3,
-      reactions: 1,
-      hands: 2,
-      chomebitsTn: attributeTree?.cybernetica.skills.chromebits.points,
-      hardwiredTn: attributeTree?.cybernetica.skills.hardwired.points,
-      motorizedTn: attributeTree?.cybernetica.skills.motorized.points,
-      networkedTn: attributeTree?.cybernetica.skills.networked.points,
-      gestaltTn: attributeTree?.esoterica.skills.gestalt.points,
-      godheadTn: attributeTree?.esoterica.skills.godhead.points,
-      mysticismTn: attributeTree?.esoterica.skills.mysticism.points,
-      outerworldTn: attributeTree?.esoterica.skills.outerworld.points,
-      barterTn: attributeTree?.peace.skills.barter.points,
-      rhetoricTn: attributeTree?.peace.skills.rhetoric.points,
-      eruditionTn: attributeTree?.peace.skills.erudition.points,
-      treatmentTn: attributeTree?.peace.skills.treatment.points,
-      assaultTn: attributeTree?.violence.skills.assault.points,
-      shootingTn: attributeTree?.violence.skills.shooting.points,
-      subterfugeTn: attributeTree?.violence.skills.subterfuge.points,
-      thresholdTn: attributeTree?.violence.skills.threshold.points,
-    }),
-    [
-      armorValue,
-      wardValue,
-      nonArmorWeight,
-      armorWeight,
-      equippedCyber,
-      attributeTree,
-    ],
-  );
+  let stats = {
+    maxHealth: 10 + attributeTree?.violence.skills.threshold.points * 2,
+    maxSanity: 5 + attributeTree?.esoterica.skills.mysticism.points * 2,
+    maxEquip: 10 + attributeTree?.violence.skills.threshold.points * 2,
+    maxCyber: 5 + attributeTree?.cybernetica.skills.chromebits.points * 2,
+    speed: 4 + attributeTree?.violence.skills.assault.points * 1,
+    armor: armorValue,
+    ward: wardValue,
+    evasion: 1,
+    weight: nonArmorWeight + armorWeight,
+    cyber: equippedCyber,
+    permanentInjuries: characterStats?.permanentInjuries || 5,
+    permanentInsanities: characterStats?.permanentInsanities || 5,
+    actions: 3,
+    reactions: 1,
+    hands: 2,
+    chomebitsTn: attributeTree?.cybernetica.skills.chromebits.points,
+    hardwiredTn: attributeTree?.cybernetica.skills.hardwired.points,
+    motorizedTn: attributeTree?.cybernetica.skills.motorized.points,
+    networkedTn: attributeTree?.cybernetica.skills.networked.points,
+    gestaltTn: attributeTree?.esoterica.skills.gestalt.points,
+    godheadTn: attributeTree?.esoterica.skills.godhead.points,
+    mysticismTn: attributeTree?.esoterica.skills.mysticism.points,
+    outerworldTn: attributeTree?.esoterica.skills.outerworld.points,
+    barterTn: attributeTree?.peace.skills.barter.points,
+    rhetoricTn: attributeTree?.peace.skills.rhetoric.points,
+    eruditionTn: attributeTree?.peace.skills.erudition.points,
+    treatmentTn: attributeTree?.peace.skills.treatment.points,
+    assaultTn: attributeTree?.violence.skills.assault.points,
+    shootingTn: attributeTree?.violence.skills.shooting.points,
+    subterfugeTn: attributeTree?.violence.skills.subterfuge.points,
+    thresholdTn: attributeTree?.violence.skills.threshold.points,
+  };
 
   const calculateBonus = (
     base: CharacterStats,
@@ -166,27 +138,19 @@ const useStats = (
     return updated;
   };
 
-  const finalStats = useMemo(() => {
-    let stats = { ...baseStats };
+  actions.forEach((action) => {
+    if (action.active && action.modifiers) {
+      stats = calculateBonus(stats, action.modifiers);
+    }
+  });
 
-    actions.forEach((action) => {
-      if (action.active && action.modifiers) {
-        stats = calculateBonus(stats, action.modifiers);
-      }
-    });
+  perks?.forEach((perk) => {
+    if (perk.modifiers) {
+      stats = calculateBonus(stats, perk.modifiers);
+    }
+  });
 
-    perks?.forEach((perk) => {
-      if (perk.modifiers) {
-        stats = calculateBonus(stats, perk.modifiers);
-      }
-    });
-
-    return stats;
-  }, [baseStats, actions, perks]);
-
-  return {
-    stats: finalStats,
-  };
+  return stats;
 };
 
-export default useStats;
+export default calculateStats;

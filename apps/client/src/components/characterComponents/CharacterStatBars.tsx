@@ -34,10 +34,10 @@ const CharacterStatBars = ({
 
   return (
     <>
-      {stats.currentHealth !== undefined && (
+      {stats.maxHealth !== undefined && (
         <StatBar
           title="Health"
-          current={stats.currentHealth}
+          current={stats.currentHealth ?? stats.maxHealth}
           total={stats.maxHealth}
           color={statColorMap['Health']}
           cardWidth={cardWidth}
@@ -60,10 +60,10 @@ const CharacterStatBars = ({
           />
         </StatBar>
       )}
-      {stats.currentSanity !== undefined && (
+      {stats.maxSanity !== undefined && (
         <StatBar
           title="Sanity"
-          current={stats.currentSanity}
+          current={stats.currentSanity ?? stats.maxSanity}
           total={stats.maxSanity}
           color={statColorMap['Sanity']}
           cardWidth={cardWidth}
@@ -89,7 +89,7 @@ const CharacterStatBars = ({
       {stats.maxCyber !== undefined && (
         <StatBar
           title="Cyber"
-          current={stats.cyber}
+          current={stats.cyber ?? stats.maxCyber}
           total={stats.maxCyber}
           color={statColorMap['Cyber']}
           cardWidth={cardWidth}
@@ -100,7 +100,7 @@ const CharacterStatBars = ({
       {stats.maxEquip !== undefined && (
         <StatBar
           title="Equip"
-          current={stats.weight}
+          current={stats.weight ?? stats.maxEquip}
           total={stats.maxEquip}
           color={statColorMap['Equip']}
           cardWidth={cardWidth}
