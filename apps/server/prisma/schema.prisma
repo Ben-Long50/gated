@@ -34,12 +34,13 @@ model User {
 }
 
 model GeneratedPicture {
-  id       Int    @id @default(autoincrement())
-  imageUrl String
-  publicId String
-
-  user   User? @relation(fields: [userId], references: [id])
-  userId Int?
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  imageUrl  String
+  publicId  String
+  prompt    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    Int?
 }
 
 model Campaign {

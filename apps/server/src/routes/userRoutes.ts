@@ -24,12 +24,6 @@ router.get(
   userController.getBatchUsers,
 );
 
-router.get(
-  '/users/:userId',
-  authentication.authenticate,
-  userController.getUserById,
-);
-
 router.post(
   '/users/generate',
   authentication.authenticate,
@@ -37,6 +31,12 @@ router.post(
   generatFalPicture,
   uploadGeneratedPictureToCloudinary,
   userController.addUserGeneratedPicture,
+);
+
+router.get(
+  '/users/:userId',
+  authentication.authenticate,
+  userController.getUserById,
 );
 
 router.post('/users', authentication.authenticate, userController.createUser);

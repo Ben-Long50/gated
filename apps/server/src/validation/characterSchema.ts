@@ -40,7 +40,7 @@ export const CharacterInput = z.object({
   sex: Sex,
   stats: CharacterStats,
   attributes: Attributes,
-  perkIds: z.array(z.number().int()).length(1),
+  perkIds: z.array(z.coerce.number().int()).length(1),
 });
 
 export const CharacterUpdateInput = z.object({

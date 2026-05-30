@@ -60,6 +60,31 @@ export const uploadGeneratedPictureToCloudinary = async (req, res, next) => {
             return next(new Error('Error uploading to Cloudinary'));
         }
     }
+    if (req.body.generatedPictureUrls) {
+        try {
+            if (!req.user) {
+                return res.status(401).json({
+                    error: 'You must be signed in to complete this action',
+                });
+            }
+            req.body.pictures = [];
+            for (const url of req.body.generatedPictureUrls) {
+                const uploadOptions = {
+                    quality: 'auto:eco',
+                    folder: `/gated/${req.user.id}`,
+                };
+                const result = await cloudinary.uploader.upload(url, uploadOptions);
+                req.body.pictures.push({
+                    imageUrl: result.secure_url,
+                    publicId: result.public_id,
+                });
+            }
+        }
+        catch (error) {
+            console.error(error);
+            return next(new Error('Error uploading to Cloudinary'));
+        }
+    }
     next();
 };
 export const deleteFromCloudinary = async (publicId) => {

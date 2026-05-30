@@ -22,7 +22,7 @@ const userServices = {
           lastName: true,
           role: true,
           profilePicture: true,
-          generatedPictures: true,
+          generatedPictures: { orderBy: { createdAt: 'desc' } },
           characters: {
             select: {
               id: true,
@@ -218,13 +218,20 @@ const userServices = {
 
   addUserGeneratedPicture: async (
     picture: { imageUrl: string; publicId: string },
+    prompt: string,
     userId: number,
   ) => {
     try {
       await prisma.user.update({
         where: { id: userId },
         data: {
-          generatedPictures: { create: picture },
+          generatedPictures: {
+            create: {
+              imageUrl: picture.imageUrl,
+              publicId: picture.publicId,
+              prompt,
+            },
+          },
           generationCount: { increment: 1 },
         },
       });
