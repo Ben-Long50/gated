@@ -2,7 +2,7 @@ import { Fragment, useContext, useState } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
 import ThemeContainer from '../ThemeContainer';
 import { ThemeContext } from '../../contexts/ThemeContext';
-import { mdiTriangleDown } from '@mdi/js';
+import { mdiCrown, mdiTriangleDown } from '@mdi/js';
 import Icon from '@mdi/react';
 import PerkCard from '../PerkCard';
 import AttributeCard from '../AttributeCard';
@@ -22,7 +22,6 @@ import ExpandingList from '../ExpandingList';
 import ArrowHeader4 from '../ArrowHeader4';
 import StatBarContainer from '../StatBarContainer';
 import constructName from 'src/utils/constructName';
-import NpcTypeList from '../NpcTypeList';
 import CharacterHeader from './CharacterHeader';
 
 const CharacterSheet = () => {
@@ -160,7 +159,18 @@ const CharacterSheet = () => {
                         size={0.375}
                         rotate={-90}
                       />
-                      <p>{character?.gang?.name || 'N/A'}</p>
+                      {character.controlledGang ? (
+                        <div className="flex items-center gap-4">
+                          <Icon
+                            path={mdiCrown}
+                            className="text-secondary"
+                            size={1}
+                          />
+                          <p>{character.controlledGang?.name}</p>
+                        </div>
+                      ) : (
+                        <p>{character?.gang?.name || 'N/A'}</p>
+                      )}
                     </>
                   ) : (
                     <p>No campaign</p>

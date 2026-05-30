@@ -126,7 +126,6 @@ const ItemUpgradeForm = () => {
           >
             {(field) => (
               <TextAreaField
-                className="min-h-48"
                 label={`Item Description`}
                 value={field.state.value}
                 onChange={(value) => field.handleChange(value)}

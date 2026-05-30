@@ -19,10 +19,14 @@ const TextAreaField = ({
   const { fieldState, focus, setFocus } = useInputState(value, errors);
 
   return (
-    <div className={`${className}`}>
-      <ThemeContainer chamfer="small" borderColor={fieldState.border}>
+    <div className={`${className} `}>
+      <ThemeContainer
+        className="h-32"
+        chamfer="small"
+        borderColor={fieldState.border}
+      >
         <textarea
-          className={`${fieldState.field} timing scrollbar-secondary-2 size-full rounded-bl rounded-tr pl-4 pt-3 text-xl outline-none clip-4`}
+          className={`${fieldState.field} timing scrollbar-secondary-2 size-full h-full rounded-bl rounded-tr pl-4 pt-3 text-xl outline-none clip-4`}
           value={value}
           placeholder={focus && placeholder ? placeholder : undefined}
           onFocus={() => {

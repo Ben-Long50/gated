@@ -9,6 +9,9 @@ import { AttributeTree } from 'src/types/attributeTree';
 import Icon from '@mdi/react';
 import { mdiSync } from '@mdi/js';
 import Divider from './Divider';
+import NavTabs from './NavTabs';
+import BtnAuth from './buttons/BtnAuth';
+import { capitalCase } from 'change-case';
 
 const Perks = ({
   form,
@@ -23,10 +26,13 @@ const Perks = ({
     query,
     attributeQuery,
     setQuery,
+    skillQuery,
     setAttributeQuery,
     setSkillQuery,
     isLoading,
   } = usePerks(attributeTree);
+
+  const skills = attributeQuery ? Object.keys(emptyTree[attributeQuery]) : [];
 
   if (isLoading) {
     return <Loading />;
@@ -35,33 +41,66 @@ const Perks = ({
   return (
     <>
       <div className="flex w-full flex-col gap-4">
-        <div className="grid w-full grid-cols-2 items-center justify-between gap-4 sm:grid-cols-3 sm:gap-8">
-          <ArrowHeader2 title="Filter Options" />
-          <InputSelectField
-            label="Attribute"
-            options={[
-              '',
-              'general',
-              'cybernetica',
-              'esoterica',
-              'peace',
-              'violence',
-            ]}
-            value={attributeQuery}
-            onChange={(value) => {
-              setAttributeQuery(value);
-              setSkillQuery('');
-            }}
-          />
-          <InputSelectField
-            label="Skill"
-            options={
-              attributeQuery ? Object.keys(emptyTree[selectedAttribute]) : []
-            }
-            onChange={(value) => {
-              setSkillQuery(value);
-            }}
-          />
+        <div className="flex w-full flex-col items-center justify-between gap-4">
+          <NavTabs className="grid-cols-5">
+            <BtnAuth
+              active={attributeQuery === 'general'}
+              onClick={() => {
+                setAttributeQuery('general');
+                setSkillQuery('');
+              }}
+            >
+              General
+            </BtnAuth>
+            <BtnAuth
+              active={attributeQuery === 'cybernetica'}
+              onClick={() => {
+                setAttributeQuery('cybernetica');
+                setSkillQuery('');
+              }}
+            >
+              Cybernetica
+            </BtnAuth>
+            <BtnAuth
+              active={attributeQuery === 'esoterica'}
+              onClick={() => {
+                setAttributeQuery('esoterica');
+                setSkillQuery('');
+              }}
+            >
+              Esoterica
+            </BtnAuth>
+            <BtnAuth
+              active={attributeQuery === 'peace'}
+              onClick={() => {
+                setAttributeQuery('peace');
+                setSkillQuery('');
+              }}
+            >
+              Peace
+            </BtnAuth>
+            <BtnAuth
+              active={attributeQuery === 'violence'}
+              onClick={() => {
+                setAttributeQuery('violence');
+                setSkillQuery('');
+              }}
+            >
+              Violence
+            </BtnAuth>
+          </NavTabs>
+          {skills.length > 0 && (
+            <NavTabs className="grid-cols-4">
+              {skills.map((skill) => (
+                <BtnAuth
+                  active={skillQuery === skill}
+                  onClick={() => setSkillQuery(skill)}
+                >
+                  {capitalCase(skill)}
+                </BtnAuth>
+              ))}
+            </NavTabs>
+          )}
         </div>
         <div className="flex items-end gap-4">
           <InputField
@@ -87,7 +126,6 @@ const Perks = ({
           </button>
         </div>
       </div>
-      <Divider />
       <PerkList perkTree={filteredPerkTree} form={form} />
     </>
   );

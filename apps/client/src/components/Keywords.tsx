@@ -28,26 +28,22 @@ const Keywords = ({ field }: { field?: FieldApi }) => {
   return (
     <>
       <div className="flex w-full flex-col gap-4">
-        <div className="grid w-full grid-cols-2 gap-4 sm:gap-8">
-          <ArrowHeader2 title="Filter Options" />
-
-          <InputSelectField
-            label="Trait Type"
-            options={[
-              '',
-              'weapon',
-              'armor',
-              'vehicle',
-              'chromebits',
-              'hardwired',
-              'networked',
-            ]}
-            value={category}
-            onChange={(value) => {
-              setCategory(value);
-            }}
-          />
-        </div>
+        <InputSelectField
+          label="Trait Type"
+          options={[
+            '',
+            'weapon',
+            'armor',
+            'vehicle',
+            'chromebits',
+            'hardwired',
+            'networked',
+          ]}
+          value={category}
+          onChange={(value) => {
+            setCategory(value);
+          }}
+        />
         <div className="flex items-end gap-4">
           <InputField
             label="Search Traits"
@@ -71,7 +67,6 @@ const Keywords = ({ field }: { field?: FieldApi }) => {
           </button>
         </div>
       </div>
-      <Divider />
       <div className="flex w-full flex-col gap-8">
         <ExpandingList
           title={

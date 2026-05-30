@@ -81,20 +81,13 @@ const ItemPage = () => {
   if (!item) return <h1>No item found</h1>;
 
   return (
-    <div className="flex w-full max-w-6xl flex-col items-center gap-8">
+    <div className="flex w-full flex-col items-center gap-8">
       <div className="relative grid w-full grid-cols-[1fr_auto_1fr]">
         <ItemRadialMenu className="relative size-8" item={item} />
         <h1 className="col-start-2 text-center">{item.name}</h1>
-        {/* {!characterId && (
-          <div className="col-start-3 flex items-center justify-end gap-4 self-end">
-            <CartButton itemId={item?.id} />
-          </div>
-        )} */}
       </div>
       <div className="relative grid h-full w-full grid-rows-[auto_auto] gap-8 sm:grid-cols-2 sm:grid-rows-1">
-        {item.picture?.imageUrl && (
-          <ItemPicture key={item.id} className={`timing w-full`} item={item} />
-        )}
+        <ItemPicture key={item.id} item={item} />
         <div className="flex w-full flex-col gap-4">
           {item.conditions.length > 0 && (
             <div className="flex flex-wrap items-center justify-start gap-1">
@@ -314,15 +307,15 @@ const ItemPage = () => {
         (parts.includes('codex') && user?.role === 'SUPERADMIN')) && (
         <BtnRect
           ariaLabel="Navigat to edit weapon form"
+          className="w-full"
           type="button"
-          className="text-accent w-full self-end hover:underline sm:max-w-1/3"
           onClick={() => navigate('update')}
         >
           {'Edit ' + item.name}
         </BtnRect>
       )}
       {(parts.includes('inventory') || parts.includes('equipment')) && (
-        <Link className="w-full self-end" to="upgrade">
+        <Link className="w-full" to="upgrade">
           <BtnRect ariaLabel="Navigate to modify weapon form" type="button">
             {'Upgrade ' + item.name}
           </BtnRect>

@@ -279,7 +279,6 @@ const ActionForm = () => {
       <actionForm.Field name="description">
         {(field) => (
           <TextAreaField
-            className="w-full"
             label="Action Description"
             value={field.state.value}
             onChange={(value) => field.handleChange(value)}

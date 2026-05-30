@@ -13,7 +13,6 @@ import InputSelectField from './formFields/InputSelectField';
 import { capitalCase } from 'change-case';
 import ItemCard from './ItemCard';
 import BtnAuth from './buttons/BtnAuth';
-import Divider from './Divider';
 import IconBtnMedium from './buttons/IconBtnMedium';
 
 const Items = ({
@@ -46,11 +45,11 @@ const Items = ({
     items,
     keywords,
     query,
-    category: filterCategory,
+    trait,
     priceFilter,
     rarity,
     setQuery,
-    setItemCategory,
+    setTrait,
     setPriceFilter,
     setRarity,
     isLoading,
@@ -102,9 +101,9 @@ const Items = ({
           <InputSelectField
             label="Trait"
             options={keywords || []}
-            value={filterCategory}
+            value={trait}
             onChange={(value) => {
-              setItemCategory(value);
+              setTrait(value);
             }}
           />
           <InputSelectField
@@ -149,7 +148,7 @@ const Items = ({
               <IconBtnMedium
                 onClick={() => {
                   setQuery('');
-                  setItemCategory(category);
+                  setTrait('');
                   setPriceFilter('');
                   setRarity('');
                 }}

@@ -66,18 +66,17 @@ const useBaseItems = ({
   }, [categorizedItems]);
 
   const [query, setQuery] = useState('');
-  const [itemCategory, setItemCategory] = useState('');
+  const [trait, setTrait] = useState('');
   const [priceFilter, setPriceFilter] = useState('');
   const [rarity, setRarity] = useState('');
 
   const filterItems = (items: Item[]) => {
     if (!items) return;
     let filteredItems = items;
-    if (itemCategory) {
+    if (trait) {
       filteredItems = items.filter((item: Item) =>
         item.keywords.some(
-          (keyword) =>
-            camelCase(itemCategory) === camelCase(keyword.keyword.name),
+          (keyword) => camelCase(trait) === camelCase(keyword.keyword.name),
         ),
       );
     }
@@ -119,20 +118,17 @@ const useBaseItems = ({
     return filteredItems;
   };
 
-  const filteredItems = useMemo(
-    () => filterItems(categorizedItems),
-    [query, priceFilter, rarity, category, itemCategory, categorizedItems],
-  );
+  const filteredItems = filterItems(categorizedItems);
 
   return {
     items: filteredItems,
     keywords: filteredKeywords,
     query,
-    category,
+    trait,
     priceFilter,
     rarity,
     setQuery,
-    setItemCategory,
+    setTrait,
     setPriceFilter,
     setRarity,
     isLoading,

@@ -6,7 +6,6 @@ const Properties = () => {
 
   return (
     <div className="flex w-full max-w-6xl flex-col items-center gap-8">
-      <h1>Properties</h1>
       {properties?.map((property) => (
         <PropertyCard key={property.id} property={property} />
       ))}

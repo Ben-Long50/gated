@@ -33,17 +33,14 @@ const Conditions = ({
   return (
     <>
       <div className="flex w-full flex-col gap-4">
-        <div className="grid w-full grid-cols-2 gap-4 sm:gap-8">
-          <ArrowHeader2 title="Filter Options" />
-          <InputSelectField
-            label="Condition Type"
-            options={['character', 'item']}
-            value={category}
-            onChange={(value) => {
-              setCategory(value);
-            }}
-          />
-        </div>
+        <InputSelectField
+          label="Condition Type"
+          options={['character', 'item']}
+          value={category}
+          onChange={(value) => {
+            setCategory(value);
+          }}
+        />
         <div className="flex items-end gap-4">
           <InputField
             label="Search Conditions"
@@ -67,7 +64,6 @@ const Conditions = ({
           </button>
         </div>
       </div>
-      <Divider />
       <div className="flex w-full flex-col gap-8">
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-4 md:grid md:grid-cols-2">

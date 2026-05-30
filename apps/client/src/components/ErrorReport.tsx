@@ -45,7 +45,6 @@ const ErrorReport = () => {
       >
         {(field) => (
           <TextAreaField
-            className="h-60 w-full"
             label="Describe the error"
             value={field.state.value}
             onChange={(value) => field.handleChange(value)}

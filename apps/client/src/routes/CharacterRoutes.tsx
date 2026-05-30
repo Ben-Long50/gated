@@ -26,6 +26,7 @@ import Page from 'src/components/Page';
 import CharacterProgressionPage from 'src/components/characterComponents/CharacterProgressionPage';
 import PictureLibraryModal from 'src/components/modals/PictureLibraryModal';
 import PromptModal from 'src/components/modals/PromptModal';
+import PictureRoutes from './PictureRoutes';
 
 const CharacterRoutes = () => {
   return (
@@ -90,8 +91,7 @@ const CharacterRoutes = () => {
           </Page>
         }
       >
-        <Route path="library" element={<PictureLibraryModal />} />
-        <Route path="prompt" element={<PromptModal />} />
+        {PictureRoutes()}
         <Route path="perks" element={<PerkLinkModal />} />
         <Route path="npcPreferences" element={<NpcPreferenceModal />} />
       </Route>

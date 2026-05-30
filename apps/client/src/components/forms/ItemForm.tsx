@@ -8,7 +8,6 @@ import Divider from '../Divider';
 import ItemLinkField from '../formFields/ItemLinkField';
 import KeywordLinkField from '../formFields/KeywordLinkField';
 import useItemQuery from 'src/hooks/useItemQuery/useItemQuery';
-import PictureField from '../formFields/PictureField';
 import RarityField from '../formFields/RarityField';
 import StatFields from '../formFields/StatFields';
 import useCreateItemMutation from 'src/hooks/useCreateItemMutation/useCreateItemMutation';
@@ -19,6 +18,7 @@ import BtnAuth from '../buttons/BtnAuth';
 import Icon from '@mdi/react';
 import { mdiClose } from '@mdi/js';
 import ActionLinkField from '../formFields/ActionLinkField';
+import ItemPictureField from '../formFields/ItemPictureField';
 
 const ItemForm = () => {
   const { itemId } = useParams();
@@ -79,7 +79,6 @@ const ItemForm = () => {
             )}
           </itemForm.Field>
         </div>
-
         <itemForm.Field name="itemTypes">
           {(field) => (
             <div className="flex w-full flex-col gap-4">
@@ -129,21 +128,22 @@ const ItemForm = () => {
             </div>
           )}
         </itemForm.Field>
+        <itemForm.Field name="description">
+          {(field) => (
+            <TextAreaField
+              label="Item Description"
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
+            />
+          )}
+        </itemForm.Field>
       </div>
-      <PictureField
+      <Divider />
+      <ArrowHeader2 title="Item Picture" />
+      <ItemPictureField
         form={itemForm}
         sizeInfo={{ aspectRatio: '1/1', maxHeight: '', minHeight: '' }}
       />
-      <itemForm.Field name="description">
-        {(field) => (
-          <TextAreaField
-            className="min-h-64"
-            label={'Item Description'}
-            value={field.state.value}
-            onChange={(value) => field.handleChange(value)}
-          />
-        )}
-      </itemForm.Field>
       <StatFields form={itemForm} />
       <div className="flex flex-col gap-4">
         <Divider />

@@ -8,6 +8,7 @@ import {
   useState,
 } from 'react';
 import ArrowHeader3 from './ArrowHeader3';
+import ArrowHeader2 from './ArrowHeader2';
 
 const ExpandingList = ({
   title,
@@ -25,9 +26,9 @@ const ExpandingList = ({
   const childCount = Children.count(children);
 
   return (
-    <div className={`flex w-full flex-col gap-4`}>
+    <div className={`flex w-full flex-col gap-8`}>
       <div className="flex w-full items-center justify-between gap-8">
-        <ArrowHeader3 title={title} />
+        <ArrowHeader2 title={title} />
         <button
           aria-label={listExpanded ? 'Retract all' : 'Expand all'}
           className="bg-tertiary shadow-color group ml-auto size-10 rounded p-2 shadow-md"

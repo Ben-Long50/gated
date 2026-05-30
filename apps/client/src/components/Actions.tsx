@@ -9,7 +9,6 @@ import Icon from '@mdi/react';
 import { mdiSync } from '@mdi/js';
 import { ItemObject } from 'src/types/global';
 import { useSearchParams } from 'react-router-dom';
-import Divider from './Divider';
 import { capitalCase } from 'change-case';
 import InputFieldCheckbox from './formFields/InputFieldCheckbox';
 
@@ -41,9 +40,7 @@ const Actions = ({
   return (
     <>
       <div className="flex w-full flex-col gap-4">
-        <div className="grid w-full grid-cols-2 items-center justify-between gap-4 sm:grid-cols-3 sm:gap-8">
-          <ArrowHeader2 title="Filter Options" />
-
+        <div className="grid w-full grid-cols-2 items-center justify-between gap-4">
           <InputSelectField
             label="Action Type"
             options={['action', 'extendedAction', 'reaction', 'passive']}
@@ -52,7 +49,6 @@ const Actions = ({
               setCategory(value);
             }}
           />
-
           <InputSelectField
             label="Action Subtype"
             options={['attack', 'movement', 'upkeep', 'unique']}
@@ -86,14 +82,16 @@ const Actions = ({
           </button>
         </div>
       </div>
-      <Divider />
       <div className="flex w-full flex-col gap-8">
-        <ArrowHeader2 title={capitalCase(category)} />
+        <ArrowHeader2 title={capitalCase(category) || 'All Actions'} />
         <div className="flex flex-col gap-4 md:grid md:grid-cols-2">
           {actions?.map((action) => {
-            const checked = field.state.value.some(
-              (actionId: number) => Number(actionId) === action.id,
-            );
+            const checked =
+              mode === 'form'
+                ? field.state.value.some(
+                    (actionId: number) => Number(actionId) === action.id,
+                  )
+                : false;
 
             return (
               <div key={action.id} className="flex items-center gap-4">

@@ -9,7 +9,7 @@ const StatFields = ({ form }: { form: FormApi }) => {
   return (
     <>
       <Divider />
-      <ArrowHeader2 title={'Item Stats'} />
+      <ArrowHeader2 title="Item Stats" />
       <div className="grid grid-cols-2 gap-4">
         {itemTypes.includes('cybernetic') && (
           <>

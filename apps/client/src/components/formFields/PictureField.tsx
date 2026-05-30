@@ -171,7 +171,10 @@ const PictureField = ({
             </promptForm.Subscribe>
           </div>
           <div className="flex flex-col gap-4">
-            <BtnAuth className="group" onClick={() => navigate('library')}>
+            <BtnAuth
+              className="group"
+              onClick={() => navigate('library?type=character')}
+            >
               Picture Library
             </BtnAuth>
             <form.Subscribe selector={(state) => state.values.sex}>
@@ -182,8 +185,6 @@ const PictureField = ({
                       ...values,
                       sex,
                     };
-
-                    console.log(compiledValues);
 
                     const complete = Object.values(compiledValues)
                       .map((value) => !!value)

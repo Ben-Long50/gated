@@ -105,7 +105,7 @@ const PropertyForm = () => {
         >
           {(field) => (
             <TextAreaField
-              label={'Property Description'}
+              label="Property Description"
               value={field.state.value}
               onChange={(value) => field.handleChange(value)}
             />

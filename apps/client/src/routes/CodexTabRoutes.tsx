@@ -1,4 +1,4 @@
-import { Route, useSearchParams } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 import ActionForm from 'src/components/forms/ActionForm';
 import Actions from 'src/components/Actions';
 import CodexSearch from 'src/components/CodexSearch';
@@ -21,6 +21,9 @@ import Properties from 'src/components/Properties';
 import PropertyForm from 'src/components/forms/PropertyForm';
 import CodexDashboard from 'src/components/CodexDashboard';
 import Page from 'src/components/Page';
+import PictureRoutes from './PictureRoutes';
+import ItemPromptModal from 'src/components/modals/ItemPromptModal';
+import PictureLibraryModal from 'src/components/modals/PictureLibraryModal';
 
 const CodexTabRoutes = () => {
   return (
@@ -76,6 +79,8 @@ const CodexTabRoutes = () => {
             </Page>
           }
         >
+          <Route path="library" element={<PictureLibraryModal />} />
+          <Route path="prompt" element={<ItemPromptModal />} />
           <Route path="traits" element={<KeywordLinkModal />} />
           <Route path="links" element={<ItemLinkModal />} />
           <Route path="actions" element={<ActionLinkModal />} />
@@ -88,6 +93,8 @@ const CodexTabRoutes = () => {
             </Page>
           }
         >
+          <Route path="library" element={<PictureLibraryModal />} />
+          <Route path="prompt" element={<ItemPromptModal />} />
           <Route path="traits" element={<KeywordLinkModal />} />
           <Route path="links" element={<ItemLinkModal />} />
           <Route path="actions" element={<ActionLinkModal />} />

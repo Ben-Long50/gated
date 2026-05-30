@@ -184,25 +184,16 @@ const CodexLinks = () => {
             <AdminIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
           }
         >
+          <SubLinkSidebar title="Create Item" path="codex/items/create" />
           <SubLinkSidebar
-            title="Create a New Base Item"
-            path="codex/items/create"
-          />
-          <SubLinkSidebar
-            title="Create a New Base Property"
+            title="Create Property"
             path="codex/properties/create"
           />
-          <SubLinkSidebar title="Create a New Perk" path="codex/perks/create" />
+          <SubLinkSidebar title="Create Perk" path="codex/perks/create" />
+          <SubLinkSidebar title="Create Trait" path="codex/keywords/create" />
+          <SubLinkSidebar title="Create Action" path="codex/actions/create" />
           <SubLinkSidebar
-            title="Create a New Base Trait"
-            path="codex/keywords/create"
-          />
-          <SubLinkSidebar
-            title="Create a New Base Action"
-            path="codex/actions/create"
-          />
-          <SubLinkSidebar
-            title="Create a New Base Condition"
+            title="Create Condition"
             path="codex/conditions/create"
           />
         </LinkListSidebar>

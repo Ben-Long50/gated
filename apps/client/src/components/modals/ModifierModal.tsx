@@ -13,6 +13,9 @@ import ThemeContainer from '../ThemeContainer';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import ArrowHeader2 from '../ArrowHeader2';
 import InputFieldCheckbox from '../formFields/InputFieldCheckbox';
+import NavTabs from '../NavTabs';
+import IconBtnSmall from '../buttons/IconBtnSmall';
+import Icon from '@mdi/react';
 
 const ModifierModal = () => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -105,131 +108,121 @@ const ModifierModal = () => {
       }
     >
       <h1>Stat Modifiers</h1>
-      <div className="flex w-full flex-col">
-        <div className="mb-8 grid w-full grid-cols-2 gap-4 sm:gap-8">
-          <BtnAuth
-            onClick={() => {
-              setTab('character');
-            }}
-            active={tab === 'character'}
-          >
-            Character Stats
-          </BtnAuth>
-          <BtnAuth
-            onClick={() => {
-              setTab('item');
-            }}
-            active={tab === 'item'}
-          >
-            Item Stats
-          </BtnAuth>
-        </div>
-        <ThemeContainer
-          className="w-full"
-          borderColor={accentPrimary}
-          chamfer="medium"
+      <NavTabs className="grid-cols-2">
+        <BtnAuth
+          onClick={() => {
+            setTab('character');
+          }}
+          active={tab === 'character'}
         >
-          <div className="flex w-full flex-col gap-8 p-4 sm:p-8">
-            <ArrowHeader2 title={capitalCase(tab) + ' Stats'} />
-            <form.Field name="modifiers">
-              {(field) => (
-                <div className="flex flex-col gap-6">
-                  {stats.map((stat) => {
-                    const checked = field.state.value[stat] !== undefined;
+          Character Stats
+        </BtnAuth>
+        <BtnAuth
+          onClick={() => {
+            setTab('item');
+          }}
+          active={tab === 'item'}
+        >
+          Item Stats
+        </BtnAuth>
+      </NavTabs>
+      <div className="flex w-full flex-col gap-4">
+        <form.Field name="modifiers">
+          {(field) => (
+            <div className="flex flex-col gap-6">
+              {stats.map((stat) => {
+                const checked = field.state.value[stat] !== undefined;
 
-                    return (
-                      <>
-                        <div key={stat} className="flex w-full flex-col gap-4">
-                          <InputFieldCheckbox
-                            label={capitalCase(stat)}
-                            value={stat}
-                            checked={checked}
-                            onChange={(value) => {
-                              if (checked) {
-                                const { [value]: _, ...rest } =
-                                  field.state.value;
-                                field.handleChange(rest);
-                              } else {
-                                field.handleChange((prev) => ({
-                                  ...prev,
-                                  [value]: 1,
-                                }));
-                              }
-                            }}
-                          />
-                          {checked && (
-                            <form.Field key={stat} name={`modifiers[${stat}]`}>
-                              {(subfield) =>
-                                inputType === 'number' ? (
-                                  <div className="ml-auto flex items-center gap-4">
-                                    <BtnIcon
-                                      active={true}
-                                      path={mdiSync}
-                                      onClick={() => {
-                                        setInputType('skill');
-                                        subfield.handleChange('chromebits');
-                                      }}
-                                    />
-                                    <InputField
-                                      className="max-w-80"
-                                      type="number"
-                                      label={`${capitalCase(stat)} Value`}
-                                      value={subfield.state.value}
-                                      onChange={(value) =>
-                                        subfield.handleChange(value)
-                                      }
-                                    />
-                                  </div>
-                                ) : (
-                                  <div className="ml-auto flex items-center gap-4">
-                                    <BtnIcon
-                                      active={true}
-                                      path={mdiSync}
-                                      onClick={() => {
-                                        setInputType('number');
-                                        subfield.handleChange(1);
-                                      }}
-                                    />
-                                    <InputSelectField
-                                      className="max-w-80"
-                                      label={`${capitalCase(stat)} Value`}
-                                      options={[
-                                        'chromebits',
-                                        'hardwired',
-                                        'motorized',
-                                        'networked',
-                                        'gestalt',
-                                        'outerworld',
-                                        'mysticism',
-                                        'godhead',
-                                        'barter',
-                                        'rhetoric',
-                                        'erudition',
-                                        'treatment',
-                                        'assault',
-                                        'shooting',
-                                        'subterfuge',
-                                        'threshold',
-                                      ]}
-                                      value={subfield.state.value}
-                                      onChange={(value) =>
-                                        subfield.handleChange(value)
-                                      }
-                                    />
-                                  </div>
-                                )
-                              }
-                            </form.Field>
-                          )}
-                        </div>
-                      </>
-                    );
-                  })}
-                </div>
-              )}
-            </form.Field>
-          </div>
-        </ThemeContainer>
+                return (
+                  <>
+                    <div key={stat} className="flex w-full flex-col gap-4">
+                      <InputFieldCheckbox
+                        label={capitalCase(stat)}
+                        value={stat}
+                        checked={checked}
+                        onChange={(value) => {
+                          if (checked) {
+                            const { [value]: _, ...rest } = field.state.value;
+                            field.handleChange(rest);
+                          } else {
+                            field.handleChange((prev) => ({
+                              ...prev,
+                              [value]: 1,
+                            }));
+                          }
+                        }}
+                      />
+                      {checked && (
+                        <form.Field key={stat} name={`modifiers[${stat}]`}>
+                          {(subfield) =>
+                            inputType === 'number' ? (
+                              <div className="flex w-full items-center gap-4">
+                                <IconBtnSmall
+                                  active={true}
+                                  onClick={() => {
+                                    setInputType('skill');
+                                    subfield.handleChange('chromebits');
+                                  }}
+                                >
+                                  <Icon path={mdiSync} />
+                                </IconBtnSmall>
+                                <InputField
+                                  type="number"
+                                  label={`${capitalCase(stat)} Value`}
+                                  value={subfield.state.value}
+                                  onChange={(value) =>
+                                    subfield.handleChange(value)
+                                  }
+                                />
+                              </div>
+                            ) : (
+                              <div className="flex w-full items-center gap-4">
+                                <IconBtnSmall
+                                  active={true}
+                                  onClick={() => {
+                                    setInputType('number');
+                                    subfield.handleChange(1);
+                                  }}
+                                >
+                                  <Icon path={mdiSync} />
+                                </IconBtnSmall>
+                                <InputSelectField
+                                  label={`${capitalCase(stat)} Value`}
+                                  options={[
+                                    'chromebits',
+                                    'hardwired',
+                                    'motorized',
+                                    'networked',
+                                    'gestalt',
+                                    'outerworld',
+                                    'mysticism',
+                                    'godhead',
+                                    'barter',
+                                    'rhetoric',
+                                    'erudition',
+                                    'treatment',
+                                    'assault',
+                                    'shooting',
+                                    'subterfuge',
+                                    'threshold',
+                                  ]}
+                                  value={subfield.state.value}
+                                  onChange={(value) =>
+                                    subfield.handleChange(value)
+                                  }
+                                />
+                              </div>
+                            )
+                          }
+                        </form.Field>
+                      )}
+                    </div>
+                  </>
+                );
+              })}
+            </div>
+          )}
+        </form.Field>
       </div>
     </Modal>
   );
