@@ -34,13 +34,22 @@ model User {
 }
 
 model GeneratedPicture {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  imageUrl  String
-  publicId  String
-  prompt    String?
-  user      User?    @relation(fields: [userId], references: [id])
+  id        Int                  @id @default(autoincrement())
+  createdAt DateTime             @default(now())
+  imageUrl  String               @unique
+  publicId  String               @unique
+  prompt    Json?
+  type      GeneratedPictureType
+  user      User?                @relation(fields: [userId], references: [id])
   userId    Int?
+}
+
+enum GeneratedPictureType {
+  character
+  item
+  faction
+  gang
+  setting
 }
 
 model Campaign {

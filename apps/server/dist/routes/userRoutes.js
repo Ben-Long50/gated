@@ -1,13 +1,14 @@
 import express from 'express';
 import userController from '../controllers/userController.js';
 import authentication from '../middleware/authentication.js';
-import { generatFalPicture } from '../middleware/pictureGenerationMiddleware.js';
+import { generatFalItemPicture, generatFalPicture, } from '../middleware/pictureGenerationMiddleware.js';
 import { uploadGeneratedPictureToCloudinary } from '../utils/cloudinary.js';
 const router = express.Router();
 router.get('/users', authentication.authenticate, userController.getUsersByUsernameQuery);
 router.get('/users/authenticated', authentication.authenticate, userController.getAuthenticatedUser);
 router.get('/users/batch', authentication.authenticate, userController.getBatchUsers);
 router.post('/users/generate', authentication.authenticate, authentication.authenticateSuperadmin, generatFalPicture, uploadGeneratedPictureToCloudinary, userController.addUserGeneratedPicture);
+router.post('/users/generateItem', authentication.authenticate, authentication.authenticateSuperadmin, generatFalItemPicture, uploadGeneratedPictureToCloudinary, userController.addUserGeneratedPicture);
 router.get('/users/:userId', authentication.authenticate, userController.getUserById);
 router.post('/users', authentication.authenticate, userController.createUser);
 router.put('/users', authentication.authenticate, userController.updateUser);

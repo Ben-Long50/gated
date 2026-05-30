@@ -126,6 +126,7 @@ const userController = {
               userServices.addUserGeneratedPicture(
                 picture,
                 req.body.prompt,
+                req.body.type,
                 userId,
               ),
           ),
@@ -135,19 +136,6 @@ const userController = {
           pictures,
           message: 'Successfully generated and saved images',
         });
-        return;
-      }
-
-      if (req.body.picture) {
-        const picture = await userServices.addUserGeneratedPicture(
-          req.body.picture,
-          req.body.prompt,
-          req.user.id,
-        );
-
-        res
-          .status(200)
-          .json({ picture, message: 'Successfully generated and saved image' });
         return;
       }
     } catch (error: any) {

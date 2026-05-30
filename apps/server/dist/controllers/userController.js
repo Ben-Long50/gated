@@ -113,18 +113,11 @@ const userController = {
             }
             const { id: userId } = req.user;
             if (req.body.pictures) {
-                const pictures = await Promise.all(req.body.pictures.map((picture) => userServices.addUserGeneratedPicture(picture, req.body.prompt, userId)));
+                const pictures = await Promise.all(req.body.pictures.map((picture) => userServices.addUserGeneratedPicture(picture, req.body.prompt, req.body.type, userId)));
                 res.status(200).json({
                     pictures,
                     message: 'Successfully generated and saved images',
                 });
-                return;
-            }
-            if (req.body.picture) {
-                const picture = await userServices.addUserGeneratedPicture(req.body.picture, req.body.prompt, req.user.id);
-                res
-                    .status(200)
-                    .json({ picture, message: 'Successfully generated and saved image' });
                 return;
             }
         }

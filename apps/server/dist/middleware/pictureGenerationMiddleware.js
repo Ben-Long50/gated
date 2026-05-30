@@ -1,6 +1,17 @@
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 import handleControllerError from '../controllers/handleControllerError.js';
 import { fal } from '@fal-ai/client';
-import { CharacterPromptInput } from '../validation/promptSchema.js';
+import { CharacterPromptInput, ItemPromptInput, } from '../validation/promptSchema.js';
 export const generateCloudflarePicture = async (req, res) => {
     const model = '@cf/black-forest-labs/flux-2-dev';
     try {
@@ -85,7 +96,7 @@ export const generatFalPicture = async (req, res, next) => {
                 prompt,
                 loras: [
                     {
-                        path: 'https://huggingface.co/benjlong50/gated/resolve/main/ZIT_CPA_FREE.safetensors',
+                        path: 'https://huggingface.co/benjlong50/gated/resolve/main/ZIT_CPA_PRO_V1.5.safetensors',
                         scale: 1,
                     },
                     {
@@ -101,7 +112,7 @@ export const generatFalPicture = async (req, res, next) => {
                 num_inference_steps: 8,
                 output_format: 'png',
                 acceleration: 'regular',
-                seed: 57293284911733,
+                seed: 746232381338994,
             },
         });
         const urls = result.data.images.map((image) => image.url);
@@ -109,8 +120,56 @@ export const generatFalPicture = async (req, res, next) => {
             handleControllerError(res, new Error('All image generation requests failed'));
             return;
         }
+        const { pictureCount } = validatedData, promptData = __rest(validatedData, ["pictureCount"]);
         req.body.generatedPictureUrls = urls;
-        req.body.prompt = prompt;
+        req.body.prompt = promptData;
+        req.body.type = 'character';
+    }
+    catch (error) {
+        handleControllerError(res, error);
+        return;
+    }
+    next();
+};
+export const generatFalItemPicture = async (req, res, next) => {
+    try {
+        const url = 'fal-ai/z-image/turbo/lora';
+        const data = req.body.prompt;
+        const validatedData = ItemPromptInput.parse(data);
+        const prompt = `in the style of cksc and japanese anime with muted colors, create a picutre of ${data.itemDescription}. The background setting of the picture should be ${validatedData.setting} at ${validatedData.time}. The item is found in the setting, ${data.itemArrangement}. The focus of the image is the item itself. The picture should be sharp with clearly defined lines.`;
+        const result = await fal.subscribe(url, {
+            input: {
+                prompt,
+                loras: [
+                    {
+                        path: 'https://huggingface.co/benjlong50/gated/resolve/main/ZIT_CPA_PRO_V1.5.safetensors',
+                        scale: 1,
+                    },
+                    {
+                        path: 'https://huggingface.co/benjlong50/gated/resolve/main/ck-NeurocoreShadowCircuit-ZIT_000003000.safetensors',
+                        scale: 0.3,
+                    },
+                ],
+                image_size: {
+                    width: 1024,
+                    height: 1024,
+                },
+                num_images: validatedData.pictureCount,
+                num_inference_steps: 8,
+                output_format: 'png',
+                acceleration: 'regular',
+                seed: 746232381338994,
+            },
+        });
+        const urls = result.data.images.map((image) => image.url);
+        if (urls.length === 0) {
+            handleControllerError(res, new Error('All image generation requests failed'));
+            return;
+        }
+        const { pictureCount } = validatedData, promptData = __rest(validatedData, ["pictureCount"]);
+        req.body.generatedPictureUrls = urls;
+        req.body.prompt = promptData;
+        req.body.type = 'item';
     }
     catch (error) {
         handleControllerError(res, error);

@@ -205,7 +205,7 @@ const userServices = {
             throw new Error('Failed to update account information');
         }
     },
-    addUserGeneratedPicture: async (picture, prompt, userId) => {
+    addUserGeneratedPicture: async (picture, prompt, type, userId) => {
         try {
             await prisma.user.update({
                 where: { id: userId },
@@ -214,6 +214,7 @@ const userServices = {
                         create: {
                             imageUrl: picture.imageUrl,
                             publicId: picture.publicId,
+                            type,
                             prompt,
                         },
                     },

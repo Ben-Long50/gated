@@ -1,4 +1,4 @@
-import { UserRole } from '@prisma/client';
+import { $Enums, UserRole } from '@prisma/client';
 import prisma from '../config/database.js';
 import {
   FacebookSignUpInput,
@@ -219,6 +219,7 @@ const userServices = {
   addUserGeneratedPicture: async (
     picture: { imageUrl: string; publicId: string },
     prompt: string,
+    type: $Enums.GeneratedPictureType,
     userId: number,
   ) => {
     try {
@@ -229,6 +230,7 @@ const userServices = {
             create: {
               imageUrl: picture.imageUrl,
               publicId: picture.publicId,
+              type,
               prompt,
             },
           },
