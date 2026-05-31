@@ -24,6 +24,15 @@ const characterController = {
     }
   },
 
+  getCodexCharacters: async (_: Request, res: Response) => {
+    try {
+      const characters = await characterServices.getCodexCharacters();
+      res.status(200).json(characters);
+    } catch (error: any) {
+      handleControllerError(res, error);
+    }
+  },
+
   getBatchCharacters: async (req: Request, res: Response) => {
     try {
       if (!req.user) {
@@ -139,6 +148,46 @@ const characterController = {
           validatedCharacter,
           req.user.id,
         );
+
+        const io = getIO();
+
+        if (character.campaignId) {
+          io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
+            character,
+          });
+        }
+
+        res.status(200).json({
+          character,
+          message: `Successfully created ${constructName(character)}`,
+        });
+      } catch (error: any) {
+        if (error instanceof ZodError) {
+          res.status(500).json({ error: z.prettifyError(error) });
+        } else if (error instanceof Error) {
+          res.status(500).json({ message: error });
+        }
+      }
+    },
+  ],
+
+  createCodexCharacter: [
+    upload.single('pictureFile'),
+    uploadToCloudinary,
+    async (req: Request, res: Response) => {
+      try {
+        if (!req.user) {
+          throw new Error('Could not find authenticated user');
+        }
+
+        const parsedBody = parseRequestBody(req.body);
+
+        const validatedCharacter = CharacterInput.parse(parsedBody);
+
+        const character = await characterServices.createCharacter({
+          ...validatedCharacter,
+          base: true,
+        });
 
         const io = getIO();
 

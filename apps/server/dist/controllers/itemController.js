@@ -14,10 +14,11 @@ const itemController = {
             handleControllerError(res, error);
         }
     },
-    getItems: async (req, res) => {
+    getCodexItems: async (req, res) => {
         try {
-            const category = req.params.category.slice(0, -1);
-            const items = await itemServices.getItems([category]);
+            const items = await itemServices.getCodexItems([
+                req.params.category,
+            ]);
             res.status(200).json(items);
         }
         catch (error) {
@@ -49,6 +50,26 @@ const itemController = {
             handleControllerError(res, error);
         }
     },
+    createCodexItem: [
+        upload.single('pictureFile'),
+        uploadToCloudinary,
+        async (req, res) => {
+            try {
+                const parsedBody = parseRequestBody(req.body);
+                const validatedItem = ItemInput.parse(parsedBody);
+                const item = await itemServices.createOrUpdateItem(Object.assign(Object.assign({}, validatedItem), { base: true }));
+                res.status(200).json({
+                    item,
+                    message: parsedBody.id
+                        ? `Successfully updated ${item.name}`
+                        : `Successfully created ${item.name}`,
+                });
+            }
+            catch (error) {
+                res.status(500).json({ error: error.message });
+            }
+        },
+    ],
     createOrUpdateItem: [
         upload.single('pictureFile'),
         uploadToCloudinary,

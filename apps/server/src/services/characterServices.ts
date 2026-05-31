@@ -67,6 +67,24 @@ const characterServices = {
     }
   },
 
+  getCodexCharacters: async () => {
+    try {
+      const characters = await prisma.character.findMany({
+        where: { base: true },
+        select: { id: true },
+      });
+
+      if (characters.length === 0) {
+        throw new Error('No public characters exist');
+      }
+
+      return characters;
+    } catch (error: any) {
+      console.error(error);
+      throw new Error('Failed to fetch social characters');
+    }
+  },
+
   getBatchCharacters: async (characterIds: number[]) => {
     try {
       const characters = await prisma.character.findMany({
@@ -197,13 +215,17 @@ const characterServices = {
   },
 
   createCharacter: async (
-    formData: CharacterInput,
-    userId: number,
+    formData: CharacterInput & { base?: boolean },
+    userId?: number,
     template?: boolean,
   ) => {
     try {
       const stats = {
         ...formData.stats,
+        currentHealth:
+          10 + formData.attributes.violence.skills.threshold.points * 2,
+        currentSanity:
+          5 + formData.attributes.esoterica.skills.mysticism.points,
         currentActions: 3,
         currentReactions: 1,
         currentHands: 2,
@@ -321,6 +343,7 @@ const characterServices = {
         data: {
           ...filteredData,
           npcTypes: npcTypes.filter((type) => type !== 'template'),
+          base: false,
           characterCart: { create: {} },
           characterInventory: { create: {} },
           characterLevelBonuses: {

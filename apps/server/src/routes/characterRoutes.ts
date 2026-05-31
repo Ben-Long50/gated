@@ -8,6 +8,12 @@ const router = express.Router();
 router.get('/social/characters', characterController.getSocialCharacters);
 
 router.get(
+  '/characters/base',
+  authentication.authenticate,
+  characterController.getCodexCharacters,
+);
+
+router.get(
   '/characters/batch',
   authentication.authenticate,
   characterController.getBatchCharacters,
@@ -59,6 +65,13 @@ router.post(
   '/characters',
   authentication.authenticate,
   characterController.createCharacter,
+);
+
+router.post(
+  '/characters/base',
+  authentication.authenticate,
+  authentication.authenticateAdmin,
+  characterController.createCodexCharacter,
 );
 
 router.post(

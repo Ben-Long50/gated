@@ -4,6 +4,7 @@ import characterController from '../controllers/characterController.js';
 import conditionController from '../controllers/conditionController.js';
 const router = express.Router();
 router.get('/social/characters', characterController.getSocialCharacters);
+router.get('/characters/base', authentication.authenticate, characterController.getCodexCharacters);
 router.get('/characters/batch', authentication.authenticate, characterController.getBatchCharacters);
 router.get('/characters/:characterId', authentication.authenticate, characterController.getCharacterById);
 router.get('/characters/:characterId/notes', authentication.authenticate, characterController.getCharacterNotes);
@@ -13,6 +14,7 @@ router.patch('/characters/:characterId/level', authentication.authenticate, char
 router.patch('/characters/:characterId/levelBonus', authentication.authenticate, characterController.selectLevelUpBonus);
 router.post('/characters/:characterId/inventory/:inventoryId', authentication.authenticate, characterController.completePurchase);
 router.post('/characters', authentication.authenticate, characterController.createCharacter);
+router.post('/characters/base', authentication.authenticate, authentication.authenticateAdmin, characterController.createCodexCharacter);
 router.post('/characters/:characterId/conditions', authentication.authenticate, characterController.createCharacterConditions);
 router.post('/characters/:characterId/location', authentication.authenticate, characterController.updateCharacterLocation);
 router.post('/characters/:characterId/createTemplate', authentication.authenticate, characterController.createTemplateCharacter);

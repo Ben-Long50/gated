@@ -13,11 +13,25 @@ router.get('/items', authentication.authenticate, itemController.getBatchItems);
 router.get(
   '/items/:category',
   authentication.authenticate,
-  itemController.getItems,
+  itemController.getCodexItems,
+);
+
+router.post(
+  '/items/base',
+  authentication.authenticate,
+  authentication.authenticateAdmin,
+  itemController.createCodexItem,
 );
 
 router.post(
   '/items',
+  authentication.authenticate,
+  authentication.authenticateAdmin,
+  itemController.createOrUpdateItem,
+);
+
+router.post(
+  '/items/base',
   authentication.authenticate,
   authentication.authenticateAdmin,
   itemController.createOrUpdateItem,

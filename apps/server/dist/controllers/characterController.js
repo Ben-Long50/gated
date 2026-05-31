@@ -18,6 +18,15 @@ const characterController = {
             handleControllerError(res, error);
         }
     },
+    getCodexCharacters: async (_, res) => {
+        try {
+            const characters = await characterServices.getCodexCharacters();
+            res.status(200).json(characters);
+        }
+        catch (error) {
+            handleControllerError(res, error);
+        }
+    },
     getBatchCharacters: async (req, res) => {
         try {
             if (!req.user) {
@@ -104,6 +113,38 @@ const characterController = {
                 const parsedBody = parseRequestBody(req.body);
                 const validatedCharacter = CharacterInput.parse(parsedBody);
                 const character = await characterServices.createCharacter(validatedCharacter, req.user.id);
+                const io = getIO();
+                if (character.campaignId) {
+                    io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
+                        character,
+                    });
+                }
+                res.status(200).json({
+                    character,
+                    message: `Successfully created ${constructName(character)}`,
+                });
+            }
+            catch (error) {
+                if (error instanceof ZodError) {
+                    res.status(500).json({ error: z.prettifyError(error) });
+                }
+                else if (error instanceof Error) {
+                    res.status(500).json({ message: error });
+                }
+            }
+        },
+    ],
+    createCodexCharacter: [
+        upload.single('pictureFile'),
+        uploadToCloudinary,
+        async (req, res) => {
+            try {
+                if (!req.user) {
+                    throw new Error('Could not find authenticated user');
+                }
+                const parsedBody = parseRequestBody(req.body);
+                const validatedCharacter = CharacterInput.parse(parsedBody);
+                const character = await characterServices.createCharacter(Object.assign(Object.assign({}, validatedCharacter), { base: true }));
                 const io = getIO();
                 if (character.campaignId) {
                     io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {

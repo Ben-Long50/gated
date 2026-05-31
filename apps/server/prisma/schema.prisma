@@ -336,8 +336,8 @@ model Property {
 model Character {
   id                    Int                           @id @default(autoincrement())
   createdAt             DateTime                      @default(now())
-  user                  User                          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId                Int
+  user                  User?                         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                Int?
   level                 Int                           @default(1)
   profits               Int                           @default(10)
   stats                 Json                          @default("{}")
@@ -516,6 +516,7 @@ model Item {
   available            Boolean?                 @default(true)
   characterInventory   CharacterInventory?      @relation(fields: [characterInventoryId], references: [id], onDelete: Cascade)
   characterInventoryId Int?
+  base                 Boolean                  @default(false)
   baseItem             Item?                    @relation("BaseRelation", fields: [baseItemId], references: [id])
   baseItemId           Int?
   conditions           ItemConditionReference[]
@@ -629,6 +630,7 @@ enum NpcTypes {
   shop
   template
   goon
+  monster
 }
 
 enum UserRole {

@@ -126,17 +126,21 @@ const itemServices = {
             ];
             const characterData = [
                 { playerCharacter: true },
-                { playerCharacter: false },
+                { playerCharacter: false, npcTypes: { isEmpty: true } },
                 {
                     playerCharacter: false,
                     npcTypes: { hasEvery: ['goon'] },
                 },
+                {
+                    playerCharacter: false,
+                    npcTypes: { hasEvery: ['monster'] },
+                },
             ];
             const itemCounts = await Promise.all(itemData.map((data) => prisma.item.count({
-                where: Object.assign(Object.assign({}, data), { baseItemId: null }),
+                where: Object.assign(Object.assign({}, data), { base: true }),
             })));
             const characterCounts = await Promise.all(characterData.map((data) => prisma.character.count({
-                where: data,
+                where: Object.assign(Object.assign({}, data), { base: true }),
             })));
             const itemPromises = itemData.map((data, index) => {
                 const count = itemCounts[index];
@@ -144,7 +148,7 @@ const itemServices = {
                     return null;
                 }
                 return prisma.item.findFirst({
-                    where: Object.assign(Object.assign({}, data), { baseItemId: null }),
+                    where: Object.assign(Object.assign({}, data), { base: true }),
                     skip: Math.floor(Math.random() * count),
                     select: { picture: true },
                 });
@@ -155,7 +159,7 @@ const itemServices = {
                     return null;
                 }
                 return prisma.character.findFirst({
-                    where: data,
+                    where: Object.assign(Object.assign({}, data), { base: true }),
                     skip: Math.floor(Math.random() * count),
                     select: { picture: true },
                 });
@@ -171,17 +175,16 @@ const itemServices = {
             throw new Error('Failed to fetch items');
         }
     },
-    getItems: async (category) => {
+    getCodexItems: async (category) => {
         try {
             const items = await prisma.item.findMany({
                 where: category
                     ? {
-                        characterInventory: null,
-                        baseItemId: null,
+                        base: true,
                         itemLinkId: null,
                         itemTypes: { hasSome: category },
                     }
-                    : { characterInventory: null, baseItemId: null, itemLinkId: null },
+                    : { base: true, itemLinkId: null },
                 include: itemInclude,
                 orderBy: { name: 'asc' },
             });
@@ -359,7 +362,7 @@ const itemServices = {
                                 connect: actionIds.map((id) => ({ id })),
                             },
                         },
-                    }, keywords: { createMany: { data: keywords } }, baseItemId: id }),
+                    }, keywords: { createMany: { data: keywords } }, base: false, baseItemId: id }),
             });
             return item;
         }
@@ -404,7 +407,7 @@ const itemServices = {
             if (itemDetails) {
                 for (let i = 0; i < quantity; i++) {
                     promises.push(prisma.item.create({
-                        data: Object.assign(Object.assign({}, rest), { picture: typedPicture, stats: typedStats, updatedAt: new Date(), characterInventoryId: inventoryId, baseItemId: baseItemId || id, userId, itemLinkReference: {
+                        data: Object.assign(Object.assign({}, rest), { picture: typedPicture, stats: typedStats, updatedAt: new Date(), characterInventoryId: inventoryId, base: false, baseItemId: baseItemId || id, userId, itemLinkReference: {
                                 create: {
                                     items: {
                                         connect: itemIds === null || itemIds === void 0 ? void 0 : itemIds.map((id) => ({ id })),

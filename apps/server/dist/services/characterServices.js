@@ -65,6 +65,22 @@ const characterServices = {
             throw new Error('Failed to fetch social characters');
         }
     },
+    getCodexCharacters: async () => {
+        try {
+            const characters = await prisma.character.findMany({
+                where: { base: true },
+                select: { id: true },
+            });
+            if (characters.length === 0) {
+                throw new Error('No public characters exist');
+            }
+            return characters;
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to fetch social characters');
+        }
+    },
     getBatchCharacters: async (characterIds) => {
         try {
             const characters = await prisma.character.findMany({
@@ -188,7 +204,7 @@ const characterServices = {
     },
     createCharacter: async (formData, userId, template) => {
         try {
-            const stats = Object.assign(Object.assign({}, formData.stats), { currentActions: 3, currentReactions: 1, currentHands: 2, currentFeet: 2, injuries: 0, insanities: 0 });
+            const stats = Object.assign(Object.assign({}, formData.stats), { currentHealth: 10 + formData.attributes.violence.skills.threshold.points * 2, currentSanity: 5 + formData.attributes.esoterica.skills.mysticism.points, currentActions: 3, currentReactions: 1, currentHands: 2, currentFeet: 2, injuries: 0, insanities: 0 });
             const { perkIds } = formData, data = __rest(formData, ["perkIds"]);
             const character = await prisma.character.create({
                 data: Object.assign(Object.assign({}, data), { stats,
@@ -267,7 +283,7 @@ const characterServices = {
             })
                 .filter((item) => item.length > 0));
             const character = await prisma.character.create({
-                data: Object.assign(Object.assign({}, filteredData), { npcTypes: npcTypes.filter((type) => type !== 'template'), characterCart: { create: {} }, characterInventory: { create: {} }, characterLevelBonuses: {
+                data: Object.assign(Object.assign({}, filteredData), { npcTypes: npcTypes.filter((type) => type !== 'template'), base: false, characterCart: { create: {} }, characterInventory: { create: {} }, characterLevelBonuses: {
                         createMany: {
                             data: characterLevelBonuses.map((bonus) => ({
                                 characterId: bonus.characterId,

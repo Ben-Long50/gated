@@ -122,17 +122,21 @@ const itemServices = {
 
       const characterData = [
         { playerCharacter: true },
-        { playerCharacter: false },
+        { playerCharacter: false, npcTypes: { isEmpty: true } },
         {
           playerCharacter: false,
           npcTypes: { hasEvery: ['goon'] },
+        },
+        {
+          playerCharacter: false,
+          npcTypes: { hasEvery: ['monster'] },
         },
       ];
 
       const itemCounts = await Promise.all(
         itemData.map((data) =>
           prisma.item.count({
-            where: { ...data, baseItemId: null },
+            where: { ...data, base: true },
           }),
         ),
       );
@@ -140,7 +144,7 @@ const itemServices = {
       const characterCounts = await Promise.all(
         characterData.map((data) =>
           prisma.character.count({
-            where: data,
+            where: { ...data, base: true },
           }),
         ),
       );
@@ -153,7 +157,7 @@ const itemServices = {
         }
 
         return prisma.item.findFirst({
-          where: { ...data, baseItemId: null },
+          where: { ...data, base: true },
           skip: Math.floor(Math.random() * count),
           select: { picture: true },
         });
@@ -167,7 +171,7 @@ const itemServices = {
         }
 
         return prisma.character.findFirst({
-          where: data,
+          where: { ...data, base: true },
           skip: Math.floor(Math.random() * count),
           select: { picture: true },
         });
@@ -185,17 +189,16 @@ const itemServices = {
     }
   },
 
-  getItems: async (category?: $Enums.ItemType[]) => {
+  getCodexItems: async (category: $Enums.ItemType[]) => {
     try {
       const items = await prisma.item.findMany({
         where: category
           ? {
-              characterInventory: null,
-              baseItemId: null,
+              base: true,
               itemLinkId: null,
               itemTypes: { hasSome: category },
             }
-          : { characterInventory: null, baseItemId: null, itemLinkId: null },
+          : { base: true, itemLinkId: null },
         include: itemInclude,
         orderBy: { name: 'asc' },
       });
@@ -239,7 +242,7 @@ const itemServices = {
     }
   },
 
-  createOrUpdateItem: async (formData: ItemInput) => {
+  createOrUpdateItem: async (formData: ItemInput & { base?: boolean }) => {
     try {
       const { id, itemIds, actionIds, keywords, pictureFile, ...data } =
         formData;
@@ -422,6 +425,7 @@ const itemServices = {
             },
           },
           keywords: { createMany: { data: keywords } },
+          base: false,
           baseItemId: id,
         },
       });
@@ -434,7 +438,7 @@ const itemServices = {
   },
 
   createCharacterItemCopy: async (
-    userId: number,
+    userId?: number,
     inventoryId: number,
     itemList: { itemId: number; price: number | null; quantity: number }[],
   ) => {
@@ -500,6 +504,7 @@ const itemServices = {
                 stats: typedStats,
                 updatedAt: new Date(),
                 characterInventoryId: inventoryId,
+                base: false,
                 baseItemId: baseItemId || id,
                 userId,
                 itemLinkReference: {

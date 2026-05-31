@@ -42,7 +42,7 @@ export const FactionType = z.enum([
   'noblebloods',
 ]);
 
-export const NpcType = z.enum(['shop', 'goon', 'template']);
+export const NpcType = z.enum(['shop', 'goon', 'template', 'monster']);
 
 export const Sex = z.enum(['male', 'female']);
 
