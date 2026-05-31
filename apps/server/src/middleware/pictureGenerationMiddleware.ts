@@ -203,8 +203,6 @@ export const generatFalItemPicture = async (
         num_images: validatedData.pictureCount,
         num_inference_steps: 8,
         output_format: 'png',
-        acceleration: 'regular',
-        seed: 746232381338994,
       },
     });
 

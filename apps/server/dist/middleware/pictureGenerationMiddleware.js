@@ -157,8 +157,6 @@ export const generatFalItemPicture = async (req, res, next) => {
                 num_images: validatedData.pictureCount,
                 num_inference_steps: 8,
                 output_format: 'png',
-                acceleration: 'regular',
-                seed: 746232381338994,
             },
         });
         const urls = result.data.images.map((image) => image.url);
