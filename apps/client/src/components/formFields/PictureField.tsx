@@ -235,7 +235,7 @@ const PictureField = ({
           </div>
         </div>
         {(path.includes('library') || path.includes('prompt')) && (
-          <Outlet context={{ form, promptForm }} />
+          <Outlet context={{ form, promptForm, generatePicture }} />
         )}
       </div>
     </div>

@@ -123,7 +123,6 @@ const CodexDashboard = () => {
             Gameplay
           </BtnAuth>
         </NavTabs>
-        <Divider />
         {isLoading ? (
           <Loading />
         ) : (

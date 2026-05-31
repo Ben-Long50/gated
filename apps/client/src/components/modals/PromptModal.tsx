@@ -1,25 +1,21 @@
 import { useOutletContext } from 'react-router-dom';
 import Modal from './Modal';
-import useGeneratePictureMutation from 'src/hooks/useGeneratePictureMutation/useGeneratePictureMutation';
 import FormLayout from 'src/layouts/FormLayout';
 import ArrowHeader3 from '../ArrowHeader3';
 import InputFieldRadio from '../formFields/InputFieldRadio';
 import { capitalCase } from 'change-case';
 import Divider from '../Divider';
 import TextAreaField from '../formFields/TextAreaField';
-import ArrowHeader2 from '../ArrowHeader2';
 
 const PromptModal = () => {
-  const { promptForm } = useOutletContext();
-
-  const generatePicture = useGeneratePictureMutation();
+  const { promptForm, generatePicture } = useOutletContext();
 
   return (
     <Modal>
       <div className="flex w-full flex-col items-center gap-8">
         <h1>Prompt Info</h1>
         <FormLayout
-          label="Picture Prompt"
+          label="Character Picture"
           form={promptForm}
           createMutation={generatePicture}
         >

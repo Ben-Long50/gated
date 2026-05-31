@@ -1,9 +1,13 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import generateItemPicture from './generateItemPicture';
+import { useNavigate } from 'react-router-dom';
+import useModalStore from 'src/stores/modalStore';
 
 const useGenerateItemPictureMutation = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const backgroundPath = useModalStore((state) => state.backgroundPath);
 
   return useMutation({
     mutationFn: (prompt: string) => {
@@ -11,6 +15,9 @@ const useGenerateItemPictureMutation = () => {
     },
     onSuccess: (data) => {
       toast.success(data.message);
+      if (backgroundPath) {
+        navigate(backgroundPath, { replace: true });
+      }
       queryClient.invalidateQueries({ queryKey: ['authenticatedUser'] });
     },
     onError: (data) => {

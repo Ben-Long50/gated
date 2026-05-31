@@ -53,64 +53,65 @@ const CharacterProgressionPage = () => {
         {character?.picture.imageUrl && (
           <CharacterPicture character={character} />
         )}
-        <ThemeContainer chamfer="medium" borderColor={accentPrimary}>
-          <div className="flex flex-col items-start justify-around gap-4 p-4">
-            <ArrowHeader3 title="Available Points" />
-            <Divider className="!my-0 opacity-50" />
-            <div className="flex w-full items-center justify-between gap-2">
+
+        <div className="flex flex-col items-start gap-4">
+          <ArrowHeader3 title="Available Points" />
+          <Divider />
+          <div className="flex w-full grow flex-col items-center justify-start gap-4">
+            <div className="bg-secondary flex w-full items-center justify-between gap-2 rounded-md p-4 shadow-md shadow-black">
               <ArrowHeader4 className="text-primary" title="Attribute Points" />
               <p>
                 {character?.stats.usedAttributePoints} /{' '}
                 {character?.stats.attributePoints}
               </p>
             </div>
-            <div className="flex w-full items-center justify-between gap-2">
+            <div className="bg-secondary flex w-full items-center justify-between gap-2 rounded-md p-4 shadow-md shadow-black">
               <ArrowHeader4 className="text-primary" title="Skill Points" />
               <p>
                 {character?.stats.usedSkillPoints} /{' '}
                 {character?.stats.skillPoints}
               </p>
             </div>
-            <div className="flex w-full items-center justify-between gap-2">
+            <div className="bg-secondary flex w-full items-center justify-between gap-2 rounded-md p-4 shadow-md shadow-black">
               <ArrowHeader4 className="text-primary" title="Perks" />
               <p>
                 {character?.stats.usedPerkPoints} /{' '}
                 {character?.stats.perkPoints}
               </p>
             </div>
-            <div className="flex w-full items-center justify-between gap-2">
+            <div className="bg-secondary flex w-full items-center justify-between gap-2 rounded-md p-4 shadow-md shadow-black">
               <ArrowHeader4 className="text-primary" title="Master Perks" />
               <p>
                 {character?.stats.usedMasterPerkPoints} /{' '}
                 {character?.stats.masterPerkPoints}
               </p>
             </div>
-            <BtnRect
-              className="w-full"
-              ariaLabel="Level up"
-              onClick={() =>
-                changeLevel.mutate({
-                  characterId: Number(characterId),
-                  levelChange: 1,
-                })
-              }
-            >
-              Level Up
-            </BtnRect>
-            <BtnRect
-              className="w-full"
-              ariaLabel="Level down"
-              onClick={() =>
-                changeLevel.mutate({
-                  characterId: Number(characterId),
-                  levelChange: -1,
-                })
-              }
-            >
-              Level Down
-            </BtnRect>
           </div>
-        </ThemeContainer>
+          <BtnRect
+            className="w-full"
+            ariaLabel="Level up"
+            onClick={() =>
+              changeLevel.mutate({
+                characterId: Number(characterId),
+                levelChange: 1,
+              })
+            }
+          >
+            Level Up
+          </BtnRect>
+          <BtnRect
+            className="w-full"
+            ariaLabel="Level down"
+            onClick={() =>
+              changeLevel.mutate({
+                characterId: Number(characterId),
+                levelChange: -1,
+              })
+            }
+          >
+            Level Down
+          </BtnRect>
+        </div>
       </div>
       <div className="flex flex-col gap-4">
         <ExpandingList title="Level Bonuses" className="flex flex-col gap-4">

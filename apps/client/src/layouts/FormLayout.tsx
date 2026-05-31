@@ -62,7 +62,7 @@ const FormLayout = ({
           type="submit"
           className="group w-full"
         >
-          {isPending ? (
+          {createMutation?.isPending ? (
             <Loading
               className="group-hover:text-accent dark:text-gray-900"
               size={1.15}
@@ -78,10 +78,21 @@ const FormLayout = ({
         </BtnAuth>
         {itemId && (
           <BtnAuth
-            className="w-full"
-            onClick={() => deleteMutation?.mutate(Number(itemId))}
+            className="group w-full"
+            onClick={() => {
+              if (!isPending) {
+                deleteMutation?.mutate(Number(itemId));
+              }
+            }}
           >
-            Delete
+            {deleteMutation?.isPending ? (
+              <Loading
+                className="group-hover:text-accent text-secondary"
+                size={1.15}
+              />
+            ) : (
+              `Delete ${label}`
+            )}
           </BtnAuth>
         )}
       </div>
