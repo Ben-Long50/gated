@@ -14,7 +14,7 @@ import CharacterStatBars from './CharacterStatBars';
 import useCharacter from 'src/hooks/useCharacter';
 import Loading from '../Loading';
 import ConditionTag from '../ConditionTag';
-import { Outlet, useLocation, useParams } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useInView } from 'react-intersection-observer';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
 import CharacterRadialMenu from '../radialMenus/characterRadialMenu/CharacterRadialMenu';
@@ -27,12 +27,19 @@ import { mdiAlphaTCircleOutline, mdiStorefrontOutline } from '@mdi/js';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import constructName from 'src/utils/constructName';
 
-const CharacterCardAlt = ({ characterId }: { characterId: number }) => {
+const CharacterCardAlt = ({
+  characterId,
+  menu = true,
+}: {
+  characterId: number;
+  menu?: boolean;
+}) => {
   const { gameMaster } = useContext(CampaignContext);
   const { accentPrimary } = useContext(ThemeContext);
   const { mobile } = useContext(LayoutContext);
   const { conditionId } = useParams();
   const [cardWidth, setCardWidth] = useState(0);
+  const navigate = useNavigate();
   const location = useLocation();
   const parts = location.pathname.split('/');
 
@@ -102,13 +109,19 @@ const CharacterCardAlt = ({ characterId }: { characterId: number }) => {
             className="relative flex w-full cursor-pointer select-none flex-col"
             onClick={(e) => {
               e.stopPropagation();
-              handleMenu(e);
+              if (menu) {
+                handleMenu(e);
+              } else {
+                navigate(`${character?.id}`);
+              }
             }}
           >
-            <CharacterRadialMenu
-              character={character}
-              containerRef={containerRef}
-            />
+            {menu && (
+              <CharacterRadialMenu
+                character={character}
+                containerRef={containerRef}
+              />
+            )}
             <div className="col-span-2 col-start-1 row-start-1 flex aspect-square h-full w-full items-center overflow-hidden rounded-bl rounded-tr clip-6">
               <CloudinaryPicture
                 className={`${awol && 'grayscale'}`}

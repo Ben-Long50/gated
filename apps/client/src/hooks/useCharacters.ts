@@ -1,13 +1,22 @@
 import { useState } from 'react';
 import { Character } from 'src/types/character';
 import useCharacterQueries from './useCharactersQuery/useCharacterQueries';
-import { set } from 'date-fns';
+import { useSearchParams } from 'react-router-dom';
 
-const useCharacters = (
-  characterIds: number[],
-  playerCharacter?: boolean | null,
-  npcTypes?: string[],
-) => {
+const useCharacters = (characterIds: number[]) => {
+  const [searchParams] = useSearchParams();
+
+  const characterType = searchParams.get('characterType');
+  const npcTypes = searchParams.getAll('npcType');
+
+  let playerCharacter = null;
+
+  if (characterType && characterType === 'playerCharacter') {
+    playerCharacter = true;
+  } else if (characterType && characterType === 'nonPlayerCharacter') {
+    playerCharacter = false;
+  }
+
   const { characters, isLoading: charactersLoading } =
     useCharacterQueries(characterIds);
 

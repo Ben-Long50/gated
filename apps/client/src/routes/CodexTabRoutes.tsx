@@ -24,6 +24,12 @@ import Page from 'src/components/Page';
 import PictureRoutes from './PictureRoutes';
 import ItemPromptModal from 'src/components/modals/ItemPromptModal';
 import PictureLibraryModal from 'src/components/modals/PictureLibraryModal';
+import CharacterSheet from 'src/components/characterComponents/CharacterSheet';
+import CharacterForm from 'src/components/forms/CharacterForm';
+import PerkLinkModal from 'src/components/modals/PerkLinkModal';
+import NpcPreferenceModal from 'src/components/modals/NpcPreferenceModal';
+import CodexCharacters from 'src/components/characterComponents/CodexCharacters';
+import CharacterUpdateForm from 'src/components/forms/CharacterUpdateForm';
 
 const CodexTabRoutes = () => {
   return (
@@ -41,6 +47,50 @@ const CodexTabRoutes = () => {
       <Route path="patchNotes">
         <Route path="create" element={<PatchNoteForm />} />
         <Route path=":patchNoteId/update" element={<PatchNoteForm />} />
+      </Route>
+      <Route path="characters">
+        <Route
+          path=""
+          element={
+            <Page title="Characters">
+              <CodexCharacters />
+            </Page>
+          }
+        />
+        <Route path=":characterId">
+          <Route
+            path=""
+            element={
+              <Page title="Character Sheet">
+                <CharacterSheet />
+              </Page>
+            }
+          />
+          <Route
+            path="update"
+            element={
+              <Page title="Update Character">
+                <CharacterUpdateForm />
+              </Page>
+            }
+          >
+            {PictureRoutes()}
+            <Route path="perks" element={<PerkLinkModal />} />
+            <Route path="npcPreferences" element={<NpcPreferenceModal />} />
+          </Route>
+        </Route>
+        <Route
+          path="create"
+          element={
+            <Page title="Create Codex Character">
+              <CharacterForm />
+            </Page>
+          }
+        >
+          {PictureRoutes()}
+          <Route path="perks" element={<PerkLinkModal />} />
+          <Route path="npcPreferences" element={<NpcPreferenceModal />} />
+        </Route>
       </Route>
       <Route path="items">
         <Route
@@ -71,10 +121,11 @@ const CodexTabRoutes = () => {
           />
           <Route path="traits/:traitId" element={<DescriptionModal />} />
         </Route>
+
         <Route
           path="create"
           element={
-            <Page title="Create Item">
+            <Page title="Create Codex Item">
               <ItemForm />
             </Page>
           }
@@ -112,7 +163,7 @@ const CodexTabRoutes = () => {
         <Route
           path="create"
           element={
-            <Page title="Create Property">
+            <Page title="Create Codex Property">
               <PropertyForm />
             </Page>
           }
@@ -138,7 +189,7 @@ const CodexTabRoutes = () => {
         <Route
           path="create"
           element={
-            <Page title="Create Perk">
+            <Page title="Create Codex Perk">
               <PerkForm />
             </Page>
           }
@@ -168,7 +219,7 @@ const CodexTabRoutes = () => {
         <Route
           path="create"
           element={
-            <Page title="Create Trait">
+            <Page title="Create Codex Trait">
               <KeywordForm />
             </Page>
           }
@@ -194,7 +245,7 @@ const CodexTabRoutes = () => {
         <Route
           path="create"
           element={
-            <Page title="Create Action">
+            <Page title="Create Codex Action">
               <ActionForm />
             </Page>
           }
@@ -226,7 +277,7 @@ const CodexTabRoutes = () => {
         <Route
           path="create"
           element={
-            <Page title="Create Condition">
+            <Page title="Create Codex Condition">
               <ConditionForm />
             </Page>
           }

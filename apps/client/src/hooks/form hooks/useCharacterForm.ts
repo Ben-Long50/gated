@@ -44,8 +44,6 @@ const useCharacterForm = (
       age: null as number | null,
       sex: null as 'male' | 'female' | null,
       stats: {
-        currentHealth: 0,
-        currentSanity: 0,
         permanentInjuries: 5,
         permanentInsanities: 5,
       },
@@ -58,9 +56,6 @@ const useCharacterForm = (
         : null;
 
       value.stats = {
-        currentHealth:
-          10 + value.attributes.violence.skills.threshold.points * 2,
-        currentSanity: 5 + value.attributes.esoterica.skills.mysticism.points,
         permanentInjuries: value.stats.permanentInjuries,
         permanentInsanities: value.stats.permanentInsanities,
       };

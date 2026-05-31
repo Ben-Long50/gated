@@ -30,7 +30,10 @@ const CloudinaryPicture = ({
   const responsiveImage = cld.image(publicId);
 
   return (
-    <div className={`${className} bg-primary h-full w-full`} onClick={onClick}>
+    <div
+      className={`${className} timing bg-primary h-full w-full`}
+      onClick={onClick}
+    >
       {publicId ? (
         <AdvancedImage
           style={{

@@ -14,7 +14,7 @@ import CharacterStatBars from './CharacterStatBars';
 import useCharacter from 'src/hooks/useCharacter';
 import Loading from '../Loading';
 import ConditionTag from '../ConditionTag';
-import { Outlet, useLocation, useParams } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useInView } from 'react-intersection-observer';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
 import CharacterRadialMenu from '../radialMenus/characterRadialMenu/CharacterRadialMenu';
@@ -26,12 +26,19 @@ import { CampaignContext } from 'src/contexts/CampaignContext';
 import constructName from 'src/utils/constructName';
 import NpcTypeList from '../NpcTypeList';
 
-const CharacterCard = ({ characterId }: { characterId: number }) => {
+const CharacterCard = ({
+  characterId,
+  menu = true,
+}: {
+  characterId: number;
+  menu?: boolean;
+}) => {
   const { gameMaster } = useContext(CampaignContext);
   const { accentPrimary } = useContext(ThemeContext);
   const { mobile } = useContext(LayoutContext);
   const { conditionId } = useParams();
   const [cardWidth, setCardWidth] = useState(0);
+  const navigate = useNavigate();
   const location = useLocation();
   const parts = location.pathname.split('/');
 
@@ -90,7 +97,7 @@ const CharacterCard = ({ characterId }: { characterId: number }) => {
     <div className="w-full" ref={ref}>
       {inView && (
         <ThemeContainer
-          className="w-full"
+          className="group w-full"
           chamfer="medium"
           borderColor={accentPrimary}
         >
@@ -99,16 +106,22 @@ const CharacterCard = ({ characterId }: { characterId: number }) => {
             className="relative grid w-full cursor-pointer select-none sm:grid-cols-[1fr_1fr_4fr]"
             onClick={(e) => {
               e.stopPropagation();
-              handleMenu(e);
+              if (menu) {
+                handleMenu(e);
+              } else {
+                navigate(`${character?.id}`);
+              }
             }}
           >
-            <CharacterRadialMenu
-              character={character}
-              containerRef={containerRef}
-            />
+            {menu && (
+              <CharacterRadialMenu
+                character={character}
+                containerRef={containerRef}
+              />
+            )}
             <div className="col-span-2 col-start-1 row-start-1 flex aspect-video h-full w-[350px] items-center overflow-hidden rounded-bl clip-6">
               <CloudinaryPicture
-                className={`${awol && 'grayscale'}`}
+                className={`${awol && 'grayscale'} group-hover:bg-secondary`}
                 publicId={character?.picture?.publicId}
                 position={character?.picture?.position}
                 style={{

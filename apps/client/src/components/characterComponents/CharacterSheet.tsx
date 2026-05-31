@@ -51,7 +51,7 @@ const CharacterSheet = () => {
     <>
       <div className="flex items-center justify-between gap-8">
         <CharacterHeader character={character} />
-        <div className="flex w-full grow items-center justify-end gap-2 sm:gap-8">
+        <div className="flex items-center justify-end gap-2 sm:gap-8">
           <div className="flex flex-col items-center gap-1">
             <h3 className="text-primary text-xl font-semibold tracking-widest">
               Height
@@ -246,27 +246,47 @@ const CharacterSheet = () => {
             </ThemeContainer>
           ))}
       </div>
-      <Divider />
-      <ExpandingList
-        title="Perks"
-        className="grid grid-cols-1 gap-4 md:grid-cols-2"
-      >
-        {character?.perks ? (
-          character?.perks.map((perk) => (
-            <PerkCard key={perk.id} perkId={perk.id} />
-          ))
-        ) : (
-          <h2 className="pl-6">???</h2>
-        )}
-      </ExpandingList>
-      <Divider />
-      {user?.id === character.userId && (
-        <Link className="w-full" to={`update`}>
-          <BtnRect type="button" ariaLabel="Update character information">
-            Update character info
-          </BtnRect>
-        </Link>
+      {character?.perks && character?.perks.length > 0 && (
+        <>
+          <Divider />
+          <ExpandingList
+            title="Perks"
+            className="grid grid-cols-1 gap-4 md:grid-cols-2"
+          >
+            {character?.perks ? (
+              character?.perks.map((perk) => (
+                <PerkCard key={perk.id} perkId={perk.id} />
+              ))
+            ) : (
+              <h2 className="pl-6">???</h2>
+            )}
+          </ExpandingList>
+        </>
       )}
+      {user?.id === character?.userId && (
+        <>
+          <Divider />
+          <Link className="w-full" to={`update`}>
+            <BtnRect type="button" ariaLabel="Update character information">
+              Update character
+            </BtnRect>
+          </Link>
+        </>
+      )}
+      {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') &&
+        character?.base && (
+          <>
+            <Divider />
+            <Link className="w-full" to={`update`}>
+              <BtnRect
+                type="button"
+                ariaLabel="Update codex character information"
+              >
+                Update codex character
+              </BtnRect>
+            </Link>
+          </>
+        )}
     </>
   );
 };

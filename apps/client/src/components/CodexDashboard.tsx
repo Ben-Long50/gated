@@ -1,5 +1,4 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import Divider from './Divider';
 import useCodexPreviewItemsQuery from 'src/hooks/useCodexPreviewItemsQuery/useCodexPreviewItemsQuery';
 import Loading from './Loading';
 import BtnAuth from './buttons/BtnAuth';
@@ -87,15 +86,19 @@ const CodexDashboard = () => {
   const characterLinks = [
     {
       label: 'Player Classes',
-      path: 'characters?playerCharacter=true',
+      path: 'characters?characterType=playerCharacter',
     },
     {
-      label: 'NPC Templates',
-      path: 'characters?playerCharacter=false',
+      label: 'Template NPCs',
+      path: 'characters?characterType=nonPlayerCharacter',
     },
     {
       label: 'Goons',
-      path: 'characters?playerCharacter=true',
+      path: 'characters?characterType=nonPlayerCharacter&npcType=goon',
+    },
+    {
+      label: 'Monsters',
+      path: 'characters?characterType=nonPlayerCharacter&npcType=monster',
     },
   ];
 

@@ -18,13 +18,21 @@ import useCharacterForm from 'src/hooks/form hooks/useCharacterForm';
 import calculateStats from 'src/hooks/useStats';
 import StatBarContainer from '../StatBarContainer';
 import CharacterStatBars from '../characterComponents/CharacterStatBars';
+import useCreateCodexCharacterMutation from 'src/hooks/useCreateCodexCharacterMutation/useCreateCodexCharacterMutation';
+import { useSearchParams } from 'react-router-dom';
 
 const CharacterForm = () => {
   const { data: campaigns } = useCampaignsQuery();
 
-  const createCharacter = useCreateCharacterMutation();
+  const [searchParams] = useSearchParams();
+  const formType = searchParams.get('formType');
 
-  const characterForm = useCharacterForm(createCharacter);
+  const createCharacter = useCreateCharacterMutation();
+  const createCodexCharacter = useCreateCodexCharacterMutation();
+
+  const createMutation =
+    formType === 'codex' ? createCodexCharacter : createCharacter;
+  const characterForm = useCharacterForm(createMutation);
 
   const perks = useStore(characterForm.store, (state) => state.values.perksIds);
 
@@ -57,7 +65,7 @@ const CharacterForm = () => {
     <FormLayout
       label="Character"
       form={characterForm}
-      createMutation={createCharacter}
+      createMutation={createMutation}
     >
       <ArrowHeader2 title="General Information" />
       <characterForm.Field
@@ -73,7 +81,7 @@ const CharacterForm = () => {
         }}
       >
         {(field) => (
-          <>
+          <div className="flex flex-col gap-4">
             <InputFieldRadio
               label="Player Character"
               value={true}
@@ -98,19 +106,21 @@ const CharacterForm = () => {
                   {error}
                 </p>
               ))}
-          </>
+          </div>
         )}
       </characterForm.Field>
-      <characterForm.Field name="campaignId">
-        {(field) => (
-          <InputSelectField
-            label="Campaign"
-            options={campaigns || []}
-            value={field.state.value}
-            onChange={(value) => field.handleChange(value.id)}
-          />
-        )}
-      </characterForm.Field>
+      {formType !== 'codex' && (
+        <characterForm.Field name="campaignId">
+          {(field) => (
+            <InputSelectField
+              label="Campaign"
+              options={campaigns || []}
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value.id)}
+            />
+          )}
+        </characterForm.Field>
+      )}
       <NpcPreferenceField form={characterForm} />
       <Divider />
       <ArrowHeader2 title="Character Information" />

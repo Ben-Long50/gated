@@ -2,7 +2,7 @@ import InputField from '../formFields/InputField';
 import InputSelectField from '../formFields/InputSelectField';
 import TextAreaField from '../formFields/TextAreaField';
 import FormLayout from '../../layouts/FormLayout';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import ArrowHeader2 from '../ArrowHeader2';
 import Divider from '../Divider';
 import ItemLinkField from '../formFields/ItemLinkField';
@@ -19,13 +19,18 @@ import Icon from '@mdi/react';
 import { mdiClose } from '@mdi/js';
 import ActionLinkField from '../formFields/ActionLinkField';
 import ItemPictureField from '../formFields/ItemPictureField';
+import useCreateCodexItemMutation from 'src/hooks/useCreateCodexItemMutation/useCreateCodexItemMutation';
 
 const ItemForm = () => {
   const { itemId } = useParams();
 
+  const [searchParams] = useSearchParams();
+  const formType = searchParams.get('formType');
+
   const { data: item } = useItemQuery(Number(itemId));
 
   const createItem = useCreateItemMutation();
+  const createCodexItem = useCreateCodexItemMutation();
 
   const createItemCopy = useCreateItemCopyMutation(Number(itemId));
 
@@ -38,8 +43,8 @@ const ItemForm = () => {
       label="Item"
       form={itemForm}
       itemId={itemId}
-      createMutation={createItem}
-      deleteMutation={deleteItem}
+      createMutation={formType === 'codex' ? createCodexItem : createItem}
+      deleteMutation={itemId ? deleteItem : undefined}
     >
       <ArrowHeader2 title="Item Information" />
       <div className="flex w-full flex-col gap-4">

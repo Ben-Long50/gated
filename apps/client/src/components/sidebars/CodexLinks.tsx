@@ -19,6 +19,7 @@ import DroneIcon from '../icons/DroneIcon';
 import PotionIcon from '../icons/PotionIcon';
 import PropertyIcon from '../icons/PropertyIcon';
 import AdminIcon from '../icons/AdminIcon';
+import CharacterIcon from '../icons/CharacterIcon';
 
 const CodexLinks = () => {
   const { user } = useContext(AuthContext);
@@ -36,6 +37,29 @@ const CodexLinks = () => {
         }
         path="/glam/codex/search"
       />
+      <LinkListSidebar
+        icon={
+          <CharacterIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
+        }
+        title="Characters"
+      >
+        <SubLinkSidebar
+          title="Player Classes"
+          path="codex/characters?characterType=playerCharacter"
+        />
+        <SubLinkSidebar
+          title="Template NPCs"
+          path="codex/characters?characterType=nonPlayerCharacter"
+        />
+        <SubLinkSidebar
+          title="Goons"
+          path="codex/characters?characterType=nonPlayerCharacter&npcType=goon"
+        />
+        <SubLinkSidebar
+          title="Monsters"
+          path="codex/characters?characterType=nonPlayerCharacter&npcType=monster"
+        />
+      </LinkListSidebar>
       <LinkListSidebar
         icon={
           <WeaponIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
@@ -184,7 +208,14 @@ const CodexLinks = () => {
             <AdminIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
           }
         >
-          <SubLinkSidebar title="Create Item" path="codex/items/create" />
+          <SubLinkSidebar
+            title="Create Character"
+            path="codex/characters/create?formType=codex"
+          />
+          <SubLinkSidebar
+            title="Create Item"
+            path="codex/items/create?formType=codex"
+          />
           <SubLinkSidebar
             title="Create Property"
             path="codex/properties/create"

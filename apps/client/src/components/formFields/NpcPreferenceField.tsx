@@ -10,7 +10,7 @@ const NpcPreferenceField = ({ form }: { form: FormApi }) => {
   const location = useLocation();
   const parts = location.pathname.split('/');
 
-  const npcTypes = ['shop', 'template', 'goon'];
+  const npcTypes = ['shop', 'template', 'goon', 'monster'];
 
   return (
     <form.Subscribe selector={(state) => state.values.playerCharacter}>

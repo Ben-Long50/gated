@@ -159,20 +159,6 @@ const CharacterRadialMenu = ({
             ),
           },
           {
-            label: 'Drones & Vehicles',
-            element: (
-              <div
-                onClick={() => {
-                  navigate(`${path}/deployments`);
-                  setMenuOpen(false);
-                }}
-              >
-                <HangarIcon className="text-inherit" />
-              </div>
-            ),
-          },
-
-          {
             label: 'Affiliations',
             element: (
               <div

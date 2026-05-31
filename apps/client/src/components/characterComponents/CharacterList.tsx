@@ -15,22 +15,17 @@ import { mdiCropSquare, mdiGrid, mdiSync } from '@mdi/js';
 import { useSearchParams, useParams } from 'react-router-dom';
 import { camelCase, capitalCase } from 'change-case';
 
-const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
+const CharacterList = ({
+  characterIds,
+  menu = true,
+}: {
+  characterIds?: number[];
+  menu?: boolean;
+}) => {
   const { user } = useContext(AuthContext);
   const { campaignId } = useParams();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [setSearchParams] = useSearchParams();
   const [cardType, setCardType] = useState<'large' | 'small'>('large');
-
-  const characterType = searchParams.get('characterType');
-  const npcTypes = searchParams.getAll('npcType');
-
-  let playerCharacter = null;
-
-  if (characterType && characterType === 'playerCharacter') {
-    playerCharacter = true;
-  } else if (characterType && characterType === 'nonPlayerCharacter') {
-    playerCharacter = false;
-  }
 
   const characterIdList =
     characterIds || user.characters.map((character) => character.id);
@@ -42,7 +37,7 @@ const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
     setQuery,
     setCampaignId,
     isLoading,
-  } = useCharacters(characterIdList, playerCharacter, npcTypes);
+  } = useCharacters(characterIdList);
 
   const { data: campaigns } = useCampaignsQuery();
 
@@ -72,20 +67,11 @@ const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
               value={query}
               onChange={(value) => setQuery(value)}
             />
-            <InputSelectField
-              label="Character Type"
-              options={['Player Character', 'Non-player Character']}
-              value={characterType ? capitalCase(characterType) : ''}
-              onChange={(value) =>
-                setSearchParams({ characterType: `${camelCase(value)}` })
-              }
-            />
             <button
               className="text-accent bg-tertiary shadow-color group grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
               onClick={(e) => {
                 e.preventDefault();
                 setCampaignId(null);
-                setSearchParams({});
                 setQuery('');
               }}
             >
@@ -128,9 +114,14 @@ const CharacterList = ({ characterIds }: { characterIds?: number[] }) => {
           >
             {characters.map((character: Character) =>
               cardType === 'large' ? (
-                <CharacterCard key={character.id} characterId={character.id} />
+                <CharacterCard
+                  menu={menu}
+                  key={character.id}
+                  characterId={character.id}
+                />
               ) : (
                 <CharacterCardAlt
+                  menu={menu}
                   key={character.id}
                   characterId={character.id}
                 />
