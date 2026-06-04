@@ -56,14 +56,26 @@ const calculateStats = (
     }, 0) || 0;
 
   let stats = {
-    maxHealth: 10 + attributeTree?.violence.skills.threshold.points * 2,
-    maxSanity: 5 + attributeTree?.esoterica.skills.mysticism.points * 2,
-    maxEquip: 10 + attributeTree?.violence.skills.threshold.points * 2,
-    maxCyber: 5 + attributeTree?.cybernetica.skills.chromebits.points * 2,
+    maxHealth: characterStats?.maxHealth
+      ? characterStats.maxHealth +
+        (10 + attributeTree?.violence.skills.threshold.points * 2)
+      : 10 + attributeTree?.violence.skills.threshold.points * 2,
+    maxSanity: characterStats?.maxSanity
+      ? characterStats.maxSanity +
+        (5 + attributeTree?.esoterica.skills.mysticism.points * 2)
+      : 5 + attributeTree?.esoterica.skills.mysticism.points * 2,
+    maxEquip: characterStats?.maxEquip
+      ? characterStats.maxEquip +
+        (10 + attributeTree?.violence.skills.threshold.points * 2)
+      : 10 + attributeTree?.violence.skills.threshold.points * 2,
+    maxCyber: characterStats?.maxCyber
+      ? characterStats?.maxCyber +
+        (5 + attributeTree?.cybernetica.skills.chromebits.points * 2)
+      : 5 + attributeTree?.cybernetica.skills.chromebits.points * 2,
     speed: 4 + attributeTree?.violence.skills.assault.points * 1,
     armor: armorValue,
     ward: wardValue,
-    evasion: 1,
+    evasion: characterStats?.evasion ? characterStats?.evasion + 1 : 1,
     weight: nonArmorWeight + armorWeight,
     cyber: equippedCyber,
     permanentInjuries: characterStats?.permanentInjuries || 5,

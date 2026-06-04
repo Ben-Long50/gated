@@ -97,6 +97,10 @@ const CodexDashboard = () => {
       path: 'characters?characterType=nonPlayerCharacter&npcType=goon',
     },
     {
+      label: 'Merchant',
+      path: 'characters?characterType=nonPlayerCharacter&npcType=shop',
+    },
+    {
       label: 'Monsters',
       path: 'characters?characterType=nonPlayerCharacter&npcType=monster',
     },

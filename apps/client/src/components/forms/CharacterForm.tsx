@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useDebugValue, useMemo } from 'react';
 import InputField from '../formFields/InputField';
 import { useStore, ValidationError } from '@tanstack/react-form';
 import useAttributeTree from '../../hooks/useAttributeTree';
@@ -74,8 +74,20 @@ const CharacterForm = () => {
           onChange: ({ value }) => {
             if (value) {
               characterForm.setFieldValue('npcTypes', null);
+              characterForm.setFieldValue('stats', {
+                permanentInjuries: 5,
+                permanentInsanities: 5,
+              });
             } else if (!value) {
               characterForm.setFieldValue('npcTypes', []);
+              characterForm.setFieldValue('stats', (prev) => ({
+                ...prev,
+                maxHealth: 0,
+                maxSanity: 0,
+                maxCyber: 0,
+                maxEquip: 0,
+                evasion: 0,
+              }));
             }
           },
         }}
@@ -192,9 +204,31 @@ const CharacterForm = () => {
       />
       <Divider />
       <ArrowHeader2 title="Stats" />
-      <StatBarContainer>
-        <CharacterStatBars stats={stats} size="large" />
-      </StatBarContainer>
+      <characterForm.Subscribe
+        selector={(state) => state.values.playerCharacter}
+      >
+        {(playerCharacter) => (
+          <characterForm.Field name="stats">
+            {() => (
+              <StatBarContainer>
+                <CharacterStatBars
+                  stats={stats}
+                  size="large"
+                  handleChange={
+                    !playerCharacter
+                      ? (stat, value) =>
+                          characterForm.setFieldValue(
+                            `stats.${stat}`,
+                            (prev) => prev + value,
+                          )
+                      : undefined
+                  }
+                />
+              </StatBarContainer>
+            )}
+          </characterForm.Field>
+        )}
+      </characterForm.Subscribe>
       <div className="col-span-4 flex w-full items-center gap-8">
         <characterForm.Field name="stats.permanentInjuries">
           {(field) => (

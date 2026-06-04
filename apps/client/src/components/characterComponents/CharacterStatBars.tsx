@@ -21,11 +21,13 @@ const CharacterStatBars = ({
   stats,
   cardWidth,
   characterId,
+  handleChange,
   size,
 }: {
   stats: CharacterStats;
   cardWidth: number;
   characterId: number;
+  handleChange?: (stat: string, value: number) => void;
   size: 'large' | 'small';
 }) => {
   const { statColorMap } = useContext(ThemeContext);
@@ -53,6 +55,11 @@ const CharacterStatBars = ({
             }
           }}
           mode="adjustable"
+          handleChange={
+            handleChange
+              ? (value: number) => handleChange('maxHealth', value)
+              : undefined
+          }
           size={size}
         >
           <HealthIcon
@@ -79,6 +86,11 @@ const CharacterStatBars = ({
             }
           }}
           mode="adjustable"
+          handleChange={
+            handleChange
+              ? (value: number) => handleChange('maxSanity', value)
+              : undefined
+          }
           size={size}
         >
           <SanityIcon
@@ -93,6 +105,11 @@ const CharacterStatBars = ({
           total={stats.maxCyber}
           color={statColorMap['Cyber']}
           cardWidth={cardWidth}
+          handleChange={
+            handleChange
+              ? (value: number) => handleChange('maxCyber', value)
+              : undefined
+          }
         >
           <CyberIcon className="text-secondary size-8" />
         </StatBar>
@@ -104,6 +121,11 @@ const CharacterStatBars = ({
           total={stats.maxEquip}
           color={statColorMap['Equip']}
           cardWidth={cardWidth}
+          handleChange={
+            handleChange
+              ? (value: number) => handleChange('maxEquip', value)
+              : undefined
+          }
         >
           <EquipIcon className="text-secondary text-blue size-8" />
         </StatBar>
@@ -124,6 +146,11 @@ const CharacterStatBars = ({
           current={stats.evasion}
           color={statColorMap['EV']}
           cardWidth={cardWidth}
+          handleChange={
+            handleChange
+              ? (value: number) => handleChange('evasion', value)
+              : undefined
+          }
         >
           <EvasionIcon className="text-secondary text-blue size-8" />
         </StatBar>
