@@ -51,15 +51,6 @@ const useCharacterForm = (
       perkIds: [] as number[],
     },
     onSubmit: ({ value }) => {
-      value.npcTypes = value.npcTypes
-        ? value.npcTypes.filter((type) => type)
-        : null;
-
-      value.stats = {
-        permanentInjuries: value.stats.permanentInjuries,
-        permanentInsanities: value.stats.permanentInsanities,
-      };
-
       const formData = constructFormData(value);
 
       mutation.mutate(formData);
