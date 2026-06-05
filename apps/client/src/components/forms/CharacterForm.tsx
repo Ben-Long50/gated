@@ -20,6 +20,7 @@ import StatBarContainer from '../StatBarContainer';
 import CharacterStatBars from '../characterComponents/CharacterStatBars';
 import useCreateCodexCharacterMutation from 'src/hooks/useCreateCodexCharacterMutation/useCreateCodexCharacterMutation';
 import { useSearchParams } from 'react-router-dom';
+import TextAreaField from '../formFields/TextAreaField';
 
 const CharacterForm = () => {
   const { data: campaigns } = useCampaignsQuery();
@@ -68,24 +69,39 @@ const CharacterForm = () => {
       createMutation={createMutation}
     >
       <ArrowHeader2 title="General Information" />
+      {formType !== 'codex' && (
+        <characterForm.Field name="campaignId">
+          {(field) => (
+            <InputSelectField
+              label="Campaign"
+              options={campaigns || []}
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value.id)}
+            />
+          )}
+        </characterForm.Field>
+      )}
       <characterForm.Field
         name="playerCharacter"
         listeners={{
           onChange: ({ value }) => {
             if (value) {
               characterForm.setFieldValue('npcTypes', null);
+              characterForm.setFieldValue('description', null);
               characterForm.setFieldValue('stats', {
                 permanentInjuries: 5,
                 permanentInsanities: 5,
               });
             } else if (!value) {
               characterForm.setFieldValue('npcTypes', []);
+              characterForm.setFieldValue('description', '');
               characterForm.setFieldValue('stats', (prev) => ({
                 ...prev,
                 maxHealth: 0,
                 maxSanity: 0,
                 maxCyber: 0,
                 maxEquip: 0,
+                speed: 0,
                 evasion: 0,
               }));
             }
@@ -121,18 +137,6 @@ const CharacterForm = () => {
           </div>
         )}
       </characterForm.Field>
-      {formType !== 'codex' && (
-        <characterForm.Field name="campaignId">
-          {(field) => (
-            <InputSelectField
-              label="Campaign"
-              options={campaigns || []}
-              value={field.state.value}
-              onChange={(value) => field.handleChange(value.id)}
-            />
-          )}
-        </characterForm.Field>
-      )}
       <NpcPreferenceField form={characterForm} />
       <Divider />
       <ArrowHeader2 title="Character Information" />
@@ -200,6 +204,7 @@ const CharacterForm = () => {
       <ArrowHeader2 title="Character Picture" />
       <PictureField
         form={characterForm}
+        type="character"
         sizeInfo={{ aspectRatio: '1/1', maxHeight: '', minHeight: '' }}
       />
       <Divider />
@@ -229,28 +234,6 @@ const CharacterForm = () => {
           </characterForm.Field>
         )}
       </characterForm.Subscribe>
-      <div className="col-span-4 flex w-full items-center gap-8">
-        <characterForm.Field name="stats.permanentInjuries">
-          {(field) => (
-            <InputField
-              type="number"
-              label="Max Injuries"
-              value={field.state.value}
-              onChange={(value) => field.handleChange(value)}
-            />
-          )}
-        </characterForm.Field>
-        <characterForm.Field name="stats.permanentInsanities">
-          {(field) => (
-            <InputField
-              type="number"
-              label="Max Insanities"
-              value={field.state.value}
-              onChange={(value) => field.handleChange(value)}
-            />
-          )}
-        </characterForm.Field>
-      </div>
       <Divider />
       <ArrowHeader2 title="Attributes and skills" />
       <div className="flex w-full flex-col gap-4 border-l-2 border-gray-400 border-opacity-50 pl-4">

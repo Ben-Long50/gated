@@ -18,8 +18,8 @@ import BtnAuth from '../buttons/BtnAuth';
 import Icon from '@mdi/react';
 import { mdiClose } from '@mdi/js';
 import ActionLinkField from '../formFields/ActionLinkField';
-import ItemPictureField from '../formFields/ItemPictureField';
 import useCreateCodexItemMutation from 'src/hooks/useCreateCodexItemMutation/useCreateCodexItemMutation';
+import PictureField from '../formFields/PictureField';
 
 const ItemForm = () => {
   const { itemId } = useParams();
@@ -145,8 +145,9 @@ const ItemForm = () => {
       </div>
       <Divider />
       <ArrowHeader2 title="Item Picture" />
-      <ItemPictureField
+      <PictureField
         form={itemForm}
+        type="item"
         sizeInfo={{ aspectRatio: '1/1', maxHeight: '', minHeight: '' }}
       />
       <StatFields form={itemForm} />

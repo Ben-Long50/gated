@@ -58,9 +58,6 @@ const StatBar = ({
     <>
       {title && (small ? null : <h4>{title}</h4>)}
       {children}
-      {/* <div
-        className={`${small ? 'col-span-3 gap-2' : 'col-span-2 gap-4'} grid w-full grid-cols-[1fr_auto] items-center justify-between`}
-      > */}
       <div className={`flex w-full items-center rounded`} style={{}}>
         {Array.from({
           length: arrayLength,
@@ -84,53 +81,54 @@ const StatBar = ({
         ))}
       </div>
       {mode !== 'edit' && (
-        <div
-          className={`${small ? 'gap-1' : 'gap-2'} text-tertiary flex w-full items-center justify-around whitespace-nowrap text-xl`}
-        >
-          {handleChange && (
-            <IconBtnSmall onClick={() => handleChange(-1)}>
-              <Icon path={mdiMinus} />
-            </IconBtnSmall>
-          )}
+        <div className="flex items-center justify-end gap-4 place-self-end">
           <div
-            className={`${mutation && 'hover:text-accent cursor-pointer'} text-secondary grid h-6 min-w-6 select-none place-content-center`}
-            onClick={(e) => {
-              e.stopPropagation();
-              if (mutation) mutation(-1);
-            }}
+            className={`${small ? 'gap-1' : 'gap-2'} text-tertiary flex w-full items-center justify-end whitespace-nowrap text-xl`}
           >
-            <p
-              className={`${total && current > total ? 'text-error' : '!text-inherit'} ${size === 'small' && '!text-base'} `}
+            <div
+              className={`${mutation && 'hover:text-accent cursor-pointer'} text-secondary grid h-6 min-w-6 select-none place-content-center`}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (mutation) mutation(-1);
+              }}
             >
-              {current}
-            </p>
-          </div>
-          {(reserve || total) && (
-            <>
-              <p>/</p>
-              <div
-                className={`${mutation && 'hover:text-accent cursor-pointer'} text-secondary grid h-6 min-w-6 select-none place-content-center`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (mutation) mutation(1);
-                }}
+              <p
+                className={`${total && current > total ? 'text-error' : '!text-inherit'} ${size === 'small' && '!text-base'} `}
               >
-                <p
-                  className={`${size === 'small' && '!text-base'} !text-inherit`}
+                {current}
+              </p>
+            </div>
+            {(reserve || total) && (
+              <>
+                <p>/</p>
+                <div
+                  className={`${mutation && 'hover:text-accent cursor-pointer'} text-secondary grid h-6 min-w-6 select-none place-content-center`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (mutation) mutation(1);
+                  }}
                 >
-                  {reserve !== undefined ? reserve : total}
-                </p>
-              </div>
-            </>
-          )}
+                  <p
+                    className={`${size === 'small' && '!text-base'} !text-inherit`}
+                  >
+                    {reserve !== undefined ? reserve : total}
+                  </p>
+                </div>
+              </>
+            )}
+          </div>
           {handleChange && (
-            <IconBtnSmall onClick={() => handleChange(1)}>
-              <Icon path={mdiPlus} />
-            </IconBtnSmall>
+            <>
+              <IconBtnSmall onClick={() => handleChange(-1)}>
+                <Icon path={mdiMinus} />
+              </IconBtnSmall>
+              <IconBtnSmall onClick={() => handleChange(1)}>
+                <Icon path={mdiPlus} />
+              </IconBtnSmall>
+            </>
           )}
         </div>
       )}
-      {/* </div> */}
     </>
   );
 };

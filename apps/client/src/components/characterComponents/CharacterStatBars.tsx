@@ -10,12 +10,13 @@ import useCharacterStatMutation from 'src/hooks/character stat hooks/useCharacte
 import InjuryIcon from '../icons/InjuryIcon';
 import InsanityIcon from '../icons/InsanityIcon';
 import Icon from '@mdi/react';
-import { mdiCircleOutline } from '@mdi/js';
+import { mdiCircleOutline, mdiMinus, mdiPlus } from '@mdi/js';
 import BlockIcon from '../icons/BlockIcon';
 import WardIcon from '../icons/WardIcon';
 import ArmorIcon from '../icons/ArmorIcon';
 import SpeedIcon from '../icons/SpeedIcon';
 import EvasionIcon from '../icons/EvasionIcon';
+import IconBtnSmall from '../buttons/IconBtnSmall';
 
 const CharacterStatBars = ({
   stats,
@@ -136,6 +137,11 @@ const CharacterStatBars = ({
           current={stats.speed}
           color={statColorMap['SPD']}
           cardWidth={cardWidth}
+          handleChange={
+            handleChange
+              ? (value: number) => handleChange('speed', value)
+              : undefined
+          }
         >
           <SpeedIcon className="text-secondary text-blue size-8" />
         </StatBar>
@@ -193,24 +199,38 @@ const CharacterStatBars = ({
         <>
           <h4>Insanities</h4>
           <InjuryIcon className="text-secondary size-8" />
-          <div
-            className={`col-span-2 flex grow items-center gap-2 justify-self-end`}
-          >
-            {Array.from({
-              length: stats.permanentInjuries,
-            }).map((_, index) =>
-              index < stats.injuries ? (
-                <InjuryIcon
-                  key={index}
-                  className="text-secondary size-7 shrink-0 sm:size-8"
-                />
-              ) : (
-                <Icon
-                  path={mdiCircleOutline}
-                  key={index}
-                  className="text-tertiary size-7 shrink-0 p-1 sm:size-8"
-                />
-              ),
+          <div className="col-span-2 flex items-center justify-end gap-4 place-self-end">
+            <div className={`flex grow items-center gap-2 justify-self-end`}>
+              {Array.from({
+                length: stats.permanentInjuries,
+              }).map((_, index) =>
+                index < stats.injuries ? (
+                  <InjuryIcon
+                    key={index}
+                    className="text-secondary size-7 shrink-0 sm:size-8"
+                  />
+                ) : (
+                  <Icon
+                    path={mdiCircleOutline}
+                    key={index}
+                    className="text-tertiary size-7 shrink-0 p-1 sm:size-8"
+                  />
+                ),
+              )}
+            </div>
+            {handleChange && (
+              <>
+                <IconBtnSmall
+                  onClick={() => handleChange('permanentInjuries', -1)}
+                >
+                  <Icon path={mdiMinus} />
+                </IconBtnSmall>
+                <IconBtnSmall
+                  onClick={() => handleChange('permanentInjuries', 1)}
+                >
+                  <Icon path={mdiPlus} />
+                </IconBtnSmall>
+              </>
             )}
           </div>
         </>
@@ -219,24 +239,38 @@ const CharacterStatBars = ({
         <>
           <h4>Insanities</h4>
           <InsanityIcon className="text-secondary size-8" />
-          <div
-            className={`col-span-2 flex grow items-center gap-2 justify-self-end`}
-          >
-            {Array.from({
-              length: stats.permanentInsanities,
-            }).map((_, index) =>
-              index < stats.insanities ? (
-                <InsanityIcon
-                  key={index}
-                  className="text-secondary size-7 shrink-0 sm:size-8"
-                />
-              ) : (
-                <Icon
-                  path={mdiCircleOutline}
-                  key={index}
-                  className="text-tertiary size-7 shrink-0 p-1 sm:size-8"
-                />
-              ),
+          <div className="col-span-2 flex items-center justify-end gap-4 place-self-end">
+            <div className={`flex grow items-center gap-2 justify-self-end`}>
+              {Array.from({
+                length: stats.permanentInsanities,
+              }).map((_, index) =>
+                index < stats.insanities ? (
+                  <InsanityIcon
+                    key={index}
+                    className="text-secondary size-7 shrink-0 sm:size-8"
+                  />
+                ) : (
+                  <Icon
+                    path={mdiCircleOutline}
+                    key={index}
+                    className="text-tertiary size-7 shrink-0 p-1 sm:size-8"
+                  />
+                ),
+              )}
+            </div>
+            {handleChange && (
+              <>
+                <IconBtnSmall
+                  onClick={() => handleChange('permanentInsanities', -1)}
+                >
+                  <Icon path={mdiMinus} />
+                </IconBtnSmall>
+                <IconBtnSmall
+                  onClick={() => handleChange('permanentInsanities', 1)}
+                >
+                  <Icon path={mdiPlus} />
+                </IconBtnSmall>
+              </>
             )}
           </div>
         </>

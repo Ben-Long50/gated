@@ -1,7 +1,7 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
 import { Character } from 'src/types/character';
-import constructFormData from './constructFormData';
+import constructFormData, { filterStats } from './constructFormData';
 
 const useCharacterUpdateForm = (
   mutation: UseMutationResult<any, Error, FormData>,
@@ -31,13 +31,16 @@ const useCharacterUpdateForm = (
       },
       firstName: character?.firstName ?? null,
       lastName: character?.lastName ?? null,
+      description: character?.description ?? null,
       stats: {
-        currentHealth: character?.stats.currentHealth ?? null,
-        currentSanity: character?.stats.currentSanity ?? null,
-        injuries: character?.stats.injuries ?? null,
-        insanities: character?.stats.insanities ?? null,
-        permanentInjuries: character?.stats.permanentInjuries ?? 5,
-        permanentInsanities: character?.stats.permanentInsanities ?? 5,
+        maxHealth: character?.stats.maxHealth ?? 0,
+        maxSanity: character?.stats.maxSanity ?? 0,
+        maxCyber: character?.stats.maxCyber ?? 0,
+        maxEquip: character?.stats.maxEquip ?? 0,
+        speed: character?.stats.speed ?? 0,
+        evasion: character?.stats.evasion ?? 0,
+        permanentInjuries: character?.stats.permanentInjuries ?? 0,
+        permanentInsanities: character?.stats.permanentInsanities ?? 0,
       },
       pictureFile: null as File | null,
       picture: {
@@ -51,11 +54,9 @@ const useCharacterUpdateForm = (
       sex: character?.sex ?? null,
     },
     onSubmit: async ({ value }) => {
-      value.npcTypes = value.npcTypes
-        ? value.npcTypes.filter((type) => type)
-        : null;
+      const filteredStats = filterStats(value.stats);
 
-      const formData = constructFormData(value);
+      const formData = constructFormData({ ...value, stats: filteredStats });
 
       mutation.mutate(formData);
     },

@@ -38,6 +38,8 @@ const CharacterSheet = () => {
     Number(characterId),
   );
 
+  console.log(character);
+
   const height =
     typeof character?.height === 'number'
       ? `${Math.floor(character?.height / 12)}' ${character?.height % 12}"`
@@ -177,15 +179,21 @@ const CharacterSheet = () => {
                   )}
                 </div>
                 <Divider />
-                <Link to={`resume?state=Backstory`}>
-                  <BtnAuth>Backstory</BtnAuth>
-                </Link>
-                <Link to={`resume?state=First Taste`}>
-                  <BtnAuth>First Taste</BtnAuth>
-                </Link>
-                <Link to={`resume?state=Bad Medicine`}>
-                  <BtnAuth>Bad Medicine</BtnAuth>
-                </Link>
+                {character?.playerCharacter ? (
+                  <>
+                    <Link to={`resume?state=Backstory`}>
+                      <BtnAuth>Backstory</BtnAuth>
+                    </Link>
+                    <Link to={`resume?state=First Taste`}>
+                      <BtnAuth>First Taste</BtnAuth>
+                    </Link>
+                    <Link to={`resume?state=Bad Medicine`}>
+                      <BtnAuth>Bad Medicine</BtnAuth>
+                    </Link>
+                  </>
+                ) : (
+                  <p>{character?.description || 'No NPC description'}</p>
+                )}
               </>
             )}
           </div>

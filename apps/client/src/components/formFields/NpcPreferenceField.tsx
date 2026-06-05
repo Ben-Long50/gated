@@ -4,6 +4,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { capitalCase } from 'change-case';
 import ArrowHeader3 from '../ArrowHeader3';
 import InputFieldCheckbox from './InputFieldCheckbox';
+import TextAreaField from './TextAreaField';
 
 const NpcPreferenceField = ({ form }: { form: FormApi }) => {
   const navigate = useNavigate();
@@ -45,6 +46,15 @@ const NpcPreferenceField = ({ form }: { form: FormApi }) => {
                     </div>
                   ))}
                 </div>
+              )}
+            </form.Field>
+            <form.Field name="description">
+              {(field) => (
+                <TextAreaField
+                  label="NPC Description"
+                  value={field.state.value}
+                  onChange={(value) => field.handleChange(value)}
+                />
               )}
             </form.Field>
             <BtnRect

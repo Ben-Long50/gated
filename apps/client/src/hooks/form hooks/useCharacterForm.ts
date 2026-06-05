@@ -1,7 +1,7 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
 import { Character } from 'src/types/character';
-import constructFormData from './constructFormData';
+import constructFormData, { filterStats } from './constructFormData';
 import useAttributeTree from '../useAttributeTree';
 
 const useCharacterForm = (
@@ -43,6 +43,7 @@ const useCharacterForm = (
       weight: null as number | null,
       age: null as number | null,
       sex: null as 'male' | 'female' | null,
+      description: null as string | null,
       stats: {
         permanentInjuries: 5,
         permanentInsanities: 5,
@@ -51,7 +52,9 @@ const useCharacterForm = (
       perkIds: [] as number[],
     },
     onSubmit: ({ value }) => {
-      const formData = constructFormData(value);
+      const filteredStats = filterStats(value.stats);
+
+      const formData = constructFormData({ ...value, stats: filteredStats });
 
       mutation.mutate(formData);
     },

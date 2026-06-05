@@ -1,29 +1,15 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
-import { Character } from 'src/types/character';
 
-const usePromptForm = (
-  mutation: UseMutationResult<any, Error, any>,
-  character: Partial<Character>,
-) => {
+const usePromptForm = (mutation: UseMutationResult<any, Error, any>) => {
   const promptForm = useForm({
     defaultValues: {
       setting: '',
       time: 'daytime',
-      height: '',
-      age: '',
-      sex: character.sex ?? '',
-      hair: '',
-      build: '',
-      outfit: '',
-      augmentation: '',
-      weapon: '',
-      pose: '',
+      description: '',
       pictureCount: 1,
     },
     onSubmit: async ({ value }) => {
-      value = { ...value, sex: character.sex };
-
       await mutation.mutate(value);
     },
   });

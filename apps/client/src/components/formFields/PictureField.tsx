@@ -14,6 +14,7 @@ import BtnAuth from '../buttons/BtnAuth';
 import { PictureCard } from '../PictureCard';
 import TrueFalseIndicator from '../TrueFalseIndicator';
 import CloudinaryPicture from '../CloudinaryPicture';
+import useGenerateItemPictureMutation from 'src/hooks/useGenerateItemPictureMutation/useGenerateItemPictureMutation';
 
 type SizeInfo = {
   aspectRatio: string;
@@ -23,9 +24,11 @@ type SizeInfo = {
 
 const PictureField = ({
   form,
+  type,
   sizeInfo,
 }: {
   form: FormApi;
+  type: 'character' | 'item' | 'scene';
   sizeInfo: SizeInfo;
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -33,13 +36,21 @@ const PictureField = ({
   const location = useLocation();
   const path = location.pathname.split('/');
 
-  const generatePicture = useGeneratePictureMutation();
+  const generateCharacterPicture = useGeneratePictureMutation();
+  const generateItemPicture = useGenerateItemPictureMutation();
 
-  const sex = useStore(form.store, (state) => state.values.sex);
+  let generatePicture = generateCharacterPicture;
 
-  const promptForm = usePromptForm(generatePicture, {
-    sex,
-  });
+  switch (type) {
+    case 'character':
+      generatePicture = generateCharacterPicture;
+      break;
+    case 'item':
+      generatePicture = generateItemPicture;
+      break;
+  }
+
+  const promptForm = usePromptForm(generatePicture);
 
   useEffect(() => {
     if (generatePicture.data) {
@@ -143,29 +154,21 @@ const PictureField = ({
             )}
           </promptForm.Field>
           <div className="flex flex-col gap-3 border-x-2 border-x-gray-400 border-opacity-50 px-4">
-            <form.Subscribe selector={(state) => state.values.sex}>
-              {(sex) => (
+            <promptForm.Subscribe
+              selector={(state) => [
+                state.values.time,
+                state.values.setting,
+                state.values.description,
+              ]}
+            >
+              {([time, setting, description]) => (
                 <>
-                  <TrueFalseIndicator label="Sex" active={sex} />
-                </>
-              )}
-            </form.Subscribe>
-            <promptForm.Subscribe selector={(state) => state.values}>
-              {(values) => (
-                <>
-                  <TrueFalseIndicator label="Height" active={values.height} />
-                  <TrueFalseIndicator label="Build" active={values.build} />
-                  <TrueFalseIndicator label="Age" active={values.age} />
-                  <TrueFalseIndicator label="Time" active={values.time} />
-                  <TrueFalseIndicator label="Setting" active={values.setting} />
-                  <TrueFalseIndicator label="Hair" active={values.hair} />
-                  <TrueFalseIndicator label="Outfit" active={values.outfit} />
+                  <TrueFalseIndicator label="Time" active={time} />
+                  <TrueFalseIndicator label="Setting" active={setting} />
                   <TrueFalseIndicator
-                    label="Augmentation"
-                    active={values.augmentation}
+                    label="Description"
+                    active={description}
                   />
-                  <TrueFalseIndicator label="Weapon" active={values.weapon} />
-                  <TrueFalseIndicator label="Pose" active={values.pose} />
                 </>
               )}
             </promptForm.Subscribe>
@@ -235,7 +238,7 @@ const PictureField = ({
           </div>
         </div>
         {(path.includes('library') || path.includes('prompt')) && (
-          <Outlet context={{ form, promptForm, generatePicture }} />
+          <Outlet context={{ type, form, promptForm, generatePicture }} />
         )}
       </div>
     </div>

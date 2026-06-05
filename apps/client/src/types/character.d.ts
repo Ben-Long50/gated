@@ -24,9 +24,10 @@ interface Character {
   gangId?: number;
   campaign?: Campaign;
   campaignId?: number;
-  backstory: { html: string; nodes: object };
-  firstTaste: { html: string; nodes: object };
-  badMedicine: { html: string; nodes: object };
+  backstory?: { html: string; nodes: object };
+  firstTaste?: { html: string; nodes: object };
+  badMedicine?: { html: string; nodes: object };
+  description?: string;
   attributes: AttributeTree;
   firstName: string;
   lastName: string;
