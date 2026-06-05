@@ -1,5 +1,5 @@
 import z from 'zod';
-import { Attributes, CharacterStats, FirstName, LastName, Picture, PictureFile, } from './fieldSchemas.js';
+import { Attributes, CharacterStats, Description, FirstName, LastName, Picture, PictureFile, } from './fieldSchemas.js';
 import { NpcType, Sex } from './enums.js';
 export const CharacterInput = z.object({
     id: z.number().int().optional(),
@@ -30,6 +30,7 @@ export const CharacterInput = z.object({
     weight: z.number().nonnegative(),
     age: z.number().int().nonnegative(),
     sex: Sex,
+    description: Description.optional(),
     stats: CharacterStats,
     attributes: Attributes,
     perkIds: z.array(z.coerce.number().int()),
@@ -63,6 +64,7 @@ export const CharacterUpdateInput = z.object({
     weight: z.number().nonnegative(),
     age: z.number().int().nonnegative(),
     sex: Sex,
+    description: Description.optional(),
     stats: CharacterStats,
 });
 export const CharacterLevelBonus = z.object({

@@ -191,7 +191,7 @@ const characterController = {
                 }
                 const parsedBody = parseRequestBody(req.body);
                 const validatedCharacter = CharacterUpdateInput.parse(parsedBody);
-                const character = await characterServices.updateCharacter(validatedCharacter, req.user.id);
+                const character = await characterServices.updateCharacter(validatedCharacter);
                 const io = getIO();
                 if (character.campaignId) {
                     io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {

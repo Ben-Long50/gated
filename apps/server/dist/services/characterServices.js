@@ -403,12 +403,11 @@ const characterServices = {
             throw new Error('Failed to clear cart');
         }
     },
-    updateCharacter: async (formData, userId) => {
+    updateCharacter: async (formData) => {
         try {
             const { id } = formData, data = __rest(formData, ["id"]);
             const character = await prisma.character.update({
                 where: {
-                    userId,
                     id,
                 },
                 data,

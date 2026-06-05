@@ -1,10 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import handleControllerError from '../controllers/handleControllerError.js';
 import { fal } from '@fal-ai/client';
-import {
-  CharacterPromptInput,
-  ItemPromptInput,
-} from '../validation/promptSchema.js';
+import { PromptInput } from '../validation/promptSchema.js';
 
 export const generateCloudflarePicture = async (
   req: Request,
@@ -117,9 +114,9 @@ export const generatFalPicture = async (
 
     const data = req.body.prompt;
 
-    const validatedData = CharacterPromptInput.parse(data);
+    const validatedData = PromptInput.parse(data);
 
-    const prompt = `in the style of cksc and japanese anime with muted colors, create a picutre of a ${validatedData.age} ${validatedData.sex} character with a ${validatedData.height} height and ${validatedData.build} build. The characters hair can be described as ${validatedData.hair}. The character is wearing ${validatedData.outfit}. The character has enhanced prosthetic body parts that can be described as ${validatedData.augmentation}. The character is equipped with a ${validatedData.weapon} and is posed ${validatedData.pose}. The background setting of the picture should be ${validatedData.setting} at ${validatedData.time}.`;
+    const prompt = `in the style of cksc and japanese anime with muted colors, create a picutre of a character that can be described as ${validatedData.description}. The background setting of the picture should be ${validatedData.setting} at ${validatedData.time}. The focus of the picture is the character themself. The picture should be sharp with clearly defined lines.`;
 
     const result = await fal.subscribe(url, {
       input: {
@@ -141,8 +138,6 @@ export const generatFalPicture = async (
         num_images: validatedData.pictureCount,
         num_inference_steps: 8,
         output_format: 'png',
-        acceleration: 'regular',
-        seed: 746232381338994,
       },
     });
 
@@ -179,9 +174,9 @@ export const generatFalItemPicture = async (
 
     const data = req.body.prompt;
 
-    const validatedData = ItemPromptInput.parse(data);
+    const validatedData = PromptInput.parse(data);
 
-    const prompt = `in the style of cksc and japanese anime with muted colors, create a picutre of ${data.itemDescription}. The background setting of the picture should be ${validatedData.setting} at ${validatedData.time}. The item is found in the setting, ${data.itemArrangement}. The focus of the image is the item itself. The picture should be sharp with clearly defined lines.`;
+    const prompt = `in the style of cksc and japanese anime with muted colors, create a picutre of ${data.description}. The background setting of the picture should be ${validatedData.setting} at ${validatedData.time}. The focus of the picture is the item itself. The picture should be sharp with clearly defined lines.`;
 
     const result = await fal.subscribe(url, {
       input: {

@@ -244,10 +244,8 @@ const characterController = {
 
         const validatedCharacter = CharacterUpdateInput.parse(parsedBody);
 
-        const character = await characterServices.updateCharacter(
-          validatedCharacter,
-          req.user.id,
-        );
+        const character =
+          await characterServices.updateCharacter(validatedCharacter);
 
         const io = getIO();
 

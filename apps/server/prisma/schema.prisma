@@ -349,6 +349,7 @@ model Character {
   backstory             Json?
   firstTaste            Json?
   badMedicine           Json?
+  description           String?
   attributes            Json
   firstName             String
   lastName              String?

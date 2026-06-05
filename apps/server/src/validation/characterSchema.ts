@@ -2,6 +2,7 @@ import z from 'zod';
 import {
   Attributes,
   CharacterStats,
+  Description,
   FirstName,
   LastName,
   Picture,
@@ -38,6 +39,7 @@ export const CharacterInput = z.object({
   weight: z.number().nonnegative(),
   age: z.number().int().nonnegative(),
   sex: Sex,
+  description: Description.optional(),
   stats: CharacterStats,
   attributes: Attributes,
   perkIds: z.array(z.coerce.number().int()),
@@ -72,6 +74,7 @@ export const CharacterUpdateInput = z.object({
   weight: z.number().nonnegative(),
   age: z.number().int().nonnegative(),
   sex: Sex,
+  description: Description.optional(),
   stats: CharacterStats,
 });
 

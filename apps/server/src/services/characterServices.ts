@@ -496,13 +496,12 @@ const characterServices = {
     }
   },
 
-  updateCharacter: async (formData: CharacterUpdateInput, userId: number) => {
+  updateCharacter: async (formData: CharacterUpdateInput) => {
     try {
       const { id, ...data } = formData;
 
       const character = await prisma.character.update({
         where: {
-          userId,
           id,
         },
         data,
