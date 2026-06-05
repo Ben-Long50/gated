@@ -99,7 +99,7 @@ const CharacterStatBars = ({
           />
         </StatBar>
       )}
-      {stats.maxCyber !== undefined && (
+      {stats.maxCyber ? (
         <StatBar
           title="Cyber"
           current={stats.cyber ?? stats.maxCyber}
@@ -114,8 +114,8 @@ const CharacterStatBars = ({
         >
           <CyberIcon className="text-secondary size-8" />
         </StatBar>
-      )}
-      {stats.maxEquip !== undefined && (
+      ) : null}
+      {stats.maxEquip ? (
         <StatBar
           title="Equip"
           current={stats.weight ?? stats.maxEquip}
@@ -130,7 +130,7 @@ const CharacterStatBars = ({
         >
           <EquipIcon className="text-secondary text-blue size-8" />
         </StatBar>
-      )}
+      ) : null}
       {stats.speed != undefined && (
         <StatBar
           title="Speed"
