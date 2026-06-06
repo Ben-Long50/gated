@@ -167,10 +167,6 @@
   .editor-table-cell {
     @apply !border-2 !border-zinc-400 bg-transparent p-2;
   }
-  .main-layout-large {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-  }
   .no-scroll {
     @apply overflow-hidden;
   }
