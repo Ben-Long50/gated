@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import prisma from '../config/database.js';
 import addVariableStats from '../utils/addVariableStats.js';
 import { ActionInput } from '../validation/actionSchema.js';
@@ -53,7 +54,7 @@ const actionServices = {
 
   createOrUpdateAction: async (formData: ActionInput) => {
     try {
-      const { modifiers, keywords, ...data } = formData;
+      const { id, modifiers, keywords, ...data } = formData;
 
       const modifierStats = modifiers ? addVariableStats(modifiers) : undefined;
 
@@ -118,9 +119,12 @@ const actionServices = {
   },
 
   createCharacterActionCopy: async (
-    inventoryId: number,
     actionList: { actionId: number; quantity: number }[],
+    characterInventoryId?: number,
+    tx?: Prisma.TransactionClient,
   ) => {
+    const client = tx || prisma;
+
     const actionIds = actionList?.map((action) => action.actionId);
 
     const actions = await prisma.action.findMany({
@@ -140,14 +144,14 @@ const actionServices = {
 
         if (actionDetails) {
           return Array.from({ length: quantity }).map(() =>
-            prisma.action.create({
+            client.action.create({
               data: {
                 ...data,
                 keywordModifiers: {
                   createMany: { data: actionDetails.keywordModifiers || [] },
                 },
                 baseActionId: actionDetails.baseActionId || actionDetails.id,
-                characterInventoryId: inventoryId,
+                characterInventoryId,
               },
               include: actionInclude,
             }),

@@ -3,7 +3,7 @@
 import prisma from '../config/database.js';
 import { enforceSingularLinking } from '../utils/enforceSingularLinking.js';
 import { createLinkedCopies } from '../utils/createLinkedCopies.js';
-import { $Enums } from '@prisma/client';
+import { $Enums, Prisma } from '@prisma/client';
 import actionServices from './actionServices.js';
 import { ItemInput, ItemUpgradeInput } from '../validation/itemSchema.js';
 import { ItemStats, Picture } from '../validation/fieldSchemas.js';
@@ -438,13 +438,15 @@ const itemServices = {
   },
 
   createCharacterItemCopy: async (
-    userId?: number,
     inventoryId: number,
     itemList: { itemId: number; price: number | null; quantity: number }[],
+    tx?: Prisma.TransactionClient,
   ) => {
+    const client = tx ?? prisma;
+
     const itemIds = itemList?.map((item) => item.itemId);
 
-    const items = await prisma.item.findMany({
+    const items = await client.item.findMany({
       where: { id: { in: itemIds } },
       select: {
         id: true,
@@ -488,16 +490,16 @@ const itemServices = {
       const typedStats = stats as ItemStats;
 
       const { itemIds, actionIds } = await createLinkedCopies(
-        userId,
         itemLinkReference,
         inventoryId,
         quantity,
+        client,
       );
 
       if (itemDetails) {
         for (let i = 0; i < quantity; i++) {
           promises.push(
-            prisma.item.create({
+            client.item.create({
               data: {
                 ...rest,
                 picture: typedPicture,
@@ -506,7 +508,6 @@ const itemServices = {
                 characterInventoryId: inventoryId,
                 base: false,
                 baseItemId: baseItemId || id,
-                userId,
                 itemLinkReference: {
                   create: {
                     items: {

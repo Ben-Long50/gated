@@ -33,7 +33,13 @@ export const ActionType = z.enum([
   'passive',
 ]);
 
-export const ActionSubtype = z.enum(['movement', 'attack', 'upkeep', 'unique']);
+export const ActionSubtype = z.enum([
+  'movement',
+  'attack',
+  'upkeep',
+  'unique',
+  'monster',
+]);
 
 export const FactionType = z.enum([
   'churchOfElShaddai',

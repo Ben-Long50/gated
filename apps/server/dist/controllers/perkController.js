@@ -34,7 +34,7 @@ const perkController = {
         try {
             const validatedPerk = PerkSchema.parse(req.body);
             const perk = await perkServices.createPerk(validatedPerk);
-            res.status(200).json(perk);
+            res.status(200).json({ perk, message: 'Successfully created perk' });
         }
         catch (error) {
             handleControllerError(res, error);

@@ -10,6 +10,7 @@ export const PerkSchema = z.object({
   id: z.number().int().optional(),
   name: Name,
   description: Description,
+  type: z.enum(['character', 'monster']),
   modifiers: CharacterStats,
   attributes: Attributes,
 });

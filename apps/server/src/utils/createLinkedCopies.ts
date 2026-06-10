@@ -1,44 +1,43 @@
+import { Action, Item, Prisma } from '@prisma/client';
+import prisma from '../config/database.js';
 import actionServices from '../services/actionServices.js';
 import itemServices from '../services/itemServices.js';
 import { LinkReferencePlaylaod } from '../types/linkReferencePayloads';
 
 export const createLinkedCopies = async (
-  userId: number,
   itemReference: LinkReferencePlaylaod,
   inventoryId: number,
   quantity: number,
+  tx?: Prisma.TransactionClient,
 ) => {
-  let items = [] as any[];
-  let actions = [] as any[];
+  const client = tx ?? prisma;
 
-  if (
-    itemReference &&
-    'items' in itemReference &&
-    itemReference?.items.length > 0
-  ) {
-    const itemInfo = itemReference.items.map((item) => {
-      return { itemId: item.id, price: 0, quantity };
-    });
-    items = await itemServices.createCharacterItemCopy(
-      userId,
-      inventoryId,
-      itemInfo,
-    );
+  if (!itemReference) {
+    throw new Error('Item reference not found');
   }
 
-  if (
-    itemReference &&
-    'actions' in itemReference &&
-    itemReference?.actions.length > 0
-  ) {
-    const actionInfo = itemReference.actions.map((action) => {
-      return { actionId: action.id, quantity };
-    });
-    actions = await actionServices.createCharacterActionCopy(
-      inventoryId,
-      actionInfo,
-    );
-  }
+  const itemInfo = itemReference.items.map((item) => ({
+    itemId: item.id,
+    price: 0,
+    quantity,
+  }));
+
+  const items = (await itemServices.createCharacterItemCopy(
+    inventoryId,
+    itemInfo,
+    client,
+  )) as Item[];
+
+  const actionInfo = itemReference.actions.map((action) => ({
+    actionId: action.id,
+    quantity,
+  }));
+
+  const actions = (await actionServices.createCharacterActionCopy(
+    actionInfo,
+    undefined,
+    client,
+  )) as Action[];
 
   return {
     itemIds: items.map((item) => item.id),

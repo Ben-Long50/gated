@@ -371,9 +371,10 @@ const itemServices = {
             throw new Error('Failed to create item copy');
         }
     },
-    createCharacterItemCopy: async (userId, inventoryId, itemList) => {
+    createCharacterItemCopy: async (inventoryId, itemList, tx) => {
+        const client = tx !== null && tx !== void 0 ? tx : prisma;
         const itemIds = itemList === null || itemList === void 0 ? void 0 : itemList.map((item) => item.itemId);
-        const items = await prisma.item.findMany({
+        const items = await client.item.findMany({
             where: { id: { in: itemIds } },
             select: {
                 id: true,
@@ -403,11 +404,11 @@ const itemServices = {
             const { id, baseItemId, itemLinkReference, keywords, picture, stats } = itemDetails, rest = __rest(itemDetails, ["id", "baseItemId", "itemLinkReference", "keywords", "picture", "stats"]);
             const typedPicture = picture;
             const typedStats = stats;
-            const { itemIds, actionIds } = await createLinkedCopies(userId, itemLinkReference, inventoryId, quantity);
+            const { itemIds, actionIds } = await createLinkedCopies(itemLinkReference, inventoryId, quantity, client);
             if (itemDetails) {
                 for (let i = 0; i < quantity; i++) {
-                    promises.push(prisma.item.create({
-                        data: Object.assign(Object.assign({}, rest), { picture: typedPicture, stats: typedStats, updatedAt: new Date(), characterInventoryId: inventoryId, base: false, baseItemId: baseItemId || id, userId, itemLinkReference: {
+                    promises.push(client.item.create({
+                        data: Object.assign(Object.assign({}, rest), { picture: typedPicture, stats: typedStats, updatedAt: new Date(), characterInventoryId: inventoryId, base: false, baseItemId: baseItemId || id, itemLinkReference: {
                                 create: {
                                     items: {
                                         connect: itemIds === null || itemIds === void 0 ? void 0 : itemIds.map((id) => ({ id })),

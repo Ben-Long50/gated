@@ -502,8 +502,6 @@ model Action {
 model Item {
   id                   Int                      @id @default(autoincrement())
   updatedAt            DateTime                 @default(now())
-  user                 User?                    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId               Int?
   name                 String
   itemTypes            ItemType[]
   rarity               ItemRarity               @default(common)
@@ -530,6 +528,8 @@ model Item {
   derivedItems         Item[]                   @relation("BaseRelation")
   location             Location?
   locationId           Int?
+  user                 User?                    @relation(fields: [userId], references: [id])
+  userId               Int?
 
   @@index([itemTypes])
   @@index([characterInventoryId])
@@ -586,28 +586,11 @@ model Perk {
   id                    Int                   @id @default(autoincrement())
   name                  String                @unique
   description           String
+  type                  PerkType              @default(character)
   attributes            Json?
   characters            Character[]           @relation("CharacterToPerk")
   modifiers             Json?
   characterLevelBonuses CharacterLevelBonus[]
-}
-
-model BookSection {
-  id      Int         @id @default(autoincrement())
-  order   Int         @unique
-  title   String      @unique
-  entries BookEntry[]
-}
-
-model BookEntry {
-  id        Int         @id @default(autoincrement())
-  page      Int         @unique
-  title     String
-  section   BookSection @relation(fields: [sectionId], references: [id])
-  sectionId Int
-  content   Json
-
-  @@unique([title, sectionId])
 }
 
 model PatchNote {
@@ -625,6 +608,11 @@ model Error {
   content   String
   userId    Int
   user      User     @relation(fields: [userId], references: [id])
+}
+
+enum PerkType {
+  character
+  monster
 }
 
 enum NpcTypes {
@@ -671,6 +659,7 @@ enum ActionSubtype {
   attack
   upkeep
   unique
+  monster
 }
 
 enum ItemRarity {

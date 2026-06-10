@@ -113,7 +113,6 @@ const characterController = {
       }
 
       await characterServices.addToInventory(
-        req.user?.id,
         Number(req.params.characterId),
         Number(req.params.inventoryId),
       );
@@ -148,6 +147,10 @@ const characterController = {
           validatedCharacter,
           req.user.id,
         );
+
+        if (!character) {
+          throw new Error('Failed to create character');
+        }
 
         const io = getIO();
 
@@ -189,6 +192,10 @@ const characterController = {
           base: true,
         });
 
+        if (!character) {
+          throw new Error('Failed to create character');
+        }
+
         const io = getIO();
 
         if (character.campaignId) {
@@ -219,7 +226,6 @@ const characterController = {
 
       const character = await characterServices.createTemplateCharacter(
         Number(req.params.characterId),
-        req.user.id,
       );
 
       res.status(200).json({

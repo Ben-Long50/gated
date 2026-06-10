@@ -16,6 +16,7 @@ import { getIO } from '../sockets/socket.js';
 import subtractAttributeTrees from '../utils/subtractAttributeTrees.js';
 import validateLevelUpBonus from '../utils/validateLevelUpBonus.js';
 import { ConditionReferenceInput } from '../validation/conditionSchema.js';
+import actionServices from './actionServices.js';
 export const characterInclude = {
     campaign: {
         select: {
@@ -32,7 +33,10 @@ export const characterInclude = {
     controlledGang: { select: { name: true } },
     perks: true,
     characterInventory: {
-        include: { items: { select: { id: true } } },
+        include: {
+            items: { select: { id: true } },
+            actions: { select: { id: true } },
+        },
     },
     characterCart: {
         include: includeCharacterCart,
@@ -205,38 +209,49 @@ const characterServices = {
     createCharacter: async (formData, userId, template) => {
         try {
             const stats = Object.assign(Object.assign({}, formData.stats), { currentHealth: 10 + formData.attributes.violence.skills.threshold.points * 2, currentSanity: 5 + formData.attributes.esoterica.skills.mysticism.points, currentActions: 3, currentReactions: 1, currentHands: 2, currentFeet: 2, injuries: 0, insanities: 0 });
-            const { perkIds } = formData, data = __rest(formData, ["perkIds"]);
-            const character = await prisma.character.create({
-                data: Object.assign(Object.assign({}, data), { stats,
-                    userId, perks: { connect: perkIds.map((id) => ({ id })) }, characterLevelBonuses: {
-                        create: {
-                            level: 1,
-                            attributes: formData.attributes,
-                            perks: { connect: perkIds.map((id) => ({ id })) },
-                        },
-                    }, characterCart: { create: {} }, characterInventory: { create: {} } }),
-                include: characterInclude,
-            });
-            if (!template) {
-                const unarmed = await prisma.item.findFirst({
-                    where: { name: 'Unarmed', baseItemId: null },
+            const { perkIds, actionIds } = formData, data = __rest(formData, ["perkIds", "actionIds"]);
+            const character = await prisma.$transaction(async (tx) => {
+                const character = await tx.character.create({
+                    data: Object.assign(Object.assign({}, data), { stats,
+                        userId, perks: { connect: perkIds.map((id) => ({ id })) }, characterLevelBonuses: {
+                            create: {
+                                level: 1,
+                                attributes: formData.attributes,
+                                perks: { connect: perkIds.map((id) => ({ id })) },
+                            },
+                        }, characterCart: { create: {} }, characterInventory: { create: {} } }),
+                    include: { characterInventory: true },
                 });
-                if (!unarmed) {
-                    throw new Error('Failed to find base Unarmed item');
+                if (actionIds.length > 0 && character.characterInventory) {
+                    const actionList = actionIds.map((actionId) => ({
+                        actionId,
+                        quantity: 1,
+                    }));
+                    await actionServices.createCharacterActionCopy(actionList, character.characterInventory.id, tx);
                 }
-                if (!character.characterInventory) {
-                    throw new Error('Failed to create character inventory');
+                if (!template) {
+                    const unarmed = await tx.item.findFirst({
+                        where: { name: 'Unarmed', base: true },
+                    });
+                    if (!unarmed) {
+                        throw new Error('Failed to find base Unarmed item');
+                    }
+                    if (!character.characterInventory) {
+                        throw new Error('Failed to create character inventory');
+                    }
+                    await itemServices.createCharacterItemCopy(character.characterInventory.id, [{ itemId: unarmed.id, price: null, quantity: 2 }], tx);
                 }
-                await itemServices.createCharacterItemCopy(userId, character.characterInventory.id, [{ itemId: unarmed.id, price: null, quantity: 2 }]);
-            }
-            return character;
+                return character;
+            });
+            const newCharacter = await characterServices.getCharacterById(character.id);
+            return newCharacter;
         }
         catch (error) {
             console.error(error);
             throw new Error('Failed to create character');
         }
     },
-    createTemplateCharacter: async (characterId, userId) => {
+    createTemplateCharacter: async (characterId) => {
         try {
             const templateCharacter = await prisma.character.findUnique({
                 where: { id: characterId },
@@ -305,7 +320,7 @@ const characterServices = {
                     price: null,
                     quantity: 1,
                 }));
-                await itemServices.createCharacterItemCopy(userId, character.characterInventory.id, itemList);
+                await itemServices.createCharacterItemCopy(character.characterInventory.id, itemList);
             }
             return character;
         }
@@ -340,7 +355,7 @@ const characterServices = {
             throw new Error('Failed to create character inventory');
         }
     },
-    addToInventory: async (userId, characterId, inventoryId) => {
+    addToInventory: async (characterId, inventoryId) => {
         var _a;
         try {
             const profits = ((_a = (await prisma.character.findUnique({
@@ -375,7 +390,7 @@ const characterServices = {
                 throw new Error('You do not have enough profits to complete this purchase');
             }
             if (items.length > 0) {
-                itemServices.createCharacterItemCopy(userId, inventoryId, items);
+                itemServices.createCharacterItemCopy(inventoryId, items);
             }
             await prisma.character.update({
                 where: { id: Number(characterId) },
@@ -404,14 +419,38 @@ const characterServices = {
         }
     },
     updateCharacter: async (formData) => {
+        var _a;
         try {
-            const { id } = formData, data = __rest(formData, ["id"]);
-            const character = await prisma.character.update({
-                where: {
-                    id,
+            const { id, perkIds, actionIds } = formData, data = __rest(formData, ["id", "perkIds", "actionIds"]);
+            const oldCharacter = await prisma.character.findUnique({
+                where: { id },
+                select: {
+                    characterInventory: {
+                        select: { id: true, actions: { select: { id: true } } },
+                    },
                 },
-                data,
-                include: characterInclude,
+            });
+            const oldActionIds = (_a = oldCharacter === null || oldCharacter === void 0 ? void 0 : oldCharacter.characterInventory) === null || _a === void 0 ? void 0 : _a.actions.map((action) => action.id).filter((actionId) => !actionIds.some((id) => id === actionId));
+            const newActonIds = actionIds.filter((actionId) => !(oldActionIds === null || oldActionIds === void 0 ? void 0 : oldActionIds.some((id) => id === actionId)));
+            const character = await prisma.$transaction(async (tx) => {
+                var _a;
+                await tx.action.deleteMany({ where: { id: { in: oldActionIds } } });
+                const newActions = await actionServices.createCharacterActionCopy(newActonIds.map((actionId) => ({ actionId, quantity: 1 })), (_a = oldCharacter === null || oldCharacter === void 0 ? void 0 : oldCharacter.characterInventory) === null || _a === void 0 ? void 0 : _a.id, tx);
+                const character = await tx.character.update({
+                    where: {
+                        id,
+                    },
+                    data: Object.assign(Object.assign({}, data), { perks: { set: perkIds.map((id) => ({ id })) }, characterInventory: {
+                            update: {
+                                actions: {
+                                    deleteMany: { id: { in: oldActionIds } },
+                                    connect: newActions.map((action) => ({ id: action === null || action === void 0 ? void 0 : action.id })),
+                                },
+                            },
+                        } }),
+                    include: characterInclude,
+                });
+                return character;
             });
             return character;
         }

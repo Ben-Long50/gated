@@ -42,7 +42,7 @@ const perkController = {
 
       const perk = await perkServices.createPerk(validatedPerk);
 
-      res.status(200).json(perk);
+      res.status(200).json({ perk, message: 'Successfully created perk' });
     } catch (error: any) {
       handleControllerError(res, error);
     }

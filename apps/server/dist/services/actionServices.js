@@ -61,7 +61,7 @@ const actionServices = {
     },
     createOrUpdateAction: async (formData) => {
         try {
-            const { modifiers, keywords } = formData, data = __rest(formData, ["modifiers", "keywords"]);
+            const { id, modifiers, keywords } = formData, data = __rest(formData, ["id", "modifiers", "keywords"]);
             const modifierStats = modifiers ? addVariableStats(modifiers) : undefined;
             const newAction = await prisma.action.upsert({
                 where: { id: formData.id || 0 },
@@ -105,7 +105,8 @@ const actionServices = {
             throw new Error('Failed to create action copy');
         }
     },
-    createCharacterActionCopy: async (inventoryId, actionList) => {
+    createCharacterActionCopy: async (actionList, characterInventoryId, tx) => {
+        const client = tx || prisma;
         const actionIds = actionList === null || actionList === void 0 ? void 0 : actionList.map((action) => action.actionId);
         const actions = await prisma.action.findMany({
             where: { id: { in: actionIds } },
@@ -118,10 +119,10 @@ const actionServices = {
             const validatedAction = ActionInput.parse(actionDetails);
             const { id } = validatedAction, data = __rest(validatedAction, ["id"]);
             if (actionDetails) {
-                return Array.from({ length: quantity }).map(() => prisma.action.create({
+                return Array.from({ length: quantity }).map(() => client.action.create({
                     data: Object.assign(Object.assign({}, data), { keywordModifiers: {
                             createMany: { data: actionDetails.keywordModifiers || [] },
-                        }, baseActionId: actionDetails.baseActionId || actionDetails.id, characterInventoryId: inventoryId }),
+                        }, baseActionId: actionDetails.baseActionId || actionDetails.id, characterInventoryId }),
                     include: actionInclude,
                 }));
             }
