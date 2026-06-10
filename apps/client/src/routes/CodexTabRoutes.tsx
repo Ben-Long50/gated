@@ -77,6 +77,7 @@ const CodexTabRoutes = () => {
             {PictureRoutes()}
             <Route path="perks" element={<PerkLinkModal />} />
             <Route path="npcPreferences" element={<NpcPreferenceModal />} />
+            <Route path="actions" element={<ActionLinkModal />} />
           </Route>
         </Route>
         <Route
@@ -90,6 +91,7 @@ const CodexTabRoutes = () => {
           {PictureRoutes()}
           <Route path="perks" element={<PerkLinkModal />} />
           <Route path="npcPreferences" element={<NpcPreferenceModal />} />
+          <Route path="actions" element={<ActionLinkModal />} />
         </Route>
       </Route>
       <Route path="items">

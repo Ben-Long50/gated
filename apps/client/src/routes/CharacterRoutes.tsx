@@ -27,6 +27,7 @@ import CharacterProgressionPage from 'src/components/characterComponents/Charact
 import PictureLibraryModal from 'src/components/modals/PictureLibraryModal';
 import PromptModal from 'src/components/modals/PromptModal';
 import PictureRoutes from './PictureRoutes';
+import ActionLinkModal from 'src/components/modals/ActionLinkModal';
 
 const CharacterRoutes = () => {
   return (
@@ -94,6 +95,7 @@ const CharacterRoutes = () => {
         {PictureRoutes()}
         <Route path="perks" element={<PerkLinkModal />} />
         <Route path="npcPreferences" element={<NpcPreferenceModal />} />
+        <Route path="actions" element={<ActionLinkModal />} />
       </Route>
       <Route path="cart" element={<Cart />} />
       <Route

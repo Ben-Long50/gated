@@ -5,6 +5,7 @@ interface Perk {
   id: number;
   name: string;
   description: string;
+  type: 'character' | 'monster';
   modifiers: Stats;
   attributes: AttributeTree;
 }

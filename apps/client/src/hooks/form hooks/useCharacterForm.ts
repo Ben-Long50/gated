@@ -50,6 +50,7 @@ const useCharacterForm = (
       },
       attributes: emptyAttributeTree,
       perkIds: [] as number[],
+      actionIds: [] as number[],
     },
     onSubmit: ({ value }) => {
       const filteredStats = filterStats(value.stats);

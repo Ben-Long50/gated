@@ -5,10 +5,9 @@ import PerkLinkModal from 'src/components/modals/PerkLinkModal';
 import CharacterRoutes from './CharacterRoutes';
 import CharacterMenuRoutes from './CharacterMenuRoutes';
 import CharacterDashboard from 'src/components/characterComponents/CharacterDashboard';
-import PictureLibraryModal from 'src/components/modals/PictureLibraryModal';
 import Page from 'src/components/Page';
-import PromptModal from 'src/components/modals/PromptModal';
 import PictureRoutes from './PictureRoutes';
+import ActionLinkModal from 'src/components/modals/ActionLinkModal';
 
 const CharacterTabRoutes = () => {
   return (
@@ -27,6 +26,7 @@ const CharacterTabRoutes = () => {
         {PictureRoutes()}
         <Route path="perks" element={<PerkLinkModal />} />
         <Route path="npcPreferences" element={<NpcPreferenceModal />} />
+        <Route path="actions" element={<ActionLinkModal />} />
       </Route>
       {CharacterRoutes()}
     </Route>

@@ -7,8 +7,6 @@ import FormLayout from '../../layouts/FormLayout';
 import useCreateActionMutation from '../../hooks/useCreateActionMutation/useCreateActionMutation';
 import { useParams } from 'react-router-dom';
 import useDeleteActionMutation from '../../hooks/useDeleteActionMutation/useDeleteActionMutation';
-import useActions from '../../hooks/useActions';
-import { Action } from 'src/types/action';
 import Divider from '../Divider';
 import ArrowHeader2 from '../ArrowHeader2';
 import ModifierField from '../formFields/ModifierField';
@@ -16,15 +14,13 @@ import InputSelectField from '../formFields/InputSelectField';
 import KeywordLinkField from '../formFields/KeywordLinkField';
 import useActionForm from 'src/hooks/form hooks/useActionForm';
 import BtnAuth from '../buttons/BtnAuth';
+import useActionQuery from 'src/hooks/useActionQuery/useActionQuery';
+import Loading from '../Loading';
 
 const ActionForm = () => {
   const { actionId } = useParams();
 
-  const actions = useActions();
-
-  const action = actions.filteredActions?.filter(
-    (action: Action) => action.id === Number(actionId),
-  )[0];
+  const { data: action, isLoading } = useActionQuery(Number(actionId));
 
   const createAction = useCreateActionMutation(Number(actionId));
   const deleteAction = useDeleteActionMutation(Number(actionId));
@@ -32,6 +28,10 @@ const ActionForm = () => {
   const { emptyAttributeTree } = useAttributeTree();
 
   const actionForm = useActionForm(createAction, action);
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <FormLayout
@@ -143,10 +143,16 @@ const ActionForm = () => {
                       {(subField) => {
                         return (
                           <InputSelectField
-                            options={['attack', 'movement', 'upkeep', 'unique']}
+                            options={[
+                              'attack',
+                              'monster',
+                              'movement',
+                              'upkeep',
+                              'unique',
+                            ]}
                             label="Action Subtype"
-                            value={field.state.value}
-                            onChange={(value) => field.handleChange(value)}
+                            value={subField.state.value}
+                            onChange={(value) => subField.handleChange(value)}
                           />
                         );
                       }}

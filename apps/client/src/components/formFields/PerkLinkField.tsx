@@ -1,17 +1,17 @@
-import { FormApi, FormState } from '@tanstack/react-form';
-import BtnRect from '../buttons/BtnRect';
-import Icon from '@mdi/react';
-import { mdiClose } from '@mdi/js';
+import { FormApi } from '@tanstack/react-form';
 import PerkCard from '../PerkCard';
 import { AttributeTree } from 'src/types/attributeTree';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import BtnAuth from '../buttons/BtnAuth';
+import InputFieldCheckbox from './InputFieldCheckbox';
 
 const PerkLinkField = ({
   form,
+  path,
   attributeTree,
 }: {
   form: FormApi;
+  path: string;
   attributeTree: AttributeTree;
 }) => {
   const navigate = useNavigate();
@@ -20,50 +20,39 @@ const PerkLinkField = ({
 
   return (
     <>
+      {parts.includes('perks') && <Outlet context={{ form, attributeTree }} />}
+      <form.Field name="perkIds">
+        {(field) => (
+          <div className="flex flex-col items-start gap-4 md:grid md:grid-cols-2">
+            {field.state.value.map((perkId: number) => (
+              <InputFieldCheckbox
+                label={<PerkCard perkId={perkId} />}
+                value={perkId}
+                checked={field.state.value.some((id: number) => perkId === id)}
+                onChange={(value) => {
+                  if (!field.state.value.includes(Number(value))) {
+                    field.handleChange([...field.state.value, Number(value)]);
+                  } else {
+                    field.handleChange(
+                      field.state.value.filter(
+                        (id: number) => id !== Number(value),
+                      ),
+                    );
+                  }
+                }}
+              />
+            ))}
+          </div>
+        )}
+      </form.Field>
       <BtnAuth
         className="w-full min-w-48"
         onClick={() => {
-          navigate('perks');
+          navigate(path || 'perks?mode=form');
         }}
       >
         Link Perks
       </BtnAuth>
-      <form.Subscribe selector={(state: FormState) => state.values.perkIds}>
-        {(perkIds: number[]) => (
-          <>
-            <form.Field name="perks">
-              {(field) => (
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  {parts[parts.length - 1] === 'perks' && (
-                    <Outlet context={{ form, attributeTree, parts }} />
-                  )}
-                  {perkIds.map((perkId: number) => {
-                    return (
-                      <div className="flex items-center gap-2" key={perkId}>
-                        <PerkCard perkId={perkId} />
-                        <button
-                          onClick={() => {
-                            field.handleChange(
-                              field.state.value.filter(
-                                (id: number) => id !== perkId,
-                              ),
-                            );
-                          }}
-                        >
-                          <Icon
-                            path={mdiClose}
-                            className="text-tertiary hover:text-accent timing size-10"
-                          />
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </form.Field>
-          </>
-        )}
-      </form.Subscribe>
     </>
   );
 };

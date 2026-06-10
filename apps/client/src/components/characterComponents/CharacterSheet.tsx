@@ -7,7 +7,7 @@ import Icon from '@mdi/react';
 import PerkCard from '../PerkCard';
 import AttributeCard from '../AttributeCard';
 import { LayoutContext } from '../../contexts/LayoutContext';
-import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import BtnRect from '../buttons/BtnRect';
 import Loading from '../Loading';
 import ArrowHeader3 from '../ArrowHeader3';
@@ -23,12 +23,14 @@ import ArrowHeader4 from '../ArrowHeader4';
 import StatBarContainer from '../StatBarContainer';
 import constructName from 'src/utils/constructName';
 import CharacterHeader from './CharacterHeader';
+import ActionCard from '../ActionCard';
 
 const CharacterSheet = () => {
   const { accentPrimary } = useContext(ThemeContext);
   const { conditionId, characterId } = useParams();
   const { user } = useContext(AuthContext);
   const { mobile } = useContext(LayoutContext);
+  const navigate = useNavigate();
   const location = useLocation();
   const parts = location.pathname.split('/');
 
@@ -37,8 +39,6 @@ const CharacterSheet = () => {
   const { filteredCharacter: character, isLoading } = useCharacter(
     Number(characterId),
   );
-
-  console.log(character);
 
   const height =
     typeof character?.height === 'number'
@@ -181,15 +181,19 @@ const CharacterSheet = () => {
                 <Divider />
                 {character?.playerCharacter ? (
                   <>
-                    <Link to={`resume?state=Backstory`}>
-                      <BtnAuth>Backstory</BtnAuth>
-                    </Link>
-                    <Link to={`resume?state=First Taste`}>
-                      <BtnAuth>First Taste</BtnAuth>
-                    </Link>
-                    <Link to={`resume?state=Bad Medicine`}>
-                      <BtnAuth>Bad Medicine</BtnAuth>
-                    </Link>
+                    <BtnAuth onClick={() => navigate('resume?state=Backstory')}>
+                      Backstory
+                    </BtnAuth>
+                    <BtnAuth
+                      onClick={() => navigate('resume?state=First Taste')}
+                    >
+                      First Taste
+                    </BtnAuth>
+                    <BtnAuth
+                      onClick={() => navigate('resume?state=Bad Medicine')}
+                    >
+                      Bad Medicine
+                    </BtnAuth>
                   </>
                 ) : (
                   <p>{character?.description || 'No NPC description'}</p>
@@ -271,28 +275,47 @@ const CharacterSheet = () => {
           </ExpandingList>
         </>
       )}
+      {character?.characterInventory.actions &&
+        character?.characterInventory.actions.length > 0 && (
+          <>
+            <Divider />
+            <ExpandingList
+              title="Actions"
+              className="grid grid-cols-1 gap-4 md:grid-cols-2"
+            >
+              {character?.characterInventory.actions ? (
+                character?.characterInventory.actions.map((action) => (
+                  <ActionCard key={action.id} actionId={action.id} />
+                ))
+              ) : (
+                <h2 className="pl-6">???</h2>
+              )}
+            </ExpandingList>
+          </>
+        )}
       {user?.id === character?.userId && (
         <>
           <Divider />
-          <Link className="w-full" to={`update`}>
-            <BtnRect type="button" ariaLabel="Update character information">
-              Update character
-            </BtnRect>
-          </Link>
+          <BtnRect
+            type="button"
+            ariaLabel="Update character information"
+            onClick={() => navigate('update&mode=form')}
+          >
+            Update Character
+          </BtnRect>
         </>
       )}
       {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') &&
         character?.base && (
           <>
             <Divider />
-            <Link className="w-full" to={`update`}>
-              <BtnRect
-                type="button"
-                ariaLabel="Update codex character information"
-              >
-                Update codex character
-              </BtnRect>
-            </Link>
+            <BtnRect
+              type="button"
+              ariaLabel="Update codex character information"
+              onClick={() => navigate('update?formType=codex&mode=form')}
+            >
+              Update Codex Character
+            </BtnRect>
           </>
         )}
     </>

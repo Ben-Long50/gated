@@ -10,7 +10,7 @@ const useActionQueries = (actionIds: number[]) => {
     })),
     combine: (results) => {
       return {
-        actions: results.map((result) => result.data),
+        actions: results.filter(Boolean).map((result) => result.data),
         isLoading: results.some((result) => result.isLoading),
         isPending: results.some((result) => result.isPending),
       };

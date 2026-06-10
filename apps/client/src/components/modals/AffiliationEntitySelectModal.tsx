@@ -117,8 +117,6 @@ const AffiliationEntitySelectModal = () => {
                         value={faction.id}
                         checked={checked}
                         onChange={(value) => {
-                          console.log(value);
-
                           field.handleChange((prev: number[]) =>
                             checked
                               ? prev.filter(

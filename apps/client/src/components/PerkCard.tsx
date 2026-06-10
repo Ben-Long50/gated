@@ -5,20 +5,16 @@ import ItemCardSmall from './ItemCardSmall';
 import ArrowHeader4 from './ArrowHeader4';
 import ThemeContainer from './ThemeContainer';
 import { capitalCase } from 'change-case';
-import { FormApi } from '@tanstack/react-form';
 import AttributeListSmall from './AttributeListSmall';
 import AttributeList from './AttributeList';
 import usePerkQuery from 'src/hooks/usePerkQuery/usePerkQuery';
-import InputFieldCheckbox from './formFields/InputFieldCheckbox';
 
 const PerkCard = ({
   perkId,
   expanded,
-  form,
 }: {
   perkId: number;
   expanded?: boolean;
-  form?: FormApi;
 }) => {
   const { user } = useContext(AuthContext);
 
@@ -86,25 +82,6 @@ const PerkCard = ({
           </div>
         )}
       </ItemCardSmall>
-      {form && (
-        <form.Field name="perkIds">
-          {(field) => (
-            <InputFieldCheckbox
-              value={perk?.id}
-              checked={field.state.value.includes(perk?.id)}
-              onChange={(value) => {
-                if (!field.state.value.includes(value)) {
-                  field.handleChange([...field.state.value, value]);
-                } else {
-                  field.handleChange(
-                    field.state.value.filter((id: number) => id !== value),
-                  );
-                }
-              }}
-            />
-          )}
-        </form.Field>
-      )}
     </div>
   );
 };

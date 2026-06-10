@@ -10,6 +10,7 @@ import ArrowHeader2 from '../ArrowHeader2';
 import AttributeField from '../formFields/AttributeField';
 import usePerkForm from 'src/hooks/form hooks/usePerkForm';
 import usePerkQuery from 'src/hooks/usePerkQuery/usePerkQuery';
+import InputSelectField from '../formFields/InputSelectField';
 
 const PerkForm = () => {
   const { perkId } = useParams();
@@ -30,15 +31,7 @@ const PerkForm = () => {
       deleteMutation={deletePerk}
     >
       <ArrowHeader2 title="Perk Information" />
-      <perkForm.Field
-        name="name"
-        validators={{
-          onChange: ({ value }) =>
-            value.length < 2
-              ? 'Perk name must be at least 2 characters long'
-              : undefined,
-        }}
-      >
+      <perkForm.Field name="name">
         {(field) => (
           <InputField
             label="Perk Name"
@@ -47,15 +40,17 @@ const PerkForm = () => {
           />
         )}
       </perkForm.Field>
-      <perkForm.Field
-        name="description"
-        validators={{
-          onChange: ({ value }) =>
-            value.length < 2
-              ? 'Perk description must be at least 2 characters long'
-              : undefined,
-        }}
-      >
+      <perkForm.Field name="type">
+        {(field) => (
+          <InputSelectField
+            label="Perk Type"
+            options={['character', 'monster']}
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
+          />
+        )}
+      </perkForm.Field>
+      <perkForm.Field name="description">
         {(field) => (
           <TextAreaField
             label="Perk description"

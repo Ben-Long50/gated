@@ -21,6 +21,7 @@ import CharacterStatBars from '../characterComponents/CharacterStatBars';
 import useCreateCodexCharacterMutation from 'src/hooks/useCreateCodexCharacterMutation/useCreateCodexCharacterMutation';
 import { useSearchParams } from 'react-router-dom';
 import TextAreaField from '../formFields/TextAreaField';
+import ActionLinkField from '../formFields/ActionLinkField';
 
 const CharacterForm = () => {
   const { data: campaigns } = useCampaignsQuery();
@@ -256,10 +257,23 @@ const CharacterForm = () => {
       <characterForm.Subscribe selector={(state) => state.values.attributes}>
         {(attributes) => (
           <div className="flex flex-col gap-4">
-            <PerkLinkField form={characterForm} attributeTree={attributes} />
+            <PerkLinkField
+              form={characterForm}
+              attributeTree={attributes}
+              path="perks?formType=codex&mode=form"
+            />
           </div>
         )}
       </characterForm.Subscribe>
+      <ArrowHeader2 title="Character Specific Actions" />
+      <p className="text-tertiary border-l-2 border-gray-400 border-opacity-50 pl-4">
+        Select actions that are linked directly to, and usable by this character
+        regardless of equipment loadout
+      </p>
+      <ActionLinkField
+        form={characterForm}
+        path="actions?formType=codex&mode=form"
+      />
     </FormLayout>
   );
 };

@@ -1,11 +1,10 @@
 import InputField from '../formFields/InputField';
-import { useStore, ValidationError } from '@tanstack/react-form';
-import { useParams } from 'react-router-dom';
+import { useStore } from '@tanstack/react-form';
+import { useParams, useSearchParams } from 'react-router-dom';
 import useUpdateCharacterMutation from '../../hooks/useCharacterUpdateMutation/useCharacterUpdateMutation';
 import useDeleteCharacterMutation from '../../hooks/useDeleteCharacterMutation/useDeleteCharacterMutation';
 import Loading from '../Loading';
 import FormLayout from '../../layouts/FormLayout';
-import InputFieldRadio from '../formFields/InputFieldRadio';
 import ArrowHeader2 from '../ArrowHeader2';
 import Divider from '../Divider';
 import StatBarContainer from '../StatBarContainer';
@@ -19,10 +18,14 @@ import CharacterStatBars from '../characterComponents/CharacterStatBars';
 import calculateStats from 'src/hooks/useStats';
 import { SortedInventory } from 'src/types/character';
 import useCharacterQuery from 'src/hooks/useCharacterQuery/useCharacterQuery';
-import TextAreaField from '../formFields/TextAreaField';
+import ActionLinkField from '../formFields/ActionLinkField';
+import PerkLinkField from '../formFields/PerkLinkField';
 
 const CharacterUpdateForm = () => {
   const { characterId } = useParams();
+  const [searchParams] = useSearchParams();
+
+  const formType = searchParams.get('formType');
 
   const { data: campaigns, isLoading: campaignsLoading } = useCampaignsQuery();
 
@@ -169,6 +172,20 @@ const CharacterUpdateForm = () => {
           </StatBarContainer>
         )}
       </characterUpdateForm.Field>
+      {formType === 'codex' && (
+        <>
+          <Divider />
+          <PerkLinkField
+            form={characterUpdateForm}
+            attributeTree={character?.attributes}
+            path="perks?formType=codex&mode=form"
+          />
+          <ActionLinkField
+            form={characterUpdateForm}
+            path="actions?formType=codex&mode=form"
+          />
+        </>
+      )}
     </FormLayout>
   );
 };

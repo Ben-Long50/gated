@@ -1,80 +1,89 @@
 import { useContext, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import DieIcon from './icons/DieIcon';
-import { Action } from 'src/types/action';
 import ItemCardSmall from './ItemCardSmall';
 import Icon from '@mdi/react';
 import { mdiTriangleDown } from '@mdi/js';
 import ActionStatBars from './ActionStatBars';
 import { capitalCase } from 'change-case';
-import ThemeContainer from './ThemeContainer';
 import StatBarContainer from './StatBarContainer';
 import CharacterStatBars from './characterComponents/CharacterStatBars';
+import useActionQuery from 'src/hooks/useActionQuery/useActionQuery';
+import Loading from './Loading';
 
 const ActionCard = ({
-  action,
-  mode,
-  className,
+  actionId,
+  expanded,
 }: {
-  action: Action;
-  mode?: string;
-  className?: string;
+  actionId: number;
+  expanded?: boolean;
 }) => {
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const cardRef = useRef(null);
 
-  const costLength = action?.costs ? Object.keys(action.costs).length : 0;
+  const { data: action, isLoading } = useActionQuery(Number(actionId));
 
-  const description = action.description.split(/\[stats\]/);
+  const costLength = action?.costs ? Object.keys(action?.costs).length : 0;
 
-  const description1 = description[0];
-  const description2 = description[1];
+  const description = action?.description.split(/\[stats\]/);
 
-  return (
+  const description1 = action ? description[0] : undefined;
+  const description2 = action ? description[1] : undefined;
+
+  return isLoading ? (
+    <Loading size={1.15} />
+  ) : (
     <ItemCardSmall
-      className={className}
+      expanded={expanded}
       cardRef={cardRef}
       heading={
-        <div
-          className={`${action.characterInventoryId ? (action.active ? 'opacity-100' : 'opacity-30') : ''} flex w-full items-center justify-between gap-4 pr-2`}
-        >
+        <div className={`flex w-full items-center justify-between gap-4 pr-2`}>
           <h3 className="grow">{action?.name}</h3>
-          {action.itemLink && (
-            <p className="text-right">{action.itemLink.item.name}</p>
+          {action?.itemLink && (
+            <p className="text-right">{action?.itemLink.item.name}</p>
           )}
-          {((mode === 'codex' && user?.role === 'ADMIN') ||
-            (mode === 'codex' && user?.role === 'SUPERADMIN')) && (
-            <Link to={`/glam/codex/actions/${action.id}/update`}>
-              <button className="text-accent hover:underline">Edit</button>
-            </Link>
-          )}
+
+          {user.role === 'ADMIN' ||
+            (user.role === 'SUPERADMIN' && (
+              <button
+                className="text-accent hover:underline"
+                onClick={() =>
+                  navigate(`/glam/codex/actions/${action?.id}/update`)
+                }
+              >
+                Edit
+              </button>
+            ))}
         </div>
       }
     >
       <div className="flex flex-col gap-4">
         {action?.roll && action?.roll.length > 0 && (
           <div className="flex flex-col gap-2">
-            {action.roll.map((roll, index) => (
-              <div key={index} className="flex items-center gap-4">
-                <DieIcon className="text-secondary size-8" />
-                <p className="font-semibold">
-                  {roll.attribute ? capitalCase(roll.attribute) : undefined}
-                </p>
-                {roll.skill && (
-                  <>
-                    <Icon
-                      className="text-secondary"
-                      path={mdiTriangleDown}
-                      size={0.35}
-                      rotate={-90}
-                    />
-                    <p>{roll.skill ? capitalCase(roll.skill) : undefined}</p>
-                  </>
-                )}
-              </div>
-            ))}
+            {action?.roll.map(
+              (roll: { attribute: string; skill: string }, index: number) => (
+                <div key={index} className="flex items-center gap-4">
+                  <DieIcon className="text-secondary size-8" />
+                  <p className="font-semibold">
+                    {roll.attribute ? capitalCase(roll.attribute) : undefined}
+                  </p>
+                  {roll.skill && (
+                    <>
+                      <Icon
+                        className="text-secondary"
+                        path={mdiTriangleDown}
+                        size={0.35}
+                        rotate={-90}
+                      />
+                      <p>{roll.skill ? capitalCase(roll.skill) : undefined}</p>
+                    </>
+                  )}
+                </div>
+              ),
+            )}
           </div>
         )}
         {costLength > 0 && (
@@ -84,23 +93,23 @@ const ActionCard = ({
               className={`${cardRef.current?.offsetWidth < 500 ? 'gap-2 px-2' : 'gap-4 px-4'} grid h-full w-full grow grid-cols-[auto_auto_1fr_auto] place-items-center gap-y-2 border-x-2 border-gray-400 border-opacity-50`}
             >
               <ActionStatBars
-                stats={action.costs}
+                stats={action?.costs}
                 cardWidth={cardRef.current?.offsetWidth}
               />
             </div>
           </div>
         )}
         <p>{description1}</p>
-        {action.modifiers && (
+        {action?.modifiers && (
           <StatBarContainer>
-            <CharacterStatBars stats={action.modifiers} />
+            <CharacterStatBars stats={action?.modifiers} />
           </StatBarContainer>
         )}
-        {action.keywordModifiers?.length > 0 &&
-          action.keywordModifiers.map((keyword, index) => (
+        {action?.keywordModifiers?.length > 0 &&
+          action?.keywordModifiers.map((keyword, index) => (
             <ItemCardSmall
               key={index}
-              className={`${index !== action.keywordModifiers.length - 1 && 'mr-1'} bg-tertiary`}
+              className={`${index !== action?.keywordModifiers.length - 1 && 'mr-1'} bg-tertiary`}
               heading={<h4>{keyword.keyword?.name}</h4>}
             >
               <p>{keyword.keyword?.description}</p>

@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import getKeywordById from './getActionById';
+import getAction from './getAction';
 
-const useActionQuery = (actionId: string) => {
+const useActionQuery = (actionId: number) => {
   return useQuery({
     queryKey: ['action', actionId],
-    queryFn: async () => await getKeywordById(actionId),
+    queryFn: () => getAction.fetch(actionId),
   });
 };
 

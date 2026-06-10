@@ -43,46 +43,18 @@ const useActionForm = (
         })) ?? ([] as { keywordId: number; value: number | null }[]),
     },
     onSubmit: async ({ value }) => {
-      const filteredSubtypes = value.actionSubtypes.filter(
-        (subtype) => subtype.length,
-      );
-
-      const filteredCosts = Object.fromEntries(
-        Object.entries(value.costs).filter(([_, value]) => value !== null),
-      ) as ActionCosts;
-
       const data = {
         ...value,
-        actionSubtypes: filteredSubtypes,
-        costs: filteredCosts,
+        actionSubtypes: value.actionSubtypes.filter(Boolean),
+        costs: Object.fromEntries(
+          Object.entries(value.costs).filter(([_, value]) => value !== null),
+        ) as ActionCosts,
       };
 
       const filteredData = filterFormData(data);
 
       await mutation.mutate(filteredData);
     },
-    // validators: {
-    //   onSubmit: ({ value }) => {
-    //     const errors = [];
-    //     if (value.name.length < 2) {
-    //       errors.push('Action name is too short');
-    //     }
-    //     if (value.name.length > 100) {
-    //       errors.push('Action name is too long');
-    //     }
-    //     if (!value.actionType) {
-    //       errors.push('An action type must be selected');
-    //     }
-    //     if (value.description.length < 10) {
-    //       errors.push('Action description is too short');
-    //     }
-    //     if (value.description.length > 250) {
-    //       errors.push('Action description is too long');
-    //     }
-
-    //     return errors.length > 0 ? errors.join(',') : undefined;
-    //   },
-    // },
   });
 
   return actionForm;

@@ -74,8 +74,6 @@ const GangCharacterSelectModal = () => {
                   return (
                     <form.Field name="leaderIds">
                       {(field) => {
-                        console.log(field.state.value);
-
                         const checked = field.state.value.some(
                           (id: number) => character.id === id,
                         );

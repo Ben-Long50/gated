@@ -1,5 +1,5 @@
 import InputField from './formFields/InputField';
-import { FieldApi } from '@tanstack/react-form';
+import { FormApi } from '@tanstack/react-form';
 import useActions from '../hooks/useActions';
 import ActionCard from './ActionCard';
 import Loading from './Loading';
@@ -7,21 +7,10 @@ import ArrowHeader2 from './ArrowHeader2';
 import InputSelectField from './formFields/InputSelectField';
 import Icon from '@mdi/react';
 import { mdiSync } from '@mdi/js';
-import { ItemObject } from 'src/types/global';
-import { useSearchParams } from 'react-router-dom';
 import { capitalCase } from 'change-case';
 import InputFieldCheckbox from './formFields/InputFieldCheckbox';
 
-const Actions = ({
-  field,
-  toggleFormLink,
-}: {
-  field?: FieldApi;
-  toggleFormLink?: (item: ItemObject) => void;
-}) => {
-  const [searchParams] = useSearchParams();
-  const mode = searchParams.get('mode');
-
+const Actions = ({ form }: { form?: FormApi }) => {
   const {
     actions,
     query,
@@ -84,33 +73,43 @@ const Actions = ({
       </div>
       <div className="flex w-full flex-col gap-8">
         <ArrowHeader2 title={capitalCase(category) || 'All Actions'} />
-        <div className="flex flex-col gap-4 md:grid md:grid-cols-2">
-          {actions?.map((action) => {
-            const checked =
-              mode === 'form'
-                ? field.state.value.some(
-                    (actionId: number) => Number(actionId) === action.id,
-                  )
-                : false;
-
-            return (
-              <div key={action.id} className="flex items-center gap-4">
-                <ActionCard action={action} />
-                {mode === 'form' && (
+        {form ? (
+          <form.Field name="actionIds">
+            {(field) => (
+              <div className="flex flex-col gap-4 md:grid md:grid-cols-2">
+                {actions?.map((action) => (
                   <InputFieldCheckbox
+                    label={<ActionCard actionId={action.id} />}
                     value={action.id}
-                    checked={checked}
+                    checked={field.state.value.some(
+                      (id: number) => action.id === id,
+                    )}
                     onChange={(value) => {
-                      if (toggleFormLink) {
-                        toggleFormLink(value);
+                      if (!field.state.value.includes(Number(value))) {
+                        field.handleChange([
+                          ...field.state.value,
+                          Number(value),
+                        ]);
+                      } else {
+                        field.handleChange(
+                          field.state.value.filter(
+                            (id: number) => id !== Number(value),
+                          ),
+                        );
                       }
                     }}
                   />
-                )}
+                ))}
               </div>
-            );
-          })}
-        </div>
+            )}
+          </form.Field>
+        ) : (
+          <div className="flex flex-col gap-4 md:grid md:grid-cols-2">
+            {actions?.map((action) => (
+              <ActionCard actionId={action.id} />
+            ))}
+          </div>
+        )}
       </div>
     </>
   );

@@ -1,7 +1,7 @@
 import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const getActionById = async (actionId: string) => {
+const getActionById = async (actionId: number) => {
   try {
     const response = await fetch(`${apiUrl}/actions/${actionId}`, {
       method: 'GET',
