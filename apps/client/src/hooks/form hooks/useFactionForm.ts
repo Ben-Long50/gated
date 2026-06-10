@@ -9,7 +9,7 @@ const useFactionForm = (
 ) => {
   const factionForm = useForm({
     defaultValues: {
-      id: faction?.id ?? 0,
+      id: faction?.id ?? null,
       name: faction?.name ?? '',
       factionType: faction?.factionType ?? '',
       pictureFile: null as File | null,

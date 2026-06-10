@@ -9,7 +9,7 @@ const useActionForm = (
 ) => {
   const actionForm = useForm({
     defaultValues: {
-      id: action?.id ?? 0,
+      id: action?.id ?? null,
       name: action?.name ?? '',
       costs: {
         currentActions: action?.costs?.currentActions ?? null,
