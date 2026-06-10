@@ -116,11 +116,15 @@ const actionServices = {
         });
         const newActions = await Promise.all(actionList.flatMap(({ actionId, quantity }) => {
             const actionDetails = actions.find((action) => action.id === actionId);
-            const validatedAction = ActionInput.parse(actionDetails);
-            const { id } = validatedAction, data = __rest(validatedAction, ["id"]);
+            if (!actionDetails) {
+                throw new Error('Failed to find action');
+            }
+            const { id } = actionDetails, data = __rest(actionDetails, ["id"]);
+            const filteredData = Object.fromEntries(Object.entries(data).filter(([, value]) => value !== null));
+            const validatedAction = ActionInput.parse(filteredData);
             if (actionDetails) {
                 return Array.from({ length: quantity }).map(() => client.action.create({
-                    data: Object.assign(Object.assign({}, data), { keywordModifiers: {
+                    data: Object.assign(Object.assign({}, validatedAction), { keywordModifiers: {
                             createMany: { data: actionDetails.keywordModifiers || [] },
                         }, baseActionId: actionDetails.baseActionId || actionDetails.id, characterInventoryId }),
                     include: actionInclude,

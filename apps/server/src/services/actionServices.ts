@@ -138,15 +138,23 @@ const actionServices = {
       actionList.flatMap(({ actionId, quantity }) => {
         const actionDetails = actions.find((action) => action.id === actionId);
 
-        const validatedAction = ActionInput.parse(actionDetails);
+        if (!actionDetails) {
+          throw new Error('Failed to find action');
+        }
 
-        const { id, ...data } = validatedAction;
+        const { id, ...data } = actionDetails;
+
+        const filteredData = Object.fromEntries(
+          Object.entries(data).filter(([, value]) => value !== null),
+        );
+
+        const validatedAction = ActionInput.parse(filteredData);
 
         if (actionDetails) {
           return Array.from({ length: quantity }).map(() =>
             client.action.create({
               data: {
-                ...data,
+                ...validatedAction,
                 keywordModifiers: {
                   createMany: { data: actionDetails.keywordModifiers || [] },
                 },
