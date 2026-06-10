@@ -8,11 +8,7 @@ const useCreatePatchNoteMutation = (patchNoteId?: number) => {
     mutationFn: (formData: object) => {
       return createPatchNote(formData);
     },
-    onSuccess: () => {
-      const message = patchNoteId
-        ? 'Patch note successfully updated'
-        : 'Patch note successfully created';
-
+    onSuccess: (data) => {
       toast.success(data.message);
 
       return queryClient.invalidateQueries({

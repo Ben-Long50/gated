@@ -8,11 +8,7 @@ const useCreateKeywordMutation = (keywordId?: number) => {
     mutationFn: (formData: object) => {
       return createKeyword(formData);
     },
-    onSuccess: () => {
-      const message = keywordId
-        ? 'Keyword successfully updated'
-        : 'Keyword successfully created';
-
+    onSuccess: (data) => {
       toast.success(data.message);
 
       return queryClient.invalidateQueries({

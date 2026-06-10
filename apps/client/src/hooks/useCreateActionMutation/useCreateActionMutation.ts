@@ -8,11 +8,7 @@ const useCreateActionMutation = (actionId?: number) => {
     mutationFn: (formData: object) => {
       return createAction(formData);
     },
-    onSuccess: () => {
-      const message = actionId
-        ? 'Action successfully updated'
-        : 'Action successfully created';
-
+    onSuccess: (data) => {
       toast.success(data.message);
 
       return queryClient.invalidateQueries({

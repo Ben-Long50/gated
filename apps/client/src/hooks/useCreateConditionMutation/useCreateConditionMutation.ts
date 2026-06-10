@@ -8,11 +8,7 @@ const useCreateConditionMutation = (conditionId?: number) => {
     mutationFn: (formData: object) => {
       return createCondition(formData);
     },
-    onSuccess: () => {
-      const message = conditionId
-        ? 'Condition successfully updated'
-        : 'Condition successfully created';
-
+    onSuccess: (data) => {
       toast.success(data.message);
 
       return queryClient.invalidateQueries({

@@ -9,11 +9,7 @@ const useCreatePerkMutation = (perkId?: number) => {
     mutationFn: (formData: Perk) => {
       return createPerk(formData);
     },
-    onSuccess: () => {
-      const message = perkId
-        ? 'Perk successfully updated'
-        : 'Perk successfully created';
-
+    onSuccess: (data) => {
       toast.success(data.message);
 
       queryClient.invalidateQueries({

@@ -8,11 +8,7 @@ const useCreatePropertyMutation = (propertyId?: number) => {
     mutationFn: (formData: FormData) => {
       return createProperty(formData);
     },
-    onSuccess: () => {
-      const message = propertyId
-        ? 'Property successfully updated'
-        : 'Property successfully created';
-
+    onSuccess: (data) => {
       toast.success(data.message);
 
       return queryClient.invalidateQueries({
