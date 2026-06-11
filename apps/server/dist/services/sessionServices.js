@@ -44,7 +44,6 @@ const sessionServices = {
     },
     createOrUpdateSessionNotes: async (formData) => {
         try {
-            console.log(formData);
             const validatedNotes = NotesInput.parse(formData);
             const { id } = validatedNotes, data = __rest(validatedNotes, ["id"]);
             const notes = await prisma.note.upsert({

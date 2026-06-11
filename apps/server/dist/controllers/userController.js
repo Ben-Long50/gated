@@ -132,7 +132,6 @@ const userController = {
                 role: UserRole,
             });
             const validatedRoles = req.body.map((user) => UserRoleInput.parse(user));
-            console.log(validatedRoles);
             await userServices.updateUserRoles(validatedRoles);
             res.status(200).json({ message: 'Successfully updated user roles' });
         }

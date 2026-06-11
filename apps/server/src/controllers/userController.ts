@@ -154,8 +154,6 @@ const userController = {
         (user: { id: number; role: string }) => UserRoleInput.parse(user),
       );
 
-      console.log(validatedRoles);
-
       await userServices.updateUserRoles(validatedRoles);
 
       res.status(200).json({ message: 'Successfully updated user roles' });

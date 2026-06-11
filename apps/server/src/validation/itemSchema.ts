@@ -10,6 +10,7 @@ import { ItemType, Rarity } from './enums.js';
 
 export const ItemInput = z.object({
   id: z.number().int().optional(),
+  base: z.boolean().optional(),
   name: Name,
   itemTypes: z.array(ItemType).min(1),
   rarity: Rarity,
@@ -23,8 +24,8 @@ export const ItemInput = z.object({
   actionIds: z.array(z.number().int()).optional(),
   keywords: z.array(
     z.object({
-      keywordId: z.number().int(),
-      value: z.number().int().nonnegative().nullable(),
+      keywordId: z.number().int().nonnegative(),
+      value: z.number().int().nonnegative().nullish(),
     }),
   ),
 });
@@ -40,8 +41,8 @@ export const ItemUpgradeInput = z.object({
   modifiedStats: ItemStats,
   keywords: z.array(
     z.object({
-      keywordId: z.number().int(),
-      value: z.number().int().nonnegative().nullable(),
+      keywordId: z.number().int().nonnegative(),
+      value: z.number().int().nonnegative().optional(),
     }),
   ),
   characterId: z.number().int().nonnegative(),

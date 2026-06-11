@@ -37,8 +37,6 @@ const sessionServices = {
 
   createOrUpdateSessionNotes: async (formData: NotesInput) => {
     try {
-      console.log(formData);
-
       const validatedNotes = NotesInput.parse(formData);
 
       const { id, ...data } = validatedNotes;

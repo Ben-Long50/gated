@@ -194,11 +194,11 @@ const itemServices = {
       const items = await prisma.item.findMany({
         where: category
           ? {
-              base: true,
+              baseItemId: null,
               itemLinkId: null,
               itemTypes: { hasSome: category },
             }
-          : { base: true, itemLinkId: null },
+          : { baseItemId: null, itemLinkId: null },
         include: itemInclude,
         orderBy: { name: 'asc' },
       });
@@ -251,13 +251,13 @@ const itemServices = {
         (await enforceSingularLinking(formData.id, itemIds, actionIds));
 
       const item = await prisma.item.upsert({
-        where: { id: formData.id || 0 },
+        where: { id: id || 0 },
         update: {
           ...data,
           updatedAt: new Date(),
           itemLinkReference: {
             upsert: {
-              where: { itemId: formData.id || 0 },
+              where: { itemId: id || 0 },
               update: {
                 items: {
                   set: itemIds?.map((id) => ({ id })),
@@ -276,7 +276,7 @@ const itemServices = {
               },
             },
           },
-          keywords: { deleteMany: {}, createMany: { data: formData.keywords } },
+          keywords: { deleteMany: {}, createMany: { data: keywords } },
         },
         create: {
           ...data,
@@ -290,7 +290,7 @@ const itemServices = {
               },
             },
           },
-          keywords: { createMany: { data: formData.keywords } },
+          keywords: { createMany: { data: keywords } },
         },
         include: itemInclude,
       });

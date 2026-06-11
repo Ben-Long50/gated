@@ -64,14 +64,11 @@ const itemController = {
     uploadToCloudinary,
     async (req: Request, res: Response) => {
       try {
-        const parsedBody = parseRequestBody(req.body);
+        const parsedBody = parseRequestBody({ ...req.body, base: true });
 
         const validatedItem = ItemInput.parse(parsedBody);
 
-        const item = await itemServices.createOrUpdateItem({
-          ...validatedItem,
-          base: true,
-        });
+        const item = await itemServices.createOrUpdateItem(validatedItem);
 
         res.status(200).json({
           item,

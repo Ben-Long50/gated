@@ -3,6 +3,7 @@ import { Description, ItemStats, Name, Picture, PictureFile, } from './fieldSche
 import { ItemType, Rarity } from './enums.js';
 export const ItemInput = z.object({
     id: z.number().int().optional(),
+    base: z.boolean().optional(),
     name: Name,
     itemTypes: z.array(ItemType).min(1),
     rarity: Rarity,
@@ -15,8 +16,8 @@ export const ItemInput = z.object({
     itemIds: z.array(z.number().int()).optional(),
     actionIds: z.array(z.number().int()).optional(),
     keywords: z.array(z.object({
-        keywordId: z.number().int(),
-        value: z.number().int().nonnegative().nullable(),
+        keywordId: z.number().int().nonnegative(),
+        value: z.number().int().nonnegative().nullish(),
     })),
 });
 export const ItemUpgradeInput = z.object({
@@ -29,8 +30,8 @@ export const ItemUpgradeInput = z.object({
     upgradePrice: z.number().int().nonnegative(),
     modifiedStats: ItemStats,
     keywords: z.array(z.object({
-        keywordId: z.number().int(),
-        value: z.number().int().nonnegative().nullable(),
+        keywordId: z.number().int().nonnegative(),
+        value: z.number().int().nonnegative().optional(),
     })),
     characterId: z.number().int().nonnegative(),
 });
