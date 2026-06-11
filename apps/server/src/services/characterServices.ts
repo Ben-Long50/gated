@@ -494,7 +494,7 @@ const characterServices = {
       }
 
       if (items.length > 0) {
-        itemServices.createCharacterItemCopy(inventoryId, items, client);
+        await itemServices.createCharacterItemCopy(inventoryId, items, client);
       }
 
       await client.character.update({
