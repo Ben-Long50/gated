@@ -1,7 +1,5 @@
 import { FormApi, FormState } from '@tanstack/react-form';
 import ItemCardSmall from '../ItemCardSmall';
-import Icon from '@mdi/react';
-import { mdiClose } from '@mdi/js';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import useKeywords from 'src/hooks/useKeywords';
 import BtnAuth from '../buttons/BtnAuth';

@@ -147,7 +147,8 @@ const useCharacter = (characterId: number) => {
           : null,
       equipment:
         characterOwner || character?.preferences?.equipment ? equipment : null,
-      inventory: characterOwner ? items : null,
+      inventory:
+        characterOwner || character?.preferences?.equipment ? items : null,
       actions:
         characterOwner || character?.preferences?.equipment ? actions : null,
     };

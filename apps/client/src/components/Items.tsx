@@ -143,7 +143,7 @@ const Items = ({
                   setCardType(cardType === 'large' ? 'small' : 'large')
                 }
               >
-                <Icon path={cardType === 'large' ? mdiCropSquare : mdiGrid} />
+                <Icon path={cardType === 'small' ? mdiGrid : mdiCropSquare} />
               </IconBtnMedium>
               <IconBtnMedium
                 onClick={() => {

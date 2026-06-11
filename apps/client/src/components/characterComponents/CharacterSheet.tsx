@@ -24,6 +24,7 @@ import StatBarContainer from '../StatBarContainer';
 import constructName from 'src/utils/constructName';
 import CharacterHeader from './CharacterHeader';
 import ActionCard from '../ActionCard';
+import Inventory from '../Inventory';
 
 const CharacterSheet = () => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -80,7 +81,7 @@ const CharacterSheet = () => {
           </div>
           <div className="flex flex-col items-center gap-1">
             <h3 className="text-xl">Profits</h3>
-            <p className="text-xl">{character?.profits}p</p>
+            <p className="text-xl">{character?.profits.toLocaleString()} p</p>
           </div>
         </div>
       </div>
@@ -203,7 +204,6 @@ const CharacterSheet = () => {
           </div>
         </ThemeContainer>
       </div>
-
       <StatBarContainer>
         <CharacterStatBars
           stats={character?.stats}
@@ -211,34 +211,48 @@ const CharacterSheet = () => {
         />
       </StatBarContainer>
       <Divider />
-      <div className="grid grid-cols-2 items-center justify-around gap-4">
-        <div className="bg-secondary flex items-center justify-between gap-2 rounded-md p-4 shadow-md shadow-black">
-          <ArrowHeader4 className="text-primary" title="Attribute Points" />
-          <p>
-            {character?.stats.usedAttributePoints} /{' '}
-            {character?.stats.attributePoints}
-          </p>
+      {character?.base && (
+        <>
+          <BtnRect ariaLabel="Inventory" onClick={() => navigate('inventory')}>
+            Inventory
+          </BtnRect>
+          {(user.role === 'ADMIN' || user.role === 'SUPERADMIN') && (
+            <BtnAuth onClick={() => navigate('shop/global')}>Shop</BtnAuth>
+          )}
+          <Divider />
+        </>
+      )}
+      {character?.playerCharacter && (
+        <div className="grid grid-cols-2 items-center justify-around gap-4">
+          <div className="bg-secondary flex items-center justify-between gap-2 rounded-md p-4 shadow-md shadow-black">
+            <ArrowHeader4 className="text-primary" title="Attribute Points" />
+            <p>
+              {character?.stats.usedAttributePoints} /{' '}
+              {character?.stats.attributePoints}
+            </p>
+          </div>
+          <div className="bg-secondary flex items-center justify-between gap-2 rounded-md p-4 shadow-md shadow-black">
+            <ArrowHeader4 className="text-primary" title="Skill Points" />
+            <p>
+              {character?.stats.usedSkillPoints} /{' '}
+              {character?.stats.skillPoints}
+            </p>
+          </div>
+          <div className="bg-secondary flex items-center justify-between gap-2 rounded-md p-4 shadow-md shadow-black">
+            <ArrowHeader4 className="text-primary" title="Perks" />
+            <p>
+              {character?.stats.usedPerkPoints} / {character?.stats.perkPoints}
+            </p>
+          </div>
+          <div className="bg-secondary flex items-center justify-between gap-2 rounded-md p-4 shadow-md shadow-black">
+            <ArrowHeader4 className="text-primary" title="Master Perks" />
+            <p>
+              {character?.stats.usedMasterPerkPoints} /{' '}
+              {character?.stats.masterPerkPoints}
+            </p>
+          </div>
         </div>
-        <div className="bg-secondary flex items-center justify-between gap-2 rounded-md p-4 shadow-md shadow-black">
-          <ArrowHeader4 className="text-primary" title="Skill Points" />
-          <p>
-            {character?.stats.usedSkillPoints} / {character?.stats.skillPoints}
-          </p>
-        </div>
-        <div className="bg-secondary flex items-center justify-between gap-2 rounded-md p-4 shadow-md shadow-black">
-          <ArrowHeader4 className="text-primary" title="Perks" />
-          <p>
-            {character?.stats.usedPerkPoints} / {character?.stats.perkPoints}
-          </p>
-        </div>
-        <div className="bg-secondary flex items-center justify-between gap-2 rounded-md p-4 shadow-md shadow-black">
-          <ArrowHeader4 className="text-primary" title="Master Perks" />
-          <p>
-            {character?.stats.usedMasterPerkPoints} /{' '}
-            {character?.stats.masterPerkPoints}
-          </p>
-        </div>
-      </div>
+      )}
       <div className="mb-auto flex w-full grow flex-col gap-6 lg:grid lg:grid-cols-2 lg:grid-rows-2 lg:gap-10">
         {Object.entries(character?.attributes)
           .sort(([a], [b]) => a.localeCompare(b))

@@ -24,10 +24,9 @@ import ItemPage from 'src/components/ItemPage';
 import LevelBonusModal from 'src/components/LevelBonusModal';
 import Page from 'src/components/Page';
 import CharacterProgressionPage from 'src/components/characterComponents/CharacterProgressionPage';
-import PictureLibraryModal from 'src/components/modals/PictureLibraryModal';
-import PromptModal from 'src/components/modals/PromptModal';
 import PictureRoutes from './PictureRoutes';
 import ActionLinkModal from 'src/components/modals/ActionLinkModal';
+import ItemForm from 'src/components/forms/ItemForm';
 
 const CharacterRoutes = () => {
   return (
@@ -173,15 +172,20 @@ const CharacterRoutes = () => {
               element={<DescriptionModal />}
             />
           </Route>
-          <Route path=":itemId" element={<ItemPage />}>
-            <Route path="update" element={<ItemUpdateModal />} />
-            <Route
-              path="conditions/:conditionId"
-              element={<DescriptionModal />}
-            />
-            <Route path="traits/:traitId" element={<DescriptionModal />} />
-          </Route>
+          <Route
+            path="conditions/:conditionId"
+            element={<DescriptionModal />}
+          />
+          <Route path="traits/:traitId" element={<DescriptionModal />} />
         </Route>
+        <Route
+          path="items/:itemId/update"
+          element={
+            <Modal>
+              <ItemForm />
+            </Modal>
+          }
+        />
         <Route
           path="items/:itemId/upgrade"
           element={

@@ -1,5 +1,4 @@
 import BtnAuth from './buttons/BtnAuth';
-import Divider from './Divider';
 import ArmorIcon from './icons/ArmorIcon';
 import CyberIcon from './icons/CyberIcon';
 import DroneIcon from './icons/DroneIcon';
@@ -14,17 +13,11 @@ import {
   useParams,
   useSearchParams,
 } from 'react-router-dom';
-import Icon from '@mdi/react';
-import { mdiCheckCircle, mdiCircleOutline } from '@mdi/js';
-import useToggleEquipmentMutation from 'src/hooks/useEquipmentToggleMutation/useEquipmentToggleMutation';
-import rarityColorMap from 'src/utils/rarityColorMap';
 import useCharacter from 'src/hooks/useCharacter';
 import Loading from './Loading';
 import { Item } from 'src/types/item';
 import { useRef } from 'react';
 import NavTabs from './NavTabs';
-import CharacterHeader from './characterComponents/CharacterHeader';
-import { PictureCard } from './PictureCard';
 import InventoryCard from './InventoryCard';
 
 const Inventory = () => {
@@ -38,10 +31,12 @@ const Inventory = () => {
     Number(characterId),
   );
 
+  console.log(character);
+
   const category = searchParams.get('category');
 
   const items = category
-    ? character?.inventory.filter((item) => item.itemTypes.includes(category))
+    ? character?.inventory?.filter((item) => item.itemTypes.includes(category))
     : character?.inventory;
 
   const handleTab = (newCategory: string | null) => {
@@ -63,8 +58,6 @@ const Inventory = () => {
 
   return (
     <>
-      <CharacterHeader character={character} />
-      <Divider />
       <NavTabs>
         <BtnAuth active={!category} onClick={() => handleTab(null)}>
           All

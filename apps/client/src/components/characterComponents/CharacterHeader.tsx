@@ -14,10 +14,14 @@ const CharacterHeader = ({
       className={`${className} flex flex-col items-start justify-between gap-2`}
     >
       <div className="flex items-center justify-start gap-4">
-        <p className="font-zen text-4xl">{constructName(character)}</p>
+        <p className="font-zen text-5xl">{constructName(character)}</p>
         <NpcTypeList npcTypes={character?.npcTypes} />
       </div>
-      <p className="!text-accent font-zen text-3xl">Level {character?.level}</p>
+      {character?.playerCharacter && (
+        <p className="!text-accent font-zen text-3xl">
+          Level {character?.level}
+        </p>
+      )}
     </div>
   );
 };

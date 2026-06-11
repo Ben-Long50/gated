@@ -30,6 +30,7 @@ import NpcPreferenceModal from 'src/components/modals/NpcPreferenceModal';
 import CodexCharacters from 'src/components/characterComponents/CodexCharacters';
 import CharacterUpdateForm from 'src/components/forms/CharacterUpdateForm';
 import PromptModal from 'src/components/modals/PromptModal';
+import CharacterRoutes from './CharacterRoutes';
 
 const CodexTabRoutes = () => {
   return (
@@ -57,16 +58,9 @@ const CodexTabRoutes = () => {
             </Page>
           }
         />
-        <Route path=":characterId">
-          <Route
-            path=""
-            element={
-              <Page title="Character Sheet">
-                <CharacterSheet />
-              </Page>
-            }
-          />
-          <Route
+        {CharacterRoutes()}
+
+        {/* <Route
             path="update"
             element={
               <Page title="Update Character">
@@ -78,8 +72,8 @@ const CodexTabRoutes = () => {
             <Route path="perks" element={<PerkLinkModal />} />
             <Route path="npcPreferences" element={<NpcPreferenceModal />} />
             <Route path="actions" element={<ActionLinkModal />} />
-          </Route>
-        </Route>
+          </Route> */}
+
         <Route
           path="create"
           element={

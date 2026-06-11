@@ -1,5 +1,6 @@
 import {
   mdiAlphaGCircleOutline,
+  mdiAlphaMCircleOutline,
   mdiAlphaSCircleOutline,
   mdiAlphaTCircleOutline,
 } from '@mdi/js';
@@ -12,6 +13,13 @@ const NpcTypeList = ({ npcTypes = [] }: { npcTypes?: string[] }) => {
         <Icon
           className="text-primary"
           path={mdiAlphaGCircleOutline}
+          size={1.25}
+        />
+      )}
+      {npcTypes.includes('monster') && (
+        <Icon
+          className="text-primary"
+          path={mdiAlphaMCircleOutline}
           size={1.25}
         />
       )}

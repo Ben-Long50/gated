@@ -243,66 +243,7 @@ const ItemPage = () => {
           </div>
         </ThemeContainer>
       )}
-      {item.baseItem && (
-        <div className="flex w-full items-center justify-between">
-          <Link
-            className="timing group flex items-center gap-4 self-start py-2"
-            to={`/glam/codex/items/${item.baseItem.id}`}
-          >
-            <Icon
-              path={mdiLinkBoxVariantOutline}
-              className="group-hover:text-accent timing text-secondary size-8 shrink-0"
-            />
-            <div className="overflow-hidden">
-              <p
-                className={`timing group-hover:text-accent inline-block origin-left -translate-x-full transform text-left ease-in-out group-hover:translate-x-0`}
-              >
-                {item.baseItem.name}
-              </p>
-            </div>
-          </Link>
-          <button
-            className="group flex items-center gap-4 py-2"
-            onClick={() => {
-              if (item.baseItem && item.updatedAt < item.baseItem.updatedAt) {
-                navigate('update');
-              }
-            }}
-          >
-            {item.updatedAt < item.baseItem.updatedAt ? (
-              <>
-                <div className="overflow-hidden">
-                  <p
-                    className={`timing group-hover:text-accent inline-block origin-right translate-x-full transform text-right ease-in-out group-hover:translate-x-0`}
-                  >
-                    New Version Available
-                  </p>
-                </div>
-                <Icon
-                  path={mdiCalendarRemoveOutline}
-                  className="group-hover:text-accent timing text-secondary size-8 shrink-0"
-                />
-              </>
-            ) : (
-              <>
-                <div className="overflow-hidden">
-                  <p
-                    className={`timing group-hover:text-accent inline-block origin-right translate-x-full transform text-right ease-in-out group-hover:translate-x-0`}
-                  >
-                    Up to Date
-                  </p>
-                </div>
-                <Icon
-                  path={mdiCalendarCheckOutline}
-                  className="group-hover:text-accent timing text-secondary size-8 shrink-0"
-                />
-              </>
-            )}
-          </button>
-          {parts.includes('update') && <Outlet context={{ item, parts }} />}
-        </div>
-      )}
-
+      <Divider />
       {((parts.includes('codex') && user?.role === 'ADMIN') ||
         (parts.includes('codex') && user?.role === 'SUPERADMIN')) && (
         <BtnRect

@@ -11,6 +11,7 @@ const useCharacterUpdateForm = (
     defaultValues: {
       id: character?.id ?? null,
       playerCharacter: character?.playerCharacter ?? null,
+      profits: character?.profits ?? null,
       campaignId: character?.campaignId ?? null,
       npcTypes: character?.npcTypes ?? (character?.playerCharacter ? null : []),
       preferences: {

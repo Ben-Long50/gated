@@ -12,6 +12,7 @@ import { capitalCase } from 'change-case';
 import ExpandingList from './ExpandingList';
 import Divider from './Divider';
 import { useSearchParams } from 'react-router-dom';
+import IconBtnMedium from './buttons/IconBtnMedium';
 
 const Keywords = ({ field }: { field?: FieldApi }) => {
   const { keywords, query, category, setQuery, setCategory, isLoading } =
@@ -52,19 +53,14 @@ const Keywords = ({ field }: { field?: FieldApi }) => {
               setQuery(value);
             }}
           />
-          <button
-            className="text-accent bg-tertiary shadow-color group z-10 grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
-            onClick={(e) => {
-              e.preventDefault();
+          <IconBtnMedium
+            onClick={() => {
               setQuery('');
               setCategory('');
             }}
           >
-            <Icon
-              path={mdiSync}
-              className="text-secondary group-hover:text-accent timing"
-            />
-          </button>
+            <Icon path={mdiSync} />
+          </IconBtnMedium>
         </div>
       </div>
       <div className="flex w-full flex-col gap-8">

@@ -18,7 +18,9 @@ const InputFieldRadio = ({
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   return (
-    <div className={`${className} flex items-center justify-between gap-8`}>
+    <div
+      className={`${className} flex w-full items-center justify-between gap-8`}
+    >
       {label && (
         <label
           className={`${checked ? 'text-accent font-semibold' : 'text-secondary'} w-full grow cursor-text text-xl`}

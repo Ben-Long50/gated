@@ -4,10 +4,13 @@ import { toast } from 'react-toastify';
 import { useContext } from 'react';
 import { AuthContext } from 'src/contexts/AuthContext';
 import { User } from 'src/types/user';
+import { useNavigate } from 'react-router-dom';
 
 const useCreateCharacterMutation = () => {
   const { user } = useContext(AuthContext);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
   return useMutation({
     mutationFn: (formData: FormData) => {
       return createCharacter(formData);
@@ -31,6 +34,8 @@ const useCreateCharacterMutation = () => {
           characters: [...prevUser.characters, { id: data.character.id }],
         });
       }
+
+      navigate(`../${data.character.id}`);
     },
     onError: (data) => {
       toast.error(data.message);

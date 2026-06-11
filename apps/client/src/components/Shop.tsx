@@ -70,11 +70,13 @@ const Shop = () => {
         ) : (
           <CharacterPictureRound character={character} />
         )}
-        <h1 className="text-left">
+        <h2 className="text-left">
           {shopId ? `${shop?.firstName}'s Shop` : 'Global Shop'}
-        </h1>
+        </h2>
       </div>
-      <p className="absolute right-4 top-4">{character?.profits}p</p>
+      <p className="absolute right-4 top-4">
+        {character?.profits.toLocaleString()} p
+      </p>
       <div className="grid w-full grid-cols-[repeat(auto-fit,_minmax(100px,_1fr))] gap-2">
         {shopId && (
           <BtnAuth

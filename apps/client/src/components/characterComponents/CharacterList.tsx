@@ -14,6 +14,7 @@ import Icon from '@mdi/react';
 import { mdiCropSquare, mdiGrid, mdiSync } from '@mdi/js';
 import { useSearchParams, useParams } from 'react-router-dom';
 import { camelCase, capitalCase } from 'change-case';
+import IconBtnMedium from '../buttons/IconBtnMedium';
 
 const CharacterList = ({
   characterIds,
@@ -67,23 +68,16 @@ const CharacterList = ({
               value={query}
               onChange={(value) => setQuery(value)}
             />
-            <button
-              className="text-accent bg-tertiary shadow-color group grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
-              onClick={(e) => {
-                e.preventDefault();
+            <IconBtnMedium
+              onClick={() => {
                 setCampaignId(null);
                 setQuery('');
               }}
             >
-              <Icon
-                path={mdiSync}
-                className="text-tertiary group-hover:text-accent timing"
-              />
-            </button>
-            <button
-              className="text-accent bg-tertiary shadow-color group grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
-              onClick={(e) => {
-                e.preventDefault();
+              <Icon path={mdiSync} />
+            </IconBtnMedium>
+            <IconBtnMedium
+              onClick={() => {
                 if (cardType === 'large') {
                   setCardType('small');
                 } else if (cardType === 'small') {
@@ -91,11 +85,8 @@ const CharacterList = ({
                 }
               }}
             >
-              <Icon
-                path={cardType === 'large' ? mdiGrid : mdiCropSquare}
-                className="text-tertiary group-hover:text-accent timing"
-              />
-            </button>
+              <Icon path={cardType === 'small' ? mdiGrid : mdiCropSquare} />
+            </IconBtnMedium>
           </div>
         </div>
 

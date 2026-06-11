@@ -58,7 +58,7 @@ const MainLayout = () => {
         </Sidebar>
       )}
       <div
-        className="flex flex-col items-center gap-8 px-4"
+        className="flex flex-col items-center gap-8 px-4 pb-4"
         style={{ marginLeft: navbarHeight + 12 }}
       >
         <Navbar navbarRef={navbarRef} />

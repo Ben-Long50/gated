@@ -1,6 +1,3 @@
-import { useContext, useState } from 'react';
-import ThemeContainer from './ThemeContainer';
-import { ThemeContext } from '../contexts/ThemeContext';
 import Loading from './Loading';
 import BtnRect from './buttons/BtnRect';
 import CartCard from './CartCard';
@@ -10,11 +7,11 @@ import { useParams } from 'react-router-dom';
 import { Character } from 'src/types/character';
 import ArrowHeader3 from './ArrowHeader3';
 import useCharacter from 'src/hooks/useCharacter';
+import Divider from './Divider';
+import BtnAuth from './buttons/BtnAuth';
 
 const Cart = ({ character }: { character?: Character }) => {
-  const { accentPrimary } = useContext(ThemeContext);
   const { characterId } = useParams();
-  const [deleteMode, setDeleteMode] = useState(false);
 
   const { filteredCharacter } = useCharacter(Number(characterId));
 
@@ -23,7 +20,6 @@ const Cart = ({ character }: { character?: Character }) => {
   const clearCart = useClearCartMutation(
     characterObj?.id,
     characterObj?.characterCart?.id,
-    setDeleteMode,
   );
 
   const completePurchase = useCompletePurchaseMutation(
@@ -43,89 +39,6 @@ const Cart = ({ character }: { character?: Character }) => {
 
   return (
     <div className="flex w-full flex-col items-center gap-6 sm:gap-8">
-      <ThemeContainer
-        className={`ml-auto w-full`}
-        chamfer="medium"
-        borderColor={accentPrimary}
-      >
-        <div className="flex w-full flex-col gap-4 p-4">
-          <div className="flex w-full items-center justify-between gap-8">
-            <ArrowHeader3 title="Available Profits" />
-            <h3 className="ml-auto">{characterObj?.profits}p</h3>
-          </div>
-
-          <div className="flex w-full items-center justify-between gap-8">
-            <ArrowHeader3 title="Cart Total" />
-            <div className="flex items-center gap-4">
-              <h3 className="ml-auto">{totalPrice}p</h3>
-              <p
-                className={`${characterObj?.profits - totalPrice < 0 && 'text-error'} text-base`}
-              >
-                ({characterObj?.profits - totalPrice}p)
-              </p>
-            </div>
-          </div>
-          <div className="flex w-full items-end justify-between">
-            <div className="flex items-end justify-start gap-8">
-              <button
-                className="text-accent text-base hover:underline"
-                onClick={
-                  deleteMode
-                    ? (e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        clearCart.mutate();
-                      }
-                    : (e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setDeleteMode(true);
-                      }
-                }
-              >
-                {deleteMode ? 'Confirm' : 'Clear cart'}
-              </button>
-              {deleteMode && (
-                <button
-                  className="text-secondary text-base hover:underline"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setDeleteMode(false);
-                  }}
-                >
-                  Cancel
-                </button>
-              )}
-            </div>
-            <BtnRect
-              ariaLabel="Complete purchase"
-              type="submit"
-              className="group min-w-64 self-end"
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                if (completePurchase.isPending) return;
-                completePurchase.mutate();
-              }}
-            >
-              {completePurchase.isPending ? (
-                <Loading
-                  className="group-hover:text-accent dark:text-gray-900"
-                  size={1.15}
-                />
-              ) : (
-                'Complete purchase'
-              )}
-            </BtnRect>
-          </div>
-          {deleteMode && (
-            <p className="text-error text-base">
-              Press the confirm button to remove all cart items
-            </p>
-          )}
-        </div>
-      </ThemeContainer>
       {characterObj?.characterCart.items.map((itemReference) => {
         return (
           <CartCard
@@ -137,6 +50,45 @@ const Cart = ({ character }: { character?: Character }) => {
           />
         );
       })}
+      <Divider />
+      <div className="flex w-full items-center justify-between gap-8">
+        <ArrowHeader3 title="Cart Total" />
+        <div className="flex items-center gap-4">
+          <p className="ml-auto text-2xl">{totalPrice.toLocaleString()} p</p>
+          <p
+            className={`${characterObj?.profits - totalPrice < 0 && 'text-error'} text-base`}
+          >
+            ({(characterObj?.profits - totalPrice).toLocaleString()} p)
+          </p>
+        </div>
+      </div>
+      <div className="flex w-full justify-between">
+        <BtnAuth className="min-w-64" onClick={() => clearCart.mutate()}>
+          {clearCart.isPending ? (
+            <Loading className="text-accent" size={1.15} />
+          ) : (
+            'Clear Cart'
+          )}
+        </BtnAuth>
+        <BtnRect
+          ariaLabel="Complete purchase"
+          type="submit"
+          className="group min-w-64 self-end"
+          onClick={() => {
+            if (completePurchase.isPending) return;
+            completePurchase.mutate();
+          }}
+        >
+          {completePurchase.isPending ? (
+            <Loading
+              className="group-hover:text-accent dark:text-gray-900"
+              size={1.15}
+            />
+          ) : (
+            'Complete purchase'
+          )}
+        </BtnRect>
+      </div>
     </div>
   );
 };

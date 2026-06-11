@@ -12,8 +12,9 @@ const useCharacterForm = (
 
   const characterForm = useForm({
     defaultValues: {
-      playerCharacter: true as string | boolean,
+      playerCharacter: null as boolean | null,
       npcTypes: null as null | string[],
+      profits: null as number | null,
       campaignId: null as number | null,
       preferences: {
         firstName: true,
@@ -42,7 +43,7 @@ const useCharacterForm = (
       height: null as number | null,
       weight: null as number | null,
       age: null as number | null,
-      sex: null as 'male' | 'female' | null,
+      sex: null as 'male' | 'female' | 'unknown' | null,
       description: null as string | null,
       stats: {
         permanentInjuries: 5,

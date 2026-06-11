@@ -144,7 +144,9 @@ const GangPage = () => {
                   {usedGangPoints} / {gangPoints}
                 </p>
                 <p>Profits</p>
-                <p className="justify-self-end">{gang?.profits}</p>
+                <p className="justify-self-end">
+                  {gang?.profits.toLocaleString()} p
+                </p>
                 <p>Properties</p>
                 <p className="justify-self-end whitespace-nowrap text-center">
                   {gang?.properties.length}

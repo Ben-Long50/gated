@@ -102,7 +102,9 @@ const GangProfitsModal = () => {
                     });
                   }}
                 />
-                <p className="w-8 text-center text-2xl">{character.profits}</p>
+                <p className="w-8 text-center text-2xl">
+                  {character.profits.toLocaleString()} p
+                </p>
                 <BtnIcon
                   active={
                     gang?.profits &&

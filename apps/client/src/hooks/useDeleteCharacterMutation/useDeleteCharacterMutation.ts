@@ -14,11 +14,11 @@ const useDeleteCharacterMutation = (characterId: number) => {
     onSuccess: (data) => {
       toast.success(data.message);
 
-      navigate(-1);
-
       queryClient.removeQueries({
         queryKey: ['character', characterId],
       });
+
+      navigate(-1);
     },
     onError: (data) => {
       toast.error(data.message);

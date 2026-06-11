@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import completePurchase from './completePurchase';
+import { toast } from 'react-toastify';
 
 const useCompletePurchaseMutation = (
   characterId: number,
@@ -10,10 +11,15 @@ const useCompletePurchaseMutation = (
     mutationFn: () => {
       return completePurchase(characterId, inventoryId);
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      toast.success(data.message);
+
       return queryClient.invalidateQueries({
         queryKey: ['character', characterId],
       });
+    },
+    onError: (data) => {
+      toast.error(data.message);
     },
     throwOnError: false,
   });

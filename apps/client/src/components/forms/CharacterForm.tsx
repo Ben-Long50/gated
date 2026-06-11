@@ -20,7 +20,6 @@ import StatBarContainer from '../StatBarContainer';
 import CharacterStatBars from '../characterComponents/CharacterStatBars';
 import useCreateCodexCharacterMutation from 'src/hooks/useCreateCodexCharacterMutation/useCreateCodexCharacterMutation';
 import { useSearchParams } from 'react-router-dom';
-import TextAreaField from '../formFields/TextAreaField';
 import ActionLinkField from '../formFields/ActionLinkField';
 
 const CharacterForm = () => {
@@ -194,7 +193,7 @@ const CharacterForm = () => {
           {(field) => (
             <InputSelectField
               label="Sex"
-              options={['male', 'female']}
+              options={['male', 'female', 'unknown']}
               value={field.state.value}
               onChange={(value) => field.handleChange(value)}
             />

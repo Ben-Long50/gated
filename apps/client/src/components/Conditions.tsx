@@ -9,6 +9,7 @@ import Icon from '@mdi/react';
 import { mdiSync } from '@mdi/js';
 import { Condition } from 'src/types/condition';
 import Divider from './Divider';
+import IconBtnMedium from './buttons/IconBtnMedium';
 
 const Conditions = ({
   form,
@@ -49,19 +50,14 @@ const Conditions = ({
               setQuery(value);
             }}
           />
-          <button
-            className="text-accent bg-tertiary shadow-color group grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
-            onClick={(e) => {
-              e.preventDefault();
+          <IconBtnMedium
+            onClick={() => {
               setQuery('');
               setCategory('');
             }}
           >
-            <Icon
-              path={mdiSync}
-              className="text-secondary group-hover:text-accent timing"
-            />
-          </button>
+            <Icon path={mdiSync} />
+          </IconBtnMedium>
         </div>
       </div>
       <div className="flex w-full flex-col gap-8">

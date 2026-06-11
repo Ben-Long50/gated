@@ -9,6 +9,12 @@ import { mdiSync } from '@mdi/js';
 import NavTabs from './NavTabs';
 import BtnAuth from './buttons/BtnAuth';
 import { capitalCase } from 'change-case';
+import InputFieldRadio from './formFields/InputFieldRadio';
+import Divider from './Divider';
+import IconBtnMedium from './buttons/IconBtnMedium';
+import ArrowHeader3 from './ArrowHeader3';
+import { useContext } from 'react';
+import { LayoutContext } from 'src/contexts/LayoutContext';
 
 const Perks = ({
   form,
@@ -17,6 +23,7 @@ const Perks = ({
   form?: FormApi;
   attributeTree?: AttributeTree;
 }) => {
+  const { mobile } = useContext(LayoutContext);
   const {
     filteredPerkTree,
     emptyTree,
@@ -29,6 +36,8 @@ const Perks = ({
     isLoading,
   } = usePerks(attributeTree);
 
+  const attributes = Object.keys(emptyTree);
+
   const skills = attributeQuery ? Object.keys(emptyTree[attributeQuery]) : [];
 
   if (isLoading) {
@@ -37,68 +46,39 @@ const Perks = ({
 
   return (
     <>
-      <div className="flex w-full flex-col gap-4">
-        <div className="flex w-full flex-col items-center justify-between gap-4">
-          <NavTabs className="grid-cols-5">
-            <BtnAuth
-              active={attributeQuery === 'general'}
-              onClick={() => {
-                setAttributeQuery('general');
-                setSkillQuery('');
-              }}
-            >
-              General
-            </BtnAuth>
-            <BtnAuth
-              active={attributeQuery === 'cybernetica'}
-              onClick={() => {
-                setAttributeQuery('cybernetica');
-                setSkillQuery('');
-              }}
-            >
-              Cybernetica
-            </BtnAuth>
-            <BtnAuth
-              active={attributeQuery === 'esoterica'}
-              onClick={() => {
-                setAttributeQuery('esoterica');
-                setSkillQuery('');
-              }}
-            >
-              Esoterica
-            </BtnAuth>
-            <BtnAuth
-              active={attributeQuery === 'peace'}
-              onClick={() => {
-                setAttributeQuery('peace');
-                setSkillQuery('');
-              }}
-            >
-              Peace
-            </BtnAuth>
-            <BtnAuth
-              active={attributeQuery === 'violence'}
-              onClick={() => {
-                setAttributeQuery('violence');
-                setSkillQuery('');
-              }}
-            >
-              Violence
-            </BtnAuth>
-          </NavTabs>
+      <div className="flex w-full flex-col gap-8">
+        <div
+          className={`${mobile ? 'grid-flow-row' : 'grid-flow-col'} grid w-full gap-8`}
+        >
+          <div className="flex w-full flex-col items-start justify-start gap-2">
+            <ArrowHeader3 title="Attribute" />
+            {attributes.map((attribute) => (
+              <InputFieldRadio
+                label={capitalCase(attribute)}
+                checked={attributeQuery === attribute}
+                value={attribute}
+                onChange={(value) => {
+                  setAttributeQuery(value);
+                  setSkillQuery('');
+                }}
+              />
+            ))}
+          </div>
           {skills.length > 0 && (
-            <NavTabs className="grid-cols-4">
+            <div className="flex w-full flex-col items-start justify-start gap-2">
+              <ArrowHeader3 title="Skill" />
               {skills.map((skill) => (
-                <BtnAuth
-                  active={skillQuery === skill}
-                  onClick={() => setSkillQuery(skill)}
-                >
-                  {capitalCase(skill)}
-                </BtnAuth>
+                <InputFieldRadio
+                  label={capitalCase(skill)}
+                  checked={skillQuery === skill}
+                  value={skill}
+                  onChange={() => setSkillQuery(skill)}
+                />
               ))}
-            </NavTabs>
+            </div>
           )}
         </div>
+        <Divider />
         <div className="flex items-end gap-4">
           <InputField
             label="Search Perks"
@@ -107,20 +87,15 @@ const Perks = ({
               setQuery(value);
             }}
           />
-          <button
-            className="text-accent bg-tertiary shadow-color group z-10 grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
-            onClick={(e) => {
-              e.preventDefault();
+          <IconBtnMedium
+            onClick={() => {
               setQuery('');
               setAttributeQuery('');
               setSkillQuery('');
             }}
           >
-            <Icon
-              path={mdiSync}
-              className="text-secondary group-hover:text-accent timing"
-            />
-          </button>
+            <Icon path={mdiSync} />
+          </IconBtnMedium>
         </div>
       </div>
       <PerkList perkTree={filteredPerkTree} form={form} />

@@ -137,7 +137,7 @@ const CharacterUpdateForm = () => {
           {(field) => (
             <InputSelectField
               label="Sex"
-              options={['male', 'female']}
+              options={['male', 'female', 'unknown']}
               value={field.state.value}
               onChange={(value) => field.handleChange(value)}
             />

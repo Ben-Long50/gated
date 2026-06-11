@@ -5,7 +5,7 @@ const deleteItem = async (itemId: number) => {
   try {
     if (!itemId) throw new Error('Cannot delete with an undefined itemId');
 
-    const response = await fetch(`${apiUrl}/items/${itemId}/delete`, {
+    const response = await fetch(`${apiUrl}/items/${itemId}`, {
       method: 'DELETE',
       credentials: 'include',
     });

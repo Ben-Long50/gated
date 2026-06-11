@@ -9,6 +9,7 @@ import Icon from '@mdi/react';
 import { mdiSync } from '@mdi/js';
 import { capitalCase } from 'change-case';
 import InputFieldCheckbox from './formFields/InputFieldCheckbox';
+import IconBtnMedium from './buttons/IconBtnMedium';
 
 const Actions = ({ form }: { form?: FormApi }) => {
   const {
@@ -56,19 +57,15 @@ const Actions = ({ form }: { form?: FormApi }) => {
             }}
           />
 
-          <button
-            className="text-accent bg-tertiary shadow-color group z-10 grid size-12 shrink-0 place-items-center rounded-md p-1.5 shadow-md hover:underline"
-            onClick={(e) => {
-              e.preventDefault();
+          <IconBtnMedium
+            onClick={() => {
               setQuery('');
               setCategory('');
+              setSubCategory('');
             }}
           >
-            <Icon
-              path={mdiSync}
-              className="text-secondary group-hover:text-accent timing"
-            />
-          </button>
+            <Icon path={mdiSync} />
+          </IconBtnMedium>
         </div>
       </div>
       <div className="flex w-full flex-col gap-8">

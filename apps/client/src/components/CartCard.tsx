@@ -1,90 +1,79 @@
 import { Item } from 'src/types/item';
-import { useContext } from 'react';
-import { mdiMinus, mdiPlus } from '@mdi/js';
-import { ThemeContext } from 'src/contexts/ThemeContext';
+import { mdiMinus, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import useEditCartMutation from 'src/hooks/useEditCartMutation/useEditCartMutation';
-import { AuthContext } from 'src/contexts/AuthContext';
-import BtnIcon from './buttons/BtnIcon';
-import CloudinaryPicture from './CloudinaryPicture';
+import { PictureCard } from './PictureCard';
+import IconBtnSmall from './buttons/IconBtnSmall';
+import Icon from '@mdi/react';
+import constructName from 'src/utils/constructName';
 
 const CartCard = ({
-  className,
   item,
   quantity,
   characterId,
   cartId,
 }: {
-  className?: string;
   item: Item;
   quantity: number;
   characterId: number;
   cartId: number;
 }) => {
-  const { rarityColorMap } = useContext(ThemeContext);
-
   const editCart = useEditCartMutation(Number(characterId), cartId);
 
   const shopName = item?.characterInventory
-    ? item?.characterInventory.character.firstName +
-      ' ' +
-      item?.characterInventory.character.lastName +
-      "'s Shop"
+    ? constructName(item?.characterInventory.character) + "'s Shop"
     : 'Global Shop';
 
   return (
-    <div className="shadow-color w-full rounded-br-4xl rounded-tl-4xl shadow-md">
-      <div
-        className={`${className} bg-secondary timing flex w-full flex-col pr-4 clip-4 sm:pr-6`}
-      >
-        <div className="relative flex h-full items-center">
-          {item?.picture?.publicId && (
-            <div
-              className="group relative size-24 shrink-0 overflow-hidden pl-1"
-              style={{ backgroundColor: rarityColorMap[item?.rarity] }}
-            >
-              <CloudinaryPicture
-                className=""
-                publicId={item?.picture?.publicId}
-                position={item?.picture?.position}
-              />
-            </div>
-          )}
-          <div className="flex grow items-center justify-between">
-            <div className="flex flex-col items-start justify-center gap-1 py-4 pl-8">
-              <h2>{item?.name}</h2>
-              <h4 className="text-tertiary">({shopName})</h4>
-            </div>
-            <h3 className="mr-4 sm:mr-8">{item.price * quantity}p</h3>
-          </div>
-          <div className="ml-auto grid grid-cols-3 items-end gap-2 sm:flex-row sm:items-center sm:gap-4">
-            <BtnIcon
-              path={mdiMinus}
-              active={true}
-              onClick={() => {
-                if (cartId) {
-                  editCart.mutate({
-                    itemId: item.id,
-                    value: -1,
-                  });
-                }
-              }}
-            />
-            <h2 className="text-center">{quantity}</h2>
-            <BtnIcon
-              path={mdiPlus}
-              active={true}
-              onClick={() => {
-                if (cartId) {
-                  editCart.mutate({
-                    itemId: item.id,
-                    value: 1,
-                  });
-                }
-              }}
-            />
-          </div>
-        </div>
+    <div className="flex h-full w-full items-center justify-between gap-8">
+      <PictureCard className="w-32" publicId={item.picture.publicId} />
+      <div className="flex flex-col items-start justify-center gap-1">
+        <h3>{item?.name}</h3>
+        <p className="text-tertiary">({shopName})</p>
       </div>
+      <div className="ml-auto mr-8 flex items-center gap-4">
+        <IconBtnSmall
+          onClick={() => {
+            if (cartId) {
+              editCart.mutate({
+                itemId: item.id,
+                value: -1,
+              });
+            }
+          }}
+        >
+          <Icon path={mdiMinus} />
+        </IconBtnSmall>
+        <p className="text-center">Qty. {quantity}</p>
+        <IconBtnSmall
+          onClick={() => {
+            if (cartId) {
+              editCart.mutate({
+                itemId: item.id,
+                value: 1,
+              });
+            }
+          }}
+        >
+          <Icon path={mdiPlus} />
+        </IconBtnSmall>
+      </div>
+      {item.price ? (
+        <p className="text-2xl">{item?.price * quantity} p</p>
+      ) : (
+        <p>N/A</p>
+      )}
+      <IconBtnSmall
+        onClick={() => {
+          if (cartId) {
+            editCart.mutate({
+              itemId: item.id,
+              value: 1,
+            });
+          }
+        }}
+      >
+        <Icon path={mdiTrashCanOutline} />
+      </IconBtnSmall>
     </div>
   );
 };

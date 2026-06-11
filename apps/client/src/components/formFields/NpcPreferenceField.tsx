@@ -57,6 +57,22 @@ const NpcPreferenceField = ({ form }: { form: FormApi }) => {
                 />
               )}
             </form.Field>
+            <form.Field name="profits">
+              {(field) => (
+                <InputFieldCheckbox
+                  label={`Max Profits (${field.state.value.toLocaleString()} p)`}
+                  checked={field.state.value === 99999}
+                  value={field.state.value}
+                  onChange={(value) => {
+                    if (value > 10) {
+                      field.handleChange(10);
+                    } else {
+                      field.handleChange(99999);
+                    }
+                  }}
+                />
+              )}
+            </form.Field>
             <BtnRect
               type="button"
               ariaLabel="NPC preferences"
