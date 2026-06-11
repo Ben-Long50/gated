@@ -8,29 +8,48 @@ const cartServices = {
     itemId: number,
     value: number,
   ) => {
+    const cartItem = await prisma.cartItemRelation.findUnique({
+      where: { characterCartId_itemId: { characterCartId: cartId, itemId } },
+    });
+
+    let remove = false;
+
+    if (cartItem && cartItem.quantity + value === 0) {
+      remove = true;
+    }
+
     try {
       const character = await prisma.character.update({
         where: { id: characterId },
         data: {
           characterCart: {
             update: {
-              items: {
-                upsert: {
-                  where: {
-                    characterCartId_itemId: {
-                      characterCartId: cartId,
-                      itemId,
+              items: remove
+                ? {
+                    delete: {
+                      characterCartId_itemId: {
+                        characterCartId: cartId,
+                        itemId,
+                      },
+                    },
+                  }
+                : {
+                    upsert: {
+                      where: {
+                        characterCartId_itemId: {
+                          characterCartId: cartId,
+                          itemId,
+                        },
+                      },
+                      update: {
+                        quantity: { increment: value },
+                      },
+                      create: {
+                        itemId,
+                        quantity: value,
+                      },
                     },
                   },
-                  update: {
-                    quantity: { increment: value },
-                  },
-                  create: {
-                    itemId,
-                    quantity: value,
-                  },
-                },
-              },
             },
           },
         },

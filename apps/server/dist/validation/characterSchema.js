@@ -7,6 +7,7 @@ export const CharacterInput = z.object({
     firstName: FirstName,
     lastName: LastName,
     playerCharacter: z.boolean(),
+    profits: z.number().int().nonnegative().optional(),
     npcTypes: z.array(NpcType).optional(),
     preferences: z.object({
         firstName: z.boolean(),
@@ -42,6 +43,7 @@ export const CharacterUpdateInput = z.object({
     firstName: FirstName,
     lastName: LastName,
     playerCharacter: z.boolean(),
+    profits: z.number().int().nonnegative().optional(),
     npcTypes: z.array(NpcType).optional(),
     preferences: z.object({
         firstName: z.boolean(),

@@ -15,6 +15,7 @@ import {
 import { Attributes } from '../validation/fieldSchemas.js';
 import { ConditionReferenceInput } from '../validation/conditionSchema.js';
 import actionServices from './actionServices.js';
+import { Prisma } from '@prisma/client';
 
 export const characterInclude = {
   campaign: {
@@ -436,8 +437,14 @@ const characterServices = {
     }
   },
 
-  addToInventory: async (characterId: number, inventoryId: number) => {
+  addToInventory: async (
+    characterId: number,
+    inventoryId: number,
+    tx?: Prisma.TransactionClient,
+  ) => {
     try {
+      const client = tx ?? prisma;
+
       const profits =
         (
           await prisma.character.findUnique({
@@ -487,10 +494,10 @@ const characterServices = {
       }
 
       if (items.length > 0) {
-        itemServices.createCharacterItemCopy(inventoryId, items);
+        itemServices.createCharacterItemCopy(inventoryId, items, client);
       }
 
-      await prisma.character.update({
+      await client.character.update({
         where: { id: Number(characterId) },
         data: { profits: profits - totalPrice },
       });
@@ -500,9 +507,11 @@ const characterServices = {
     }
   },
 
-  clearCart: async (characterId: number) => {
+  clearCart: async (characterId: number, tx?: Prisma.TransactionClient) => {
     try {
-      await prisma.characterCart.update({
+      const client = tx ?? prisma;
+
+      await client.characterCart.update({
         where: { characterId: Number(characterId) },
         data: {
           items: {

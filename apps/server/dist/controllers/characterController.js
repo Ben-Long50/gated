@@ -8,6 +8,7 @@ import z, { ZodError } from 'zod';
 import { getIO } from '../sockets/socket.js';
 import constructName from '../utils/constructName.js';
 import handleControllerError from './handleControllerError.js';
+import prisma from '../config/database.js';
 const characterController = {
     getSocialCharacters: async (_, res) => {
         try {
@@ -86,9 +87,11 @@ const characterController = {
             if (!req.user) {
                 throw new Error('Could not find authenticated user');
             }
-            await characterServices.addToInventory(Number(req.params.characterId), Number(req.params.inventoryId));
-            await characterServices.clearCart(Number(req.params.characterId));
-            res.status(200).json({ message: 'Purchase completed' });
+            await prisma.$transaction(async (tx) => {
+                await characterServices.addToInventory(Number(req.params.characterId), Number(req.params.inventoryId), tx);
+                await characterServices.clearCart(Number(req.params.characterId), tx);
+            });
+            res.status(200).json({ message: 'Successfully completed purchase' });
         }
         catch (error) {
             handleControllerError(res, error);
@@ -97,7 +100,7 @@ const characterController = {
     clearCart: async (req, res) => {
         try {
             await characterServices.clearCart(Number(req.params.characterId));
-            res.status(200).json({ message: 'Cart cleared' });
+            res.status(200).json({ message: 'Successfully cleared cart' });
         }
         catch (error) { }
     },

@@ -50,7 +50,7 @@ export const FactionType = z.enum([
 
 export const NpcType = z.enum(['shop', 'goon', 'template', 'monster']);
 
-export const Sex = z.enum(['male', 'female']);
+export const Sex = z.enum(['male', 'female', 'unknown']);
 
 export const ConditionType = z.enum(['character', 'item']);
 
