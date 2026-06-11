@@ -95,6 +95,7 @@ const useItemForm = (
       value.stats = { ...filteredStats };
 
       const formData = constructFormData(value);
+
       await mutation.mutate(formData);
     },
   });

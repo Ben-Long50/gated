@@ -36,7 +36,10 @@ const ItemForm = () => {
 
   const deleteItem = useDeleteItemMutation(Number(itemId));
 
-  const itemForm = useItemForm(createItem, item);
+  const itemForm = useItemForm(
+    formType === 'codex' ? createCodexItem : createItem,
+    item,
+  );
 
   return (
     <FormLayout

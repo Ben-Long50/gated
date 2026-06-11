@@ -31,8 +31,6 @@ const Inventory = () => {
     Number(characterId),
   );
 
-  console.log(character);
-
   const category = searchParams.get('category');
 
   const items = category
