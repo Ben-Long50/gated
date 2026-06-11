@@ -447,13 +447,13 @@ const characterServices = {
 
       const profits =
         (
-          await prisma.character.findUnique({
+          await client.character.findUnique({
             where: { id: characterId },
             select: { profits: true },
           })
         )?.profits || 0;
 
-      const cart = await prisma.characterCart.findUnique({
+      const cart = await client.characterCart.findUnique({
         where: { characterId },
         select: {
           items: {
