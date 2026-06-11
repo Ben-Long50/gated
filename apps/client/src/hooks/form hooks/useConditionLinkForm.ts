@@ -1,6 +1,7 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
 import { Item } from 'src/types/item';
+import { filterFormData } from './constructFormData';
 
 const useConditionLinkForm = (
   characterMutation: UseMutationResult<any, Error, any>,
@@ -22,11 +23,13 @@ const useConditionLinkForm = (
         ([] as { conditionId: number; stacks: number | null }[]),
     },
     onSubmit: async ({ value }) => {
+      const filteredData = filterFormData(value.conditions);
+
       if (item) {
-        await itemMutation.mutate(value.conditions);
+        await itemMutation.mutate(filteredData);
       }
       if (character) {
-        await characterMutation.mutate(value.conditions);
+        await characterMutation.mutate(filteredData);
       }
     },
   });

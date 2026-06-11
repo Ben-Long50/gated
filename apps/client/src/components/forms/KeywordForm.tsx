@@ -29,15 +29,7 @@ const KeywordForm = () => {
       deleteMutation={deleteKeyword}
     >
       <ArrowHeader2 title="Trait Information" />
-      <keywordForm.Field
-        name="name"
-        validators={{
-          onChange: ({ value }) =>
-            value.length < 2
-              ? 'Trait name must be at least 2 characters long'
-              : undefined,
-        }}
-      >
+      <keywordForm.Field name="name">
         {(field) => (
           <InputField
             label="Trait Name"
@@ -46,15 +38,7 @@ const KeywordForm = () => {
           />
         )}
       </keywordForm.Field>
-      <keywordForm.Field
-        name="description"
-        validators={{
-          onChange: ({ value }) =>
-            value.length < 2
-              ? 'Trait description must be at least 2 characters long'
-              : undefined,
-        }}
-      >
+      <keywordForm.Field name="description">
         {(field) => (
           <TextAreaField
             label="Trait Description"
@@ -64,13 +48,7 @@ const KeywordForm = () => {
         )}
       </keywordForm.Field>
       <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
-        <keywordForm.Field
-          name="keywordType"
-          validators={{
-            onSubmit: ({ value }) =>
-              value.length < 1 ? 'You must select a trait type' : undefined,
-          }}
-        >
+        <keywordForm.Field name="keywordType">
           {(field) => (
             <InputSelectField
               options={[
@@ -87,13 +65,7 @@ const KeywordForm = () => {
             />
           )}
         </keywordForm.Field>
-        <keywordForm.Field
-          name="gpCost"
-          validators={{
-            onSubmit: ({ value }) =>
-              !value ? 'You must enter GP cost' : undefined,
-          }}
-        >
+        <keywordForm.Field name="gpCost">
           {(field) => (
             <InputField
               type="number"

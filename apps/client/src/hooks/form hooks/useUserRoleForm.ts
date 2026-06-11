@@ -11,13 +11,13 @@ const useUserRoleForm = (mutation: UseMutationResult<any, Error, any>) => {
         role: string;
       }[],
     },
-    onSubmit: ({ value }) => {
+    onSubmit: async ({ value }) => {
       const userData = value.users.map((user) => ({
         id: user.id,
         role: user.role,
       }));
 
-      mutation.mutate(userData);
+      await mutation.mutate(userData);
     },
   });
 

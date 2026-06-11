@@ -1,5 +1,6 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
+import { filterFormData } from './constructFormData';
 
 const usePromptForm = (mutation: UseMutationResult<any, Error, any>) => {
   const promptForm = useForm({
@@ -10,7 +11,9 @@ const usePromptForm = (mutation: UseMutationResult<any, Error, any>) => {
       pictureCount: 1,
     },
     onSubmit: async ({ value }) => {
-      await mutation.mutate(value);
+      const filteredData = filterFormData(value);
+
+      await mutation.mutate(filteredData);
     },
   });
 

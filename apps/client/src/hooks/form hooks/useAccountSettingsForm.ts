@@ -1,6 +1,7 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
 import { User } from 'src/types/user';
+import { filterFormData } from './constructFormData';
 
 const useAccountSettingsForm = (
   mutation: UseMutationResult<any, Error, any>,
@@ -15,7 +16,9 @@ const useAccountSettingsForm = (
       password: '',
     },
     onSubmit: ({ value }) => {
-      mutation.mutate(value);
+      const filteredData = filterFormData(value);
+
+      mutation.mutate(filteredData);
     },
   });
 

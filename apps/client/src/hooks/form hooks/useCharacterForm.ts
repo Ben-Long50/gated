@@ -53,12 +53,12 @@ const useCharacterForm = (
       perkIds: [] as number[],
       actionIds: [] as number[],
     },
-    onSubmit: ({ value }) => {
+    onSubmit: async ({ value }) => {
       const filteredStats = filterStats(value.stats);
 
       const formData = constructFormData({ ...value, stats: filteredStats });
 
-      mutation.mutate(formData);
+      await mutation.mutate(formData);
     },
   });
 

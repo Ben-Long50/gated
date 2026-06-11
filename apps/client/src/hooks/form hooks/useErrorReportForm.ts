@@ -1,6 +1,7 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
 import { ErrorReport } from 'src/types/errorReport';
+import { filterFormData } from './constructFormData';
 
 const useErrorReportForm = (
   mutation: UseMutationResult<any, Error, any>,
@@ -12,7 +13,9 @@ const useErrorReportForm = (
       content: errorReport?.content ?? '',
     },
     onSubmit: async ({ value }) => {
-      await mutation.mutate(value);
+      const filtereData = filterFormData(value);
+
+      await mutation.mutate(filtereData);
     },
   });
 

@@ -47,7 +47,7 @@ const useItemUpgradeForm = (
         modifiedStats: filteredStats,
       });
 
-      mutation.mutate(formData);
+      await mutation.mutate(formData);
     },
   });
 

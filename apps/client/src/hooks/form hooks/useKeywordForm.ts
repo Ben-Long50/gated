@@ -1,6 +1,7 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
 import { Keyword } from 'src/types/keyword';
+import { filterFormData } from './constructFormData';
 
 const useKeywordForm = (
   mutation: UseMutationResult<any, Error, any>,
@@ -15,7 +16,9 @@ const useKeywordForm = (
       gpCost: keyword?.gpCost ?? null,
     },
     onSubmit: async ({ value }) => {
-      await mutation.mutate(value);
+      const filteredData = filterFormData(value);
+
+      await mutation.mutate(filteredData);
     },
   });
 

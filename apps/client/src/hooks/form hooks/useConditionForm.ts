@@ -1,6 +1,7 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
 import { Condition } from 'src/types/condition';
+import { filterFormData } from './constructFormData';
 
 const useConditionForm = (
   mutation: UseMutationResult<any, Error, object>,
@@ -14,7 +15,9 @@ const useConditionForm = (
       description: condition?.description ?? '',
     },
     onSubmit: async ({ value }) => {
-      await mutation.mutate(value);
+      const filteredData = filterFormData(value);
+
+      await mutation.mutate(filteredData);
     },
   });
 
