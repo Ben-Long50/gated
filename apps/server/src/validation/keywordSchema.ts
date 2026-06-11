@@ -7,7 +7,7 @@ export const KeywordInput = z.object({
   name: Name,
   keywordType: KeywordType,
   description: Description,
-  gpCost: z.number().int().nonnegative(),
+  gpCost: z.number().int().nonnegative().optional(),
 });
 
 export type KeywordInput = z.infer<typeof KeywordInput>;
