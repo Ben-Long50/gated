@@ -123,11 +123,11 @@ const actionServices = {
     characterInventoryId?: number,
     tx?: Prisma.TransactionClient,
   ) => {
-    const client = tx || prisma;
+    const client = tx ?? prisma;
 
     const actionIds = actionList?.map((action) => action.actionId);
 
-    const actions = await prisma.action.findMany({
+    const actions = await client.action.findMany({
       where: { id: { in: actionIds } },
       include: {
         keywordModifiers: { select: { keywordId: true, value: true } },
