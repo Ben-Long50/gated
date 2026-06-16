@@ -31,6 +31,7 @@ const useCharacter = (characterId: number) => {
 
   const equipment = items
     ? {
+        all: items?.filter((item) => item?.equipped === true),
         weapons: items?.filter(
           (item) =>
             item?.itemTypes.includes('weapon') && item?.equipped === true,

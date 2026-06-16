@@ -24,7 +24,7 @@ import StatBarContainer from '../StatBarContainer';
 import constructName from 'src/utils/constructName';
 import CharacterHeader from './CharacterHeader';
 import ActionCard from '../ActionCard';
-import Inventory from '../Inventory';
+import EquipmentList from '../EquipmentList';
 
 const CharacterSheet = () => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -213,9 +213,8 @@ const CharacterSheet = () => {
       <Divider />
       {character?.base && (
         <>
-          <BtnRect ariaLabel="Inventory" onClick={() => navigate('inventory')}>
-            Inventory
-          </BtnRect>
+          <ArrowHeader3 title="Standard Equipment" />
+          <EquipmentList equipment={character.equipment} />
           {(user.role === 'ADMIN' || user.role === 'SUPERADMIN') && (
             <BtnAuth onClick={() => navigate('shop/global')}>Shop</BtnAuth>
           )}

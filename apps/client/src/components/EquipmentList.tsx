@@ -1,78 +1,129 @@
-import { ReactNode, useContext } from 'react';
-import { ThemeContext } from '../contexts/ThemeContext';
-import ItemMenu from './ItemMenu';
-import { SortedInventory } from 'src/types/character';
+import BtnAuth from './buttons/BtnAuth';
+import ArmorIcon from './icons/ArmorIcon';
+import CyberIcon from './icons/CyberIcon';
+import DroneIcon from './icons/DroneIcon';
+import InventoryIcon from './icons/InventoryIcon';
+import PotionIcon from './icons/PotionIcon';
+import VehicleIcon from './icons/VehicleIcon';
+import WeaponIcon from './icons/WeaponIcon';
+import {
+  Outlet,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom';
+import { Equipment, Item } from 'src/types/item';
+import { useRef } from 'react';
+import NavTabs from './NavTabs';
+import InventoryCard from './InventoryCard';
 
-const EquipmentList = ({
-  equipment,
-  active,
-  toggleActive,
-}: {
-  equipment: SortedInventory | null;
-  active: {
-    id: null | number;
-    category: null | string;
+const EquipmentList = ({ equipment }: { equipment: Equipment }) => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const parts = location.pathname.split('/');
+
+  const category = searchParams.get('category');
+
+  const items = category
+    ? equipment[`${category}s` as keyof Equipment]
+    : equipment['all' as keyof Equipment];
+
+  const handleTab = (newCategory: string | null) => {
+    if (!newCategory) {
+      navigate('');
+    } else {
+      navigate(`?category=${newCategory}`);
+    }
   };
-  toggleActive: (id: null | number, category: null | string) => void;
-  modalOpen: boolean;
-  toggleModal: () => void;
-  children?: ReactNode;
-}) => {
-  const { rarityColorMap } = useContext(ThemeContext);
+
+  const clickTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  const handleClick = (item: Item) => {
+    clickTimeout.current = setTimeout(() => {
+      navigate(`inventory/items/${item.id}`);
+      clickTimeout.current = null;
+    }, 200);
+  };
 
   return (
-    <div className="flex w-full flex-col gap-8">
-      <ItemMenu equipment={equipment}>
-        {(item, index, { tab }) => {
-          return (
-            <div
-              key={index}
-              className="shadow-color flex flex-col rounded-br-4xl rounded-tl-4xl shadow-md"
-            >
-              <div className="bg-secondary relative flex w-full items-start gap-3 pr-4 clip-4 sm:gap-6">
-                <button
-                  className="group relative h-24 w-28 shrink-0 overflow-hidden pl-1 lg:h-28 lg:w-32"
-                  style={{ backgroundColor: rarityColorMap[item.rarity] }}
-                  onClick={() => toggleActive(item.id, tab)}
-                >
-                  {item.picture?.imageUrl ? (
-                    <img
-                      src={item.picture?.imageUrl}
-                      alt={item.name}
-                      className="size-full group-hover:opacity-80"
-                    />
-                  ) : (
-                    <div className="bg-tertiary h-full w-full p-1 group-hover:opacity-80">
-                      <p className="my-auto break-words text-center text-base">
-                        {item.name}
-                      </p>
-                    </div>
-                  )}
-                </button>
-                <div className="flex h-full w-full flex-col items-start justify-evenly gap-2 overflow-hidden">
-                  <h3 className="line-clamp-2 text-ellipsis">{item.name}</h3>
-                  {active?.id === item?.id ? (
-                    <button
-                      className="text-error text-lg hover:underline"
-                      onClick={() => toggleActive(null, null)}
-                    >
-                      Disarm
-                    </button>
-                  ) : (
-                    <button
-                      className="text-accent text-lg hover:underline"
-                      onClick={() => toggleActive(item.id, tab)}
-                    >
-                      Activate
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-          );
-        }}
-      </ItemMenu>
-    </div>
+    <>
+      <NavTabs>
+        <BtnAuth active={!category} onClick={() => handleTab(null)}>
+          All
+        </BtnAuth>
+        {equipment.weapons.length > 0 && (
+          <BtnAuth
+            active={category === 'weapon'}
+            onClick={() => handleTab('weapon')}
+          >
+            <WeaponIcon className="size-8" />
+          </BtnAuth>
+        )}
+        {equipment.armors.length > 0 && (
+          <BtnAuth
+            active={category === 'armor'}
+            onClick={() => handleTab('armor')}
+          >
+            <ArmorIcon className="size-8" />
+          </BtnAuth>
+        )}
+        {equipment.augmentations.length > 0 && (
+          <BtnAuth
+            active={category === 'cybernetic'}
+            onClick={() => handleTab('cybernetic')}
+          >
+            <CyberIcon className="size-8" />
+          </BtnAuth>
+        )}
+        {equipment.reusables.length > 0 && (
+          <BtnAuth
+            active={category === 'reusable'}
+            onClick={() => handleTab('reusable')}
+          >
+            <InventoryIcon className="size-8" />
+          </BtnAuth>
+        )}
+        {equipment.consumables.length > 0 && (
+          <BtnAuth
+            active={category === 'consumable'}
+            onClick={() => handleTab('consumable')}
+          >
+            <PotionIcon className="size-8" />
+          </BtnAuth>
+        )}
+        {equipment.vehicles.length > 0 && (
+          <BtnAuth
+            active={category === 'vehicle'}
+            onClick={() => handleTab('vehicle')}
+          >
+            <VehicleIcon className="size-8" />
+          </BtnAuth>
+        )}
+        {equipment.drones.length > 0 && (
+          <BtnAuth
+            active={category === 'drone'}
+            onClick={() => handleTab('drone')}
+          >
+            <DroneIcon className="size-8" />
+          </BtnAuth>
+        )}
+      </NavTabs>
+      <div className={`scrollbar-secondary-2 grid grid-cols-6 gap-2 sm:gap-4`}>
+        {items ? (
+          items.map((item) => (
+            <InventoryCard
+              key={item.id}
+              item={item}
+              onClick={() => handleClick(item)}
+            />
+          ))
+        ) : (
+          <h2 className="pl-4">???</h2>
+        )}
+      </div>
+      <Outlet context={{ parts }} />
+    </>
   );
 };
 
