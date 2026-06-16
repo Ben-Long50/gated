@@ -208,7 +208,17 @@ const characterServices = {
     },
     createCharacter: async (formData, userId, template) => {
         try {
-            const stats = Object.assign(Object.assign({}, formData.stats), { currentHealth: 10 + formData.attributes.violence.skills.threshold.points * 2, currentSanity: 5 + formData.attributes.esoterica.skills.mysticism.points, currentActions: 3, currentReactions: 1, currentHands: 2, currentFeet: 2, injuries: 0, insanities: 0 });
+            const stats = Object.assign(Object.assign({}, formData.stats), { currentHealth: formData.stats.maxHealth
+                    ? formData.stats.maxHealth +
+                        10 +
+                        formData.attributes.violence.skills.threshold.points * 2
+                    : 10 + formData.attributes.violence.skills.threshold.points * 2, currentSanity: formData.stats.maxSanity
+                    ? formData.stats.maxSanity +
+                        5 +
+                        formData.attributes.esoterica.skills.mysticism.points
+                    : 5 + formData.attributes.esoterica.skills.mysticism.points, currentActions: formData.stats.actions ? formData.stats.actions + 3 : 3, currentReactions: formData.stats.reactions
+                    ? formData.stats.reactions + 1
+                    : 1, currentHands: formData.stats.hands ? formData.stats.hands + 2 : 2, currentFeet: formData.stats.feet ? formData.stats.feet + 2 : 2, injuries: 0, insanities: 0 });
             const { perkIds, actionIds } = formData, data = __rest(formData, ["perkIds", "actionIds"]);
             const character = await prisma.$transaction(async (tx) => {
                 const character = await tx.character.create({
@@ -359,11 +369,11 @@ const characterServices = {
         var _a;
         try {
             const client = tx !== null && tx !== void 0 ? tx : prisma;
-            const profits = ((_a = (await prisma.character.findUnique({
+            const profits = ((_a = (await client.character.findUnique({
                 where: { id: characterId },
                 select: { profits: true },
             }))) === null || _a === void 0 ? void 0 : _a.profits) || 0;
-            const cart = await prisma.characterCart.findUnique({
+            const cart = await client.characterCart.findUnique({
                 where: { characterId },
                 select: {
                     items: {
@@ -391,7 +401,7 @@ const characterServices = {
                 throw new Error('You do not have enough profits to complete this purchase');
             }
             if (items.length > 0) {
-                itemServices.createCharacterItemCopy(inventoryId, items, client);
+                await itemServices.createCharacterItemCopy(inventoryId, items, client);
             }
             await client.character.update({
                 where: { id: Number(characterId) },

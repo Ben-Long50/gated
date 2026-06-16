@@ -106,9 +106,9 @@ const actionServices = {
         }
     },
     createCharacterActionCopy: async (actionList, characterInventoryId, tx) => {
-        const client = tx || prisma;
+        const client = tx !== null && tx !== void 0 ? tx : prisma;
         const actionIds = actionList === null || actionList === void 0 ? void 0 : actionList.map((action) => action.actionId);
-        const actions = await prisma.action.findMany({
+        const actions = await client.action.findMany({
             where: { id: { in: actionIds } },
             include: {
                 keywordModifiers: { select: { keywordId: true, value: true } },

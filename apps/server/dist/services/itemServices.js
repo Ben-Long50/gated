@@ -15,6 +15,7 @@ import { enforceSingularLinking } from '../utils/enforceSingularLinking.js';
 import { createLinkedCopies } from '../utils/createLinkedCopies.js';
 import actionServices from './actionServices.js';
 import { ConditionReferenceInput } from '../validation/conditionSchema.js';
+import addVariableStats from '../utils/addVariableStats.js';
 export const itemInclude = {
     baseItem: true,
     characterInventory: { select: { characterId: true } },
@@ -226,12 +227,13 @@ const itemServices = {
     },
     createOrUpdateItem: async (formData) => {
         try {
-            const { id, itemIds, actionIds, keywords, pictureFile } = formData, data = __rest(formData, ["id", "itemIds", "actionIds", "keywords", "pictureFile"]);
+            const { id, itemIds, actionIds, keywords, pictureFile, stats } = formData, data = __rest(formData, ["id", "itemIds", "actionIds", "keywords", "pictureFile", "stats"]);
+            const newStats = addVariableStats(stats);
             formData.id &&
                 (await enforceSingularLinking(formData.id, itemIds, actionIds));
             const item = await prisma.item.upsert({
                 where: { id: id || 0 },
-                update: Object.assign(Object.assign({}, data), { updatedAt: new Date(), itemLinkReference: {
+                update: Object.assign(Object.assign({}, data), { stats: newStats, updatedAt: new Date(), itemLinkReference: {
                         upsert: {
                             where: { itemId: id || 0 },
                             update: {
@@ -252,7 +254,7 @@ const itemServices = {
                             },
                         },
                     }, keywords: { deleteMany: {}, createMany: { data: keywords } } }),
-                create: Object.assign(Object.assign({}, data), { itemLinkReference: {
+                create: Object.assign(Object.assign({}, data), { stats: newStats, itemLinkReference: {
                         create: {
                             items: {
                                 connect: itemIds === null || itemIds === void 0 ? void 0 : itemIds.map((id) => ({ id })),
