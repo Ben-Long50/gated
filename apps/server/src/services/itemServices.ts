@@ -8,6 +8,7 @@ import actionServices from './actionServices.js';
 import { ItemInput, ItemUpgradeInput } from '../validation/itemSchema.js';
 import { ItemStats, Picture } from '../validation/fieldSchemas.js';
 import { ConditionReferenceInput } from '../validation/conditionSchema.js';
+import addVariableStats from '../utils/addVariableStats.js';
 
 export const itemInclude = {
   baseItem: true,
@@ -244,8 +245,10 @@ const itemServices = {
 
   createOrUpdateItem: async (formData: ItemInput & { base?: boolean }) => {
     try {
-      const { id, itemIds, actionIds, keywords, pictureFile, ...data } =
+      const { id, itemIds, actionIds, keywords, pictureFile, stats, ...data } =
         formData;
+
+      const newStats = addVariableStats(stats);
 
       formData.id &&
         (await enforceSingularLinking(formData.id, itemIds, actionIds));
@@ -254,6 +257,7 @@ const itemServices = {
         where: { id: id || 0 },
         update: {
           ...data,
+          stats: newStats,
           updatedAt: new Date(),
           itemLinkReference: {
             upsert: {
@@ -280,6 +284,7 @@ const itemServices = {
         },
         create: {
           ...data,
+          stats: newStats,
           itemLinkReference: {
             create: {
               items: {

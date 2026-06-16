@@ -227,14 +227,22 @@ const characterServices = {
     try {
       const stats = {
         ...formData.stats,
-        currentHealth:
-          10 + formData.attributes.violence.skills.threshold.points * 2,
-        currentSanity:
-          5 + formData.attributes.esoterica.skills.mysticism.points,
-        currentActions: 3,
-        currentReactions: 1,
-        currentHands: 2,
-        currentFeet: 2,
+        currentHealth: formData.stats.maxHealth
+          ? formData.stats.maxHealth +
+            10 +
+            formData.attributes.violence.skills.threshold.points * 2
+          : 10 + formData.attributes.violence.skills.threshold.points * 2,
+        currentSanity: formData.stats.maxSanity
+          ? formData.stats.maxSanity +
+            5 +
+            formData.attributes.esoterica.skills.mysticism.points
+          : 5 + formData.attributes.esoterica.skills.mysticism.points,
+        currentActions: formData.stats.actions ? formData.stats.actions + 3 : 3,
+        currentReactions: formData.stats.reactions
+          ? formData.stats.reactions + 1
+          : 1,
+        currentHands: formData.stats.hands ? formData.stats.hands + 2 : 2,
+        currentFeet: formData.stats.feet ? formData.stats.feet + 2 : 2,
         injuries: 0,
         insanities: 0,
       };
