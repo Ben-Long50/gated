@@ -2,20 +2,16 @@ import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
 import { Item } from 'src/types/item';
 import constructFormData from './constructFormData';
-import { useSearchParams } from 'react-router-dom';
 
 const useItemForm = (
   mutation: UseMutationResult<any, Error, FormData>,
   item?: Item,
 ) => {
-  const [searchParams] = useSearchParams();
-  const category = searchParams.get('category') ?? '';
-
   const itemForm = useForm({
     defaultValues: {
       id: item?.id ?? null,
       name: item?.name ?? '',
-      itemTypes: item?.itemTypes ?? ([category] as string[]),
+      itemTypes: item?.itemTypes ?? ([] as string[]),
       rarity: item?.rarity ?? '',
       grade: item?.grade ?? 1,
       pictureFile: null as File | null,

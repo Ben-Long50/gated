@@ -156,8 +156,13 @@ const ItemForm = () => {
       <StatFields form={itemForm} />
       <div className="flex flex-col gap-4">
         <Divider />
+        <ArrowHeader2 title="Traits" />
         <KeywordLinkField form={itemForm} />
+        <Divider />
+        <ArrowHeader2 title="Actions" />
         <ActionLinkField form={itemForm} />
+        <Divider />
+        <ArrowHeader2 title="Items" />
         <ItemLinkField form={itemForm} />
       </div>
     </FormLayout>

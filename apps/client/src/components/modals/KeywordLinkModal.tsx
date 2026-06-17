@@ -5,7 +5,7 @@ import BtnRect from '../buttons/BtnRect';
 import useModalStore from 'src/stores/modalStore';
 
 const KeywordLinkModal = () => {
-  const { field } = useOutletContext() || {};
+  const { form } = useOutletContext() || {};
   const navigate = useNavigate();
 
   const backgroundPath = useModalStore((state) => state.backgroundPath);
@@ -25,7 +25,7 @@ const KeywordLinkModal = () => {
         </BtnRect>
       }
     >
-      <Keywords field={field} />
+      <Keywords form={form} />
     </Modal>
   );
 };

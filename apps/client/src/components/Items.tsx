@@ -1,10 +1,9 @@
 import { useContext, useState } from 'react';
 import InputField from './formFields/InputField';
-import { FieldApi } from '@tanstack/react-form';
+import { FormApi } from '@tanstack/react-form';
 import Loading from './Loading';
 import useBaseItems from '../hooks/useBaseItems';
 import { Item } from 'src/types/item';
-import ArrowHeader2 from './ArrowHeader2';
 import { LayoutContext } from '../contexts/LayoutContext';
 import Icon from '@mdi/react';
 import { mdiCropSquare, mdiGrid, mdiLinkVariant, mdiSync } from '@mdi/js';
@@ -15,15 +14,7 @@ import ItemCard from './ItemCard';
 import BtnAuth from './buttons/BtnAuth';
 import IconBtnMedium from './buttons/IconBtnMedium';
 
-const Items = ({
-  itemList,
-  field,
-  toggleFormLink,
-}: {
-  itemList?: Item[];
-  field?: FieldApi;
-  toggleFormLink?: (itemId: number) => void;
-}) => {
+const Items = ({ itemList, form }: { itemList?: Item[]; form?: FormApi }) => {
   const { mobile } = useContext(LayoutContext);
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -159,47 +150,63 @@ const Items = ({
           )}
         </div>
       </div>
-      <div
-        className={`${cardType === 'small' ? 'grid-cols-[repeat(auto-fit,_minmax(350px,_1fr))] gap-4' : 'grid-cols-1 gap-8'} grid w-full`}
-      >
-        {isLoading ? (
-          <Loading />
-        ) : (
-          items?.map((item: Item) => {
-            const linkCount =
-              mode === 'form'
-                ? field.state.value.reduce((sum: number, id: number) => {
-                    if (id === item.id) {
-                      return sum + 1;
-                    } else {
-                      return sum;
-                    }
-                  }, 0)
-                : 0;
+      {form ? (
+        <form.Field name="itemIds">
+          {(field) => (
+            <div
+              className={`${cardType === 'small' ? 'grid-cols-[repeat(auto-fit,_minmax(350px,_1fr))] gap-4' : 'grid-cols-1 gap-8'} grid w-full`}
+            >
+              {isLoading ? (
+                <Loading />
+              ) : (
+                items?.map((item: Item) => {
+                  const linkCount = field.state.value.reduce(
+                    (sum: number, id: number) => {
+                      if (id === item.id) {
+                        return sum + 1;
+                      } else {
+                        return sum;
+                      }
+                    },
+                    0,
+                  );
 
-            return (
-              <div key={item.id} className="flex w-full items-center gap-4">
-                <ItemCard className="grow" item={item} cardType={cardType} />
-                {toggleFormLink && mode === 'form' && (
-                  <div className="flex flex-col items-center justify-center gap-2">
-                    {linkCount > 0 && <p>{linkCount}</p>}
-                    <button
-                      className="shadow-color hover:border-accent timing bg-secondary group rounded border-2 border-transparent p-4"
-                      onClick={() => toggleFormLink(item.id)}
+                  return (
+                    <div
+                      key={item.id}
+                      className="flex w-full items-center gap-4"
                     >
-                      <Icon
-                        className="text-primary timing group-hover:text-accent"
-                        path={mdiLinkVariant}
-                        size={1.2}
-                      />
-                    </button>
-                  </div>
-                )}
-              </div>
-            );
-          })
-        )}
-      </div>
+                      <ItemCard item={item} cardType={cardType} menu={false} />
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        {linkCount > 0 && <p>{linkCount}</p>}
+                        <IconBtnMedium
+                          onClick={() => {
+                            field.handleChange((prev) => [...prev, item.id]);
+                          }}
+                        >
+                          <Icon path={mdiLinkVariant} />
+                        </IconBtnMedium>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          )}
+        </form.Field>
+      ) : (
+        <div
+          className={`${cardType === 'small' ? 'grid-cols-[repeat(auto-fit,_minmax(350px,_1fr))] gap-4' : 'grid-cols-1 gap-8'} grid w-full`}
+        >
+          {isLoading ? (
+            <Loading />
+          ) : (
+            items?.map((item: Item) => (
+              <ItemCard item={item} cardType={cardType} />
+            ))
+          )}
+        </div>
+      )}
     </div>
   );
 };

@@ -28,7 +28,7 @@ const useInputState = (value: string | number, errors?: string[]) => {
   const [focus, setFocus] = useState(false);
 
   const handleBorder = () => {
-    const length = value ? value.toString().length : 0;
+    const length = value != null ? value.toString().length : 0;
 
     if (errors && errors.length > 0) {
       setFieldState(errorState);

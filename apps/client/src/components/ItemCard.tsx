@@ -117,7 +117,7 @@ const ItemCard = ({
   const uniqueActions = item.itemLinkReference?.actions || [];
 
   return (
-    <div className={`${className}`} ref={ref} style={style}>
+    <div className={`${className} w-full`} ref={ref} style={style}>
       {inView && (
         <ThemeContainer
           chamfer="medium"
@@ -129,7 +129,9 @@ const ItemCard = ({
             className={`timing relative flex w-full cursor-pointer flex-col gap-8 p-4`}
             onClick={(e) => {
               e.stopPropagation();
-              handleMenu(e);
+              if (menu) {
+                handleMenu(e);
+              }
             }}
           >
             {menu && <ItemRadialMenu item={item} containerRef={containerRef} />}

@@ -42,7 +42,7 @@ const InputField = ({
           }}
         />
         <label
-          className={` ${fieldState.label} timing absolute left-5 top-3.5 transform cursor-text`}
+          className={` ${fieldState.label} timing pointer-events-none absolute left-5 top-3.5 transform cursor-text`}
         >
           {label}
         </label>

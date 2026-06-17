@@ -25,7 +25,7 @@ const InputFieldCheckbox = ({
     >
       {label && (
         <label
-          className={`${checked ? 'text-accent font-semibold' : 'text-secondary'} w-full grow cursor-text text-xl`}
+          className={`${checked ? 'text-accent font-semibold' : 'text-secondary'} flex w-full grow cursor-text items-center gap-4 text-xl`}
         >
           {label}
         </label>

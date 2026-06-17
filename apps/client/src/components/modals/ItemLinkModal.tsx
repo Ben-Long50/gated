@@ -7,13 +7,9 @@ import BtnRect from '../buttons/BtnRect';
 const ItemLinkModal = () => {
   const navigate = useNavigate();
 
-  const { field } = useOutletContext() || {};
+  const { form } = useOutletContext() || {};
 
   const backgroundPath = useModalStore((state) => state.backgroundPath);
-
-  const toggleFormLink = (itemId: number) => {
-    field.handleChange([...field.state.value, itemId]);
-  };
 
   return (
     <Modal
@@ -22,9 +18,7 @@ const ItemLinkModal = () => {
           type="button"
           ariaLabel="Confirm preferences"
           className="w-full"
-          onClick={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
+          onClick={() => {
             if (!backgroundPath) {
               navigate('..', { replace: true });
             } else {
@@ -37,7 +31,7 @@ const ItemLinkModal = () => {
         </BtnRect>
       }
     >
-      <Items toggleFormLink={toggleFormLink} field={field} />
+      <Items form={form} />
     </Modal>
   );
 };

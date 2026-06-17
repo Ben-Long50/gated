@@ -87,6 +87,7 @@ const CharacterForm = () => {
           onChange: ({ value }) => {
             if (value) {
               characterForm.setFieldValue('npcTypes', null);
+              characterForm.setFieldValue('profits', null);
               characterForm.setFieldValue('description', null);
               characterForm.setFieldValue('stats', {
                 permanentInjuries: 5,
@@ -94,6 +95,7 @@ const CharacterForm = () => {
               });
             } else if (!value) {
               characterForm.setFieldValue('npcTypes', []);
+              characterForm.setFieldValue('profits', 10);
               characterForm.setFieldValue('description', '');
               characterForm.setFieldValue('stats', (prev) => ({
                 ...prev,
