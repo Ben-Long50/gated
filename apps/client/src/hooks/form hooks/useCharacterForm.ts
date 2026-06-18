@@ -1,12 +1,10 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
-import { Character } from 'src/types/character';
 import constructFormData, { filterStats } from './constructFormData';
 import useAttributeTree from '../useAttributeTree';
 
 const useCharacterForm = (
   mutation: UseMutationResult<any, Error, FormData>,
-  character?: Character,
 ) => {
   const { emptyAttributeTree } = useAttributeTree();
 
@@ -16,6 +14,7 @@ const useCharacterForm = (
       npcTypes: null as null | string[],
       profits: null as number | null,
       campaignId: null as number | null,
+      level: 1,
       preferences: {
         firstName: true,
         lastName: true,

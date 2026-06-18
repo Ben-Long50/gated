@@ -11,7 +11,7 @@ const useItemForm = (
     defaultValues: {
       id: item?.id ?? null,
       name: item?.name ?? '',
-      itemTypes: item?.itemTypes ?? ([] as string[]),
+      itemTypes: item?.itemTypes ?? ([''] as string[]),
       rarity: item?.rarity ?? '',
       grade: item?.grade ?? 1,
       pictureFile: null as File | null,

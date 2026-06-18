@@ -5,6 +5,7 @@ import BtnAuth from '../buttons/BtnAuth';
 import InputFieldCheckbox from './InputFieldCheckbox';
 import { useContext } from 'react';
 import { LayoutContext } from 'src/contexts/LayoutContext';
+import ArrowHeader2 from '../ArrowHeader2';
 
 const ActionLinkField = ({ form, path }: { form: FormApi; path?: string }) => {
   const { mobile } = useContext(LayoutContext);
@@ -15,6 +16,7 @@ const ActionLinkField = ({ form, path }: { form: FormApi; path?: string }) => {
   return (
     <>
       {parts.includes('actions') && <Outlet context={{ form }} />}
+      <ArrowHeader2 title="Actions" />
       <form.Field name="actionIds">
         {(field) =>
           field.state.value.length > 0 && (

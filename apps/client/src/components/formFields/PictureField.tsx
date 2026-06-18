@@ -92,6 +92,27 @@ const PictureField = ({
               )}
             </form.Subscribe>
           </ThemeContainer>
+        </div>
+        <div className="flex flex-col gap-8">
+          <promptForm.Field name="pictureCount">
+            {(field) => (
+              <div className="flex items-center justify-between gap-4">
+                <IconBtnSmall
+                  active={field.state.value > 1}
+                  onClick={() => field.handleChange((prev) => prev - 1)}
+                >
+                  <Icon path={mdiMinus} />
+                </IconBtnSmall>
+                <p>Picture Count {field.state.value}</p>
+                <IconBtnSmall
+                  active={field.state.value < 4}
+                  onClick={() => field.handleChange((prev) => prev + 1)}
+                >
+                  <Icon path={mdiPlus} />
+                </IconBtnSmall>
+              </div>
+            )}
+          </promptForm.Field>
           <promptForm.Subscribe selector={(state) => state.values.pictureCount}>
             {(pictureCount) => (
               <div className="grid grid-cols-4 gap-4">
@@ -132,28 +153,7 @@ const PictureField = ({
               </div>
             )}
           </promptForm.Subscribe>
-        </div>
-        <div className="flex flex-col gap-8">
-          <promptForm.Field name="pictureCount">
-            {(field) => (
-              <div className="flex items-center justify-between gap-4">
-                <IconBtnSmall
-                  active={field.state.value > 1}
-                  onClick={() => field.handleChange((prev) => prev - 1)}
-                >
-                  <Icon path={mdiMinus} />
-                </IconBtnSmall>
-                <p>Picture Count {field.state.value}</p>
-                <IconBtnSmall
-                  active={field.state.value < 4}
-                  onClick={() => field.handleChange((prev) => prev + 1)}
-                >
-                  <Icon path={mdiPlus} />
-                </IconBtnSmall>
-              </div>
-            )}
-          </promptForm.Field>
-          <div className="flex flex-col gap-3 border-x-2 border-x-gray-400 border-opacity-50 px-4">
+          <div className="mt-auto flex flex-col gap-3 border-x-2 border-x-gray-400 border-opacity-50 px-4">
             <promptForm.Subscribe
               selector={(state) => [
                 state.values.time,

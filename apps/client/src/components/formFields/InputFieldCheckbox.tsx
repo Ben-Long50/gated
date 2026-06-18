@@ -31,7 +31,7 @@ const InputFieldCheckbox = ({
         </label>
       )}
       <button
-        className={`${!active && 'pointer-events-none opacity-50'}`}
+        className={`${!active && 'text-tertiary pointer-events-none opacity-50'}`}
         onClick={(e) => {
           e.preventDefault();
           inputRef.current?.click();

@@ -111,8 +111,8 @@ const CampaignForm = () => {
                     {(subfield) => (
                       <InputField
                         label="Faction name"
-                        value={field.state.value}
-                        onChange={(value) => field.handleChange(value)}
+                        value={subfield.state.value}
+                        onChange={(value) => subfield.handleChange(value)}
                       />
                     )}
                   </campaignForm.Field>

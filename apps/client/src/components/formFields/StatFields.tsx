@@ -9,7 +9,7 @@ const StatFields = ({ form }: { form: FormApi }) => {
   return (
     <>
       <Divider />
-      <ArrowHeader2 title="Item Stats" />
+      <ArrowHeader2 title="Stats" />
       {!itemTypes || itemTypes.length === 0 ? (
         <p>Select at least 1 Item Type</p>
       ) : (

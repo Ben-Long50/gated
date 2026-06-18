@@ -8,6 +8,7 @@ import Icon from '@mdi/react';
 import { mdiLinkVariantOff } from '@mdi/js';
 import IconBtnMedium from '../buttons/IconBtnMedium';
 import Loading from '../Loading';
+import ArrowHeader2 from '../ArrowHeader2';
 
 const ItemLinkField = ({ form }: { form: FormApi }) => {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ const ItemLinkField = ({ form }: { form: FormApi }) => {
   return (
     <>
       {parts.includes('links') && <Outlet context={{ form, parts }} />}
+      <ArrowHeader2 title="Linked Items" />
       {isLoading ? (
         <Loading />
       ) : (

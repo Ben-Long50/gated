@@ -6,6 +6,7 @@ import BtnAuth from '../buttons/BtnAuth';
 import InputFieldCheckbox from './InputFieldCheckbox';
 import { useContext } from 'react';
 import { LayoutContext } from 'src/contexts/LayoutContext';
+import ArrowHeader2 from '../ArrowHeader2';
 
 const KeywordLinkField = ({ form, mode }: { form: FormApi; mode?: string }) => {
   const { mobile } = useContext(LayoutContext);
@@ -18,6 +19,7 @@ const KeywordLinkField = ({ form, mode }: { form: FormApi; mode?: string }) => {
   return (
     <>
       {parts.includes('traits') && <Outlet context={{ form, parts }} />}
+      <ArrowHeader2 title="Traits" />
       <form.Field name="keywords">
         {(field) =>
           field.state.value.length > 0 && (

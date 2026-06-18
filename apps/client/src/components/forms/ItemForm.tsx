@@ -50,102 +50,84 @@ const ItemForm = () => {
       deleteMutation={itemId ? deleteItem : undefined}
     >
       <ArrowHeader2 title="Item Information" />
-      <div className="flex w-full flex-col gap-4">
-        <div className="flex w-full gap-4">
-          <itemForm.Field name="name">
-            {(field) => (
-              <InputField
-                label={'Item Name'}
-                value={field.state.value}
-                onChange={(value) => field.handleChange(value)}
-              />
-            )}
-          </itemForm.Field>
-          <itemForm.Field name="price">
-            {(field) => (
-              <InputField
-                className="max-w-28"
-                type="number"
-                label="Price"
-                value={field.state.value}
-                onChange={(value) => field.handleChange(value)}
-              />
-            )}
-          </itemForm.Field>
-        </div>
-        <div className="flex w-full items-center gap-4">
-          <RarityField form={itemForm} />
-          <itemForm.Field name="grade">
-            {(field) => (
-              <InputField
-                className="w-full max-w-28"
-                type="number"
-                label="Grade"
-                value={field.state.value}
-                onChange={(value) => field.handleChange(value)}
-              />
-            )}
-          </itemForm.Field>
-        </div>
-        <itemForm.Field name="itemTypes">
+      <div className="flex w-full gap-4">
+        <itemForm.Field name="name">
           {(field) => (
-            <div className="flex w-full flex-col gap-4">
-              {field.state.value.map((_, i) => (
-                <div className="flex w-full items-center gap-4">
-                  <itemForm.Field key={i} name={`itemTypes[${i}]`}>
-                    {(subfield) => (
-                      <InputSelectField
-                        label="Item Type"
-                        options={[
-                          'weapon',
-                          'armor',
-                          'cybernetic',
-                          'mutation',
-                          'vehicle',
-                          'drone',
-                          'modification',
-                          'reusable',
-                          'consumable',
-                        ]}
-                        value={subfield.state.value}
-                        onChange={(value) => subfield.handleChange(value)}
-                      />
-                    )}
-                  </itemForm.Field>
-                  {i > 0 && (
-                    <button onClick={() => field.removeValue(i)} type="button">
-                      <Icon
-                        className="text-tertiary hover:text-accent timing"
-                        path={mdiClose}
-                        size={1.5}
-                      />
-                    </button>
-                  )}
-                </div>
-              ))}
-              <BtnAuth
-                onClick={() => {
-                  itemForm.setFieldValue('itemTypes', [
-                    ...field.state.value,
-                    '',
-                  ]);
-                }}
-              >
-                Add Item Type
-              </BtnAuth>
-            </div>
+            <InputField
+              label={'Item Name'}
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
+            />
           )}
         </itemForm.Field>
-        <itemForm.Field name="description">
+        <itemForm.Field name="price">
           {(field) => (
-            <TextAreaField
-              label="Item Description"
+            <InputField
+              className="max-w-28"
+              type="number"
+              label="Price"
               value={field.state.value}
               onChange={(value) => field.handleChange(value)}
             />
           )}
         </itemForm.Field>
       </div>
+      <RarityField form={itemForm} />
+      <itemForm.Field name="itemTypes">
+        {(field) => (
+          <div className="flex w-full flex-col gap-4">
+            {field.state.value.map((_, i) => (
+              <div className="flex w-full items-center gap-4">
+                <itemForm.Field key={i} name={`itemTypes[${i}]`}>
+                  {(subfield) => (
+                    <InputSelectField
+                      label="Item Type"
+                      options={[
+                        'weapon',
+                        'armor',
+                        'cybernetic',
+                        'mutation',
+                        'vehicle',
+                        'drone',
+                        'modification',
+                        'reusable',
+                        'consumable',
+                      ]}
+                      value={subfield.state.value}
+                      onChange={(value) => subfield.handleChange(value)}
+                    />
+                  )}
+                </itemForm.Field>
+                {i > 0 && (
+                  <button onClick={() => field.removeValue(i)} type="button">
+                    <Icon
+                      className="text-tertiary hover:text-accent timing"
+                      path={mdiClose}
+                      size={1.5}
+                    />
+                  </button>
+                )}
+              </div>
+            ))}
+            <BtnAuth
+              onClick={() => {
+                itemForm.setFieldValue('itemTypes', [...field.state.value, '']);
+              }}
+            >
+              Add Item Type
+            </BtnAuth>
+          </div>
+        )}
+      </itemForm.Field>
+      <itemForm.Field name="description">
+        {(field) => (
+          <TextAreaField
+            label="Item Description"
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
+          />
+        )}
+      </itemForm.Field>
       <Divider />
       <ArrowHeader2 title="Item Picture" />
       <PictureField
@@ -154,17 +136,12 @@ const ItemForm = () => {
         sizeInfo={{ aspectRatio: '1/1', maxHeight: '', minHeight: '' }}
       />
       <StatFields form={itemForm} />
-      <div className="flex flex-col gap-4">
-        <Divider />
-        <ArrowHeader2 title="Traits" />
-        <KeywordLinkField form={itemForm} />
-        <Divider />
-        <ArrowHeader2 title="Actions" />
-        <ActionLinkField form={itemForm} />
-        <Divider />
-        <ArrowHeader2 title="Items" />
-        <ItemLinkField form={itemForm} />
-      </div>
+      <Divider />
+      <KeywordLinkField form={itemForm} />
+      <Divider />
+      <ActionLinkField form={itemForm} />
+      <Divider />
+      <ItemLinkField form={itemForm} />
     </FormLayout>
   );
 };

@@ -35,7 +35,7 @@ const PerkCard = ({
     : [];
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex w-full items-center gap-4">
       <ItemCardSmall
         expanded={expanded}
         heading={

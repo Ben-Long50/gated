@@ -21,6 +21,7 @@ import CharacterStatBars from '../characterComponents/CharacterStatBars';
 import useCreateCodexCharacterMutation from 'src/hooks/useCreateCodexCharacterMutation/useCreateCodexCharacterMutation';
 import { useSearchParams } from 'react-router-dom';
 import ActionLinkField from '../formFields/ActionLinkField';
+import calculateLevelBonus from 'src/utils/calculateLevelBonus';
 
 const CharacterForm = () => {
   const { data: campaigns } = useCampaignsQuery();
@@ -33,9 +34,10 @@ const CharacterForm = () => {
 
   const createMutation =
     formType === 'codex' ? createCodexCharacter : createCharacter;
+
   const characterForm = useCharacterForm(createMutation);
 
-  const perks = useStore(characterForm.store, (state) => state.values.perksIds);
+  const perks = useStore(characterForm.store, (state) => state.values.perkIds);
 
   const characterStats = useStore(
     characterForm.store,
@@ -50,7 +52,7 @@ const CharacterForm = () => {
     [attributesJson],
   );
 
-  const { usedAttributePoints, usedSkillPoints } = useAttributeTree(attributes);
+  // const { usedAttributePoints, usedSkillPoints } = useAttributeTree(attributes);
 
   const stats = calculateStats(
     {
@@ -88,6 +90,7 @@ const CharacterForm = () => {
             if (value) {
               characterForm.setFieldValue('npcTypes', null);
               characterForm.setFieldValue('profits', null);
+              characterForm.setFieldValue('level', 1);
               characterForm.setFieldValue('description', null);
               characterForm.setFieldValue('stats', {
                 permanentInjuries: 5,
@@ -96,6 +99,7 @@ const CharacterForm = () => {
             } else if (!value) {
               characterForm.setFieldValue('npcTypes', []);
               characterForm.setFieldValue('profits', 10);
+              characterForm.setFieldValue('level', 1);
               characterForm.setFieldValue('description', '');
               characterForm.setFieldValue('stats', (prev) => ({
                 ...prev,
@@ -238,39 +242,98 @@ const CharacterForm = () => {
       </characterForm.Subscribe>
       <Divider />
       <ArrowHeader2 title="Attributes and skills" />
-      <div className="flex w-full flex-col gap-4 border-l-2 border-gray-400 border-opacity-50 pl-4">
-        <p className="flex justify-between">
-          <span className="text-tertiary">Starting Attribute Points</span>
-          <span className="text-xl">{usedAttributePoints} / 6</span>
-        </p>
-        <p className="flex justify-between">
-          <span className="text-tertiary">Starting Skill Points</span>
-          <span className="text-xl">{usedSkillPoints} / 12</span>
-        </p>
-      </div>
-      <AttributeField form={characterForm} />
+      <characterForm.Subscribe
+        selector={(state) => [state.values.level, state.values.attributes]}
+      >
+        {([level, attributes]) => {
+          const {
+            attributePoints,
+            skillPoints,
+            perkPoints,
+            masterPerkPoints,
+            usedAttributePoints,
+            usedSkillPoints,
+            usedPerkPoints,
+            usedMasterPerkPoints,
+          } = calculateLevelBonus(level, attributes);
+
+          return (
+            <>
+              <div className="flex w-full flex-col gap-4">
+                <div className="flex justify-between">
+                  <p>Attribute Points</p>
+                  <div className="flex items-center gap-2">
+                    <p className="grid size-6 place-content-center">
+                      {usedAttributePoints}
+                    </p>
+                    <p> / </p>
+                    <p className="grid size-6 place-content-center">
+                      {attributePoints}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex justify-between">
+                  <p>Skill Points</p>
+                  <div className="flex items-center gap-2">
+                    <p className="grid size-6 place-content-center">
+                      {usedSkillPoints}
+                    </p>
+                    <p> / </p>
+                    <p className="grid size-6 place-content-center">
+                      {skillPoints}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex justify-between">
+                  <p>Perks</p>
+                  <div className="flex items-center gap-2">
+                    <p className="grid size-6 place-content-center">
+                      {usedPerkPoints}
+                    </p>
+                    <p> / </p>
+                    <p className="grid size-6 place-content-center">
+                      {perkPoints}
+                    </p>
+                  </div>
+                </div>
+                {masterPerkPoints > 0 && (
+                  <div className="flex justify-between">
+                    <p>Master Perks</p>
+                    <div className="flex items-center gap-2">
+                      <p className="grid size-6 place-content-center">
+                        {usedMasterPerkPoints}
+                      </p>
+                      <p> / </p>
+                      <p className="grid size-6 place-content-center">
+                        {masterPerkPoints}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <AttributeField
+                form={characterForm}
+                attributeTree={attributes}
+                attributeIncrease={usedAttributePoints < attributePoints}
+                skillIncrease={usedSkillPoints < skillPoints}
+              />
+            </>
+          );
+        }}
+      </characterForm.Subscribe>
       <Divider />
-      <ArrowHeader2 title="Starting Perk" />
-      <p className="text-tertiary border-l-2 border-gray-400 border-opacity-50 pl-4">
-        Select a starting perk for your character. Available perks are only
-        shown if you meet the attribute and skill point requirements
-      </p>
-      <characterForm.Subscribe selector={(state) => state.values.attributes}>
-        {(attributes) => (
-          <div className="flex flex-col gap-4">
-            <PerkLinkField
-              form={characterForm}
-              attributeTree={attributes}
-              path="perks?formType=codex&mode=form"
-            />
-          </div>
+      <characterForm.Subscribe
+        selector={(state) => [state.values.level, state.values.attributes]}
+      >
+        {([level, attributes]) => (
+          <PerkLinkField
+            form={characterForm}
+            level={level}
+            attributeTree={attributes}
+            path="perks?formType=codex&mode=form"
+          />
         )}
       </characterForm.Subscribe>
-      <ArrowHeader2 title="Character Specific Actions" />
-      <p className="text-tertiary border-l-2 border-gray-400 border-opacity-50 pl-4">
-        Select actions that are linked directly to, and usable by this character
-        regardless of equipment loadout
-      </p>
       <ActionLinkField
         form={characterForm}
         path="actions?formType=codex&mode=form"

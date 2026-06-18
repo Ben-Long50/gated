@@ -31,16 +31,8 @@ const PropertyForm = () => {
       createMutation={createProperty}
     >
       <ArrowHeader2 title="Property Information" />
-      <div className="flex w-full gap-4 lg:gap-8">
-        <propertyForm.Field
-          name="name"
-          validators={{
-            onChange: ({ value }) =>
-              value.length < 2
-                ? 'Gang name must be at least 2 characters long'
-                : undefined,
-          }}
-        >
+      <div className="flex w-full gap-4">
+        <propertyForm.Field name="name">
           {(field) => (
             <InputField
               label="Property Name"
@@ -49,17 +41,7 @@ const PropertyForm = () => {
             />
           )}
         </propertyForm.Field>
-        <propertyForm.Field
-          name="gpPrice"
-          validators={{
-            onChange: ({ value }) => {
-              if (!value || value < 0) {
-                return 'Gang Point price cannot be negative';
-              }
-              return undefined;
-            },
-          }}
-        >
+        <propertyForm.Field name="gpPrice">
           {(field) => (
             <InputField
               className="max-w-28"
@@ -71,15 +53,7 @@ const PropertyForm = () => {
           )}
         </propertyForm.Field>
       </div>
-      <propertyForm.Field
-        name="type"
-        validators={{
-          onChange: ({ value }) =>
-            value.length < 2
-              ? 'Gang name must be at least 2 characters long'
-              : undefined,
-        }}
-      >
+      <propertyForm.Field name="type">
         {(field) => (
           <InputSelectField
             label="Property Type"
@@ -89,29 +63,20 @@ const PropertyForm = () => {
           />
         )}
       </propertyForm.Field>
-      <div className="grid w-full gap-8 max-sm:col-span-2 max-sm:grid-flow-row sm:grid-cols-2">
-        <PictureField
-          form={propertyForm}
-          sizeInfo={{ aspectRatio: '1/1', maxHeight: '', minHeight: '' }}
-        />
-        <propertyForm.Field
-          name="description"
-          validators={{
-            onChange: ({ value }) =>
-              value.length < 2
-                ? `Property description must be at least 2 characters long`
-                : undefined,
-          }}
-        >
-          {(field) => (
-            <TextAreaField
-              label="Property Description"
-              value={field.state.value}
-              onChange={(value) => field.handleChange(value)}
-            />
-          )}
-        </propertyForm.Field>
-      </div>
+      <propertyForm.Field name="description">
+        {(field) => (
+          <TextAreaField
+            label="Property Description"
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
+          />
+        )}
+      </propertyForm.Field>
+      <PictureField
+        form={propertyForm}
+        type="scene"
+        sizeInfo={{ aspectRatio: '1/1', maxHeight: '', minHeight: '' }}
+      />
     </FormLayout>
   );
 };

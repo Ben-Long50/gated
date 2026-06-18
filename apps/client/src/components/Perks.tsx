@@ -18,9 +18,11 @@ import { LayoutContext } from 'src/contexts/LayoutContext';
 
 const Perks = ({
   form,
+  level,
   attributeTree,
 }: {
   form?: FormApi;
+  level?: number;
   attributeTree?: AttributeTree;
 }) => {
   const { mobile } = useContext(LayoutContext);
@@ -98,7 +100,12 @@ const Perks = ({
           </IconBtnMedium>
         </div>
       </div>
-      <PerkList perkTree={filteredPerkTree} form={form} />
+      <PerkList
+        perkTree={filteredPerkTree}
+        level={level}
+        attributes={attributeTree}
+        form={form}
+      />
     </>
   );
 };

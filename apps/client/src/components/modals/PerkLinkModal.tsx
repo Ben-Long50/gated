@@ -5,9 +5,11 @@ import useModalStore from 'src/stores/modalStore';
 import Perks from '../Perks';
 import ArrowHeader4 from '../ArrowHeader4';
 import PerkCard from '../PerkCard';
+import { useStore } from 'zustand';
+import useLevelBonus from 'src/hooks/useLevelBonus';
 
 const PerkLinkModal = () => {
-  const { form, attributeTree } = useOutletContext() || {};
+  const { form, level, attributeTree } = useOutletContext() || {};
   const navigate = useNavigate();
 
   const backgroundPath = useModalStore((state) => state.backgroundPath);
@@ -43,7 +45,7 @@ const PerkLinkModal = () => {
         </>
       }
     >
-      <Perks form={form} attributeTree={attributeTree} />
+      <Perks form={form} level={level} attributeTree={attributeTree} />
     </Modal>
   );
 };

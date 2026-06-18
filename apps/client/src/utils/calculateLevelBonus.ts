@@ -7,7 +7,7 @@ import getUsedPoints from './getUsedPoints.js';
 const calculateLevelBonus = (
   level: number,
   attributeTree: AttributeTree,
-  perks: Perk[],
+  perks?: Perk[],
 ) => {
   let levelBonus = null;
 
@@ -124,7 +124,7 @@ const calculateLevelBonus = (
   let usedPerkPoints = 0;
   let usedMasterPerkPoints = 0;
 
-  perks.forEach((perk) => {
+  perks?.forEach((perk) => {
     const { usedAttributePoints, usedSkillPoints } = getUsedPoints(
       perk.attributes,
     );

@@ -1,18 +1,35 @@
 import PerkCard from './PerkCard';
 import { Perk, PerkTree } from 'src/types/perk';
-import { FormApi } from '@tanstack/react-form';
+import { FormApi, useStore } from '@tanstack/react-form';
 import { capitalCase } from 'change-case';
 import ExpandingList from './ExpandingList';
 import Divider from './Divider';
 import InputFieldCheckbox from './formFields/InputFieldCheckbox';
+import { AttributeTree } from 'src/types/attributeTree';
+import useLevelBonus from 'src/hooks/useLevelBonus';
+import getUsedPoints from 'src/utils/getUsedPoints';
 
 const PerkList = ({
   form,
+  level,
+  attributes,
   perkTree,
 }: {
   form?: FormApi;
+  level?: number;
+  attributes?: AttributeTree;
   perkTree: Partial<PerkTree>;
 }) => {
+  const perkIds = form
+    ? useStore(form.store, (state) => state.values.perkIds)
+    : [];
+
+  const { availablePerkPoints, availableMasterPerkPoints } = useLevelBonus(
+    level,
+    attributes,
+    perkIds,
+  );
+
   return (
     <>
       {Object.entries(perkTree).map(([perkType, skills]) => {
@@ -39,34 +56,48 @@ const PerkList = ({
                                   }
                                   className="flex flex-col items-start gap-4 md:grid md:grid-cols-2"
                                 >
-                                  {perkList.map((perk: Perk) => (
-                                    <InputFieldCheckbox
-                                      label={<PerkCard perkId={perk.id} />}
-                                      value={perk.id}
-                                      checked={field.state.value.some(
-                                        (id: number) => perk.id === id,
-                                      )}
-                                      onChange={(value) => {
-                                        if (
-                                          !field.state.value.includes(
-                                            Number(value),
-                                          )
-                                        ) {
-                                          field.handleChange([
-                                            ...field.state.value,
-                                            Number(value),
-                                          ]);
-                                        } else {
-                                          field.handleChange(
-                                            field.state.value.filter(
-                                              (id: number) =>
-                                                id !== Number(value),
-                                            ),
-                                          );
+                                  {perkList.map((perk: Perk) => {
+                                    const { usedSkillPoints } = getUsedPoints(
+                                      perk.attributes,
+                                    );
+                                    const masterPerk = usedSkillPoints >= 4;
+
+                                    const active = masterPerk
+                                      ? availableMasterPerkPoints > 0
+                                      : availablePerkPoints > 0;
+                                    return (
+                                      <InputFieldCheckbox
+                                        label={<PerkCard perkId={perk.id} />}
+                                        active={
+                                          active ||
+                                          field.state.value.includes(perk.id)
                                         }
-                                      }}
-                                    />
-                                  ))}
+                                        value={perk.id}
+                                        checked={field.state.value.some(
+                                          (id: number) => perk.id === id,
+                                        )}
+                                        onChange={(value) => {
+                                          if (
+                                            !field.state.value.includes(
+                                              Number(value),
+                                            )
+                                          ) {
+                                            field.handleChange([
+                                              ...field.state.value,
+                                              Number(value),
+                                            ]);
+                                          } else {
+                                            field.handleChange(
+                                              field.state.value.filter(
+                                                (id: number) =>
+                                                  id !== Number(value),
+                                              ),
+                                            );
+                                          }
+                                        }}
+                                      />
+                                    );
+                                  })}
                                 </ExpandingList>
                               )}
                             </form.Field>

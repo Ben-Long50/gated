@@ -3,6 +3,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import BtnAuth from '../buttons/BtnAuth';
 import StatBarContainer from '../StatBarContainer';
 import CharacterStatBars from '../characterComponents/CharacterStatBars';
+import ArrowHeader2 from '../ArrowHeader2';
 
 const ModifierField = ({ form }: { form: FormApi }) => {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ const ModifierField = ({ form }: { form: FormApi }) => {
 
   return (
     <>
+      <ArrowHeader2 title="Stat Modifiers" />
       <form.Field name="modifiers">
         {(field) => {
           const modifiedStats = Object.entries(field.state.value) || [];

@@ -5,6 +5,7 @@ import { capitalCase } from 'change-case';
 import ArrowHeader3 from '../ArrowHeader3';
 import InputFieldCheckbox from './InputFieldCheckbox';
 import TextAreaField from './TextAreaField';
+import InputField from './InputField';
 
 const NpcPreferenceField = ({ form }: { form: FormApi }) => {
   const navigate = useNavigate();
@@ -21,6 +22,16 @@ const NpcPreferenceField = ({ form }: { form: FormApi }) => {
             {parts[parts.length - 1] === 'npcPreferences' && (
               <Outlet context={{ form, parts }} />
             )}
+            <form.Field name="level">
+              {(field) => (
+                <InputField
+                  label="NPC Level"
+                  type="number"
+                  value={field.state.value}
+                  onChange={(value) => field.handleChange(value)}
+                />
+              )}
+            </form.Field>
             <form.Field name="npcTypes" mode="array">
               {(field) => (
                 <div className="flex w-full flex-col gap-4">
