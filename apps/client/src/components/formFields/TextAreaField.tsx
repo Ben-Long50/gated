@@ -36,7 +36,8 @@ const TextAreaField = ({
             setFocus(false);
           }}
           onChange={(e) => {
-            onChange(e.target.value);
+            const cleaned = e.target.value.replace(/\n/g, ' ');
+            onChange(cleaned);
           }}
         />
         <label

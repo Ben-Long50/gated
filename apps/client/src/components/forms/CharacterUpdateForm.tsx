@@ -154,23 +154,26 @@ const CharacterUpdateForm = () => {
       <Divider />
       <ArrowHeader2 title="Stats" />
       <characterUpdateForm.Field name="stats">
-        {() => (
-          <StatBarContainer>
-            <CharacterStatBars
-              stats={stats}
-              size="large"
-              handleChange={
-                !character?.playerCharacter
-                  ? (stat, value) =>
-                      characterUpdateForm.setFieldValue(
-                        `stats.${stat}`,
-                        (prev) => prev + value,
-                      )
-                  : undefined
-              }
-            />
-          </StatBarContainer>
-        )}
+        {(field) => {
+          return (
+            <StatBarContainer>
+              <CharacterStatBars
+                stats={stats}
+                size="large"
+                handleChange={
+                  !character?.playerCharacter
+                    ? (stat, value) =>
+                        characterUpdateForm.setFieldValue('stats', (prev) => ({
+                          ...prev,
+                          [stat]:
+                            prev[stat] != null ? prev[stat] + value : value,
+                        }))
+                    : undefined
+                }
+              />
+            </StatBarContainer>
+          );
+        }}
       </characterUpdateForm.Field>
       {formType === 'codex' && (
         <>

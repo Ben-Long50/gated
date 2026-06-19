@@ -109,6 +109,8 @@ const CharacterForm = () => {
                 maxEquip: 0,
                 speed: 0,
                 evasion: 0,
+                hands: 0,
+                feet: 0,
               }));
             }
           },

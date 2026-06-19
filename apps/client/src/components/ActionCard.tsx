@@ -11,6 +11,7 @@ import StatBarContainer from './StatBarContainer';
 import CharacterStatBars from './characterComponents/CharacterStatBars';
 import useActionQuery from 'src/hooks/useActionQuery/useActionQuery';
 import Loading from './Loading';
+import StatBars from './StatBars';
 
 const ActionCard = ({
   actionId,
@@ -41,7 +42,12 @@ const ActionCard = ({
       cardRef={cardRef}
       heading={
         <div className={`flex w-full items-center justify-between gap-4 pr-2`}>
-          <h3 className="grow">{action?.name}</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="grow">{action?.name}</h3>
+            <p className="text-tertiary text-base font-semibold">
+              ({capitalCase(action?.actionType)})
+            </p>
+          </div>
           {action?.itemLink && (
             <p className="text-right">{action?.itemLink.item.name}</p>
           )}
@@ -89,20 +95,19 @@ const ActionCard = ({
         {costLength > 0 && (
           <div className="flex w-full flex-col justify-start gap-2">
             <p className="text-accent text-base tracking-widest">Costs</p>
-            <div
-              className={`${cardRef.current?.offsetWidth < 500 ? 'gap-2 px-2' : 'gap-4 px-4'} grid h-full w-full grow grid-cols-[auto_auto_1fr_auto] place-items-center gap-y-2 border-x-2 border-gray-400 border-opacity-50`}
-            >
+            <StatBarContainer>
               <ActionStatBars
                 stats={action?.costs}
                 cardWidth={cardRef.current?.offsetWidth}
               />
-            </div>
+            </StatBarContainer>
           </div>
         )}
         <p>{description1}</p>
-        {action?.modifiers && (
+        {action?.modifiers && Object.keys(action?.modifiers).length > 0 && (
           <StatBarContainer>
             <CharacterStatBars stats={action?.modifiers} />
+            <StatBars stats={action?.modifiers} />
           </StatBarContainer>
         )}
         {action?.keywordModifiers?.length > 0 &&

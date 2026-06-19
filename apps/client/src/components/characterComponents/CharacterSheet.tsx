@@ -25,6 +25,7 @@ import constructName from 'src/utils/constructName';
 import CharacterHeader from './CharacterHeader';
 import ActionCard from '../ActionCard';
 import EquipmentList from '../EquipmentList';
+import NavTabs from '../NavTabs';
 
 const CharacterSheet = () => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -216,7 +217,10 @@ const CharacterSheet = () => {
           <ArrowHeader3 title="Standard Equipment" />
           <EquipmentList equipment={character.equipment} />
           {(user.role === 'ADMIN' || user.role === 'SUPERADMIN') && (
-            <BtnAuth onClick={() => navigate('shop/global')}>Shop</BtnAuth>
+            <NavTabs className="grid-cols-2">
+              <BtnAuth onClick={() => navigate('shop/global')}>Shop</BtnAuth>
+              <BtnAuth onClick={() => navigate('inventory')}>Inventory</BtnAuth>
+            </NavTabs>
           )}
           <Divider />
         </>

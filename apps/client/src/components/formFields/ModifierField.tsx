@@ -4,6 +4,7 @@ import BtnAuth from '../buttons/BtnAuth';
 import StatBarContainer from '../StatBarContainer';
 import CharacterStatBars from '../characterComponents/CharacterStatBars';
 import ArrowHeader2 from '../ArrowHeader2';
+import StatBars from '../StatBars';
 
 const ModifierField = ({ form }: { form: FormApi }) => {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ const ModifierField = ({ form }: { form: FormApi }) => {
               )}
               {modifiedStats.length > 0 && (
                 <StatBarContainer>
-                  <CharacterStatBars stats={field.state.value} />
+                  <StatBars stats={field.state.value} />
                 </StatBarContainer>
               )}
             </>

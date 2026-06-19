@@ -17,6 +17,9 @@ import ArmorIcon from '../icons/ArmorIcon';
 import SpeedIcon from '../icons/SpeedIcon';
 import EvasionIcon from '../icons/EvasionIcon';
 import IconBtnSmall from '../buttons/IconBtnSmall';
+import HandIcon from '../icons/HandIcon';
+import FootIcon from '../icons/FootIcon';
+import SizeIcon from '../icons/SizeIcon';
 
 const CharacterStatBars = ({
   stats,
@@ -194,7 +197,21 @@ const CharacterStatBars = ({
           <BlockIcon className="text-secondary text-blue size-8" />
         </StatBar>
       )}
-
+      {stats.size !== undefined && (
+        <StatBar
+          title="Size"
+          current={stats.size}
+          color={statColorMap['SZE']}
+          cardWidth={cardWidth}
+          handleChange={
+            handleChange
+              ? (value: number) => handleChange('size', value)
+              : undefined
+          }
+        >
+          <SizeIcon className="text-secondary text-blue size-8" />
+        </StatBar>
+      )}
       {stats.permanentInjuries !== undefined && (
         <>
           <h4>Insanities</h4>
@@ -274,6 +291,36 @@ const CharacterStatBars = ({
             )}
           </div>
         </>
+      )}
+      {stats.hands !== undefined && (
+        <StatBar
+          title="Hands"
+          current={stats.hands}
+          color={statColorMap['Hands']}
+          cardWidth={cardWidth}
+          handleChange={
+            handleChange
+              ? (value: number) => handleChange('hands', value)
+              : undefined
+          }
+        >
+          <HandIcon className="text-secondary text-blue size-8" />
+        </StatBar>
+      )}
+      {stats.feet !== undefined && (
+        <StatBar
+          title="Feet"
+          current={stats.feet}
+          color={statColorMap['Feet']}
+          cardWidth={cardWidth}
+          handleChange={
+            handleChange
+              ? (value: number) => handleChange('feet', value)
+              : undefined
+          }
+        >
+          <FootIcon className="text-secondary text-blue size-8" />
+        </StatBar>
       )}
     </>
   );

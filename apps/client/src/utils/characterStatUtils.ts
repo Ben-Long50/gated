@@ -99,19 +99,29 @@ const calculateCharacterStats = (
   );
 
   const baseStats: CharacterStats = {
-     maxHealth: stats?.maxHealth
-      ? stats.maxHealth + 10 + attributeTree?.violence.skills.threshold.points * 2
+    maxHealth: stats?.maxHealth
+      ? stats.maxHealth +
+        10 +
+        attributeTree?.violence.skills.threshold.points * 2
       : 10 + attributeTree?.violence.skills.threshold.points * 2,
     maxSanity: stats?.maxSanity
-      ? stats.maxSanity + 5 + attributeTree?.esoterica.skills.mysticism.points * 2
+      ? stats.maxSanity +
+        5 +
+        attributeTree?.esoterica.skills.mysticism.points * 2
       : 5 + attributeTree?.esoterica.skills.mysticism.points * 2,
     maxEquip: stats?.maxEquip
-      ? stats.maxEquip + 10 + attributeTree?.violence.skills.threshold.points * 2
+      ? stats.maxEquip +
+        10 +
+        attributeTree?.violence.skills.threshold.points * 2
       : 10 + attributeTree?.violence.skills.threshold.points * 2,
     maxCyber: stats?.maxCyber
-      ? stats?.maxCyber + 5 + attributeTree?.cybernetica.skills.chromebits.points * 2
+      ? stats?.maxCyber +
+        5 +
+        attributeTree?.cybernetica.skills.chromebits.points * 2
       : 5 + attributeTree?.cybernetica.skills.chromebits.points * 2,
-    speed: stats?.speed ? stats?.speed + 4 + attributeTree?.violence.skills.assault.points * 1 : 4 + attributeTree?.violence.skills.assault.points * 1,
+    speed: stats?.speed
+      ? stats?.speed + 4 + attributeTree?.violence.skills.assault.points * 1
+      : 4 + attributeTree?.violence.skills.assault.points * 1,
     evasion: stats?.evasion ? stats?.evasion + 1 : 1,
     armor: armorValue,
     equippedArmor,
@@ -123,10 +133,11 @@ const calculateCharacterStats = (
     cyber: 0 + equippedCyber,
     permanentInjuries: stats?.permanentInjuries || 5,
     permanentInsanities: stats?.permanentInsanities || 5,
-    actions: 3,
-    reactions: 1,
-    hands: 2,
-    feet: 2,
+    actions: stats?.actions ? stats?.actions + 3 : 3,
+    reactions: stats?.reactions ? stats?.reactions + 1 : 1,
+    hands: stats?.hands ? stats?.hands + 2 : 2,
+    feet: stats?.feet ? stats?.feet + 2 : 2,
+    size: stats?.size ? stats?.size + 1 : 1,
     chomebitsTn: attributeTree?.cybernetica.skills.chromebits.points,
     hardwiredTn: attributeTree?.cybernetica.skills.hardwired.points,
     motorizedTn: attributeTree?.cybernetica.skills.motorized.points,
