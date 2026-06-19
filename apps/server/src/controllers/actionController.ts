@@ -41,6 +41,8 @@ const actionController = {
 
   createOrUpdateAction: async (req: Request, res: Response) => {
     try {
+      console.log(req.body);
+
       const data = ActionInput.parse(req.body);
 
       const action = await actionServices.createOrUpdateAction(data);

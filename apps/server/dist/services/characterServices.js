@@ -74,6 +74,7 @@ const characterServices = {
             const characters = await prisma.character.findMany({
                 where: { base: true },
                 select: { id: true },
+                orderBy: { firstName: 'asc' },
             });
             if (characters.length === 0) {
                 throw new Error('No public characters exist');
@@ -92,6 +93,7 @@ const characterServices = {
                     id: { in: characterIds },
                 },
                 include: characterInclude,
+                orderBy: { firstName: 'asc' },
             });
             return characters;
         }
@@ -431,35 +433,43 @@ const characterServices = {
         }
     },
     updateCharacter: async (formData) => {
-        var _a;
         try {
-            const { id, perkIds, actionIds } = formData, data = __rest(formData, ["id", "perkIds", "actionIds"]);
+            const { id, perkIds, actionIds, stats } = formData, data = __rest(formData, ["id", "perkIds", "actionIds", "stats"]);
             const oldCharacter = await prisma.character.findUnique({
                 where: { id },
                 select: {
                     characterInventory: {
-                        select: { id: true, actions: { select: { id: true } } },
+                        select: {
+                            id: true,
+                            actions: { select: { id: true, baseActionId: true } },
+                        },
                     },
+                    stats: true,
                 },
             });
-            const oldActionIds = (_a = oldCharacter === null || oldCharacter === void 0 ? void 0 : oldCharacter.characterInventory) === null || _a === void 0 ? void 0 : _a.actions.map((action) => action.id).filter((actionId) => !actionIds.some((id) => id === actionId));
-            const newActonIds = actionIds.filter((actionId) => !(oldActionIds === null || oldActionIds === void 0 ? void 0 : oldActionIds.some((id) => id === actionId)));
+            const replaceActions = async (newActionIds, oldActionIds, tx) => {
+                var _a;
+                const actions = await tx.action.findMany({
+                    where: { id: { in: newActionIds } },
+                    select: { id: true, baseActionId: true },
+                });
+                const baseIds = new Set(actions.map((action) => action.baseActionId ? action.baseActionId : action.id));
+                await tx.action.deleteMany({
+                    where: { id: { in: oldActionIds } },
+                });
+                await actionServices.createCharacterActionCopy(Array.from(baseIds)
+                    .filter(Boolean)
+                    .map((actionId) => ({ actionId, quantity: 1 })), (_a = oldCharacter === null || oldCharacter === void 0 ? void 0 : oldCharacter.characterInventory) === null || _a === void 0 ? void 0 : _a.id, tx);
+            };
+            const newStats = Object.assign(Object.assign({}, oldCharacter === null || oldCharacter === void 0 ? void 0 : oldCharacter.stats), stats);
             const character = await prisma.$transaction(async (tx) => {
                 var _a;
-                await tx.action.deleteMany({ where: { id: { in: oldActionIds } } });
-                const newActions = await actionServices.createCharacterActionCopy(newActonIds.map((actionId) => ({ actionId, quantity: 1 })), (_a = oldCharacter === null || oldCharacter === void 0 ? void 0 : oldCharacter.characterInventory) === null || _a === void 0 ? void 0 : _a.id, tx);
+                await replaceActions(actionIds, ((_a = oldCharacter === null || oldCharacter === void 0 ? void 0 : oldCharacter.characterInventory) === null || _a === void 0 ? void 0 : _a.actions.map((action) => action.id)) || [], tx);
                 const character = await tx.character.update({
                     where: {
                         id,
                     },
-                    data: Object.assign(Object.assign({}, data), { perks: { set: perkIds.map((id) => ({ id })) }, characterInventory: {
-                            update: {
-                                actions: {
-                                    deleteMany: { id: { in: oldActionIds } },
-                                    connect: newActions.map((action) => ({ id: action === null || action === void 0 ? void 0 : action.id })),
-                                },
-                            },
-                        } }),
+                    data: Object.assign(Object.assign({}, data), { stats: newStats, perks: { set: perkIds.map((id) => ({ id })) } }),
                     include: characterInclude,
                 });
                 return character;

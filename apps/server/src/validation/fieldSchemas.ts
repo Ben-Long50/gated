@@ -90,7 +90,7 @@ export type ItemStats = z.infer<typeof ItemStats>;
 export const Keywords = z.array(
   z.object({
     keywordId: z.number().int(),
-    value: z.number().int().int().nonnegative(),
+    value: z.number().int().int().nonnegative().nullish(),
   }),
 );
 

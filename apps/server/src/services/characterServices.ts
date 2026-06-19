@@ -77,6 +77,7 @@ const characterServices = {
       const characters = await prisma.character.findMany({
         where: { base: true },
         select: { id: true },
+        orderBy: { firstName: 'asc' },
       });
 
       if (characters.length === 0) {
@@ -97,6 +98,7 @@ const characterServices = {
           id: { in: characterIds },
         },
         include: characterInclude,
+        orderBy: { firstName: 'asc' },
       });
 
       return characters;
@@ -535,31 +537,61 @@ const characterServices = {
 
   updateCharacter: async (formData: CharacterUpdateInput) => {
     try {
-      const { id, perkIds, actionIds, ...data } = formData;
+      const { id, perkIds, actionIds, stats, ...data } = formData;
 
       const oldCharacter = await prisma.character.findUnique({
         where: { id },
         select: {
           characterInventory: {
-            select: { id: true, actions: { select: { id: true } } },
+            select: {
+              id: true,
+              actions: { select: { id: true, baseActionId: true } },
+            },
           },
+          stats: true,
         },
       });
 
-      const oldActionIds = oldCharacter?.characterInventory?.actions
-        .map((action) => action.id)
-        .filter((actionId) => !actionIds.some((id) => id === actionId));
+      const replaceActions = async (
+        newActionIds: number[],
+        oldActionIds: number[],
+        tx: Prisma.TransactionClient,
+      ) => {
+        const actions = await tx.action.findMany({
+          where: { id: { in: newActionIds } },
+          select: { id: true, baseActionId: true },
+        });
 
-      const newActonIds = actionIds.filter(
-        (actionId) => !oldActionIds?.some((id) => id === actionId),
-      );
+        const baseIds = new Set(
+          actions.map((action) =>
+            action.baseActionId ? action.baseActionId : action.id,
+          ),
+        );
+
+        await tx.action.deleteMany({
+          where: { id: { in: oldActionIds } },
+        });
+
+        await actionServices.createCharacterActionCopy(
+          Array.from(baseIds)
+            .filter(Boolean)
+            .map((actionId) => ({ actionId, quantity: 1 })),
+          oldCharacter?.characterInventory?.id,
+          tx,
+        );
+      };
+
+      const newStats = {
+        ...(oldCharacter?.stats as Record<string, number>),
+        ...stats,
+      };
 
       const character = await prisma.$transaction(async (tx) => {
-        await tx.action.deleteMany({ where: { id: { in: oldActionIds } } });
-
-        const newActions = await actionServices.createCharacterActionCopy(
-          newActonIds.map((actionId) => ({ actionId, quantity: 1 })),
-          oldCharacter?.characterInventory?.id,
+        await replaceActions(
+          actionIds,
+          oldCharacter?.characterInventory?.actions.map(
+            (action) => action.id,
+          ) || [],
           tx,
         );
 
@@ -569,15 +601,8 @@ const characterServices = {
           },
           data: {
             ...data,
+            stats: newStats,
             perks: { set: perkIds.map((id) => ({ id })) },
-            characterInventory: {
-              update: {
-                actions: {
-                  deleteMany: { id: { in: oldActionIds } },
-                  connect: newActions.map((action) => ({ id: action?.id })),
-                },
-              },
-            },
           },
           include: characterInclude,
         });

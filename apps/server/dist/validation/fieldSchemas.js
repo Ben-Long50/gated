@@ -71,7 +71,7 @@ export const CharacterStats = z.record(z.string(), z.number().int());
 export const ItemStats = z.record(z.string(), z.number().int());
 export const Keywords = z.array(z.object({
     keywordId: z.number().int(),
-    value: z.number().int().int().nonnegative(),
+    value: z.number().int().int().nonnegative().nullish(),
 }));
 export const Roll = z.object({ attribute: Attribute, skill: Skill });
 export const Costs = z.record(z.string(), z.number().int().nonnegative());
