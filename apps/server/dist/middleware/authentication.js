@@ -52,8 +52,22 @@ const authentication = {
         }
         next();
     },
+    authenticateProUser: (req, res, next) => {
+        const allowedRoles = ['SUPERADMIN', 'ADMIN', 'PROUSER'];
+        if (!req.user) {
+            res.status(401).json({ error: 'No user found' });
+            return;
+        }
+        else if (req.user.role && !allowedRoles.includes(req.user.role)) {
+            res.status(403).json({
+                error: 'You do not have the required permissions to use this function',
+            });
+            return;
+        }
+        next();
+    },
     authenticateUser: (req, res, next) => {
-        const allowedRoles = ['SUPERADMIN', 'ADMIN', 'USER'];
+        const allowedRoles = ['SUPERADMIN', 'ADMIN', 'PROUSER', 'USER'];
         if (!req.user) {
             res.status(401).json({ error: 'No user found' });
             return;

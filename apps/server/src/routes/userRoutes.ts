@@ -30,7 +30,7 @@ router.get(
 router.post(
   '/users/generate',
   authentication.authenticate,
-  authentication.authenticateSuperadmin,
+  authentication.authenticateProUser,
   generatFalPicture,
   uploadGeneratedPictureToCloudinary,
   userController.addUserGeneratedPicture,
@@ -39,7 +39,7 @@ router.post(
 router.post(
   '/users/generateItem',
   authentication.authenticate,
-  authentication.authenticateSuperadmin,
+  authentication.authenticateProUser,
   generatFalItemPicture,
   uploadGeneratedPictureToCloudinary,
   userController.addUserGeneratedPicture,

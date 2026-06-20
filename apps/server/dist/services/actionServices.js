@@ -14,7 +14,7 @@ import addVariableStats from '../utils/addVariableStats.js';
 import { ActionInput } from '../validation/actionSchema.js';
 const actionInclude = {
     keywordModifiers: { select: { id: true } },
-    itemLink: { select: { item: { select: { name: true } } } },
+    itemLink: { select: { item: { select: { name: true, id: true } } } },
 };
 const actionServices = {
     getActions: async () => {
