@@ -6,11 +6,9 @@ import ItemCardSmall from './ItemCardSmall';
 
 const KeywordCard = ({
   keyword,
-  mode,
   expanded,
 }: {
   keyword: Keyword;
-  mode?: string;
   expanded?: boolean;
 }) => {
   const { user } = useContext(AuthContext);
@@ -25,8 +23,7 @@ const KeywordCard = ({
             className="pointer-events-auto -my-2 flex items-center gap-4"
             onClick={(e) => e.stopPropagation()}
           >
-            {((mode === 'codex' && user?.role === 'ADMIN') ||
-              (mode === 'codex' && user?.role === 'SUPERADMIN')) && (
+            {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
               <Link to={`/glam/codex/keywords/${keyword.id}/update`}>
                 <button className="text-accent hover:underline">Edit</button>
               </Link>

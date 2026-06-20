@@ -5,10 +5,10 @@ import ErrorReport from 'src/components/ErrorReport';
 import ErrorReports from 'src/components/ErrorReports';
 import Notifications from 'src/components/Notifications';
 import PatchNoteForm from 'src/components/forms/PatchNotesForm';
-import UserRoles from 'src/components/UserRoles';
 import Page from 'src/components/Page';
 import AccountInfo from 'src/components/AccountInfo';
 import UserRoleForm from 'src/components/forms/UserRoleForm';
+import GenerationLibrary from 'src/components/GenerationLibrary';
 
 const AccountTabRoutes = () => {
   return (
@@ -26,6 +26,14 @@ const AccountTabRoutes = () => {
         element={
           <Page title="Update Account Info">
             <AccountSettingsForm />
+          </Page>
+        }
+      />
+      <Route
+        path="generations"
+        element={
+          <Page title="Generated Pictures">
+            <GenerationLibrary />
           </Page>
         }
       />

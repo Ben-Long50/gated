@@ -13,7 +13,7 @@ const IconBtnSmall = ({
 }) => {
   return (
     <button
-      className={`${className} ${!active && 'pointer-events-none opacity-50'} bg-secondary hover:border-accent timing shadow-color group rounded border-2 border-transparent p-1 shadow-md`}
+      className={`${className} ${!active && 'pointer-events-none opacity-50'} bg-secondary hover:border-accent timing shadow-color group size-10 rounded border-2 border-transparent p-1 shadow-md`}
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();

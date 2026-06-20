@@ -8,6 +8,7 @@ import {
   mdiAccountWrenchOutline,
   mdiAlertCircleOutline,
   mdiBellOutline,
+  mdiImageOutline,
   mdiLogout,
 } from '@mdi/js';
 import useSignoutMutation from '../../hooks/useSignoutMutation/useSignoutMutation';
@@ -40,6 +41,16 @@ const AccountLinks = () => {
           />
         }
         title="Account Preferences"
+      />
+      <LinkSidebar
+        path={`account/${user?.id}/generations`}
+        icon={
+          <Icon
+            path={mdiImageOutline}
+            className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit"
+          />
+        }
+        title="Generated Pictures"
       />
       <LinkSidebar
         path={`account/${user?.id}/notifications`}

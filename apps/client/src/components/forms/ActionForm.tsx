@@ -16,6 +16,7 @@ import useActionForm from 'src/hooks/form hooks/useActionForm';
 import BtnAuth from '../buttons/BtnAuth';
 import useActionQuery from 'src/hooks/useActionQuery/useActionQuery';
 import Loading from '../Loading';
+import IconBtnSmall from '../buttons/IconBtnSmall';
 
 const ActionForm = () => {
   const { actionId } = useParams();
@@ -64,10 +65,10 @@ const ActionForm = () => {
       <actionForm.Field name="roll" mode="array">
         {(field) => {
           return (
-            <div className="flex w-full flex-col gap-4 sm:gap-6 lg:gap-8">
+            <div className="flex w-full flex-col gap-4">
               {field.state.value.map((_, j: number) => (
-                <div key={j} className="flex w-full gap-4 sm:gap-6 lg:gap-8">
-                  <div className="flex w-full flex-col gap-4 sm:flex-row sm:gap-6 lg:gap-8">
+                <div key={j} className="flex w-full gap-4">
+                  <div className="flex w-full flex-col gap-4 sm:flex-row">
                     <actionForm.Field
                       name={`roll[${j}].attribute`}
                       listeners={{
@@ -110,17 +111,9 @@ const ActionForm = () => {
                       )}
                     </actionForm.Subscribe>
                   </div>
-                  <button
-                    className="sm:-ml-2 lg:-ml-4"
-                    onClick={() => field.removeValue(j)}
-                    type="button"
-                  >
-                    <Icon
-                      className="text-tertiary"
-                      path={mdiClose}
-                      size={1.25}
-                    />
-                  </button>
+                  <IconBtnSmall onClick={() => field.removeValue(j)}>
+                    <Icon path={mdiClose} />
+                  </IconBtnSmall>
                 </div>
               ))}
               <BtnAuth
@@ -138,7 +131,7 @@ const ActionForm = () => {
             <div className="flex flex-col gap-4">
               {field.state.value.map((_, i) => {
                 return (
-                  <div key={i} className="flex gap-2 sm:gap-4 lg:gap-6">
+                  <div key={i} className="flex gap-2 sm:gap-4">
                     <actionForm.Field name={`actionSubtypes[${i}]`}>
                       {(subField) => {
                         return (
@@ -157,17 +150,9 @@ const ActionForm = () => {
                         );
                       }}
                     </actionForm.Field>
-                    <button
-                      className="sm:-ml-2 lg:-ml-4"
-                      onClick={() => field.removeValue(i)}
-                      type="button"
-                    >
-                      <Icon
-                        className="text-tertiary"
-                        path={mdiClose}
-                        size={1.25}
-                      />
-                    </button>
+                    <IconBtnSmall onClick={() => field.removeValue(i)}>
+                      <Icon path={mdiClose} />
+                    </IconBtnSmall>
                   </div>
                 );
               })}
@@ -181,7 +166,7 @@ const ActionForm = () => {
       <actionForm.Field name="duration">
         {(field) =>
           field.state.value ? (
-            <div className="flex w-full items-center gap-4 lg:gap-8">
+            <div className="flex w-full items-center gap-4">
               <actionForm.Field name="duration.unit">
                 {(field) => (
                   <InputSelectField
@@ -220,6 +205,9 @@ const ActionForm = () => {
                   />
                 )}
               </actionForm.Field>
+              <IconBtnSmall onClick={() => field.handleChange(null)}>
+                <Icon path={mdiClose} />
+              </IconBtnSmall>
             </div>
           ) : (
             <BtnAuth
@@ -233,7 +221,7 @@ const ActionForm = () => {
       <actionForm.Field name="cooldown">
         {(field) =>
           field.state.value ? (
-            <div className="flex w-full items-center gap-4 lg:gap-8">
+            <div className="flex w-full items-center gap-4">
               <actionForm.Field name="cooldown.unit">
                 {(field) => (
                   <InputSelectField
@@ -272,6 +260,9 @@ const ActionForm = () => {
                   />
                 )}
               </actionForm.Field>
+              <IconBtnSmall onClick={() => field.handleChange(null)}>
+                <Icon path={mdiClose} />
+              </IconBtnSmall>
             </div>
           ) : (
             <BtnAuth

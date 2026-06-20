@@ -34,6 +34,8 @@ const ActionCard = ({
   const description1 = action ? description[0] : undefined;
   const description2 = action ? description[1] : undefined;
 
+  console.log(action);
+
   return isLoading ? (
     <Loading size={1.15} />
   ) : (
@@ -41,28 +43,35 @@ const ActionCard = ({
       expanded={expanded}
       cardRef={cardRef}
       heading={
-        <div className={`flex w-full items-center justify-between gap-4 pr-2`}>
-          <div className="flex items-center gap-2">
-            <h3 className="grow">{action?.name}</h3>
+        <div className={`flex w-full items-center gap-4 pr-2`}>
+          <div className="flex grow items-center gap-2">
+            <h3>{action?.name}</h3>
             <p className="text-tertiary text-base font-semibold">
               ({capitalCase(action?.actionType)})
             </p>
           </div>
           {action?.itemLink && (
-            <p className="text-right">{action?.itemLink.item.name}</p>
+            <button
+              onClick={() =>
+                navigate(`/glam/codex/items/${action?.itemLink?.item.id}`)
+              }
+            >
+              <p className="hover:text-accent timing text-right">
+                {action?.itemLink.item.name}
+              </p>
+            </button>
           )}
 
-          {user.role === 'ADMIN' ||
-            (user.role === 'SUPERADMIN' && (
-              <button
-                className="text-accent hover:underline"
-                onClick={() =>
-                  navigate(`/glam/codex/actions/${action?.id}/update`)
-                }
-              >
-                Edit
-              </button>
-            ))}
+          {(user.role === 'ADMIN' || user.role === 'SUPERADMIN') && (
+            <button
+              className="text-accent hover:underline"
+              onClick={() =>
+                navigate(`/glam/codex/actions/${action?.id}/update`)
+              }
+            >
+              Edit
+            </button>
+          )}
         </div>
       }
     >
