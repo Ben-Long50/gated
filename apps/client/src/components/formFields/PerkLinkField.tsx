@@ -7,7 +7,6 @@ import InputFieldCheckbox from './InputFieldCheckbox';
 import { useContext } from 'react';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import ArrowHeader2 from '../ArrowHeader2';
-import useLevelBonus from 'src/hooks/useLevelBonus';
 
 const PerkLinkField = ({
   form,
