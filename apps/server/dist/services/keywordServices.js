@@ -10,13 +10,11 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 import prisma from '../config/database.js';
-const keywordInclude = { KeywordReference: { select: { itemId: true } } };
 const keywordServices = {
     getKeywords: async () => {
         try {
             const keywords = await prisma.keyword.findMany({
                 orderBy: { name: 'asc' },
-                include: keywordInclude,
             });
             return keywords;
         }
@@ -29,7 +27,6 @@ const keywordServices = {
         try {
             const keyword = await prisma.keyword.findUnique({
                 where: { id: keywordId },
-                include: keywordInclude,
             });
             return keyword;
         }

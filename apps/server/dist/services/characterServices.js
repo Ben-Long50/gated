@@ -241,7 +241,7 @@ const characterServices = {
                     }));
                     await actionServices.createCharacterActionCopy(actionList, character.characterInventory.id, tx);
                 }
-                if (!template) {
+                if (!template && !character.npcTypes.includes('monster')) {
                     const unarmed = await tx.item.findFirst({
                         where: { name: 'Unarmed', base: true },
                     });
@@ -251,7 +251,7 @@ const characterServices = {
                     if (!character.characterInventory) {
                         throw new Error('Failed to create character inventory');
                     }
-                    await itemServices.createCharacterItemCopy(character.characterInventory.id, [{ itemId: unarmed.id, price: null, quantity: 2 }], tx);
+                    await itemServices.createCharacterItemCopy(character.characterInventory.id, [{ itemId: unarmed.id, price: null, quantity: 1 }], tx);
                 }
                 return character;
             });

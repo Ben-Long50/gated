@@ -284,7 +284,7 @@ const characterServices = {
           );
         }
 
-        if (!template) {
+        if (!template && !character.npcTypes.includes('monster')) {
           const unarmed = await tx.item.findFirst({
             where: { name: 'Unarmed', base: true },
           });
@@ -299,7 +299,7 @@ const characterServices = {
 
           await itemServices.createCharacterItemCopy(
             character.characterInventory.id,
-            [{ itemId: unarmed.id, price: null, quantity: 2 }],
+            [{ itemId: unarmed.id, price: null, quantity: 1 }],
             tx,
           );
         }
