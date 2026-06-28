@@ -16,17 +16,17 @@ import useItemStatMutation from 'src/hooks/item stat hooks/useItemStatMutation/u
 export const WeaponControls = ({
   stats,
   weaponId,
-  cardType,
+  size,
 }: {
   stats: Stats;
   weaponId: number;
-  cardType?: 'small' | 'large';
+  size: 'small' | 'large';
 }) => {
   const editItemStat = useItemStatMutation();
 
   return (
     <div
-      className={`${cardType === 'small' ? 'flex flex-col' : 'col-span-2 grid grid-cols-1 sm:grid-cols-2'} items-center justify-start gap-2`}
+      className={`${size === 'small' ? 'flex flex-col' : 'col-span-2 grid grid-cols-1 sm:grid-cols-2'} items-center justify-start gap-2`}
     >
       {stats.currentAmmoCount !== undefined && (
         <BtnControl
@@ -120,17 +120,17 @@ export const WeaponControls = ({
 export const ArmorControls = ({
   armorId,
   stats,
-  cardType,
+  size,
 }: {
   armorId: number;
   stats: Stats;
-  cardType?: 'small' | 'large';
+  size?: 'small' | 'large';
 }) => {
   const editItemStat = useItemStatMutation();
 
   return (
     <div
-      className={`${cardType === 'small' ? 'flex flex-col' : 'col-span-2 grid grid-cols-1 sm:grid-cols-2'} items-center justify-start gap-2`}
+      className={`${size === 'small' ? 'flex flex-col' : 'col-span-2 grid grid-cols-1 sm:grid-cols-2'} items-center justify-start gap-2`}
     >
       {stats.currentBlock !== undefined && (
         <BtnControl
@@ -204,17 +204,17 @@ export const ArmorControls = ({
 export const CyberneticControls = ({
   cyberneticId,
   stats,
-  cardType,
+  size,
 }: {
   cyberneticId: number;
   stats: Stats;
-  cardType?: 'small' | 'large';
+  size?: 'small' | 'large';
 }) => {
   const editItemStat = useItemStatMutation();
 
   return (
     <div
-      className={`${cardType === 'small' ? 'flex flex-col' : 'col-span-2 grid grid-cols-1 sm:grid-cols-2'} items-center justify-start gap-2`}
+      className={`${size === 'small' ? 'flex flex-col' : 'col-span-2 grid grid-cols-1 sm:grid-cols-2'} items-center justify-start gap-2`}
     >
       {stats.currentPower !== undefined && (
         <BtnControl
@@ -259,17 +259,17 @@ export const CyberneticControls = ({
 export const VehicleControls = ({
   stats,
   vehicleId,
-  cardType,
+  size,
 }: {
   stats: Stats;
   vehicleId: number;
-  cardType?: 'small' | 'large';
+  size?: 'small' | 'large';
 }) => {
   const editItemStat = useItemStatMutation();
 
   return (
     <div
-      className={`${cardType === 'small' ? 'flex flex-col' : 'col-span-2 grid grid-cols-1 sm:grid-cols-2'} items-center justify-start gap-2`}
+      className={`${size === 'small' ? 'flex flex-col' : 'col-span-2 grid grid-cols-1 sm:grid-cols-2'} items-center justify-start gap-2`}
     >
       {stats.currentHull !== undefined && (
         <BtnControl
@@ -368,17 +368,17 @@ export const VehicleControls = ({
 export const DroneControls = ({
   stats,
   droneId,
-  cardType,
+  size,
 }: {
   stats: Stats;
   droneId: number;
-  cardType?: 'small' | 'large';
+  size?: 'small' | 'large';
 }) => {
   const editItemStat = useItemStatMutation();
 
   return (
     <div
-      className={`${cardType === 'small' ? 'flex flex-col' : 'col-span-2 grid grid-cols-1 sm:grid-cols-2'} items-center justify-start gap-2`}
+      className={`${size === 'small' ? 'flex flex-col' : 'col-span-2 grid grid-cols-1 sm:grid-cols-2'} items-center justify-start gap-2`}
     >
       {stats.currentHull !== undefined && (
         <BtnControl
@@ -452,17 +452,17 @@ export const DroneControls = ({
 export const ItemControls = ({
   itemId,
   stats,
-  cardType,
+  size,
 }: {
   itemId: number;
   stats: Stats;
-  cardType?: 'small' | 'large';
+  size?: 'small' | 'large';
 }) => {
   const editItemStat = useItemStatMutation();
 
   return (
     <div
-      className={`${cardType === 'small' ? 'flex flex-col' : 'col-span-2 grid grid-cols-1 sm:grid-cols-2'} items-center justify-start gap-2`}
+      className={`${size === 'small' ? 'flex flex-col' : 'col-span-2 grid grid-cols-1 sm:grid-cols-2'} items-center justify-start gap-2`}
     >
       {stats.currentPower !== undefined && (
         <BtnControl

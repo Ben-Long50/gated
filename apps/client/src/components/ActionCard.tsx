@@ -15,9 +15,11 @@ import StatBars from './StatBars';
 
 const ActionCard = ({
   actionId,
-  expanded,
+  expanded = false,
+  size = 'small',
 }: {
   actionId: number;
+  size: 'small' | 'large';
   expanded?: boolean;
 }) => {
   const { user } = useContext(AuthContext);
@@ -33,8 +35,6 @@ const ActionCard = ({
 
   const description1 = action ? description[0] : undefined;
   const description2 = action ? description[1] : undefined;
-
-  console.log(action);
 
   return isLoading ? (
     <Loading size={1.15} />
@@ -104,22 +104,20 @@ const ActionCard = ({
         {costLength > 0 && (
           <div className="flex w-full flex-col justify-start gap-2">
             <p className="text-accent text-base tracking-widest">Costs</p>
-            <StatBarContainer>
-              <ActionStatBars
-                stats={action?.costs}
-                cardWidth={cardRef.current?.offsetWidth}
-              />
+            <StatBarContainer size={size}>
+              <ActionStatBars stats={action?.costs} size={size} />
             </StatBarContainer>
           </div>
         )}
         <p>{description1}</p>
         {action?.modifiers && Object.keys(action?.modifiers).length > 0 && (
-          <StatBarContainer>
-            <CharacterStatBars stats={action?.modifiers} />
-            <StatBars stats={action?.modifiers} />
+          <StatBarContainer size={size}>
+            <CharacterStatBars size={size} stats={action?.modifiers} />
+            <StatBars size={size} stats={action?.modifiers} />
           </StatBarContainer>
         )}
-        {action?.keywordModifiers?.length > 0 &&
+        {action?.keywordModifiers &&
+          action?.keywordModifiers.length > 0 &&
           action?.keywordModifiers.map((keyword, index) => (
             <ItemCardSmall
               key={index}

@@ -33,18 +33,21 @@ import ItemRadialMenu from './radialMenus/itemRadialMenu/ItemRadialMenu';
 import ConditionTag from './ConditionTag';
 import ExpandingList from './ExpandingList';
 import useItem from 'src/hooks/useItem';
+import { LayoutContext } from 'src/contexts/LayoutContext';
+import StatBarContainer from './StatBarContainer';
 
 const ItemPage = () => {
   const { accentPrimary } = useContext(ThemeContext);
   const { user } = useContext(AuthContext);
-  const { conditionId, itemId } = useParams();
-  const navigate = useNavigate();
-  const [cardWidth, setCardWidth] = useState(0);
+  const { mobile } = useContext(LayoutContext);
 
+  const size = mobile ? 'small' : 'large';
+
+  const { conditionId, itemId } = useParams();
+
+  const navigate = useNavigate();
   const location = useLocation();
   const parts = location.pathname.split('/');
-
-  const cardRef = useRef(null);
 
   const { item, isLoading } = useItem(Number(itemId));
 
@@ -70,22 +73,13 @@ const ItemPage = () => {
 
   const linkedActions = item?.itemLinkReference?.actions || [];
 
-  useLayoutEffect(() => {
-    if (!isLoading && cardRef.current) {
-      setCardWidth(cardRef.current.offsetWidth);
-    }
-  }, [isLoading]);
-
   if (isLoading) return <Loading />;
 
   if (!item) return <h1>No item found</h1>;
 
   return (
     <div className="flex w-full flex-col items-center gap-8">
-      <div className="relative grid w-full grid-cols-[1fr_auto_1fr]">
-        <ItemRadialMenu className="relative size-8" item={item} />
-        <h1 className="col-start-2 text-center">{item.name}</h1>
-      </div>
+      <h1 className="col-start-2 text-center">{item.name}</h1>
       <div className="relative grid h-full w-full grid-rows-[auto_auto] gap-8 sm:grid-cols-2 sm:grid-rows-1">
         <ItemPicture key={item.id} item={item} />
         <div className="flex w-full flex-col gap-4">
@@ -106,7 +100,7 @@ const ItemPage = () => {
               className="col-span-2 place-self-start"
               rarity={item?.rarity}
               grade={item?.grade}
-              cardWidth={cardWidth}
+              size={size}
             />
             <h4>Cost {item.price ? <span>{`${item.price}p`}</span> : 'N/A'}</h4>
           </div>
@@ -146,12 +140,9 @@ const ItemPage = () => {
         </div>
       </div>
       {item && (
-        <div
-          ref={cardRef}
-          className={`${cardWidth < 500 ? 'gap-2 px-2' : 'gap-8 px-4'} grid h-full w-full grow grid-cols-[auto_auto_1fr_auto] place-items-center gap-y-2 border-x-2 border-gray-400 border-opacity-50`}
-        >
-          <StatBars stats={item.stats} cardWidth={cardWidth} />
-        </div>
+        <StatBarContainer size={size}>
+          <StatBars stats={item.stats} size={size} />
+        </StatBarContainer>
       )}
       <p className="self-start">{item.description}</p>
       {linkedWeapons.length > 0 && (
@@ -160,13 +151,7 @@ const ItemPage = () => {
           <ArrowHeader2 className="self-start" title="Integrated Weapons" />
           <div className="flex w-full flex-col gap-8">
             {linkedWeapons.map((weapon: Item, index: number) => {
-              return (
-                <LinkedItemCard
-                  key={index}
-                  item={weapon}
-                  cardWidth={cardRef.current?.offsetWidth}
-                />
-              );
+              return <LinkedItemCard key={index} item={weapon} size={size} />;
             })}
           </div>
         </>
@@ -177,13 +162,7 @@ const ItemPage = () => {
           <ArrowHeader2 className="self-start" title="Integrated Armor" />
           <div className="flex w-full flex-col gap-8">
             {linkedArmor.map((armor: Item, index: number) => {
-              return (
-                <LinkedItemCard
-                  key={index}
-                  item={armor}
-                  cardWidth={cardRef.current?.offsetWidth}
-                />
-              );
+              return <LinkedItemCard key={index} item={armor} size={size} />;
             })}
           </div>
         </>
@@ -194,13 +173,7 @@ const ItemPage = () => {
           <ArrowHeader2 className="self-start" title="Supplied Vehicles" />
           <div className="flex w-full flex-col gap-8">
             {linkedVehicles.map((vehicle: Item, index: number) => {
-              return (
-                <LinkedItemCard
-                  key={index}
-                  item={vehicle}
-                  cardWidth={cardRef.current?.offsetWidth}
-                />
-              );
+              return <LinkedItemCard key={index} item={vehicle} size={size} />;
             })}
           </div>
         </>
@@ -212,11 +185,7 @@ const ItemPage = () => {
           <div className="flex w-full flex-col gap-8">
             {linkedActions.map((action: Action, index: number) => {
               return (
-                <LinkedActionCard
-                  key={index}
-                  action={action}
-                  cardWidth={cardRef.current?.offsetWidth}
-                />
+                <LinkedActionCard key={index} action={action} size={size} />
               );
             })}
           </div>
@@ -234,7 +203,7 @@ const ItemPage = () => {
                   <LinkedItemCard
                     key={modification.id}
                     item={modification}
-                    cardWidth={cardRef.current?.offsetWidth}
+                    size={size}
                   />
                   {index < linkedModifiactions.length - 1 && <Divider />}
                 </Fragment>

@@ -1,6 +1,5 @@
 import { useContext, useState } from 'react';
 import CharacterCard from './CharacterCard';
-import CharacterCardAlt from './CharacterCardAlt';
 import BtnRect from '../buttons/BtnRect';
 import { Link } from 'react-router-dom';
 import Loading from '../Loading';
@@ -12,8 +11,7 @@ import useCharacters from 'src/hooks/useCharacters';
 import InputField from '../formFields/InputField';
 import Icon from '@mdi/react';
 import { mdiCropSquare, mdiGrid, mdiSync } from '@mdi/js';
-import { useSearchParams, useParams } from 'react-router-dom';
-import { camelCase, capitalCase } from 'change-case';
+import { useParams } from 'react-router-dom';
 import IconBtnMedium from '../buttons/IconBtnMedium';
 
 const CharacterList = ({
@@ -25,8 +23,7 @@ const CharacterList = ({
 }) => {
   const { user } = useContext(AuthContext);
   const { campaignId } = useParams();
-  const [setSearchParams] = useSearchParams();
-  const [cardType, setCardType] = useState<'large' | 'small'>('large');
+  const [size, setSize] = useState<'small' | 'large'>('large');
 
   const characterIdList =
     characterIds || user.characters.map((character) => character.id);
@@ -78,14 +75,14 @@ const CharacterList = ({
             </IconBtnMedium>
             <IconBtnMedium
               onClick={() => {
-                if (cardType === 'large') {
-                  setCardType('small');
-                } else if (cardType === 'small') {
-                  setCardType('large');
+                if (size === 'large') {
+                  setSize('small');
+                } else if (size === 'small') {
+                  setSize('large');
                 }
               }}
             >
-              <Icon path={cardType === 'small' ? mdiGrid : mdiCropSquare} />
+              <Icon path={size === 'small' ? mdiGrid : mdiCropSquare} />
             </IconBtnMedium>
           </div>
         </div>
@@ -101,23 +98,16 @@ const CharacterList = ({
           </>
         ) : (
           <div
-            className={`${cardType === 'large' ? 'grid-cols-1' : 'grid-cols-3'} grid w-full gap-10`}
+            className={`${size === 'large' ? 'grid-cols-1' : 'grid-cols-3'} grid w-full gap-10`}
           >
-            {characters.map((character: Character) =>
-              cardType === 'large' ? (
-                <CharacterCard
-                  menu={menu}
-                  key={character.id}
-                  characterId={character.id}
-                />
-              ) : (
-                <CharacterCardAlt
-                  menu={menu}
-                  key={character.id}
-                  characterId={character.id}
-                />
-              ),
-            )}
+            {characters.map((character: Character, index: number) => (
+              <CharacterCard
+                menu={menu}
+                size={size}
+                key={index}
+                characterId={character.id}
+              />
+            ))}
           </div>
         )}
       </div>

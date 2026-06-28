@@ -14,8 +14,7 @@ const StatBar = ({
   children,
   mutation,
   handleChange,
-  cardWidth,
-  size,
+  size = 'small',
   widthCap = true,
 }: {
   title?: string;
@@ -27,12 +26,10 @@ const StatBar = ({
   children: ReactNode;
   mutation?: (value: number) => void;
   handleChange?: (value: number) => void;
-  cardWidth: number;
-  size?: 'large' | 'small';
+  size: 'large' | 'small';
   widthCap?: boolean;
 }) => {
   const { theme } = useContext(ThemeContext);
-  const small = cardWidth < 500;
 
   const arrayLength = (() => {
     let divider = 1;
@@ -56,7 +53,7 @@ const StatBar = ({
 
   return (
     <>
-      {title && (small ? null : <h4>{title}</h4>)}
+      {size === 'large' && <h4>{title}</h4>}
       {children}
       <div className={`flex w-full items-center rounded`} style={{}}>
         {Array.from({
@@ -83,7 +80,7 @@ const StatBar = ({
       {mode !== 'edit' && (
         <div className="flex items-center justify-end gap-4 place-self-end">
           <div
-            className={`${small ? 'gap-1' : 'gap-2'} text-tertiary flex w-full items-center justify-end whitespace-nowrap text-xl`}
+            className={`${size === 'small' ? 'gap-1' : 'gap-2'} text-tertiary flex w-full items-center justify-end whitespace-nowrap text-xl`}
           >
             <div
               className={`${mutation && 'hover:text-accent cursor-pointer'} text-secondary grid h-6 min-w-6 select-none place-content-center`}

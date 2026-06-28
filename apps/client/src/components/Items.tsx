@@ -26,7 +26,7 @@ const Items = ({ itemList, form }: { itemList?: Item[]; form?: FormApi }) => {
   const include = searchParams.getAll('include');
   const exclude = searchParams.getAll('exclude');
 
-  const [cardType, setCardType] = useState<'small' | 'large'>(() =>
+  const [size, setSize] = useState<'small' | 'large'>(() =>
     mobile ? 'small' : 'large',
   );
 
@@ -128,13 +128,11 @@ const Items = ({ itemList, form }: { itemList?: Item[]; form?: FormApi }) => {
           />
           {!mobile && (
             <>
-              {cardType === 'large'}
+              {size === 'large'}
               <IconBtnMedium
-                onClick={() =>
-                  setCardType(cardType === 'large' ? 'small' : 'large')
-                }
+                onClick={() => setSize(size === 'large' ? 'small' : 'large')}
               >
-                <Icon path={cardType === 'small' ? mdiGrid : mdiCropSquare} />
+                <Icon path={size === 'small' ? mdiGrid : mdiCropSquare} />
               </IconBtnMedium>
               <IconBtnMedium
                 onClick={() => {
@@ -154,7 +152,7 @@ const Items = ({ itemList, form }: { itemList?: Item[]; form?: FormApi }) => {
         <form.Field name="itemIds">
           {(field) => (
             <div
-              className={`${cardType === 'small' ? 'grid-cols-[repeat(auto-fit,_minmax(350px,_1fr))] gap-4' : 'grid-cols-1 gap-8'} grid w-full`}
+              className={`${size === 'small' ? 'grid-cols-[repeat(auto-fit,_minmax(350px_400px))] gap-4' : 'grid-cols-1 gap-8'} grid w-full`}
             >
               {isLoading ? (
                 <Loading />
@@ -176,7 +174,7 @@ const Items = ({ itemList, form }: { itemList?: Item[]; form?: FormApi }) => {
                       key={item.id}
                       className="flex w-full items-center gap-4"
                     >
-                      <ItemCard item={item} cardType={cardType} menu={false} />
+                      <ItemCard item={item} size={size} menu={false} />
                       <div className="flex flex-col items-center justify-center gap-2">
                         {linkCount > 0 && <p>{linkCount}</p>}
                         <IconBtnMedium
@@ -196,13 +194,13 @@ const Items = ({ itemList, form }: { itemList?: Item[]; form?: FormApi }) => {
         </form.Field>
       ) : (
         <div
-          className={`${cardType === 'small' ? 'grid-cols-[repeat(auto-fit,_minmax(350px,_1fr))] gap-4' : 'grid-cols-1 gap-8'} grid w-full`}
+          className={`${size === 'small' ? 'grid-cols-[repeat(auto-fit,_minmax(350px,_33%))] gap-4' : 'grid-cols-1 gap-8'} grid w-full`}
         >
           {isLoading ? (
             <Loading />
           ) : (
             items?.map((item: Item) => (
-              <ItemCard item={item} cardType={cardType} />
+              <ItemCard item={item} size={size} menu={false} />
             ))
           )}
         </div>

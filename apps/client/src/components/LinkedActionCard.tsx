@@ -1,15 +1,12 @@
 import Icon from '@mdi/react';
 import DieIcon from './icons/DieIcon';
-import { mdiLinkBoxVariantOutline, mdiTriangleDown } from '@mdi/js';
+import { mdiTriangleDown } from '@mdi/js';
 import { Action } from 'src/types/action';
 import StopwatchIcon from './icons/StopwatchIcon';
-import { useContext, useRef } from 'react';
-import { ThemeContext } from '../contexts/ThemeContext';
+import { useRef } from 'react';
 import ArrowHeader3 from './ArrowHeader3';
-import ThemeContainer from './ThemeContainer';
 import ActionStatBars from './ActionStatBars';
 import { capitalCase } from 'change-case';
-import { Link, useNavigate } from 'react-router-dom';
 import ActionRadialMenu from './radialMenus/ActionRadialMenu';
 import ItemCardSmall from './ItemCardSmall';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
@@ -21,18 +18,11 @@ import ArrowHeader4 from './ArrowHeader4';
 
 const LinkedActionCard = ({
   action,
-  cardWidth,
-  className,
-  onClick,
+  size = 'small',
 }: {
   action: Action;
-  cardWidth: number;
-  className?: string;
-  onClick: () => void;
+  size: 'small' | 'large';
 }) => {
-  const { accentPrimary } = useContext(ThemeContext);
-  const navigate = useNavigate();
-
   const containerRef = useRef(null);
 
   const menuOpen = useRadialMenuStore((state) => state.menuOpen);
@@ -108,13 +98,11 @@ const LinkedActionCard = ({
         </div>
       )}
       <p>{description1}</p>
-
       {costLength > 0 && (
         <>
-          <Divider />
-          <ArrowHeader4 className="text-primary" title="Costs" />
-          <StatBarContainer>
-            <ActionStatBars stats={action.costs} cardWidth={cardWidth} />
+          <ArrowHeader4 className="text-secondary" title="Costs" />
+          <StatBarContainer size={size}>
+            <ActionStatBars stats={action.costs} size={size} />
           </StatBarContainer>
         </>
       )}
@@ -124,9 +112,9 @@ const LinkedActionCard = ({
           <Divider />
           <ArrowHeader4 className="text-primary" title="Modifiers" />
           {action?.modifiers && Object.keys(action?.modifiers).length > 0 && (
-            <StatBarContainer>
-              <CharacterStatBars stats={action?.modifiers} />
-              <StatBars stats={action?.modifiers} />
+            <StatBarContainer size={size}>
+              <CharacterStatBars stats={action?.modifiers} size={size} />
+              <StatBars stats={action?.modifiers} size={size} />
             </StatBarContainer>
           )}
           <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2">

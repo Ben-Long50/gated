@@ -2,10 +2,14 @@ import { CSSProperties, useContext } from 'react';
 import CloudinaryPicture from '../CloudinaryPicture';
 import { Character } from 'src/types/character';
 import { ThemeContext } from 'src/contexts/ThemeContext';
-import InjuryIcon from '../icons/InjuryIcon';
-import InsanityIcon from '../icons/InsanityIcon';
 import Icon from '@mdi/react';
-import { mdiAlphaTCircleOutline } from '@mdi/js';
+import {
+  mdiAlphaGCircleOutline,
+  mdiAlphaMCircleOutline,
+  mdiAlphaSCircleOutline,
+  mdiAlphaTCircleOutline,
+} from '@mdi/js';
+import constructName from 'src/utils/constructName';
 
 const CharacterPictureRound = ({
   character,
@@ -18,7 +22,7 @@ const CharacterPictureRound = ({
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
 
-  const name = character?.firstName || character?.name;
+  const name = constructName(character);
 
   const awol =
     (typeof character?.stats?.injuries === 'number' &&
@@ -52,19 +56,41 @@ const CharacterPictureRound = ({
             </h2>
           </div>
         )}
-        {awol && (
-          <InjuryIcon className="absolute inset-0 size-full fill-black stroke-red-600 stroke-2 p-0.5" />
-        )}
-        {insane && (
-          <InsanityIcon className="absolute inset-0 size-full fill-black stroke-blue-600 stroke-2 p-0.5" />
-        )}
-      </div>
-      {character?.npcTypes && character?.npcTypes.includes('template') && (
-        <Icon
-          className="text-primary absolute -right-1 -top-1"
-          path={mdiAlphaTCircleOutline}
-          size={0.8}
+        <div
+          className={`${awol && !insane && 'bg-red-600'} ${insane && !awol && 'bg-blue-600'} ${awol && insane && 'bg-purple-600'} absolute inset-0 bg-opacity-35`}
         />
+      </div>
+      {character.npcTypes && character.npcTypes.length > 0 && (
+        <div className="absolute -right-1 -top-1 flex flex-wrap items-center gap-1">
+          {character?.npcTypes.includes('shop') && (
+            <Icon
+              className="text-primary"
+              path={mdiAlphaSCircleOutline}
+              size={0.8}
+            />
+          )}
+          {character?.npcTypes.includes('monster') && (
+            <Icon
+              className="text-primary"
+              path={mdiAlphaMCircleOutline}
+              size={0.8}
+            />
+          )}
+          {character?.npcTypes.includes('goon') && (
+            <Icon
+              className="text-primary"
+              path={mdiAlphaGCircleOutline}
+              size={0.8}
+            />
+          )}
+          {character?.npcTypes.includes('template') && (
+            <Icon
+              className="text-primary"
+              path={mdiAlphaTCircleOutline}
+              size={0.8}
+            />
+          )}
+        </div>
       )}
     </div>
   );

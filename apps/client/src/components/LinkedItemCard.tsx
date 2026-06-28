@@ -13,15 +13,14 @@ import { mdiLinkBoxVariantOutline } from '@mdi/js';
 import KeywordTag from './KeywordTag';
 import ConditionTag from './ConditionTag';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
+import StatBarContainer from './StatBarContainer';
 
 const LinkedItemCard = ({
   item,
-  mode,
-  cardWidth,
+  size = 'small',
 }: {
   item: Item;
-  mode?: string;
-  cardWidth: number;
+  size: 'small' | 'large';
 }) => {
   const { traitId, conditionId } = useParams();
   const { accentPrimary } = useContext(ThemeContext);
@@ -96,22 +95,18 @@ const LinkedItemCard = ({
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              {item.keywords?.map((keyword: KeywordReference) => {
-                return (
-                  <Fragment key={keyword.id}>
-                    <KeywordTag key={keyword.id} keyword={keyword} />
-                    {Number(traitId) === keyword.id && (
-                      <Outlet context={{ keyword, parts }} />
-                    )}
-                  </Fragment>
-                );
-              })}
+              {item.keywords?.map((keyword: KeywordReference) => (
+                <Fragment key={keyword.id}>
+                  <KeywordTag key={keyword.id} keyword={keyword} />
+                  {Number(traitId) === keyword.id && (
+                    <Outlet context={{ keyword, parts }} />
+                  )}
+                </Fragment>
+              ))}
             </div>
-            <div
-              className={`${cardWidth < 500 ? 'gap-2 px-2' : 'gap-4 px-4'} scrollbar-primary-2 grid w-full grid-cols-[auto_auto_1fr_auto] place-items-center gap-y-2 overflow-y-auto border-x-2 border-gray-400 border-opacity-50`}
-            >
-              <StatBars stats={item.stats} mode={mode} cardWidth={cardWidth} />
-            </div>
+            <StatBarContainer size={size}>
+              <StatBars stats={item.stats} size={size} />
+            </StatBarContainer>
           </div>
         </div>
       </div>

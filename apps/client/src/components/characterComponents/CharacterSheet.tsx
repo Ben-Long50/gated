@@ -36,6 +36,8 @@ const CharacterSheet = () => {
   const location = useLocation();
   const parts = location.pathname.split('/');
 
+  const size = mobile ? 'small' : 'large';
+
   const [infoVisibility, setInfoVisibility] = useState(mobile ? false : true);
 
   const { filteredCharacter: character, isLoading } = useCharacter(
@@ -205,9 +207,10 @@ const CharacterSheet = () => {
           </div>
         </ThemeContainer>
       </div>
-      <StatBarContainer>
+      <StatBarContainer size={size}>
         <CharacterStatBars
           stats={character?.stats}
+          size={size}
           characterId={character.id}
         />
       </StatBarContainer>
@@ -226,7 +229,7 @@ const CharacterSheet = () => {
         </>
       )}
       {character?.playerCharacter && (
-        <div className="grid grid-cols-2 items-center justify-around gap-4">
+        <div className="grid w-full grid-cols-2 items-center justify-around gap-4">
           <div className="bg-secondary flex items-center justify-between gap-2 rounded-md p-4 shadow-md shadow-black">
             <ArrowHeader4 className="text-primary" title="Attribute Points" />
             <p>
@@ -315,6 +318,7 @@ const CharacterSheet = () => {
           <Divider />
           <BtnRect
             type="button"
+            className="w-full"
             ariaLabel="Update character information"
             onClick={() => navigate('update&mode=form')}
           >
@@ -328,6 +332,7 @@ const CharacterSheet = () => {
             <Divider />
             <BtnRect
               type="button"
+              className="w-full"
               ariaLabel="Update codex character information"
               onClick={() => navigate('update?formType=codex&mode=form')}
             >

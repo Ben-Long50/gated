@@ -13,12 +13,10 @@ import FootIcon from './icons/FootIcon';
 
 const ActionStatBars = ({
   stats,
-  mode,
-  cardWidth,
+  size = 'small',
 }: {
   stats: any;
-  mode?: string;
-  cardWidth: number;
+  size: 'small' | 'large';
 }) => {
   const { statColorMap } = useContext(ThemeContext);
 
@@ -29,7 +27,7 @@ const ActionStatBars = ({
           title="Actions"
           current={stats.currentActions}
           color={statColorMap['AP']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <ActionIcon className="text-secondary size-8" />
         </StatBar>
@@ -39,7 +37,7 @@ const ActionStatBars = ({
           title="Reactions"
           current={stats.currentReactions}
           color={statColorMap['RP']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <ReactionIcon className="text-secondary size-8" />
         </StatBar>
@@ -49,7 +47,7 @@ const ActionStatBars = ({
           title="Health"
           current={stats.currentHealth}
           color={statColorMap['Health']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <HealthIcon className="text-secondary size-8" />
         </StatBar>
@@ -59,7 +57,7 @@ const ActionStatBars = ({
           title="Sanity"
           current={stats.currentSanity}
           color={statColorMap['Sanity']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <SanityIcon className="text-secondary size-8" />
         </StatBar>
@@ -69,7 +67,7 @@ const ActionStatBars = ({
           title="PWR"
           current={stats.currentPower}
           color={statColorMap['PWR']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <LightningIcon className="text-secondary size-8" />
         </StatBar>
@@ -79,7 +77,7 @@ const ActionStatBars = ({
           title="MAG"
           current={stats.currentAmmoCount}
           color={statColorMap['MAG']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <MagCapacityIcon className="text-secondary size-8" />
         </StatBar>
@@ -89,7 +87,7 @@ const ActionStatBars = ({
           title="Wyrm"
           current={stats.wyrmShells}
           color={statColorMap['wyrmShells']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <WyrmShellIcon className="text-secondary size-8" />
         </StatBar>
@@ -99,7 +97,7 @@ const ActionStatBars = ({
           title="Hands"
           current={stats.currentHands}
           color={statColorMap['Health']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <HandIcon className="text-secondary size-8" />
         </StatBar>
@@ -109,7 +107,7 @@ const ActionStatBars = ({
           title="Feet"
           current={stats.currentFeet}
           color={statColorMap['Health']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <FootIcon className="text-secondary size-8" />
         </StatBar>

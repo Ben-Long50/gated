@@ -23,16 +23,14 @@ import SizeIcon from '../icons/SizeIcon';
 
 const CharacterStatBars = ({
   stats,
-  cardWidth,
   characterId,
   handleChange,
-  size,
+  size = 'small',
 }: {
   stats: CharacterStats;
-  cardWidth: number;
   characterId: number;
   handleChange?: (stat: string, value: number) => void;
-  size: 'large' | 'small';
+  size: 'small' | 'large';
 }) => {
   const { statColorMap } = useContext(ThemeContext);
 
@@ -46,7 +44,7 @@ const CharacterStatBars = ({
           current={stats.currentHealth ?? stats.maxHealth}
           total={stats.maxHealth}
           color={statColorMap['Health']}
-          cardWidth={cardWidth}
+          size={size}
           mutation={(value: number) => {
             if (
               (value > 0 && stats.currentHealth < stats.maxHealth) ||
@@ -64,7 +62,6 @@ const CharacterStatBars = ({
               ? (value: number) => handleChange('maxHealth', value)
               : undefined
           }
-          size={size}
         >
           <HealthIcon
             className={`${size === 'small' ? 'size-7' : 'size-8'} text-secondary`}
@@ -77,7 +74,7 @@ const CharacterStatBars = ({
           current={stats.currentSanity ?? stats.maxSanity}
           total={stats.maxSanity}
           color={statColorMap['Sanity']}
-          cardWidth={cardWidth}
+          size={size}
           mutation={(value: number) => {
             if (
               (value > 0 && stats.currentSanity < stats.maxSanity) ||
@@ -95,7 +92,6 @@ const CharacterStatBars = ({
               ? (value: number) => handleChange('maxSanity', value)
               : undefined
           }
-          size={size}
         >
           <SanityIcon
             className={`${size === 'small' ? 'size-7' : 'size-8'} text-secondary`}
@@ -108,7 +104,7 @@ const CharacterStatBars = ({
           current={stats.cyber ?? stats.maxCyber}
           total={stats.maxCyber}
           color={statColorMap['Cyber']}
-          cardWidth={cardWidth}
+          size={size}
           handleChange={
             handleChange
               ? (value: number) => handleChange('maxCyber', value)
@@ -124,7 +120,7 @@ const CharacterStatBars = ({
           current={stats.weight ?? stats.maxEquip}
           total={stats.maxEquip}
           color={statColorMap['Equip']}
-          cardWidth={cardWidth}
+          size={size}
           handleChange={
             handleChange
               ? (value: number) => handleChange('maxEquip', value)
@@ -139,7 +135,7 @@ const CharacterStatBars = ({
           title="Speed"
           current={stats.speed}
           color={statColorMap['SPD']}
-          cardWidth={cardWidth}
+          size={size}
           handleChange={
             handleChange
               ? (value: number) => handleChange('speed', value)
@@ -154,7 +150,7 @@ const CharacterStatBars = ({
           title="Evasion"
           current={stats.evasion}
           color={statColorMap['EV']}
-          cardWidth={cardWidth}
+          size={size}
           handleChange={
             handleChange
               ? (value: number) => handleChange('evasion', value)
@@ -170,7 +166,7 @@ const CharacterStatBars = ({
           current={stats.armor}
           total={stats.equippedArmor}
           color={statColorMap['AV']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <ArmorIcon className="text-secondary text-blue size-8" />
         </StatBar>
@@ -181,7 +177,7 @@ const CharacterStatBars = ({
           current={stats.ward}
           total={stats.equippedWard}
           color={statColorMap['WV']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <WardIcon className="text-secondary text-blue size-8" />
         </StatBar>
@@ -192,7 +188,7 @@ const CharacterStatBars = ({
           current={stats.currentBlockPoints}
           total={stats.blockPoints}
           color={statColorMap['BP']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <BlockIcon className="text-secondary text-blue size-8" />
         </StatBar>
@@ -202,7 +198,7 @@ const CharacterStatBars = ({
           title="Size"
           current={stats.size}
           color={statColorMap['SZE']}
-          cardWidth={cardWidth}
+          size={size}
           handleChange={
             handleChange
               ? (value: number) => handleChange('size', value)
@@ -214,7 +210,7 @@ const CharacterStatBars = ({
       )}
       {stats.permanentInjuries !== undefined && (
         <>
-          <h4>Insanities</h4>
+          {size === 'large' && <h4>Insanities</h4>}
           <InjuryIcon className="text-secondary size-8" />
           <div className="col-span-2 flex items-center justify-end gap-4 place-self-end">
             <div className={`flex grow items-center gap-2 justify-self-end`}>
@@ -252,9 +248,39 @@ const CharacterStatBars = ({
           </div>
         </>
       )}
+      {stats.hands !== undefined && (
+        <StatBar
+          title="Hands"
+          current={stats.hands}
+          color={statColorMap['Hands']}
+          size={size}
+          handleChange={
+            handleChange
+              ? (value: number) => handleChange('hands', value)
+              : undefined
+          }
+        >
+          <HandIcon className="text-secondary text-blue size-8" />
+        </StatBar>
+      )}
+      {stats.feet !== undefined && (
+        <StatBar
+          title="Feet"
+          current={stats.feet}
+          color={statColorMap['Feet']}
+          size={size}
+          handleChange={
+            handleChange
+              ? (value: number) => handleChange('feet', value)
+              : undefined
+          }
+        >
+          <FootIcon className="text-secondary text-blue size-8" />
+        </StatBar>
+      )}
       {stats.permanentInsanities !== undefined && (
         <>
-          <h4>Insanities</h4>
+          {size === 'large' && <h4>Insanities</h4>}
           <InsanityIcon className="text-secondary size-8" />
           <div className="col-span-2 flex items-center justify-end gap-4 place-self-end">
             <div className={`flex grow items-center gap-2 justify-self-end`}>
@@ -291,36 +317,6 @@ const CharacterStatBars = ({
             )}
           </div>
         </>
-      )}
-      {stats.hands !== undefined && (
-        <StatBar
-          title="Hands"
-          current={stats.hands}
-          color={statColorMap['Hands']}
-          cardWidth={cardWidth}
-          handleChange={
-            handleChange
-              ? (value: number) => handleChange('hands', value)
-              : undefined
-          }
-        >
-          <HandIcon className="text-secondary text-blue size-8" />
-        </StatBar>
-      )}
-      {stats.feet !== undefined && (
-        <StatBar
-          title="Feet"
-          current={stats.feet}
-          color={statColorMap['Feet']}
-          cardWidth={cardWidth}
-          handleChange={
-            handleChange
-              ? (value: number) => handleChange('feet', value)
-              : undefined
-          }
-        >
-          <FootIcon className="text-secondary text-blue size-8" />
-        </StatBar>
       )}
     </>
   );

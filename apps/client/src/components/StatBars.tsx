@@ -28,10 +28,10 @@ import SanityDamageIcon from './icons/SanityDamageIcon';
 
 const StatBars = ({
   stats,
-  cardWidth,
+  size = 'small',
 }: {
   stats: Stats;
-  cardWidth: number;
+  size: 'small' | 'large';
 }) => {
   const { statColorMap } = useContext(ThemeContext);
 
@@ -42,7 +42,7 @@ const StatBars = ({
           title="DMG"
           current={stats.damage}
           color={statColorMap['DMG']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <DamageIcon className="text-secondary size-8" />
         </StatBar>
@@ -52,7 +52,7 @@ const StatBars = ({
           title="SDMG"
           current={stats.sanityDamage}
           color={statColorMap['SDMG']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <SanityDamageIcon className="text-secondary size-8" />
         </StatBar>
@@ -62,7 +62,7 @@ const StatBars = ({
           title="SLV"
           current={stats.salvo}
           color={statColorMap['SLV']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <SalvoIcon className="text-secondary size-8" />
         </StatBar>
@@ -72,7 +72,7 @@ const StatBars = ({
           title="FLR"
           current={stats.flurry}
           color={statColorMap['FLR']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <FlurryIcon className="text-secondary size-8" />
         </StatBar>
@@ -81,9 +81,8 @@ const StatBars = ({
         <StatBar
           title="RNG"
           current={stats.range}
-          divider={5}
           color={statColorMap['RNG']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <RangeIcon className="text-secondary size-8" />
         </StatBar>
@@ -97,7 +96,7 @@ const StatBars = ({
               current={stats.currentAmmoCount}
               reserve={stats.currentMagCount * stats.magCapacity}
               color={statColorMap['MAG']}
-              cardWidth={cardWidth}
+              size={size}
             >
               <MagCapacityIcon className="text-secondary size-8" />
             </StatBar>
@@ -110,7 +109,7 @@ const StatBars = ({
               current={stats.magCapacity}
               reserve={(stats.magCount - 1) * stats.magCapacity}
               color={statColorMap['MAG']}
-              cardWidth={cardWidth}
+              size={size}
             >
               <MagCapacityIcon className="text-secondary size-8" />
             </StatBar>
@@ -122,7 +121,7 @@ const StatBars = ({
           current={stats.cyber}
           total={stats.maxCyber}
           color={statColorMap['Cyber']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <CyberIcon className="text-secondary size-8" />
         </StatBar>
@@ -133,7 +132,7 @@ const StatBars = ({
           current={stats.currentHull}
           total={stats.hull}
           color={statColorMap['HULL']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <HullIcon className="text-secondary size-8" />
         </StatBar>
@@ -143,7 +142,7 @@ const StatBars = ({
             title="HV"
             current={stats.hull}
             color={statColorMap['HULL']}
-            cardWidth={cardWidth}
+            size={size}
           >
             <HullIcon className="text-secondary size-8" />
           </StatBar>
@@ -154,7 +153,7 @@ const StatBars = ({
           title="AV"
           current={stats.armor}
           color={statColorMap['AV']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <ArmorIcon className="text-secondary size-8" />
         </StatBar>
@@ -164,7 +163,7 @@ const StatBars = ({
           title="SZE"
           current={stats.size}
           color={statColorMap['SZE']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <SizeIcon className="text-secondary size-8" />
         </StatBar>
@@ -173,9 +172,8 @@ const StatBars = ({
         <StatBar
           title="SPD"
           current={stats.speed}
-          divider={10}
           color={statColorMap['SPD']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <VehicleSpeedIcon className="text-secondary size-8" />
         </StatBar>
@@ -185,7 +183,7 @@ const StatBars = ({
           title="AGL"
           current={stats.agility}
           color={statColorMap['AGL']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <AgilityIcon className="text-secondary size-8" />
         </StatBar>
@@ -196,7 +194,7 @@ const StatBars = ({
           current={stats.currentCargo}
           total={stats.cargo}
           color={statColorMap['CRG']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <CargoIcon className="text-secondary size-8" />
         </StatBar>
@@ -206,7 +204,7 @@ const StatBars = ({
             title="CRG"
             current={stats.cargo}
             color={statColorMap['CRG']}
-            cardWidth={cardWidth}
+            size={size}
           >
             <CargoIcon className="text-secondary size-8" />
           </StatBar>
@@ -218,7 +216,7 @@ const StatBars = ({
           current={stats.currentPass}
           total={stats.pass}
           color={statColorMap['PASS']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <PassIcon className="text-secondary size-8" />
         </StatBar>
@@ -228,7 +226,7 @@ const StatBars = ({
             title="OCC"
             current={stats.pass}
             color={statColorMap['PASS']}
-            cardWidth={cardWidth}
+            size={size}
           >
             <PassIcon className="text-secondary size-8" />
           </StatBar>
@@ -240,7 +238,7 @@ const StatBars = ({
           current={stats.currentTurret}
           total={stats.turret}
           color={statColorMap['TUR']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <DroneIcon className="text-secondary size-8" />
         </StatBar>
@@ -251,7 +249,7 @@ const StatBars = ({
           current={stats.currentWeapon}
           total={stats.weapon}
           color={statColorMap['WPN']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <VehicleWeaponIcon className="text-secondary size-8" />
         </StatBar>
@@ -261,7 +259,7 @@ const StatBars = ({
           title="WV"
           current={stats.ward}
           color={statColorMap['WV']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <WardIcon className="text-secondary size-8" />
         </StatBar>
@@ -274,7 +272,7 @@ const StatBars = ({
               total={stats.block}
               current={stats.currentBlock}
               color={statColorMap['BP']}
-              cardWidth={cardWidth}
+              size={size}
             >
               <BlockIcon className="text-secondary size-8" />
             </StatBar>
@@ -285,7 +283,7 @@ const StatBars = ({
               total={stats.block}
               current={stats.block}
               color={statColorMap['BP']}
-              cardWidth={cardWidth}
+              size={size}
             >
               <BlockIcon className="text-secondary size-8" />
             </StatBar>
@@ -296,7 +294,7 @@ const StatBars = ({
           total={stats.power}
           current={stats.currentPower}
           color="rgb(107, 255, 124)"
-          cardWidth={cardWidth}
+          size={size}
         >
           <LightningIcon className="text-secondary size-8" />
         </StatBar>
@@ -306,7 +304,7 @@ const StatBars = ({
             title="PWR"
             current={stats.power}
             color="rgb(107, 255, 124)"
-            cardWidth={cardWidth}
+            size={size}
           >
             <LightningIcon className="text-secondary size-8" />
           </StatBar>
@@ -319,7 +317,7 @@ const StatBars = ({
             current={stats.currentWyrmMoldSlots}
             total={stats.wyrmMoldSlots}
             color={statColorMap['WMS']}
-            cardWidth={cardWidth}
+            size={size}
           >
             <WyrmMoldSlotsIcon className="text-secondary size-8" />
           </StatBar>
@@ -329,7 +327,7 @@ const StatBars = ({
           title="WMP"
           current={stats.wyrmMoldPoints}
           color={statColorMap['WMP']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <WyrmShellIcon className="text-secondary size-8" />
         </StatBar>
@@ -341,7 +339,7 @@ const StatBars = ({
             current={stats.currentEsotericCharges}
             total={stats.esotericCharges}
             color={statColorMap['EC']}
-            cardWidth={cardWidth}
+            size={size}
           >
             <InsanityIcon className="text-secondary size-8" />
           </StatBar>
@@ -351,7 +349,7 @@ const StatBars = ({
           title="WGT"
           current={stats.weight}
           color={statColorMap['WGT']}
-          cardWidth={cardWidth}
+          size={size}
         >
           <EquipIcon className="text-secondary size-8" />
         </StatBar>
