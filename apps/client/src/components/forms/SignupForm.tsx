@@ -29,7 +29,7 @@ const SignupForm = () => {
 
   return (
     <AuthFormLayout form={signupForm}>
-      <h1 className="text-center font-zen">Sign Up</h1>
+      <h1 className="mb-auto text-center font-zen">Sign Up</h1>
       <signupForm.Field
         name="username"
         validators={{
@@ -149,7 +149,7 @@ const SignupForm = () => {
           'Sign up'
         )}
       </BtnRect>
-      <p className="text-tertiary text-center">
+      <p className="text-tertiary mt-auto text-center">
         Already have an account?
         <Link to="/signin">
           <span className="pl-2 hover:underline">Sign in</span>

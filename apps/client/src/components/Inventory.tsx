@@ -20,6 +20,7 @@ import { useContext, useRef } from 'react';
 import NavTabs from './NavTabs';
 import InventoryCard from './InventoryCard';
 import { LayoutContext } from 'src/contexts/LayoutContext';
+import InventoryGrid from './InventoryGrid';
 
 const Inventory = () => {
   const { mobile } = useContext(LayoutContext);
@@ -109,9 +110,7 @@ const Inventory = () => {
       {isLoading ? (
         <Loading />
       ) : (
-        <div
-          className={`scrollbar-secondary-2 ${mobile ? 'gap-4' : 'gap-6'} grid w-full grid-cols-[repeat(auto-fit,minmax(150px,1fr))]`}
-        >
+        <InventoryGrid minWidth={175}>
           {items ? (
             items.map((item) => (
               <InventoryCard
@@ -123,7 +122,7 @@ const Inventory = () => {
           ) : (
             <h2 className="pl-4">???</h2>
           )}
-        </div>
+        </InventoryGrid>
       )}
       <Outlet context={{ parts }} />
     </>

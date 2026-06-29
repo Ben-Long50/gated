@@ -48,7 +48,7 @@ const SigninForm = () => {
 
   return (
     <AuthFormLayout form={signinForm}>
-      <h1 className="text-center font-zen">Sign In</h1>
+      <h1 className="mb-auto text-center font-zen">Sign In</h1>
       <signinForm.Field
         name="email"
         validators={{
@@ -105,6 +105,7 @@ const SigninForm = () => {
         <Divider />
       </div>
       <BtnAuth
+        className="text-primary hover:text-accent"
         onClick={() => {
           googleSignin();
         }}
@@ -117,6 +118,7 @@ const SigninForm = () => {
         Google
       </BtnAuth>
       <BtnAuth
+        className="text-primary hover:text-accent"
         onClick={() => {
           facebookSignin();
         }}
@@ -128,7 +130,7 @@ const SigninForm = () => {
         />
         Facebook
       </BtnAuth>
-      <p className="text-tertiary w-full text-center">
+      <p className="text-tertiary mt-auto w-full text-center">
         Don't have an account?
         <Link to="/signup">
           <span className="pl-2 hover:underline">Sign up</span>

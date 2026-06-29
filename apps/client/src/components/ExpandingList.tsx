@@ -7,8 +7,8 @@ import {
   ReactNode,
   useState,
 } from 'react';
-import ArrowHeader3 from './ArrowHeader3';
 import ArrowHeader2 from './ArrowHeader2';
+import IconBtnSmall from './buttons/IconBtnSmall';
 
 const ExpandingList = ({
   title,
@@ -29,12 +29,8 @@ const ExpandingList = ({
     <div className={`flex w-full flex-col gap-8`}>
       <div className="flex w-full items-center justify-between gap-8">
         <ArrowHeader2 title={title} />
-        <button
-          aria-label={listExpanded ? 'Retract all' : 'Expand all'}
-          className="bg-tertiary shadow-color group ml-auto size-10 rounded p-2 shadow-md"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
+        <IconBtnSmall
+          onClick={() => {
             if (onClick) {
               onClick();
             }
@@ -52,7 +48,7 @@ const ExpandingList = ({
               className="text-secondary timing group-hover:text-accent"
             />
           )}
-        </button>
+        </IconBtnSmall>
       </div>
       {childCount > 0 && (
         <div className={`${className}`}>

@@ -1,23 +1,26 @@
 import { Outlet } from 'react-router-dom';
-import { ThemeContext } from '../contexts/ThemeContext';
 import { useContext } from 'react';
 import LogoTitle from '../components/LogoTitle';
 import { LayoutContext } from 'src/contexts/LayoutContext';
+import { ThemeContext } from 'src/contexts/ThemeContext';
 
 const AuthLayout = () => {
-  const { theme } = useContext(ThemeContext);
   const { mobile } = useContext(LayoutContext);
+  const { accentPrimary } = useContext(ThemeContext);
 
   return (
     <div
-      className={`${theme} scrollbar-primary-2 relative flex h-full min-h-dvh w-dvw items-center justify-center overflow-y-auto`}
+      className={`scrollbar-primary-2 relative grid h-full min-h-dvh w-dvw place-items-center overflow-y-auto`}
+      style={
+        {
+          '--accent-primary': accentPrimary,
+        } as React.CSSProperties
+      }
     >
       <LogoTitle
         className={`${mobile ? 'bottom-4 left-4' : 'bottom-8 left-8'} absolute`}
       />
-      <div className="z-20 w-full">
-        <Outlet />
-      </div>
+      <Outlet />
     </div>
   );
 };

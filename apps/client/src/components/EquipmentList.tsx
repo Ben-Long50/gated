@@ -16,6 +16,7 @@ import { Equipment, Item } from 'src/types/item';
 import { useRef } from 'react';
 import NavTabs from './NavTabs';
 import InventoryCard from './InventoryCard';
+import InventoryGrid from './InventoryGrid';
 
 const EquipmentList = ({ equipment }: { equipment: Equipment }) => {
   const navigate = useNavigate();
@@ -109,7 +110,7 @@ const EquipmentList = ({ equipment }: { equipment: Equipment }) => {
           </BtnAuth>
         )}
       </NavTabs>
-      <div className={`scrollbar-secondary-2 grid grid-cols-6 gap-2 sm:gap-4`}>
+      <InventoryGrid minWidth={175}>
         {items ? (
           items.map((item) => (
             <InventoryCard
@@ -121,7 +122,7 @@ const EquipmentList = ({ equipment }: { equipment: Equipment }) => {
         ) : (
           <h2 className="pl-4">???</h2>
         )}
-      </div>
+      </InventoryGrid>
       <Outlet context={{ parts }} />
     </>
   );

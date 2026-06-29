@@ -6,6 +6,7 @@ import NavTabs from './NavTabs';
 import { PictureCard } from './PictureCard';
 import { useContext } from 'react';
 import { LayoutContext } from 'src/contexts/LayoutContext';
+import InventoryGrid from './InventoryGrid';
 
 const CodexDashboard = () => {
   const { mobile } = useContext(LayoutContext);
@@ -133,9 +134,7 @@ const CodexDashboard = () => {
       {isLoading ? (
         <Loading />
       ) : (
-        <div
-          className={`${mobile ? 'gap-4' : 'gap-6'} grid w-full grid-cols-[repeat(auto-fit,minmax(150px,1fr))]`}
-        >
+        <InventoryGrid minWidth={175}>
           {tab === 'equipment' &&
             items &&
             equipmentLinks.map((link, index) => (
@@ -158,7 +157,7 @@ const CodexDashboard = () => {
                 onClick={() => navigate(link.path)}
               />
             ))}
-        </div>
+        </InventoryGrid>
       )}
     </>
   );

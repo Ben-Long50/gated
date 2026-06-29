@@ -22,7 +22,7 @@ export const PictureCard = ({
 
   return (
     <button
-      className={`${className} ${label && 'pb-2'} ${hover ? 'border-accent border-opacity-100' : 'border-transparent border-opacity-50'} bg-primary timing shadow-color group flex w-full flex-col items-center overflow-hidden rounded-md border-2 border-zinc-800`}
+      className={`${className} ${label && 'pb-2'} ${hover ? 'border-accent border-opacity-100' : 'border-transparent border-opacity-50'} bg-primary timing shadow-color group flex w-full max-w-[300px] flex-col items-center overflow-hidden rounded-md border-2 border-zinc-800`}
       style={{ borderColor: hover ? color : `${color}50` }}
       onClick={
         onClick

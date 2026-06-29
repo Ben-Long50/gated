@@ -4,6 +4,7 @@ import rarityColorMap from 'src/utils/rarityColorMap';
 import useToggleEquipmentMutation from 'src/hooks/useEquipmentToggleMutation/useEquipmentToggleMutation';
 import Icon from '@mdi/react';
 import { mdiCheckCircle, mdiCircleOutline } from '@mdi/js';
+import IconBtnSmall from './buttons/IconBtnSmall';
 
 const InventoryCard = ({
   item,
@@ -22,10 +23,9 @@ const InventoryCard = ({
       color={rarityColorMap[item.rarity]}
       onClick={onClick}
     >
-      <button
-        className="group/equip absolute left-0 top-0 p-1"
-        onClick={(e) => {
-          e.stopPropagation();
+      <IconBtnSmall
+        className="absolute left-1 top-1"
+        onClick={() => {
           if (item.characterInventory?.characterId) {
             toggleEquipment.mutate({
               characterId: item.characterInventory?.characterId,
@@ -36,12 +36,8 @@ const InventoryCard = ({
           }
         }}
       >
-        <Icon
-          className="timing text-tertiary group-hover/equip:text-accent"
-          path={item.equipped ? mdiCheckCircle : mdiCircleOutline}
-          size={1.5}
-        />
-      </button>
+        <Icon path={item.equipped ? mdiCheckCircle : mdiCircleOutline} />
+      </IconBtnSmall>
     </PictureCard>
   );
 };

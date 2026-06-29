@@ -16,10 +16,10 @@ const AuthFormLayout = ({
 
   return (
     <div
-      className={`${!mobile && 'grid grid-cols-2'} shadow-color bg-base w-full overflow-hidden rounded-lg shadow-lg`}
+      className={`${!mobile && 'grid grid-cols-2'} shadow-color bg-base z-10 overflow-hidden rounded-lg shadow-lg`}
     >
       <form
-        className={`${mobile ? 'gap-6 p-4' : 'gap-8 p-8'} flex w-full flex-col justify-between`}
+        className={`${mobile ? 'gap-6 p-4' : 'gap-8 p-8'} flex flex-col justify-between`}
         onSubmit={(e) => {
           e.preventDefault();
           e.stopPropagation();

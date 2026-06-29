@@ -17,6 +17,7 @@ import Divider from './Divider';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import Items from './Items';
 import Cart from './Cart';
+import NavTabs from './NavTabs';
 
 const Shop = () => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -44,26 +45,7 @@ const Shop = () => {
     : null;
 
   return (
-    <div className="relative flex w-full flex-col gap-8">
-      <div className="absolute left-2 top-2 flex items-center gap-4 sm:left-4 sm:top-4">
-        <button
-          className="group relative"
-          onClick={() => setSearchParams({ category: 'cart' })}
-        >
-          <Icon
-            className="group-hover:text-accent text-secondary timing size-12 shrink-0 p-2"
-            path={mdiCartOutline}
-          />
-          <p
-            className="shadow-color absolute right-0 top-0 flex h-6 min-w-6 items-center justify-center rounded-full pt-0.5 text-center text-base font-semibold shadow-md dark:text-gray-950"
-            style={{ backgroundColor: accentPrimary }}
-          >
-            {cartLength}
-          </p>
-        </button>
-        <CharacterPictureRound className="size-9" character={character} />
-      </div>
-
+    <>
       <div className="flex w-full items-center justify-center gap-4 px-8">
         {shopId ? (
           <CharacterPictureRound character={shop} />
@@ -74,10 +56,28 @@ const Shop = () => {
           {shopId ? `${shop?.firstName}'s Shop` : 'Global Shop'}
         </h2>
       </div>
-      <p className="absolute right-4 top-4">
-        {character?.profits.toLocaleString()} p
-      </p>
-      <div className="grid w-full grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-2">
+      <div className="flex items-center justify-between gap-8">
+        <div className="flex items-center justify-start gap-4">
+          <button
+            className="group relative"
+            onClick={() => setSearchParams({ category: 'cart' })}
+          >
+            <Icon
+              className="group-hover:text-accent text-secondary timing size-12 shrink-0 p-2"
+              path={mdiCartOutline}
+            />
+            <p
+              className="shadow-color absolute right-0 top-0 flex h-6 min-w-6 items-center justify-center rounded-full pt-0.5 text-center text-base font-semibold shadow-md dark:text-gray-950"
+              style={{ backgroundColor: accentPrimary }}
+            >
+              {cartLength}
+            </p>
+          </button>
+          <CharacterPictureRound className="size-9" character={character} />
+        </div>
+        <p>{character?.profits.toLocaleString()} p</p>
+      </div>
+      <NavTabs>
         {shopId && (
           <BtnAuth
             active={category === 'all'}
@@ -142,10 +142,10 @@ const Shop = () => {
             <DroneIcon className="size-8" />
           </BtnAuth>
         )}
-      </div>
+      </NavTabs>
       <Divider className="my-0" />
       {category === 'cart' ? <Cart /> : <Items />}
-    </div>
+    </>
   );
 };
 

@@ -13,6 +13,7 @@ import { PictureCard } from '../PictureCard';
 import NavTabs from '../NavTabs';
 import BtnAuth from '../buttons/BtnAuth';
 import { LayoutContext } from 'src/contexts/LayoutContext';
+import InventoryGrid from '../InventoryGrid';
 
 const PictureLibraryModal = () => {
   const { user } = useContext(AuthContext);
@@ -60,9 +61,7 @@ const PictureLibraryModal = () => {
           Items
         </BtnAuth>
       </NavTabs>
-      <div
-        className={`${mobile ? 'gap-4' : 'gap-6'} grid w-full grid-cols-[repeat(auto-fit,minmax(150px,1fr))]`}
-      >
+      <InventoryGrid minWidth={175}>
         {pictures.map(
           (picture: { imageUrl: string; publicId: string }, index: number) => (
             <PictureCard
@@ -82,7 +81,7 @@ const PictureLibraryModal = () => {
             />
           ),
         )}
-      </div>
+      </InventoryGrid>
     </Modal>
   );
 };
