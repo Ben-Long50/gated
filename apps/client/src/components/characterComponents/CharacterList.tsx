@@ -13,6 +13,7 @@ import Icon from '@mdi/react';
 import { mdiCropSquare, mdiGrid, mdiSync } from '@mdi/js';
 import { useParams } from 'react-router-dom';
 import IconBtnMedium from '../buttons/IconBtnMedium';
+import { LayoutContext } from 'src/contexts/LayoutContext';
 
 const CharacterList = ({
   characterIds,
@@ -22,8 +23,13 @@ const CharacterList = ({
   menu?: boolean;
 }) => {
   const { user } = useContext(AuthContext);
+  const { mobile } = useContext(LayoutContext);
   const { campaignId } = useParams();
-  const [size, setSize] = useState<'small' | 'large'>('large');
+  const [size, setSize] = useState<'small' | 'large'>(
+    mobile ? 'small' : 'large',
+  );
+
+  const cardSize = mobile || size === 'small' ? 'small' : 'large';
 
   const characterIdList =
     characterIds || user.characters.map((character) => character.id);
@@ -49,7 +55,7 @@ const CharacterList = ({
 
   return (
     <>
-      <div className="flex flex-col gap-8">
+      <div className={`${mobile ? 'gap-4' : 'gap-8'} flex flex-col`}>
         <div className="flex w-full flex-col gap-4">
           {availableCampaigns && availableCampaigns?.length > 1 && (
             <InputSelectField
@@ -73,17 +79,19 @@ const CharacterList = ({
             >
               <Icon path={mdiSync} />
             </IconBtnMedium>
-            <IconBtnMedium
-              onClick={() => {
-                if (size === 'large') {
-                  setSize('small');
-                } else if (size === 'small') {
-                  setSize('large');
-                }
-              }}
-            >
-              <Icon path={size === 'small' ? mdiGrid : mdiCropSquare} />
-            </IconBtnMedium>
+            {!mobile && (
+              <IconBtnMedium
+                onClick={() => {
+                  if (size === 'large') {
+                    setSize('small');
+                  } else if (size === 'small') {
+                    setSize('large');
+                  }
+                }}
+              >
+                <Icon path={size === 'small' ? mdiGrid : mdiCropSquare} />
+              </IconBtnMedium>
+            )}
           </div>
         </div>
 
@@ -98,12 +106,12 @@ const CharacterList = ({
           </>
         ) : (
           <div
-            className={`${size === 'large' ? 'grid-cols-1' : 'grid-cols-3'} grid w-full gap-10`}
+            className={`${mobile ? 'gap-4' : 'gap-8'} ${cardSize === 'large' ? 'grid-cols-1' : 'grid-cols-[repeat(auto-fit,minmax(350px,1fr))]'} grid w-full`}
           >
             {characters.map((character: Character, index: number) => (
               <CharacterCard
                 menu={menu}
-                size={size}
+                size={cardSize}
                 key={index}
                 characterId={character.id}
               />

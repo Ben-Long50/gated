@@ -1,11 +1,14 @@
 import RootPortal from '../../layouts/RootPortal';
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useContext, useEffect } from 'react';
 import BtnIcon from '../buttons/BtnIcon';
 import { mdiClose } from '@mdi/js';
 import { useNavigate } from 'react-router-dom';
 import useModalStore from 'src/stores/modalStore';
 import Divider from '../Divider';
 import useRouteHistoryStore from 'src/stores/routeHistoryStore';
+import IconBtnSmall from '../buttons/IconBtnSmall';
+import Icon from '@mdi/react';
+import { LayoutContext } from 'src/contexts/LayoutContext';
 
 const Modal = ({
   children,
@@ -18,6 +21,7 @@ const Modal = ({
   errors?: ReactNode;
   className?: string;
 }) => {
+  const { mobile } = useContext(LayoutContext);
   const navigate = useNavigate();
   const backgroundPath = useModalStore((state) => state.backgroundPath);
 
@@ -45,19 +49,20 @@ const Modal = ({
           e.stopPropagation();
         }}
       >
-        <div
-          className={`${className} flex flex-col items-center gap-4 p-8 sm:gap-8`}
+        <IconBtnSmall
+          className="sticky right-2 top-2 z-10 ml-auto"
+          active={true}
+          onClick={() => {
+            if (backgroundPath) {
+              navigate(backgroundPath, { replace: true });
+            }
+          }}
         >
-          <BtnIcon
-            active={true}
-            onClick={() => {
-              if (backgroundPath) {
-                navigate(backgroundPath, { replace: true });
-              }
-            }}
-            path={mdiClose}
-            className="absolute right-2 top-2"
-          />
+          <Icon path={mdiClose} />
+        </IconBtnSmall>
+        <div
+          className={`${className} ${mobile ? 'gap-4 p-4' : 'gap-8 p-8'} flex flex-col items-center`}
+        >
           {children}
         </div>
         {(button || errors) && (

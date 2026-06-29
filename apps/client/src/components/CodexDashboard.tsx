@@ -4,9 +4,11 @@ import Loading from './Loading';
 import BtnAuth from './buttons/BtnAuth';
 import NavTabs from './NavTabs';
 import { PictureCard } from './PictureCard';
-import Container from './Container';
+import { useContext } from 'react';
+import { LayoutContext } from 'src/contexts/LayoutContext';
 
 const CodexDashboard = () => {
+  const { mobile } = useContext(LayoutContext);
   const { data, isLoading } = useCodexPreviewItemsQuery();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -107,67 +109,58 @@ const CodexDashboard = () => {
   ];
 
   return (
-    <div className="flex w-full max-w-8xl flex-col items-center gap-8">
-      <h1 className="text-center">Codex</h1>
-      <Container>
-        <NavTabs>
-          <BtnAuth
-            active={tab === 'equipment'}
-            onClick={() => setSearchParams({ tab: 'equipment' })}
-          >
-            Equipment
-          </BtnAuth>
-          <BtnAuth
-            active={tab === 'characters'}
-            onClick={() => setSearchParams({ tab: 'characters' })}
-          >
-            Characters
-          </BtnAuth>
-          <BtnAuth
-            active={tab === 'gameplay'}
-            onClick={() => setSearchParams({ tab: 'gameplay' })}
-          >
-            Gameplay
-          </BtnAuth>
-        </NavTabs>
-        {isLoading ? (
-          <Loading />
-        ) : (
-          <>
-            {tab === 'equipment' && (
-              <div className="grid w-full grid-cols-5 gap-4 sm:gap-6">
-                {items &&
-                  equipmentLinks.map((link, index) => (
-                    <PictureCard
-                      key={index}
-                      label={link.label}
-                      publicId={items[index].picture.publicId}
-                      onClick={() => navigate(link.path)}
-                    />
-                  ))}
-              </div>
-            )}
-            {tab === 'characters' && (
-              <div className="grid w-full grid-cols-5 gap-4">
-                {characters &&
-                  characterLinks.map((link, index) => (
-                    <PictureCard
-                      key={index}
-                      label={link.label}
-                      publicId={
-                        characters[index]
-                          ? characters[index].picture.publicId
-                          : ''
-                      }
-                      onClick={() => navigate(link.path)}
-                    />
-                  ))}
-              </div>
-            )}
-          </>
-        )}
-      </Container>
-    </div>
+    <>
+      <NavTabs>
+        <BtnAuth
+          active={tab === 'equipment'}
+          onClick={() => setSearchParams({ tab: 'equipment' })}
+        >
+          Equipment
+        </BtnAuth>
+        <BtnAuth
+          active={tab === 'characters'}
+          onClick={() => setSearchParams({ tab: 'characters' })}
+        >
+          Characters
+        </BtnAuth>
+        <BtnAuth
+          active={tab === 'gameplay'}
+          onClick={() => setSearchParams({ tab: 'gameplay' })}
+        >
+          Gameplay
+        </BtnAuth>
+      </NavTabs>
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <div
+          className={`${mobile ? 'gap-4' : 'gap-6'} grid w-full grid-cols-[repeat(auto-fit,minmax(150px,1fr))]`}
+        >
+          {tab === 'equipment' &&
+            items &&
+            equipmentLinks.map((link, index) => (
+              <PictureCard
+                key={index}
+                label={link.label}
+                publicId={items[index].picture.publicId}
+                onClick={() => navigate(link.path)}
+              />
+            ))}
+          {tab === 'characters' &&
+            characters &&
+            characterLinks.map((link, index) => (
+              <PictureCard
+                key={index}
+                label={link.label}
+                publicId={
+                  characters[index] ? characters[index].picture.publicId : ''
+                }
+                onClick={() => navigate(link.path)}
+              />
+            ))}
+        </div>
+      )}
+    </>
   );
 };
 

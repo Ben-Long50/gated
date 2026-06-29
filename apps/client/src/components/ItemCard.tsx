@@ -32,11 +32,12 @@ import KeywordTag from './KeywordTag';
 import ConditionTag from './ConditionTag';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
 import { CampaignContext } from 'src/contexts/CampaignContext';
-import { LayoutContext } from 'src/contexts/LayoutContext';
 import StatBarContainer from './StatBarContainer';
 import ActionCard from './ActionCard';
 import ArrowHeader3 from './ArrowHeader3';
 import Divider from './Divider';
+import { LayoutContext } from 'src/contexts/LayoutContext';
+import rarityColorMap from 'src/utils/rarityColorMap';
 
 const ItemCard = ({
   item,
@@ -63,8 +64,6 @@ const ItemCard = ({
   const navigate = useNavigate();
   const location = useLocation();
   const parts = location.pathname.split('/');
-
-  const cardSize = mobile || size === 'small' ? 'small' : 'large';
 
   const { ref, inView } = useInView({
     triggerOnce: true,
@@ -112,11 +111,11 @@ const ItemCard = ({
         <ThemeContainer
           chamfer="medium"
           className="group w-full"
-          borderColor={accentPrimary}
+          borderColor={rarityColorMap[item.rarity]}
         >
           <div
             ref={containerRef}
-            className={`timing relative flex w-full cursor-pointer flex-col gap-8 p-3 pr-2`}
+            className={`${mobile ? 'p-2' : 'p-4'} timing relative flex cursor-pointer flex-col`}
             onClick={(e) => {
               e.stopPropagation();
               if (menu) {
@@ -128,7 +127,7 @@ const ItemCard = ({
           >
             {menu && <ItemRadialMenu item={item} containerRef={containerRef} />}
             <div
-              className={`${cardSize === 'small' ? 'flex-col' : 'max-h-[300px] flex-row'} flex w-full gap-8`}
+              className={`${size === 'small' ? 'flex-col' : 'max-h-[300px] flex-row'} flex w-full gap-8`}
             >
               <ItemPicture
                 key={item.id}
@@ -194,11 +193,11 @@ const ItemCard = ({
                     className="ml-auto"
                     rarity={item?.rarity}
                     grade={item?.grade}
-                    size={cardSize}
+                    size={size}
                   />
                 </div>
-                <StatBarContainer size={cardSize}>
-                  <StatBars size={cardSize} stats={item?.stats} />
+                <StatBarContainer size={size}>
+                  <StatBars size={size} stats={item?.stats} />
                 </StatBarContainer>
                 <div>
                   {linkedWeapons.length > 0 && (
@@ -237,7 +236,7 @@ const ItemCard = ({
                       <ArrowHeader3 title="Unique Actions" />
                       {uniqueActions.map((action) => (
                         <ActionCard
-                          size={cardSize}
+                          size={size}
                           actionId={action.id}
                           expanded={true}
                         />

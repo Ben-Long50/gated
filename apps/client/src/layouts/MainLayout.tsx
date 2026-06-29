@@ -58,24 +58,14 @@ const MainLayout = () => {
         </Sidebar>
       )}
       <div
-        className="flex flex-col items-center gap-8 px-4 pb-4"
-        style={{ marginLeft: navbarHeight + 12 }}
+        className={`${mobile ? 'gap-4 px-0' : 'gap-8 px-4 pb-4'} flex flex-col items-center`}
+        style={{ marginLeft: mobile ? 0 : navbarHeight + 12 }}
       >
         <Navbar navbarRef={navbarRef} />
         <div
           id="portal-root"
           className={`relative flex w-full flex-col items-center`}
         >
-          {mobile && (
-            <div
-              className={`${navbar || sidebar ? 'visible h-full bg-black bg-opacity-50 backdrop-blur-md' : 'invisible bg-transparent bg-opacity-0 backdrop-blur-0'} timing absolute top-0 z-20 w-dvw`}
-              onClick={(e) => {
-                e.stopPropagation();
-                setNavbar(false);
-                setSidebar(false);
-              }}
-            />
-          )}
           <Outlet />
           {rollsArray.length > 0 && (
             <button
@@ -87,6 +77,16 @@ const MainLayout = () => {
           )}
         </div>
       </div>
+      {mobile && (
+        <div
+          className={`${navbar || sidebar ? 'visible h-full bg-black bg-opacity-50 backdrop-blur-md' : 'invisible bg-transparent bg-opacity-0 backdrop-blur-0'} timing fixed inset-0`}
+          onClick={(e) => {
+            e.stopPropagation();
+            setNavbar(false);
+            setSidebar(false);
+          }}
+        />
+      )}
       <ToastContainer
         position="bottom-center"
         autoClose={5000}

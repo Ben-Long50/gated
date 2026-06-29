@@ -1,4 +1,5 @@
-import { ReactNode } from 'react';
+import { ReactNode, useContext } from 'react';
+import { LayoutContext } from 'src/contexts/LayoutContext';
 
 const NavTabs = ({
   children,
@@ -7,9 +8,11 @@ const NavTabs = ({
   children: ReactNode;
   className?: string;
 }) => {
+  const { mobile } = useContext(LayoutContext);
+
   return (
     <div
-      className={`${className} grid w-full grid-flow-col items-center gap-4`}
+      className={`${className} ${mobile ? 'grid-flow-row grid-cols-2' : 'grid-flow-col'} grid w-full items-center gap-4`}
     >
       {children}
     </div>

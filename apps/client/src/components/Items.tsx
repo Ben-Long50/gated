@@ -30,6 +30,8 @@ const Items = ({ itemList, form }: { itemList?: Item[]; form?: FormApi }) => {
     mobile ? 'small' : 'large',
   );
 
+  const cardSize = mobile || size === 'small' ? 'small' : 'large';
+
   const itemCategory = mode && mode === 'form' ? linkCategory : category;
 
   const {
@@ -52,12 +54,16 @@ const Items = ({ itemList, form }: { itemList?: Item[]; form?: FormApi }) => {
   });
 
   return (
-    <div className="flex w-full flex-col items-start gap-8">
+    <div
+      className={`${mobile ? 'gap-4' : 'gap-8'} flex w-full flex-col items-start`}
+    >
       <h2 className="font-zen text-4xl">
         {itemCategory ? `${capitalCase(itemCategory)}s` : ''}
       </h2>
       {mode && mode === 'form' && (
-        <div className="flex w-full gap-4">
+        <div
+          className={`${mobile ? 'flex-col' : 'flex-row'} flex w-full gap-4`}
+        >
           <BtnAuth
             active={linkCategory === 'weapon'}
             className="w-full grow"
@@ -88,7 +94,9 @@ const Items = ({ itemList, form }: { itemList?: Item[]; form?: FormApi }) => {
         </div>
       )}
       <div className="flex w-full flex-col gap-4">
-        <div className="grid w-full grid-cols-3 items-center justify-between gap-4">
+        <div
+          className={`${mobile ? 'grid-cols-1' : 'grid-cols-3'} grid w-full items-center justify-between gap-4`}
+        >
           <InputSelectField
             label="Trait"
             options={keywords || []}
@@ -127,32 +135,29 @@ const Items = ({ itemList, form }: { itemList?: Item[]; form?: FormApi }) => {
             }}
           />
           {!mobile && (
-            <>
-              {size === 'large'}
-              <IconBtnMedium
-                onClick={() => setSize(size === 'large' ? 'small' : 'large')}
-              >
-                <Icon path={size === 'small' ? mdiGrid : mdiCropSquare} />
-              </IconBtnMedium>
-              <IconBtnMedium
-                onClick={() => {
-                  setQuery('');
-                  setTrait('');
-                  setPriceFilter('');
-                  setRarity('');
-                }}
-              >
-                <Icon path={mdiSync} />
-              </IconBtnMedium>
-            </>
+            <IconBtnMedium
+              onClick={() => setSize(size === 'large' ? 'small' : 'large')}
+            >
+              <Icon path={size === 'small' ? mdiGrid : mdiCropSquare} />
+            </IconBtnMedium>
           )}
+          <IconBtnMedium
+            onClick={() => {
+              setQuery('');
+              setTrait('');
+              setPriceFilter('');
+              setRarity('');
+            }}
+          >
+            <Icon path={mdiSync} />
+          </IconBtnMedium>
         </div>
       </div>
       {form ? (
         <form.Field name="itemIds">
           {(field) => (
             <div
-              className={`${size === 'small' ? 'grid-cols-[repeat(auto-fit,_minmax(350px_400px))] gap-4' : 'grid-cols-1 gap-8'} grid w-full`}
+              className={`${cardSize === 'small' ? 'grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-4' : 'grid-cols-1 gap-8'} grid w-full`}
             >
               {isLoading ? (
                 <Loading />
@@ -174,7 +179,7 @@ const Items = ({ itemList, form }: { itemList?: Item[]; form?: FormApi }) => {
                       key={item.id}
                       className="flex w-full items-center gap-4"
                     >
-                      <ItemCard item={item} size={size} menu={false} />
+                      <ItemCard item={item} size={cardSize} menu={false} />
                       <div className="flex flex-col items-center justify-center gap-2">
                         {linkCount > 0 && <p>{linkCount}</p>}
                         <IconBtnMedium
@@ -194,13 +199,13 @@ const Items = ({ itemList, form }: { itemList?: Item[]; form?: FormApi }) => {
         </form.Field>
       ) : (
         <div
-          className={`${size === 'small' ? 'grid-cols-[repeat(auto-fit,_minmax(350px,_33%))] gap-4' : 'grid-cols-1 gap-8'} grid w-full`}
+          className={`${mobile ? 'gap-4' : 'gap-8'} ${cardSize === 'small' ? 'grid-cols-[repeat(auto-fit,minmax(350px,1fr))]' : 'grid-cols-1'} grid w-full`}
         >
           {isLoading ? (
             <Loading />
           ) : (
             items?.map((item: Item) => (
-              <ItemCard item={item} size={size} menu={false} />
+              <ItemCard item={item} size={cardSize} menu={false} />
             ))
           )}
         </div>

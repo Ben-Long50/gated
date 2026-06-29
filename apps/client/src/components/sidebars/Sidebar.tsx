@@ -45,14 +45,14 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
 
   const mobileSidebarStyle = sidebar
     ? 'w-full max-w-85dvw'
-    : 'w-full max-w-85dvw -translate-x-[101%]';
+    : 'w-full max-w-85dvw -translate-x-[105%]';
 
   return (
     <nav
       ref={sidebarRef}
-      className={`${mobile ? mobileSidebarStyle : sidebarStyle} timing shadow-color fixed bottom-4 left-4 top-4 z-20 flex overflow-x-hidden shadow-lg`}
+      className={`${mobile ? mobileSidebarStyle : sidebarStyle} timing shadow-color fixed bottom-2 left-2 top-2 z-10 flex overflow-x-hidden shadow-lg`}
       style={{
-        top: mobile ? navbarHeight + 16 : 16,
+        top: mobile ? navbarHeight + 8 : 16,
         bottom: 16,
         borderColor: accentPrimary,
       }}

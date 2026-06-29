@@ -229,7 +229,9 @@ const CharacterSheet = () => {
         </>
       )}
       {character?.playerCharacter && (
-        <div className="grid w-full grid-cols-2 items-center justify-around gap-4">
+        <div
+          className={`${mobile ? 'grid-cols-1' : 'grid-cols-2'} grid w-full items-center justify-around gap-4`}
+        >
           <div className="bg-secondary flex items-center justify-between gap-2 rounded-md p-4 shadow-md shadow-black">
             <ArrowHeader4 className="text-primary" title="Attribute Points" />
             <p>

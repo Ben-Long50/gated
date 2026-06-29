@@ -12,9 +12,11 @@ import Divider from '../Divider';
 import { PictureCard } from '../PictureCard';
 import NavTabs from '../NavTabs';
 import BtnAuth from '../buttons/BtnAuth';
+import { LayoutContext } from 'src/contexts/LayoutContext';
 
 const PictureLibraryModal = () => {
   const { user } = useContext(AuthContext);
+  const { mobile } = useContext(LayoutContext);
   const navigate = useNavigate();
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -58,7 +60,9 @@ const PictureLibraryModal = () => {
           Items
         </BtnAuth>
       </NavTabs>
-      <div className="grid w-full grid-cols-5 gap-4 sm:gap-6">
+      <div
+        className={`${mobile ? 'gap-4' : 'gap-6'} grid w-full grid-cols-[repeat(auto-fit,minmax(150px,1fr))]`}
+      >
         {pictures.map(
           (picture: { imageUrl: string; publicId: string }, index: number) => (
             <PictureCard

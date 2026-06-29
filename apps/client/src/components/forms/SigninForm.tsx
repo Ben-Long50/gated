@@ -48,45 +48,43 @@ const SigninForm = () => {
 
   return (
     <AuthFormLayout form={signinForm}>
-      <ArrowHeader1 className="font-zen" title="Sign in" />
-      <div className="flex flex-col gap-4">
-        <signinForm.Field
-          name="email"
-          validators={{
-            onChange: ({ value }) =>
-              /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
-                ? undefined
-                : 'Email must be in a valid email format',
-          }}
-        >
-          {(field) => (
-            <InputField
-              label="Email"
-              type="email"
-              value={field.state.value}
-              onChange={(value) => field.handleChange(value)}
-            />
-          )}
-        </signinForm.Field>
-        <signinForm.Field
-          name="password"
-          validators={{
-            onChange: ({ value }) =>
-              value.length < 8
-                ? 'Password must be at least 8 characters long'
-                : undefined,
-          }}
-        >
-          {(field) => (
-            <InputField
-              type="password"
-              label="Password"
-              value={field.state.value}
-              onChange={(value) => field.handleChange(value)}
-            />
-          )}
-        </signinForm.Field>
-      </div>
+      <h1 className="text-center font-zen">Sign In</h1>
+      <signinForm.Field
+        name="email"
+        validators={{
+          onChange: ({ value }) =>
+            /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+              ? undefined
+              : 'Email must be in a valid email format',
+        }}
+      >
+        {(field) => (
+          <InputField
+            label="Email"
+            type="email"
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
+          />
+        )}
+      </signinForm.Field>
+      <signinForm.Field
+        name="password"
+        validators={{
+          onChange: ({ value }) =>
+            value.length < 8
+              ? 'Password must be at least 8 characters long'
+              : undefined,
+        }}
+      >
+        {(field) => (
+          <InputField
+            type="password"
+            label="Password"
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
+          />
+        )}
+      </signinForm.Field>
       <BtnRect
         ariaLabel="Submit form"
         type="submit"
@@ -106,32 +104,30 @@ const SigninForm = () => {
         <p className="mx-4 text-gray-400">or</p>
         <Divider />
       </div>
-      <div className="grid grid-rows-2 gap-4">
-        <BtnAuth
-          onClick={() => {
-            googleSignin();
-          }}
-        >
-          <Icon
-            className="mr-2 stroke-inherit text-inherit"
-            path={mdiGoogle}
-            size={1.5}
-          />
-          Google
-        </BtnAuth>
-        <BtnAuth
-          onClick={() => {
-            facebookSignin();
-          }}
-        >
-          <Icon
-            className="mr-2 stroke-inherit text-inherit"
-            path={mdiFacebook}
-            size={1.5}
-          />
-          Facebook
-        </BtnAuth>
-      </div>
+      <BtnAuth
+        onClick={() => {
+          googleSignin();
+        }}
+      >
+        <Icon
+          className="mr-2 stroke-inherit text-inherit"
+          path={mdiGoogle}
+          size={1.5}
+        />
+        Google
+      </BtnAuth>
+      <BtnAuth
+        onClick={() => {
+          facebookSignin();
+        }}
+      >
+        <Icon
+          className="mr-2 stroke-inherit text-inherit"
+          path={mdiFacebook}
+          size={1.5}
+        />
+        Facebook
+      </BtnAuth>
       <p className="text-tertiary w-full text-center">
         Don't have an account?
         <Link to="/signup">

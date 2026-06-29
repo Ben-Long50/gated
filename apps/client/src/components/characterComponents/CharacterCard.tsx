@@ -1,7 +1,6 @@
-import { Fragment, useContext, useRef } from 'react';
+import { useContext, useRef } from 'react';
 import ThemeContainer from '../ThemeContainer';
 import { ThemeContext } from '../../contexts/ThemeContext';
-import { LayoutContext } from '../../contexts/LayoutContext';
 import WardIcon from '../icons/WardIcon';
 import ArmorIcon from '../icons/ArmorIcon';
 import EvasionIcon from '../icons/EvasionIcon';
@@ -33,10 +32,7 @@ const CharacterCard = ({
   size?: 'small' | 'large';
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
-  const { mobile } = useContext(LayoutContext);
   const navigate = useNavigate();
-
-  const cardSize = mobile || size === 'small' ? 'small' : 'large';
 
   const { filteredCharacter: character, isLoading } = useCharacter(characterId);
 
@@ -161,7 +157,7 @@ const CharacterCard = ({
                   </h4>
                 </div>
               )}
-              <StatBarContainer size={cardSize}>
+              <StatBarContainer size={size}>
                 <CharacterStatBars
                   stats={{
                     maxHealth: character?.stats.maxHealth,
@@ -171,17 +167,17 @@ const CharacterCard = ({
                   }}
                   cardWidth={containerRef.current?.offsetWidth}
                   characterId={character?.id}
-                  size={cardSize}
+                  size={size}
                 />
               </StatBarContainer>
               <div
-                className={`${cardSize === 'small' ? 'flex-col gap-4' : 'flex-row gap-8'} flex w-full items-center justify-between`}
+                className={`${size === 'small' ? 'flex-col gap-4' : 'flex-row gap-8'} flex w-full items-center justify-between`}
               >
                 <div
-                  className={`${cardSize === 'small' ? 'justify-around gap-4' : 'justify-start gap-8'} flex w-full items-center justify-start`}
+                  className={`${size === 'small' ? 'justify-around gap-4' : 'justify-start gap-8'} flex w-full items-center justify-start`}
                 >
                   <div className="flex flex-col items-center justify-between gap-2">
-                    {cardSize === 'large' && (
+                    {size === 'large' && (
                       <h3 className="text-primary text-xl font-semibold tracking-widest">
                         Speed
                       </h3>
@@ -194,7 +190,7 @@ const CharacterCard = ({
                     </div>
                   </div>
                   <div className="flex flex-col items-center justify-between gap-2">
-                    {cardSize === 'large' && (
+                    {size === 'large' && (
                       <h3 className="text-primary text-xl font-semibold tracking-widest">
                         Evasion
                       </h3>
@@ -207,7 +203,7 @@ const CharacterCard = ({
                     </div>
                   </div>
                   <div className="flex flex-col items-center justify-between gap-2">
-                    {cardSize === 'large' && (
+                    {size === 'large' && (
                       <h3 className="text-primary text-xl font-semibold tracking-widest">
                         Armor
                       </h3>
@@ -220,7 +216,7 @@ const CharacterCard = ({
                     </div>
                   </div>
                   <div className="flex flex-col items-center justify-between gap-2">
-                    {cardSize === 'large' && (
+                    {size === 'large' && (
                       <h3 className="text-primary text-xl font-semibold tracking-widest">
                         Ward
                       </h3>
@@ -234,10 +230,10 @@ const CharacterCard = ({
                   </div>
                 </div>
                 <div
-                  className={`${cardSize === 'small' ? 'gap-4' : 'gap-8'} flex w-full items-end justify-end`}
+                  className={`${size === 'small' ? 'gap-4' : 'gap-8'} flex w-full items-end justify-end`}
                 >
                   <div className="flex flex-col items-center justify-between gap-2">
-                    {cardSize === 'large' && (
+                    {size === 'large' && (
                       <h3 className="text-primary text-xl font-semibold tracking-widest">
                         Injuries
                       </h3>
@@ -251,7 +247,7 @@ const CharacterCard = ({
                     </div>
                   </div>
                   <div className="flex flex-col items-center justify-between gap-2">
-                    {cardSize === 'large' && (
+                    {size === 'large' && (
                       <h3 className="text-primary text-xl font-semibold tracking-widest">
                         Insanities
                       </h3>

@@ -16,11 +16,13 @@ import {
 import useCharacter from 'src/hooks/useCharacter';
 import Loading from './Loading';
 import { Item } from 'src/types/item';
-import { useRef } from 'react';
+import { useContext, useRef } from 'react';
 import NavTabs from './NavTabs';
 import InventoryCard from './InventoryCard';
+import { LayoutContext } from 'src/contexts/LayoutContext';
 
 const Inventory = () => {
+  const { mobile } = useContext(LayoutContext);
   const { characterId } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -108,7 +110,7 @@ const Inventory = () => {
         <Loading />
       ) : (
         <div
-          className={`scrollbar-secondary-2 grid grid-cols-6 gap-2 sm:gap-4`}
+          className={`scrollbar-secondary-2 ${mobile ? 'gap-4' : 'gap-6'} grid w-full grid-cols-[repeat(auto-fit,minmax(150px,1fr))]`}
         >
           {items ? (
             items.map((item) => (

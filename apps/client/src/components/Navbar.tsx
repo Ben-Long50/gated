@@ -38,9 +38,9 @@ const Navbar = ({
   return mobile ? (
     <nav
       ref={navbarRef}
-      className={`bg-primary timing shadow-color flex w-full flex-col items-center justify-start shadow-md`}
+      className={`bg-primary timing shadow-color sticky top-0 z-10 flex w-full flex-col items-center justify-start shadow-md`}
     >
-      <div className="my-2 flex w-full items-center justify-between px-2">
+      <div className="flex w-full items-center justify-between px-2 py-2">
         <button
           onClick={() => {
             setNavbar(false);
@@ -102,37 +102,37 @@ const Navbar = ({
         </div>
       </div>
       <NavMenuMobile>
-        <Link className="w-full p-2" to="campaigns">
-          <LinkNavbar
-            className="w-full text-left"
+        <Link className="w-full p-1" to="campaigns">
+          <button
+            className="text-primary w-full text-left"
             onClick={() => {
               setNavbar(false);
             }}
           >
             Campaigns
-          </LinkNavbar>
+          </button>
         </Link>
         <Divider />
-        <Link className="w-full p-2" to="codex?tab=equipment">
-          <LinkNavbar
-            className="w-full text-left"
+        <Link className="w-full p-1" to="codex?tab=equipment">
+          <button
+            className="text-primary w-full text-left"
             onClick={() => {
               setNavbar(false);
             }}
           >
             Codex
-          </LinkNavbar>
+          </button>
         </Link>
         <Divider />
-        <Link className="w-full p-2" to="characters">
-          <LinkNavbar
-            className="bg-primary text-left"
+        <Link className="w-full p-1" to="characters">
+          <button
+            className="text-primary w-full text-left"
             onClick={() => {
               setNavbar(false);
             }}
           >
             Characters
-          </LinkNavbar>
+          </button>
         </Link>
       </NavMenuMobile>
     </nav>

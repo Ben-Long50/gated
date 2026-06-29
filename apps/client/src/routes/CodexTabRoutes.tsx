@@ -23,19 +23,24 @@ import CodexDashboard from 'src/components/CodexDashboard';
 import Page from 'src/components/Page';
 import PictureRoutes from './PictureRoutes';
 import PictureLibraryModal from 'src/components/modals/PictureLibraryModal';
-import CharacterSheet from 'src/components/characterComponents/CharacterSheet';
 import CharacterForm from 'src/components/forms/CharacterForm';
 import PerkLinkModal from 'src/components/modals/PerkLinkModal';
 import NpcPreferenceModal from 'src/components/modals/NpcPreferenceModal';
 import CodexCharacters from 'src/components/characterComponents/CodexCharacters';
-import CharacterUpdateForm from 'src/components/forms/CharacterUpdateForm';
 import PromptModal from 'src/components/modals/PromptModal';
 import CharacterRoutes from './CharacterRoutes';
 
 const CodexTabRoutes = () => {
   return (
     <Route path="codex">
-      <Route index element={<CodexDashboard />} />
+      <Route
+        index
+        element={
+          <Page title="Codex">
+            <CodexDashboard />
+          </Page>
+        }
+      />
       <Route
         path="search"
         element={

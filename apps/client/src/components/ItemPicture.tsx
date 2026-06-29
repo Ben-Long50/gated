@@ -12,6 +12,7 @@ const ItemPicture = ({
   className?: string;
 }) => {
   const { accentPrimary, rarityColorMap } = useContext(ThemeContext);
+
   return (
     <ThemeContainer
       borderColor={rarityColorMap[item.rarity] || accentPrimary}
