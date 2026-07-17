@@ -350,7 +350,6 @@ model Character {
   firstTaste            Json?
   badMedicine           Json?
   description           String?
-  attributes            Json
   firstName             String
   lastName              String?
   playerCharacter       Boolean                       @default(false)
@@ -360,7 +359,6 @@ model Character {
   locationId            Int?
   base                  Boolean                       @default(false)
   pushCounter           Int                           @default(0)
-  perks                 Perk[]                        @relation("CharacterToPerk")
   campaign              Campaign?                     @relation(fields: [campaignId], references: [id])
   campaignId            Int?
   sessions              Session[]
@@ -384,9 +382,11 @@ model CharacterLevelBonus {
   id          Int       @id @default(autoincrement())
   character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
   characterId Int
-  level       Int
+  level       Int?
   attributes  Json?
   perks       Perk[]
+
+  @@unique([characterId, level])
 }
 
 model CharacterCart {
@@ -411,7 +411,6 @@ model CharacterInventory {
   id          Int        @id @default(autoincrement())
   character   Character? @relation(fields: [characterId], references: [id], onDelete: Cascade)
   characterId Int?       @unique
-  actions     Action[]
   items       Item[]
 }
 
@@ -476,27 +475,27 @@ model Keyword {
 }
 
 model Action {
-  id                   Int                 @id @default(autoincrement())
-  name                 String
-  description          String
-  costs                Json?
-  roll                 Json?
-  actionType           ActionType
-  actionSubtypes       ActionSubtype[]
-  duration             Json?
-  cooldown             Json?
-  equipped             Boolean             @default(false)
-  active               Boolean             @default(false)
-  available            Boolean             @default(true)
-  modifiers            Json?
-  keywordModifiers     KeywordReference[]
-  characterInventory   CharacterInventory? @relation(fields: [characterInventoryId], references: [id], onDelete: Cascade)
-  characterInventoryId Int?
-  baseAction           Action?             @relation("BaseRelation", fields: [baseActionId], references: [id])
-  baseActionId         Int?
-  derivedActions       Action[]            @relation("BaseRelation")
-  itemLink             ItemLinkReference?  @relation(fields: [itemLinkId], references: [id], onDelete: Cascade)
-  itemLinkId           Int?
+  id               Int                @id @default(autoincrement())
+  name             String
+  description      String
+  costs            Json?
+  roll             Json?
+  actionType       ActionType
+  actionSubtypes   ActionSubtype[]
+  duration         Json?
+  cooldown         Json?
+  equipped         Boolean            @default(false)
+  active           Boolean            @default(false)
+  available        Boolean            @default(true)
+  modifiers        Json?
+  keywordModifiers KeywordReference[]
+  baseAction       Action?            @relation("BaseRelation", fields: [baseActionId], references: [id])
+  baseActionId     Int?
+  derivedActions   Action[]           @relation("BaseRelation")
+  itemLink         ItemLinkReference? @relation(fields: [itemLinkId], references: [id], onDelete: Cascade)
+  itemLinkId       Int?
+  perk             Perk?              @relation(fields: [perkId], references: [id])
+  perkId           Int?
 }
 
 model Item {
@@ -583,14 +582,17 @@ enum DurationUnit {
 }
 
 model Perk {
-  id                    Int                   @id @default(autoincrement())
-  name                  String                @unique
+  id                    Int                  @id @default(autoincrement())
+  name                  String
   description           String
-  type                  PerkType              @default(character)
+  type                  PerkType             @default(character)
   attributes            Json?
-  characters            Character[]           @relation("CharacterToPerk")
-  modifiers             Json?
-  characterLevelBonuses CharacterLevelBonus[]
+  actions               Action[]
+  characterLevelBonus   CharacterLevelBonus? @relation(fields: [characterLevelBonusId], references: [id], onDelete: Cascade)
+  characterLevelBonusId Int?                 @unique
+  basePerk              Perk?                @relation("BaseRelation", fields: [basePerkId], references: [id])
+  basePerkId            Int?
+  derivedPerks          Perk[]               @relation("BaseRelation")
 }
 
 model PatchNote {

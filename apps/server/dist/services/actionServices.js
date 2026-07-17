@@ -14,13 +14,15 @@ import addVariableStats from '../utils/addVariableStats.js';
 import { ActionInput } from '../validation/actionSchema.js';
 const actionInclude = {
     keywordModifiers: { select: { id: true } },
-    itemLink: { select: { item: { select: { name: true, id: true } } } },
+    itemLink: {
+        select: { item: { select: { name: true, id: true, itemTypes: true } } },
+    },
 };
 const actionServices = {
     getActions: async () => {
         try {
             const actions = await prisma.action.findMany({
-                where: { characterInventory: null, baseActionId: null },
+                where: { baseActionId: null },
                 include: actionInclude,
                 orderBy: { name: 'asc' },
             });
@@ -79,9 +81,10 @@ const actionServices = {
             throw new Error('Failed to create or update action');
         }
     },
-    createActionCopy: async (actionId) => {
+    createActionCopy: async (actionId, tx) => {
         try {
-            const actionInfo = await prisma.action.findUnique({
+            const client = tx !== null && tx !== void 0 ? tx : prisma;
+            const actionInfo = await client.action.findUnique({
                 where: { id: actionId },
                 include: {
                     keywordModifiers: { select: { keywordId: true, value: true } },
@@ -92,7 +95,7 @@ const actionServices = {
             }
             const validatedAction = ActionInput.parse(actionInfo);
             const { id } = validatedAction, data = __rest(validatedAction, ["id"]);
-            const action = await prisma.action.create({
+            const action = await client.action.create({
                 data: Object.assign(Object.assign({}, data), { keywordModifiers: {
                         createMany: { data: actionInfo.keywordModifiers || [] },
                     }, baseActionId: actionInfo.baseActionId || id }),
@@ -105,35 +108,49 @@ const actionServices = {
             throw new Error('Failed to create action copy');
         }
     },
-    createCharacterActionCopy: async (actionList, characterInventoryId, tx) => {
-        const client = tx !== null && tx !== void 0 ? tx : prisma;
-        const actionIds = actionList === null || actionList === void 0 ? void 0 : actionList.map((action) => action.actionId);
-        const actions = await client.action.findMany({
-            where: { id: { in: actionIds } },
-            include: {
-                keywordModifiers: { select: { keywordId: true, value: true } },
-            },
-        });
-        const newActions = await Promise.all(actionList.flatMap(({ actionId, quantity }) => {
-            const actionDetails = actions.find((action) => action.id === actionId);
-            if (!actionDetails) {
-                throw new Error('Failed to find action');
-            }
-            const { id } = actionDetails, data = __rest(actionDetails, ["id"]);
-            const filteredData = Object.fromEntries(Object.entries(data).filter(([, value]) => value !== null));
-            const validatedAction = ActionInput.parse(filteredData);
-            if (actionDetails) {
-                return Array.from({ length: quantity }).map(() => client.action.create({
-                    data: Object.assign(Object.assign({}, validatedAction), { keywordModifiers: {
-                            createMany: { data: actionDetails.keywordModifiers || [] },
-                        }, baseActionId: actionDetails.baseActionId || actionDetails.id, characterInventoryId }),
-                    include: actionInclude,
-                }));
-            }
-            return;
-        }));
-        return newActions;
-    },
+    // createCharacterActionCopy: async (
+    //   actionList: { actionId: number; quantity: number }[],
+    //   characterInventoryId?: number,
+    //   tx?: Prisma.TransactionClient,
+    // ) => {
+    //   const client = tx ?? prisma;
+    //   const actionIds = actionList?.map((action) => action.actionId);
+    //   const actions = await client.action.findMany({
+    //     where: { id: { in: actionIds } },
+    //     include: {
+    //       keywordModifiers: { select: { keywordId: true, value: true } },
+    //     },
+    //   });
+    //   const newActions = await Promise.all(
+    //     actionList.flatMap(({ actionId, quantity }) => {
+    //       const actionDetails = actions.find((action) => action.id === actionId);
+    //       if (!actionDetails) {
+    //         throw new Error('Failed to find action');
+    //       }
+    //       const { id, ...data } = actionDetails;
+    //       const filteredData = Object.fromEntries(
+    //         Object.entries(data).filter(([, value]) => value !== null),
+    //       );
+    //       const validatedAction = ActionInput.parse(filteredData);
+    //       if (actionDetails) {
+    //         return Array.from({ length: quantity }).map(() =>
+    //           client.action.create({
+    //             data: {
+    //               ...validatedAction,
+    //               keywordModifiers: {
+    //                 createMany: { data: actionDetails.keywordModifiers || [] },
+    //               },
+    //               baseActionId: actionDetails.baseActionId || actionDetails.id,
+    //             },
+    //             include: actionInclude,
+    //           }),
+    //         );
+    //       }
+    //       return;
+    //     }),
+    //   );
+    //   return newActions;
+    // },
     activateAction: async (actionId, value) => {
         try {
             const action = await prisma.action.update({

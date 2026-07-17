@@ -68,11 +68,7 @@ const calculateCharacterStats = (character: ConstructedCharacter) => {
       return sum;
     }, 0) || 0;
 
-  const levelBonus = calculateLevelBonus(
-    character.level,
-    attributeTree,
-    character.perks,
-  );
+  const levelBonus = calculateLevelBonus(character.level);
 
   const baseStats: CharacterStats = {
     maxHealth: 10 + attributeTree?.violence.skills.threshold.points * 2,

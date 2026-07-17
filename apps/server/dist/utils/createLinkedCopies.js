@@ -12,13 +12,13 @@ export const createLinkedCopies = async (itemReference, inventoryId, quantity, t
         quantity,
     }));
     const items = (await itemServices.createCharacterItemCopy(inventoryId, itemInfo, client));
-    const actionInfo = itemReference.actions.map((action) => ({
-        actionId: action.id,
-        quantity,
-    }));
-    const actions = (await actionServices.createCharacterActionCopy(actionInfo, undefined, client));
+    const actionIds = [];
+    for (const action of itemReference.actions) {
+        const newAction = await actionServices.createActionCopy(action.id, client);
+        actionIds.push(newAction.id);
+    }
     return {
         itemIds: items.map((item) => item.id),
-        actionIds: actions.map((action) => action.id),
+        actionIds,
     };
 };

@@ -34,8 +34,7 @@ export const CharacterInput = z.object({
     description: Description.optional(),
     stats: CharacterStats,
     attributes: Attributes,
-    perkIds: z.array(z.coerce.number().int().nonnegative()),
-    actionIds: z.array(z.coerce.number().int().nonnegative()),
+    perkId: z.coerce.number().int().nonnegative(),
 });
 export const CharacterUpdateInput = z.object({
     id: z.number().int().optional(),
@@ -69,11 +68,9 @@ export const CharacterUpdateInput = z.object({
     sex: Sex,
     description: Description.optional(),
     stats: CharacterStats,
-    perkIds: z.array(z.coerce.number().int().nonnegative()),
-    actionIds: z.array(z.coerce.number().int().nonnegative()),
 });
 export const CharacterLevelBonus = z.object({
-    level: z.number().int().min(1).max(12),
+    level: z.number().int().min(1).max(12).nullable(),
     attributes: Attributes.optional(),
     perkIds: z.array(z.number().int().nonnegative()).optional(),
 });

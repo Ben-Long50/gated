@@ -13,10 +13,10 @@ import prisma from '../config/database.js';
 import { includeCharacterCart, unequipLinked, } from '../utils/linkQueryStructures.js';
 import itemServices, { itemInclude } from './itemServices.js';
 import { getIO } from '../sockets/socket.js';
-import subtractAttributeTrees from '../utils/subtractAttributeTrees.js';
 import validateLevelUpBonus from '../utils/validateLevelUpBonus.js';
+import { CharacterLevelBonus, } from '../validation/characterSchema.js';
 import { ConditionReferenceInput } from '../validation/conditionSchema.js';
-import actionServices from './actionServices.js';
+import perkServices from './perkServices.js';
 export const characterInclude = {
     campaign: {
         select: {
@@ -31,18 +31,16 @@ export const characterInclude = {
     affiliations: { select: { id: true } },
     gang: { select: { name: true } },
     controlledGang: { select: { name: true } },
-    perks: true,
     characterInventory: {
         include: {
             items: { select: { id: true } },
-            actions: { select: { id: true } },
         },
     },
     characterCart: {
         include: includeCharacterCart,
     },
     location: { include: { map: { select: { name: true } } } },
-    characterLevelBonuses: { include: { perks: true } },
+    characterLevelBonuses: { include: { perks: { include: { actions: true } } } },
 };
 const characterServices = {
     getSocialCharacters: async () => {
@@ -52,11 +50,12 @@ const characterServices = {
                     firstName: 'asc',
                 },
                 include: {
-                    perks: true,
                     characterInventory: {
                         include: { items: { select: { id: true } } },
                     },
-                    characterLevelBonuses: { include: { perks: true } },
+                    characterLevelBonuses: {
+                        include: { perks: { include: { actions: true } } },
+                    },
                 },
             });
             if (characters.length === 0) {
@@ -221,26 +220,19 @@ const characterServices = {
                     : 5 + formData.attributes.esoterica.skills.mysticism.points, currentActions: formData.stats.actions ? formData.stats.actions + 3 : 3, currentReactions: formData.stats.reactions
                     ? formData.stats.reactions + 1
                     : 1, currentHands: formData.stats.hands ? formData.stats.hands + 2 : 2, currentFeet: formData.stats.feet ? formData.stats.feet + 2 : 2, injuries: 0, insanities: 0 });
-            const { perkIds, actionIds } = formData, data = __rest(formData, ["perkIds", "actionIds"]);
+            const { perkId, attributes } = formData, data = __rest(formData, ["perkId", "attributes"]);
             const character = await prisma.$transaction(async (tx) => {
                 const character = await tx.character.create({
                     data: Object.assign(Object.assign({}, data), { stats,
-                        userId, perks: { connect: perkIds.map((id) => ({ id })) }, characterLevelBonuses: {
+                        userId, characterLevelBonuses: {
                             create: {
                                 level: 1,
-                                attributes: formData.attributes,
-                                perks: { connect: perkIds.map((id) => ({ id })) },
+                                attributes,
+                                perks: { connect: { id: perkId } },
                             },
                         }, characterCart: { create: {} }, characterInventory: { create: {} } }),
                     include: { characterInventory: true },
                 });
-                if (actionIds.length > 0 && character.characterInventory) {
-                    const actionList = actionIds.map((actionId) => ({
-                        actionId,
-                        quantity: 1,
-                    }));
-                    await actionServices.createCharacterActionCopy(actionList, character.characterInventory.id, tx);
-                }
                 if (!template && !character.npcTypes.includes('monster')) {
                     const unarmed = await tx.item.findFirst({
                         where: { name: 'Unarmed', base: true },
@@ -281,24 +273,24 @@ const characterServices = {
                     backstory: true,
                     firstTaste: true,
                     badMedicine: true,
-                    attributes: true,
                     playerCharacter: true,
                     npcTypes: true,
                     preferences: true,
                     campaignId: true,
                     gangId: true,
                     controlledGangId: true,
-                    perks: true,
                     characterInventory: {
                         include: { items: { select: { id: true } } },
                     },
-                    characterLevelBonuses: { include: { perks: true } },
+                    characterLevelBonuses: {
+                        include: { perks: { include: { actions: true } } },
+                    },
                 },
             });
             if (!templateCharacter) {
                 throw new Error('Failed to find template character');
             }
-            const { npcTypes, perks, characterInventory, characterLevelBonuses } = templateCharacter, data = __rest(templateCharacter, ["npcTypes", "perks", "characterInventory", "characterLevelBonuses"]);
+            const { npcTypes, characterInventory, characterLevelBonuses } = templateCharacter, data = __rest(templateCharacter, ["npcTypes", "characterInventory", "characterLevelBonuses"]);
             const filteredData = Object.fromEntries(Object.entries(data)
                 .map(([key, value]) => {
                 if (value) {
@@ -316,11 +308,9 @@ const characterServices = {
                                 characterId: bonus.characterId,
                                 level: bonus.level,
                                 attributes: bonus.attributes ? bonus.attributes : undefined,
-                                perks: bonus.perks.length > 0
-                                    ? {
-                                        connect: bonus.perks.map((perk) => ({ id: perk.id })),
-                                    }
-                                    : [],
+                                perk: bonus.perks
+                                    ? { connect: bonus.perks.map((perk) => ({ id: perk.id })) }
+                                    : null,
                             })),
                         },
                     } }),
@@ -434,42 +424,25 @@ const characterServices = {
     },
     updateCharacter: async (formData) => {
         try {
-            const { id, perkIds, actionIds, stats } = formData, data = __rest(formData, ["id", "perkIds", "actionIds", "stats"]);
+            const { id, stats } = formData, data = __rest(formData, ["id", "stats"]);
             const oldCharacter = await prisma.character.findUnique({
                 where: { id },
                 select: {
                     characterInventory: {
                         select: {
                             id: true,
-                            actions: { select: { id: true, baseActionId: true } },
                         },
                     },
                     stats: true,
                 },
             });
-            const replaceActions = async (newActionIds, oldActionIds, tx) => {
-                var _a;
-                const actions = await tx.action.findMany({
-                    where: { id: { in: newActionIds } },
-                    select: { id: true, baseActionId: true },
-                });
-                const baseIds = new Set(actions.map((action) => action.baseActionId ? action.baseActionId : action.id));
-                await tx.action.deleteMany({
-                    where: { id: { in: oldActionIds } },
-                });
-                await actionServices.createCharacterActionCopy(Array.from(baseIds)
-                    .filter(Boolean)
-                    .map((actionId) => ({ actionId, quantity: 1 })), (_a = oldCharacter === null || oldCharacter === void 0 ? void 0 : oldCharacter.characterInventory) === null || _a === void 0 ? void 0 : _a.id, tx);
-            };
             const newStats = Object.assign(Object.assign({}, oldCharacter === null || oldCharacter === void 0 ? void 0 : oldCharacter.stats), stats);
             const character = await prisma.$transaction(async (tx) => {
-                var _a;
-                await replaceActions(actionIds, ((_a = oldCharacter === null || oldCharacter === void 0 ? void 0 : oldCharacter.characterInventory) === null || _a === void 0 ? void 0 : _a.actions.map((action) => action.id)) || [], tx);
                 const character = await tx.character.update({
                     where: {
                         id,
                     },
-                    data: Object.assign(Object.assign({}, data), { stats: newStats, perks: { set: perkIds.map((id) => ({ id })) } }),
+                    data: Object.assign(Object.assign({}, data), { stats: newStats }),
                     include: characterInclude,
                 });
                 return character;
@@ -500,59 +473,46 @@ const characterServices = {
         }
     },
     selectLevelUpBonus: async (characterId, bonus) => {
-        try {
-            const character = await characterServices.getCharacterById(characterId);
-            if (!character) {
-                throw new Error('Failed to find character');
+        var _a, _b;
+        const validatedBonus = CharacterLevelBonus.parse(bonus);
+        const character = await characterServices.getCharacterById(characterId);
+        if (!character) {
+            throw new Error('Failed to find character');
+        }
+        await validateLevelUpBonus({
+            level: validatedBonus.level,
+            attributes: (_a = validatedBonus.attributes) !== null && _a !== void 0 ? _a : undefined,
+            perkIds: (_b = validatedBonus.perkIds) !== null && _b !== void 0 ? _b : undefined,
+        });
+        const updatedCharacter = prisma.$transaction(async (tx) => {
+            var _a;
+            let newPerkIds = [];
+            if (validatedBonus.perkIds) {
+                for (const id of validatedBonus.perkIds) {
+                    const newPerk = await perkServices.createPerkCopy(id, tx);
+                    newPerkIds.push(newPerk.id);
+                }
             }
-            const perks = bonus.perkIds
-                ? await prisma.perk.findMany({
-                    where: { id: { in: bonus.perkIds } },
-                    select: { id: true, name: true, attributes: true },
-                })
-                : [];
-            const validated = validateLevelUpBonus({
-                level: bonus.level,
-                attributes: bonus.attributes,
-                perks,
-            });
-            if (!validated) {
-                throw new Error('The incorrect amount of level up bonus points have been distributed');
-            }
-            const levelUpBonusTree = bonus.attributes
-                ? subtractAttributeTrees(bonus.attributes, character === null || character === void 0 ? void 0 : character.attributes)
-                : null;
-            const data = {};
-            const bonusData = { level: bonus.level };
-            if (bonus.attributes) {
-                data.attributes = bonus.attributes;
-                bonusData.attributes = levelUpBonusTree;
-            }
-            if (bonus.perkIds) {
-                data.perks = {
-                    connect: bonus.perkIds.map((perkId) => ({ id: perkId })),
-                };
-                bonusData.perks = {
-                    connect: bonus.perkIds
-                        .filter((perkId) => !(character === null || character === void 0 ? void 0 : character.perks.some((perk) => perk.id === perkId)))
-                        .map((perkId) => ({ id: perkId })),
-                };
-            }
-            const updatedCharacter = await prisma.character.update({
+            const updatedCharacter = await tx.character.update({
                 where: {
                     id: characterId,
                 },
-                data: Object.assign(Object.assign({}, data), { characterLevelBonuses: {
-                        create: bonusData,
-                    } }),
+                data: {
+                    characterLevelBonuses: {
+                        create: {
+                            level: validatedBonus.level,
+                            attributes: (_a = validatedBonus.attributes) !== null && _a !== void 0 ? _a : undefined,
+                            perks: {
+                                connect: newPerkIds.map((newPerkId) => ({ id: newPerkId })),
+                            },
+                        },
+                    },
+                },
                 include: characterInclude,
             });
             return updatedCharacter;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to select level up bonus');
-        }
+        });
+        return updatedCharacter;
     },
     createCharacterConditions: async (characterId, formData) => {
         const validatedConditionReference = ConditionReferenceInput.parse(formData);

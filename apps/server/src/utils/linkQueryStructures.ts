@@ -7,10 +7,6 @@ export const includeCharacterInventory: Prisma.CharacterInventoryInclude = {
       keywords: { include: { keyword: true } },
     },
   },
-  actions: {
-    orderBy: { name: 'asc' },
-    include: { keywordModifiers: { include: { keyword: true } } },
-  },
 };
 
 export const includeCharacterCart: Prisma.CharacterCartInclude = {

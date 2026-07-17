@@ -13,6 +13,9 @@ import prisma from '../config/database.js';
 import { getIO } from '../sockets/socket.js';
 import { calculateRoll } from '../utils/rollUtilities.js';
 import constructCalendar from '../utils/constructCalendar.js';
+import { Attributes } from '../validation/fieldSchemas.js';
+import { characterInclude } from './characterServices.js';
+import { combineAttributeTrees } from '../utils/combineAttributeTrees.js';
 const campaignInclude = {
     sessions: { orderBy: { sessionNumber: 'desc' } },
     players: { orderBy: { username: 'asc' } },
@@ -313,6 +316,7 @@ const campaignServices = {
             const [character, action] = await prisma.$transaction([
                 prisma.character.findUnique({
                     where: { id: rollData.characterId },
+                    include: characterInclude,
                 }),
                 prisma.action.findUnique({
                     where: { id: rollData.actionId },
@@ -321,7 +325,11 @@ const campaignServices = {
             if (!character || !action) {
                 throw new Error('Failed to find character or action associated with this roll');
             }
-            const rollResults = calculateRoll(character.attributes, { name: action.name, roll: action.roll }, rollData.modifiers, rollData.extraDice) || { result: [], successes: 0, roll: null };
+            const levelAttributes = character.characterLevelBonuses
+                .filter((bonus) => Boolean(bonus.attributes))
+                .map((bonus) => Attributes.parse(bonus.attributes));
+            const attributes = combineAttributeTrees(levelAttributes);
+            const rollResults = calculateRoll(attributes, { name: action.name, roll: action.roll }, rollData.modifiers, rollData.extraDice) || { result: [], successes: 0, roll: null };
             const rolls = new Map();
             if (rollResults) {
                 rolls.set(userId, {

@@ -5,7 +5,9 @@ import { calculateRoll } from '../utils/rollUtilities.js';
 import constructCalendar from '../utils/constructCalendar.js';
 import { CampaignInput } from '../validation/campaignSchema.js';
 import { EventInput } from '../validation/eventSchema.js';
-import { Date, Time } from '../validation/fieldSchemas.js';
+import { Attributes, Date, Time } from '../validation/fieldSchemas.js';
+import { characterInclude } from './characterServices.js';
+import { combineAttributeTrees } from '../utils/combineAttributeTrees.js';
 
 const campaignInclude = {
   sessions: { orderBy: { sessionNumber: 'desc' as const } },
@@ -370,6 +372,7 @@ const campaignServices = {
       const [character, action] = await prisma.$transaction([
         prisma.character.findUnique({
           where: { id: rollData.characterId },
+          include: characterInclude,
         }),
 
         prisma.action.findUnique({
@@ -383,8 +386,14 @@ const campaignServices = {
         );
       }
 
+      const levelAttributes = character.characterLevelBonuses
+        .filter((bonus) => Boolean(bonus.attributes))
+        .map((bonus) => Attributes.parse(bonus.attributes));
+
+      const attributes = combineAttributeTrees(levelAttributes);
+
       const rollResults = calculateRoll(
-        character.attributes,
+        attributes,
         { name: action.name, roll: action.roll },
         rollData.modifiers,
         rollData.extraDice,
@@ -409,7 +418,7 @@ const campaignServices = {
         character,
         action,
       } as {
-        character: Character;
+        character: any;
         action: Action;
         rollResult: {
           result: number[];

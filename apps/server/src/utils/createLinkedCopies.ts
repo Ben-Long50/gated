@@ -1,4 +1,4 @@
-import { Action, Item, Prisma } from '@prisma/client';
+import { Item, Prisma } from '@prisma/client';
 import prisma from '../config/database.js';
 import actionServices from '../services/actionServices.js';
 import itemServices from '../services/itemServices.js';
@@ -28,19 +28,16 @@ export const createLinkedCopies = async (
     client,
   )) as Item[];
 
-  const actionInfo = itemReference.actions.map((action) => ({
-    actionId: action.id,
-    quantity,
-  }));
+  const actionIds = [];
 
-  const actions = (await actionServices.createCharacterActionCopy(
-    actionInfo,
-    undefined,
-    client,
-  )) as Action[];
+  for (const action of itemReference.actions) {
+    const newAction = await actionServices.createActionCopy(action.id, client);
+
+    actionIds.push(newAction.id);
+  }
 
   return {
     itemIds: items.map((item) => item.id),
-    actionIds: actions.map((action) => action.id),
+    actionIds,
   };
 };

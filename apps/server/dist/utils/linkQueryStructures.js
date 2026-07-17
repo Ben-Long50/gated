@@ -5,10 +5,6 @@ export const includeCharacterInventory = {
             keywords: { include: { keyword: true } },
         },
     },
-    actions: {
-        orderBy: { name: 'asc' },
-        include: { keywordModifiers: { include: { keyword: true } } },
-    },
 };
 export const includeCharacterCart = {
     items: {
