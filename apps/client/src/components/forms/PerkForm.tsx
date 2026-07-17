@@ -11,6 +11,7 @@ import AttributeField from '../formFields/AttributeField';
 import usePerkForm from 'src/hooks/form hooks/usePerkForm';
 import usePerkQuery from 'src/hooks/usePerkQuery/usePerkQuery';
 import InputSelectField from '../formFields/InputSelectField';
+import ActionLinkField from '../formFields/ActionLinkField';
 
 const PerkForm = () => {
   const { perkId } = useParams();
@@ -59,7 +60,7 @@ const PerkForm = () => {
           />
         )}
       </perkForm.Field>
-      <ModifierField form={perkForm} />
+      <ActionLinkField form={perkForm} />
       <Divider />
       <ArrowHeader2 title="Perk Requirements" />
       <AttributeField form={perkForm} />

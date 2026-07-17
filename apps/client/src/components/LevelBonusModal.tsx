@@ -1,13 +1,10 @@
 import { useParams, useSearchParams } from 'react-router-dom';
 import Modal from './modals/Modal';
-import getLevelBonusData from 'src/utils/getLevelBonusData';
 import useCharacter from 'src/hooks/useCharacter';
 import Loading from './Loading';
 import AttributeField from './formFields/AttributeField';
-import { useStore } from '@tanstack/react-form';
 import BtnRect from './buttons/BtnRect';
 import Perks from './Perks';
-import getUsedPoints, { subtractAttributeTrees } from 'src/utils/getUsedPoints';
 import AttributeList from './AttributeList';
 import useSelectLevelUpBonusMutation from 'src/hooks/character hooks/useUpdateCharacterLevelMutation/useSelectLevelUpBonusMutation';
 import { useState } from 'react';
@@ -15,6 +12,8 @@ import BtnAuth from './buttons/BtnAuth';
 import useLevelBonusForm from 'src/hooks/form hooks/useLevelBonusForm';
 import PerkCard from './PerkCard';
 import ArrowHeader4 from './ArrowHeader4';
+import calculateLevelBonus from 'src/utils/calculateLevelBonus';
+import { getUsedPoints } from 'src/utils/getUsedPoints';
 
 const LevelBonusModal = () => {
   const { characterId } = useParams();
@@ -27,13 +26,17 @@ const LevelBonusModal = () => {
   );
 
   const {
-    levelUpAttributePoints,
-    levelUpSkillPoints,
-    levelUpPerkPoints,
-    levelUpMasterPerkPoints,
-  } = getLevelBonusData(character, Number(level));
+    attributePoints,
+    skillPoints,
+    perkPoints,
+    masterPerkPoints,
+    availableAttributePoints,
+    availableSkillPoints,
+    availablePerkPoints,
+    availableMasterPerkPoints,
+  } = calculateLevelBonus(Number(level));
 
-  const [tab, setTab] = useState(levelUpSkillPoints ? 'attributes' : 'perks');
+  const [tab, setTab] = useState(skillPoints ? 'attributes' : 'perks');
 
   const selectLevelUpBonus = useSelectLevelUpBonusMutation(Number(characterId));
 
@@ -43,21 +46,6 @@ const LevelBonusModal = () => {
     character,
   );
 
-  const formAttributeTree = useStore(
-    levelBonusForm.store,
-    (state) => state.values.attributes,
-  );
-
-  const subtractedTree = subtractAttributeTrees(
-    formAttributeTree,
-    character?.attributes,
-  );
-
-  const { usedAttributePoints, usedSkillPoints } =
-    getUsedPoints(subtractedTree);
-
-  const totalPoints = usedAttributePoints + usedSkillPoints;
-
   if (isLoading) {
     return <Loading />;
   }
@@ -66,41 +54,51 @@ const LevelBonusModal = () => {
     <Modal
       button={
         <div className="flex w-full flex-col gap-8">
-          {totalPoints > 0 && (
+          {attributePoints + skillPoints > 0 && (
             <div className="flex w-full flex-col items-start gap-4">
               <ArrowHeader4
                 className="text-primary"
                 title="Selected Attribute and Skill Bonuses"
               />
-              <AttributeList
-                className="mr-auto"
-                attributeTree={subtractedTree}
-              />
+              <levelBonusForm.Subscribe
+                selector={(state) => state.values.attributes}
+              >
+                {(attributes) => (
+                  <AttributeList
+                    className="mr-auto"
+                    attributeTree={attributes}
+                  />
+                )}
+              </levelBonusForm.Subscribe>
             </div>
           )}
-          <levelBonusForm.Subscribe selector={(state) => state.values.perkIds}>
-            {(perkIds) => {
-              const selectedPerkIds = perkIds.filter(
-                (id) => !character?.perks?.some((perk) => perk.id === id),
-              );
+          {perkPoints + masterPerkPoints > 0 && (
+            <levelBonusForm.Subscribe
+              selector={(state) => state.values.perkIds}
+            >
+              {(perkIds) => {
+                const selectedPerkIds = perkIds.filter(
+                  (id) => !character?.perks?.some((perk) => perk.id === id),
+                );
 
-              return (
-                selectedPerkIds.length > 0 && (
-                  <div className="flex w-full flex-col items-start gap-4">
-                    <ArrowHeader4
-                      className="text-primary"
-                      title="Selected Perk Bonuses"
-                    />
-                    <div className="grid w-full grid-cols-2 gap-4">
-                      {selectedPerkIds.map((perkId) => (
-                        <PerkCard perkId={perkId} form={levelBonusForm} />
-                      ))}
+                return (
+                  selectedPerkIds.length > 0 && (
+                    <div className="flex w-full flex-col items-start gap-4">
+                      <ArrowHeader4
+                        className="text-primary"
+                        title="Selected Perk Bonuses"
+                      />
+                      <div className="grid w-full grid-cols-2 gap-4">
+                        {selectedPerkIds.map((perkId) => (
+                          <PerkCard perkId={perkId} form={levelBonusForm} />
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )
-              );
-            }}
-          </levelBonusForm.Subscribe>
+                  )
+                );
+              }}
+            </levelBonusForm.Subscribe>
+          )}
           <BtnRect
             className="group w-full"
             ariaLabel="Confirm level bonus"
@@ -146,25 +144,52 @@ const LevelBonusModal = () => {
         </BtnAuth>
       </div>
       {tab === 'attributes' &&
-        (levelUpSkillPoints + levelUpAttributePoints > 0 ? (
-          <>
-            <p>{`Distribute ${levelUpSkillPoints} Skill Point(s) and confirm your level up bonus. This action cannot be undone`}</p>
-            <AttributeField
-              form={levelBonusForm}
-              attributeTree={character?.attributes}
-              attributeIncrease={levelUpAttributePoints > 0}
-              attributeDecrease={false}
-              skillIncrease={levelUpSkillPoints > 0}
-              skillDecrease={false}
-            />
-          </>
+        (skillPoints + attributePoints > 0 ? (
+          <levelBonusForm.Subscribe
+            selector={(state) => state.values.attributes}
+          >
+            {(attributes) => {
+              const { usedAttributePoints, usedSkillPoints } =
+                getUsedPoints(attributes);
+              return (
+                <>
+                  {availableAttributePoints > 0 && (
+                    <div className="flex w-full items-center justify-between gap-8">
+                      <p>Attribute Points</p>
+                      <p>
+                        {usedAttributePoints} / {availableAttributePoints}
+                      </p>
+                    </div>
+                  )}
+                  {availableSkillPoints > 0 && (
+                    <div className="flex w-full items-center justify-between gap-8">
+                      <p>Skill Points</p>
+                      <p>
+                        {usedSkillPoints} / {availableSkillPoints}
+                      </p>
+                    </div>
+                  )}
+                  <AttributeField
+                    form={levelBonusForm}
+                    attributeTree={character?.attributes}
+                    attributeIncrease={
+                      usedAttributePoints < availableAttributePoints
+                    }
+                    attributeDecrease={false}
+                    skillIncrease={usedSkillPoints < availableSkillPoints}
+                    skillDecrease={false}
+                  />
+                </>
+              );
+            }}
+          </levelBonusForm.Subscribe>
         ) : (
           <p>You may not select an Attribute or Skill bonus for this level</p>
         ))}
       {tab === 'perks' &&
-        (levelUpPerkPoints + levelUpMasterPerkPoints > 0 ? (
+        (perkPoints + masterPerkPoints > 0 ? (
           <>
-            <p>{`Select an additional ${levelUpPerkPoints + levelUpMasterPerkPoints} Perk(s) and confirm your level up bonus. This action cannot be undone`}</p>
+            <p>{`Select an additional ${perkPoints + masterPerkPoints} Perk(s) and confirm your level up bonus. This action cannot be undone`}</p>
             <Perks
               form={levelBonusForm}
               attributeTree={character?.attributes}

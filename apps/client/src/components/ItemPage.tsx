@@ -35,6 +35,7 @@ import ExpandingList from './ExpandingList';
 import useItem from 'src/hooks/useItem';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import StatBarContainer from './StatBarContainer';
+import ActionCard from './ActionCard';
 
 const ItemPage = () => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -185,7 +186,12 @@ const ItemPage = () => {
           <div className="flex w-full flex-col gap-8">
             {linkedActions.map((action: Action, index: number) => {
               return (
-                <LinkedActionCard key={index} action={action} size={size} />
+                <ActionCard
+                  expanded={true}
+                  key={index}
+                  actionId={action.id}
+                  size={size}
+                />
               );
             })}
           </div>

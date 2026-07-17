@@ -23,9 +23,9 @@ import ArrowHeader4 from '../ArrowHeader4';
 import StatBarContainer from '../StatBarContainer';
 import constructName from 'src/utils/constructName';
 import CharacterHeader from './CharacterHeader';
-import ActionCard from '../ActionCard';
 import EquipmentList from '../EquipmentList';
 import NavTabs from '../NavTabs';
+import ArrowHeader2 from '../ArrowHeader2';
 
 const CharacterSheet = () => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -207,6 +207,7 @@ const CharacterSheet = () => {
           </div>
         </ThemeContainer>
       </div>
+      <ArrowHeader2 title="Stats" />
       <StatBarContainer size={size}>
         <CharacterStatBars
           stats={character?.stats}
@@ -261,6 +262,7 @@ const CharacterSheet = () => {
           </div>
         </div>
       )}
+      <ArrowHeader2 title="Attributes & Skills" />
       <div className="mb-auto flex w-full grow flex-col gap-6 lg:grid lg:grid-cols-2 lg:grid-rows-2 lg:gap-10">
         {Object.entries(character?.attributes)
           .sort(([a], [b]) => a.localeCompare(b))
@@ -297,24 +299,6 @@ const CharacterSheet = () => {
           </ExpandingList>
         </>
       )}
-      {character?.characterInventory.actions &&
-        character?.characterInventory.actions.length > 0 && (
-          <>
-            <Divider />
-            <ExpandingList
-              title="Actions"
-              className="grid grid-cols-1 gap-4 md:grid-cols-2"
-            >
-              {character?.characterInventory.actions ? (
-                character?.characterInventory.actions.map((action) => (
-                  <ActionCard key={action.id} actionId={action.id} />
-                ))
-              ) : (
-                <h2 className="pl-6">???</h2>
-              )}
-            </ExpandingList>
-          </>
-        )}
       {user?.id === character?.userId && (
         <>
           <Divider />

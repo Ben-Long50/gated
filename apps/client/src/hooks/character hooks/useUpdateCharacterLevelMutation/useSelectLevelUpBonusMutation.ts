@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import selectLevelUpBonus from './selectLevelUpBonus';
 import { AttributeTree } from 'src/types/attributeTree';
-import { Perk } from 'src/types/perk';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const useSelectLevelUpBonusMutation = (characterId: number) => {
   const queryClient = useQueryClient();
@@ -12,13 +12,17 @@ const useSelectLevelUpBonusMutation = (characterId: number) => {
     mutationFn: (bonus: {
       level: number;
       attributes?: AttributeTree;
-      perkIds?: number[];
+      perkId?: number;
     }) => selectLevelUpBonus(characterId, bonus),
 
     onSuccess: (data) => {
+      toast.success(data.message);
       queryClient.setQueryData(['character', characterId], data.character);
 
       navigate('..');
+    },
+    onError: (data) => {
+      toast.error(data.message);
     },
     throwOnError: false,
   });

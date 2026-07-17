@@ -4,7 +4,24 @@ import {
   SkillName,
 } from 'src/types/attributeTree';
 
-const getUsedPoints = (tree: AttributeTree) => {
+export const getAttributePoints = (
+  tree: AttributeTree,
+  attributeName: AttributeName,
+) => {
+  return tree[attributeName]?.points ?? 0;
+};
+
+export const getSkillPoints = (tree: AttributeTree, skillName: string) => {
+  for (const attribute of Object.values(tree)) {
+    if (skillName in attribute.skills) {
+      return (
+        attribute.skills[skillName as keyof typeof attribute.skills].points ?? 0
+      );
+    }
+  }
+};
+
+export const getUsedPoints = (tree: AttributeTree) => {
   let usedAttributePoints = 0;
   let usedSkillPoints = 0;
 
@@ -32,31 +49,3 @@ export const getSkillValue = (
 ) => {
   return tree[attribute].skills[skill].points;
 };
-
-export const subtractAttributeTrees = (
-  treeA: AttributeTree,
-  treeB: AttributeTree,
-) => {
-  const result = {} as AttributeTree;
-
-  for (const key in treeA) {
-    const nodeA = treeA[key];
-    const nodeB = treeB[key];
-
-    result[key] = {
-      points: nodeA.points - nodeB.points,
-      ...(nodeA.skills && nodeB.skills
-        ? {
-            skills: subtractAttributeTrees(
-              nodeA.skills as AttributeTree,
-              nodeB.skills as AttributeTree,
-            ),
-          }
-        : {}),
-    };
-  }
-
-  return result;
-};
-
-export default getUsedPoints;

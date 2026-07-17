@@ -1,4 +1,4 @@
-import getUsedPoints from 'src/utils/getUsedPoints';
+import { getUsedPoints } from 'src/utils/getUsedPoints';
 import { AttributeTree } from '../types/attributeTree';
 
 const useAttributeTree = (tree?: AttributeTree) => {

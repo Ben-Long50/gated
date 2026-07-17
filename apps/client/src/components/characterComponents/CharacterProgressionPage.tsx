@@ -1,6 +1,3 @@
-import { useContext } from 'react';
-import ThemeContainer from '../ThemeContainer';
-import { ThemeContext } from '../../contexts/ThemeContext';
 import {
   mdiCheckCircleOutline,
   mdiCircleOutline,
@@ -24,9 +21,9 @@ import getLevelBonusData from 'src/utils/getLevelBonusData';
 import { Perk } from 'src/types/perk';
 import usePerkQueries from 'src/hooks/usePerkQueries/usePerkQueries';
 import CharacterHeader from './CharacterHeader';
+import calculateLevelBonus from 'src/utils/calculateLevelBonus';
 
 const CharacterProgressionPage = () => {
-  const { accentPrimary } = useContext(ThemeContext);
   const { characterId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -123,12 +120,26 @@ const CharacterProgressionPage = () => {
             );
 
             const {
-              levelUpAttributePoints,
-              levelUpSkillPoints,
-              levelUpPerkPoints,
-              levelUpMasterPerkPoints,
-              levelBonusUsed,
-            } = getLevelBonusData(character, level);
+              skillPoints,
+              attributePoints,
+              perkPoints,
+              masterPerkPoints,
+              availableAttributePoints,
+              availableSkillPoints,
+              availablePerkPoints,
+              availableMasterPerkPoints,
+              usedSkillPoints,
+              usedAttributePoints,
+              usedPerkPoints,
+              usedMasterPerkPoints,
+            } = calculateLevelBonus(level);
+
+            const levelBonusUsed =
+              availableAttributePoints +
+                availableSkillPoints +
+                availablePerkPoints +
+                availableMasterPerkPoints ===
+              0;
 
             return (
               <div className="flex items-center gap-4">
@@ -138,7 +149,7 @@ const CharacterProgressionPage = () => {
                     <div className="mr-4 flex w-full items-center justify-between gap-4">
                       <ArrowHeader4 title={level} className="w-12" />
                       {levelBonusUsed ? (
-                        level > character.level ? (
+                        Number(level) > character.level ? (
                           <Icon
                             path={mdiCloseCircleOutline}
                             size={1}
@@ -159,40 +170,36 @@ const CharacterProgressionPage = () => {
                         />
                       )}
                       <div className="flex flex-col gap-1">
-                        {levelUpAttributePoints +
-                          levelUpSkillPoints +
-                          levelUpPerkPoints +
-                          levelUpMasterPerkPoints <=
+                        {availableAttributePoints +
+                          availableSkillPoints +
+                          availablePerkPoints +
+                          availableMasterPerkPoints <=
                           0 && <p>No Bonuses</p>}
-                        {levelUpAttributePoints > 0 && (
+                        {attributePoints > 0 && (
                           <div className="flex items-start justify-between gap-4">
                             <p className="grow">Attribute Points</p>
                             <p className="size-6 text-center">
-                              {levelUpAttributePoints}
+                              {attributePoints}
                             </p>
                           </div>
                         )}
-                        {levelUpSkillPoints > 0 && (
+                        {skillPoints > 0 && (
                           <div className="flex items-start justify-between gap-4">
                             <p className="grow">Skill Points</p>
-                            <p className="size-6 text-center">
-                              {levelUpSkillPoints}
-                            </p>
+                            <p className="size-6 text-center">{skillPoints}</p>
                           </div>
                         )}
-                        {levelUpPerkPoints > 0 && (
+                        {perkPoints > 0 && (
                           <div className="flex items-start justify-between gap-4">
                             <p className="grow">Perks</p>
-                            <p className="size-6 text-center">
-                              {levelUpPerkPoints}
-                            </p>
+                            <p className="size-6 text-center">{perkPoints}</p>
                           </div>
                         )}
-                        {levelUpMasterPerkPoints > 0 && (
+                        {masterPerkPoints > 0 && (
                           <div className="flex items-start justify-between gap-4">
                             <p className="grow">Master Perks</p>
                             <p className="size-6 text-center">
-                              {levelUpMasterPerkPoints}
+                              {masterPerkPoints}
                             </p>
                           </div>
                         )}
@@ -244,12 +251,19 @@ const CharacterProgressionPage = () => {
           const level = index + 1 + character?.level;
 
           const {
-            levelUpAttributePoints,
-            levelUpSkillPoints,
-            levelUpPerkPoints,
-            levelUpMasterPerkPoints,
-            levelBonusUsed,
-          } = getLevelBonusData(character, level);
+            skillPoints,
+            attributePoints,
+            perkPoints,
+            masterPerkPoints,
+            availableAttributePoints,
+            availableSkillPoints,
+            availablePerkPoints,
+            availableMasterPerkPoints,
+            usedSkillPoints,
+            usedAttributePoints,
+            usedPerkPoints,
+            usedMasterPerkPoints,
+          } = calculateLevelBonus(level);
 
           return (
             <ItemCardSmall
@@ -258,63 +272,34 @@ const CharacterProgressionPage = () => {
               heading={
                 <div className="flex w-full items-start justify-between gap-4">
                   <ArrowHeader4 title={level} className="w-12" />
-                  {levelBonusUsed ? (
-                    level > character.level ? (
-                      <Icon
-                        path={mdiCloseCircleOutline}
-                        size={1}
-                        className="text-error mr-auto"
-                      />
-                    ) : (
-                      <Icon
-                        path={mdiCheckCircleOutline}
-                        size={1}
-                        className="text-accent mr-auto"
-                      />
-                    )
-                  ) : (
-                    <Icon
-                      path={mdiCircleOutline}
-                      size={1}
-                      className="mr-auto"
-                    />
-                  )}
                   <div className="flex flex-col gap-1">
-                    {levelUpAttributePoints +
-                      levelUpSkillPoints +
-                      levelUpPerkPoints +
-                      levelUpMasterPerkPoints <=
+                    {availableAttributePoints +
+                      availableSkillPoints +
+                      availablePerkPoints +
+                      availableMasterPerkPoints <=
                       0 && <p>No Bonuses</p>}
-                    {levelUpAttributePoints > 0 && (
+                    {attributePoints > 0 && (
                       <div className="flex items-start justify-between gap-4">
                         <p className="grow">Attribute Points</p>
-                        <p className="size-6 text-center">
-                          {levelUpAttributePoints}
-                        </p>
+                        <p className="size-6 text-center">{attributePoints}</p>
                       </div>
                     )}
-                    {levelUpSkillPoints > 0 && (
+                    {skillPoints > 0 && (
                       <div className="flex items-start justify-between gap-4">
                         <p className="grow">Skill Points</p>
-                        <p className="size-6 text-center">
-                          {levelUpSkillPoints}
-                        </p>
+                        <p className="size-6 text-center">{skillPoints}</p>
                       </div>
                     )}
-                    {levelUpPerkPoints > 0 && (
+                    {perkPoints > 0 && (
                       <div className="flex items-start justify-between gap-4">
                         <p className="grow">Perks</p>
-                        <p className="size-6 text-center">
-                          {levelUpPerkPoints}
-                        </p>
+                        <p className="size-6 text-center">{perkPoints}</p>
                       </div>
                     )}
-                    {levelUpMasterPerkPoints > 0 && (
+                    {masterPerkPoints > 0 && (
                       <div className="flex items-start justify-between gap-4">
                         <p className="grow">Master Perks</p>
-                        <p className="size-6 text-center">
-                          {levelUpMasterPerkPoints}
-                        </p>
+                        <p className="size-6 text-center">{masterPerkPoints}</p>
                       </div>
                     )}
                   </div>

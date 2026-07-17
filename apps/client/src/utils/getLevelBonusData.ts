@@ -1,7 +1,6 @@
-import { Character } from 'src/types/character';
 import calculateLevelBonus from './calculateLevelBonus';
 
-const getLevelBonusData = (character: Character, level: number) => {
+const getLevelBonusData = (level: number) => {
   const {
     attributePoints,
     skillPoints,
@@ -11,14 +10,14 @@ const getLevelBonusData = (character: Character, level: number) => {
     availableSkillPoints,
     availablePerkPoints,
     availableMasterPerkPoints,
-  } = calculateLevelBonus(level, character?.attributes, character?.perks);
+  } = calculateLevelBonus(level);
 
   const {
     attributePoints: prevAttributePoints,
     skillPoints: prevSkillPoints,
     perkPoints: prevPerkPoints,
     masterPerkPoints: prevMasterPerkPoints,
-  } = calculateLevelBonus(level - 1, character?.attributes, character?.perks);
+  } = calculateLevelBonus(level - 1);
 
   const levelUpAttributePoints = attributePoints - prevAttributePoints;
   const levelUpSkillPoints = skillPoints - prevSkillPoints;

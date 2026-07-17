@@ -41,7 +41,16 @@ interface Character {
   characterCart: CharacterCart;
   characterInventory: CharacterInventory;
   affiliations: Affiliation[];
+  characterLevelBonuses: CharacterLevelBonus[];
   location: Location;
+}
+
+interface CharacterLevelBonus {
+  id: number;
+  characterId: number;
+  level: number;
+  perk?: Perk;
+  attributes: AttributeTree;
 }
 
 interface CharacterStats {

@@ -1,3 +1,4 @@
+import { Action } from './action';
 import { AttributeTree } from './attributeTree';
 import { Stats } from './item';
 
@@ -8,6 +9,7 @@ interface Perk {
   type: 'character' | 'monster';
   modifiers: Stats;
   attributes: AttributeTree;
+  actions: Action[];
 }
 
 export interface PerkTree {

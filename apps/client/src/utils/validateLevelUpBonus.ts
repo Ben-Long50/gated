@@ -1,5 +1,5 @@
 import { AttributeTree } from '../types/attributeTree';
-import getUsedPoints from './getUsedPoints.js';
+import { getUsedPoints } from './getUsedPoints.js';
 import calculateLevelBonus from './calculateLevelBonus.js';
 import { Perk } from 'src/types/perk';
 

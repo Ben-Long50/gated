@@ -12,6 +12,14 @@ import CharacterStatBars from './characterComponents/CharacterStatBars';
 import useActionQuery from 'src/hooks/useActionQuery/useActionQuery';
 import Loading from './Loading';
 import StatBars from './StatBars';
+import WeaponIcon from './icons/WeaponIcon';
+import CyberIcon from './icons/CyberIcon';
+import ArmorIcon from './icons/ArmorIcon';
+import InventoryIcon from './icons/InventoryIcon';
+import DroneIcon from './icons/DroneIcon';
+import PotionIcon from './icons/PotionIcon';
+import ModificationIcon from './icons/ModificationIcon';
+import ArrowHeader4 from './ArrowHeader4';
 
 const ActionCard = ({
   actionId,
@@ -28,6 +36,8 @@ const ActionCard = ({
   const cardRef = useRef(null);
 
   const { data: action, isLoading } = useActionQuery(Number(actionId));
+
+  console.log(action?.costs);
 
   const costLength = action?.costs ? Object.keys(action?.costs).length : 0;
 
@@ -52,13 +62,35 @@ const ActionCard = ({
           </div>
           {action?.itemLink && (
             <button
+              className="group flex items-center gap-2"
               onClick={() =>
                 navigate(`/glam/codex/items/${action?.itemLink?.item.id}`)
               }
             >
-              <p className="hover:text-accent timing text-right">
+              <p className="group-hover:text-accent timing text-right text-base">
                 {action?.itemLink.item.name}
               </p>
+              {action?.itemLink.item.itemTypes.includes('weapon') && (
+                <WeaponIcon className="group-hover:text-accent size-6" />
+              )}
+              {action?.itemLink.item.itemTypes.includes('armor') && (
+                <ArmorIcon className="group-hover:text-accent size-6" />
+              )}
+              {action?.itemLink.item.itemTypes.includes('cybernetic') && (
+                <CyberIcon className="group-hover:text-accent size-6" />
+              )}
+              {action?.itemLink.item.itemTypes.includes('drone') && (
+                <DroneIcon className="group-hover:text-accent size-6" />
+              )}
+              {action?.itemLink.item.itemTypes.includes('reusable') && (
+                <InventoryIcon className="group-hover:text-accent size-6" />
+              )}
+              {action?.itemLink.item.itemTypes.includes('consumable') && (
+                <PotionIcon className="group-hover:text-accent size-6" />
+              )}
+              {action?.itemLink.item.itemTypes.includes('modification') && (
+                <ModificationIcon className="group-hover:text-accent size-6" />
+              )}
             </button>
           )}
 
@@ -103,7 +135,7 @@ const ActionCard = ({
         )}
         {costLength > 0 && (
           <div className="flex w-full flex-col justify-start gap-2">
-            <p className="text-accent text-base tracking-widest">Costs</p>
+            <ArrowHeader4 title="Costs" className="text-primary" />
             <StatBarContainer size={size}>
               <ActionStatBars stats={action?.costs} size={size} />
             </StatBarContainer>

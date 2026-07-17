@@ -1,15 +1,19 @@
 import { Equipment } from 'src/types/item';
 import { Character, CharacterStats } from '../types/character';
-import calculateLevelBonus from './calculateLevelBonus';
+import calculateLevelBonus, {
+  calculateTotalLevelBonus,
+} from './calculateLevelBonus';
 import { Action } from 'src/types/action';
+import { AttributeTree } from 'src/types/attributeTree';
+import { Perk } from 'src/types/perk';
 
 const calculateCharacterStats = (
   character: Character,
+  attributes: AttributeTree,
+  perks: Perk[],
   equipment: Equipment,
   actions: Action[],
 ) => {
-  const attributeTree = character.attributes;
-  const perks = character.perks;
   const stats = character.stats;
 
   const armors = equipment.armors;
@@ -92,36 +96,26 @@ const calculateCharacterStats = (
       return sum;
     }, 0) || 0;
 
-  const levelBonus = calculateLevelBonus(
-    character.level,
-    attributeTree,
-    character.perks,
-  );
+  const levelBonus = calculateTotalLevelBonus(character.level);
 
   const baseStats: CharacterStats = {
     maxHealth: stats?.maxHealth
-      ? stats.maxHealth +
-        10 +
-        attributeTree?.violence.skills.threshold.points * 2
-      : 10 + attributeTree?.violence.skills.threshold.points * 2,
+      ? stats.maxHealth + 10 + attributes?.violence.skills.threshold.points * 2
+      : 10 + attributes?.violence.skills.threshold.points * 2,
     maxSanity: stats?.maxSanity
-      ? stats.maxSanity +
-        5 +
-        attributeTree?.esoterica.skills.mysticism.points * 2
-      : 5 + attributeTree?.esoterica.skills.mysticism.points * 2,
+      ? stats.maxSanity + 5 + attributes?.esoterica.skills.mysticism.points * 2
+      : 5 + attributes?.esoterica.skills.mysticism.points * 2,
     maxEquip: stats?.maxEquip
-      ? stats.maxEquip +
-        10 +
-        attributeTree?.violence.skills.threshold.points * 2
-      : 10 + attributeTree?.violence.skills.threshold.points * 2,
+      ? stats.maxEquip + 10 + attributes?.violence.skills.threshold.points * 2
+      : 10 + attributes?.violence.skills.threshold.points * 2,
     maxCyber: stats?.maxCyber
       ? stats?.maxCyber +
         5 +
-        attributeTree?.cybernetica.skills.chromebits.points * 2
-      : 5 + attributeTree?.cybernetica.skills.chromebits.points * 2,
+        attributes?.cybernetica.skills.chromebits.points * 2
+      : 5 + attributes?.cybernetica.skills.chromebits.points * 2,
     speed: stats?.speed
-      ? stats?.speed + 4 + attributeTree?.violence.skills.assault.points * 1
-      : 4 + attributeTree?.violence.skills.assault.points * 1,
+      ? stats?.speed + 4 + attributes?.violence.skills.assault.points * 1
+      : 4 + attributes?.violence.skills.assault.points * 1,
     evasion: stats?.evasion ? stats?.evasion + 1 : 1,
     armor: armorValue,
     equippedArmor,
@@ -138,22 +132,22 @@ const calculateCharacterStats = (
     hands: stats?.hands ? stats?.hands + 2 : 2,
     feet: stats?.feet ? stats?.feet + 2 : 2,
     size: stats?.size ? stats?.size + 1 : 1,
-    chomebitsTn: attributeTree?.cybernetica.skills.chromebits.points,
-    hardwiredTn: attributeTree?.cybernetica.skills.hardwired.points,
-    motorizedTn: attributeTree?.cybernetica.skills.motorized.points,
-    networkedTn: attributeTree?.cybernetica.skills.networked.points,
-    gestaltTn: attributeTree?.esoterica.skills.gestalt.points,
-    godheadTn: attributeTree?.esoterica.skills.godhead.points,
-    mysticismTn: attributeTree?.esoterica.skills.mysticism.points,
-    outerworldTn: attributeTree?.esoterica.skills.outerworld.points,
-    barterTn: attributeTree?.peace.skills.barter.points,
-    rhetoricTn: attributeTree?.peace.skills.rhetoric.points,
-    eruditionTn: attributeTree?.peace.skills.erudition.points,
-    treatmentTn: attributeTree?.peace.skills.treatment.points,
-    assaultTn: attributeTree?.violence.skills.assault.points,
-    shootingTn: attributeTree?.violence.skills.shooting.points,
-    subterfugeTn: attributeTree?.violence.skills.subterfuge.points,
-    thresholdTn: attributeTree?.violence.skills.threshold.points,
+    chomebitsTn: attributes?.cybernetica.skills.chromebits.points,
+    hardwiredTn: attributes?.cybernetica.skills.hardwired.points,
+    motorizedTn: attributes?.cybernetica.skills.motorized.points,
+    networkedTn: attributes?.cybernetica.skills.networked.points,
+    gestaltTn: attributes?.esoterica.skills.gestalt.points,
+    godheadTn: attributes?.esoterica.skills.godhead.points,
+    mysticismTn: attributes?.esoterica.skills.mysticism.points,
+    outerworldTn: attributes?.esoterica.skills.outerworld.points,
+    barterTn: attributes?.peace.skills.barter.points,
+    rhetoricTn: attributes?.peace.skills.rhetoric.points,
+    eruditionTn: attributes?.peace.skills.erudition.points,
+    treatmentTn: attributes?.peace.skills.treatment.points,
+    assaultTn: attributes?.violence.skills.assault.points,
+    shootingTn: attributes?.violence.skills.shooting.points,
+    subterfugeTn: attributes?.violence.skills.subterfuge.points,
+    thresholdTn: attributes?.violence.skills.threshold.points,
     ...levelBonus,
   };
 
@@ -173,32 +167,31 @@ const calculateCharacterStats = (
       ) {
         updated[stat as keyof CharacterStats] =
           currentValue +
-          attributeTree.cybernetica.skills[
-            value as keyof typeof attributeTree.cybernetica.skills
+          attributes.cybernetica.skills[
+            value as keyof typeof attributes.cybernetica.skills
           ].points;
       } else if (
         ['gestalt', 'godhead', 'mysticism', 'outerworld'].includes(value)
       ) {
         updated[stat as keyof CharacterStats] =
           currentValue +
-          attributeTree.esoterica.skills[
-            value as keyof typeof attributeTree.esoterica.skills
+          attributes.esoterica.skills[
+            value as keyof typeof attributes.esoterica.skills
           ].points;
       } else if (
         ['barter', 'rhetoric', 'erudition', 'treatment'].includes(value)
       ) {
         updated[stat as keyof CharacterStats] =
           currentValue +
-          attributeTree.peace.skills[
-            value as keyof typeof attributeTree.peace.skills
-          ].points;
+          attributes.peace.skills[value as keyof typeof attributes.peace.skills]
+            .points;
       } else if (
         ['assault', 'shooting', 'subterfuge', 'threshold'].includes(value)
       ) {
         updated[stat as keyof CharacterStats] =
           currentValue +
-          attributeTree.violence.skills[
-            value as keyof typeof attributeTree.violence.skills
+          attributes.violence.skills[
+            value as keyof typeof attributes.violence.skills
           ].points;
       }
     });

@@ -6,6 +6,7 @@ import useCharacterQuery from './useCharacterQuery/useCharacterQuery';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import calculateCharacterStats from 'src/utils/characterStatUtils';
 import useItems from './useItems';
+import { combineAttributeTrees } from 'src/utils/combineAttributeTrees';
 
 const useCharacter = (characterId: number) => {
   const { user } = useContext(AuthContext);
@@ -28,6 +29,20 @@ const useCharacter = (characterId: number) => {
   } = useItems(itemIds);
 
   const { emptyAttributeTree } = useAttributeTree(character?.attributes);
+
+  const levelBonusAttributeTrees = character
+    ? character?.characterLevelBonuses
+        .filter((bonus) => Boolean(bonus.attributes))
+        .map((bonus) => bonus.attributes)
+    : [];
+
+  const attributes = combineAttributeTrees(levelBonusAttributeTrees);
+
+  const perks = character
+    ? character?.characterLevelBonuses
+        .filter((bonus) => Boolean(bonus.perks))
+        .flatMap((bonus) => bonus.perks)
+    : [];
 
   const equipment = items
     ? {
@@ -77,7 +92,13 @@ const useCharacter = (characterId: number) => {
 
   const stats =
     character && equipment
-      ? calculateCharacterStats(character, equipment, actions)
+      ? calculateCharacterStats(
+          character,
+          attributes,
+          perks,
+          equipment,
+          actions,
+        )
       : {};
 
   const filterByPreferences = (character: Character) => {
@@ -140,12 +161,9 @@ const useCharacter = (characterId: number) => {
       ),
       attributes:
         characterOwner || character?.preferences?.attributes
-          ? character?.attributes
+          ? attributes
           : emptyAttributeTree,
-      perks:
-        characterOwner || character?.preferences?.perks
-          ? character?.perks
-          : null,
+      perks: characterOwner || character?.preferences?.perks ? perks : null,
       equipment:
         characterOwner || character?.preferences?.equipment ? equipment : null,
       inventory:

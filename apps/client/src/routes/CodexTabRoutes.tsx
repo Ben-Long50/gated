@@ -196,6 +196,7 @@ const CodexTabRoutes = () => {
           }
         >
           <Route path="modifiers" element={<ModifierModal />} />
+          <Route path="actions" element={<ActionLinkModal />} />
         </Route>
         <Route
           path=":perkId/update"
@@ -206,6 +207,7 @@ const CodexTabRoutes = () => {
           }
         >
           <Route path="modifiers" element={<ModifierModal />} />
+          <Route path="actions" element={<ActionLinkModal />} />
         </Route>
       </Route>
       <Route path="keywords">

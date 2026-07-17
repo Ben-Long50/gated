@@ -18,6 +18,7 @@ const usePerkForm = (
       type: perk?.type ?? 'character',
       modifiers: perk?.modifiers ?? {},
       attributes: perk?.attributes ?? emptyAttributeTree,
+      actionIds: perk?.actions.map((action) => action.id) ?? ([] as number[]),
     },
     onSubmit: async ({ value }) => {
       const filteredData = filterFormData(value);

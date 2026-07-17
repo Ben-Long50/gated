@@ -1,11 +1,10 @@
 import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../../handleResponse';
 import { AttributeTree } from 'src/types/attributeTree';
-import { Perk } from 'src/types/perk';
 
 const selectLevelUpBonus = async (
   characterId: number,
-  bonus: { level: number; attributes?: AttributeTree; perkIds?: number[] },
+  bonus: { level: number; attributes?: AttributeTree; perkId?: number },
 ) => {
   try {
     const response = await fetch(

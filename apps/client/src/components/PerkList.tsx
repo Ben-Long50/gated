@@ -7,7 +7,7 @@ import Divider from './Divider';
 import InputFieldCheckbox from './formFields/InputFieldCheckbox';
 import { AttributeTree } from 'src/types/attributeTree';
 import useLevelBonus from 'src/hooks/useLevelBonus';
-import getUsedPoints from 'src/utils/getUsedPoints';
+import { getUsedPoints } from 'src/utils/getUsedPoints';
 
 const PerkList = ({
   form,
