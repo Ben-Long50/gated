@@ -11,11 +11,13 @@ const useLevelBonusForm = (
 ) => {
   const levelBonusForm = useForm({
     defaultValues: {
-      level: Number(level),
+      level,
       attributes: character.playerCharacter
         ? emptyAttributeTree
         : character.attributes,
-      perkIds: [],
+      perkIds: character.playerCharacter
+        ? []
+        : character.perks.map((perk) => perk.basePerkId),
     },
     onSubmit: ({ value }) => {
       const filteredData = filterFormData(value);

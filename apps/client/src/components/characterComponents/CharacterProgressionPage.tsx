@@ -40,6 +40,8 @@ const CharacterProgressionPage = () => {
 
   usePerkQueries(character?.perks?.map((perk) => perk.id) || []);
 
+  console.log(character?.characterLevelBonuses);
+
   if (isLoading || isPending) {
     return <Loading />;
   }
@@ -142,7 +144,52 @@ const CharacterProgressionPage = () => {
           </div>
         )}
       </div>
-      {character?.playerCharacter ? (
+      <div className="flex flex-col gap-8">
+        {character?.characterLevelBonuses && character?.attributes && (
+          <>
+            <ArrowHeader2 title="Attributes & Skills" />
+            <div className="mb-auto flex w-full grow flex-col gap-4 lg:grid lg:grid-cols-2 lg:grid-rows-2 lg:gap-8">
+              {Object.entries(character?.attributes)
+                .sort(([a], [b]) => a.localeCompare(b))
+                .map(([attribute, { points, skills }]) => (
+                  <ThemeContainer
+                    key={attribute}
+                    chamfer="medium"
+                    borderColor={accentPrimary}
+                  >
+                    <div className="p-4">
+                      <AttributeCard
+                        attribute={attribute}
+                        points={points}
+                        skills={skills}
+                      />
+                    </div>
+                  </ThemeContainer>
+                ))}
+            </div>
+          </>
+        )}
+        {character?.characterLevelBonuses && character?.perks.length > 0 && (
+          <>
+            <ArrowHeader2 title="Perks" />
+            <div className="grid grid-cols-2 gap-4 lg:gap-8">
+              {character?.characterLevelBonuses[0].perks.map((perk: Perk) => (
+                <PerkCard perkId={perk.id} />
+              ))}
+            </div>
+          </>
+        )}
+        {!character?.playerCharacter && (
+          <BtnRect
+            className="w-full"
+            ariaLabel="Select level up bonus"
+            onClick={() => navigate(`levelBonus?level=0`)}
+          >
+            Edit NPC Stat Bonuses
+          </BtnRect>
+        )}
+      </div>
+      {character?.playerCharacter && (
         <div className="flex flex-col gap-4">
           <ExpandingList title="Level Bonuses" className="flex flex-col gap-4">
             {Array.from({ length: Number(character?.level) || 1 }).map(
@@ -309,56 +356,6 @@ const CharacterProgressionPage = () => {
               />
             );
           })}
-        </div>
-      ) : (
-        <div className="flex flex-col gap-8">
-          {character?.characterLevelBonuses[0] &&
-            character?.characterLevelBonuses[0].attributes && (
-              <>
-                <ArrowHeader2 title="Attributes & Skills" />
-                <div className="mb-auto flex w-full grow flex-col gap-4 lg:grid lg:grid-cols-2 lg:grid-rows-2 lg:gap-8">
-                  {Object.entries(
-                    character?.characterLevelBonuses[0].attributes,
-                  )
-                    .sort(([a], [b]) => a.localeCompare(b))
-                    .map(([attribute, { points, skills }]) => (
-                      <ThemeContainer
-                        key={attribute}
-                        chamfer="medium"
-                        borderColor={accentPrimary}
-                      >
-                        <div className="p-4">
-                          <AttributeCard
-                            attribute={attribute}
-                            points={points}
-                            skills={skills}
-                          />
-                        </div>
-                      </ThemeContainer>
-                    ))}
-                </div>
-              </>
-            )}
-          {character?.characterLevelBonuses &&
-            character?.characterLevelBonuses[0].perks.length > 0 && (
-              <>
-                <ArrowHeader2 title="Perks" />
-                <div className="grid grid-cols-2 gap-4 lg:gap-8">
-                  {character?.characterLevelBonuses[0].perks.map(
-                    (perk: Perk) => (
-                      <PerkCard perkId={perk.id} />
-                    ),
-                  )}
-                </div>
-              </>
-            )}
-          <BtnRect
-            className="w-full"
-            ariaLabel="Select level up bonus"
-            onClick={() => navigate(`levelBonus?level=${null}`)}
-          >
-            Edit NPC Stat Bonuses
-          </BtnRect>
         </div>
       )}
       {parts.includes('levelBonus') && <Outlet context={{ parts }} />}

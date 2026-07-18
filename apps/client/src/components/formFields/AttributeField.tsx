@@ -49,7 +49,7 @@ const AttributeField = ({
     attributeDecrease ||
     (attributeTree
       ? points > getAttributePoints(attributeTree, attribute)
-      : points > getAttributePoints(formTree, attribute));
+      : points > 0);
 
   const calculateAttributeIncrease = (
     points: number,
@@ -59,7 +59,7 @@ const AttributeField = ({
     attributeIncrease ||
     (attributeTree
       ? getAttributePoints(attributeTree, attribute) > points
-      : getAttributePoints(formTree, attribute) > points);
+      : 4 > points);
 
   const calculateSkillDecrease = (
     points: number,
@@ -69,7 +69,7 @@ const AttributeField = ({
     skillDecrease ||
     (attributeTree
       ? getSkillPoints(attributeTree, skill) < points
-      : getSkillPoints(formTree, skill) < points);
+      : 0 < points);
 
   const calculateSkillIncrease = (
     points: number,
@@ -79,7 +79,7 @@ const AttributeField = ({
     skillIncrease ||
     (attributeTree
       ? getSkillPoints(attributeTree, skill) > points
-      : getSkillPoints(formTree, skill) > points);
+      : 4 > points);
 
   return (
     <form.Field name="attributes">
@@ -114,7 +114,7 @@ const AttributeField = ({
                                   calculateAttributeDecrease(
                                     attributePoints,
                                     attribute,
-                                    field.state.value,
+                                    combinedTree,
                                   ) && subfield.state.value.points > 0
                                 }
                                 onClick={() => {
@@ -166,7 +166,7 @@ const AttributeField = ({
                                   calculateAttributeIncrease(
                                     attributePoints,
                                     attribute,
-                                    field.state.value,
+                                    combinedTree,
                                   ) && subfield.state.value.points < 4
                                 }
                                 onClick={() => {
@@ -209,7 +209,7 @@ const AttributeField = ({
                                                 calculateSkillDecrease(
                                                   skillPoints,
                                                   skill,
-                                                  field.state.value,
+                                                  combinedTree,
                                                 ) && subSubfield.state.value > 0
                                               }
                                               onClick={() => {
@@ -263,7 +263,7 @@ const AttributeField = ({
                                                 calculateSkillIncrease(
                                                   skillPoints,
                                                   skill,
-                                                  field.state.value,
+                                                  combinedTree,
                                                 ) && subSubfield.state.value < 4
                                               }
                                               onClick={() => {
