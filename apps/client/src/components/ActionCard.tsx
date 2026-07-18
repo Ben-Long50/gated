@@ -20,6 +20,7 @@ import DroneIcon from './icons/DroneIcon';
 import PotionIcon from './icons/PotionIcon';
 import ModificationIcon from './icons/ModificationIcon';
 import ArrowHeader4 from './ArrowHeader4';
+import PerkIcon from './icons/PerkIcon';
 
 const ActionCard = ({
   actionId,
@@ -94,7 +95,17 @@ const ActionCard = ({
               )}
             </button>
           )}
-
+          {action?.perk && (
+            <button
+              className="group flex items-center gap-2"
+              onClick={() => navigate(`/glam/codex/perks/${action?.perks}`)}
+            >
+              <p className="group-hover:text-accent timing text-right text-base">
+                {action?.perk.name}
+              </p>
+              <PerkIcon className="group-hover:text-accent size-6" />
+            </button>
+          )}
           {(user.role === 'ADMIN' || user.role === 'SUPERADMIN') && (
             <button
               className="text-accent hover:underline"

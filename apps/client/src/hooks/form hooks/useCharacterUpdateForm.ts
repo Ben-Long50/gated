@@ -53,6 +53,7 @@ const useCharacterUpdateForm = (
       weight: character?.weight ?? null,
       age: character?.age ?? null,
       sex: character?.sex ?? null,
+      perkIds: [],
     },
     onSubmit: async ({ value }) => {
       const filteredStats = filterStats(value.stats);

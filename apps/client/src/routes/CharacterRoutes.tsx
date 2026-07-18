@@ -92,9 +92,8 @@ const CharacterRoutes = () => {
         }
       >
         {PictureRoutes()}
-        <Route path="perks" element={<PerkLinkModal />} />
+        <Route path="levelBonus" element={<LevelBonusModal />} />
         <Route path="npcPreferences" element={<NpcPreferenceModal />} />
-        <Route path="actions" element={<ActionLinkModal />} />
       </Route>
       <Route path="cart" element={<Cart />} />
       <Route

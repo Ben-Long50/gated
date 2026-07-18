@@ -1,5 +1,11 @@
 import InputField from '../formFields/InputField';
-import { useParams, useSearchParams } from 'react-router-dom';
+import {
+  Outlet,
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from 'react-router-dom';
 import useUpdateCharacterMutation from '../../hooks/useCharacterUpdateMutation/useCharacterUpdateMutation';
 import useDeleteCharacterMutation from '../../hooks/useDeleteCharacterMutation/useDeleteCharacterMutation';
 import Loading from '../Loading';
@@ -15,8 +21,6 @@ import useCharacterUpdateForm from 'src/hooks/form hooks/useCharacterUpdateForm'
 import constructName from 'src/utils/constructName';
 import CharacterStatBars from '../characterComponents/CharacterStatBars';
 import useCharacterQuery from 'src/hooks/useCharacterQuery/useCharacterQuery';
-import ActionLinkField from '../formFields/ActionLinkField';
-import PerkLinkField from '../formFields/PerkLinkField';
 import { useContext } from 'react';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import useCharacter from 'src/hooks/useCharacter';
@@ -24,12 +28,9 @@ import combineObjects from 'src/utils/combineObjects';
 
 const CharacterUpdateForm = () => {
   const { characterId } = useParams();
-  const [searchParams] = useSearchParams();
   const { mobile } = useContext(LayoutContext);
 
   const size = mobile ? 'small' : 'large';
-
-  const formType = searchParams.get('formType');
 
   const { data: campaigns, isLoading: campaignsLoading } = useCampaignsQuery();
 
@@ -169,20 +170,6 @@ const CharacterUpdateForm = () => {
           );
         }}
       </characterUpdateForm.Field>
-      {formType === 'codex' && (
-        <>
-          <Divider />
-          <PerkLinkField
-            form={characterUpdateForm}
-            attributeTree={character?.attributes}
-            path="perks?formType=codex&mode=form"
-          />
-          <ActionLinkField
-            form={characterUpdateForm}
-            path="actions?formType=codex&mode=form"
-          />
-        </>
-      )}
     </FormLayout>
   );
 };

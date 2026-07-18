@@ -19,7 +19,7 @@ const useSelectLevelUpBonusMutation = (characterId: number) => {
       toast.success(data.message);
       queryClient.setQueryData(['character', characterId], data.character);
 
-      navigate('..');
+      navigate(-1);
     },
     onError: (data) => {
       toast.error(data.message);

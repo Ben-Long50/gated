@@ -358,7 +358,7 @@ const CharacterProgressionPage = () => {
           })}
         </div>
       )}
-      {parts.includes('levelBonus') && <Outlet context={{ parts }} />}
+      {parts.includes('levelBonus') && <Outlet />}
     </>
   );
 };

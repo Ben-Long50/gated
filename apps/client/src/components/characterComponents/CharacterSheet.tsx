@@ -44,6 +44,8 @@ const CharacterSheet = () => {
     Number(characterId),
   );
 
+  console.log(character);
+
   const height =
     typeof character?.height === 'number'
       ? `${Math.floor(character?.height / 12)}' ${character?.height % 12}"`
@@ -308,7 +310,7 @@ const CharacterSheet = () => {
             ariaLabel="Update character information"
             onClick={() => navigate('update?mode=form')}
           >
-            Update Character
+            Update Character Info
           </BtnRect>
         </>
       )}
@@ -316,14 +318,26 @@ const CharacterSheet = () => {
         character?.base && (
           <>
             <Divider />
-            <BtnRect
-              type="button"
-              className="w-full"
-              ariaLabel="Update codex character information"
-              onClick={() => navigate('update?formType=codex&mode=form')}
-            >
-              Update Codex Character
-            </BtnRect>
+            <div className="flex w-full flex-col gap-4">
+              <BtnRect
+                type="button"
+                className="w-full"
+                ariaLabel="Update codex character information"
+                onClick={() => navigate('update?formType=codex&mode=form')}
+              >
+                Update Character Info
+              </BtnRect>
+              <BtnRect
+                type="button"
+                className="w-full"
+                ariaLabel="Update codex character information"
+                onClick={() =>
+                  navigate('progression/levelBonus?formType=codex&mode=form')
+                }
+              >
+                Update Progression Info
+              </BtnRect>
+            </div>
           </>
         )}
     </>

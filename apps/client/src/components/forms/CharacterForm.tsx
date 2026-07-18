@@ -337,10 +337,6 @@ const CharacterForm = () => {
           />
         )}
       </characterForm.Subscribe>
-      <ActionLinkField
-        form={characterForm}
-        path="actions?formType=codex&mode=form"
-      />
     </FormLayout>
   );
 };
