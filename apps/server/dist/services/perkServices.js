@@ -58,11 +58,11 @@ const perkServices = {
     },
     createPerk: async (formData) => {
         try {
-            const { id } = formData, data = __rest(formData, ["id"]);
+            const { id, actionIds } = formData, data = __rest(formData, ["id", "actionIds"]);
             const perk = await prisma.perk.upsert({
                 where: { id: id || 0 },
-                update: data,
-                create: data,
+                update: Object.assign(Object.assign({}, data), { actions: { set: actionIds === null || actionIds === void 0 ? void 0 : actionIds.map((id) => ({ id })) } }),
+                create: Object.assign(Object.assign({}, data), { actions: { connect: actionIds === null || actionIds === void 0 ? void 0 : actionIds.map((id) => ({ id })) } }),
                 include: perkInclude,
             });
             return perk;

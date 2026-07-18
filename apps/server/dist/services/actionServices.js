@@ -108,49 +108,6 @@ const actionServices = {
             throw new Error('Failed to create action copy');
         }
     },
-    // createCharacterActionCopy: async (
-    //   actionList: { actionId: number; quantity: number }[],
-    //   characterInventoryId?: number,
-    //   tx?: Prisma.TransactionClient,
-    // ) => {
-    //   const client = tx ?? prisma;
-    //   const actionIds = actionList?.map((action) => action.actionId);
-    //   const actions = await client.action.findMany({
-    //     where: { id: { in: actionIds } },
-    //     include: {
-    //       keywordModifiers: { select: { keywordId: true, value: true } },
-    //     },
-    //   });
-    //   const newActions = await Promise.all(
-    //     actionList.flatMap(({ actionId, quantity }) => {
-    //       const actionDetails = actions.find((action) => action.id === actionId);
-    //       if (!actionDetails) {
-    //         throw new Error('Failed to find action');
-    //       }
-    //       const { id, ...data } = actionDetails;
-    //       const filteredData = Object.fromEntries(
-    //         Object.entries(data).filter(([, value]) => value !== null),
-    //       );
-    //       const validatedAction = ActionInput.parse(filteredData);
-    //       if (actionDetails) {
-    //         return Array.from({ length: quantity }).map(() =>
-    //           client.action.create({
-    //             data: {
-    //               ...validatedAction,
-    //               keywordModifiers: {
-    //                 createMany: { data: actionDetails.keywordModifiers || [] },
-    //               },
-    //               baseActionId: actionDetails.baseActionId || actionDetails.id,
-    //             },
-    //             include: actionInclude,
-    //           }),
-    //         );
-    //       }
-    //       return;
-    //     }),
-    //   );
-    //   return newActions;
-    // },
     activateAction: async (actionId, value) => {
         try {
             const action = await prisma.action.update({

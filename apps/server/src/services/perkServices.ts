@@ -54,11 +54,14 @@ const perkServices = {
 
   createPerk: async (formData: PerkSchema) => {
     try {
-      const { id, ...data } = formData;
+      const { id, actionIds, ...data } = formData;
       const perk = await prisma.perk.upsert({
         where: { id: id || 0 },
-        update: data,
-        create: data,
+        update: { ...data, actions: { set: actionIds?.map((id) => ({ id })) } },
+        create: {
+          ...data,
+          actions: { connect: actionIds?.map((id) => ({ id })) },
+        },
         include: perkInclude,
       });
 
