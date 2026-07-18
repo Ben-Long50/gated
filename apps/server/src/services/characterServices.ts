@@ -576,8 +576,6 @@ const characterServices = {
     characterId: number,
     bonus: CharacterLevelBonus,
   ) => {
-    const validatedBonus = CharacterLevelBonus.parse(bonus);
-
     const character = await characterServices.getCharacterById(characterId);
 
     if (!character) {
@@ -586,17 +584,17 @@ const characterServices = {
 
     if (character.playerCharacter) {
       await validateLevelUpBonus({
-        level: validatedBonus.level,
-        attributes: validatedBonus.attributes ?? undefined,
-        perkIds: validatedBonus.perkIds ?? undefined,
+        level: bonus.level,
+        attributes: bonus.attributes ?? undefined,
+        perkIds: bonus.perkIds ?? undefined,
       });
     }
 
     const updatedCharacter = prisma.$transaction(async (tx) => {
       let newPerkIds = [] as number[];
 
-      if (validatedBonus.perkIds) {
-        for (const id of validatedBonus.perkIds) {
+      if (bonus.perkIds) {
+        for (const id of bonus.perkIds) {
           const newPerk = await perkServices.createPerkCopy(id, tx);
 
           console.log(newPerk);
@@ -604,8 +602,6 @@ const characterServices = {
           newPerkIds.push(newPerk.id);
         }
       }
-
-      console.log(validatedBonus);
 
       const updatedCharacter = await tx.character.update({
         where: {
@@ -617,19 +613,19 @@ const characterServices = {
               where: {
                 characterId_level: {
                   characterId,
-                  level: validatedBonus.level,
+                  level: bonus.level,
                 },
               },
               update: {
-                attributes: validatedBonus.attributes ?? undefined,
+                attributes: bonus.attributes ?? undefined,
                 perks: {
                   deleteMany: {},
                   connect: newPerkIds.map((newPerkId) => ({ id: newPerkId })),
                 },
               },
               create: {
-                level: validatedBonus.level,
-                attributes: validatedBonus.attributes ?? undefined,
+                level: bonus.level,
+                attributes: bonus.attributes ?? undefined,
                 perks: {
                   connect: newPerkIds.map((newPerkId) => ({ id: newPerkId })),
                 },

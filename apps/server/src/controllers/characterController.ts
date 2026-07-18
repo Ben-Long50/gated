@@ -317,11 +317,11 @@ const characterController = {
         throw new Error('Could not find authenticated user');
       }
 
-      const bonus = CharacterLevelBonus.parse(req.body);
+      const validatedBonus = CharacterLevelBonus.parse(req.body);
 
       const character = await characterServices.selectLevelUpBonus(
         Number(req.params.characterId),
-        bonus,
+        validatedBonus,
       );
 
       const io = getIO();

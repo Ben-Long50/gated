@@ -14,7 +14,6 @@ import { includeCharacterCart, unequipLinked, } from '../utils/linkQueryStructur
 import itemServices, { itemInclude } from './itemServices.js';
 import { getIO } from '../sockets/socket.js';
 import validateLevelUpBonus from '../utils/validateLevelUpBonus.js';
-import { CharacterLevelBonus, } from '../validation/characterSchema.js';
 import { ConditionReferenceInput } from '../validation/conditionSchema.js';
 import perkServices from './perkServices.js';
 export const characterInclude = {
@@ -474,29 +473,27 @@ const characterServices = {
     },
     selectLevelUpBonus: async (characterId, bonus) => {
         var _a, _b;
-        const validatedBonus = CharacterLevelBonus.parse(bonus);
         const character = await characterServices.getCharacterById(characterId);
         if (!character) {
             throw new Error('Failed to find character');
         }
         if (character.playerCharacter) {
             await validateLevelUpBonus({
-                level: validatedBonus.level,
-                attributes: (_a = validatedBonus.attributes) !== null && _a !== void 0 ? _a : undefined,
-                perkIds: (_b = validatedBonus.perkIds) !== null && _b !== void 0 ? _b : undefined,
+                level: bonus.level,
+                attributes: (_a = bonus.attributes) !== null && _a !== void 0 ? _a : undefined,
+                perkIds: (_b = bonus.perkIds) !== null && _b !== void 0 ? _b : undefined,
             });
         }
         const updatedCharacter = prisma.$transaction(async (tx) => {
             var _a, _b;
             let newPerkIds = [];
-            if (validatedBonus.perkIds) {
-                for (const id of validatedBonus.perkIds) {
+            if (bonus.perkIds) {
+                for (const id of bonus.perkIds) {
                     const newPerk = await perkServices.createPerkCopy(id, tx);
                     console.log(newPerk);
                     newPerkIds.push(newPerk.id);
                 }
             }
-            console.log(validatedBonus);
             const updatedCharacter = await tx.character.update({
                 where: {
                     id: characterId,
@@ -507,19 +504,19 @@ const characterServices = {
                             where: {
                                 characterId_level: {
                                     characterId,
-                                    level: validatedBonus.level,
+                                    level: bonus.level,
                                 },
                             },
                             update: {
-                                attributes: (_a = validatedBonus.attributes) !== null && _a !== void 0 ? _a : undefined,
+                                attributes: (_a = bonus.attributes) !== null && _a !== void 0 ? _a : undefined,
                                 perks: {
                                     deleteMany: {},
                                     connect: newPerkIds.map((newPerkId) => ({ id: newPerkId })),
                                 },
                             },
                             create: {
-                                level: validatedBonus.level,
-                                attributes: (_b = validatedBonus.attributes) !== null && _b !== void 0 ? _b : undefined,
+                                level: bonus.level,
+                                attributes: (_b = bonus.attributes) !== null && _b !== void 0 ? _b : undefined,
                                 perks: {
                                     connect: newPerkIds.map((newPerkId) => ({ id: newPerkId })),
                                 },
