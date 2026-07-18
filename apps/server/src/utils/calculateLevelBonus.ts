@@ -101,10 +101,10 @@ const calculateLevelBonus = (level: number) => {
       break;
     default:
       levelBonus = {
-        attributePoints: 6,
-        skillPoints: 12,
-        perkPoints: 1,
-        masterPerkPoints: 0,
+        attributePoints: 16,
+        skillPoints: 64,
+        perkPoints: 10,
+        masterPerkPoints: 4,
       };
       break;
   }

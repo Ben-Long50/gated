@@ -584,11 +584,13 @@ const characterServices = {
       throw new Error('Failed to find character');
     }
 
-    await validateLevelUpBonus({
-      level: validatedBonus.level,
-      attributes: validatedBonus.attributes ?? undefined,
-      perkIds: validatedBonus.perkIds ?? undefined,
-    });
+    if (character.playerCharacter) {
+      await validateLevelUpBonus({
+        level: validatedBonus.level,
+        attributes: validatedBonus.attributes ?? undefined,
+        perkIds: validatedBonus.perkIds ?? undefined,
+      });
+    }
 
     const updatedCharacter = prisma.$transaction(async (tx) => {
       let newPerkIds = [] as number[];
@@ -597,9 +599,13 @@ const characterServices = {
         for (const id of validatedBonus.perkIds) {
           const newPerk = await perkServices.createPerkCopy(id, tx);
 
+          console.log(newPerk);
+
           newPerkIds.push(newPerk.id);
         }
       }
+
+      console.log(validatedBonus);
 
       const updatedCharacter = await tx.character.update({
         where: {
@@ -607,11 +613,26 @@ const characterServices = {
         },
         data: {
           characterLevelBonuses: {
-            create: {
-              level: validatedBonus.level,
-              attributes: validatedBonus.attributes ?? undefined,
-              perks: {
-                connect: newPerkIds.map((newPerkId) => ({ id: newPerkId })),
+            upsert: {
+              where: {
+                characterId_level: {
+                  characterId,
+                  level: validatedBonus.level,
+                },
+              },
+              update: {
+                attributes: validatedBonus.attributes ?? undefined,
+                perks: {
+                  deleteMany: {},
+                  connect: newPerkIds.map((newPerkId) => ({ id: newPerkId })),
+                },
+              },
+              create: {
+                level: validatedBonus.level,
+                attributes: validatedBonus.attributes ?? undefined,
+                perks: {
+                  connect: newPerkIds.map((newPerkId) => ({ id: newPerkId })),
+                },
               },
             },
           },

@@ -479,31 +479,50 @@ const characterServices = {
         if (!character) {
             throw new Error('Failed to find character');
         }
-        await validateLevelUpBonus({
-            level: validatedBonus.level,
-            attributes: (_a = validatedBonus.attributes) !== null && _a !== void 0 ? _a : undefined,
-            perkIds: (_b = validatedBonus.perkIds) !== null && _b !== void 0 ? _b : undefined,
-        });
+        if (character.playerCharacter) {
+            await validateLevelUpBonus({
+                level: validatedBonus.level,
+                attributes: (_a = validatedBonus.attributes) !== null && _a !== void 0 ? _a : undefined,
+                perkIds: (_b = validatedBonus.perkIds) !== null && _b !== void 0 ? _b : undefined,
+            });
+        }
         const updatedCharacter = prisma.$transaction(async (tx) => {
-            var _a;
+            var _a, _b;
             let newPerkIds = [];
             if (validatedBonus.perkIds) {
                 for (const id of validatedBonus.perkIds) {
                     const newPerk = await perkServices.createPerkCopy(id, tx);
+                    console.log(newPerk);
                     newPerkIds.push(newPerk.id);
                 }
             }
+            console.log(validatedBonus);
             const updatedCharacter = await tx.character.update({
                 where: {
                     id: characterId,
                 },
                 data: {
                     characterLevelBonuses: {
-                        create: {
-                            level: validatedBonus.level,
-                            attributes: (_a = validatedBonus.attributes) !== null && _a !== void 0 ? _a : undefined,
-                            perks: {
-                                connect: newPerkIds.map((newPerkId) => ({ id: newPerkId })),
+                        upsert: {
+                            where: {
+                                characterId_level: {
+                                    characterId,
+                                    level: validatedBonus.level,
+                                },
+                            },
+                            update: {
+                                attributes: (_a = validatedBonus.attributes) !== null && _a !== void 0 ? _a : undefined,
+                                perks: {
+                                    deleteMany: {},
+                                    connect: newPerkIds.map((newPerkId) => ({ id: newPerkId })),
+                                },
+                            },
+                            create: {
+                                level: validatedBonus.level,
+                                attributes: (_b = validatedBonus.attributes) !== null && _b !== void 0 ? _b : undefined,
+                                perks: {
+                                    connect: newPerkIds.map((newPerkId) => ({ id: newPerkId })),
+                                },
                             },
                         },
                     },

@@ -589,7 +589,7 @@ model Perk {
   attributes            Json?
   actions               Action[]
   characterLevelBonus   CharacterLevelBonus? @relation(fields: [characterLevelBonusId], references: [id], onDelete: Cascade)
-  characterLevelBonusId Int?                 @unique
+  characterLevelBonusId Int?
   basePerk              Perk?                @relation("BaseRelation", fields: [basePerkId], references: [id])
   basePerkId            Int?
   derivedPerks          Perk[]               @relation("BaseRelation")

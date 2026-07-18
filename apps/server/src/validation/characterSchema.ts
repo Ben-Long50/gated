@@ -81,7 +81,7 @@ export const CharacterUpdateInput = z.object({
 });
 
 export const CharacterLevelBonus = z.object({
-  level: z.number().int().min(1).max(12).nullable(),
+  level: z.number().int().min(0).max(12),
   attributes: Attributes.optional(),
   perkIds: z.array(z.number().int().nonnegative()).optional(),
 });
