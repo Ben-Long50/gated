@@ -12,8 +12,12 @@ import {
 import { useContext } from 'react';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import { ThemeContext } from 'src/contexts/ThemeContext';
-import { FormApi, useStore } from '@tanstack/react-form';
-import { AttributeTree } from 'src/types/attributeTree';
+import { FormApi } from '@tanstack/react-form';
+import {
+  AttributeName,
+  AttributeTree,
+  SkillName,
+} from 'src/types/attributeTree';
 import IconBtnSmall from '../buttons/IconBtnSmall';
 import ThemeContainer from '../ThemeContainer';
 import { getAttributePoints, getSkillPoints } from 'src/utils/getUsedPoints';
@@ -37,13 +41,52 @@ const AttributeField = ({
   const { mobile } = useContext(LayoutContext);
   const { accentPrimary } = useContext(ThemeContext);
 
+  const calculateAttributeDecrease = (
+    points: number,
+    attribute: AttributeName,
+    formTree: AttributeTree,
+  ) =>
+    attributeDecrease ||
+    (attributeTree
+      ? points > getAttributePoints(attributeTree, attribute)
+      : points > getAttributePoints(formTree, attribute));
+
+  const calculateAttributeIncrease = (
+    points: number,
+    attribute: AttributeName,
+    formTree: AttributeTree,
+  ) =>
+    attributeIncrease ||
+    (attributeTree
+      ? getAttributePoints(attributeTree, attribute) > points
+      : getAttributePoints(formTree, attribute) > points);
+
+  const calculateSkillDecrease = (
+    points: number,
+    skill: SkillName,
+    formTree: AttributeTree,
+  ) =>
+    skillDecrease ||
+    (attributeTree
+      ? getSkillPoints(attributeTree, skill) < points
+      : getSkillPoints(formTree, skill) < points);
+
+  const calculateSkillIncrease = (
+    points: number,
+    skill: SkillName,
+    formTree: AttributeTree,
+  ) =>
+    skillIncrease ||
+    (attributeTree
+      ? getSkillPoints(attributeTree, skill) > points
+      : getSkillPoints(formTree, skill) > points);
+
   return (
     <form.Field name="attributes">
       {(field) => {
-        const combinedTree = combineAttributeTrees([
-          attributeTree,
-          field.state.value,
-        ]);
+        const combinedTree = attributeTree
+          ? combineAttributeTrees([attributeTree, field.state.value])
+          : field.state.value;
 
         return (
           <div className="flex w-full grow flex-col gap-4 lg:grid lg:grid-cols-2 lg:gap-8">
@@ -68,13 +111,11 @@ const AttributeField = ({
                             <div className="flex items-center gap-2 sm:gap-4">
                               <IconBtnSmall
                                 active={
-                                  (attributeDecrease ||
-                                    attributePoints >
-                                      getAttributePoints(
-                                        attributeTree,
-                                        attribute,
-                                      )) &&
-                                  subfield.state.value.points > 0
+                                  calculateAttributeDecrease(
+                                    attributePoints,
+                                    attribute,
+                                    field.state.value,
+                                  ) && subfield.state.value.points > 0
                                 }
                                 onClick={() => {
                                   if (subfield.state.value.points > 0) {
@@ -122,12 +163,11 @@ const AttributeField = ({
                               )}
                               <IconBtnSmall
                                 active={
-                                  (attributeIncrease ||
-                                    getAttributePoints(
-                                      attributeTree,
-                                      attribute,
-                                    ) > attributePoints) &&
-                                  subfield.state.value.points < 4
+                                  calculateAttributeIncrease(
+                                    attributePoints,
+                                    attribute,
+                                    field.state.value,
+                                  ) && subfield.state.value.points < 4
                                 }
                                 onClick={() => {
                                   if (subfield.state.value.points < 4) {
@@ -166,12 +206,11 @@ const AttributeField = ({
                                           <div className="flex items-center gap-2 sm:gap-4">
                                             <IconBtnSmall
                                               active={
-                                                (skillDecrease ||
-                                                  getSkillPoints(
-                                                    attributeTree,
-                                                    skill,
-                                                  ) < skillPoints) &&
-                                                subSubfield.state.value > 0
+                                                calculateSkillDecrease(
+                                                  skillPoints,
+                                                  skill,
+                                                  field.state.value,
+                                                ) && subSubfield.state.value > 0
                                               }
                                               onClick={() => {
                                                 if (
@@ -221,12 +260,11 @@ const AttributeField = ({
                                             )}
                                             <IconBtnSmall
                                               active={
-                                                (skillIncrease ||
-                                                  getSkillPoints(
-                                                    attributeTree,
-                                                    skill,
-                                                  ) > skillPoints) &&
-                                                subSubfield.state.value < 4
+                                                calculateSkillIncrease(
+                                                  skillPoints,
+                                                  skill,
+                                                  field.state.value,
+                                                ) && subSubfield.state.value < 4
                                               }
                                               onClick={() => {
                                                 if (

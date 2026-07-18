@@ -1,7 +1,8 @@
 import { Equipment } from 'src/types/item';
 import { Character, CharacterStats } from '../types/character';
-import calculateLevelBonus, {
+import {
   calculateTotalLevelBonus,
+  calculateUsedPoints,
 } from './calculateLevelBonus';
 import { Action } from 'src/types/action';
 import { AttributeTree } from 'src/types/attributeTree';
@@ -98,6 +99,8 @@ const calculateCharacterStats = (
 
   const levelBonus = calculateTotalLevelBonus(character.level);
 
+  const usedLevelBonus = calculateUsedPoints(attributes, perks);
+
   const baseStats: CharacterStats = {
     maxHealth: stats?.maxHealth
       ? stats.maxHealth + 10 + attributes?.violence.skills.threshold.points * 2
@@ -149,6 +152,7 @@ const calculateCharacterStats = (
     subterfugeTn: attributes?.violence.skills.subterfuge.points,
     thresholdTn: attributes?.violence.skills.threshold.points,
     ...levelBonus,
+    ...usedLevelBonus,
   };
 
   const calculateBonus = (
@@ -205,14 +209,6 @@ const calculateCharacterStats = (
     actions.forEach((action) => {
       if (action.active && action.modifiers) {
         finalStats = calculateBonus(finalStats, action.modifiers);
-      }
-    });
-  }
-
-  if (perks && perks.length > 0) {
-    perks?.forEach((perk) => {
-      if (perk.modifiers) {
-        finalStats = calculateBonus(finalStats, perk.modifiers);
       }
     });
   }

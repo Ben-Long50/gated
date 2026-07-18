@@ -16,7 +16,6 @@ const usePerkForm = (
       name: perk?.name ?? '',
       description: perk?.description ?? '',
       type: perk?.type ?? 'character',
-      modifiers: perk?.modifiers ?? {},
       attributes: perk?.attributes ?? emptyAttributeTree,
       actionIds: perk?.actions.map((action) => action.id) ?? ([] as number[]),
     },

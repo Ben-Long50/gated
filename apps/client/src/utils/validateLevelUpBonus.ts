@@ -13,7 +13,7 @@ const validateLevelUpBonus = ({
   perks?: Perk[];
 }) => {
   const { attributePoints, skillPoints, perkPoints, masterPerkPoints } =
-    calculateLevelBonus(level, attributes, perks);
+    calculateLevelBonus(level);
 
   const failedValidation = { validated: false, errors: [] as string[] };
 

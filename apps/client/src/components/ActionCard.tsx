@@ -24,10 +24,12 @@ import ArrowHeader4 from './ArrowHeader4';
 const ActionCard = ({
   actionId,
   expanded = false,
+  child = false,
   size = 'small',
 }: {
   actionId: number;
   size: 'small' | 'large';
+  child?: boolean;
   expanded?: boolean;
 }) => {
   const { user } = useContext(AuthContext);
@@ -36,8 +38,6 @@ const ActionCard = ({
   const cardRef = useRef(null);
 
   const { data: action, isLoading } = useActionQuery(Number(actionId));
-
-  console.log(action?.costs);
 
   const costLength = action?.costs ? Object.keys(action?.costs).length : 0;
 
@@ -51,6 +51,7 @@ const ActionCard = ({
   ) : (
     <ItemCardSmall
       expanded={expanded}
+      child={child}
       cardRef={cardRef}
       heading={
         <div className={`flex w-full items-center gap-4 pr-2`}>

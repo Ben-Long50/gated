@@ -306,7 +306,7 @@ const CharacterSheet = () => {
             type="button"
             className="w-full"
             ariaLabel="Update character information"
-            onClick={() => navigate('update&mode=form')}
+            onClick={() => navigate('update?mode=form')}
           >
             Update Character
           </BtnRect>

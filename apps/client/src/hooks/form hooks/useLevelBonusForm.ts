@@ -2,15 +2,19 @@ import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
 import { filterFormData } from './constructFormData';
 import emptyAttributeTree from 'src/utils/constants/emptyAttributeTree';
+import { Character } from 'src/types/character';
 
 const useLevelBonusForm = (
   mutation: UseMutationResult<any, Error, any>,
   level: number,
+  character: Character,
 ) => {
   const levelBonusForm = useForm({
     defaultValues: {
       level: Number(level),
-      attributes: emptyAttributeTree,
+      attributes: character.playerCharacter
+        ? emptyAttributeTree
+        : character.attributes,
       perkIds: [],
     },
     onSubmit: ({ value }) => {

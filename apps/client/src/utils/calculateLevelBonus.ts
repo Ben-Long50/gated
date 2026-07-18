@@ -1,14 +1,8 @@
-//@ts-nocheck
-
-import { Perk } from '@prisma/client';
+import { Perk } from 'src/types/perk';
 import { AttributeTree } from '../types/attributeTree';
 import { getUsedPoints } from './getUsedPoints.js';
 
-const calculateLevelBonus = (
-  level: number,
-  attributeTree?: AttributeTree,
-  perk?: Perk,
-) => {
+const calculateLevelBonus = (level: number) => {
   let levelBonus = null;
 
   switch (level) {
@@ -110,29 +104,12 @@ const calculateLevelBonus = (
       break;
     default:
       levelBonus = {
-        attributePoints: 0,
-        skillPoints: 0,
-        perkPoints: 0,
-        masterPerkPoints: 0,
+        attributePoints: 16,
+        skillPoints: 64,
+        perkPoints: 10,
+        masterPerkPoints: 4,
       };
       break;
-  }
-
-  const { usedAttributePoints, usedSkillPoints } = attributeTree
-    ? getUsedPoints(attributeTree)
-    : { usedAttributePoints: 0, usedSkillPoints: 0 };
-
-  let usedPerkPoints = 0;
-  let usedMasterPerkPoints = 0;
-
-  if (perk) {
-    const { usedAttributePoints, usedSkillPoints } = getUsedPoints(
-      perk.attributes,
-    );
-
-    usedAttributePoints + usedSkillPoints >= 4
-      ? usedMasterPerkPoints++
-      : usedPerkPoints++;
   }
 
   return {
@@ -140,26 +117,6 @@ const calculateLevelBonus = (
     skillPoints: levelBonus.skillPoints,
     perkPoints: levelBonus.perkPoints,
     masterPerkPoints: levelBonus.masterPerkPoints,
-    usedAttributePoints,
-    usedSkillPoints,
-    usedPerkPoints,
-    usedMasterPerkPoints,
-    availableAttributePoints:
-      levelBonus.attributePoints - usedAttributePoints < 0
-        ? 0
-        : levelBonus.attributePoints - usedAttributePoints,
-    availableSkillPoints:
-      levelBonus.skillPoints - usedSkillPoints < 0
-        ? 0
-        : levelBonus.skillPoints - usedSkillPoints,
-    availablePerkPoints:
-      levelBonus.perkPoints - usedPerkPoints < 0
-        ? 0
-        : levelBonus.perkPoints - usedPerkPoints,
-    availableMasterPerkPoints:
-      levelBonus.masterPerkPoints - usedMasterPerkPoints < 0
-        ? 0
-        : levelBonus.masterPerkPoints - usedMasterPerkPoints,
   };
 };
 
@@ -190,5 +147,43 @@ export const calculateTotalLevelBonus = (level: number) => {
     skillPoints,
     perkPoints,
     masterPerkPoints,
+  };
+};
+
+export const calculateUsedPoints = (
+  attributes?: AttributeTree,
+  perks?: Perk[],
+) => {
+  let attributePoints = 0;
+  let skillPoints = 0;
+  let perkPoints = 0;
+  let masterPerkPoints = 0;
+
+  if (attributes) {
+    const { usedAttributePoints, usedSkillPoints } = getUsedPoints(attributes);
+    attributePoints += usedAttributePoints;
+    skillPoints += usedSkillPoints;
+  }
+
+  if (perks) {
+    for (const perk of perks) {
+      const { usedAttributePoints, usedSkillPoints } = getUsedPoints(
+        perk.attributes,
+      );
+
+      if (usedAttributePoints + usedSkillPoints < 4) {
+        perkPoints++;
+      }
+      if (usedAttributePoints + usedSkillPoints >= 4) {
+        masterPerkPoints++;
+      }
+    }
+  }
+
+  return {
+    usedAttributePoints: attributePoints,
+    usedSkillPoints: skillPoints,
+    usedPerkPoints: perkPoints,
+    usedMasterPerkPoints: masterPerkPoints,
   };
 };

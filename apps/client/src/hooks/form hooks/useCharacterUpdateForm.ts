@@ -53,10 +53,6 @@ const useCharacterUpdateForm = (
       weight: character?.weight ?? null,
       age: character?.age ?? null,
       sex: character?.sex ?? null,
-      perkIds: character?.perks.map((perk) => perk.id) ?? ([] as number[]),
-      actionIds:
-        character?.characterInventory.actions.map((action) => action.id) ??
-        ([] as number[]),
     },
     onSubmit: async ({ value }) => {
       const filteredStats = filterStats(value.stats);

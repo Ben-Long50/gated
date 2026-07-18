@@ -21,7 +21,9 @@ import CharacterStatBars from '../characterComponents/CharacterStatBars';
 import useCreateCodexCharacterMutation from 'src/hooks/useCreateCodexCharacterMutation/useCreateCodexCharacterMutation';
 import { useSearchParams } from 'react-router-dom';
 import ActionLinkField from '../formFields/ActionLinkField';
-import calculateLevelBonus from 'src/utils/calculateLevelBonus';
+import calculateLevelBonus, {
+  calculateUsedPoints,
+} from 'src/utils/calculateLevelBonus';
 
 const CharacterForm = () => {
   const { data: campaigns } = useCampaignsQuery();
@@ -248,16 +250,15 @@ const CharacterForm = () => {
         selector={(state) => [state.values.level, state.values.attributes]}
       >
         {([level, attributes]) => {
+          const { attributePoints, skillPoints, perkPoints, masterPerkPoints } =
+            calculateLevelBonus(Number(level));
+
           const {
-            attributePoints,
-            skillPoints,
-            perkPoints,
-            masterPerkPoints,
             usedAttributePoints,
             usedSkillPoints,
             usedPerkPoints,
             usedMasterPerkPoints,
-          } = calculateLevelBonus(level, attributes);
+          } = calculateUsedPoints(attributes);
 
           return (
             <>

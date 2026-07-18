@@ -3,18 +3,21 @@ import { Link } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import ItemCardSmall from './ItemCardSmall';
 import ArrowHeader4 from './ArrowHeader4';
-import ThemeContainer from './ThemeContainer';
-import { capitalCase } from 'change-case';
 import AttributeListSmall from './AttributeListSmall';
 import AttributeList from './AttributeList';
 import usePerkQuery from 'src/hooks/usePerkQuery/usePerkQuery';
+import ActionCard from './ActionCard';
+import ArrowHeader3 from './ArrowHeader3';
+import Divider from './Divider';
 
 const PerkCard = ({
   perkId,
-  expanded,
+  expanded = false,
+  child = false,
 }: {
   perkId: number;
   expanded?: boolean;
+  child?: boolean;
 }) => {
   const { user } = useContext(AuthContext);
 
@@ -37,6 +40,7 @@ const PerkCard = ({
   return (
     <div className="flex w-full items-center gap-4">
       <ItemCardSmall
+        child={child}
         expanded={expanded}
         heading={
           <div className="flex w-full items-center justify-between gap-4 pr-3">
@@ -61,25 +65,14 @@ const PerkCard = ({
           perk?.attributes && <AttributeList attributeTree={perk?.attributes} />
         )}
         <p className="text-secondary">{perk?.description}</p>
-        {perk?.modifiers && (
-          <div className="flex flex-col gap-4">
-            {Object.entries(perk?.modifiers).map(([stat, value], index) => (
-              <ThemeContainer
-                key={index}
-                borderColor="transparent"
-                chamfer="small"
-              >
-                <div className="bg-tertiary flex w-full items-center justify-between p-3 px-4 clip-4">
-                  <h4>{capitalCase(stat)}</h4>
-                  <p
-                    className={`${index !== 0 && 'ml-1'} ${value > 0 || typeof value === 'string' ? 'text-accent' : 'text-error'} mr-1 inline-block font-semibold`}
-                  >
-                    {typeof value === 'number' ? value : capitalCase(value)}
-                  </p>
-                </div>
-              </ThemeContainer>
+        {perk?.actions && perk.actions.length > 0 && (
+          <>
+            <Divider />
+            <ArrowHeader3 title="Actions" />
+            {perk.actions.map((action) => (
+              <ActionCard actionId={action.id} size="large" child={true} />
             ))}
-          </div>
+          </>
         )}
       </ItemCardSmall>
     </div>

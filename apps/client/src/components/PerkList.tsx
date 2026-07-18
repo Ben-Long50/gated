@@ -6,8 +6,8 @@ import ExpandingList from './ExpandingList';
 import Divider from './Divider';
 import InputFieldCheckbox from './formFields/InputFieldCheckbox';
 import { AttributeTree } from 'src/types/attributeTree';
-import useLevelBonus from 'src/hooks/useLevelBonus';
 import { getUsedPoints } from 'src/utils/getUsedPoints';
+import calculateLevelBonus from 'src/utils/calculateLevelBonus';
 
 const PerkList = ({
   form,
@@ -24,11 +24,7 @@ const PerkList = ({
     ? useStore(form.store, (state) => state.values.perkIds)
     : [];
 
-  const { availablePerkPoints, availableMasterPerkPoints } = useLevelBonus(
-    level,
-    attributes,
-    perkIds,
-  );
+  const { perkPoints, masterPerkPoints } = calculateLevelBonus(Number(level));
 
   return (
     <>
@@ -68,8 +64,8 @@ const PerkList = ({
                                         const active =
                                           !playerCharacter ||
                                           (masterPerk
-                                            ? availableMasterPerkPoints > 0
-                                            : availablePerkPoints > 0);
+                                            ? masterPerkPoints > 0
+                                            : perkPoints > 0);
 
                                         return (
                                           <InputFieldCheckbox

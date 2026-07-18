@@ -11,12 +11,14 @@ const ItemCardSmall = ({
   expanded,
   heading,
   children,
+  child = false,
 }: {
   cardRef?: Ref;
   className?: string;
   expanded?: boolean;
   heading: ReactNode;
   children?: ReactNode;
+  child?: boolean;
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -39,7 +41,7 @@ const ItemCardSmall = ({
     >
       <div
         ref={cardRef}
-        className={`${className} bg-secondary mb-auto w-full cursor-pointer`}
+        className={`${className} ${child ? 'bg-secondary' : 'bg-primary'} mb-auto w-full cursor-pointer`}
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();

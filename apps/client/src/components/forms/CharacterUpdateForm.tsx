@@ -1,5 +1,4 @@
 import InputField from '../formFields/InputField';
-import { useStore } from '@tanstack/react-form';
 import { useParams, useSearchParams } from 'react-router-dom';
 import useUpdateCharacterMutation from '../../hooks/useCharacterUpdateMutation/useCharacterUpdateMutation';
 import useDeleteCharacterMutation from '../../hooks/useDeleteCharacterMutation/useDeleteCharacterMutation';
@@ -15,15 +14,20 @@ import PictureField from '../formFields/PictureField';
 import useCharacterUpdateForm from 'src/hooks/form hooks/useCharacterUpdateForm';
 import constructName from 'src/utils/constructName';
 import CharacterStatBars from '../characterComponents/CharacterStatBars';
-import calculateStats from 'src/hooks/useStats';
-import { SortedInventory } from 'src/types/character';
 import useCharacterQuery from 'src/hooks/useCharacterQuery/useCharacterQuery';
 import ActionLinkField from '../formFields/ActionLinkField';
 import PerkLinkField from '../formFields/PerkLinkField';
+import { useContext } from 'react';
+import { LayoutContext } from 'src/contexts/LayoutContext';
+import useCharacter from 'src/hooks/useCharacter';
+import combineObjects from 'src/utils/combineObjects';
 
 const CharacterUpdateForm = () => {
   const { characterId } = useParams();
   const [searchParams] = useSearchParams();
+  const { mobile } = useContext(LayoutContext);
+
+  const size = mobile ? 'small' : 'large';
 
   const formType = searchParams.get('formType');
 
@@ -33,27 +37,14 @@ const CharacterUpdateForm = () => {
     Number(characterId),
   );
 
+  const { filteredCharacter } = useCharacter(Number(characterId));
+
   const updateCharacter = useUpdateCharacterMutation(Number(characterId));
   const deleteCharacter = useDeleteCharacterMutation(Number(characterId));
 
   const characterUpdateForm = useCharacterUpdateForm(
     updateCharacter,
     character,
-  );
-
-  const characterStats = useStore(
-    characterUpdateForm.store,
-    (state) => state.values.stats,
-  );
-
-  const stats = calculateStats(
-    {
-      items: [],
-    } as unknown as SortedInventory,
-    [],
-    character?.attributes,
-    character?.perks,
-    characterStats,
   );
 
   const isLoading = characterLoading || campaignsLoading;
@@ -155,10 +146,13 @@ const CharacterUpdateForm = () => {
       <ArrowHeader2 title="Stats" />
       <characterUpdateForm.Field name="stats">
         {(field) => {
+          const { permanentInjuries, permanentInsanities, ...stats } =
+            filteredCharacter?.stats;
+
           return (
-            <StatBarContainer>
+            <StatBarContainer size={size}>
               <CharacterStatBars
-                stats={stats}
+                stats={combineObjects(field.state.value, stats)}
                 size="large"
                 handleChange={
                   !character?.playerCharacter

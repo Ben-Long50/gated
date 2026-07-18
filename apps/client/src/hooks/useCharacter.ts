@@ -85,9 +85,12 @@ const useCharacter = (characterId: number) => {
     : null;
 
   const actions = equipment
-    ? Object.values(equipment).flatMap((items) =>
-        items.flatMap((item) => item.itemLinkReference.actions),
-      )
+    ? [
+        ...Object.values(equipment).flatMap((items) =>
+          items.flatMap((item) => item.itemLinkReference.actions),
+        ),
+        ...perks.flatMap((perk) => perk.actions),
+      ]
     : [];
 
   const stats =
