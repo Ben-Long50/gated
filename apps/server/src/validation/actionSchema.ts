@@ -21,13 +21,13 @@ export const ActionInput = z.object({
       unit: z.string(),
       value: z.number().int().nonnegative(),
     })
-    .optional(),
+    .nullish(),
   cooldown: z
     .object({
       unit: z.string(),
       value: z.number().int().nonnegative(),
     })
-    .optional(),
+    .nullish(),
   description: Description,
   modifiers: ItemStats.optional(),
   keywords: Keywords.optional(),
