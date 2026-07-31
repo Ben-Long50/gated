@@ -105,6 +105,8 @@ const actionServices = {
 
       const { id, cooldown, duration, ...data } = validatedAction;
 
+      console.log(cooldown, duration, actionInfo.baseActionId);
+
       const action = await client.action.create({
         data: {
           ...data,
