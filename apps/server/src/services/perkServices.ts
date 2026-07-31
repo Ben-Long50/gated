@@ -11,6 +11,7 @@ const perkServices = {
   getPerks: async () => {
     try {
       const perks = await prisma.perk.findMany({
+        where: {basePerkId: null},
         orderBy: { name: 'asc' },
         include: perkInclude,
       });
