@@ -103,11 +103,13 @@ const actionServices = {
 
       const validatedAction = ActionInput.parse(actionInfo);
 
-      const { id, ...data } = validatedAction;
+      const { id, cooldown, duration, ...data } = validatedAction;
 
       const action = await client.action.create({
         data: {
           ...data,
+          cooldown: cooldown ?? undefined,
+          duration: duration ?? undefined,
           keywordModifiers: {
             createMany: { data: actionInfo.keywordModifiers || [] },
           },
