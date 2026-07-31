@@ -23,7 +23,7 @@ export const ActionInput = z.object({
       unit: z.string(),
       value: z.number().int().nonnegative(),
     })
-    .optional(),
+    .optional()),
   cooldown: z.preprocess(
   (value) => value === null ? undefined : value,
     z
@@ -31,13 +31,13 @@ export const ActionInput = z.object({
       unit: z.string(),
       value: z.number().int().nonnegative(),
     })
-    .optional(),
+    .optional()),
   description: Description,
   modifiers: ItemStats.optional(),
   keywords: Keywords.optional(),
   baseActionId: z.preprocess(
   (value) => value === null ? undefined : value,
-    z.number().int().optional()
+    z.number().int().optional())
 });
 
 export type ActionInput = z.infer<typeof ActionInput>;
