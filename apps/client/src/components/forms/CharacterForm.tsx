@@ -24,8 +24,13 @@ import ActionLinkField from '../formFields/ActionLinkField';
 import calculateLevelBonus, {
   calculateUsedPoints,
 } from 'src/utils/calculateLevelBonus';
+import { useContext } from 'react';
+import { LayoutContext } from 'src/contexts/LayoutContext';
 
 const CharacterForm = () => {
+  const { mobile } = useContext(LayoutContext);
+
+  const size = mobile ? 'small' : 'large';
   const { data: campaigns } = useCampaignsQuery();
 
   const [searchParams] = useSearchParams();
@@ -225,7 +230,7 @@ const CharacterForm = () => {
         {(playerCharacter) => (
           <characterForm.Field name="stats">
             {() => (
-              <StatBarContainer>
+              <StatBarContainer size={size}>
                 <CharacterStatBars
                   stats={stats}
                   size="large"
