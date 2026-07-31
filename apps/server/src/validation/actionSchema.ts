@@ -21,16 +21,17 @@ export const ActionInput = z.object({
       unit: z.string(),
       value: z.number().int().nonnegative(),
     })
-    .nullish(),
+    .optional(),
   cooldown: z
     .object({
       unit: z.string(),
       value: z.number().int().nonnegative(),
     })
-    .nullish(),
+    .optional(),
   description: Description,
   modifiers: ItemStats.optional(),
   keywords: Keywords.optional(),
+  baseActionId: z.number().int().optional()
 });
 
 export type ActionInput = z.infer<typeof ActionInput>;
