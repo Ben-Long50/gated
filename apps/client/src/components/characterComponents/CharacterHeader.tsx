@@ -17,10 +17,12 @@ const CharacterHeader = ({
         <p className="font-zen text-5xl">{constructName(character)}</p>
         <NpcTypeList npcTypes={character?.npcTypes} />
       </div>
-      {character?.playerCharacter && (
+      {character?.playerCharacter ? (
         <p className="!text-accent font-zen text-3xl">
           Level {character?.level}
         </p>
+      ) : (
+        <p className="!text-accent font-zen text-3xl">NPC</p>
       )}
     </div>
   );

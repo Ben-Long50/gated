@@ -14,7 +14,7 @@ const useCharacterForm = (
       npcTypes: null as null | string[],
       profits: null as number | null,
       campaignId: null as number | null,
-      level: 1,
+      level: null as number | null,
       preferences: {
         firstName: true,
         lastName: true,

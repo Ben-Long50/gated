@@ -54,10 +54,7 @@ const CharacterForm = () => {
   const attributesJson = useStore(characterForm.store, (state) =>
     JSON.stringify(state.values.attributes),
   );
-  const attributes = useMemo(
-    () => JSON.parse(attributesJson),
-    [attributesJson],
-  );
+  const attributes = JSON.parse(attributesJson);
 
   // const { usedAttributePoints, usedSkillPoints } = useAttributeTree(attributes);
 
@@ -106,7 +103,7 @@ const CharacterForm = () => {
             } else if (!value) {
               characterForm.setFieldValue('npcTypes', []);
               characterForm.setFieldValue('profits', 10);
-              characterForm.setFieldValue('level', 1);
+              characterForm.setFieldValue('level', null);
               characterForm.setFieldValue('description', '');
               characterForm.setFieldValue('stats', (prev) => ({
                 ...prev,
@@ -321,7 +318,6 @@ const CharacterForm = () => {
               </div>
               <AttributeField
                 form={characterForm}
-                attributeTree={attributes}
                 attributeIncrease={usedAttributePoints < attributePoints}
                 skillIncrease={usedSkillPoints < skillPoints}
               />

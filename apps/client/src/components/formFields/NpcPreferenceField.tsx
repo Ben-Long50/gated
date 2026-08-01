@@ -22,16 +22,6 @@ const NpcPreferenceField = ({ form }: { form: FormApi }) => {
             {parts[parts.length - 1] === 'npcPreferences' && (
               <Outlet context={{ form, parts }} />
             )}
-            <form.Field name="level">
-              {(field) => (
-                <InputField
-                  label="NPC Level"
-                  type="number"
-                  value={field.state.value}
-                  onChange={(value) => field.handleChange(value)}
-                />
-              )}
-            </form.Field>
             <form.Field name="npcTypes" mode="array">
               {(field) => (
                 <div className="flex w-full flex-col gap-4">
