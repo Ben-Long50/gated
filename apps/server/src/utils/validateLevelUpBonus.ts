@@ -8,11 +8,11 @@ const validateLevelUpBonus = async ({
   attributes,
   perkIds,
 }: {
-  level: number | null;
+  level: number | undefined;
   attributes?: Attributes;
   perkIds?: number[];
 }) => {
-  if (level === null) {
+  if (!level) {
     return;
   }
 

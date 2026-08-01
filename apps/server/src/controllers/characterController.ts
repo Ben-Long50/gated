@@ -9,7 +9,6 @@ import {
   CharacterLevelBonus,
   CharacterUpdateInput,
 } from '../validation/characterSchema.js';
-import z, { ZodError } from 'zod';
 import { getIO } from '../sockets/socket.js';
 import constructName from '../utils/constructName.js';
 import handleControllerError from './handleControllerError.js';
@@ -171,11 +170,7 @@ const characterController = {
           message: `Successfully created ${constructName(character)}`,
         });
       } catch (error: any) {
-        if (error instanceof ZodError) {
-          res.status(500).json({ error: z.prettifyError(error) });
-        } else if (error instanceof Error) {
-          res.status(500).json({ message: error });
-        }
+        handleControllerError(res, error);
       }
     },
   ],
@@ -215,11 +210,7 @@ const characterController = {
           message: `Successfully created ${constructName(character)}`,
         });
       } catch (error: any) {
-        if (error instanceof ZodError) {
-          res.status(500).json({ error: z.prettifyError(error) });
-        } else if (error instanceof Error) {
-          res.status(500).json({ message: error });
-        }
+        handleControllerError(res, error);
       }
     },
   ],

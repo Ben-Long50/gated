@@ -83,6 +83,7 @@ const actionServices = {
         }
     },
     createActionCopy: async (actionId, tx) => {
+        var _a;
         try {
             const client = tx !== null && tx !== void 0 ? tx : prisma;
             const actionInfo = await client.action.findUnique({
@@ -99,7 +100,7 @@ const actionServices = {
             const action = await client.action.create({
                 data: Object.assign(Object.assign({}, data), { keywordModifiers: {
                         createMany: { data: actionInfo.keywordModifiers || [] },
-                    }, baseActionId: actionInfo.baseActionId || id }),
+                    }, baseActionId: (_a = validatedAction.baseActionId) !== null && _a !== void 0 ? _a : id }),
                 include: actionInclude,
             });
             return action;

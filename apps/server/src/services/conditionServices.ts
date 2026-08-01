@@ -14,10 +14,10 @@ const conditionServices = {
     }
   },
 
-  getConditionById: async (conditionId: string) => {
+  getConditionById: async (conditionId: number) => {
     try {
       const condition = await prisma.condition.findUnique({
-        where: { id: Number(conditionId) },
+        where: { id: conditionId },
       });
       return condition;
     } catch (error: any) {

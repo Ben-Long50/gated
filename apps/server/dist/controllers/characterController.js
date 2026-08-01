@@ -4,7 +4,6 @@ import upload from '../utils/multer.js';
 import parseRequestBody from '../utils/parseRequestBody.js';
 import cartServices from '../services/cartServices.js';
 import { CharacterInput, CharacterLevelBonus, CharacterUpdateInput, } from '../validation/characterSchema.js';
-import z, { ZodError } from 'zod';
 import { getIO } from '../sockets/socket.js';
 import constructName from '../utils/constructName.js';
 import handleControllerError from './handleControllerError.js';
@@ -130,12 +129,7 @@ const characterController = {
                 });
             }
             catch (error) {
-                if (error instanceof ZodError) {
-                    res.status(500).json({ error: z.prettifyError(error) });
-                }
-                else if (error instanceof Error) {
-                    res.status(500).json({ message: error });
-                }
+                handleControllerError(res, error);
             }
         },
     ],
@@ -165,12 +159,7 @@ const characterController = {
                 });
             }
             catch (error) {
-                if (error instanceof ZodError) {
-                    res.status(500).json({ error: z.prettifyError(error) });
-                }
-                else if (error instanceof Error) {
-                    res.status(500).json({ message: error });
-                }
+                handleControllerError(res, error);
             }
         },
     ],

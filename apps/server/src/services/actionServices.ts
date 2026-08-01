@@ -103,19 +103,15 @@ const actionServices = {
 
       const validatedAction = ActionInput.parse(actionInfo);
 
-      const { id, cooldown, duration, ...data } = validatedAction;
-
-      console.log(cooldown, duration, actionInfo.baseActionId);
+      const { id, ...data } = validatedAction;
 
       const action = await client.action.create({
         data: {
           ...data,
-          cooldown: cooldown ?? undefined,
-          duration: duration ?? undefined,
           keywordModifiers: {
             createMany: { data: actionInfo.keywordModifiers || [] },
           },
-          baseActionId: actionInfo.baseActionId || id,
+          baseActionId: validatedAction.baseActionId ?? id,
         },
         include: actionInclude,
       });

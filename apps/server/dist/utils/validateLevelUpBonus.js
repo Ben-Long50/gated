@@ -2,7 +2,7 @@ import getUsedPoints from './getUsedPoints.js';
 import calculateLevelBonus from './calculateLevelBonus.js';
 import prisma from '../config/database.js';
 const validateLevelUpBonus = async ({ level, attributes, perkIds, }) => {
-    if (level === null) {
+    if (!level) {
         return;
     }
     const perks = perkIds && perkIds.length > 0

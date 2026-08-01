@@ -207,52 +207,47 @@ const characterServices = {
         }
     },
     createCharacter: async (formData, userId, template) => {
-        try {
-            const stats = Object.assign(Object.assign({}, formData.stats), { currentHealth: formData.stats.maxHealth
-                    ? formData.stats.maxHealth +
-                        10 +
-                        formData.attributes.violence.skills.threshold.points * 2
-                    : 10 + formData.attributes.violence.skills.threshold.points * 2, currentSanity: formData.stats.maxSanity
-                    ? formData.stats.maxSanity +
-                        5 +
-                        formData.attributes.esoterica.skills.mysticism.points
-                    : 5 + formData.attributes.esoterica.skills.mysticism.points, currentActions: formData.stats.actions ? formData.stats.actions + 3 : 3, currentReactions: formData.stats.reactions
-                    ? formData.stats.reactions + 1
-                    : 1, currentHands: formData.stats.hands ? formData.stats.hands + 2 : 2, currentFeet: formData.stats.feet ? formData.stats.feet + 2 : 2, injuries: 0, insanities: 0 });
-            const { perkId, attributes } = formData, data = __rest(formData, ["perkId", "attributes"]);
-            const character = await prisma.$transaction(async (tx) => {
-                const character = await tx.character.create({
-                    data: Object.assign(Object.assign({}, data), { stats,
-                        userId, characterLevelBonuses: {
-                            create: {
-                                level: 1,
-                                attributes,
-                                perks: { connect: { id: perkId } },
-                            },
-                        }, characterCart: { create: {} }, characterInventory: { create: {} } }),
-                    include: { characterInventory: true },
-                });
-                if (!template && !character.npcTypes.includes('monster')) {
-                    const unarmed = await tx.item.findFirst({
-                        where: { name: 'Unarmed', base: true },
-                    });
-                    if (!unarmed) {
-                        throw new Error('Failed to find base Unarmed item');
-                    }
-                    if (!character.characterInventory) {
-                        throw new Error('Failed to create character inventory');
-                    }
-                    await itemServices.createCharacterItemCopy(character.characterInventory.id, [{ itemId: unarmed.id, price: null, quantity: 1 }], tx);
-                }
-                return character;
+        const stats = Object.assign(Object.assign({}, formData.stats), { currentHealth: formData.stats.maxHealth
+                ? formData.stats.maxHealth +
+                    10 +
+                    formData.attributes.violence.skills.threshold.points * 2
+                : 10 + formData.attributes.violence.skills.threshold.points * 2, currentSanity: formData.stats.maxSanity
+                ? formData.stats.maxSanity +
+                    5 +
+                    formData.attributes.esoterica.skills.mysticism.points
+                : 5 + formData.attributes.esoterica.skills.mysticism.points, currentActions: formData.stats.actions ? formData.stats.actions + 3 : 3, currentReactions: formData.stats.reactions
+                ? formData.stats.reactions + 1
+                : 1, currentHands: formData.stats.hands ? formData.stats.hands + 2 : 2, currentFeet: formData.stats.feet ? formData.stats.feet + 2 : 2, injuries: 0, insanities: 0 });
+        const { perkIds, attributes } = formData, data = __rest(formData, ["perkIds", "attributes"]);
+        await validateLevelUpBonus({ level: data.level, attributes, perkIds });
+        const character = await prisma.$transaction(async (tx) => {
+            const character = await tx.character.create({
+                data: Object.assign(Object.assign({}, data), { stats,
+                    userId, characterLevelBonuses: {
+                        create: {
+                            level: data.level,
+                            attributes,
+                            perks: { connect: perkIds.map((perkId) => ({ id: perkId })) },
+                        },
+                    }, characterCart: { create: {} }, characterInventory: { create: {} } }),
+                include: { characterInventory: true },
             });
-            const newCharacter = await characterServices.getCharacterById(character.id);
-            return newCharacter;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to create character');
-        }
+            if (!template && !character.npcTypes.includes('monster')) {
+                const unarmed = await tx.item.findFirst({
+                    where: { name: 'Unarmed', base: true },
+                });
+                if (!unarmed) {
+                    throw new Error('Failed to find base Unarmed item');
+                }
+                if (!character.characterInventory) {
+                    throw new Error('Failed to create character inventory');
+                }
+                await itemServices.createCharacterItemCopy(character.characterInventory.id, [{ itemId: unarmed.id, price: null, quantity: 1 }], tx);
+            }
+            return character;
+        });
+        const newCharacter = await characterServices.getCharacterById(character.id);
+        return newCharacter;
     },
     createTemplateCharacter: async (characterId) => {
         try {

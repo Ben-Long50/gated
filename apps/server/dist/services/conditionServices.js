@@ -26,7 +26,7 @@ const conditionServices = {
     getConditionById: async (conditionId) => {
         try {
             const condition = await prisma.condition.findUnique({
-                where: { id: Number(conditionId) },
+                where: { id: conditionId },
             });
             return condition;
         }

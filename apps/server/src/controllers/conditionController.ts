@@ -16,7 +16,7 @@ const conditionController = {
   getConditionById: async (req: Request, res: Response) => {
     try {
       const condition = await conditionServices.getConditionById(
-        req.params.conditionId,
+        Number(req.params.conditionId),
       );
       res.status(200).json(condition);
     } catch (error: any) {

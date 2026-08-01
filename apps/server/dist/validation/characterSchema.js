@@ -2,7 +2,6 @@ import z from 'zod';
 import { Attributes, CharacterStats, Description, FirstName, LastName, Picture, PictureFile, } from './fieldSchemas.js';
 import { NpcType, Sex } from './enums.js';
 export const CharacterInput = z.object({
-    id: z.number().int().optional(),
     campaignId: z.number().int().optional(),
     firstName: FirstName,
     lastName: LastName,
@@ -27,6 +26,7 @@ export const CharacterInput = z.object({
     }),
     pictureFile: PictureFile,
     picture: Picture,
+    level: z.preprocess((value) => (value === null ? undefined : value), z.number().int().min(1).max(12).optional()),
     height: z.number().int().nonnegative(),
     weight: z.number().nonnegative(),
     age: z.number().int().nonnegative(),
@@ -34,7 +34,7 @@ export const CharacterInput = z.object({
     description: Description.optional(),
     stats: CharacterStats,
     attributes: Attributes,
-    perkId: z.coerce.number().int().nonnegative(),
+    perkIds: z.array(z.coerce.number().int().nonnegative()),
 });
 export const CharacterUpdateInput = z.object({
     id: z.number().int().optional(),
