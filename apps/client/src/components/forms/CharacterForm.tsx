@@ -20,12 +20,12 @@ import StatBarContainer from '../StatBarContainer';
 import CharacterStatBars from '../characterComponents/CharacterStatBars';
 import useCreateCodexCharacterMutation from 'src/hooks/useCreateCodexCharacterMutation/useCreateCodexCharacterMutation';
 import { useSearchParams } from 'react-router-dom';
-import ActionLinkField from '../formFields/ActionLinkField';
 import calculateLevelBonus, {
   calculateUsedPoints,
 } from 'src/utils/calculateLevelBonus';
 import { useContext } from 'react';
 import { LayoutContext } from 'src/contexts/LayoutContext';
+import usePerkQueries from 'src/hooks/usePerkQueries/usePerkQueries';
 
 const CharacterForm = () => {
   const { mobile } = useContext(LayoutContext);
@@ -44,7 +44,12 @@ const CharacterForm = () => {
 
   const characterForm = useCharacterForm(createMutation);
 
-  const perks = useStore(characterForm.store, (state) => state.values.perkIds);
+  const perkIds = useStore(
+    characterForm.store,
+    (state) => state.values.perkIds,
+  );
+
+  const { perks } = usePerkQueries(perkIds);
 
   const characterStats = useStore(
     characterForm.store,
@@ -260,7 +265,7 @@ const CharacterForm = () => {
             usedSkillPoints,
             usedPerkPoints,
             usedMasterPerkPoints,
-          } = calculateUsedPoints(attributes);
+          } = calculateUsedPoints(attributes, perks);
 
           return (
             <>
