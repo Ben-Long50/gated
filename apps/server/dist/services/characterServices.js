@@ -221,11 +221,12 @@ const characterServices = {
         const { perkIds, attributes } = formData, data = __rest(formData, ["perkIds", "attributes"]);
         await validateLevelUpBonus({ level: data.level, attributes, perkIds });
         const character = await prisma.$transaction(async (tx) => {
+            var _a;
             const character = await tx.character.create({
                 data: Object.assign(Object.assign({}, data), { level: data.playerCharacter ? data.level : undefined, stats,
                     userId, characterLevelBonuses: {
                         create: {
-                            level: data.playerCharacter ? data.level : 0,
+                            level: (_a = data.level) !== null && _a !== void 0 ? _a : 0,
                             attributes,
                             perks: { connect: perkIds.map((perkId) => ({ id: perkId })) },
                         },

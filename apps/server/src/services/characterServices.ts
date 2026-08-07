@@ -258,7 +258,7 @@ const characterServices = {
           userId,
           characterLevelBonuses: {
             create: {
-              level: data.playerCharacter ? data.level : 0,
+              level: data.level ?? 0,
               attributes,
               perks: { connect: perkIds.map((perkId) => ({ id: perkId })) },
             },
