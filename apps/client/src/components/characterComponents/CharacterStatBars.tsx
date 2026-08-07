@@ -20,6 +20,8 @@ import IconBtnSmall from '../buttons/IconBtnSmall';
 import HandIcon from '../icons/HandIcon';
 import FootIcon from '../icons/FootIcon';
 import SizeIcon from '../icons/SizeIcon';
+import ReactionIcon from '../icons/ReactionIcon';
+import ActionIcon from '../icons/ActionIcon';
 
 const CharacterStatBars = ({
   stats,
@@ -316,6 +318,36 @@ const CharacterStatBars = ({
           }
         >
           <FootIcon className="text-secondary text-blue size-8" />
+        </StatBar>
+      )}
+      {stats.actions !== undefined && (
+        <StatBar
+          title="Actions"
+          current={stats.actions}
+          color={statColorMap['Actions']}
+          size={size}
+          handleChange={
+            handleChange
+              ? (value: number) => handleChange('actions', value)
+              : undefined
+          }
+        >
+          <ActionIcon className="text-secondary text-blue size-8" />
+        </StatBar>
+      )}
+      {stats.reactions !== undefined && (
+        <StatBar
+          title="Reactions"
+          current={stats.reactions}
+          color={statColorMap['Reactions']}
+          size={size}
+          handleChange={
+            handleChange
+              ? (value: number) => handleChange('reactions', value)
+              : undefined
+          }
+        >
+          <ReactionIcon className="text-secondary text-blue size-8" />
         </StatBar>
       )}
     </>
