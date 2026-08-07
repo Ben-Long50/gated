@@ -16,13 +16,14 @@ const InventoryCard = ({
   const toggleEquipment = useToggleEquipmentMutation();
 
   return (
-    <PictureCard
-      className="relative w-full border-opacity-50 hover:border-opacity-100"
-      label={item.name}
-      publicId={item.picture.publicId}
-      color={rarityColorMap[item.rarity]}
-      onClick={onClick}
-    >
+    <div className="relative">
+      <PictureCard
+        className="w-full border-opacity-50 hover:border-opacity-100"
+        label={item.name}
+        publicId={item.picture.publicId}
+        color={rarityColorMap[item.rarity]}
+        onClick={onClick}
+      />
       <IconBtnSmall
         className="absolute left-1 top-1"
         onClick={() => {
@@ -38,7 +39,7 @@ const InventoryCard = ({
       >
         <Icon path={item.equipped ? mdiCheckCircle : mdiCircleOutline} />
       </IconBtnSmall>
-    </PictureCard>
+    </div>
   );
 };
 

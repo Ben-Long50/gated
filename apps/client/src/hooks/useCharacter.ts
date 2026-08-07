@@ -1,12 +1,12 @@
 import { useContext } from 'react';
 import { AuthContext } from 'src/contexts/AuthContext';
 import { Character } from 'src/types/character';
-import useAttributeTree from './useAttributeTree';
 import useCharacterQuery from './useCharacterQuery/useCharacterQuery';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import calculateCharacterStats from 'src/utils/characterStatUtils';
 import useItems from './useItems';
 import { combineAttributeTrees } from 'src/utils/combineAttributeTrees';
+import emptyAttributeTree from 'src/utils/constants/emptyAttributeTree';
 
 const useCharacter = (characterId: number) => {
   const { user } = useContext(AuthContext);
@@ -27,8 +27,6 @@ const useCharacter = (characterId: number) => {
     isLoading: itemsLoading,
     isPending: itemsPending,
   } = useItems(itemIds);
-
-  const { emptyAttributeTree } = useAttributeTree(character?.attributes);
 
   const levelBonusAttributeTrees = character
     ? character?.characterLevelBonuses

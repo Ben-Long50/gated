@@ -40,8 +40,6 @@ const CharacterProgressionPage = () => {
 
   usePerkQueries(character?.perks?.map((perk) => perk.id) || []);
 
-  console.log(character?.characterLevelBonuses);
-
   if (isLoading || isPending) {
     return <Loading />;
   }

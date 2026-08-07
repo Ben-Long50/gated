@@ -69,7 +69,7 @@ const LevelBonusModal = () => {
         </levelBonusForm.Subscribe>
       }
     >
-      <h1>{`Select Level ${level} Bonus`}</h1>
+      <h1>{level ? `Select Level ${level} Bonus` : `Select Level Bonus`}</h1>
       <div className="flex w-full items-center gap-8">
         <BtnAuth
           className="w-full"

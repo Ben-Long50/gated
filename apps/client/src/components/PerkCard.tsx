@@ -70,7 +70,12 @@ const PerkCard = ({
             <Divider />
             <ArrowHeader3 title="Actions" />
             {perk.actions.map((action) => (
-              <ActionCard actionId={action.id} size="large" child={true} />
+              <ActionCard
+                key={action.id}
+                actionId={action.id}
+                size="large"
+                child={true}
+              />
             ))}
           </>
         )}

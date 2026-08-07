@@ -10,7 +10,7 @@ const useSelectLevelUpBonusMutation = (characterId: number) => {
 
   return useMutation({
     mutationFn: (bonus: {
-      level: number;
+      level: number | null;
       attributes?: AttributeTree;
       perkId?: number;
     }) => selectLevelUpBonus(characterId, bonus),

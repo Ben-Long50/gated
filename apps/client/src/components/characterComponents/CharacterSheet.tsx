@@ -44,8 +44,6 @@ const CharacterSheet = () => {
     Number(characterId),
   );
 
-  console.log(character);
-
   const height =
     typeof character?.height === 'number'
       ? `${Math.floor(character?.height / 12)}' ${character?.height % 12}"`
