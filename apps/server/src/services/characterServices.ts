@@ -249,48 +249,65 @@ const characterServices = {
 
     await validateLevelUpBonus({ level: data.level, attributes, perkIds });
 
-    const character = await prisma.$transaction(async (tx) => {
-      const character = await tx.character.create({
-        data: {
-          ...data,
-          level: data.playerCharacter ? data.level : undefined,
-          stats,
-          userId,
-          characterLevelBonuses: {
-            create: {
-              level: data.level ?? 0,
-              attributes,
-              perks: { connect: perkIds.map((perkId) => ({ id: perkId })) },
-            },
-          },
-          characterCart: { create: {} },
-          characterInventory: { create: {} },
-        },
-        include: { characterInventory: true },
-      });
+    const character = await prisma.$transaction(
+      async (tx) => {
+        let newPerkIds = [] as number[];
 
-      if (!template && !character.npcTypes.includes('monster')) {
-        const unarmed = await tx.item.findFirst({
-          where: { name: 'Unarmed', base: true },
+        if (perkIds) {
+          for (const id of perkIds) {
+            const newPerk = await perkServices.createPerkCopy(id, tx);
+
+            newPerkIds.push(newPerk.id);
+          }
+        }
+
+        const character = await tx.character.create({
+          data: {
+            ...data,
+            level: data.playerCharacter ? data.level : undefined,
+            stats,
+            userId,
+            characterLevelBonuses: {
+              create: {
+                level: data.level ?? 0,
+                attributes,
+                perks: {
+                  connect: newPerkIds.map((perkId) => ({ id: perkId })),
+                },
+              },
+            },
+            characterCart: { create: {} },
+            characterInventory: { create: {} },
+          },
+          include: { characterInventory: true },
         });
 
-        if (!unarmed) {
-          throw new Error('Failed to find base Unarmed item');
+        if (!template && !character.npcTypes.includes('monster')) {
+          const unarmed = await tx.item.findFirst({
+            where: { name: 'Unarmed', base: true },
+          });
+
+          if (!unarmed) {
+            throw new Error('Failed to find base Unarmed item');
+          }
+
+          if (!character.characterInventory) {
+            throw new Error('Failed to create character inventory');
+          }
+
+          await itemServices.createCharacterItemCopy(
+            character.characterInventory.id,
+            [{ itemId: unarmed.id, price: null, quantity: 1 }],
+            tx,
+          );
         }
 
-        if (!character.characterInventory) {
-          throw new Error('Failed to create character inventory');
-        }
-
-        await itemServices.createCharacterItemCopy(
-          character.characterInventory.id,
-          [{ itemId: unarmed.id, price: null, quantity: 1 }],
-          tx,
-        );
-      }
-
-      return character;
-    });
+        return character;
+      },
+      {
+        timeout: 15000,
+      },
+    );
 
     const newCharacter = await characterServices.getCharacterById(character.id);
 

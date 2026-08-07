@@ -222,13 +222,22 @@ const characterServices = {
         await validateLevelUpBonus({ level: data.level, attributes, perkIds });
         const character = await prisma.$transaction(async (tx) => {
             var _a;
+            let newPerkIds = [];
+            if (perkIds) {
+                for (const id of perkIds) {
+                    const newPerk = await perkServices.createPerkCopy(id, tx);
+                    newPerkIds.push(newPerk.id);
+                }
+            }
             const character = await tx.character.create({
                 data: Object.assign(Object.assign({}, data), { level: data.playerCharacter ? data.level : undefined, stats,
                     userId, characterLevelBonuses: {
                         create: {
                             level: (_a = data.level) !== null && _a !== void 0 ? _a : 0,
                             attributes,
-                            perks: { connect: perkIds.map((perkId) => ({ id: perkId })) },
+                            perks: {
+                                connect: newPerkIds.map((perkId) => ({ id: perkId })),
+                            },
                         },
                     }, characterCart: { create: {} }, characterInventory: { create: {} } }),
                 include: { characterInventory: true },
@@ -246,6 +255,8 @@ const characterServices = {
                 await itemServices.createCharacterItemCopy(character.characterInventory.id, [{ itemId: unarmed.id, price: null, quantity: 1 }], tx);
             }
             return character;
+        }, {
+            timeout: 15000,
         });
         const newCharacter = await characterServices.getCharacterById(character.id);
         return newCharacter;
