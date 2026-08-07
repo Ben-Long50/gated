@@ -253,11 +253,12 @@ const characterServices = {
       const character = await tx.character.create({
         data: {
           ...data,
+          level: data.playerCharacter ? data.level : undefined,
           stats,
           userId,
           characterLevelBonuses: {
             create: {
-              level: data.level,
+              level: data.playerCharacter ? data.level : 0,
               attributes,
               perks: { connect: perkIds.map((perkId) => ({ id: perkId })) },
             },
@@ -567,22 +568,13 @@ const characterServices = {
     }
   },
 
-  selectLevelUpBonus: async (
-    characterId: number,
-    bonus: CharacterLevelBonus,
-  ) => {
-    const character = await characterServices.getCharacterById(characterId);
+  selectLevelUpBonus: async (bonus: CharacterLevelBonus) => {
+    const character = await characterServices.getCharacterById(
+      bonus.characterId,
+    );
 
     if (!character) {
       throw new Error('Failed to find character');
-    }
-
-    if (character.playerCharacter) {
-      await validateLevelUpBonus({
-        level: bonus.level,
-        attributes: bonus.attributes ?? undefined,
-        perkIds: bonus.perkIds ?? undefined,
-      });
     }
 
     const updatedCharacter = prisma.$transaction(async (tx) => {
@@ -592,22 +584,20 @@ const characterServices = {
         for (const id of bonus.perkIds) {
           const newPerk = await perkServices.createPerkCopy(id, tx);
 
-          console.log(newPerk);
-
           newPerkIds.push(newPerk.id);
         }
       }
 
       const updatedCharacter = await tx.character.update({
         where: {
-          id: characterId,
+          id: bonus.characterId,
         },
         data: {
           characterLevelBonuses: {
             upsert: {
               where: {
                 characterId_level: {
-                  characterId,
+                  characterId: bonus.characterId,
                   level: bonus.level,
                 },
               },

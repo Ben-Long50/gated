@@ -237,8 +237,8 @@ const characterController = {
             if (!req.user) {
                 throw new Error('Could not find authenticated user');
             }
-            const validatedBonus = CharacterLevelBonus.parse(req.body);
-            const character = await characterServices.selectLevelUpBonus(Number(req.params.characterId), validatedBonus);
+            const validatedBonus = await CharacterLevelBonus.parseAsync(Object.assign({ characterId: Number(req.params.characterId) }, req.body));
+            const character = await characterServices.selectLevelUpBonus(validatedBonus);
             const io = getIO();
             if (character.campaignId) {
                 io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {

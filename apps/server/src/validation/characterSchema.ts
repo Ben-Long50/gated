@@ -9,6 +9,8 @@ import {
   PictureFile,
 } from './fieldSchemas.js';
 import { NpcType, Sex } from './enums.js';
+import prisma from '../config/database.js';
+import validateLevelUpBonus from '../utils/validateLevelUpBonus.js';
 
 export const CharacterInput = z.object({
   campaignId: z.number().int().optional(),
@@ -83,11 +85,57 @@ export const CharacterUpdateInput = z.object({
   stats: CharacterStats,
 });
 
-export const CharacterLevelBonus = z.object({
-  level: z.number().int().min(0).max(12),
-  attributes: Attributes.optional(),
-  perkIds: z.array(z.number().int().nonnegative()).optional(),
-});
+export const CharacterLevelBonus = z
+  .object({
+    characterId: z.number().int().nonnegative(),
+    level: z.number().int().min(0).max(12),
+    attributes: Attributes.optional(),
+    perkIds: z.array(z.number().int().nonnegative()).optional(),
+  })
+  .superRefine(async (data, ctx) => {
+    const character = await prisma.character.findUnique({
+      where: {
+        id: data.characterId,
+      },
+      select: {
+        playerCharacter: true,
+      },
+    });
+
+    if (character?.playerCharacter) {
+      if (data.level === 0) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['level'],
+          message:
+            'Assigned level must be between 1 and 12 for player characters',
+        });
+      }
+
+      try {
+        await validateLevelUpBonus({
+          level: data.level,
+          attributes: data.attributes ?? undefined,
+          perkIds: data.perkIds ?? undefined,
+        });
+      } catch (error) {
+        ctx.addIssue({
+          code: 'custom',
+          message: error instanceof Error ? error.message : 'Validation failed',
+        });
+      }
+    }
+
+    if (!character?.playerCharacter) {
+      if (data.level > 0) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['level'],
+          message: 'Assigned level must be 0 for non-player characters',
+        });
+      }
+    }
+  });
 
 export type CharacterLevelBonus = z.infer<typeof CharacterLevelBonus>;
 

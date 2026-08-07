@@ -222,10 +222,10 @@ const characterServices = {
         await validateLevelUpBonus({ level: data.level, attributes, perkIds });
         const character = await prisma.$transaction(async (tx) => {
             const character = await tx.character.create({
-                data: Object.assign(Object.assign({}, data), { stats,
+                data: Object.assign(Object.assign({}, data), { level: data.playerCharacter ? data.level : undefined, stats,
                     userId, characterLevelBonuses: {
                         create: {
-                            level: data.level,
+                            level: data.playerCharacter ? data.level : 0,
                             attributes,
                             perks: { connect: perkIds.map((perkId) => ({ id: perkId })) },
                         },
@@ -466,18 +466,10 @@ const characterServices = {
             throw new Error('Failed to change character level');
         }
     },
-    selectLevelUpBonus: async (characterId, bonus) => {
-        var _a, _b;
-        const character = await characterServices.getCharacterById(characterId);
+    selectLevelUpBonus: async (bonus) => {
+        const character = await characterServices.getCharacterById(bonus.characterId);
         if (!character) {
             throw new Error('Failed to find character');
-        }
-        if (character.playerCharacter) {
-            await validateLevelUpBonus({
-                level: bonus.level,
-                attributes: (_a = bonus.attributes) !== null && _a !== void 0 ? _a : undefined,
-                perkIds: (_b = bonus.perkIds) !== null && _b !== void 0 ? _b : undefined,
-            });
         }
         const updatedCharacter = prisma.$transaction(async (tx) => {
             var _a, _b;
@@ -485,20 +477,19 @@ const characterServices = {
             if (bonus.perkIds) {
                 for (const id of bonus.perkIds) {
                     const newPerk = await perkServices.createPerkCopy(id, tx);
-                    console.log(newPerk);
                     newPerkIds.push(newPerk.id);
                 }
             }
             const updatedCharacter = await tx.character.update({
                 where: {
-                    id: characterId,
+                    id: bonus.characterId,
                 },
                 data: {
                     characterLevelBonuses: {
                         upsert: {
                             where: {
                                 characterId_level: {
-                                    characterId,
+                                    characterId: bonus.characterId,
                                     level: bonus.level,
                                 },
                             },

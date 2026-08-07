@@ -1,6 +1,8 @@
 import z from 'zod';
 import { Attributes, CharacterStats, Description, FirstName, LastName, Picture, PictureFile, } from './fieldSchemas.js';
 import { NpcType, Sex } from './enums.js';
+import prisma from '../config/database.js';
+import validateLevelUpBonus from '../utils/validateLevelUpBonus.js';
 export const CharacterInput = z.object({
     campaignId: z.number().int().optional(),
     firstName: FirstName,
@@ -69,8 +71,52 @@ export const CharacterUpdateInput = z.object({
     description: Description.optional(),
     stats: CharacterStats,
 });
-export const CharacterLevelBonus = z.object({
+export const CharacterLevelBonus = z
+    .object({
+    characterId: z.number().int().nonnegative(),
     level: z.number().int().min(0).max(12),
     attributes: Attributes.optional(),
     perkIds: z.array(z.number().int().nonnegative()).optional(),
+})
+    .superRefine(async (data, ctx) => {
+    var _a, _b;
+    const character = await prisma.character.findUnique({
+        where: {
+            id: data.characterId,
+        },
+        select: {
+            playerCharacter: true,
+        },
+    });
+    if (character === null || character === void 0 ? void 0 : character.playerCharacter) {
+        if (data.level === 0) {
+            ctx.addIssue({
+                code: 'custom',
+                path: ['level'],
+                message: 'Assigned level must be between 1 and 12 for player characters',
+            });
+        }
+        try {
+            await validateLevelUpBonus({
+                level: data.level,
+                attributes: (_a = data.attributes) !== null && _a !== void 0 ? _a : undefined,
+                perkIds: (_b = data.perkIds) !== null && _b !== void 0 ? _b : undefined,
+            });
+        }
+        catch (error) {
+            ctx.addIssue({
+                code: 'custom',
+                message: error instanceof Error ? error.message : 'Validation failed',
+            });
+        }
+    }
+    if (!(character === null || character === void 0 ? void 0 : character.playerCharacter)) {
+        if (data.level > 0) {
+            ctx.addIssue({
+                code: 'custom',
+                path: ['level'],
+                message: 'Assigned level must be 0 for non-player characters',
+            });
+        }
+    }
 });

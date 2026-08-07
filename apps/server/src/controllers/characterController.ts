@@ -308,12 +308,13 @@ const characterController = {
         throw new Error('Could not find authenticated user');
       }
 
-      const validatedBonus = CharacterLevelBonus.parse(req.body);
+      const validatedBonus = await CharacterLevelBonus.parseAsync({
+        characterId: Number(req.params.characterId),
+        ...req.body,
+      });
 
-      const character = await characterServices.selectLevelUpBonus(
-        Number(req.params.characterId),
-        validatedBonus,
-      );
+      const character =
+        await characterServices.selectLevelUpBonus(validatedBonus);
 
       const io = getIO();
 

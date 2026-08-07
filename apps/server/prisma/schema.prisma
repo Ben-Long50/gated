@@ -338,7 +338,7 @@ model Character {
   createdAt             DateTime                      @default(now())
   user                  User?                         @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId                Int?
-  level                 Int                           @default(1)
+  level                 Int?                          @default(1)
   profits               Int                           @default(10)
   stats                 Json                          @default("{}")
   picture               Json?
@@ -382,7 +382,7 @@ model CharacterLevelBonus {
   id          Int       @id @default(autoincrement())
   character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
   characterId Int
-  level       Int?
+  level       Int
   attributes  Json?
   perks       Perk[]
 
