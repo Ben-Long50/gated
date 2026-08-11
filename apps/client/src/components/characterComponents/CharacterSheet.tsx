@@ -23,9 +23,9 @@ import ArrowHeader4 from '../ArrowHeader4';
 import StatBarContainer from '../StatBarContainer';
 import constructName from 'src/utils/constructName';
 import CharacterHeader from './CharacterHeader';
-import EquipmentList from '../EquipmentList';
 import NavTabs from '../NavTabs';
 import ArrowHeader2 from '../ArrowHeader2';
+import Inventory from '../Inventory';
 
 const CharacterSheet = () => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -43,8 +43,6 @@ const CharacterSheet = () => {
   const { filteredCharacter: character, isLoading } = useCharacter(
     Number(characterId),
   );
-
-  console.log(character);
 
   const height =
     typeof character?.height === 'number'
@@ -220,12 +218,11 @@ const CharacterSheet = () => {
       <Divider />
       {character?.base && (
         <>
-          <ArrowHeader3 title="Standard Equipment" />
-          <EquipmentList equipment={character.equipment} />
+          <ArrowHeader3 title="Starting Inventory" />
+          <Inventory />
           {(user.role === 'ADMIN' || user.role === 'SUPERADMIN') && (
-            <NavTabs className="grid-cols-2">
+            <NavTabs className="grid-cols-1">
               <BtnAuth onClick={() => navigate('shop/global')}>Shop</BtnAuth>
-              <BtnAuth onClick={() => navigate('inventory')}>Inventory</BtnAuth>
             </NavTabs>
           )}
           <Divider />

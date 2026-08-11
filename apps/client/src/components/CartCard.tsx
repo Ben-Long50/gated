@@ -25,8 +25,8 @@ const CartCard = ({
 
   return (
     <div className="flex h-full w-full items-center justify-between gap-8">
-      <PictureCard className="max-w-32" publicId={item.picture.publicId} />
-      <div className="flex flex-col items-start justify-center gap-1">
+      <PictureCard className="max-w-48" publicId={item.picture.publicId} />
+      <div className="flex grow flex-col items-start justify-center gap-1">
         <h3>{item?.name}</h3>
         <p className="text-tertiary">({shopName})</p>
       </div>

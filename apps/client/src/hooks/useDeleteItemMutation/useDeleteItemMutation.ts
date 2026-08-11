@@ -1,25 +1,60 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
 import deleteItem from './deleteItem';
 import { toast } from 'react-toastify';
+import constructName from 'src/utils/constructName';
+import { Character } from 'src/types/character';
+import { Item } from 'src/types/item';
 
 const useDeleteItemMutation = (itemId: number) => {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
+
   return useMutation({
     mutationFn: () => {
       return deleteItem(itemId);
     },
+    onMutate: () => {
+      const prevItem = queryClient.getQueryData(['item', itemId]) as Item;
+
+      if (prevItem && prevItem.characterInventory?.characterId) {
+        const prevCharacter = queryClient.getQueryData([
+          'character',
+          prevItem.characterInventory.characterId,
+        ]) as Character;
+
+        queryClient.setQueryData(['character', prevCharacter.id], {
+          ...prevCharacter,
+          characterInventory: {
+            ...prevCharacter.characterInventory,
+            items: prevCharacter.characterInventory.items.filter(
+              (item) => item.id !== itemId,
+            ),
+          },
+        });
+      }
+
+      queryClient.removeQueries({
+        queryKey: ['item', itemId],
+      });
+
+      return { prevItem };
+    },
     onSuccess: (data) => {
       toast.success(data.message);
 
-      navigate(-1);
+      if (data.character) {
+        queryClient.setQueryData(
+          ['character', data.character.id],
+          data.character,
+        );
 
-      return queryClient.removeQueries({
-        queryKey: ['item', itemId],
-      });
+        toast.success(`Updated ${constructName(data.character)}`);
+      }
     },
-    onError: (data) => {
+    onError: (data, __, context) => {
+      if (context?.prevItem) {
+        queryClient.setQueryData(['item', itemId], context.prevItem);
+      }
+
       toast.error(data.message);
     },
     throwOnError: false,

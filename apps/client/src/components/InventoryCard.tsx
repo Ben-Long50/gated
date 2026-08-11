@@ -3,8 +3,9 @@ import { PictureCard } from './PictureCard';
 import rarityColorMap from 'src/utils/rarityColorMap';
 import useToggleEquipmentMutation from 'src/hooks/useEquipmentToggleMutation/useEquipmentToggleMutation';
 import Icon from '@mdi/react';
-import { mdiCheckCircle, mdiCircleOutline } from '@mdi/js';
+import { mdiCheckCircle, mdiCircleOutline, mdiDotsHorizontal } from '@mdi/js';
 import IconBtnSmall from './buttons/IconBtnSmall';
+import InventoryCardMenu from './InventoryCardMenu';
 
 const InventoryCard = ({
   item,
@@ -13,8 +14,6 @@ const InventoryCard = ({
   item: Item;
   onClick: () => void;
 }) => {
-  const toggleEquipment = useToggleEquipmentMutation();
-
   return (
     <div className="relative">
       <PictureCard
@@ -24,21 +23,14 @@ const InventoryCard = ({
         color={rarityColorMap[item.rarity]}
         onClick={onClick}
       />
-      <IconBtnSmall
-        className="absolute left-1 top-1"
-        onClick={() => {
-          if (item.characterInventory?.characterId) {
-            toggleEquipment.mutate({
-              characterId: item.characterInventory?.characterId,
-              inventoryId: item.characterInventoryId,
-              category: item.itemTypes,
-              itemId: item.id,
-            });
-          }
-        }}
-      >
-        <Icon path={item.equipped ? mdiCheckCircle : mdiCircleOutline} />
-      </IconBtnSmall>
+      {item.equipped && (
+        <Icon
+          className="text-primary bg-primary absolute left-1.5 top-1.5 rounded-full"
+          path={mdiCheckCircle}
+          size={1}
+        />
+      )}
+      <InventoryCardMenu item={item} />
     </div>
   );
 };

@@ -12,21 +12,14 @@ const useCharacter = (characterId: number) => {
   const { user } = useContext(AuthContext);
   const { gameMaster } = useContext(CampaignContext);
 
-  const {
-    data: character,
-    isLoading: characterLoading,
-    isPending: characterPending,
-  } = useCharacterQuery(characterId);
+  const { data: character, isLoading: characterLoading } =
+    useCharacterQuery(characterId);
 
   const itemIds = character
     ? character.characterInventory.items.filter(Boolean).map((item) => item.id)
     : [];
 
-  const {
-    items,
-    isLoading: itemsLoading,
-    isPending: itemsPending,
-  } = useItems(itemIds);
+  const { items, isLoading: itemsLoading } = useItems(itemIds);
 
   const levelBonusAttributeTrees = character
     ? character?.characterLevelBonuses
@@ -179,7 +172,6 @@ const useCharacter = (characterId: number) => {
   return {
     filteredCharacter: character ? filteredCharacter : null,
     isLoading: characterLoading || itemsLoading,
-    isPending: characterPending || itemsPending,
   };
 };
 

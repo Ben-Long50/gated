@@ -16,7 +16,7 @@ const useUpdateCharacterMutation = (characterId: number) => {
 
       queryClient.setQueryData(['character', characterId], data.character);
 
-      navigate('..');
+      navigate(-1);
     },
     onError: (data) => {
       toast.error(data.message);
