@@ -4,6 +4,8 @@ import { uploadToCloudinary } from '../utils/cloudinary.js';
 import parseRequestBody from '../utils/parseRequestBody.js';
 import { ItemInput, ItemUpgradeInput } from '../validation/itemSchema.js';
 import handleControllerError from './handleControllerError.js';
+import { getIO } from '../sockets/socket.js';
+import characterServices from '../services/characterServices.js';
 const itemController = {
     getCodexPreviewItems: async (_, res) => {
         try {
@@ -140,9 +142,28 @@ const itemController = {
         }
     },
     deleteItem: async (req, res) => {
+        var _a;
         try {
+            const item = await itemServices.getItemById(Number(req.params.itemId));
             await itemServices.deleteItem(Number(req.params.itemId));
-            res.status(200).json({ message: 'Successfully deleted item' });
+            if ((_a = item.characterInventory) === null || _a === void 0 ? void 0 : _a.characterId) {
+                const character = await characterServices.getCharacterById(item.characterInventory.characterId);
+                if (!character) {
+                    throw new Error('No character found');
+                }
+                const io = getIO();
+                if (character.campaignId) {
+                    io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
+                        character,
+                    });
+                }
+                res
+                    .status(200)
+                    .json({ character, message: 'Successfully deleted item' });
+            }
+            else {
+                res.status(200).json({ message: 'Successfully deleted item' });
+            }
         }
         catch (error) {
             handleControllerError(res, error);

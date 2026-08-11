@@ -6,6 +6,8 @@ import parseRequestBody from '../utils/parseRequestBody.js';
 import { ItemType } from '@prisma/client';
 import { ItemInput, ItemUpgradeInput } from '../validation/itemSchema.js';
 import handleControllerError from './handleControllerError.js';
+import { getIO } from '../sockets/socket.js';
+import characterServices from '../services/characterServices.js';
 
 const itemController = {
   getCodexPreviewItems: async (_: Request, res: Response) => {
@@ -167,8 +169,33 @@ const itemController = {
 
   deleteItem: async (req: Request, res: Response) => {
     try {
+      const item = await itemServices.getItemById(Number(req.params.itemId));
+
       await itemServices.deleteItem(Number(req.params.itemId));
-      res.status(200).json({ message: 'Successfully deleted item' });
+
+      if (item.characterInventory?.characterId) {
+        const character = await characterServices.getCharacterById(
+          item.characterInventory.characterId,
+        );
+
+        if (!character) {
+          throw new Error('No character found');
+        }
+
+        const io = getIO();
+
+        if (character.campaignId) {
+          io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
+            character,
+          });
+        }
+
+        res
+          .status(200)
+          .json({ character, message: 'Successfully deleted item' });
+      } else {
+        res.status(200).json({ message: 'Successfully deleted item' });
+      }
     } catch (error: any) {
       handleControllerError(res, error);
     }

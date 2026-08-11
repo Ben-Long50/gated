@@ -86,11 +86,24 @@ const characterController = {
             if (!req.user) {
                 throw new Error('Could not find authenticated user');
             }
-            await prisma.$transaction(async (tx) => {
+            const character = await prisma.$transaction(async (tx) => {
                 await characterServices.addToInventory(Number(req.params.characterId), Number(req.params.inventoryId), tx);
                 await characterServices.clearCart(Number(req.params.characterId), tx);
-            });
-            res.status(200).json({ message: 'Successfully completed purchase' });
+                const character = await characterServices.getCharacterById(Number(req.params.characterId));
+                if (!character) {
+                    throw new Error('Character not found');
+                }
+                return character;
+            }, { timeout: 15000 });
+            const io = getIO();
+            if (character.campaignId) {
+                io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
+                    character,
+                });
+            }
+            res
+                .status(200)
+                .json({ character, message: 'Successfully completed purchase' });
         }
         catch (error) {
             handleControllerError(res, error);

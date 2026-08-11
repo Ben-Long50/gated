@@ -3,6 +3,7 @@ import authentication from '../middleware/authentication.js';
 import itemController from '../controllers/itemController.js';
 import itemStatController from '../controllers/itemStatController.js';
 import conditionController from '../controllers/conditionController.js';
+import characterAuthentication from '../middleware/characterAuthentication.js';
 const router = express.Router();
 router.get('/items/codex', itemController.getCodexPreviewItems);
 router.get('/items', authentication.authenticate, itemController.getBatchItems);
@@ -16,5 +17,5 @@ router.put('/items/:itemId', authentication.authenticate, authentication.authent
 router.put('/items/:category/:itemId/upgrade', authentication.authenticate, authentication.authenticateItemModification, itemController.upgradeItem);
 router.patch('/items/:itemId/stats', authentication.authenticate, itemStatController.editItemStat);
 router.delete('/items/:itemId/conditions/:conditionId', authentication.authenticate, conditionController.deleteItemCondition);
-router.delete('/items/:itemId', authentication.authenticate, authentication.authenticateAdmin, itemController.deleteItem);
+router.delete('/items/:itemId', authentication.authenticate, characterAuthentication.validateItemDeletePermissions, itemController.deleteItem);
 export default router;

@@ -3,6 +3,7 @@ import authentication from '../middleware/authentication.js';
 import itemController from '../controllers/itemController.js';
 import itemStatController from '../controllers/itemStatController.js';
 import conditionController from '../controllers/conditionController.js';
+import characterAuthentication from '../middleware/characterAuthentication.js';
 
 const router = express.Router();
 
@@ -79,7 +80,7 @@ router.delete(
 router.delete(
   '/items/:itemId',
   authentication.authenticate,
-  authentication.authenticateAdmin,
+  characterAuthentication.validateItemDeletePermissions,
   itemController.deleteItem,
 );
 
