@@ -33,7 +33,9 @@ export const ActionInput = z.object({
     })
     .optional()),
   description: Description,
-  modifiers: ItemStats.optional(),
+  modifiers: z.preprocess(
+  (value) => value === null ? undefined : value,
+    ItemStats.optional()),
   keywords: Keywords.optional(),
   baseActionId: z.preprocess(
   (value) => value === null ? undefined : value,
