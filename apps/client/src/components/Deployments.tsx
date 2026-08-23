@@ -78,9 +78,7 @@ const Deployments = () => {
   const weapons = useMemo(() => {
     return (
       character?.equipment?.weapons.filter((weapon: Item) =>
-        activeItem?.itemLinkReference?.items.some(
-          (item: Item) => item.id === weapon.id,
-        ),
+        activeItem?.parentItem?.some((item: Item) => item.id === weapon.id),
       ) || []
     );
   }, [activeItem, character]);

@@ -33,7 +33,7 @@ const useInventory = (inventory: CharacterInventory) => {
             consumables: items?.filter((item) =>
               item?.itemTypes.includes('consumable'),
             ),
-            actions: items?.flatMap((item) => item?.itemLinkReference?.actions),
+            actions: items?.flatMap((item) => item?.linkedActions),
           }
         : null,
     [items],
@@ -89,7 +89,7 @@ const useInventory = (inventory: CharacterInventory) => {
       items
         ? items
             ?.filter((item) => item?.equipped === true)
-            .flatMap((item) => item?.itemLinkReference?.actions)
+            .flatMap((item) => item?.linkedActions)
         : null,
     [items],
   );

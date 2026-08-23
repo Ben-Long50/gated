@@ -53,26 +53,21 @@ const ItemPage = () => {
   const { item, isLoading } = useItem(Number(itemId));
 
   const linkedWeapons =
-    item?.itemLinkReference?.items.filter((item) =>
-      item.itemTypes.includes('weapon'),
-    ) || [];
+    item?.linkedItems.filter((item) => item.itemTypes.includes('weapon')) || [];
 
   const linkedArmor =
-    item?.itemLinkReference?.items.filter((item) =>
-      item.itemTypes.includes('armor'),
-    ) || [];
+    item?.linkedItems.filter((item) => item.itemTypes.includes('armor')) || [];
 
   const linkedVehicles =
-    item?.itemLinkReference?.items.filter((item) =>
-      item.itemTypes.includes('vehicle'),
-    ) || [];
+    item?.linkedItems.filter((item) => item.itemTypes.includes('vehicle')) ||
+    [];
 
   const linkedModifiactions =
-    item?.itemLinkReference?.items.filter((item) =>
+    item?.linkedItems.filter((item) =>
       item.itemTypes.includes('modification'),
     ) || [];
 
-  const linkedActions = item?.itemLinkReference?.actions || [];
+  const linkedActions = item?.linkedActions || [];
 
   if (isLoading) return <Loading />;
 
@@ -219,24 +214,27 @@ const ItemPage = () => {
         </ThemeContainer>
       )}
       <Divider />
-      {((parts.includes('codex') && user?.role === 'ADMIN') ||
-        (parts.includes('codex') && user?.role === 'SUPERADMIN')) && (
-        <BtnRect
-          ariaLabel="Navigat to edit weapon form"
-          className="w-full"
-          type="button"
-          onClick={() => navigate('update')}
-        >
-          {'Edit ' + item.name}
-        </BtnRect>
-      )}
-      {(parts.includes('inventory') || parts.includes('equipment')) && (
-        <Link className="w-full" to="upgrade">
-          <BtnRect ariaLabel="Navigate to modify weapon form" type="button">
-            {'Upgrade ' + item.name}
+      <div className="flex w-full flex-col gap-4">
+        {((parts.includes('codex') && user?.role === 'ADMIN') ||
+          (parts.includes('codex') && user?.role === 'SUPERADMIN')) && (
+          <BtnRect
+            ariaLabel="Navigat to edit weapon form"
+            className="w-full"
+            type="button"
+            onClick={() => navigate('update')}
+          >
+            {'Edit ' + item.name}
           </BtnRect>
-        </Link>
-      )}
+        )}
+        {item.characterIventory &&
+          item.characterInventory.character.userId === user.id && (
+            <Link className="w-full" to="upgrade">
+              <BtnRect ariaLabel="Navigate to modify weapon form" type="button">
+                {'Upgrade ' + item.name}
+              </BtnRect>
+            </Link>
+          )}
+      </div>
     </div>
   );
 };

@@ -19,7 +19,7 @@ const InventoryCard = ({
       <PictureCard
         className="w-full border-opacity-50 hover:border-opacity-100"
         label={item.name}
-        publicId={item.picture.publicId}
+        publicId={item.picture?.publicId}
         color={rarityColorMap[item.rarity]}
         onClick={onClick}
       />

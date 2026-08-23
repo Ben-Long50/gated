@@ -5,7 +5,7 @@ export const calculateItemStats = (item: Item) => {
 
   const modifierKeywords = [] as { keyword: Keyword; value: number | null }[];
 
-  const activeActions = item?.itemLinkReference?.actions?.filter(
+  const activeActions = item?.linkedActions?.filter(
     (action: Action) => action.active,
   );
 

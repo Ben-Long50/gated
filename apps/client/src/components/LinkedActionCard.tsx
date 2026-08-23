@@ -60,10 +60,10 @@ const LinkedActionCard = ({
         handleMenu(e);
       }}
     >
-      {action.itemLink && (
+      {action.parentItemId && (
         <ActionRadialMenu
           action={action}
-          itemId={action.itemLink.itemId}
+          itemId={action.parentItemId}
           containerRef={containerRef}
         />
       )}

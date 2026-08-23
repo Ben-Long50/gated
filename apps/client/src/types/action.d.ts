@@ -1,5 +1,6 @@
 import { AttributeName, SkillName } from './attributeTree';
-import { Stats } from './item';
+import { Item, Stats } from './item';
+import { Perk } from './perk';
 
 interface Action {
   id: number;
@@ -16,8 +17,10 @@ interface Action {
   cooldown: { unit: string; value: number | null };
   modifiers: Stats;
   keywordModifiers: { keyword: Keyword; value: number | null }[];
-  itemLink?: ItemLinkReference;
-  itemLinkId?: number;
+  parentItem?: Item | null;
+  parentItemId?: number | null;
+  perk?: Perk | null;
+  perkId?: number | null;
 }
 
 interface ActionCosts {

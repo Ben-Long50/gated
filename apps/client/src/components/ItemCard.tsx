@@ -92,18 +92,17 @@ const ItemCard = ({
   };
 
   const linkedWeapons =
-    item.itemLinkReference?.items.filter((item: Item) =>
+    item.linkedItems.filter((item: Item) =>
       item.itemTypes.includes('weapon'),
     ) || [];
   const linkedArmors =
-    item.itemLinkReference?.items.filter((item: Item) =>
-      item.itemTypes.includes('armor'),
-    ) || [];
+    item.linkedItems.filter((item: Item) => item.itemTypes.includes('armor')) ||
+    [];
   const linkedVehicles =
-    item.itemLinkReference?.items.filter((item: Item) =>
+    item.linkedItems.filter((item: Item) =>
       item.itemTypes.includes('vehicle'),
     ) || [];
-  const uniqueActions = item.itemLinkReference?.actions || [];
+  const uniqueActions = item.linkedActions || [];
 
   return (
     <div className={`${className} w-full`} ref={ref} style={style}>

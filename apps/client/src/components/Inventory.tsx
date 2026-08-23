@@ -52,7 +52,11 @@ const Inventory = () => {
 
   const handleClick = (item: Item) => {
     clickTimeout.current = setTimeout(() => {
-      navigate(`items/${item.id}`);
+      navigate(
+        parts.includes('inventory')
+          ? `items/${item.id}`
+          : `inventory/items/${item.id}`,
+      );
       clickTimeout.current = null;
     }, 200);
   };

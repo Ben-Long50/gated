@@ -21,13 +21,9 @@ const useActivateActionMutation = (itemId: number, actionId: number) => {
 
       queryClient.setQueryData(['item', itemId], () => ({
         ...prevItemData,
-        itemLinkReference: {
-          ...prevItemData?.itemLinkReference,
-          actions: prevItemData?.itemLinkReference?.actions.map(
-            (action: Action) =>
-              action.id === actionId ? { ...action, active: !value } : action,
-          ),
-        },
+        linkedActions: prevItemData?.linkedActions.map((action: Action) =>
+          action.id === actionId ? { ...action, active: !value } : action,
+        ),
       }));
 
       return { prevItemData };

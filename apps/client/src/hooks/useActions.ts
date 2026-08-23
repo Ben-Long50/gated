@@ -10,9 +10,8 @@ const useActions = (
   const { data: actions, isLoading, isPending } = useActionsQuery();
 
   const generalActions =
-    actions?.filter(
-      (action) => !action.itemLinkId && !action.characterInventoryId,
-    ) || [];
+    actions?.filter((action) => !action.parentItemId && !action.baseActionId) ||
+    [];
 
   const list = characterActions
     ? [...characterActions, ...generalActions]

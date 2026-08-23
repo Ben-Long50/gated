@@ -22,20 +22,16 @@ interface Item {
   keywords: KeywordReference[];
   modifiedKeywords: KeywordReference[];
   conditions: ConditionReference[];
-  itemLinkReference?: LinkReference;
+  linkedItems: Item[];
+  linkedActions: Action[];
+  parentItemId: number | null;
+  parentItem: Item | null;
   baseItemId: number | null;
   baseItem: Item | null;
   characterInventory?: {
     character: { campaignId: number };
     characterId: number;
   };
-}
-
-interface LinkReference {
-  id: number;
-  itemId: number;
-  items: Item[];
-  actions: Action[];
 }
 
 interface Stats {

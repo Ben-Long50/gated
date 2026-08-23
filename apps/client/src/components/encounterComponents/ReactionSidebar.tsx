@@ -59,10 +59,10 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
   const setItem = useCombatStore((state) => state.setItem);
 
   const handleChosenItem = (reaction: Action) => {
-    if (reaction && reaction.itemLink) {
+    if (reaction && reaction.parentItemId) {
       const item = queryClient.getQueryData([
         'item',
-        reaction.itemLink.itemId,
+        reaction.parentItemId,
       ]) as Item;
 
       setItem(item);

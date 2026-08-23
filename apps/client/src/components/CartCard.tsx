@@ -67,7 +67,7 @@ const CartCard = ({
           if (cartId) {
             editCart.mutate({
               itemId: item.id,
-              value: 1,
+              value: quantity * -1,
             });
           }
         }}

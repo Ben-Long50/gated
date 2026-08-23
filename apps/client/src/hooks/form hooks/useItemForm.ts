@@ -56,11 +56,9 @@ const useItemForm = (
         esotericCharges: item?.stats?.esotericCharges ?? '',
       } as Record<string, number>,
       itemIds:
-        item?.itemLinkReference?.items.map((item: Item) => item.id) ??
-        ([] as number[]),
+        item?.linkedItems.map((item: Item) => item.id) ?? ([] as number[]),
       actionIds:
-        item?.itemLinkReference?.actions.map((action) => action.id) ??
-        ([] as number[]),
+        item?.linkedActions.map((action) => action.id) ?? ([] as number[]),
       keywords:
         item?.keywords.map((keyword) => ({
           keywordId: keyword.keyword.id,

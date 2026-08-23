@@ -9,9 +9,7 @@ const useCompletePurchaseMutation = (
 ) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: () => {
-      return completePurchase(characterId, inventoryId);
-    },
+    mutationFn: () => completePurchase(characterId, inventoryId),
     onSuccess: (data) => {
       toast.success(data.message);
 

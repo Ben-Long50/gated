@@ -18,6 +18,7 @@ import { ThemeContext } from 'src/contexts/ThemeContext';
 import Items from './Items';
 import Cart from './Cart';
 import NavTabs from './NavTabs';
+import BulkItemForm from './forms/BulkItemForm';
 
 const Shop = () => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -143,8 +144,16 @@ const Shop = () => {
           </BtnAuth>
         )}
       </NavTabs>
+      <BtnAuth
+        active={category === 'bulk'}
+        onClick={() => setSearchParams({ category: 'bulk' })}
+      >
+        Bulk Item Select
+      </BtnAuth>
       <Divider className="my-0" />
-      {category === 'cart' ? <Cart /> : <Items />}
+      {category === 'bulk' && <BulkItemForm />}
+      {category === 'cart' && <Cart />}
+      {category !== 'bulk' && category !== 'cart' && <Items />}
     </>
   );
 };

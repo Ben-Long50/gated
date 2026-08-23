@@ -61,7 +61,7 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
     const rangedActions = ['Single Shot', 'Salvo', 'Reload'];
     const meleeActions = ['Strike', 'Flurry', 'Haymaker', 'Charge', 'Throw'];
 
-    const itemActions = item.itemLinkReference?.actions || [];
+    const itemActions = item.linkedActions || [];
 
     if (item.keywords.some((data) => data.keyword.name === 'Ranged')) {
       return [
@@ -93,10 +93,10 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
   const setItem = useCombatStore((state) => state.setItem);
 
   const handleChosenItem = (action: Action) => {
-    if (action && action.itemLink) {
+    if (action && action.parentItemId) {
       const item = queryClient.getQueryData([
         'item',
-        action.itemLink.itemId,
+        action.parentItemId,
       ]) as Item;
 
       setItem(item);

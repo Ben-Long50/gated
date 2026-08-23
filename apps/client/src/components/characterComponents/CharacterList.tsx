@@ -25,9 +25,7 @@ const CharacterList = ({
   const { user } = useContext(AuthContext);
   const { mobile } = useContext(LayoutContext);
   const { campaignId } = useParams();
-  const [size, setSize] = useState<'small' | 'large'>(
-    mobile ? 'small' : 'large',
-  );
+  const [size, setSize] = useState<'small' | 'large'>('small');
 
   const cardSize = mobile || size === 'small' ? 'small' : 'large';
 
@@ -106,7 +104,7 @@ const CharacterList = ({
           </>
         ) : (
           <div
-            className={`${mobile ? 'gap-4' : 'gap-8'} ${cardSize === 'large' ? 'grid-cols-1' : 'grid-cols-[repeat(auto-fit,minmax(350px,1fr))]'} grid w-full`}
+            className={`${mobile ? 'gap-4' : 'gap-8'} ${cardSize === 'large' ? 'grid-cols-1' : 'grid-cols-[repeat(auto-fit,minmax(350px,400px))]'} grid w-full`}
           >
             {characters.map((character: Character, index: number) => (
               <CharacterCard

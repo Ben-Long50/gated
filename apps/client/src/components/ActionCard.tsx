@@ -62,35 +62,32 @@ const ActionCard = ({
               ({capitalCase(action?.actionType)})
             </p>
           </div>
-          {action?.itemLink && (
+          {action?.parentItem && (
             <button
               className="group flex items-center gap-2"
               onClick={() =>
-                navigate(`/glam/codex/items/${action?.itemLink?.item.id}`)
+                navigate(`/glam/codex/items/${action?.parentItem?.id}`)
               }
             >
-              <p className="group-hover:text-accent timing text-right text-base">
-                {action?.itemLink.item.name}
-              </p>
-              {action?.itemLink.item.itemTypes.includes('weapon') && (
+              {action?.parentItem.itemTypes.includes('weapon') && (
                 <WeaponIcon className="group-hover:text-accent size-6" />
               )}
-              {action?.itemLink.item.itemTypes.includes('armor') && (
+              {action?.parentItem.itemTypes.includes('armor') && (
                 <ArmorIcon className="group-hover:text-accent size-6" />
               )}
-              {action?.itemLink.item.itemTypes.includes('cybernetic') && (
+              {action?.parentItem.itemTypes.includes('cybernetic') && (
                 <CyberIcon className="group-hover:text-accent size-6" />
               )}
-              {action?.itemLink.item.itemTypes.includes('drone') && (
+              {action?.parentItem.itemTypes.includes('drone') && (
                 <DroneIcon className="group-hover:text-accent size-6" />
               )}
-              {action?.itemLink.item.itemTypes.includes('reusable') && (
+              {action?.parentItem.itemTypes.includes('reusable') && (
                 <InventoryIcon className="group-hover:text-accent size-6" />
               )}
-              {action?.itemLink.item.itemTypes.includes('consumable') && (
+              {action?.parentItem.itemTypes.includes('consumable') && (
                 <PotionIcon className="group-hover:text-accent size-6" />
               )}
-              {action?.itemLink.item.itemTypes.includes('modification') && (
+              {action?.parentItem.itemTypes.includes('modification') && (
                 <ModificationIcon className="group-hover:text-accent size-6" />
               )}
             </button>
@@ -98,11 +95,8 @@ const ActionCard = ({
           {action?.perk && (
             <button
               className="group flex items-center gap-2"
-              onClick={() => navigate(`/glam/codex/perks/${action?.perks}`)}
+              onClick={() => navigate(`/glam/codex/perks`)}
             >
-              <p className="group-hover:text-accent timing text-right text-base">
-                {action?.perk.name}
-              </p>
               <PerkIcon className="group-hover:text-accent size-6" />
             </button>
           )}
