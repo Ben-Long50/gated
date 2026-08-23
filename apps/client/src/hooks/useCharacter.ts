@@ -78,7 +78,7 @@ const useCharacter = (characterId: number) => {
   const actions = equipment
     ? [
         ...Object.values(equipment).flatMap((items) =>
-          items.flatMap((item) => item.itemLinkReference.actions),
+          items.flatMap((item) => item.linkedActions),
         ),
         ...perks.flatMap((perk) => perk.actions),
       ]
