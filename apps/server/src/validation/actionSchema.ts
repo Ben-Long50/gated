@@ -17,27 +17,33 @@ export const ActionInput = z.object({
   actionType: ActionType,
   actionSubtypes: z.array(ActionSubtype).optional(),
   duration: z.preprocess(
-  (value) => value === null ? undefined : value,
+    (value) => (value === null ? undefined : value),
     z
-    .object({
-      unit: z.string(),
-      value: z.number().int().nonnegative(),
-    })
-    .optional()),
+      .object({
+        unit: z.string(),
+        value: z.number().int().nonnegative(),
+      })
+      .optional(),
+  ),
   cooldown: z.preprocess(
-  (value) => value === null ? undefined : value,
+    (value) => (value === null ? undefined : value),
     z
-    .object({
-      unit: z.string(),
-      value: z.number().int().nonnegative(),
-    })
-    .optional()),
+      .object({
+        unit: z.string(),
+        value: z.number().int().nonnegative(),
+      })
+      .optional(),
+  ),
   description: Description,
-  modifiers: ItemStats.optional(),
+  modifiers: z.preprocess(
+    (value) => (value === null ? undefined : value),
+    ItemStats.optional(),
+  ),
   keywords: Keywords.optional(),
   baseActionId: z.preprocess(
-  (value) => value === null ? undefined : value,
-    z.number().int().optional())
+    (value) => (value === null ? undefined : value),
+    z.number().int().optional(),
+  ),
 });
 
 export type ActionInput = z.infer<typeof ActionInput>;

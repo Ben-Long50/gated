@@ -63,7 +63,7 @@ const characterController = {
             const item = await characterServices.toggleEquipment(Number(req.params.inventoryId), Number(req.params.itemId));
             res
                 .status(200)
-                .json({ item, message: `Successfully toggled ${item.name}` });
+                .json({ item, message: `Successfully toggled ${item === null || item === void 0 ? void 0 : item.name}` });
         }
         catch (error) {
             handleControllerError(res, error);
@@ -81,15 +81,29 @@ const characterController = {
             handleControllerError(res, error);
         }
     },
+    addBulkItems: async (req, res) => {
+        try {
+            const character = await cartServices.addBulkItems(Number(req.params.characterId), req.body);
+            if (!character) {
+                throw new Error('Failed to find character');
+            }
+            res.status(200).json({
+                character,
+                message: `Successfully added bulk item(s) to ${constructName(character)}'s cart`,
+            });
+        }
+        catch (error) {
+            handleControllerError(res, error);
+        }
+    },
     completePurchase: async (req, res) => {
         try {
             if (!req.user) {
                 throw new Error('Could not find authenticated user');
             }
             const character = await prisma.$transaction(async (tx) => {
-                await characterServices.addToInventory(Number(req.params.characterId), Number(req.params.inventoryId), tx);
+                const character = await characterServices.addToInventory(Number(req.params.characterId), Number(req.params.inventoryId), tx);
                 await characterServices.clearCart(Number(req.params.characterId), tx);
-                const character = await characterServices.getCharacterById(Number(req.params.characterId));
                 if (!character) {
                     throw new Error('Character not found');
                 }

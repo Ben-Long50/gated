@@ -3,7 +3,8 @@ import { Prisma } from '@prisma/client';
 export const includeCharacterInventory: Prisma.CharacterInventoryInclude = {
   items: {
     include: {
-      itemLinkReference: { include: { actions: true, items: true } },
+      linkedActions: true,
+      linkedItems: true,
       keywords: { include: { keyword: true } },
     },
   },
@@ -14,12 +15,8 @@ export const includeCharacterCart: Prisma.CharacterCartInclude = {
     include: {
       item: {
         include: {
-          itemLinkReference: {
-            include: {
-              items: { orderBy: { name: 'asc' } },
-              actions: { orderBy: { name: 'asc' } },
-            },
-          },
+          linkedItems: { orderBy: { name: 'asc' } },
+          linkedActions: { orderBy: { name: 'asc' } },
           characterInventory: {
             include: {
               character: { select: { firstName: true, lastName: true } },
@@ -29,44 +26,5 @@ export const includeCharacterCart: Prisma.CharacterCartInclude = {
       },
     },
     orderBy: { item: { name: 'asc' } },
-  },
-};
-
-export const equipLinked = {
-  items: {
-    updateMany: {
-      where: {},
-      data: {
-        equipped: true,
-      },
-    },
-  },
-  actions: {
-    updateMany: {
-      where: { itemType: 'passive' },
-      data: {
-        equipped: true,
-      },
-    },
-  },
-};
-
-export const unequipLinked = {
-  items: {
-    updateMany: {
-      where: {},
-      data: {
-        equipped: false,
-      },
-    },
-  },
-  actions: {
-    updateMany: {
-      where: {},
-      data: {
-        active: false,
-        equipped: false,
-      },
-    },
   },
 };

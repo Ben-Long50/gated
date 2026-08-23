@@ -10,7 +10,7 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 import prisma from '../config/database.js';
-import { includeCharacterCart, unequipLinked, } from '../utils/linkQueryStructures.js';
+import { includeCharacterCart } from '../utils/linkQueryStructures.js';
 import itemServices, { itemInclude } from './itemServices.js';
 import { getIO } from '../sockets/socket.js';
 import validateLevelUpBonus from '../utils/validateLevelUpBonus.js';
@@ -148,56 +148,24 @@ const characterServices = {
                     id: Number(itemId),
                     characterInventoryId: Number(inventoryId),
                 },
-                select: { id: true, equipped: true },
+                select: {
+                    id: true,
+                    equipped: true,
+                    linkedItems: { select: { id: true } },
+                },
             });
             if (!item) {
                 throw new Error('Item not found');
             }
-            const updatedItem = await prisma.$transaction(async (tx) => {
-                await tx.itemLinkReference.update({
-                    where: { itemId: item.id },
-                    data: item.equipped
-                        ? unequipLinked
-                        : {
-                            items: {
-                                updateMany: {
-                                    where: {},
-                                    data: {
-                                        equipped: true,
-                                    },
-                                },
-                            },
-                            actions: {
-                                updateMany: {
-                                    where: { actionType: 'passive' },
-                                    data: {
-                                        active: true,
-                                        equipped: true,
-                                    },
-                                },
-                            },
-                        },
-                });
-                await tx.itemLinkReference.update({
-                    where: { itemId: item.id },
-                    data: item.equipped
-                        ? unequipLinked
-                        : {
-                            actions: {
-                                updateMany: {
-                                    where: { actionType: { not: 'passive' } },
-                                    data: {
-                                        equipped: true,
-                                    },
-                                },
-                            },
-                        },
-                });
-                return await tx.item.update({
-                    where: { id: item.id },
-                    data: { equipped: !item.equipped },
-                    include: itemInclude,
-                });
+            const itemIds = [...item === null || item === void 0 ? void 0 : item.linkedItems.map((item) => item.id), item.id];
+            const equipped = item === null || item === void 0 ? void 0 : item.equipped;
+            await prisma.item.updateMany({
+                where: { id: { in: itemIds } },
+                data: { equipped: !equipped },
+            });
+            const updatedItem = await prisma.item.findUnique({
+                where: { id: item.id },
+                include: itemInclude,
             });
             return updatedItem;
         }
@@ -252,7 +220,7 @@ const characterServices = {
                 if (!character.characterInventory) {
                     throw new Error('Failed to create character inventory');
                 }
-                await itemServices.createCharacterItemCopy(character.characterInventory.id, [{ itemId: unarmed.id, price: null, quantity: 1 }], tx);
+                await itemServices.createCharacterItemCopy(character.characterInventory.id, [{ itemId: unarmed.id, quantity: 1 }], tx);
             }
             return character;
         }, {
@@ -337,50 +305,26 @@ const characterServices = {
             throw new Error('Failed to create character');
         }
     },
-    createCharacterCart: async (characterId) => {
-        try {
-            await prisma.characterCart.create({
-                data: {
-                    character: { connect: { id: characterId } },
-                },
-            });
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to create character cart');
-        }
-    },
-    createCharacterInventory: async (characterId) => {
-        try {
-            await prisma.characterInventory.create({
-                data: {
-                    character: { connect: { id: characterId } },
-                },
-            });
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to create character inventory');
-        }
-    },
     addToInventory: async (characterId, inventoryId, tx) => {
-        var _a;
         try {
             const client = tx !== null && tx !== void 0 ? tx : prisma;
-            const profits = ((_a = (await client.character.findUnique({
+            const character = await client.character.findUnique({
                 where: { id: characterId },
-                select: { profits: true },
-            }))) === null || _a === void 0 ? void 0 : _a.profits) || 0;
-            const cart = await client.characterCart.findUnique({
-                where: { characterId },
                 select: {
-                    items: {
-                        include: {
-                            item: { select: { id: true, price: true, itemTypes: true } },
+                    profits: true,
+                    characterCart: {
+                        select: {
+                            items: {
+                                include: {
+                                    item: { select: { id: true, price: true, itemTypes: true } },
+                                },
+                            },
                         },
                     },
                 },
             });
+            const profits = (character === null || character === void 0 ? void 0 : character.profits) || 0;
+            const cart = character === null || character === void 0 ? void 0 : character.characterCart;
             const items = (cart === null || cart === void 0 ? void 0 : cart.items.map((item) => ({
                 itemId: item.item.id,
                 quantity: item.quantity,
@@ -401,10 +345,12 @@ const characterServices = {
             if (items.length > 0) {
                 await itemServices.createCharacterItemCopy(inventoryId, items, client);
             }
-            await client.character.update({
-                where: { id: Number(characterId) },
-                data: { profits: profits - totalPrice },
+            const updatedCharacter = await client.character.update({
+                where: { id: characterId },
+                data: { profits: { decrement: totalPrice } },
+                include: characterInclude,
             });
+            return updatedCharacter;
         }
         catch (error) {
             console.error(error);

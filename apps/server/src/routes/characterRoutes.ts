@@ -38,6 +38,12 @@ router.patch(
 );
 
 router.patch(
+  '/characters/:characterId/cart/bulk',
+  authentication.authenticate,
+  characterController.addBulkItems,
+);
+
+router.patch(
   '/characters/:characterId/cart/:cartId',
   authentication.authenticate,
   characterController.editCart,

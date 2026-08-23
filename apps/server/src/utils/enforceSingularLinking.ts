@@ -12,8 +12,8 @@ export const enforceSingularLinking = async (
       where: { id },
       select: {
         name: true,
-        itemLink: {
-          select: { item: { select: { id: true, name: true } } },
+        parentItem: {
+          select: { id: true, name: true },
         },
       },
     });
@@ -22,7 +22,7 @@ export const enforceSingularLinking = async (
       continue;
     }
 
-    const parentItem = item.itemLink?.item;
+    const parentItem = item.parentItem;
 
     if (parentItem && parentItem.id !== parentId) {
       linkedItems.push(`${item.name} linked to ${parentItem.name}`);
@@ -34,8 +34,8 @@ export const enforceSingularLinking = async (
       where: { id },
       select: {
         name: true,
-        itemLink: {
-          select: { item: { select: { id: true, name: true } } },
+        parentItem: {
+          select: { id: true, name: true },
         },
       },
     });
@@ -44,7 +44,7 @@ export const enforceSingularLinking = async (
       continue;
     }
 
-    const parentItem = action.itemLink?.item;
+    const parentItem = action.parentItem;
 
     if (parentItem && parentItem.id !== parentId) {
       linkedItems.push(`${action.name} linked to ${parentItem.name}`);

@@ -1,8 +1,9 @@
 import prisma from '../config/database.js';
 import { characterInclude } from './characterServices.js';
 const cartServices = {
-    editCartItem: async (characterId, cartId, itemId, value) => {
-        const cartItem = await prisma.cartItemRelation.findUnique({
+    editCartItem: async (characterId, cartId, itemId, value, tx) => {
+        const client = tx !== null && tx !== void 0 ? tx : prisma;
+        const cartItem = await client.cartItemRelation.findUnique({
             where: { characterCartId_itemId: { characterCartId: cartId, itemId } },
         });
         let remove = false;
@@ -10,7 +11,7 @@ const cartServices = {
             remove = true;
         }
         try {
-            const character = await prisma.character.update({
+            const character = await client.character.update({
                 where: { id: characterId },
                 data: {
                     characterCart: {
@@ -52,6 +53,69 @@ const cartServices = {
             console.error(error);
             throw new Error('Failed to add item to cart');
         }
+    },
+    addBulkItems: async (characterId, formData) => {
+        const character = await prisma.$transaction(async (tx) => {
+            var _a;
+            const character = await tx.character.findUnique({
+                where: { id: characterId },
+                select: {
+                    characterCart: {
+                        select: {
+                            id: true,
+                            items: { select: { itemId: true } },
+                        },
+                    },
+                    profits: true,
+                    npcTypes: true,
+                },
+            });
+            const cartItemIds = (_a = character === null || character === void 0 ? void 0 : character.characterCart) === null || _a === void 0 ? void 0 : _a.items.map((item) => item.itemId);
+            if (!(character === null || character === void 0 ? void 0 : character.npcTypes.includes('shop'))) {
+                throw new Error('Only merchant npcs can make bulk item purchases');
+            }
+            if (!character || !character.characterCart) {
+                throw new Error('Failed to find character');
+            }
+            const items = await tx.item.findMany({
+                where: {
+                    baseItemId: null,
+                    characterInventoryId: null,
+                    itemTypes: { hasSome: formData.itemTypes },
+                    rarity: { in: formData.rarities },
+                },
+                select: { id: true, price: true },
+            });
+            const updateItemIds = items
+                .filter((item) => cartItemIds === null || cartItemIds === void 0 ? void 0 : cartItemIds.includes(item.id))
+                .map((item) => item.id);
+            const createItemIds = items
+                .filter((item) => !(cartItemIds === null || cartItemIds === void 0 ? void 0 : cartItemIds.includes(item.id)))
+                .map((item) => item.id);
+            await tx.cartItemRelation.updateMany({
+                where: {
+                    characterCartId: character.characterCart.id,
+                    itemId: { in: updateItemIds },
+                },
+                data: { quantity: { increment: formData.quantity } },
+            });
+            await tx.cartItemRelation.createMany({
+                data: createItemIds.map((itemId) => {
+                    var _a;
+                    return ({
+                        characterCartId: (_a = character.characterCart) === null || _a === void 0 ? void 0 : _a.id,
+                        itemId,
+                        quantity: formData.quantity,
+                    });
+                }),
+            });
+            const updatedCharacter = await tx.character.findUnique({
+                where: { id: characterId },
+                include: characterInclude,
+            });
+            return updatedCharacter;
+        }, { timeout: 15000 });
+        return character;
     },
 };
 export default cartServices;

@@ -1,26 +1,41 @@
-// @ts-nocheck
+import { Action, Keyword, Prisma } from '@prisma/client';
 
-import { Action, Item } from '@prisma/client';
-import { Keyword } from '../types/keyword';
-
-const calculateItemsStats = (items: Item[]) => {
+const calculateItemsStats = (
+  items: Prisma.ItemGetPayload<{
+    include: {
+      linkedActions: {
+        include: { keywordModifiers: { include: { keyword: true } } };
+      };
+      keywords: { include: { keyword: true } };
+    };
+  }>[],
+) => {
   const calculatedItems = items.map((item) => calculateItemStats(item));
 
   return calculatedItems;
 };
 
-export const calculateItemStats = (item: Item) => {
+export const calculateItemStats = (
+  item: Prisma.ItemGetPayload<{
+    include: {
+      linkedActions: {
+        include: { keywordModifiers: { include: { keyword: true } } };
+      };
+      keywords: { include: { keyword: true } };
+    };
+  }>,
+) => {
   if (!item?.stats && !item?.modifiedStats) return item;
 
   const modifierObj = {} as Record<string, number>;
 
   const modifierKeywords = [] as { keyword: Keyword; value: number | null }[];
 
-  const activeActions = item?.itemLinkReference?.actions?.filter(
+  const activeActions = item?.linkedActions.filter(
     (action: Action) => action.active,
   );
 
-  activeActions?.forEach((action: Action) => {
+  activeActions?.forEach((action) => {
     if (action.modifiers) {
       Object.entries(action.modifiers).forEach(([stat, value]) => {
         if (!modifierObj[stat]) {
@@ -38,7 +53,7 @@ export const calculateItemStats = (item: Item) => {
     }
   });
 
-  const combined: Record<string, number> = { ...item.stats };
+  const combined = item.stats as Record<string, number>;
 
   const modifiedStats = item?.modifiedStats || {};
 

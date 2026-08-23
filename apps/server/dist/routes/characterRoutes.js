@@ -9,6 +9,7 @@ router.get('/characters/batch', authentication.authenticate, characterController
 router.get('/characters/:characterId', authentication.authenticate, characterController.getCharacterById);
 router.get('/characters/:characterId/notes', authentication.authenticate, characterController.getCharacterNotes);
 router.patch('/characters/:characterId/inventory/:inventoryId/equipment/:itemId', authentication.authenticate, characterController.toggleEquipment);
+router.patch('/characters/:characterId/cart/bulk', authentication.authenticate, characterController.addBulkItems);
 router.patch('/characters/:characterId/cart/:cartId', authentication.authenticate, characterController.editCart);
 router.patch('/characters/:characterId/level', authentication.authenticate, characterController.updateCharacterLevel);
 router.patch('/characters/:characterId/levelBonus', authentication.authenticate, characterController.selectLevelUpBonus);

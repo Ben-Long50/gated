@@ -6,9 +6,7 @@ import { ActionInput } from '../validation/actionSchema.js';
 const actionInclude = {
   keywordModifiers: { select: { id: true } },
   perk: { select: { name: true, id: true } },
-  itemLink: {
-    select: { item: { select: { name: true, id: true, itemTypes: true } } },
-  },
+  parentItem: { select: { name: true, id: true, itemTypes: true } },
 };
 
 const actionServices = {

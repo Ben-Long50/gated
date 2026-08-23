@@ -19,16 +19,18 @@ export const Description = z
     .min(10, 'Description must be at least 10 characters')
     .max(1000, 'Description must be under 1000 characters');
 export const PictureFile = z.file().optional();
-export const Picture = z
+export const Picture = z.preprocess((value) => (value === 0 ? undefined : value), z
     .object({
-    imageUrl: z.string(),
-    publicId: z.string(),
-    position: z.object({
+    imageUrl: z.string().optional(),
+    publicId: z.string().optional(),
+    position: z
+        .object({
         x: z.number().int().min(0).max(100),
         y: z.number().int().min(0).max(100),
-    }),
+    })
+        .optional(),
 })
-    .optional();
+    .optional());
 export const RichText = z.object({
     html: z.string().transform((val) => sanitizeHtml(val, {
         allowedTags: [
@@ -68,7 +70,7 @@ export const RichText = z.object({
     nodes: z.object({ root: z.any() }),
 });
 export const CharacterStats = z.record(z.string(), z.number().int());
-export const ItemStats = z.record(z.string(), z.number().int());
+export const ItemStats = z.record(z.string(), z.number());
 export const Keywords = z.array(z.object({
     keywordId: z.number().int(),
     value: z.number().int().int().nonnegative().nullish(),

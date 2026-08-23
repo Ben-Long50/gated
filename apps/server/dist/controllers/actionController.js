@@ -35,7 +35,6 @@ const actionController = {
     },
     createOrUpdateAction: async (req, res) => {
         try {
-            console.log(req.body);
             const data = ActionInput.parse(req.body);
             const action = await actionServices.createOrUpdateAction(data);
             res.status(200).json({ action, message: 'Successfully created action' });

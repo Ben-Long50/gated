@@ -25,16 +25,21 @@ export const Description = z
 
 export const PictureFile = z.file().optional();
 
-export const Picture = z
-  .object({
-    imageUrl: z.string(),
-    publicId: z.string(),
-    position: z.object({
-      x: z.number().int().min(0).max(100),
-      y: z.number().int().min(0).max(100),
-    }),
-  })
-  .optional();
+export const Picture = z.preprocess(
+  (value) => (value === 0 ? undefined : value),
+  z
+    .object({
+      imageUrl: z.string().optional(),
+      publicId: z.string().optional(),
+      position: z
+        .object({
+          x: z.number().int().min(0).max(100),
+          y: z.number().int().min(0).max(100),
+        })
+        .optional(),
+    })
+    .optional(),
+);
 
 export type Picture = z.infer<typeof Picture>;
 
@@ -83,7 +88,7 @@ export const CharacterStats = z.record(z.string(), z.number().int());
 
 export type CharacterStats = z.infer<typeof CharacterStats>;
 
-export const ItemStats = z.record(z.string(), z.number().int());
+export const ItemStats = z.record(z.string(), z.number());
 
 export type ItemStats = z.infer<typeof ItemStats>;
 

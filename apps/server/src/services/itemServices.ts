@@ -1,42 +1,38 @@
-// @ts-nocheck
-
 import prisma from '../config/database.js';
 import { enforceSingularLinking } from '../utils/enforceSingularLinking.js';
-import { createLinkedCopies } from '../utils/createLinkedCopies.js';
 import { $Enums, Prisma } from '@prisma/client';
 import actionServices from './actionServices.js';
 import { ItemInput, ItemUpgradeInput } from '../validation/itemSchema.js';
 import { ItemStats, Picture } from '../validation/fieldSchemas.js';
 import { ConditionReferenceInput } from '../validation/conditionSchema.js';
 import addVariableStats from '../utils/addVariableStats.js';
+import { ActionInput } from '../validation/actionSchema.js';
 
 export const itemInclude = {
   baseItem: true,
-  characterInventory: { select: { characterId: true } },
-  itemLinkReference: {
+  characterInventory: {
+    select: { characterId: true, character: { select: { userId: true } } },
+  },
+  linkedItems: {
     include: {
-      items: {
-        include: {
-          keywords: {
-            include: { keyword: true },
-            orderBy: { keyword: { name: 'asc' as const } },
-          },
-          modifiedKeywords: {
-            include: { keyword: true },
-            orderBy: { keyword: { name: 'asc' as const } },
-          },
-          conditions: {
-            include: { condition: true },
-            orderBy: { condition: { name: 'asc' as const } },
-          },
-        },
+      keywords: {
+        include: { keyword: true },
+        orderBy: { keyword: { name: 'asc' as const } },
       },
-      actions: {
-        include: {
-          keywordModifiers: { include: { keyword: true } },
-          itemLink: { select: { item: { select: { name: true } } } },
-        },
+      modifiedKeywords: {
+        include: { keyword: true },
+        orderBy: { keyword: { name: 'asc' as const } },
       },
+      conditions: {
+        include: { condition: true },
+        orderBy: { condition: { name: 'asc' as const } },
+      },
+    },
+  },
+  linkedActions: {
+    include: {
+      keywordModifiers: { include: { keyword: true } },
+      parentItem: { select: { name: true } },
     },
   },
   keywords: {
@@ -130,6 +126,10 @@ const itemServices = {
         },
         {
           playerCharacter: false,
+          npcTypes: { hasEvery: ['shop'] },
+        },
+        {
+          playerCharacter: false,
           npcTypes: { hasEvery: ['monster'] },
         },
       ];
@@ -137,6 +137,7 @@ const itemServices = {
       const itemCounts = await Promise.all(
         itemData.map((data) =>
           prisma.item.count({
+            //@ts-ignore
             where: { ...data, base: true },
           }),
         ),
@@ -145,6 +146,7 @@ const itemServices = {
       const characterCounts = await Promise.all(
         characterData.map((data) =>
           prisma.character.count({
+            //@ts-ignore
             where: { ...data, base: true },
           }),
         ),
@@ -158,6 +160,7 @@ const itemServices = {
         }
 
         return prisma.item.findFirst({
+          //@ts-ignore
           where: { ...data, base: true },
           skip: Math.floor(Math.random() * count),
           select: { picture: true },
@@ -172,6 +175,7 @@ const itemServices = {
         }
 
         return prisma.character.findFirst({
+          //@ts-ignore
           where: { ...data, base: true },
           skip: Math.floor(Math.random() * count),
           select: { picture: true },
@@ -196,10 +200,10 @@ const itemServices = {
         where: category
           ? {
               baseItemId: null,
-              itemLinkId: null,
+              parentItemId: null,
               itemTypes: { hasSome: category },
             }
-          : { baseItemId: null, itemLinkId: null },
+          : { baseItemId: null, parentItemId: null },
         include: itemInclude,
         orderBy: { name: 'asc' },
       });
@@ -259,41 +263,22 @@ const itemServices = {
           ...data,
           stats: newStats,
           updatedAt: new Date(),
-          itemLinkReference: {
-            upsert: {
-              where: { itemId: id || 0 },
-              update: {
-                items: {
-                  set: itemIds?.map((id) => ({ id })),
-                },
-                actions: {
-                  set: actionIds?.map((id) => ({ id })),
-                },
-              },
-              create: {
-                items: {
-                  connect: itemIds?.map((id) => ({ id })),
-                },
-                actions: {
-                  connect: actionIds?.map((id) => ({ id })),
-                },
-              },
-            },
+          linkedItems: {
+            set: itemIds?.map((id) => ({ id })),
+          },
+          linkedActions: {
+            set: actionIds?.map((id) => ({ id })),
           },
           keywords: { deleteMany: {}, createMany: { data: keywords } },
         },
         create: {
           ...data,
           stats: newStats,
-          itemLinkReference: {
-            create: {
-              items: {
-                connect: itemIds?.map((id) => ({ id })),
-              },
-              actions: {
-                connect: actionIds?.map((id) => ({ id })),
-              },
-            },
+          linkedItems: {
+            connect: itemIds?.map((id) => ({ id })),
+          },
+          linkedActions: {
+            connect: actionIds?.map((id) => ({ id })),
           },
           keywords: { createMany: { data: keywords } },
         },
@@ -367,12 +352,8 @@ const itemServices = {
           grade: true,
           price: true,
           baseItemId: true,
-          itemLinkReference: {
-            include: {
-              items: { select: { id: true } },
-              actions: { select: { id: true } },
-            },
-          },
+          linkedItems: { select: { id: true } },
+          linkedActions: { select: { id: true } },
           keywords: { select: { keywordId: true, value: true } },
         },
       });
@@ -387,7 +368,8 @@ const itemServices = {
         stats,
         picture,
         keywords,
-        itemLinkReference,
+        linkedItems,
+        linkedActions,
         ...data
       } = itemDetails;
 
@@ -397,16 +379,16 @@ const itemServices = {
       const itemIds = [] as number[];
       const actionIds = [] as number[];
 
-      if (itemLinkReference?.items) {
-        for (let item of itemLinkReference?.items) {
+      if (linkedItems.length > 0) {
+        for (let item of linkedItems) {
           const newItem = await itemServices.createItemCopy(item.id);
 
           itemIds.push(newItem.id);
         }
       }
 
-      if (itemLinkReference?.actions) {
-        for (let action of itemLinkReference?.actions) {
+      if (linkedActions.length > 0) {
+        for (let action of linkedActions) {
           const newItem = await actionServices.createActionCopy(action.id);
 
           actionIds.push(newItem.id);
@@ -418,16 +400,11 @@ const itemServices = {
           ...data,
           picture: typedPicture,
           stats: typedStats,
-          itemLinkReference: {
-            create: {
-              items: {
-                connect: itemIds.map((id) => ({ id })),
-              },
-
-              actions: {
-                connect: actionIds.map((id) => ({ id })),
-              },
-            },
+          linkedItems: {
+            connect: itemIds.map((id) => ({ id })),
+          },
+          linkedActions: {
+            connect: actionIds.map((id) => ({ id })),
           },
           keywords: { createMany: { data: keywords } },
           base: false,
@@ -444,7 +421,7 @@ const itemServices = {
 
   createCharacterItemCopy: async (
     inventoryId: number,
-    itemList: { itemId: number; price: number | null; quantity: number }[],
+    itemList: { itemId: number; quantity: number }[],
     tx?: Prisma.TransactionClient,
   ) => {
     const client = tx ?? prisma;
@@ -464,81 +441,187 @@ const itemServices = {
         grade: true,
         price: true,
         baseItemId: true,
-        itemLinkReference: {
-          include: {
-            items: { select: { id: true } },
-            actions: { select: { id: true } },
+        linkedItems: {
+          select: {
+            id: true,
+            name: true,
+            rarity: true,
+            description: true,
+            stats: true,
+            picture: true,
+            itemTypes: true,
+            grade: true,
+            price: true,
+            baseItemId: true,
+            keywords: { select: { keywordId: true, value: true } },
+          },
+        },
+        linkedActions: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            costs: true,
+            roll: true,
+            actionType: true,
+            actionSubtypes: true,
+            duration: true,
+            cooldown: true,
+            modifiers: true,
+            keywordModifiers: { select: { keywordId: true, value: true } },
+            baseActionId: true,
           },
         },
         keywords: { select: { keywordId: true, value: true } },
       },
     });
 
-    const promises = [];
-
-    for (const { itemId, quantity } of itemList) {
-      const itemDetails = items.find((item) => item.id === itemId);
-
-      if (!itemDetails) continue;
-
-      const {
-        id,
-        baseItemId,
-        itemLinkReference,
-        keywords,
-        picture,
-        stats,
-        ...rest
-      } = itemDetails;
-
-      const typedPicture = picture as Picture;
-      const typedStats = stats as ItemStats;
-
-      const { itemIds, actionIds } = await createLinkedCopies(
-        itemLinkReference,
-        inventoryId,
-        quantity,
-        client,
-      );
-
-      if (itemDetails) {
-        for (let i = 0; i < quantity; i++) {
-          promises.push(
-            client.item.create({
-              data: {
-                ...rest,
-                picture: typedPicture,
-                stats: typedStats,
-                updatedAt: new Date(),
-                characterInventoryId: inventoryId,
-                base: false,
-                baseItemId: baseItemId || id,
-                itemLinkReference: {
-                  create: {
-                    items: {
-                      connect: itemIds?.map((id) => ({ id })),
-                    },
-                    actions: {
-                      connect: actionIds?.map((id) => ({ id })),
-                    },
-                  },
-                },
-                keywords: {
-                  createMany: {
-                    data: keywords,
-                  },
-                },
-              },
-              include: itemInclude,
-            }),
-          );
-        }
-      }
+    if (items.length === 0) {
+      throw new Error('No items found');
     }
 
-    const newItems = await Promise.all(promises);
+    let nested = new Map();
 
-    return newItems;
+    items.forEach((item) => {
+      if (item.baseItemId) {
+        throw new Error('Cannot create an item copy from a non-base item');
+      }
+
+      nested.set(`item ${item.id}`, {
+        items: item.linkedItems ?? [],
+        actions: item.linkedActions ?? [],
+        keywords: item.keywords ?? [],
+      });
+
+      if (item.linkedItems.length > 0) {
+        item.linkedItems.forEach((item) => {
+          if (item.baseItemId) {
+            throw new Error(
+              'Cannot create an item copy from a non-base linked item',
+            );
+          }
+
+          nested.set(`linked item ${item.id}`, {
+            keywords: item.keywords ?? [],
+          });
+        });
+      }
+
+      if (item.linkedActions.length > 0) {
+        item.linkedActions.forEach((action) => {
+          if (action.baseActionId) {
+            throw new Error(
+              'Cannot create an item copy from a non-base linked action',
+            );
+          }
+
+          nested.set(`linked action ${action.id}`, {
+            keywords: action.keywordModifiers ?? [],
+          });
+        });
+      }
+    });
+
+    const newItems = await client.item.createManyAndReturn({
+      data: items.flatMap((item) => {
+        const quantity =
+          itemList.find((i) => i.itemId === item.id)?.quantity ?? 1;
+
+        const validatedItem = ItemInput.parse(item);
+
+        const { id, keywords, ...data } = validatedItem;
+
+        return Array.from({ length: quantity }, () => ({
+          ...data,
+          baseItemId: item.baseItemId ?? id,
+          base: false,
+          characterInventoryId: inventoryId,
+        }));
+      }),
+      select: { id: true, baseItemId: true },
+    });
+
+    const newLinkedItems = await client.item.createManyAndReturn({
+      data: newItems.flatMap((item) => {
+        const linkedItems = nested.get(`item ${item.baseItemId}`).items;
+
+        const l = linkedItems.map((i: any) => {
+          const validatedItem = ItemInput.parse(i);
+
+          const { id, keywords, ...data } = validatedItem;
+
+          return {
+            ...data,
+            baseItemId: i.baseItemId ?? i.id,
+            base: false,
+            parentItemId: item.id,
+          };
+        });
+
+        return l;
+      }),
+      select: { id: true, baseItemId: true },
+    });
+
+    const newLinkedActions = await client.action.createManyAndReturn({
+      data: newItems.flatMap((item) => {
+        const linkedActions = nested.get(`item ${item.baseItemId}`).actions;
+
+        const l = linkedActions.map((a: any) => {
+          const validatedAction = ActionInput.parse(a);
+
+          const { id, keywords, ...data } = validatedAction;
+
+          return {
+            ...data,
+            baseActionId: a.baseActionId ?? a.id,
+            parentItemId: item.id,
+          };
+        });
+
+        return l;
+      }),
+      select: { id: true, baseActionId: true },
+    });
+
+    const keywordData = newItems.flatMap((item) => {
+      const keywords = nested.get(`item ${item.baseItemId}`).keywords;
+
+      const l = keywords.map((k: any) => ({
+        ...k,
+        itemId: item.id,
+      }));
+
+      return l;
+    });
+
+    newLinkedItems.forEach((item) => {
+      const keywords = nested.get(`linked item ${item.baseItemId}`).keywords;
+
+      keywords.map((k: any) => {
+        keywordData.push({
+          ...k,
+          itemId: item.id,
+        });
+      });
+    });
+
+    newLinkedActions.forEach((action) => {
+      const keywords = nested.get(
+        `linked action ${action.baseActionId}`,
+      ).keywords;
+
+      keywords.map((k: any) => {
+        keywordData.push({
+          ...k,
+          actionId: action.id,
+        });
+      });
+    });
+
+    await client.keywordReference.createManyAndReturn({
+      data: keywordData,
+    });
   },
 
   createItemConditions: async (

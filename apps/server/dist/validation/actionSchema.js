@@ -8,20 +8,20 @@ export const ActionInput = z.object({
     roll: z.array(Roll).optional(),
     actionType: ActionType,
     actionSubtypes: z.array(ActionSubtype).optional(),
-    duration: z.preprocess((value) => value === null ? undefined : value, z
+    duration: z.preprocess((value) => (value === null ? undefined : value), z
         .object({
         unit: z.string(),
         value: z.number().int().nonnegative(),
     })
         .optional()),
-    cooldown: z.preprocess((value) => value === null ? undefined : value, z
+    cooldown: z.preprocess((value) => (value === null ? undefined : value), z
         .object({
         unit: z.string(),
         value: z.number().int().nonnegative(),
     })
         .optional()),
     description: Description,
-    modifiers: ItemStats.optional(),
+    modifiers: z.preprocess((value) => (value === null ? undefined : value), ItemStats.optional()),
     keywords: Keywords.optional(),
-    baseActionId: z.preprocess((value) => value === null ? undefined : value, z.number().int().optional())
+    baseActionId: z.preprocess((value) => (value === null ? undefined : value), z.number().int().optional()),
 });

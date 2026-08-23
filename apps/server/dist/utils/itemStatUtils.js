@@ -1,15 +1,13 @@
-// @ts-nocheck
 const calculateItemsStats = (items) => {
     const calculatedItems = items.map((item) => calculateItemStats(item));
     return calculatedItems;
 };
 export const calculateItemStats = (item) => {
-    var _a, _b;
     if (!(item === null || item === void 0 ? void 0 : item.stats) && !(item === null || item === void 0 ? void 0 : item.modifiedStats))
         return item;
     const modifierObj = {};
     const modifierKeywords = [];
-    const activeActions = (_b = (_a = item === null || item === void 0 ? void 0 : item.itemLinkReference) === null || _a === void 0 ? void 0 : _a.actions) === null || _b === void 0 ? void 0 : _b.filter((action) => action.active);
+    const activeActions = item === null || item === void 0 ? void 0 : item.linkedActions.filter((action) => action.active);
     activeActions === null || activeActions === void 0 ? void 0 : activeActions.forEach((action) => {
         if (action.modifiers) {
             Object.entries(action.modifiers).forEach(([stat, value]) => {
@@ -28,7 +26,7 @@ export const calculateItemStats = (item) => {
             }
         }
     });
-    const combined = Object.assign({}, item.stats);
+    const combined = item.stats;
     const modifiedStats = (item === null || item === void 0 ? void 0 : item.modifiedStats) || {};
     for (const [key, value] of Object.entries(modifiedStats)) {
         if (combined[key]) {

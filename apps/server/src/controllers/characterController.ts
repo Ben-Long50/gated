@@ -82,7 +82,7 @@ const characterController = {
 
       res
         .status(200)
-        .json({ item, message: `Successfully toggled ${item.name}` });
+        .json({ item, message: `Successfully toggled ${item?.name}` });
     } catch (error: any) {
       handleControllerError(res, error);
     }
@@ -106,6 +106,26 @@ const characterController = {
     }
   },
 
+  addBulkItems: async (req: Request, res: Response) => {
+    try {
+      const character = await cartServices.addBulkItems(
+        Number(req.params.characterId),
+        req.body,
+      );
+
+      if (!character) {
+        throw new Error('Failed to find character');
+      }
+
+      res.status(200).json({
+        character,
+        message: `Successfully added bulk item(s) to ${constructName(character)}'s cart`,
+      });
+    } catch (error: any) {
+      handleControllerError(res, error);
+    }
+  },
+
   completePurchase: async (req: Request, res: Response) => {
     try {
       if (!req.user) {
@@ -114,17 +134,13 @@ const characterController = {
 
       const character = await prisma.$transaction(
         async (tx) => {
-          await characterServices.addToInventory(
+          const character = await characterServices.addToInventory(
             Number(req.params.characterId),
             Number(req.params.inventoryId),
             tx,
           );
 
           await characterServices.clearCart(Number(req.params.characterId), tx);
-
-          const character = await characterServices.getCharacterById(
-            Number(req.params.characterId),
-          );
 
           if (!character) {
             throw new Error('Character not found');

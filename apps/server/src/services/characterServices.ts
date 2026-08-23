@@ -1,8 +1,5 @@
 import prisma from '../config/database.js';
-import {
-  includeCharacterCart,
-  unequipLinked,
-} from '../utils/linkQueryStructures.js';
+import { includeCharacterCart } from '../utils/linkQueryStructures.js';
 import itemServices, { itemInclude } from './itemServices.js';
 import { getIO } from '../sockets/socket.js';
 import validateLevelUpBonus from '../utils/validateLevelUpBonus.js';
@@ -155,60 +152,27 @@ const characterServices = {
           id: Number(itemId),
           characterInventoryId: Number(inventoryId),
         },
-        select: { id: true, equipped: true },
+        select: {
+          id: true,
+          equipped: true,
+          linkedItems: { select: { id: true } },
+        },
       });
 
       if (!item) {
         throw new Error('Item not found');
       }
+      const itemIds = [...item?.linkedItems.map((item) => item.id), item.id];
+      const equipped = item?.equipped;
 
-      const updatedItem = await prisma.$transaction(async (tx) => {
-        await tx.itemLinkReference.update({
-          where: { itemId: item.id },
-          data: item.equipped
-            ? unequipLinked
-            : {
-                items: {
-                  updateMany: {
-                    where: {},
-                    data: {
-                      equipped: true,
-                    },
-                  },
-                },
-                actions: {
-                  updateMany: {
-                    where: { actionType: 'passive' },
-                    data: {
-                      active: true,
-                      equipped: true,
-                    },
-                  },
-                },
-              },
-        });
+      await prisma.item.updateMany({
+        where: { id: { in: itemIds } },
+        data: { equipped: !equipped },
+      });
 
-        await tx.itemLinkReference.update({
-          where: { itemId: item.id },
-          data: item.equipped
-            ? unequipLinked
-            : {
-                actions: {
-                  updateMany: {
-                    where: { actionType: { not: 'passive' } },
-                    data: {
-                      equipped: true,
-                    },
-                  },
-                },
-              },
-        });
-
-        return await tx.item.update({
-          where: { id: item.id },
-          data: { equipped: !item.equipped },
-          include: itemInclude,
-        });
+      const updatedItem = await prisma.item.findUnique({
+        where: { id: item.id },
+        include: itemInclude,
       });
 
       return updatedItem;
@@ -297,7 +261,7 @@ const characterServices = {
 
           await itemServices.createCharacterItemCopy(
             character.characterInventory.id,
-            [{ itemId: unarmed.id, price: null, quantity: 1 }],
+            [{ itemId: unarmed.id, quantity: 1 }],
             tx,
           );
         }
@@ -409,32 +373,6 @@ const characterServices = {
     }
   },
 
-  createCharacterCart: async (characterId: number) => {
-    try {
-      await prisma.characterCart.create({
-        data: {
-          character: { connect: { id: characterId } },
-        },
-      });
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to create character cart');
-    }
-  },
-
-  createCharacterInventory: async (characterId: number) => {
-    try {
-      await prisma.characterInventory.create({
-        data: {
-          character: { connect: { id: characterId } },
-        },
-      });
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to create character inventory');
-    }
-  },
-
   addToInventory: async (
     characterId: number,
     inventoryId: number,
@@ -443,24 +381,24 @@ const characterServices = {
     try {
       const client = tx ?? prisma;
 
-      const profits =
-        (
-          await client.character.findUnique({
-            where: { id: characterId },
-            select: { profits: true },
-          })
-        )?.profits || 0;
-
-      const cart = await client.characterCart.findUnique({
-        where: { characterId },
+      const character = await client.character.findUnique({
+        where: { id: characterId },
         select: {
-          items: {
-            include: {
-              item: { select: { id: true, price: true, itemTypes: true } },
+          profits: true,
+          characterCart: {
+            select: {
+              items: {
+                include: {
+                  item: { select: { id: true, price: true, itemTypes: true } },
+                },
+              },
             },
           },
         },
       });
+
+      const profits = character?.profits || 0;
+      const cart = character?.characterCart;
 
       const items =
         cart?.items.map((item) => ({
@@ -495,10 +433,13 @@ const characterServices = {
         await itemServices.createCharacterItemCopy(inventoryId, items, client);
       }
 
-      await client.character.update({
-        where: { id: Number(characterId) },
-        data: { profits: profits - totalPrice },
+      const updatedCharacter = await client.character.update({
+        where: { id: characterId },
+        data: { profits: { decrement: totalPrice } },
+        include: characterInclude,
       });
+
+      return updatedCharacter;
     } catch (error: any) {
       console.error(error);
       throw new Error('Failed to add items to inventory');
