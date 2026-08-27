@@ -29,7 +29,7 @@ const CharacterPicture = ({
 
   return (
     <ThemeContainer
-      className="relative aspect-square"
+      className="relative aspect-square w-full"
       chamfer="medium"
       borderColor={accentPrimary}
       overflowHidden={true}

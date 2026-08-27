@@ -77,7 +77,7 @@ const CharacterLinks = () => {
         icon={
           <ShopIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
         }
-        path={`/glam/characters/${character?.id}/shop/global?category=weapon`}
+        path={`/glam/characters/${character?.id}/shop/global`}
       />
     </>
   );

@@ -1,5 +1,5 @@
 import BtnAuth from './buttons/BtnAuth';
-import { useContext, useMemo } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import WeaponIcon from './icons/WeaponIcon';
 import ArmorIcon from './icons/ArmorIcon';
 import CyberIcon from './icons/CyberIcon';
@@ -19,31 +19,33 @@ import Items from './Items';
 import Cart from './Cart';
 import NavTabs from './NavTabs';
 import BulkItemForm from './forms/BulkItemForm';
+import { ItemType } from 'src/types/item';
+import useItemTypeQueries from 'src/hooks/useItemQueries/useItemTypeQueries';
 
 const Shop = () => {
   const { accentPrimary } = useContext(ThemeContext);
   const { characterId, shopId } = useParams();
-
-  const [searchParams, setSearchParams] = useSearchParams();
-  const category = searchParams.get('category');
+  const [types, setTypes] = useState<(ItemType | 'cart' | 'bulk')[]>([]);
 
   const { filteredCharacter: character } = useCharacter(Number(characterId));
   const { filteredCharacter: shop } = useCharacter(Number(shopId));
 
-  const cartLength = useMemo(() => {
-    return Object.values(character?.characterCart || {})
-      .filter(Array.isArray)
-      .flat()
-      .reduce((sum, item) => sum + item.quantity, 0);
-  }, [character]);
+  const { items, isLoading } = useItemTypeQueries(types);
 
-  const { actions, ...shopItems } = shop?.inventory ?? {};
+  const cartLength = Object.values(character?.characterCart || {})
+    .filter(Array.isArray)
+    .flat()
+    .reduce((sum, item) => sum + item.quantity, 0);
 
-  const categorizedShopItems = shopId
-    ? category === 'all'
-      ? Object.values(shopItems).flat()
-      : shopItems[category]
-    : null;
+  const shopItems = shopId ? shop?.inventory : items;
+
+  const categorizedShopItems = shop?.inventory
+    ? shop?.inventory.filter((item) =>
+        item.itemTypes.some(
+          (type: ItemType) => types.includes(type) || types.length === 0,
+        ),
+      )
+    : [];
 
   return (
     <>
@@ -59,10 +61,7 @@ const Shop = () => {
       </div>
       <div className="flex items-center justify-between gap-8">
         <div className="flex items-center justify-start gap-4">
-          <button
-            className="group relative"
-            onClick={() => setSearchParams({ category: 'cart' })}
-          >
+          <button className="group relative" onClick={() => setTypes(['cart'])}>
             <Icon
               className="group-hover:text-accent text-secondary timing size-12 shrink-0 p-2"
               path={mdiCartOutline}
@@ -79,81 +78,65 @@ const Shop = () => {
         <p>{character?.profits.toLocaleString()} p</p>
       </div>
       <NavTabs>
-        {shopId && (
-          <BtnAuth
-            active={category === 'all'}
-            onClick={() => setSearchParams({ category: 'all' })}
-          >
-            <ShopIcon className="size-8" />
-          </BtnAuth>
-        )}
-        {(!categorizedShopItems || shopItems.weapons?.length) > 0 && (
-          <BtnAuth
-            active={category === 'weapon'}
-            onClick={() => setSearchParams({ category: 'weapon' })}
-          >
-            <WeaponIcon className="size-8" />
-          </BtnAuth>
-        )}
-        {(!categorizedShopItems || shopItems.armors?.length > 0) && (
-          <BtnAuth
-            active={category === 'armor'}
-            onClick={() => setSearchParams({ category: 'armor' })}
-          >
-            <ArmorIcon className="size-8" />
-          </BtnAuth>
-        )}
-        {(!categorizedShopItems || shopItems.augmentations?.length > 0) && (
-          <BtnAuth
-            active={category === 'cybernetic'}
-            onClick={() => setSearchParams({ category: 'cybernetic' })}
-          >
-            <CyberIcon className="size-8" />
-          </BtnAuth>
-        )}
-        {(!categorizedShopItems || shopItems.reusables?.length > 0) && (
-          <BtnAuth
-            active={category === 'reusable'}
-            onClick={() => setSearchParams({ category: 'reusable' })}
-          >
-            <InventoryIcon className="size-8" />
-          </BtnAuth>
-        )}
-        {(!categorizedShopItems || shopItems.consumables?.length > 0) && (
-          <BtnAuth
-            active={category === 'consumable'}
-            onClick={() => setSearchParams({ category: 'consumable' })}
-          >
-            <PotionIcon className="size-8" />
-          </BtnAuth>
-        )}
-        {(!categorizedShopItems || shopItems.vehicles?.length > 0) && (
-          <BtnAuth
-            active={category === 'vehicle'}
-            onClick={() => setSearchParams({ category: 'vehicle' })}
-          >
-            <VehicleIcon className="size-8" />
-          </BtnAuth>
-        )}
-        {(!categorizedShopItems || shopItems.drones?.length > 0) && (
-          <BtnAuth
-            active={category === 'drone'}
-            onClick={() => setSearchParams({ category: 'drone' })}
-          >
-            <DroneIcon className="size-8" />
-          </BtnAuth>
-        )}
+        <BtnAuth active={types.length === 0} onClick={() => setTypes([])}>
+          All
+        </BtnAuth>
+        <BtnAuth
+          active={types.includes('weapon')}
+          onClick={() => setTypes(['weapon'])}
+        >
+          <WeaponIcon className="size-8" />
+        </BtnAuth>
+
+        <BtnAuth
+          active={types.includes('armor')}
+          onClick={() => setTypes(['armor'])}
+        >
+          <ArmorIcon className="size-8" />
+        </BtnAuth>
+        <BtnAuth
+          active={types.includes('cybernetic') || types.includes('mutation')}
+          onClick={() => setTypes(['cybernetic', 'mutation'])}
+        >
+          <CyberIcon className="size-8" />
+        </BtnAuth>
+        <BtnAuth
+          active={types.includes('reusable')}
+          onClick={() => setTypes(['reusable'])}
+        >
+          <InventoryIcon className="size-8" />
+        </BtnAuth>
+        <BtnAuth
+          active={types.includes('consumable')}
+          onClick={() => setTypes(['consumable'])}
+        >
+          <PotionIcon className="size-8" />
+        </BtnAuth>
+        <BtnAuth
+          active={types.includes('vehicle')}
+          onClick={() => setTypes(['vehicle'])}
+        >
+          <VehicleIcon className="size-8" />
+        </BtnAuth>
+        <BtnAuth
+          active={types.includes('drone')}
+          onClick={() => setTypes(['drone'])}
+        >
+          <DroneIcon className="size-8" />
+        </BtnAuth>
       </NavTabs>
       <BtnAuth
-        active={category === 'bulk'}
-        onClick={() => setSearchParams({ category: 'bulk' })}
+        active={types.includes('bulk')}
+        onClick={() => setTypes(['bulk'])}
       >
         Bulk Item Select
       </BtnAuth>
       <Divider className="my-0" />
-      {category === 'bulk' && <BulkItemForm />}
-      {category === 'cart' && <Cart />}
-      {category !== 'bulk' && category !== 'cart' && <Items />}
+      {types.includes('bulk') && <BulkItemForm />}
+      {types.includes('cart') && <Cart />}
+      {!types.includes('bulk') && !types.includes('cart') && (
+        <Items itemTypes={types} />
+      )}
     </>
   );
 };

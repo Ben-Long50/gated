@@ -6,111 +6,83 @@ import InventoryIcon from './icons/InventoryIcon';
 import PotionIcon from './icons/PotionIcon';
 import VehicleIcon from './icons/VehicleIcon';
 import WeaponIcon from './icons/WeaponIcon';
-import {
-  Outlet,
-  useLocation,
-  useNavigate,
-  useParams,
-  useSearchParams,
-} from 'react-router-dom';
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import useCharacter from 'src/hooks/useCharacter';
 import Loading from './Loading';
-import { Item } from 'src/types/item';
-import { useContext, useRef } from 'react';
+import { ItemType } from 'src/types/item';
+import { useState } from 'react';
 import NavTabs from './NavTabs';
 import InventoryCard from './InventoryCard';
-import { LayoutContext } from 'src/contexts/LayoutContext';
 import InventoryGrid from './InventoryGrid';
 
 const Inventory = () => {
-  const { mobile } = useContext(LayoutContext);
   const { characterId } = useParams();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const location = useLocation();
   const parts = location.pathname.split('/');
+  const [types, setTypes] = useState<ItemType[]>([]);
 
   const { filteredCharacter: character, isLoading } = useCharacter(
     Number(characterId),
   );
 
-  const category = searchParams.get('category');
-
-  const items = category
-    ? character?.inventory?.filter((item) => item.itemTypes.includes(category))
-    : character?.inventory;
-
-  const handleTab = (newCategory: string | null) => {
-    if (!newCategory) {
-      navigate('');
-    } else {
-      navigate(`?category=${newCategory}`);
-    }
-  };
-
-  const clickTimeout = useRef<NodeJS.Timeout | null>(null);
-
-  const handleClick = (item: Item) => {
-    clickTimeout.current = setTimeout(() => {
-      navigate(
-        parts.includes('inventory')
-          ? `items/${item.id}`
-          : `inventory/items/${item.id}`,
-      );
-      clickTimeout.current = null;
-    }, 200);
-  };
+  const items = character?.inventory
+    ? character?.inventory.filter((item) =>
+        item.itemTypes.some(
+          (type: ItemType) => types.includes(type) || types.length === 0,
+        ),
+      )
+    : [];
 
   return (
     <>
       <NavTabs>
-        <BtnAuth active={!category} onClick={() => handleTab(null)}>
+        <BtnAuth active={types.length === 0} onClick={() => setTypes([])}>
           All
         </BtnAuth>
         <BtnAuth
-          active={category === 'weapon'}
-          onClick={() => handleTab('weapon')}
+          active={types.includes('weapon')}
+          onClick={() => setTypes(['weapon'])}
         >
           <WeaponIcon className="size-8" />
         </BtnAuth>
         <BtnAuth
-          active={category === 'armor'}
-          onClick={() => handleTab('armor')}
+          active={types.includes('armor')}
+          onClick={() => setTypes(['armor'])}
         >
           <ArmorIcon className="size-8" />
         </BtnAuth>
         <BtnAuth
-          active={category === 'cybernetic'}
-          onClick={() => handleTab('cybernetic')}
+          active={types.includes('cybernetic') || types.includes('mutation')}
+          onClick={() => setTypes(['cybernetic', 'mutation'])}
         >
           <CyberIcon className="size-8" />
         </BtnAuth>
         <BtnAuth
-          active={category === 'reusable'}
-          onClick={() => handleTab('reusable')}
+          active={types.includes('reusable')}
+          onClick={() => setTypes(['reusable'])}
         >
           <InventoryIcon className="size-8" />
         </BtnAuth>
         <BtnAuth
-          active={category === 'consumable'}
-          onClick={() => handleTab('consumable')}
+          active={types.includes('consumable')}
+          onClick={() => setTypes(['consumable'])}
         >
           <PotionIcon className="size-8" />
         </BtnAuth>
         <BtnAuth
-          active={category === 'vehicle'}
-          onClick={() => handleTab('vehicle')}
+          active={types.includes('vehicle')}
+          onClick={() => setTypes(['vehicle'])}
         >
           <VehicleIcon className="size-8" />
         </BtnAuth>
         <BtnAuth
-          active={category === 'drone'}
-          onClick={() => handleTab('drone')}
+          active={types.includes('drone')}
+          onClick={() => setTypes(['drone'])}
         >
           <DroneIcon className="size-8" />
         </BtnAuth>
       </NavTabs>
-
       {isLoading ? (
         <Loading />
       ) : (
@@ -120,7 +92,7 @@ const Inventory = () => {
               <InventoryCard
                 key={item.id}
                 item={item}
-                onClick={() => handleClick(item)}
+                onClick={() => navigate(`items/${item.id}`)}
               />
             ))
           ) : (

@@ -210,9 +210,70 @@ const CharacterStatBars = ({
           <SizeIcon className="text-secondary text-blue size-8" />
         </StatBar>
       )}
+
+      {stats.hands !== undefined && (
+        <StatBar
+          title="Hands"
+          current={stats.hands}
+          color={statColorMap['Hands']}
+          size={size}
+          handleChange={
+            handleChange
+              ? (value: number) => handleChange('hands', value)
+              : undefined
+          }
+        >
+          <HandIcon className="text-secondary text-blue size-8" />
+        </StatBar>
+      )}
+      {stats.feet !== undefined && (
+        <StatBar
+          title="Feet"
+          current={stats.feet}
+          color={statColorMap['Feet']}
+          size={size}
+          handleChange={
+            handleChange
+              ? (value: number) => handleChange('feet', value)
+              : undefined
+          }
+        >
+          <FootIcon className="text-secondary text-blue size-8" />
+        </StatBar>
+      )}
+      {stats.actions !== undefined && (
+        <StatBar
+          title="Actions"
+          current={stats.actions}
+          color={statColorMap['Actions']}
+          size={size}
+          handleChange={
+            handleChange
+              ? (value: number) => handleChange('actions', value)
+              : undefined
+          }
+        >
+          <ActionIcon className="text-secondary text-blue size-8" />
+        </StatBar>
+      )}
+      {stats.reactions !== undefined && (
+        <StatBar
+          title="Reactions"
+          current={stats.reactions}
+          color={statColorMap['Reactions']}
+          size={size}
+          handleChange={
+            handleChange
+              ? (value: number) => handleChange('reactions', value)
+              : undefined
+          }
+        >
+          <ReactionIcon className="text-secondary text-blue size-8" />
+        </StatBar>
+      )}
       {stats.permanentInjuries !== undefined && (
         <>
-          {size === 'large' && <h4>Insanities</h4>}
+          {size === 'large' && <h4>Injuries</h4>}
           <InjuryIcon className="text-secondary size-8" />
           <div className="col-span-2 flex items-center justify-end gap-4 place-self-end">
             <div className={`flex grow items-center gap-2 justify-self-end`}>
@@ -289,66 +350,6 @@ const CharacterStatBars = ({
             )}
           </div>
         </>
-      )}
-      {stats.hands !== undefined && (
-        <StatBar
-          title="Hands"
-          current={stats.hands}
-          color={statColorMap['Hands']}
-          size={size}
-          handleChange={
-            handleChange
-              ? (value: number) => handleChange('hands', value)
-              : undefined
-          }
-        >
-          <HandIcon className="text-secondary text-blue size-8" />
-        </StatBar>
-      )}
-      {stats.feet !== undefined && (
-        <StatBar
-          title="Feet"
-          current={stats.feet}
-          color={statColorMap['Feet']}
-          size={size}
-          handleChange={
-            handleChange
-              ? (value: number) => handleChange('feet', value)
-              : undefined
-          }
-        >
-          <FootIcon className="text-secondary text-blue size-8" />
-        </StatBar>
-      )}
-      {stats.actions !== undefined && (
-        <StatBar
-          title="Actions"
-          current={stats.actions}
-          color={statColorMap['Actions']}
-          size={size}
-          handleChange={
-            handleChange
-              ? (value: number) => handleChange('actions', value)
-              : undefined
-          }
-        >
-          <ActionIcon className="text-secondary text-blue size-8" />
-        </StatBar>
-      )}
-      {stats.reactions !== undefined && (
-        <StatBar
-          title="Reactions"
-          current={stats.reactions}
-          color={statColorMap['Reactions']}
-          size={size}
-          handleChange={
-            handleChange
-              ? (value: number) => handleChange('reactions', value)
-              : undefined
-          }
-        >
-          <ReactionIcon className="text-secondary text-blue size-8" />
-        </StatBar>
       )}
     </>
   );

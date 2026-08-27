@@ -20,8 +20,9 @@ import ItemCard from './ItemCard';
 import { Item } from 'src/types/item';
 import { Action } from 'src/types/action';
 import { Condition } from 'src/types/condition';
-import useAllItemsQuery from 'src/hooks/useAllItemsQuery/useAllItemsQuery';
 import { camelCase } from 'change-case';
+import useItemTypeQueries from 'src/hooks/useItemQueries/useItemTypeQueries';
+import { itemTypes } from 'src/utils/constants/itemConstants';
 
 const CodexSearch = () => {
   const { mobile } = useContext(LayoutContext);
@@ -36,7 +37,7 @@ const CodexSearch = () => {
   const nameTimerRef = useRef<number | null>(null);
   const descriptionTimerRef = useRef<number | null>(null);
 
-  const { data: items, isLoading, isPending } = useAllItemsQuery();
+  const { items, isLoading, isPending } = useItemTypeQueries(itemTypes);
 
   const { filteredKeywords: keywords } = useKeywords();
 
@@ -154,7 +155,7 @@ const CodexSearch = () => {
   };
 
   return (
-    <div className="flex w-full max-w-6xl flex-col items-center gap-6 sm:gap-8">
+    <div className="flex w-full flex-col items-center gap-6 sm:gap-8">
       <div className="flex w-full flex-col gap-4">
         <div className="grid w-full grid-cols-2 gap-4 sm:gap-8">
           <ArrowHeader2 title="Filter Options" />

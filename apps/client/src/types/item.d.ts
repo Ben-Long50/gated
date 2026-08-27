@@ -86,13 +86,4 @@ export type ItemType =
   | 'reusable'
   | 'consumable';
 
-export interface Equipment {
-  weapons: Item[];
-  armors: Item[];
-  augmentations: Item[];
-  vehicles: Item[];
-  drones: Item[];
-  modifications: Item[];
-  reusables: Item[];
-  consumables: Item[];
-}
+export type Equipment = Item[];

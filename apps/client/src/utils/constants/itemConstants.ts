@@ -1,3 +1,5 @@
+import { ItemType } from 'src/types/item';
+
 export const rarities = [
   'common',
   'uncommon',
@@ -16,4 +18,4 @@ export const itemTypes = [
   'modification',
   'reusable',
   'consumable',
-];
+] as ItemType[];

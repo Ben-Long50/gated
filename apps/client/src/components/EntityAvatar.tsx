@@ -26,7 +26,7 @@ const EntityAvater = ({
         className={`${className} shadow-color relative aspect-square size-12 shrink-0 overflow-hidden rounded-full shadow-md`}
         style={style}
       >
-        {entity?.picture?.imageUrl ? (
+        {entity?.picture?.publicId ? (
           <CloudinaryPicture
             publicId={entity?.picture?.publicId}
             position={entity?.picture?.position}

@@ -55,9 +55,13 @@ const CharacterSheet = () => {
 
   return (
     <>
-      <div className="flex items-center justify-between gap-8">
+      <div
+        className={`${mobile ? 'flex-col items-start' : 'flex-row items-center'} flex justify-between gap-8`}
+      >
         <CharacterHeader character={character} />
-        <div className="flex items-center justify-end gap-2 sm:gap-8">
+        <div
+          className={`${mobile ? 'w-full justify-between' : 'justify-end'} flex items-center gap-2 sm:gap-8`}
+        >
           <div className="flex flex-col items-center gap-1">
             <h3 className="text-primary text-xl font-semibold tracking-widest">
               Height
@@ -216,7 +220,7 @@ const CharacterSheet = () => {
         />
       </StatBarContainer>
       <Divider />
-      {character?.base && (
+      {character?.userId === null && (
         <>
           <ArrowHeader3 title="Starting Inventory" />
           <Inventory />
@@ -227,39 +231,6 @@ const CharacterSheet = () => {
           )}
           <Divider />
         </>
-      )}
-      {character?.playerCharacter && (
-        <div
-          className={`${mobile ? 'grid-cols-1' : 'grid-cols-2'} grid w-full items-center justify-around gap-4`}
-        >
-          <div className="bg-secondary flex items-center justify-between gap-2 rounded-md p-4 shadow-md shadow-black">
-            <ArrowHeader4 className="text-primary" title="Attribute Points" />
-            <p>
-              {character?.stats.usedAttributePoints} /{' '}
-              {character?.stats.attributePoints}
-            </p>
-          </div>
-          <div className="bg-secondary flex items-center justify-between gap-2 rounded-md p-4 shadow-md shadow-black">
-            <ArrowHeader4 className="text-primary" title="Skill Points" />
-            <p>
-              {character?.stats.usedSkillPoints} /{' '}
-              {character?.stats.skillPoints}
-            </p>
-          </div>
-          <div className="bg-secondary flex items-center justify-between gap-2 rounded-md p-4 shadow-md shadow-black">
-            <ArrowHeader4 className="text-primary" title="Perks" />
-            <p>
-              {character?.stats.usedPerkPoints} / {character?.stats.perkPoints}
-            </p>
-          </div>
-          <div className="bg-secondary flex items-center justify-between gap-2 rounded-md p-4 shadow-md shadow-black">
-            <ArrowHeader4 className="text-primary" title="Master Perks" />
-            <p>
-              {character?.stats.usedMasterPerkPoints} /{' '}
-              {character?.stats.masterPerkPoints}
-            </p>
-          </div>
-        </div>
       )}
       <ArrowHeader2 title="Attributes & Skills" />
       <div className="mb-auto flex w-full grow flex-col gap-6 lg:grid lg:grid-cols-2 lg:grid-rows-2 lg:gap-10">
@@ -312,7 +283,7 @@ const CharacterSheet = () => {
         </>
       )}
       {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') &&
-        character?.base && (
+        character?.userId === null && (
           <>
             <Divider />
             <div className="flex w-full flex-col gap-4">

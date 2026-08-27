@@ -4,9 +4,9 @@ import { Character } from 'src/types/character';
 import useCharacterQuery from './useCharacterQuery/useCharacterQuery';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import calculateCharacterStats from 'src/utils/characterStatUtils';
-import useItems from './useItems';
 import { combineAttributeTrees } from 'src/utils/combineAttributeTrees';
 import emptyAttributeTree from 'src/utils/constants/emptyAttributeTree';
+import useItemQueries from './useItemQueries/useItemQueries';
 
 const useCharacter = (characterId: number) => {
   const { user } = useContext(AuthContext);
@@ -19,7 +19,7 @@ const useCharacter = (characterId: number) => {
     ? character.characterInventory.items.filter(Boolean).map((item) => item.id)
     : [];
 
-  const { items, isLoading: itemsLoading } = useItems(itemIds);
+  const { items, isLoading: itemsLoading } = useItemQueries(itemIds);
 
   const levelBonusAttributeTrees = character
     ? character?.characterLevelBonuses
@@ -35,53 +35,15 @@ const useCharacter = (characterId: number) => {
         .flatMap((bonus) => bonus.perks)
     : [];
 
-  const equipment = items
-    ? {
-        all: items?.filter((item) => item?.equipped === true),
-        weapons: items?.filter(
-          (item) =>
-            item?.itemTypes.includes('weapon') && item?.equipped === true,
-        ),
-        armors: items?.filter(
-          (item) =>
-            item?.itemTypes.includes('armor') && item?.equipped === true,
-        ),
-        augmentations: items?.filter(
-          (item) =>
-            (item?.itemTypes.includes('cybernetic') ||
-              item?.itemTypes.includes('mutation')) &&
-            item?.equipped === true,
-        ),
-        vehicles: items?.filter(
-          (item) =>
-            item?.itemTypes.includes('vehicle') && item?.equipped === true,
-        ),
-        drones: items?.filter(
-          (item) =>
-            item?.itemTypes.includes('drone') && item?.equipped === true,
-        ),
-        modifications: items?.filter(
-          (item) =>
-            item?.itemTypes.includes('modification') && item?.equipped === true,
-        ),
-        reusables: items?.filter(
-          (item) =>
-            item?.itemTypes.includes('reusable') && item?.equipped === true,
-        ),
-        consumables: items?.filter(
-          (item) =>
-            item?.itemTypes.includes('consumable') && item?.equipped === true,
-        ),
-      }
-    : null;
+  const equipment = !itemsLoading
+    ? items.filter(Boolean).filter((item) => item.equipped)
+    : [];
 
-  const actions = equipment
-    ? [
-        ...Object.values(equipment).flatMap((items) =>
-          items.flatMap((item) => item.linkedActions),
-        ),
-        ...perks.flatMap((perk) => perk.actions),
-      ]
+  const actions = !itemsLoading
+    ? equipment
+        .flatMap((item) => item.linkedActions)
+        .filter(Boolean)
+        .sort((a, b) => a.name.localeCompare(b.name))
     : [];
 
   const stats =

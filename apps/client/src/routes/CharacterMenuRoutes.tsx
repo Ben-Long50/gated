@@ -4,7 +4,6 @@ import Cart from 'src/components/Cart';
 import CharacterAffiliations from 'src/components/CharacterAffiliations';
 import CharacterSheet from 'src/components/characterComponents/CharacterSheet';
 import CharacterUpdateForm from 'src/components/forms/CharacterUpdateForm';
-import Deployments from 'src/components/Deployments';
 import Equipment from 'src/components/Equipment';
 import Inventory from 'src/components/Inventory';
 import ItemUpgradeForm from 'src/components/forms/ItemUpgradeForm';
@@ -113,18 +112,6 @@ const CharacterMenuRoutes = () => {
           path=":category/:itemId/conditions"
           element={<ConditionModal />}
         />
-        <Route path="conditions/:conditionId" element={<DescriptionModal />} />
-        <Route path="traits/:traitId" element={<DescriptionModal />} />
-      </Route>
-      <Route
-        path="deployments"
-        element={
-          <Modal>
-            <Deployments />
-          </Modal>
-        }
-      >
-        <Route path="inventory" element={<InventoryModal />} />
         <Route path="conditions/:conditionId" element={<DescriptionModal />} />
         <Route path="traits/:traitId" element={<DescriptionModal />} />
       </Route>

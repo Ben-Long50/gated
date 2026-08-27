@@ -94,10 +94,10 @@ const CharacterRadialMenu = ({
                     character.userId !== user?.id
                   ) {
                     navigate(
-                      `characters/${userCharacter?.id}/shop/${character.id}?category=all`,
+                      `characters/${userCharacter?.id}/shop/${character.id}`,
                     );
                   } else {
-                    navigate(`${path}/shop/global?category=weapon`);
+                    navigate(`${path}/shop/global`);
                   }
                 }}
               >

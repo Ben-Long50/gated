@@ -121,7 +121,14 @@ const CharacterRoutes = () => {
         }
       >
         <Route path="inventory" element={<InventoryModal />} />
-        <Route path="items/:itemId/conditions" element={<ConditionModal />} />
+        <Route
+          path="inventory/items/:itemId"
+          element={
+            <Modal>
+              <ItemPage />
+            </Modal>
+          }
+        />
         <Route path="conditions/:conditionId" element={<DescriptionModal />} />
         <Route path="traits/:traitId" element={<DescriptionModal />} />
       </Route>

@@ -1,9 +1,8 @@
-import { useContext, useMemo, useRef, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import Loading from './Loading';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
-import EquipmentList from './EquipmentList';
-import { Item } from 'src/types/item';
+import { ItemType } from 'src/types/item';
 import Divider from './Divider';
 import useCharacter from 'src/hooks/useCharacter';
 import CharacterStatBars from './characterComponents/CharacterStatBars';
@@ -14,78 +13,41 @@ import InventoryCard from './InventoryCard';
 import BtnAuth from './buttons/BtnAuth';
 import NavTabs from './NavTabs';
 import ActionCard from './ActionCard';
+import { LayoutContext } from 'src/contexts/LayoutContext';
+import DroneIcon from './icons/DroneIcon';
+import WeaponIcon from './icons/WeaponIcon';
+import ArmorIcon from './icons/ArmorIcon';
+import CyberIcon from './icons/CyberIcon';
+import InventoryIcon from './icons/InventoryIcon';
+import PotionIcon from './icons/PotionIcon';
+import VehicleIcon from './icons/VehicleIcon';
+import InventoryGrid from './InventoryGrid';
 
 const Equipment = () => {
   const { user } = useContext(AuthContext);
+  const { mobile } = useContext(LayoutContext);
   const { characterId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const parts = location.pathname.split('/');
   const [tab, setTab] = useState('equipment');
+  const [types, setTypes] = useState<ItemType[]>([]);
 
-  const [active, setActive] = useState<{
-    id: null | number;
-    category: null | string;
-  }>(() => {
-    const store = localStorage.getItem('activeItem');
-    if (store) {
-      return JSON.parse(store);
-    } else {
-      return {
-        id: null,
-        category: null,
-      };
-    }
-  });
+  const size = mobile ? 'small' : 'large';
 
-  const toggleActive = (id: number | null, category: string | null) => {
-    localStorage.setItem('activeItem', JSON.stringify({ id, category }));
-    setActive({ id, category });
-  };
-
-  const cardRef = useRef(null);
   const activeRef = useRef(null);
 
   const { filteredCharacter: character, isLoading } = useCharacter(
     Number(characterId),
   );
 
-  const activeItem = useMemo(() => {
-    switch (active?.category) {
-      case 'weapon':
-        return (
-          character?.equipment?.weapons.filter(
-            (weapon: Item) => weapon.id === active.id,
-          )[0] || null
-        );
-      case 'armors':
-        return (
-          character?.equipment?.armors.filter(
-            (armor: Item) => armor.id === active.id,
-          )[0] || null
-        );
-      case 'augmentations':
-        return (
-          character?.equipment?.augmentations.filter(
-            (cybernetic: Item) => cybernetic.id === active.id,
-          )[0] || null
-        );
-      case 'reusable':
-        return (
-          character?.equipment?.reusables.filter(
-            (item: Item) => item.id === active.id,
-          )[0] || null
-        );
-      case 'consumable':
-        return (
-          character?.equipment?.consumables.filter(
-            (item: Item) => item.id === active.id,
-          )[0] || null
-        );
-      default:
-        return;
-    }
-  }, [active, character]);
+  const equipment = character?.equipment
+    ? character?.equipment.filter((item) =>
+        item.itemTypes.some(
+          (type: ItemType) => types.includes(type) || types.length === 0,
+        ),
+      )
+    : [];
 
   if (isLoading) return <Loading />;
 
@@ -94,19 +56,19 @@ const Equipment = () => {
       <CharacterHeader character={character} />
       <div className="flex w-full flex-col gap-8 sm:flex-row">
         {character?.picture?.publicId && (
-          <CharacterPicture className="min-w-60" character={character} />
+          <CharacterPicture character={character} />
         )}
-        <StatBarContainer>
+        <StatBarContainer size={size}>
           <CharacterStatBars
-            cardWidth={cardRef.current?.offsetWidth}
             stats={character?.stats}
             characterId={character?.id}
+            size={size}
           />
         </StatBarContainer>
       </div>
       <Divider />
       <div ref={activeRef} className="col-span-2 flex w-full flex-col gap-8">
-        <NavTabs className="grid-cols-3">
+        <NavTabs>
           <BtnAuth
             active={tab === 'equipment'}
             onClick={() => setTab('equipment')}
@@ -119,69 +81,76 @@ const Equipment = () => {
           {character?.userId === user?.id && (
             <>
               <BtnAuth onClick={() => navigate('inventory')}>Inventory</BtnAuth>
-              {parts.includes('inventory') && (
-                <Outlet context={{ activeItem, toggleActive }} />
-              )}
+              {parts.includes('inventory') && <Outlet />}
             </>
           )}
         </NavTabs>
         {tab === 'equipment' && (
-          <div className="grid grid-cols-5 gap-8">
-            <div className="flex flex-col gap-4">
-              <p className="w-full text-center font-zen text-2xl">Weapons</p>
-              {character?.equipment?.weapons.map((weapon) => (
+          <>
+            <NavTabs>
+              <BtnAuth active={types.length === 0} onClick={() => setTypes([])}>
+                All
+              </BtnAuth>
+              <BtnAuth
+                active={types.includes('weapon')}
+                onClick={() => setTypes(['weapon'])}
+              >
+                <WeaponIcon className="size-8" />
+              </BtnAuth>
+              <BtnAuth
+                active={types.includes('armor')}
+                onClick={() => setTypes(['armor'])}
+              >
+                <ArmorIcon className="size-8" />
+              </BtnAuth>
+              <BtnAuth
+                active={
+                  types.includes('cybernetic') || types.includes('mutation')
+                }
+                onClick={() => setTypes(['cybernetic', 'mutation'])}
+              >
+                <CyberIcon className="size-8" />
+              </BtnAuth>
+              <BtnAuth
+                active={types.includes('reusable')}
+                onClick={() => setTypes(['reusable'])}
+              >
+                <InventoryIcon className="size-8" />
+              </BtnAuth>
+              <BtnAuth
+                active={types.includes('consumable')}
+                onClick={() => setTypes(['consumable'])}
+              >
+                <PotionIcon className="size-8" />
+              </BtnAuth>
+              <BtnAuth
+                active={types.includes('vehicle')}
+                onClick={() => setTypes(['vehicle'])}
+              >
+                <VehicleIcon className="size-8" />
+              </BtnAuth>
+              <BtnAuth
+                active={types.includes('drone')}
+                onClick={() => setTypes(['drone'])}
+              >
+                <DroneIcon className="size-8" />
+              </BtnAuth>
+            </NavTabs>
+            <InventoryGrid minWidth={175}>
+              {equipment.map((item) => (
                 <InventoryCard
-                  item={weapon}
-                  onClick={() => navigate(`inventory/items/${weapon.id}`)}
+                  key={item.id}
+                  item={item}
+                  onClick={() => navigate(`inventory/items/${item.id}`)}
                 />
               ))}
-            </div>
-            <div className="flex flex-col gap-4">
-              <p className="w-full text-center font-zen text-2xl">Armors</p>
-              {character?.equipment?.armors.map((armor) => (
-                <InventoryCard
-                  item={armor}
-                  onClick={() => navigate(`inventory/items/${armor.id}`)}
-                />
-              ))}
-            </div>
-            <div className="flex flex-col gap-4">
-              <p className="w-full text-center font-zen text-2xl">
-                Augmentations
-              </p>
-              {character?.equipment?.augmentations.map((augmentation) => (
-                <InventoryCard
-                  item={augmentation}
-                  onClick={() => navigate(`inventory/items/${augmentation.id}`)}
-                />
-              ))}
-            </div>
-            <div className="flex flex-col gap-4">
-              <p className="w-full text-center font-zen text-2xl">Reusables</p>
-              {character?.equipment?.reusables.map((reusable) => (
-                <InventoryCard
-                  item={reusable}
-                  onClick={() => navigate(`inventory/items/${reusable.id}`)}
-                />
-              ))}
-            </div>
-            <div className="flex flex-col gap-4">
-              <p className="w-full text-center font-zen text-2xl">
-                Consumables
-              </p>
-              {character?.equipment?.consumables.map((consumable) => (
-                <InventoryCard
-                  item={consumable}
-                  onClick={() => navigate(`inventory/items/${consumable.id}`)}
-                />
-              ))}
-            </div>
-          </div>
+            </InventoryGrid>
+          </>
         )}
         {tab === 'actions' && (
           <div className="grid grid-cols-2 gap-4">
-            {character?.actions?.map((action) => (
-              <ActionCard key={action.id} action={action} />
+            {character?.actions.map((action) => (
+              <ActionCard key={action.id} actionId={action.id} size={size} />
             ))}
           </div>
         )}

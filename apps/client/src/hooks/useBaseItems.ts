@@ -1,22 +1,22 @@
 import { useMemo, useState } from 'react';
-import useItemsQuery from './useItemsQuery/useItemsQuery';
-import { Item } from 'src/types/item';
+import { Item, ItemType } from 'src/types/item';
 import { camelCase } from 'change-case';
+import useItemTypeQueries from './useItemQueries/useItemTypeQueries';
 
 const useBaseItems = ({
-  category,
+  categories,
   itemList,
   includedKeywords,
   excludedKeywords,
   subcategory,
 }: {
-  category: string;
+  categories: ItemType[];
   itemList?: Item[];
   includedKeywords?: string[];
   excludedKeywords?: string[];
   subcategory?: string;
 }) => {
-  const { data: items, isLoading } = useItemsQuery(category);
+  const { items, isLoading } = useItemTypeQueries(categories);
 
   const list = itemList || items;
 

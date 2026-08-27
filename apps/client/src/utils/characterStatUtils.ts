@@ -17,13 +17,17 @@ const calculateCharacterStats = (
 ) => {
   const stats = character.stats;
 
-  const armors = equipment.armors;
+  const armors = equipment.filter((item) => item.itemTypes.includes('armor'));
 
-  const nonArmors = Object.entries(equipment)
-    .filter(([type, _]) => type !== 'armors')
-    .flatMap(([_, items]) => items);
+  const nonArmors = equipment.filter(
+    (item) => !item.itemTypes.includes('armor'),
+  );
 
-  const augmentations = equipment.augmentations;
+  const augmentations = equipment.filter(
+    (item) =>
+      item.itemTypes.includes('cybernetic') ||
+      item.itemTypes.includes('mutation'),
+  );
 
   const armorWeight =
     armors.reduce((sum: number, armor) => {

@@ -3,7 +3,7 @@ import InputField from './formFields/InputField';
 import { FormApi } from '@tanstack/react-form';
 import Loading from './Loading';
 import useBaseItems from '../hooks/useBaseItems';
-import { Item } from 'src/types/item';
+import { Item, ItemType } from 'src/types/item';
 import { LayoutContext } from '../contexts/LayoutContext';
 import Icon from '@mdi/react';
 import { mdiCropSquare, mdiGrid, mdiLinkVariant, mdiSync } from '@mdi/js';
@@ -14,7 +14,15 @@ import ItemCard from './ItemCard';
 import BtnAuth from './buttons/BtnAuth';
 import IconBtnMedium from './buttons/IconBtnMedium';
 
-const Items = ({ itemList, form }: { itemList?: Item[]; form?: FormApi }) => {
+const Items = ({
+  itemTypes,
+  itemList,
+  form,
+}: {
+  itemTypes?: ItemType[];
+  itemList?: Item[];
+  form?: FormApi;
+}) => {
   const { mobile } = useContext(LayoutContext);
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -47,7 +55,7 @@ const Items = ({ itemList, form }: { itemList?: Item[]; form?: FormApi }) => {
     setRarity,
     isLoading,
   } = useBaseItems({
-    category: itemCategory,
+    categories: itemTypes || [category],
     itemList: categorizedShopItems || itemList || undefined,
     includedKeywords: include.length > 0 ? include : undefined,
     excludedKeywords: exclude.length > 0 ? exclude : undefined,
