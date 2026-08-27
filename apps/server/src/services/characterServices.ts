@@ -69,7 +69,7 @@ const characterServices = {
   getCodexCharacters: async () => {
     try {
       const characters = await prisma.character.findMany({
-        where: { base: true },
+        where: { userId: null },
         select: { id: true },
         orderBy: { firstName: 'asc' },
       });
@@ -183,7 +183,7 @@ const characterServices = {
   },
 
   createCharacter: async (
-    formData: CharacterInput & { base?: boolean },
+    formData: CharacterInput,
     userId?: number,
     template?: boolean,
   ) => {
@@ -248,7 +248,7 @@ const characterServices = {
 
         if (!template && !character.npcTypes.includes('monster')) {
           const unarmed = await tx.item.findFirst({
-            where: { name: 'Unarmed', base: true },
+            where: { name: 'Unarmed', baseItemId: null },
           });
 
           if (!unarmed) {
@@ -334,7 +334,6 @@ const characterServices = {
         data: {
           ...filteredData,
           npcTypes: npcTypes.filter((type) => type !== 'template'),
-          base: false,
           characterCart: { create: {} },
           characterInventory: { create: {} },
           characterLevelBonuses: {

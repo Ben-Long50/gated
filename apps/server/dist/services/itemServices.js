@@ -62,14 +62,17 @@ const itemServices = {
             const itemData = [
                 {
                     itemTypes: { hasEvery: ['weapon'] },
+                    baseItemId: null,
                 },
                 {
                     itemTypes: { hasEvery: ['weapon'] },
                     keywords: { some: { keyword: { name: 'Ranged' } } },
+                    baseItemId: null,
                 },
                 {
                     itemTypes: { hasEvery: ['weapon'] },
                     keywords: { some: { keyword: { name: 'Melee' } } },
+                    baseItemId: null,
                 },
                 {
                     itemTypes: { hasEvery: ['weapon'] },
@@ -80,72 +83,88 @@ const itemServices = {
                             },
                         },
                     },
+                    baseItemId: null,
                 },
                 {
                     itemTypes: { hasEvery: ['armor'] },
+                    baseItemId: null,
                 },
                 {
                     itemTypes: { hasEvery: ['armor'] },
                     keywords: { some: { keyword: { name: 'Head' } } },
+                    baseItemId: null,
                 },
                 {
                     itemTypes: { hasEvery: ['armor'] },
                     keywords: { some: { keyword: { name: 'Body' } } },
+                    baseItemId: null,
                 },
                 {
                     itemTypes: { hasEvery: ['armor'] },
                     keywords: { some: { keyword: { name: 'Cloak' } } },
+                    baseItemId: null,
                 },
                 {
                     itemTypes: { hasEvery: ['cybernetic'] },
+                    baseItemId: null,
                 },
                 {
                     itemTypes: { hasEvery: ['mutation'] },
+                    baseItemId: null,
                 },
                 {
                     itemTypes: { hasEvery: ['vehicle'] },
+                    baseItemId: null,
                 },
                 {
                     itemTypes: { hasEvery: ['weapon'] },
                     keywords: { some: { keyword: { name: 'Vehicle Weapon' } } },
+                    baseItemId: null,
                 },
                 {
                     itemTypes: { hasEvery: ['drone'] },
+                    baseItemId: null,
                 },
                 {
                     itemTypes: { hasEvery: ['weapon'] },
                     keywords: { some: { keyword: { name: 'Drone Weapon' } } },
+                    baseItemId: null,
                 },
                 {
                     itemTypes: { hasEvery: ['reusable'] },
+                    baseItemId: null,
                 },
                 {
                     itemTypes: { hasEvery: ['consumable'] },
+                    baseItemId: null,
                 },
             ];
             const characterData = [
-                { playerCharacter: true },
-                { playerCharacter: false, npcTypes: { isEmpty: true } },
+                { playerCharacter: true, userId: null },
+                { playerCharacter: false, npcTypes: { isEmpty: true }, userId: null },
                 {
                     playerCharacter: false,
                     npcTypes: { hasEvery: ['goon'] },
+                    userId: null,
                 },
                 {
                     playerCharacter: false,
                     npcTypes: { hasEvery: ['shop'] },
+                    userId: null,
                 },
                 {
                     playerCharacter: false,
                     npcTypes: { hasEvery: ['monster'] },
+                    userId: null,
                 },
             ];
             const itemCounts = await Promise.all(itemData.map((data) => prisma.item.count({
                 //@ts-ignore
-                where: Object.assign(Object.assign({}, data), { base: true }),
+                where: data,
             })));
             const characterCounts = await Promise.all(characterData.map((data) => prisma.character.count({
                 //@ts-ignore
-                where: Object.assign(Object.assign({}, data), { base: true }),
+                where: data,
             })));
             const itemPromises = itemData.map((data, index) => {
                 const count = itemCounts[index];
@@ -154,7 +173,7 @@ const itemServices = {
                 }
                 return prisma.item.findFirst({
                     //@ts-ignore
-                    where: Object.assign(Object.assign({}, data), { base: true }),
+                    where: data,
                     skip: Math.floor(Math.random() * count),
                     select: { picture: true },
                 });
@@ -166,7 +185,7 @@ const itemServices = {
                 }
                 return prisma.character.findFirst({
                     //@ts-ignore
-                    where: Object.assign(Object.assign({}, data), { base: true }),
+                    where: data,
                     skip: Math.floor(Math.random() * count),
                     select: { picture: true },
                 });
@@ -340,7 +359,7 @@ const itemServices = {
                         connect: itemIds.map((id) => ({ id })),
                     }, linkedActions: {
                         connect: actionIds.map((id) => ({ id })),
-                    }, keywords: { createMany: { data: keywords } }, base: false, baseItemId: id }),
+                    }, keywords: { createMany: { data: keywords } }, baseItemId: id }),
             });
             return item;
         }
@@ -444,7 +463,7 @@ const itemServices = {
                 const { id, keywords } = validatedItem, data = __rest(validatedItem, ["id", "keywords"]);
                 return Array.from({ length: quantity }, () => {
                     var _a;
-                    return (Object.assign(Object.assign({}, data), { baseItemId: (_a = item.baseItemId) !== null && _a !== void 0 ? _a : id, base: false, characterInventoryId: inventoryId }));
+                    return (Object.assign(Object.assign({}, data), { baseItemId: (_a = item.baseItemId) !== null && _a !== void 0 ? _a : id, characterInventoryId: inventoryId }));
                 });
             }),
             select: { id: true, baseItemId: true },
@@ -456,7 +475,7 @@ const itemServices = {
                     var _a;
                     const validatedItem = ItemInput.parse(i);
                     const { id, keywords } = validatedItem, data = __rest(validatedItem, ["id", "keywords"]);
-                    return Object.assign(Object.assign({}, data), { baseItemId: (_a = i.baseItemId) !== null && _a !== void 0 ? _a : i.id, base: false, parentItemId: item.id });
+                    return Object.assign(Object.assign({}, data), { baseItemId: (_a = i.baseItemId) !== null && _a !== void 0 ? _a : i.id, parentItemId: item.id });
                 });
                 return l;
             }),

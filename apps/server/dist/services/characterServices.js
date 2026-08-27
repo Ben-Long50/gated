@@ -70,7 +70,7 @@ const characterServices = {
     getCodexCharacters: async () => {
         try {
             const characters = await prisma.character.findMany({
-                where: { base: true },
+                where: { userId: null },
                 select: { id: true },
                 orderBy: { firstName: 'asc' },
             });
@@ -212,7 +212,7 @@ const characterServices = {
             });
             if (!template && !character.npcTypes.includes('monster')) {
                 const unarmed = await tx.item.findFirst({
-                    where: { name: 'Unarmed', base: true },
+                    where: { name: 'Unarmed', baseItemId: null },
                 });
                 if (!unarmed) {
                     throw new Error('Failed to find base Unarmed item');
@@ -276,7 +276,7 @@ const characterServices = {
             })
                 .filter((item) => item.length > 0));
             const character = await prisma.character.create({
-                data: Object.assign(Object.assign({}, filteredData), { npcTypes: npcTypes.filter((type) => type !== 'template'), base: false, characterCart: { create: {} }, characterInventory: { create: {} }, characterLevelBonuses: {
+                data: Object.assign(Object.assign({}, filteredData), { npcTypes: npcTypes.filter((type) => type !== 'template'), characterCart: { create: {} }, characterInventory: { create: {} }, characterLevelBonuses: {
                         createMany: {
                             data: characterLevelBonuses.map((bonus) => ({
                                 characterId: bonus.characterId,

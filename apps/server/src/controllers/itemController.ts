@@ -66,7 +66,7 @@ const itemController = {
     uploadToCloudinary,
     async (req: Request, res: Response) => {
       try {
-        const parsedBody = parseRequestBody({ ...req.body, base: true });
+        const parsedBody = parseRequestBody(req.body);
 
         const validatedItem = ItemInput.parse(parsedBody);
 

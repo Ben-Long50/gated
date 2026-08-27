@@ -227,10 +227,8 @@ const characterController = {
 
         const validatedCharacter = CharacterInput.parse(parsedBody);
 
-        const character = await characterServices.createCharacter({
-          ...validatedCharacter,
-          base: true,
-        });
+        const character =
+          await characterServices.createCharacter(validatedCharacter);
 
         if (!character) {
           throw new Error('Failed to create character');

@@ -55,14 +55,17 @@ const itemServices = {
       const itemData = [
         {
           itemTypes: { hasEvery: ['weapon'] },
+          baseItemId: null,
         },
         {
           itemTypes: { hasEvery: ['weapon'] },
           keywords: { some: { keyword: { name: 'Ranged' } } },
+          baseItemId: null,
         },
         {
           itemTypes: { hasEvery: ['weapon'] },
           keywords: { some: { keyword: { name: 'Melee' } } },
+          baseItemId: null,
         },
         {
           itemTypes: { hasEvery: ['weapon'] },
@@ -73,64 +76,80 @@ const itemServices = {
               },
             },
           },
+          baseItemId: null,
         },
         {
           itemTypes: { hasEvery: ['armor'] },
+          baseItemId: null,
         },
         {
           itemTypes: { hasEvery: ['armor'] },
           keywords: { some: { keyword: { name: 'Head' } } },
+          baseItemId: null,
         },
         {
           itemTypes: { hasEvery: ['armor'] },
           keywords: { some: { keyword: { name: 'Body' } } },
+          baseItemId: null,
         },
         {
           itemTypes: { hasEvery: ['armor'] },
           keywords: { some: { keyword: { name: 'Cloak' } } },
+          baseItemId: null,
         },
         {
           itemTypes: { hasEvery: ['cybernetic'] },
+          baseItemId: null,
         },
         {
           itemTypes: { hasEvery: ['mutation'] },
+          baseItemId: null,
         },
         {
           itemTypes: { hasEvery: ['vehicle'] },
+          baseItemId: null,
         },
         {
           itemTypes: { hasEvery: ['weapon'] },
           keywords: { some: { keyword: { name: 'Vehicle Weapon' } } },
+          baseItemId: null,
         },
         {
           itemTypes: { hasEvery: ['drone'] },
+          baseItemId: null,
         },
         {
           itemTypes: { hasEvery: ['weapon'] },
           keywords: { some: { keyword: { name: 'Drone Weapon' } } },
+          baseItemId: null,
         },
         {
           itemTypes: { hasEvery: ['reusable'] },
+          baseItemId: null,
         },
         {
           itemTypes: { hasEvery: ['consumable'] },
+          baseItemId: null,
         },
       ];
 
       const characterData = [
-        { playerCharacter: true },
-        { playerCharacter: false, npcTypes: { isEmpty: true } },
+        { playerCharacter: true, userId: null },
+        { playerCharacter: false, npcTypes: { isEmpty: true }, userId: null },
         {
           playerCharacter: false,
           npcTypes: { hasEvery: ['goon'] },
+          userId: null,
         },
         {
           playerCharacter: false,
           npcTypes: { hasEvery: ['shop'] },
+          userId: null,
         },
         {
           playerCharacter: false,
           npcTypes: { hasEvery: ['monster'] },
+          userId: null,
         },
       ];
 
@@ -138,7 +157,7 @@ const itemServices = {
         itemData.map((data) =>
           prisma.item.count({
             //@ts-ignore
-            where: { ...data, base: true },
+            where: data,
           }),
         ),
       );
@@ -147,7 +166,7 @@ const itemServices = {
         characterData.map((data) =>
           prisma.character.count({
             //@ts-ignore
-            where: { ...data, base: true },
+            where: data,
           }),
         ),
       );
@@ -161,7 +180,7 @@ const itemServices = {
 
         return prisma.item.findFirst({
           //@ts-ignore
-          where: { ...data, base: true },
+          where: data,
           skip: Math.floor(Math.random() * count),
           select: { picture: true },
         });
@@ -176,7 +195,7 @@ const itemServices = {
 
         return prisma.character.findFirst({
           //@ts-ignore
-          where: { ...data, base: true },
+          where: data,
           skip: Math.floor(Math.random() * count),
           select: { picture: true },
         });
@@ -247,7 +266,7 @@ const itemServices = {
     }
   },
 
-  createOrUpdateItem: async (formData: ItemInput & { base?: boolean }) => {
+  createOrUpdateItem: async (formData: ItemInput) => {
     try {
       const { id, itemIds, actionIds, keywords, pictureFile, stats, ...data } =
         formData;
@@ -407,7 +426,6 @@ const itemServices = {
             connect: actionIds.map((id) => ({ id })),
           },
           keywords: { createMany: { data: keywords } },
-          base: false,
           baseItemId: id,
         },
       });
@@ -534,7 +552,6 @@ const itemServices = {
         return Array.from({ length: quantity }, () => ({
           ...data,
           baseItemId: item.baseItemId ?? id,
-          base: false,
           characterInventoryId: inventoryId,
         }));
       }),
@@ -553,7 +570,6 @@ const itemServices = {
           return {
             ...data,
             baseItemId: i.baseItemId ?? i.id,
-            base: false,
             parentItemId: item.id,
           };
         });

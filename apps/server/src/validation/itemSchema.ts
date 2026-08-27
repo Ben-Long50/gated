@@ -10,7 +10,6 @@ import { ItemType, Rarity } from './enums.js';
 
 export const ItemInput = z.object({
   id: z.number().int().optional(),
-  base: z.boolean().optional(),
   name: Name,
   itemTypes: z.array(ItemType).min(1),
   rarity: Rarity,

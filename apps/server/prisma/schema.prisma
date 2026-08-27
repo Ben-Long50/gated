@@ -357,7 +357,6 @@ model Character {
   preferences           Json?
   location              Location?
   locationId            Int?
-  base                  Boolean                       @default(false)
   pushCounter           Int                           @default(0)
   campaign              Campaign?                     @relation(fields: [campaignId], references: [id])
   campaignId            Int?
@@ -513,7 +512,6 @@ model Item {
   available            Boolean?                 @default(true)
   characterInventory   CharacterInventory?      @relation(fields: [characterInventoryId], references: [id], onDelete: Cascade)
   characterInventoryId Int?
-  base                 Boolean                  @default(false)
   baseItem             Item?                    @relation("BaseRelation", fields: [baseItemId], references: [id])
   baseItemId           Int?
   conditions           ItemConditionReference[]
