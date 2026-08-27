@@ -201,14 +201,14 @@ const itemServices = {
             throw new Error('Failed to fetch items');
         }
     },
-    getCodexItems: async (category) => {
+    getCodexItems: async (types) => {
         try {
             const items = await prisma.item.findMany({
-                where: category
+                where: types
                     ? {
                         baseItemId: null,
                         parentItemId: null,
-                        itemTypes: { hasSome: category },
+                        itemTypes: { hasSome: types },
                     }
                     : { baseItemId: null, parentItemId: null },
                 include: itemInclude,
@@ -270,6 +270,12 @@ const itemServices = {
                     }, keywords: { createMany: { data: keywords } } }),
                 include: itemInclude,
             });
+            if (id) {
+                await prisma.item.updateMany({
+                    where: { baseItemId: item.id },
+                    data: Object.assign(Object.assign({}, data), { stats: newStats, updatedAt: new Date() }),
+                });
+            }
             return item;
         }
         catch (error) {

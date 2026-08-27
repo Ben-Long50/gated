@@ -7,7 +7,7 @@ import characterAuthentication from '../middleware/characterAuthentication.js';
 const router = express.Router();
 router.get('/items/codex', itemController.getCodexPreviewItems);
 router.get('/items', authentication.authenticate, itemController.getBatchItems);
-router.get('/items/:category', authentication.authenticate, itemController.getCodexItems);
+router.get('/items/base', authentication.authenticate, itemController.getCodexItems);
 router.post('/items/base', authentication.authenticate, authentication.authenticateAdmin, itemController.createCodexItem);
 router.post('/items', authentication.authenticate, authentication.authenticateAdmin, itemController.createOrUpdateItem);
 router.post('/items/base', authentication.authenticate, authentication.authenticateAdmin, itemController.createOrUpdateItem);

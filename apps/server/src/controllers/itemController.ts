@@ -22,9 +22,9 @@ const itemController = {
 
   getCodexItems: async (req: Request, res: Response) => {
     try {
-      const items = await itemServices.getCodexItems([
-        req.params.category as ItemType,
-      ]);
+      const types = (req.query.types as string).split(',');
+
+      const items = await itemServices.getCodexItems(types as ItemType[]);
 
       res.status(200).json(items);
     } catch (error: any) {

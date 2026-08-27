@@ -213,14 +213,14 @@ const itemServices = {
     }
   },
 
-  getCodexItems: async (category: $Enums.ItemType[]) => {
+  getCodexItems: async (types: $Enums.ItemType[]) => {
     try {
       const items = await prisma.item.findMany({
-        where: category
+        where: types
           ? {
               baseItemId: null,
               parentItemId: null,
-              itemTypes: { hasSome: category },
+              itemTypes: { hasSome: types },
             }
           : { baseItemId: null, parentItemId: null },
         include: itemInclude,
@@ -303,6 +303,13 @@ const itemServices = {
         },
         include: itemInclude,
       });
+
+      if (id) {
+        await prisma.item.updateMany({
+          where: { baseItemId: item.id },
+          data: { ...data, stats: newStats, updatedAt: new Date() },
+        });
+      }
 
       return item;
     } catch (error: any) {

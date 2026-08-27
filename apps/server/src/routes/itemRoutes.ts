@@ -12,7 +12,7 @@ router.get('/items/codex', itemController.getCodexPreviewItems);
 router.get('/items', authentication.authenticate, itemController.getBatchItems);
 
 router.get(
-  '/items/:category',
+  '/items/base',
   authentication.authenticate,
   itemController.getCodexItems,
 );
