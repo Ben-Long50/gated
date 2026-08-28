@@ -99,4 +99,16 @@ export const deleteFromCloudinary = async (publicId) => {
         console.error(error);
     }
 };
+export const deleteManyFromCloudinary = async (publicIds) => {
+    if (publicIds.length === 0)
+        return { deleted: {} };
+    try {
+        const result = await cloudinary.api.delete_resources(publicIds);
+        return result;
+    }
+    catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
 export default cloudinary;

@@ -92,7 +92,12 @@ const encounterServices = {
             take: 10,
             orderBy: { createdAt: 'desc' },
           },
-          map: { select: { picture: true, name: true } },
+          map: {
+            select: {
+              generatedPicture: { select: { publicId: true } },
+              name: true,
+            },
+          },
           phaseHistory: {
             take: 1,
             orderBy: { createdAt: 'desc' },

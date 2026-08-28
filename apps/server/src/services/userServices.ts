@@ -6,7 +6,7 @@ import {
   SignUpInput,
   UserUpdateInput,
 } from '../validation/authSchema.js';
-import cloudinary from '../utils/cloudinary.js';
+import { deleteManyFromCloudinary } from '../utils/cloudinary.js';
 
 const userServices = {
   getAuthenticatedUser: async (userId: number) => {
@@ -23,7 +23,10 @@ const userServices = {
           lastName: true,
           role: true,
           profilePicture: true,
-          generatedPictures: { orderBy: { createdAt: 'desc' } },
+          generatedPictures: {
+            select: { id: true, publicId: true, type: true },
+            orderBy: { createdAt: 'desc' },
+          },
           characters: {
             select: {
               id: true,
@@ -248,28 +251,44 @@ const userServices = {
     }
   },
 
-  deleteUnusedGeneratedPictures: async (userId: number) => {
+  deleteUnusedGeneratedPictures: async (
+    userId: number,
+    type: $Enums.GeneratedPictureType,
+    count: number,
+  ) => {
     try {
-      const result = await cloudinary.search
-        .expression(`folder:"gated/${userId}"`)
-        .sort_by('created_at', 'desc')
-        .execute();
+      const publicIds = await prisma.$transaction(async (tx) => {
+        const pictures = await tx.generatedPicture.findMany({
+          where: {
+            userId,
+            type,
+            characters: { none: {} },
+            items: { none: {} },
+            properties: { none: {} },
+            gangs: { none: {} },
+            sessions: { none: {} },
+            factions: { none: {} },
+            maps: { none: {} },
+            campaigns: { none: {} },
+          },
+          orderBy: { createdAt: 'asc' },
+          take: count,
+          select: { id: true, publicId: true },
+        });
 
-      console.log(Object.keys(result));
-      console.log(result.total_count);
+        const publicIds = pictures.map((picture) => picture.publicId);
 
-      return;
-      // const pictures = await prisma.generatedPicture.findMany({
-      //   where: { userId },
-      // });
+        await tx.generatedPicture.deleteMany({
+          // where: { publicId: publicIds[0] },
+          where: { publicId: { in: publicIds } },
+        });
 
-      // const picturesIdsToDelete = [];
+        return publicIds;
+      });
 
-      // const count = await prisma.generatedPicture.deleteMany({
-      //   where: { id: { in: picturesIdsToDelete } },
-      // });
+      await deleteManyFromCloudinary(publicIds);
 
-      // return count;
+      return publicIds.length;
     } catch (error: any) {
       console.error(error);
       throw new Error('Failed to update account information');

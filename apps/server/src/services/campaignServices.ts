@@ -13,14 +13,27 @@ const campaignInclude = {
   sessions: { orderBy: { sessionNumber: 'desc' as const } },
   players: { orderBy: { username: 'asc' as const } },
   pendingPlayers: { orderBy: { username: 'asc' as const } },
-  factions: { select: { id: true, name: true, factionType: true } },
-  gangs: { select: { id: true, name: true } },
+  factions: {
+    select: {
+      id: true,
+      name: true,
+      factionType: true,
+      generatedPicture: { select: { publicId: true } },
+    },
+  },
+  gangs: {
+    select: {
+      id: true,
+      name: true,
+      generatedPicture: { select: { publicId: true } },
+    },
+  },
   characters: {
     select: {
       id: true,
       firstName: true,
       lastName: true,
-      picture: true,
+      generatedPicture: { select: { publicId: true } },
       userId: true,
       playerCharacter: true,
     },
@@ -28,7 +41,12 @@ const campaignInclude = {
   },
   events: {
     include: {
-      character: { select: { firstName: true, picture: true } },
+      character: {
+        select: {
+          firstName: true,
+          generatedPicture: { select: { publicId: true } },
+        },
+      },
     },
   },
   affiliations: { select: { id: true } },
@@ -36,7 +54,12 @@ const campaignInclude = {
   encounters: {
     select: {
       id: true,
-      map: { select: { name: true, picture: true } },
+      map: {
+        select: {
+          name: true,
+          generatedPicture: { select: { publicId: true } },
+        },
+      },
       mapId: true,
       combatPhase: true,
     },

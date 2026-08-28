@@ -146,10 +146,12 @@ const userController = {
 
       const count = await userServices.deleteUnusedGeneratedPictures(
         req.user.id,
+        req.body.type,
+        req.body.count ?? 1,
       );
 
       res.status(200).json({
-        message: `Successfully deleted ${count} unused images`,
+        message: `Successfully deleted ${count} oldest unused image(s)`,
       });
     } catch (error: any) {
       handleControllerError(res, error);
