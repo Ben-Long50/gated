@@ -64,10 +64,8 @@ interface Stats {
   currentHangar?: number;
   pass?: number;
   currentPass?: number;
-  turret?: number;
-  currentTurret?: number;
-  weapon?: number;
-  currentWeapon?: number;
+  slots?: number;
+  currentSlots?: number;
   wyrmMoldSlots?: number;
   currentWyrmMoldSlots?: number;
   wyrmMoldPoints?: number;

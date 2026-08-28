@@ -16,7 +16,6 @@ const ExpandingList = ({
   className,
   onClick,
 }: {
-  title: string;
   children: ReactNode;
   className?: string;
   onClick?: () => void;
@@ -26,7 +25,7 @@ const ExpandingList = ({
   const childCount = Children.count(children);
 
   return (
-    <div className={`flex w-full flex-col gap-8`}>
+    <div className={`flex w-full flex-col gap-4`}>
       <div className="flex w-full items-center justify-between gap-8">
         <ArrowHeader2 title={title} />
         <IconBtnSmall

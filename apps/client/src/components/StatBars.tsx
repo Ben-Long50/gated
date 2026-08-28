@@ -126,27 +126,16 @@ const StatBars = ({
           <CyberIcon className="text-secondary size-8" />
         </StatBar>
       )}
-      {stats.currentHull !== undefined ? (
+      {stats.hull !== undefined && (
         <StatBar
           title="HV"
-          current={stats.currentHull}
+          current={stats.currentHull ?? stats.hull}
           total={stats.hull}
           color={statColorMap['HULL']}
           size={size}
         >
           <HullIcon className="text-secondary size-8" />
         </StatBar>
-      ) : (
-        stats.hull !== undefined && (
-          <StatBar
-            title="HV"
-            current={stats.hull}
-            color={statColorMap['HULL']}
-            size={size}
-          >
-            <HullIcon className="text-secondary size-8" />
-          </StatBar>
-        )
       )}
       {stats.armor !== undefined && (
         <StatBar
@@ -188,66 +177,33 @@ const StatBars = ({
           <AgilityIcon className="text-secondary size-8" />
         </StatBar>
       )}
-      {stats.currentCargo !== undefined ? (
+      {stats.cargo !== undefined && (
         <StatBar
           title="CRG"
-          current={stats.currentCargo}
+          current={stats.currentCargo ?? 0}
           total={stats.cargo}
           color={statColorMap['CRG']}
           size={size}
         >
           <CargoIcon className="text-secondary size-8" />
         </StatBar>
-      ) : (
-        stats.cargo !== undefined && (
-          <StatBar
-            title="CRG"
-            current={stats.cargo}
-            color={statColorMap['CRG']}
-            size={size}
-          >
-            <CargoIcon className="text-secondary size-8" />
-          </StatBar>
-        )
       )}
-      {stats.currentPass !== undefined ? (
+      {stats.pass !== undefined && (
         <StatBar
           title="OCC"
-          current={stats.currentPass}
+          current={stats.currentPass ?? 0}
           total={stats.pass}
           color={statColorMap['PASS']}
           size={size}
         >
           <PassIcon className="text-secondary size-8" />
         </StatBar>
-      ) : (
-        stats.pass !== undefined && (
-          <StatBar
-            title="OCC"
-            current={stats.pass}
-            color={statColorMap['PASS']}
-            size={size}
-          >
-            <PassIcon className="text-secondary size-8" />
-          </StatBar>
-        )
       )}
-      {stats.turret !== undefined && stats.currentTurret !== undefined && (
+      {stats.slots !== undefined && (
         <StatBar
-          title="TUR"
-          current={stats.currentTurret}
-          total={stats.turret}
-          color={statColorMap['TUR']}
-          size={size}
-        >
-          <DroneIcon className="text-secondary size-8" />
-        </StatBar>
-      )}
-      {stats.weapon !== undefined && stats.currentWeapon !== undefined && (
-        <StatBar
-          title="WPN"
-          current={stats.currentWeapon}
-          total={stats.weapon}
+          title="SLT"
+          current={stats.currentSlots ?? 0}
+          total={stats.slots}
           color={statColorMap['WPN']}
           size={size}
         >
@@ -264,64 +220,39 @@ const StatBars = ({
           <WardIcon className="text-secondary size-8" />
         </StatBar>
       )}
-      {stats.currentBlock
-        ? stats.block !== undefined &&
-          stats.currentBlock !== undefined && (
-            <StatBar
-              title="BP"
-              total={stats.block}
-              current={stats.currentBlock}
-              color={statColorMap['BP']}
-              size={size}
-            >
-              <BlockIcon className="text-secondary size-8" />
-            </StatBar>
-          )
-        : stats.block !== undefined && (
-            <StatBar
-              title="BP"
-              total={stats.block}
-              current={stats.block}
-              color={statColorMap['BP']}
-              size={size}
-            >
-              <BlockIcon className="text-secondary size-8" />
-            </StatBar>
-          )}
-      {stats.currentPower !== undefined ? (
+      {stats.block !== undefined && (
+        <StatBar
+          title="BP"
+          current={stats.currentBlock ?? stats.block}
+          total={stats.block}
+          color={statColorMap['BP']}
+          size={size}
+        >
+          <BlockIcon className="text-secondary size-8" />
+        </StatBar>
+      )}
+      {stats.power !== undefined && (
         <StatBar
           title="PWR"
+          current={stats.currentPower ?? stats.power}
           total={stats.power}
-          current={stats.currentPower}
           color="rgb(107, 255, 124)"
           size={size}
         >
           <LightningIcon className="text-secondary size-8" />
         </StatBar>
-      ) : (
-        stats.power !== undefined && (
-          <StatBar
-            title="PWR"
-            current={stats.power}
-            color="rgb(107, 255, 124)"
-            size={size}
-          >
-            <LightningIcon className="text-secondary size-8" />
-          </StatBar>
-        )
       )}
-      {stats.wyrmMoldSlots !== undefined &&
-        stats.currentWyrmMoldSlots !== undefined && (
-          <StatBar
-            title="WMS"
-            current={stats.currentWyrmMoldSlots}
-            total={stats.wyrmMoldSlots}
-            color={statColorMap['WMS']}
-            size={size}
-          >
-            <WyrmMoldSlotsIcon className="text-secondary size-8" />
-          </StatBar>
-        )}
+      {stats.wyrmMoldSlots !== undefined && (
+        <StatBar
+          title="WMS"
+          current={stats.currentWyrmMoldSlots ?? 0}
+          total={stats.wyrmMoldSlots}
+          color={statColorMap['WMS']}
+          size={size}
+        >
+          <WyrmMoldSlotsIcon className="text-secondary size-8" />
+        </StatBar>
+      )}
       {stats.wyrmMoldPoints !== undefined && (
         <StatBar
           title="WMP"
@@ -332,18 +263,17 @@ const StatBars = ({
           <WyrmShellIcon className="text-secondary size-8" />
         </StatBar>
       )}
-      {stats.esotericCharges !== undefined &&
-        stats.currentEsotericCharges !== undefined && (
-          <StatBar
-            title="EC"
-            current={stats.currentEsotericCharges}
-            total={stats.esotericCharges}
-            color={statColorMap['EC']}
-            size={size}
-          >
-            <InsanityIcon className="text-secondary size-8" />
-          </StatBar>
-        )}
+      {stats.esotericCharges !== undefined && (
+        <StatBar
+          title="EC"
+          current={stats.currentEsotericCharges ?? stats.esotericCharges}
+          total={stats.esotericCharges}
+          color={statColorMap['EC']}
+          size={size}
+        >
+          <InsanityIcon className="text-secondary size-8" />
+        </StatBar>
+      )}
       {stats.weight !== undefined && (
         <StatBar
           title="WGT"

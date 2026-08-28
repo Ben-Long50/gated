@@ -47,6 +47,10 @@ export const calculateItemStats = (item: Item) => {
     }
   }
 
+  if (item.linkedItems.length > 0) {
+    combined.currentSlots = item.linkedItems.length;
+  }
+
   return {
     ...item,
     stats: combined,

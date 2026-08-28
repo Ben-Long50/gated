@@ -55,7 +55,7 @@ const Items = ({
     setRarity,
     isLoading,
   } = useBaseItems({
-    categories: itemTypes || [category],
+    categories: itemTypes || [itemCategory],
     itemList: categorizedShopItems || itemList || undefined,
     includedKeywords: include.length > 0 ? include : undefined,
     excludedKeywords: exclude.length > 0 ? exclude : undefined,
@@ -187,7 +187,7 @@ const Items = ({
                       key={item.id}
                       className="flex w-full items-center gap-4"
                     >
-                      <ItemCard item={item} size={cardSize} menu={false} />
+                      <ItemCard itemId={item.id} size={cardSize} menu={false} />
                       <div className="flex flex-col items-center justify-center gap-2">
                         {linkCount > 0 && <p>{linkCount}</p>}
                         <IconBtnMedium
@@ -213,7 +213,7 @@ const Items = ({
             <Loading />
           ) : (
             items?.map((item: Item) => (
-              <ItemCard item={item} size={cardSize} menu={false} />
+              <ItemCard itemId={item.id} size={cardSize} menu={false} />
             ))
           )}
         </div>

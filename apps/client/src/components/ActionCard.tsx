@@ -21,6 +21,10 @@ import PotionIcon from './icons/PotionIcon';
 import ModificationIcon from './icons/ModificationIcon';
 import ArrowHeader4 from './ArrowHeader4';
 import PerkIcon from './icons/PerkIcon';
+import { LayoutContext } from 'src/contexts/LayoutContext';
+import ExpandingList from './ExpandingList';
+import Divider from './Divider';
+import ArrowHeader3 from './ArrowHeader3';
 
 const ActionCard = ({
   actionId,
@@ -34,6 +38,7 @@ const ActionCard = ({
   expanded?: boolean;
 }) => {
   const { user } = useContext(AuthContext);
+  const { mobile } = useContext(LayoutContext);
   const navigate = useNavigate();
 
   const cardRef = useRef(null);
@@ -113,7 +118,7 @@ const ActionCard = ({
         </div>
       }
     >
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-8">
         {action?.roll && action?.roll.length > 0 && (
           <div className="flex flex-col gap-2">
             {action?.roll.map(
@@ -139,32 +144,54 @@ const ActionCard = ({
             )}
           </div>
         )}
+        <p>{description1}</p>
         {costLength > 0 && (
-          <div className="flex w-full flex-col justify-start gap-2">
-            <ArrowHeader4 title="Costs" className="text-primary" />
+          <div className="flex w-full flex-col justify-start gap-4">
+            <ArrowHeader3 title="Costs" className="text-primary" />
             <StatBarContainer size={size}>
               <ActionStatBars stats={action?.costs} size={size} />
             </StatBarContainer>
           </div>
         )}
-        <p>{description1}</p>
         {action?.modifiers && Object.keys(action?.modifiers).length > 0 && (
-          <StatBarContainer size={size}>
-            <CharacterStatBars size={size} stats={action?.modifiers} />
-            <StatBars size={size} stats={action?.modifiers} />
-          </StatBarContainer>
+          <div className="flex w-full flex-col justify-start gap-4">
+            <ArrowHeader3 title="Stats" className="text-primary" />
+            <StatBarContainer size={size}>
+              <CharacterStatBars size={size} stats={action?.modifiers} />
+              <StatBars size={size} stats={action?.modifiers} />
+            </StatBarContainer>
+          </div>
         )}
-        {action?.keywordModifiers &&
-          action?.keywordModifiers.length > 0 &&
-          action?.keywordModifiers.map((keyword, index) => (
-            <ItemCardSmall
-              key={index}
-              className={`${index !== action?.keywordModifiers.length - 1 && 'mr-1'} bg-tertiary`}
-              heading={<h4>{keyword.keyword?.name}</h4>}
-            >
-              <p>{keyword.keyword?.description}</p>
-            </ItemCardSmall>
-          ))}
+
+        {action?.keywordModifiers && action?.keywordModifiers.length > 0 && (
+          <div
+            className={`${mobile ? 'grid-cols-1' : 'grid-cols-2'} grid w-full gap-4`}
+          >
+            <ArrowHeader3
+              title="Traits"
+              className={`text-primary ${mobile ? 'col-span-1' : 'col-span-2'}`}
+            />
+            {action?.keywordModifiers.map((keyword, index) => (
+              <ItemCardSmall
+                key={index}
+                className={`${index !== action?.keywordModifiers.length - 1 && 'mr-1'} bg-tertiary`}
+                heading={
+                  <h4>
+                    {keyword.value
+                      ? keyword.keyword?.name.replace(
+                          /X/g,
+                          keyword.value.toString(),
+                        )
+                      : keyword.keyword?.name}
+                  </h4>
+                }
+              >
+                <p>{keyword.keyword?.description}</p>
+              </ItemCardSmall>
+            ))}{' '}
+          </div>
+        )}
+
         {description2 && <p>{description2}</p>}
       </div>
     </ItemCardSmall>

@@ -320,21 +320,11 @@ const StatFields = ({ form }: { form: FormApi }) => {
                   />
                 )}
               </form.Field>
-              <form.Field name="stats.turret">
+              <form.Field name="stats.slots">
                 {(field) => (
                   <InputField
                     type="number"
-                    label="Turrets"
-                    value={field.state.value}
-                    onChange={(value) => field.handleChange(value)}
-                  />
-                )}
-              </form.Field>
-              <form.Field name="stats.weapon">
-                {(field) => (
-                  <InputField
-                    type="number"
-                    label="Weapons"
+                    label="Item Slots"
                     value={field.state.value}
                     onChange={(value) => field.handleChange(value)}
                   />

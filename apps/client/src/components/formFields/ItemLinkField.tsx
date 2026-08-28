@@ -33,7 +33,7 @@ const ItemLinkField = ({ form }: { form: FormApi }) => {
                 {items?.map((item: Item, index) => {
                   return (
                     <div key={index} className="flex w-full items-center gap-4">
-                      <ItemCard className="grow" item={item} />
+                      <ItemCard className="grow" itemId={item.id} />
                       <IconBtnMedium
                         onClick={() => {
                           field.handleChange(

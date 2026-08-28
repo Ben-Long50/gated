@@ -1,5 +1,4 @@
 import { CSSProperties, Fragment, useContext, useRef } from 'react';
-import { ThemeContext } from '../contexts/ThemeContext';
 import ThemeContainer from './ThemeContainer';
 import ItemRarity from './ItemRarity';
 import CartButton from './CartButton';
@@ -38,16 +37,18 @@ import ArrowHeader3 from './ArrowHeader3';
 import Divider from './Divider';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import rarityColorMap from 'src/utils/rarityColorMap';
+import useItem from 'src/hooks/useItem';
+import Loading from './Loading';
 
 const ItemCard = ({
-  item,
+  itemId,
   className,
   style,
   menu = true,
   size = 'large',
   ownerId,
 }: {
-  item: Item;
+  itemId: number;
   className?: string;
   style?: CSSProperties;
   menu?: boolean;
@@ -55,11 +56,12 @@ const ItemCard = ({
   ownerId?: number;
 }) => {
   const { gameMaster } = useContext(CampaignContext);
-  const { accentPrimary } = useContext(ThemeContext);
   const { mobile } = useContext(LayoutContext);
   const { user } = useContext(AuthContext);
 
   const { conditionId, traitId } = useParams();
+
+  const { item, isLoading } = useItem(itemId);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -91,18 +93,9 @@ const ItemCard = ({
     setMenuOpen(!menuOpen);
   };
 
-  const linkedWeapons =
-    item.linkedItems.filter((item: Item) =>
-      item.itemTypes.includes('weapon'),
-    ) || [];
-  const linkedArmors =
-    item.linkedItems.filter((item: Item) => item.itemTypes.includes('armor')) ||
-    [];
-  const linkedVehicles =
-    item.linkedItems.filter((item: Item) =>
-      item.itemTypes.includes('vehicle'),
-    ) || [];
-  const uniqueActions = item.linkedActions || [];
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <div className={`${className} w-full`} ref={ref} style={style}>
@@ -139,7 +132,7 @@ const ItemCard = ({
                 <div className="flex w-full items-start justify-between gap-4">
                   <div className="flex w-full items-center gap-4">
                     <div className="flex items-center justify-between gap-4">
-                      <ArrowHeader2 title={item?.name} />
+                      <ArrowHeader2 title={item.name} />
                       {item.baseItemId && (
                         <Link
                           className="timing group ml-auto flex items-center gap-4 py-2"
@@ -167,8 +160,8 @@ const ItemCard = ({
                     </div>
                   </div>
                   <div className="flex grow items-start justify-end gap-4">
-                    <p>{item?.price ? item.price + 'p' : 'N/A'}</p>
-                    {parts.includes('shop') && <CartButton itemId={item?.id} />}
+                    <p>{item.price ? item.price + 'p' : 'N/A'}</p>
+                    {parts.includes('shop') && <CartButton itemId={item.id} />}
                   </div>
                 </div>
                 <div
@@ -190,59 +183,27 @@ const ItemCard = ({
                   )}
                   <ItemRarity
                     className="ml-auto"
-                    rarity={item?.rarity}
-                    grade={item?.grade}
+                    rarity={item.rarity}
+                    grade={item.grade}
                     size={size}
                   />
                 </div>
                 <StatBarContainer size={size}>
-                  <StatBars size={size} stats={item?.stats} />
+                  <StatBars size={size} stats={item.stats} />
                 </StatBarContainer>
-                <div>
-                  {linkedWeapons.length > 0 && (
-                    <>
-                      <h4 className="col-span-3 justify-self-start">
-                        Integrated Weapons
-                      </h4>
-                      <p className="min-w-6 text-center">
-                        {linkedWeapons.length}
-                      </p>
-                    </>
-                  )}
-                  {linkedArmors.length > 0 && (
-                    <>
-                      <h4 className="col-span-3 justify-self-start">
-                        Integrated Armors
-                      </h4>
-                      <p className="min-w-6 text-center">
-                        {linkedArmors.length}
-                      </p>
-                    </>
-                  )}
-                  {linkedVehicles.length > 0 && (
-                    <>
-                      <h4 className="col-span-3 justify-self-start">
-                        Supplied Vehicles
-                      </h4>
-                      <p className="min-w-6 text-center">
-                        {linkedVehicles.length}
-                      </p>
-                    </>
-                  )}
-                  {uniqueActions.length > 0 && (
-                    <div className="flex flex-col gap-4">
-                      <Divider />
-                      <ArrowHeader3 title="Unique Actions" />
-                      {uniqueActions.map((action) => (
-                        <ActionCard
-                          size={size}
-                          actionId={action.id}
-                          expanded={true}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
+                {item.linkedActions.length > 0 && (
+                  <div className="flex flex-col gap-4">
+                    <Divider />
+                    <ArrowHeader3 title="Unique Actions" />
+                    {item.linkedActions.filter(Boolean).map((action) => (
+                      <ActionCard
+                        size={size}
+                        actionId={action.id}
+                        expanded={true}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
             {(parts.includes('equipment') ||
