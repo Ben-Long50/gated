@@ -5,6 +5,7 @@ import { AuthContext } from 'src/contexts/AuthContext';
 import NavTabs from './NavTabs';
 import BtnAuth from './buttons/BtnAuth';
 import { PictureCard } from './PictureCard';
+import useDeleteUnusedPicturesMutation from 'src/hooks/useDeleteUnusedPicturesMutation/useDeleteUnusedPicturesMutation';
 
 const GenerationLibrary = () => {
   const { user } = useContext(AuthContext);
@@ -14,6 +15,8 @@ const GenerationLibrary = () => {
   const type = searchParams.get('type');
 
   const backgroundPath = useModalStore((state) => state.backgroundPath);
+
+  const deleteUnusedPictures = useDeleteUnusedPicturesMutation();
 
   const pictures = user.generatedPictures.filter(
     (picture) => picture.type === type,
@@ -41,6 +44,9 @@ const GenerationLibrary = () => {
           Scenes
         </BtnAuth>
       </NavTabs>
+      <BtnAuth onClick={() => deleteUnusedPictures.mutate()}>
+        Delete Unused Pictures
+      </BtnAuth>
       <div className="grid w-full grid-cols-5 gap-4 sm:gap-6">
         {pictures.map(
           (picture: { imageUrl: string; publicId: string }, index: number) => (

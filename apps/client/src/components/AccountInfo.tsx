@@ -7,7 +7,7 @@ import { useContext } from 'react';
 import { AuthContext } from 'src/contexts/AuthContext';
 import AccountPicture from './AccountPicture';
 import Divider from './Divider';
-import userLimits from 'src/utils/userLimits';
+import userLimits from 'src/utils/constants/userLimits';
 import ArrowHeader3 from './ArrowHeader3';
 
 const AccountInfo = () => {

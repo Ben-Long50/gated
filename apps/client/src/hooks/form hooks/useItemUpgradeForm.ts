@@ -24,9 +24,9 @@ const useItemUpgradeForm = (
       description: item?.description ?? '',
       pictureFile: null as File | null,
       picture: {
-        imageUrl: item?.picture.imageUrl ?? '',
-        publicId: item?.picture.publicId ?? '',
-        position: item?.picture.position ?? { x: 50, y: 50 },
+        imageUrl: item?.generatedPicture.imageUrl ?? '',
+        publicId: item?.generatedPicture.publicId ?? '',
+        position: item?.generatedPicture.position ?? { x: 50, y: 50 },
       },
       modifiedStats: { ...emptyStats, ...item?.modifiedStats },
       keywords:

@@ -132,7 +132,7 @@ const ItemCardBorderless = ({
                 : undefined
             }
           >
-            {cardType === 'large' && item.picture?.publicId && (
+            {cardType === 'large' && item.generatedPicture?.publicId && (
               <ItemPicture
                 key={item.id}
                 className={`timing aspect-square h-[300px]`}
@@ -160,7 +160,7 @@ const ItemCardBorderless = ({
                   </div>
                 </div>
               </div>
-              {cardType === 'small' && item.picture?.imageUrl && (
+              {cardType === 'small' && item.generatedPicture?.imageUrl && (
                 <ItemPicture
                   key={item.id}
                   className={`timing aspect-square h-[300px]`}

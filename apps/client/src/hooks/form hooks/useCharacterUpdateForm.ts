@@ -45,9 +45,9 @@ const useCharacterUpdateForm = (
       },
       pictureFile: null as File | null,
       picture: {
-        imageUrl: character?.picture.imageUrl ?? '',
-        publicId: character?.picture.publicId ?? '',
-        position: character?.picture.position ?? { x: 50, y: 50 },
+        imageUrl: character?.generatedPicture.imageUrl ?? '',
+        publicId: character?.generatedPicture.publicId ?? '',
+        position: character?.generatedPicture.position ?? { x: 50, y: 50 },
       },
       height: character?.height ?? null,
       weight: character?.weight ?? null,

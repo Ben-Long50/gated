@@ -94,7 +94,7 @@ const CharacterSheet = () => {
       </div>
       <Divider />
       <div className="grid gap-8 max-sm:grid-flow-row sm:grid-cols-2">
-        {character?.picture.imageUrl && (
+        {character?.generatedPicture.imageUrl && (
           <CharacterPicture className="relative" character={character}>
             {character?.conditions.length > 0 && (
               <div

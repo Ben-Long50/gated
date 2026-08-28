@@ -28,8 +28,8 @@ const ItemPicture = ({
       />
       <CloudinaryPicture
         className="timing w-full clip-6"
-        position={item.picture?.position}
-        publicId={item.picture?.publicId}
+        position={item.generatedPicture?.position}
+        publicId={item.generatedPicture?.publicId}
       />
     </ThemeContainer>
   );

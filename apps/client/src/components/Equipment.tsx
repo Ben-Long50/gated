@@ -55,7 +55,7 @@ const Equipment = () => {
     <>
       <CharacterHeader character={character} />
       <div className="flex w-full flex-col gap-8 sm:flex-row">
-        {character?.picture?.publicId && (
+        {character?.generatedPicture?.publicId && (
           <CharacterPicture character={character} />
         )}
         <StatBarContainer size={size}>

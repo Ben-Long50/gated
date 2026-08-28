@@ -92,7 +92,7 @@ const useCharacter = (characterId: number) => {
         characterOwner || character?.preferences?.sex ? character?.sex : '???',
       picture:
         characterOwner || character?.preferences?.picture
-          ? character?.picture
+          ? character?.generatedPicture
           : false,
       backstory:
         characterOwner || character?.preferences?.backstory

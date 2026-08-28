@@ -40,11 +40,11 @@ const CharacterPictureRound = ({
         className={`${className} shadow-color relative aspect-square size-12 shrink-0 overflow-hidden rounded-full shadow-md`}
         style={style}
       >
-        {character?.picture?.publicId ? (
+        {character?.generatedPicture?.publicId ? (
           <CloudinaryPicture
             className={`${(awol || insane) && 'grayscale'}`}
-            publicId={character?.picture?.publicId}
-            position={character?.picture?.position}
+            publicId={character?.generatedPicture?.publicId}
+            position={character?.generatedPicture?.position}
           />
         ) : (
           <div

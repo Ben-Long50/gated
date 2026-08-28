@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import CharacterList from './CharacterList';
 import { AuthContext } from 'src/contexts/AuthContext';
-import userLimits from 'src/utils/userLimits';
+import userLimits from 'src/utils/constants/userLimits';
 import ArrowHeader3 from '../ArrowHeader3';
 import Divider from '../Divider';
 import ArrowHeader4 from '../ArrowHeader4';

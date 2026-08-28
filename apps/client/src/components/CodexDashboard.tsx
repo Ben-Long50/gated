@@ -141,7 +141,7 @@ const CodexDashboard = () => {
               <PictureCard
                 key={index}
                 label={link.label}
-                publicId={items[index].picture.publicId}
+                publicId={items[index].generatedPicture?.publicId}
                 onClick={() => navigate(link.path)}
               />
             ))}
@@ -152,7 +152,9 @@ const CodexDashboard = () => {
                 key={index}
                 label={link.label}
                 publicId={
-                  characters[index] ? characters[index].picture.publicId : ''
+                  characters[index]
+                    ? characters[index].generatedPicture?.publicId
+                    : ''
                 }
                 onClick={() => navigate(link.path)}
               />

@@ -10,7 +10,7 @@ import { User } from 'src/types/user';
 import ArrowHeader2 from './ArrowHeader2';
 import ArrowHeader3 from './ArrowHeader3';
 import { AuthContext } from 'src/contexts/AuthContext';
-import userLimits from 'src/utils/userLimits';
+import userLimits from 'src/utils/constants/userLimits';
 import CloudinaryPicture from './CloudinaryPicture';
 import Divider from './Divider';
 
