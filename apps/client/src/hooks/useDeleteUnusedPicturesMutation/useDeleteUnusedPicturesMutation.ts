@@ -6,8 +6,8 @@ const useDeleteUnusedPicturesMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => {
-      return deleteUnusedPictures();
+    mutationFn: (formData: { type: string; count: number }) => {
+      return deleteUnusedPictures(formData);
     },
     onSuccess: (data) => {
       toast.success(data.message);
