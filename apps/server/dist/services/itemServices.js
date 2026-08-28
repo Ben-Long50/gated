@@ -39,9 +39,10 @@ export const itemInclude = {
     },
     linkedActions: {
         include: {
-            keywordModifiers: { include: { keyword: true } },
+            keywordModifiers: { include: { keyword: { select: { id: true } } } },
             parentItem: { select: { name: true } },
         },
+        orderBy: { name: 'asc' },
     },
     keywords: {
         include: { keyword: true },

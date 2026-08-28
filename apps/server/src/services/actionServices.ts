@@ -4,7 +4,7 @@ import addVariableStats from '../utils/addVariableStats.js';
 import { ActionInput } from '../validation/actionSchema.js';
 
 const actionInclude = {
-  keywordModifiers: { select: { id: true } },
+  keywordModifiers: { select: { keyword: true, value: true } },
   perk: { select: { name: true, id: true } },
   parentItem: { select: { name: true, id: true, itemTypes: true } },
 };
