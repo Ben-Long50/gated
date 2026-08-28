@@ -120,16 +120,11 @@ const userController = {
       const { id: userId } = req.user;
 
       if (req.body.pictures) {
-        const pictures = await Promise.all(
-          req.body.pictures.map(
-            (picture: { imageUrl: string; publicId: string }) =>
-              userServices.addUserGeneratedPicture(
-                picture,
-                req.body.prompt,
-                req.body.type,
-                userId,
-              ),
-          ),
+        const pictures = await userServices.addUserGeneratedPicture(
+          req.body.pictures,
+          req.body.prompt,
+          req.body.type,
+          userId,
         );
 
         res.status(200).json({
@@ -138,6 +133,24 @@ const userController = {
         });
         return;
       }
+    } catch (error: any) {
+      handleControllerError(res, error);
+    }
+  },
+
+  deleteUnusedGeneratedPictures: async (req: Request, res: Response) => {
+    try {
+      if (!req.user) {
+        throw new Error('Failed to find user');
+      }
+
+      const count = await userServices.deleteUnusedGeneratedPictures(
+        req.user.id,
+      );
+
+      res.status(200).json({
+        message: `Successfully deleted ${count} unused images`,
+      });
     } catch (error: any) {
       handleControllerError(res, error);
     }

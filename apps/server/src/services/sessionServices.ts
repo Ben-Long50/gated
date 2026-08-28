@@ -4,6 +4,7 @@ import { SessionInput } from '../validation/sessionSchema.js';
 
 const sessionInclude = {
   characters: true,
+  generatedPicture: { select: { publicId: true } },
 };
 
 const sessionServices = {

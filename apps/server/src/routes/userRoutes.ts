@@ -4,6 +4,7 @@ import authentication from '../middleware/authentication.js';
 import {
   generatFalItemPicture,
   generatFalPicture,
+  validatePictureGeneration,
 } from '../middleware/pictureGenerationMiddleware.js';
 import { uploadGeneratedPictureToCloudinary } from '../utils/cloudinary.js';
 
@@ -31,6 +32,7 @@ router.post(
   '/users/generate',
   authentication.authenticate,
   authentication.authenticateProUser,
+  validatePictureGeneration,
   generatFalPicture,
   uploadGeneratedPictureToCloudinary,
   userController.addUserGeneratedPicture,
@@ -40,6 +42,7 @@ router.post(
   '/users/generateItem',
   authentication.authenticate,
   authentication.authenticateProUser,
+  validatePictureGeneration,
   generatFalItemPicture,
   uploadGeneratedPictureToCloudinary,
   userController.addUserGeneratedPicture,
@@ -60,6 +63,12 @@ router.patch(
   authentication.authenticate,
   authentication.authenticateSuperadmin,
   userController.updateUserRoles,
+);
+
+router.delete(
+  '/users/unusedPictures',
+  authentication.authenticate,
+  userController.deleteUnusedGeneratedPictures,
 );
 
 export default router;

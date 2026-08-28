@@ -1,10 +1,9 @@
 import z from 'zod';
-import { Description, Name, Picture, PictureFile, RichText, } from './fieldSchemas.js';
+import { Description, Name, RichText } from './fieldSchemas.js';
 export const GangInput = z.object({
     id: z.number().int().optional(),
     name: Name,
-    pictureFile: PictureFile,
-    picture: Picture,
+    generatedPictureId: z.number().int().optional(),
     background: RichText,
     campaignId: z.number().int(),
     factionId: z.number().int().optional(),

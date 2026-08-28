@@ -3,7 +3,7 @@ import { enforceSingularLinking } from '../utils/enforceSingularLinking.js';
 import { $Enums, Prisma } from '@prisma/client';
 import actionServices from './actionServices.js';
 import { ItemInput, ItemUpgradeInput } from '../validation/itemSchema.js';
-import { ItemStats, Picture } from '../validation/fieldSchemas.js';
+import { ItemStats } from '../validation/fieldSchemas.js';
 import { ConditionReferenceInput } from '../validation/conditionSchema.js';
 import addVariableStats from '../utils/addVariableStats.js';
 import { ActionInput } from '../validation/actionSchema.js';
@@ -48,6 +48,7 @@ export const itemInclude = {
     include: { condition: true },
     orderBy: { condition: { name: 'asc' as const } },
   },
+  generatedPicture: { select: { publicId: true } },
 };
 
 const itemServices = {
@@ -183,7 +184,7 @@ const itemServices = {
           //@ts-ignore
           where: data,
           skip: Math.floor(Math.random() * count),
-          select: { picture: true },
+          select: { generatedPicture: { select: { publicId: true } } },
         });
       });
 
@@ -198,7 +199,7 @@ const itemServices = {
           //@ts-ignore
           where: data,
           skip: Math.floor(Math.random() * count),
-          select: { picture: true },
+          select: { generatedPicture: { select: { publicId: true } } },
         });
       });
 
@@ -269,8 +270,7 @@ const itemServices = {
 
   createOrUpdateItem: async (formData: ItemInput) => {
     try {
-      const { id, itemIds, actionIds, keywords, pictureFile, stats, ...data } =
-        formData;
+      const { id, itemIds, actionIds, keywords, stats, ...data } = formData;
 
       const newStats = addVariableStats(stats);
 
@@ -344,7 +344,7 @@ const itemServices = {
           data: {
             name: formData.name,
             description: formData.description,
-            picture: formData.picture,
+            generatedPictureId: formData.generatedPictureId,
             modifiedStats: formData.modifiedStats,
             modifiedKeywords: {
               deleteMany: {},
@@ -374,7 +374,7 @@ const itemServices = {
           rarity: true,
           description: true,
           stats: true,
-          picture: true,
+          generatedPictureId: true,
           itemTypes: true,
           grade: true,
           price: true,
@@ -393,14 +393,12 @@ const itemServices = {
         id,
         baseItemId,
         stats,
-        picture,
         keywords,
         linkedItems,
         linkedActions,
         ...data
       } = itemDetails;
 
-      const typedPicture = picture as Picture;
       const typedStats = stats as ItemStats;
 
       const itemIds = [] as number[];
@@ -425,7 +423,6 @@ const itemServices = {
       const item = await prisma.item.create({
         data: {
           ...data,
-          picture: typedPicture,
           stats: typedStats,
           linkedItems: {
             connect: itemIds.map((id) => ({ id })),
@@ -462,7 +459,7 @@ const itemServices = {
         rarity: true,
         description: true,
         stats: true,
-        picture: true,
+        generatedPictureId: true,
         itemTypes: true,
         grade: true,
         price: true,
@@ -474,7 +471,7 @@ const itemServices = {
             rarity: true,
             description: true,
             stats: true,
-            picture: true,
+            generatedPictureId: true,
             itemTypes: true,
             grade: true,
             price: true,

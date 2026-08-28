@@ -23,6 +23,7 @@ const mapInclude = {
         orderBy: { character: { firstName: 'asc' } },
     },
     encounters: true,
+    generatedPicture: { select: { publicId: true } },
 };
 const mapServices = {
     getBatchMaps: async (mapIds) => {

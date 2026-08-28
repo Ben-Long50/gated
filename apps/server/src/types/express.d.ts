@@ -11,6 +11,8 @@ declare global {
       facebookId?: string;
       googleId?: string;
       receivedNotifications?: Notification[];
+      generationCount?: number;
+      _count?: { generatedPictures: number };
     }
   }
 }

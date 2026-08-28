@@ -34,14 +34,22 @@ model User {
 }
 
 model GeneratedPicture {
-  id        Int                  @id @default(autoincrement())
-  createdAt DateTime             @default(now())
-  imageUrl  String               @unique
-  publicId  String               @unique
-  prompt    Json?
-  type      GeneratedPictureType
-  user      User?                @relation(fields: [userId], references: [id])
-  userId    Int?
+  id         Int                  @id @default(autoincrement())
+  createdAt  DateTime             @default(now())
+  imageUrl   String               @unique
+  publicId   String               @unique
+  prompt     Json?
+  type       GeneratedPictureType
+  user       User?                @relation(fields: [userId], references: [id])
+  userId     Int?
+  characters Character[]
+  items      Item[]
+  properties Property[]
+  gangs      Gang[]
+  sessions   Session[]
+  factions   Faction[]
+  maps       Map[]
+  campaigns  Campaign[]
 }
 
 enum GeneratedPictureType {
@@ -53,28 +61,30 @@ enum GeneratedPictureType {
 }
 
 model Campaign {
-  id             Int            @id @default(autoincrement())
-  createdAt      DateTime       @default(now())
-  active         Boolean        @default(false)
-  date           Json?
-  time           Json?
-  owner          User           @relation("owner", fields: [ownerId], references: [id])
-  ownerId        Int
-  pendingPlayers User[]         @relation("pending")
-  players        User[]         @relation("player")
-  factions       Faction[]
-  name           String
-  location       String
-  picture        Json?
-  gangs          Gang[]
-  sessions       Session[]
-  characters     Character[]
-  affiliations   Affiliation[]
-  events         Event[]
-  maps           Map[]
-  encounters     Encounter[]
-  histories      History[]
-  notifications  Notification[]
+  id                 Int               @id @default(autoincrement())
+  createdAt          DateTime          @default(now())
+  active             Boolean           @default(false)
+  date               Json?
+  time               Json?
+  owner              User              @relation("owner", fields: [ownerId], references: [id])
+  ownerId            Int
+  pendingPlayers     User[]            @relation("pending")
+  players            User[]            @relation("player")
+  factions           Faction[]
+  name               String
+  location           String
+  picture            Json?
+  generatedPicture   GeneratedPicture? @relation(fields: [generatedPictureId], references: [id])
+  generatedPictureId Int?
+  gangs              Gang[]
+  sessions           Session[]
+  characters         Character[]
+  affiliations       Affiliation[]
+  events             Event[]
+  maps               Map[]
+  encounters         Encounter[]
+  histories          History[]
+  notifications      Notification[]
 }
 
 enum Month {
@@ -104,25 +114,27 @@ model Event {
 }
 
 model Map {
-  id          Int         @id @default(autoincrement())
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      Int
-  campaign    Campaign?   @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  campaignId  Int?
-  picture     Json?
-  draft       Boolean
-  name        String
-  description String?
-  type        MapType
-  width       Int
-  height      Int
-  baseColor   String
-  layerCount  Int?
-  layers      Json?
-  locations   Location[]
-  encounters  Encounter[]
-  gang        Gang?       @relation(fields: [gangId], references: [id])
-  gangId      Int?
+  id                 Int               @id @default(autoincrement())
+  user               User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId             Int
+  campaign           Campaign?         @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId         Int?
+  picture            Json?
+  generatedPicture   GeneratedPicture? @relation(fields: [generatedPictureId], references: [id])
+  generatedPictureId Int?
+  draft              Boolean
+  name               String
+  description        String?
+  type               MapType
+  width              Int
+  height             Int
+  baseColor          String
+  layerCount         Int?
+  layers             Json?
+  locations          Location[]
+  encounters         Encounter[]
+  gang               Gang?             @relation(fields: [gangId], references: [id])
+  gangId             Int?
 }
 
 enum MapType {
@@ -210,15 +222,17 @@ model History {
 }
 
 model Faction {
-  id           Int           @id @default(autoincrement())
-  factionType  FactionType
-  name         String
-  picture      Json?
-  background   Json?
-  campaign     Campaign      @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  campaignId   Int
-  affiliations Affiliation[]
-  gangs        Gang[]
+  id                 Int               @id @default(autoincrement())
+  factionType        FactionType
+  name               String
+  picture            Json?
+  generatedPicture   GeneratedPicture? @relation(fields: [generatedPictureId], references: [id])
+  generatedPictureId Int?
+  background         Json?
+  campaign           Campaign          @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId         Int
+  affiliations       Affiliation[]
+  gangs              Gang[]
 }
 
 model Affiliation {
@@ -248,6 +262,8 @@ model Session {
   campaignId         Int
   briefing           Json
   picture            Json?
+  generatedPicture   GeneratedPicture?  @relation(fields: [generatedPictureId], references: [id])
+  generatedPictureId Int?
   notes              Note[]
   characters         Character[]
   gangSessionBonuses GangSessionBonus[]
@@ -291,6 +307,8 @@ model Gang {
   id                 Int                @id @default(autoincrement())
   name               String
   picture            Json?
+  generatedPicture   GeneratedPicture?  @relation(fields: [generatedPictureId], references: [id])
+  generatedPictureId Int?
   background         Json?
   level              Int                @default(1)
   levelNodes         Int                @default(0)
@@ -319,18 +337,20 @@ model GangSessionBonus {
 }
 
 model Property {
-  id             Int        @id @default(autoincrement())
-  updatedAt      DateTime   @default(now())
-  name           String
-  picture        Json?
-  description    String
-  gpPrice        Int
-  type           String     @default("property")
-  gang           Gang?      @relation(fields: [gangId], references: [id])
-  gangId         Int?
-  baseProperty   Property?  @relation("copyProperty", fields: [basePropertyId], references: [id])
-  basePropertyId Int?
-  properties     Property[] @relation("copyProperty")
+  id                 Int               @id @default(autoincrement())
+  updatedAt          DateTime          @default(now())
+  name               String
+  picture            Json?
+  generatedPicture   GeneratedPicture? @relation(fields: [generatedPictureId], references: [id])
+  generatedPictureId Int?
+  description        String
+  gpPrice            Int
+  type               String            @default("property")
+  gang               Gang?             @relation(fields: [gangId], references: [id])
+  gangId             Int?
+  baseProperty       Property?         @relation("copyProperty", fields: [basePropertyId], references: [id])
+  basePropertyId     Int?
+  properties         Property[]        @relation("copyProperty")
 }
 
 model Character {
@@ -341,7 +361,8 @@ model Character {
   level                 Int?                          @default(1)
   profits               Int                           @default(10)
   stats                 Json                          @default("{}")
-  picture               Json?
+  generatedPicture      GeneratedPicture?             @relation(fields: [generatedPictureId], references: [id])
+  generatedPictureId    Int?
   height                Int
   weight                Int
   age                   Int
@@ -503,7 +524,8 @@ model Item {
   itemTypes            ItemType[]
   rarity               ItemRarity               @default(common)
   grade                Int                      @default(1)
-  picture              Json?
+  generatedPicture     GeneratedPicture?        @relation(fields: [generatedPictureId], references: [id])
+  generatedPictureId   Int?
   description          String
   stats                Json
   modifiedStats        Json?
@@ -618,6 +640,7 @@ enum UserRole {
   GUEST
   USER
   PROUSER
+  SUPERUSER
   ADMIN
   SUPERADMIN
 }

@@ -1,14 +1,17 @@
 import prisma from '../config/database.js';
 import { PropertyInput } from '../validation/propertySchema.js';
 
+const propertyInclude = {
+  gang: true,
+  generatedPicture: { select: { publicId: true } },
+};
+
 const propertyServices = {
   getBaseProperties: async () => {
     try {
       const properties = await prisma.property.findMany({
         where: { basePropertyId: null },
-        include: {
-          gang: true,
-        },
+        include: propertyInclude,
       });
 
       return properties;
@@ -22,9 +25,7 @@ const propertyServices = {
     try {
       const properties = await prisma.property.findMany({
         where: { id: { in: propertyIds } },
-        include: {
-          gang: true,
-        },
+        include: propertyInclude,
       });
 
       return properties;
@@ -38,9 +39,7 @@ const propertyServices = {
     try {
       const property = await prisma.property.findUnique({
         where: { id: propertyId },
-        include: {
-          gang: true,
-        },
+        include: propertyInclude,
       });
 
       return property;

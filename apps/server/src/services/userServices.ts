@@ -6,6 +6,7 @@ import {
   SignUpInput,
   UserUpdateInput,
 } from '../validation/authSchema.js';
+import cloudinary from '../utils/cloudinary.js';
 
 const userServices = {
   getAuthenticatedUser: async (userId: number) => {
@@ -217,28 +218,58 @@ const userServices = {
   },
 
   addUserGeneratedPicture: async (
-    picture: { imageUrl: string; publicId: string },
+    pictures: { imageUrl: string; publicId: string }[],
     prompt: string,
     type: $Enums.GeneratedPictureType,
     userId: number,
   ) => {
     try {
-      await prisma.user.update({
+      const newPictures = await prisma.user.update({
         where: { id: userId },
         data: {
           generatedPictures: {
-            create: {
-              imageUrl: picture.imageUrl,
-              publicId: picture.publicId,
-              type,
-              prompt,
+            createMany: {
+              data: pictures.map((picture) => ({
+                imageUrl: picture.imageUrl,
+                publicId: picture.publicId,
+                type,
+                prompt,
+              })),
             },
           },
           generationCount: { increment: 1 },
         },
       });
 
-      return picture;
+      return newPictures;
+    } catch (error: any) {
+      console.error(error);
+      throw new Error('Failed to update account information');
+    }
+  },
+
+  deleteUnusedGeneratedPictures: async (userId: number) => {
+    try {
+      const result = await cloudinary.search
+        .expression(`folder:"gated/${userId}"`)
+        .sort_by('created_at', 'desc')
+        .execute();
+
+      console.log(Object.keys(result));
+      console.log(result.total_count);
+
+      return;
+      // const pictures = await prisma.generatedPicture.findMany({
+      //   where: { userId },
+      // });
+
+      // const picturesIdsToDelete = [];
+
+      // const count = await prisma.generatedPicture.deleteMany({
+      //   where: { id: { in: picturesIdsToDelete } },
+      // });
+
+      // return count;
     } catch (error: any) {
       console.error(error);
       throw new Error('Failed to update account information');

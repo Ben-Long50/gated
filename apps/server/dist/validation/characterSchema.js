@@ -1,5 +1,5 @@
 import z from 'zod';
-import { Attributes, CharacterStats, Description, FirstName, LastName, Picture, PictureFile, } from './fieldSchemas.js';
+import { Attributes, CharacterStats, Description, FirstName, LastName, } from './fieldSchemas.js';
 import { NpcType, Sex } from './enums.js';
 import prisma from '../config/database.js';
 import validateLevelUpBonus from '../utils/validateLevelUpBonus.js';
@@ -26,8 +26,7 @@ export const CharacterInput = z.object({
         perks: z.boolean(),
         equipment: z.boolean(),
     }),
-    pictureFile: PictureFile,
-    picture: Picture,
+    generatedPictureId: z.number().int().optional(),
     level: z.preprocess((value) => (value === null ? undefined : value), z.number().int().min(1).max(12).optional()),
     height: z.number().int().nonnegative(),
     weight: z.number().nonnegative(),
@@ -62,8 +61,7 @@ export const CharacterUpdateInput = z.object({
         perks: z.boolean(),
         equipment: z.boolean(),
     }),
-    pictureFile: PictureFile,
-    picture: Picture,
+    generatedPictureId: z.number().int().optional(),
     height: z.number().int().nonnegative(),
     weight: z.number().nonnegative(),
     age: z.number().int().nonnegative(),

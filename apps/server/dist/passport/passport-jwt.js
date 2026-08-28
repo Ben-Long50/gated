@@ -15,6 +15,7 @@ const jwtStrategy = (passport) => {
         try {
             const user = await prisma.user.findUnique({
                 where: { id: jwt_payload.id },
+                include: { _count: { select: { generatedPictures: true } } },
             });
             if (!user) {
                 return done(null, false);

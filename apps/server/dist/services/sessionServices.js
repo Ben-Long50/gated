@@ -14,6 +14,7 @@ import { NotesInput } from '../validation/notesSchema.js';
 import { SessionInput } from '../validation/sessionSchema.js';
 const sessionInclude = {
     characters: true,
+    generatedPicture: { select: { publicId: true } },
 };
 const sessionServices = {
     getCampaignSessions: async (campaignId) => {

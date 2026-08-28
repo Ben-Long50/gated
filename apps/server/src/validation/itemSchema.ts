@@ -1,11 +1,5 @@
 import z from 'zod';
-import {
-  Description,
-  ItemStats,
-  Name,
-  Picture,
-  PictureFile,
-} from './fieldSchemas.js';
+import { Description, ItemStats, Name } from './fieldSchemas.js';
 import { ItemType, Rarity } from './enums.js';
 import prisma from '../config/database.js';
 
@@ -19,8 +13,7 @@ export const ItemInput = z
     description: Description,
     price: z.number().int().nonnegative().optional().nullable(),
     stats: ItemStats,
-    pictureFile: PictureFile,
-    picture: Picture,
+    generatedPictureId: z.number().int().optional(),
     itemIds: z.array(z.number().int()).optional(),
     actionIds: z.array(z.number().int()).optional(),
     keywords: z.array(
@@ -65,8 +58,7 @@ export const ItemUpgradeInput = z
     name: Name,
     grade: z.number().int().min(1),
     description: Description,
-    pictureFile: PictureFile,
-    picture: Picture,
+    generatedPictureId: z.number().int().optional(),
     upgradePrice: z.number().int().nonnegative(),
     modifiedStats: ItemStats,
     keywords: z.array(

@@ -41,6 +41,7 @@ const campaignInclude = {
       combatPhase: true,
     },
   },
+  generatedPicture: { select: { publicId: true } },
 };
 
 const campaignServices = {
@@ -288,7 +289,7 @@ const campaignServices = {
               id: true,
               userId: true,
               campaignId: true,
-              picture: true,
+              generatedPicture: { select: { publicId: true } },
             },
           },
         },

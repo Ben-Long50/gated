@@ -36,6 +36,7 @@ export const characterInclude = {
   },
   location: { include: { map: { select: { name: true } } } },
   characterLevelBonuses: { include: { perks: { include: { actions: true } } } },
+  generatedPicture: { select: { publicId: true } },
 };
 
 const characterServices = {
@@ -128,7 +129,7 @@ const characterServices = {
               userId: true,
               firstName: true,
               lastName: true,
-              picture: true,
+              generatedPicture: { select: { publicId: true } },
             },
           },
           session: {
@@ -288,7 +289,7 @@ const characterServices = {
           lastName: true,
           level: true,
           stats: true,
-          picture: true,
+          generatedPictureId: true,
           height: true,
           weight: true,
           age: true,

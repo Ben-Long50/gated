@@ -56,6 +56,7 @@ export const itemInclude = {
         include: { condition: true },
         orderBy: { condition: { name: 'asc' } },
     },
+    generatedPicture: { select: { publicId: true } },
 };
 const itemServices = {
     getCodexPreviewItems: async () => {
@@ -176,7 +177,7 @@ const itemServices = {
                     //@ts-ignore
                     where: data,
                     skip: Math.floor(Math.random() * count),
-                    select: { picture: true },
+                    select: { generatedPicture: { select: { publicId: true } } },
                 });
             });
             const characterPromises = characterData.map((data, index) => {
@@ -188,7 +189,7 @@ const itemServices = {
                     //@ts-ignore
                     where: data,
                     skip: Math.floor(Math.random() * count),
-                    select: { picture: true },
+                    select: { generatedPicture: { select: { publicId: true } } },
                 });
             });
             const [items, characters] = await Promise.all([
@@ -253,7 +254,7 @@ const itemServices = {
     },
     createOrUpdateItem: async (formData) => {
         try {
-            const { id, itemIds, actionIds, keywords, pictureFile, stats } = formData, data = __rest(formData, ["id", "itemIds", "actionIds", "keywords", "pictureFile", "stats"]);
+            const { id, itemIds, actionIds, keywords, stats } = formData, data = __rest(formData, ["id", "itemIds", "actionIds", "keywords", "stats"]);
             const newStats = addVariableStats(stats);
             formData.id &&
                 (await enforceSingularLinking(formData.id, itemIds, actionIds));
@@ -303,7 +304,7 @@ const itemServices = {
                     data: {
                         name: formData.name,
                         description: formData.description,
-                        picture: formData.picture,
+                        generatedPictureId: formData.generatedPictureId,
                         modifiedStats: formData.modifiedStats,
                         modifiedKeywords: {
                             deleteMany: {},
@@ -331,7 +332,7 @@ const itemServices = {
                     rarity: true,
                     description: true,
                     stats: true,
-                    picture: true,
+                    generatedPictureId: true,
                     itemTypes: true,
                     grade: true,
                     price: true,
@@ -344,8 +345,7 @@ const itemServices = {
             if (!itemDetails) {
                 throw new Error('Failed to find original item');
             }
-            const { id, baseItemId, stats, picture, keywords, linkedItems, linkedActions } = itemDetails, data = __rest(itemDetails, ["id", "baseItemId", "stats", "picture", "keywords", "linkedItems", "linkedActions"]);
-            const typedPicture = picture;
+            const { id, baseItemId, stats, keywords, linkedItems, linkedActions } = itemDetails, data = __rest(itemDetails, ["id", "baseItemId", "stats", "keywords", "linkedItems", "linkedActions"]);
             const typedStats = stats;
             const itemIds = [];
             const actionIds = [];
@@ -362,7 +362,7 @@ const itemServices = {
                 }
             }
             const item = await prisma.item.create({
-                data: Object.assign(Object.assign({}, data), { picture: typedPicture, stats: typedStats, linkedItems: {
+                data: Object.assign(Object.assign({}, data), { stats: typedStats, linkedItems: {
                         connect: itemIds.map((id) => ({ id })),
                     }, linkedActions: {
                         connect: actionIds.map((id) => ({ id })),
@@ -386,7 +386,7 @@ const itemServices = {
                 rarity: true,
                 description: true,
                 stats: true,
-                picture: true,
+                generatedPictureId: true,
                 itemTypes: true,
                 grade: true,
                 price: true,
@@ -398,7 +398,7 @@ const itemServices = {
                         rarity: true,
                         description: true,
                         stats: true,
-                        picture: true,
+                        generatedPictureId: true,
                         itemTypes: true,
                         grade: true,
                         price: true,

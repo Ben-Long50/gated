@@ -28,6 +28,7 @@ const gangInclude = {
   properties: true,
   affiliations: { select: { id: true } },
   gangSessionBonuses: true,
+  generatedPicture: { select: { publicId: true } },
 };
 
 const gangServices = {

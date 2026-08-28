@@ -12,6 +12,7 @@ var __rest = (this && this.__rest) || function (s, e) {
 import handleControllerError from '../controllers/handleControllerError.js';
 import { fal } from '@fal-ai/client';
 import { PromptInput } from '../validation/promptSchema.js';
+import userLimits from '../utils/constants/userLimits.js';
 export const generateCloudflarePicture = async (req, res) => {
     const model = '@cf/black-forest-labs/flux-2-dev';
     try {
@@ -172,4 +173,31 @@ export const generatFalItemPicture = async (req, res, next) => {
         return;
     }
     next();
+};
+export const validatePictureGeneration = async (req, res, next) => {
+    try {
+        if (!req.user) {
+            throw new Error('Failed to find user');
+        }
+        const role = req.user.role;
+        const limits = userLimits[role];
+        const montlyGenerationLimit = limits.monthlyPictureGenerations;
+        const newMonthlyGenerationCount = req.body.prompt.pictureCount + req.user.generationCount;
+        if (req.user._count == null) {
+            throw new Error('Failed to find generated picture count');
+        }
+        const storageLimit = limits.pictures;
+        const newStorageCount = req.body.prompt.pictureCount + req.user._count.generatedPictures;
+        if (newMonthlyGenerationCount > montlyGenerationLimit) {
+            throw new Error(`Cannot process picture generations since it would put you over your monthly generation limit by ${newMonthlyGenerationCount - montlyGenerationLimit}.`);
+        }
+        if (newStorageCount > storageLimit) {
+            throw new Error(`Cannot process picture generations since it would put you over your availbable generation storage limit by ${newStorageCount - storageLimit}. Delete unused pictures from your storage and try again.`);
+        }
+        next();
+    }
+    catch (error) {
+        handleControllerError(res, error);
+        return;
+    }
 };

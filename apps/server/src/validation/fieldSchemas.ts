@@ -23,26 +23,6 @@ export const Description = z
   .min(10, 'Description must be at least 10 characters')
   .max(1000, 'Description must be under 1000 characters');
 
-export const PictureFile = z.file().optional();
-
-export const Picture = z.preprocess(
-  (value) => (value === 0 ? undefined : value),
-  z
-    .object({
-      imageUrl: z.string().optional(),
-      publicId: z.string().optional(),
-      position: z
-        .object({
-          x: z.number().int().min(0).max(100),
-          y: z.number().int().min(0).max(100),
-        })
-        .optional(),
-    })
-    .optional(),
-);
-
-export type Picture = z.infer<typeof Picture>;
-
 export const RichText = z.object({
   html: z.string().transform((val) =>
     sanitizeHtml(val, {

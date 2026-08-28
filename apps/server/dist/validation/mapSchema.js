@@ -1,5 +1,5 @@
 import z from 'zod';
-import { Description, Name, Picture, PictureFile } from './fieldSchemas.js';
+import { Description, Name } from './fieldSchemas.js';
 import { MapType } from './enums.js';
 const Component = z.lazy(() => z.object({
     name: Name,
@@ -31,6 +31,5 @@ export const MapInput = z.object({
         componentCount: z.number().int().nonnegative(),
         components: z.array(Component),
     })),
-    pictureFile: PictureFile.optional(),
-    picture: Picture.optional(),
+    generatedPictureId: z.number().int().optional(),
 });
