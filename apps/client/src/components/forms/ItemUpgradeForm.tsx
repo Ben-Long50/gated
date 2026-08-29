@@ -133,10 +133,7 @@ const ItemUpgradeForm = () => {
             )}
           </itemUpgradeForm.Field>
         </div>
-        <PictureField
-          form={itemUpgradeForm}
-          sizeInfo={{ aspectRatio: '1/1', maxHeight: '', minHeight: '' }}
-        />
+        <PictureField form={itemUpgradeForm} type="item" />
         <Divider />
         <div className="flex items-center justify-between gap-8">
           <ArrowHeader3 title="Upgrade Point Distribution" />

@@ -27,10 +27,7 @@ const EntityAvater = ({
         style={style}
       >
         {entity?.picture?.publicId ? (
-          <CloudinaryPicture
-            publicId={entity?.picture?.publicId}
-            position={entity?.picture?.position}
-          />
+          <CloudinaryPicture publicId={entity?.picture?.publicId} />
         ) : (
           <div
             className={`flex h-full w-full items-center justify-center`}

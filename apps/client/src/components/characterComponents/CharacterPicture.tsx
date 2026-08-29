@@ -37,7 +37,6 @@ const CharacterPicture = ({
       <CloudinaryPicture
         className={`${className}`}
         publicId={character?.generatedPicture?.publicId}
-        position={character?.generatedPicture?.position}
       />
       {awol && (
         <InjuryIcon className="absolute left-2 top-4 size-20 fill-black stroke-red-600 stroke-2 p-0.5" />

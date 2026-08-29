@@ -12,12 +12,10 @@ import Divider from '../Divider';
 import { PictureCard } from '../PictureCard';
 import NavTabs from '../NavTabs';
 import BtnAuth from '../buttons/BtnAuth';
-import { LayoutContext } from 'src/contexts/LayoutContext';
 import InventoryGrid from '../InventoryGrid';
 
 const PictureLibraryModal = () => {
   const { user } = useContext(AuthContext);
-  const { mobile } = useContext(LayoutContext);
   const navigate = useNavigate();
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -63,17 +61,12 @@ const PictureLibraryModal = () => {
       </NavTabs>
       <InventoryGrid minWidth={175}>
         {pictures.map(
-          (picture: { imageUrl: string; publicId: string }, index: number) => (
+          (picture: { id: number; publicId: string }, index: number) => (
             <PictureCard
               key={index}
               publicId={picture.publicId}
               onClick={() => {
-                const currentPicture = form.getFieldValue('picture');
-                form.setFieldValue('picture', {
-                  ...currentPicture,
-                  imageUrl: picture.imageUrl,
-                  publicId: picture.publicId,
-                });
+                form.setFieldValue('generatedPictureId', picture.id);
                 if (backgroundPath) {
                   navigate(backgroundPath, { replace: true });
                 }

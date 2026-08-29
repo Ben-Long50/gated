@@ -15,12 +15,7 @@ const useGangForm = (
       id: gang?.id ?? null,
       name: gang?.name ?? '',
       profits: gang?.profits ?? null,
-      pictureFile: null as File | null,
-      picture: {
-        imageUrl: gang?.picture.imageUrl ?? '',
-        publicId: gang?.picture.publicId ?? '',
-        position: gang?.picture.position ?? { x: 50, y: 50 },
-      },
+      generatedPictureId: gang?.generatedPictureId ?? null,
       background: {} as { html: string; nodes: string },
       campaignId: gang?.campaignId ?? Number(campaignId),
       factionId: gang?.factionId ?? null,

@@ -219,11 +219,7 @@ const CharacterForm = () => {
       </div>
       <Divider />
       <ArrowHeader2 title="Character Picture" />
-      <PictureField
-        form={characterForm}
-        type="character"
-        sizeInfo={{ aspectRatio: '1/1', maxHeight: '', minHeight: '' }}
-      />
+      <PictureField form={characterForm} type="character" />
       <Divider />
       <ArrowHeader2 title="Stats" />
       <characterForm.Subscribe

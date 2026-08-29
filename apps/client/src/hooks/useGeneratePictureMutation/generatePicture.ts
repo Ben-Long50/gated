@@ -1,7 +1,15 @@
 import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const generatePicture = async (prompt: string) => {
+const generatePicture = async (
+  type: 'character' | 'item' | 'scene',
+  prompt: {
+    setting: string;
+    time: string;
+    description: string;
+    pictureCount: number;
+  },
+) => {
   try {
     const response = await fetch(`${apiUrl}/users/generate`, {
       method: 'POST',
@@ -9,7 +17,7 @@ const generatePicture = async (prompt: string) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ prompt }),
+      body: JSON.stringify({ prompt: { ...prompt, type } }),
     });
 
     const data = await handleResponse(response);

@@ -72,11 +72,7 @@ const PropertyForm = () => {
           />
         )}
       </propertyForm.Field>
-      <PictureField
-        form={propertyForm}
-        type="scene"
-        sizeInfo={{ aspectRatio: '1/1', maxHeight: '', minHeight: '' }}
-      />
+      <PictureField form={propertyForm} type="scene" />
     </FormLayout>
   );
 };

@@ -12,12 +12,7 @@ const useCampaignForm = (
       id: campaign?.id ?? null,
       name: campaign?.name ?? '',
       location: campaign?.location ?? '',
-      pictureFile: null as File | null,
-      picture: {
-        imageUrl: campaign?.picture.imageUrl ?? '',
-        publicId: campaign?.picture.publicId ?? '',
-        position: campaign?.picture.position ?? { x: 50, y: 50 },
-      },
+      generatedPictureId: campaign?.generatedPictureId as number | null,
       factions:
         campaign?.factions ??
         ([

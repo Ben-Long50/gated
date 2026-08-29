@@ -110,7 +110,6 @@ const CharacterCard = ({
               <CloudinaryPicture
                 className={`${(awol || insane) && 'grayscale'} group-hover:bg-secondary`}
                 publicId={character?.generatedPicture?.publicId}
-                position={character?.generatedPicture?.position}
                 style={{
                   maskImage:
                     size === 'small'

@@ -43,13 +43,7 @@ const ItemUpdateModal = () => {
       id: item?.id || null,
       name: baseItem?.name || null,
       description: baseItem?.description || null,
-      picture: baseItem?.picture
-        ? {
-            imageUrl: baseItem?.picture.imageUrl,
-            publicId: baseItem?.picture.publicId,
-          }
-        : null,
-      position: baseItem?.picture?.position || null,
+      generatedPictureId: baseItem?.generatedPictureId || null,
       price: baseItem?.price || null,
       stats: {
         damage: baseItem?.stats.damage || '',

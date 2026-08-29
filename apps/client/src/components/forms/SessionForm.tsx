@@ -58,14 +58,7 @@ const SessionForm = () => {
           />
         )}
       </sessionForm.Field>
-      <PictureField
-        form={sessionForm}
-        sizeInfo={{
-          aspectRatio: '10/3',
-          maxHeight: '500px',
-          minHeight: '300px',
-        }}
-      />
+      <PictureField form={sessionForm} type="scene" />
       <Divider />
       <div className="flex flex-col gap-8">
         <ArrowHeader2 title="Session Characters" />

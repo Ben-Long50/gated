@@ -138,11 +138,7 @@ const CharacterUpdateForm = () => {
       </div>
       <Divider />
       <ArrowHeader2 title="Character Picture" />
-      <PictureField
-        form={characterUpdateForm}
-        type="character"
-        sizeInfo={{ aspectRatio: '1/1', maxHeight: '', minHeight: '' }}
-      />
+      <PictureField form={characterUpdateForm} type="character" />
       <Divider />
       <ArrowHeader2 title="Stats" />
       <characterUpdateForm.Field name="stats">

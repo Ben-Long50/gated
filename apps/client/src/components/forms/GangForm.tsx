@@ -44,14 +44,7 @@ const GangForm = () => {
           />
         )}
       </gangForm.Field>
-      <PictureField
-        form={gangForm}
-        sizeInfo={{
-          aspectRatio: '3/1',
-          maxHeight: '',
-          minHeight: '',
-        }}
-      />
+      <PictureField form={gangForm} type="scene" />
       <Divider />
       <div className="flex flex-col gap-4">
         <ArrowHeader2 title="Faction Affiliation" />

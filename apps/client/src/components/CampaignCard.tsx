@@ -31,7 +31,6 @@ const CampaignCard = ({ campaign }: { campaign: Campaign }) => {
         <div className="-z-10 col-span-2 col-start-1 row-start-1">
           <CloudinaryPicture
             publicId={campaign?.picture?.publicId}
-            position={campaign?.picture?.position}
             style={{
               maskImage: 'linear-gradient(to right, black 0%, transparent 90%',
             }}

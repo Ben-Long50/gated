@@ -34,12 +34,7 @@ const useMapForm = (
           components: [],
         },
       ],
-      pictureFile: null as File | null,
-      picture: {
-        imageUrl: map?.picture.imageUrl ?? '',
-        publicId: map?.picture.publicId ?? '',
-        position: map?.picture.position ?? { x: 50, y: 50 },
-      },
+      generatedPictureId: map?.generatedPictureId ?? null,
     },
     onSubmit: async ({ value }) => {
       if (mapRef.current) {

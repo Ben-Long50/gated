@@ -3,20 +3,13 @@ import { Cloudinary } from '@cloudinary/url-gen';
 import { mdiImageOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 
-type Position = {
-  x: number;
-  y: number;
-};
-
 const CloudinaryPicture = ({
   publicId,
-  position,
   className,
   onClick,
   style,
 }: {
   publicId?: string;
-  position?: Position;
   className?: string;
   onClick?: () => void;
   style?: object;
@@ -30,19 +23,13 @@ const CloudinaryPicture = ({
   const responsiveImage = cld.image(publicId);
 
   return (
-    <div
-      className={`${className} timing bg-primary h-full w-full`}
-      onClick={onClick}
-    >
+    <div className={`${className} timing bg-primary w-full`} onClick={onClick}>
       {publicId ? (
         <AdvancedImage
           style={{
             width: '100%',
             minHeight: '100%',
             objectFit: 'cover',
-            objectPosition: position
-              ? `${position.x}% ${position.y}%`
-              : '50% 50%',
             ...style,
           }}
           cldImg={responsiveImage}

@@ -4,21 +4,26 @@ import generatePicture from './generatePicture';
 import useModalStore from 'src/stores/modalStore';
 import { useNavigate } from 'react-router-dom';
 
-const useGeneratePictureMutation = () => {
+const useGeneratePictureMutation = (type: 'character' | 'item' | 'scene') => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const backgroundPath = useModalStore((state) => state.backgroundPath);
 
   return useMutation({
-    mutationFn: (prompt: string) => {
-      return generatePicture(prompt);
+    mutationFn: (prompt: {
+      setting: string;
+      time: string;
+      description: string;
+      pictureCount: number;
+    }) => {
+      return generatePicture(type, prompt);
     },
     onSuccess: (data) => {
       toast.success(data.message);
       if (backgroundPath) {
         navigate(backgroundPath, { replace: true });
       }
-      queryClient.invalidateQueries({ queryKey: ['authenticatedUser'] });
+      queryClient.setQueryData(['authenticatedUser'], data.user);
     },
     onError: (data) => {
       toast.error(data.message);

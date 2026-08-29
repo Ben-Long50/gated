@@ -168,7 +168,10 @@ const CodexTabRoutes = () => {
               <PropertyForm />
             </Page>
           }
-        />
+        >
+          <Route path="library" element={<PictureLibraryModal />} />
+          <Route path="prompt" element={<PromptModal />} />
+        </Route>
         <Route
           path=":propertyId/update"
           element={
@@ -176,7 +179,10 @@ const CodexTabRoutes = () => {
               <PropertyForm />
             </Page>
           }
-        />
+        >
+          <Route path="library" element={<PictureLibraryModal />} />
+          <Route path="prompt" element={<PromptModal />} />
+        </Route>
       </Route>
       <Route path="perks">
         <Route

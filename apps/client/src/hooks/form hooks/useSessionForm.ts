@@ -16,12 +16,7 @@ const useSessionForm = (
       campaignId: session?.campaignId ?? Number(campaignId),
       name: session?.name ?? '',
       location: session?.location ?? '',
-      pictureFile: null as File | null,
-      picture: {
-        imageUrl: session?.picture.imageUrl ?? '',
-        publicId: session?.picture.publicId ?? '',
-        position: session?.picture.position ?? { x: 50, y: 50 },
-      },
+      generatedPictureId: session?.generatedPictureId ?? null,
       characterIds:
         session?.characters.map((character) => character.id) ??
         ([] as number[]),

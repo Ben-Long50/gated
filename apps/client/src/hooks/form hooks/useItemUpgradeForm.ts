@@ -22,12 +22,7 @@ const useItemUpgradeForm = (
       name: item?.name ?? '',
       grade: item?.grade ?? 1,
       description: item?.description ?? '',
-      pictureFile: null as File | null,
-      picture: {
-        imageUrl: item?.generatedPicture.imageUrl ?? '',
-        publicId: item?.generatedPicture.publicId ?? '',
-        position: item?.generatedPicture.position ?? { x: 50, y: 50 },
-      },
+      generatedPictureId: item?.generatedPictureId ?? null,
       modifiedStats: { ...emptyStats, ...item?.modifiedStats },
       keywords:
         item?.modifiedKeywords.map((keyword) => ({

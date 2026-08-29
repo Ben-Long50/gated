@@ -76,14 +76,7 @@ const CampaignForm = () => {
           />
         )}
       </campaignForm.Field>
-      <PictureField
-        form={campaignForm}
-        sizeInfo={{
-          aspectRatio: '10/3',
-          maxHeight: '',
-          minHeight: '',
-        }}
-      />
+      <PictureField type="scene" form={campaignForm} />
       <Divider />
       <ArrowHeader2 title="Campaign Factions" />
       <campaignForm.Field name="factions" mode="array">

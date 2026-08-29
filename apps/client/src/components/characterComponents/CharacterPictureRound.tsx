@@ -44,7 +44,6 @@ const CharacterPictureRound = ({
           <CloudinaryPicture
             className={`${(awol || insane) && 'grayscale'}`}
             publicId={character?.generatedPicture?.publicId}
-            position={character?.generatedPicture?.position}
           />
         ) : (
           <div

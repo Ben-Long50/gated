@@ -89,7 +89,7 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
                         <div className="liveCampaign z-10 size-12 shrink-0 rounded-full">
                           <img
                             className="bg-secondary size-full shrink-0 rounded-full object-cover"
-                            src={campaign?.picture.imageUrl}
+                            src={campaign?.generatedPictureId.imageUrl}
                             alt={campaign?.name + ' ' + "'s cover picture"}
                           />
                         </div>
@@ -162,7 +162,9 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
                               <div className="liveToken z-10 ml-4 size-12 shrink-0 rounded-full">
                                 <img
                                   className="bg-secondary size-full shrink-0 rounded-full object-cover"
-                                  src={encounter?.map?.picture.imageUrl}
+                                  src={
+                                    encounter?.map?.generatedPictureId.imageUrl
+                                  }
                                   alt={encounter.map?.name + ' ' + "'s picture"}
                                 />
                               </div>

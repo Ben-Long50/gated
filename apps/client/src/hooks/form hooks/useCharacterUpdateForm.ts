@@ -43,12 +43,7 @@ const useCharacterUpdateForm = (
         permanentInjuries: character?.stats.permanentInjuries ?? 0,
         permanentInsanities: character?.stats.permanentInsanities ?? 0,
       },
-      pictureFile: null as File | null,
-      picture: {
-        imageUrl: character?.generatedPicture.imageUrl ?? '',
-        publicId: character?.generatedPicture.publicId ?? '',
-        position: character?.generatedPicture.position ?? { x: 50, y: 50 },
-      },
+      generatedPictureId: character?.generatedPictureId ?? null,
       height: character?.height ?? null,
       weight: character?.weight ?? null,
       age: character?.age ?? null,

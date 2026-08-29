@@ -7,12 +7,16 @@ import BtnAuth from './buttons/BtnAuth';
 import { PictureCard } from './PictureCard';
 import useDeleteUnusedPicturesMutation from 'src/hooks/useDeleteUnusedPicturesMutation/useDeleteUnusedPicturesMutation';
 import Loading from './Loading';
+import InventoryGrid from './InventoryGrid';
+import userLimits from 'src/utils/constants/userLimits';
+import ArrowHeader2 from './ArrowHeader2';
 
 const GenerationLibrary = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [type, setType] = useState('character');
+  const pictureStorageLimit = userLimits[user.role].pictures;
 
   const backgroundPath = useModalStore((state) => state.backgroundPath);
 
@@ -24,6 +28,10 @@ const GenerationLibrary = () => {
 
   return (
     <>
+      <div className="flex w-full items-center justify-between gap-8">
+        <ArrowHeader2 title={`Picture Storage`} />
+        <p>{`( ${user.generatedPictures.length} / ${pictureStorageLimit} )`}</p>
+      </div>
       <NavTabs className="grid-cols-3">
         <BtnAuth
           active={type === 'character'}
@@ -38,6 +46,7 @@ const GenerationLibrary = () => {
           Scenes
         </BtnAuth>
       </NavTabs>
+
       <BtnAuth
         onClick={() => {
           if (!deleteUnusedPictures.isPending) {
@@ -51,7 +60,8 @@ const GenerationLibrary = () => {
           'Delete Oldest Unused Pictures'
         )}
       </BtnAuth>
-      <div className="grid w-full grid-cols-5 gap-4 sm:gap-6">
+
+      <InventoryGrid minWidth={175}>
         {pictures.map(
           (picture: { id: number; publicId: string }, index: number) => (
             <PictureCard
@@ -66,7 +76,7 @@ const GenerationLibrary = () => {
             />
           ),
         )}
-      </div>
+      </InventoryGrid>
     </>
   );
 };

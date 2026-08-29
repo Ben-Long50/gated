@@ -33,12 +33,7 @@ const useCharacterForm = (
       },
       firstName: null as string | null,
       lastName: null as string | null,
-      pictureFile: null as File | null,
-      picture: {
-        imageUrl: '',
-        publicId: '',
-        position: { x: 50, y: 50 },
-      },
+      generatedPictureId: null as number | null,
       height: null as number | null,
       weight: null as number | null,
       age: null as number | null,

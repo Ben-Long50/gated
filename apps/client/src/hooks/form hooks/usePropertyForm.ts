@@ -12,12 +12,7 @@ const usePropertyForm = (
       id: property?.id ?? null,
       name: property?.name ?? '',
       description: property?.description ?? '',
-      pictureFile: null as File | null,
-      picture: {
-        imageUrl: property?.picture.imageUrl ?? '',
-        publicId: property?.picture.publicId ?? '',
-        position: property?.picture.position ?? { x: 50, y: 50 },
-      },
+      generatedPictureId: property?.generatedPictureId ?? null,
       gpPrice: property?.gpPrice ?? null,
       type: property?.type ?? '',
     },

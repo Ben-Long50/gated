@@ -1,4 +1,4 @@
-import { FormApi, useStore } from '@tanstack/react-form';
+import { FormApi } from '@tanstack/react-form';
 import ThemeContainer from '../ThemeContainer';
 import { useContext, useEffect } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
@@ -14,59 +14,33 @@ import BtnAuth from '../buttons/BtnAuth';
 import { PictureCard } from '../PictureCard';
 import TrueFalseIndicator from '../TrueFalseIndicator';
 import CloudinaryPicture from '../CloudinaryPicture';
-import useGenerateItemPictureMutation from 'src/hooks/useGenerateItemPictureMutation/useGenerateItemPictureMutation';
 import { LayoutContext } from 'src/contexts/LayoutContext';
-
-type SizeInfo = {
-  aspectRatio: string;
-  minHeight: string;
-  maxHeight: string;
-};
+import { AuthContext } from 'src/contexts/AuthContext';
 
 const PictureField = ({
   form,
   type,
-  sizeInfo,
 }: {
   form: FormApi;
   type: 'character' | 'item' | 'scene';
-  sizeInfo: SizeInfo;
 }) => {
+  const { user } = useContext(AuthContext);
   const { accentPrimary } = useContext(ThemeContext);
   const { mobile } = useContext(LayoutContext);
   const navigate = useNavigate();
   const location = useLocation();
   const path = location.pathname.split('/');
 
-  const generateCharacterPicture = useGeneratePictureMutation();
-  const generateItemPicture = useGenerateItemPictureMutation();
-
-  let generatePicture = generateCharacterPicture;
-
-  switch (type) {
-    case 'character':
-      generatePicture = generateCharacterPicture;
-      break;
-    case 'item':
-      generatePicture = generateItemPicture;
-      break;
-  }
+  const generatePicture = useGeneratePictureMutation(type);
 
   const promptForm = usePromptForm(generatePicture);
 
   useEffect(() => {
     if (generatePicture.data) {
       form.setFieldValue(
-        'picture.imageUrl',
-        generatePicture.data.pictures[0].imageUrl,
+        'generatedPictureId',
+        generatePicture.data?.newPictures[0].id,
       );
-
-      form.setFieldValue(
-        'picture.publicId',
-        generatePicture.data.pictures[0].publicId,
-      );
-
-      form.setFieldValue('pictureFile', null);
     }
   }, [generatePicture.data]);
 
@@ -81,18 +55,21 @@ const PictureField = ({
           borderColor={accentPrimary}
           overflowHidden={true}
         >
-          <form.Subscribe selector={(state) => state.values.picture}>
-            {(picture) => (
-              <CloudinaryPicture
-                className="bg-secondary h-full w-full overflow-hidden bg-black"
-                publicId={picture.publicId}
-                style={{
-                  aspectRatio: sizeInfo.aspectRatio,
-                  maxHeight: sizeInfo.maxHeight,
-                  minHeight: sizeInfo.minHeight,
-                }}
-              />
-            )}
+          <form.Subscribe selector={(state) => state.values.generatedPictureId}>
+            {(generatedPictureId: number) => {
+              const picture = generatedPictureId
+                ? user.generatedPictures.find(
+                    (p) => p.id === generatedPictureId,
+                  )
+                : null;
+
+              return (
+                <CloudinaryPicture
+                  className="bg-secondary h-full overflow-hidden bg-black"
+                  publicId={picture?.publicId}
+                />
+              );
+            }}
           </form.Subscribe>
         </ThemeContainer>
       </div>
@@ -119,29 +96,21 @@ const PictureField = ({
         <promptForm.Subscribe selector={(state) => state.values.pictureCount}>
           {(pictureCount) => (
             <div className="grid grid-cols-4 gap-4">
-              <form.Field name="picture">
+              <form.Field name="generatedPictureId">
                 {(field) =>
                   Array.from({ length: pictureCount }).map((_, index) => {
-                    const picture = generatePicture.data
-                      ? generatePicture.data.pictures[index]
-                      : null;
+                    const picture = generatePicture.data?.newPictures[index];
 
                     return picture ? (
                       <PictureCard
                         key={index}
                         label={
-                          field.state.value.publicId === picture.publicId
+                          field.state.value === picture.id
                             ? 'Selected'
                             : undefined
                         }
                         publicId={picture.publicId}
-                        onClick={() =>
-                          field.handleChange((prev) => ({
-                            ...prev,
-                            imageUrl: picture.imageUrl,
-                            publicId: picture.publicId,
-                          }))
-                        }
+                        onClick={() => field.handleChange(picture.id)}
                       />
                     ) : (
                       <PictureCard label="" color={accentPrimary} key={index} />
@@ -162,9 +131,12 @@ const PictureField = ({
           >
             {([time, setting, description]) => (
               <>
-                <TrueFalseIndicator label="Time" active={time} />
-                <TrueFalseIndicator label="Setting" active={setting} />
-                <TrueFalseIndicator label="Description" active={description} />
+                <TrueFalseIndicator label="Time" active={Boolean(time)} />
+                <TrueFalseIndicator label="Setting" active={Boolean(setting)} />
+                <TrueFalseIndicator
+                  label="Description"
+                  active={Boolean(description)}
+                />
               </>
             )}
           </promptForm.Subscribe>
@@ -176,61 +148,52 @@ const PictureField = ({
           >
             Picture Library
           </BtnAuth>
-          <form.Subscribe selector={(state) => state.values.sex}>
-            {(sex) => (
-              <promptForm.Subscribe selector={(state) => state.values}>
-                {(values) => {
-                  const compiledValues = {
-                    ...values,
-                    sex,
-                  };
+          <promptForm.Subscribe selector={(state) => state.values}>
+            {(values) => {
+              const complete = Object.values(values)
+                .map((value) => !!value)
+                .every(Boolean);
 
-                  const complete = Object.values(compiledValues)
-                    .map((value) => !!value)
-                    .every(Boolean);
-
-                  return complete ? (
-                    <>
-                      <BtnAuth
-                        className="group"
-                        onClick={() => {
-                          navigate('prompt');
-                        }}
-                      >
-                        Set Prompt Info
-                      </BtnAuth>
-                      <BtnRect
-                        className="group"
-                        ariaLabel="Generate picture"
-                        onClick={() => {
-                          promptForm.handleSubmit();
-                        }}
-                      >
-                        {generatePicture.isPending ? (
-                          <Loading
-                            className="group-hover:text-accent text-zinc-950"
-                            size={1.15}
-                          />
-                        ) : (
-                          'Generate'
-                        )}
-                      </BtnRect>
-                    </>
-                  ) : (
-                    <BtnRect
-                      className="group"
-                      ariaLabel="Generate picture"
-                      onClick={() => {
-                        navigate('prompt');
-                      }}
-                    >
-                      Set Prompt Info
-                    </BtnRect>
-                  );
-                }}
-              </promptForm.Subscribe>
-            )}
-          </form.Subscribe>
+              return complete ? (
+                <>
+                  <BtnAuth
+                    className="group"
+                    onClick={() => {
+                      navigate('prompt');
+                    }}
+                  >
+                    Set Prompt Info
+                  </BtnAuth>
+                  <BtnRect
+                    className="group"
+                    ariaLabel="Generate picture"
+                    onClick={() => {
+                      promptForm.handleSubmit();
+                    }}
+                  >
+                    {generatePicture.isPending ? (
+                      <Loading
+                        className="group-hover:text-accent text-zinc-950"
+                        size={1.15}
+                      />
+                    ) : (
+                      'Generate'
+                    )}
+                  </BtnRect>
+                </>
+              ) : (
+                <BtnRect
+                  className="group"
+                  ariaLabel="Generate picture"
+                  onClick={() => {
+                    navigate('prompt');
+                  }}
+                >
+                  Set Prompt Info
+                </BtnRect>
+              );
+            }}
+          </promptForm.Subscribe>
         </div>
       </div>
       {(path.includes('library') || path.includes('prompt')) && (

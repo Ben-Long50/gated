@@ -31,7 +31,6 @@ const FactionCard = ({ factionId }: { factionId: number }) => {
         <div className="-z-10 col-span-2 col-start-1 row-start-1">
           <CloudinaryPicture
             publicId={faction?.picture?.publicId}
-            position={faction?.picture?.position}
             style={{
               maskImage: 'linear-gradient(to right, black 0%, transparent 90%',
             }}

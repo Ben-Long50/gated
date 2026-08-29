@@ -60,14 +60,7 @@ const FactionForm = () => {
           />
         )}
       </factionForm.Field>
-      <PictureField
-        form={factionForm}
-        sizeInfo={{
-          aspectRatio: '10/3',
-          minHeight: '',
-          maxHeight: '',
-        }}
-      />
+      <PictureField form={factionForm} type="scene" />
       <Divider />
       <ArrowHeader2 title="Faction Background" />
       <factionForm.Field

@@ -14,12 +14,7 @@ const useItemForm = (
       itemTypes: item?.itemTypes ?? ([''] as string[]),
       rarity: item?.rarity ?? '',
       grade: item?.grade ?? 1,
-      pictureFile: null as File | null,
-      picture: {
-        imageUrl: item?.generatedPicture.imageUrl ?? '',
-        publicId: item?.generatedPicture.publicId ?? '',
-        position: item?.generatedPicture.position ?? { x: 50, y: 50 },
-      },
+      generatedPictureId: item?.generatedPictureId ?? null,
       description: item?.description ?? '',
       price: item?.price ?? '',
       stats: {

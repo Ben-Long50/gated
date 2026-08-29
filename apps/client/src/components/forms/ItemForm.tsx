@@ -130,11 +130,7 @@ const ItemForm = () => {
       </itemForm.Field>
       <Divider />
       <ArrowHeader2 title="Item Picture" />
-      <PictureField
-        form={itemForm}
-        type="item"
-        sizeInfo={{ aspectRatio: '1/1', maxHeight: '', minHeight: '' }}
-      />
+      <PictureField form={itemForm} type="item" />
       <StatFields form={itemForm} />
       <Divider />
       <KeywordLinkField form={itemForm} />

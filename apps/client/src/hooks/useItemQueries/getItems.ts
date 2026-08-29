@@ -14,7 +14,6 @@ const getItems = create({
     );
 
     const data: Item[] = await handleResponse(response);
-    console.log(data);
 
     return data;
   },

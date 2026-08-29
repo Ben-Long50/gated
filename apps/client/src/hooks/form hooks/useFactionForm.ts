@@ -12,12 +12,7 @@ const useFactionForm = (
       id: faction?.id ?? null,
       name: faction?.name ?? '',
       factionType: faction?.factionType ?? '',
-      pictureFile: null as File | null,
-      picture: {
-        imageUrl: faction?.picture.imageUrl ?? '',
-        publicId: faction?.picture.publicId ?? '',
-        position: faction?.picture.position ?? { x: 50, y: 50 },
-      },
+      generatedPictureId: faction?.generatedPictureId ?? null,
       background:
         faction?.background ?? ({} as { html: string; nodes: string }),
     },
