@@ -15,23 +15,28 @@ const AuthFormLayout = ({
   const { data: picture } = useAuthPictureQuery();
 
   return (
-    <div
-      className={`${!mobile && 'grid grid-cols-2'} shadow-color bg-base z-10 overflow-hidden rounded-lg shadow-lg`}
-    >
-      <form
-        className={`${mobile ? 'gap-6 p-4' : 'gap-8 p-8'} flex flex-col justify-between`}
-        onSubmit={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          form.handleSubmit();
-        }}
-      >
-        {children}
-      </form>
+    <>
       {!mobile && (
-        <CloudinaryPicture className="aspect-square" publicId={picture?.url} />
+        <CloudinaryPicture
+          className="absolute w-full"
+          publicId={picture?.publicId}
+        />
       )}
-    </div>
+      <div
+        className={`shadow-color bg-base z-10 w-full max-w-[600px] overflow-hidden rounded-lg shadow-lg`}
+      >
+        <form
+          className={`${mobile ? 'gap-6 p-4' : 'gap-8 p-8'} flex flex-col justify-between`}
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            form.handleSubmit();
+          }}
+        >
+          {children}
+        </form>
+      </div>
+    </>
   );
 };
 

@@ -52,7 +52,7 @@ const Campaign = () => {
 
   return (
     <>
-      <CoverPicture picture={campaign?.picture} />
+      <CoverPicture publicId={campaign?.generatedPicture?.publicId} />
       <div className="absolute left-8 right-8 top-8 flex items-start justify-between gap-8">
         <h2 className="w-full font-zen text-4xl">
           {capitalCase(campaign?.name)}

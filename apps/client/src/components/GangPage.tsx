@@ -68,7 +68,7 @@ const GangPage = () => {
 
   return (
     <>
-      <CoverPicture picture={gang?.picture} />
+      <CoverPicture publicId={gang?.generatedPicture?.publicId} />
       <div className="absolute left-8 right-8 top-8 flex items-start justify-between gap-8">
         <h2 className="w-full font-zen text-4xl">{capitalCase(gang?.name)}</h2>
         <p className="!text-accent whitespace-nowrap font-zen text-4xl">

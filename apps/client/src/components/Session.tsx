@@ -49,7 +49,7 @@ const Session = () => {
 
   return (
     <>
-      <CoverPicture picture={session.picture} />
+      <CoverPicture publicId={session.generatedPicture?.publicId} />
       <div className="absolute left-8 right-8 top-8 flex items-start justify-between gap-8">
         <h2 className="text-shadow-color text-shadow text-center font-zen text-4xl text-shadow-x-2 text-shadow-y-2">
           {capitalCase(session.name)}

@@ -146,7 +146,7 @@ const Items = ({
             <IconBtnMedium
               onClick={() => setSize(size === 'large' ? 'small' : 'large')}
             >
-              <Icon path={size === 'small' ? mdiGrid : mdiCropSquare} />
+              <Icon path={size === 'large' ? mdiGrid : mdiCropSquare} />
             </IconBtnMedium>
           )}
           <IconBtnMedium

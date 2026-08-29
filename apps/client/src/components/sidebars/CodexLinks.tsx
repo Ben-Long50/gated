@@ -227,6 +227,10 @@ const CodexLinks = () => {
             title="Create Condition"
             path="codex/conditions/create"
           />
+          <SubLinkSidebar
+            title="Create Standard Picture"
+            path="codex/pictures/create"
+          />
         </LinkListSidebar>
       )}
     </>

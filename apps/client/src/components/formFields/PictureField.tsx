@@ -1,4 +1,4 @@
-import { FormApi } from '@tanstack/react-form';
+import { FormApi, useStore } from '@tanstack/react-form';
 import ThemeContainer from '../ThemeContainer';
 import { useContext, useEffect } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
@@ -7,7 +7,12 @@ import { mdiMinus, mdiPlus } from '@mdi/js';
 import useGeneratePictureMutation from 'src/hooks/useGeneratePictureMutation/useGeneratePictureMutation';
 import BtnRect from '../buttons/BtnRect';
 import Loading from '../Loading';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import {
+  Outlet,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom';
 import IconBtnSmall from '../buttons/IconBtnSmall';
 import usePromptForm from 'src/hooks/form hooks/usePromptForm';
 import BtnAuth from '../buttons/BtnAuth';
@@ -16,6 +21,8 @@ import TrueFalseIndicator from '../TrueFalseIndicator';
 import CloudinaryPicture from '../CloudinaryPicture';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import { AuthContext } from 'src/contexts/AuthContext';
+import useStandardLibraryQuery from 'src/hooks/useStandardLibraryQuery/useStandardLibraryQuery';
+import useGenerateStandardPictureMutation from 'src/hooks/useGenerateStandardPictureMutation/useGenerateStandardPictureMutation';
 
 const PictureField = ({
   form,
@@ -31,9 +38,27 @@ const PictureField = ({
   const location = useLocation();
   const path = location.pathname.split('/');
 
-  const generatePicture = useGeneratePictureMutation(type);
+  const { data: standardLibrary } = useStandardLibraryQuery();
+
+  const [searchParams] = useSearchParams();
+  const formType = searchParams.get('formType');
+
+  const generatePicture =
+    formType === 'codex'
+      ? useGenerateStandardPictureMutation(type)
+      : useGeneratePictureMutation(type);
 
   const promptForm = usePromptForm(generatePicture);
+
+  const generationId = useStore(
+    form.store,
+    (state) => state.values.generatedPictureId,
+  );
+
+  const pictureList = standardLibrary
+    ? [...user.generatedPictures, ...standardLibrary]
+    : user.generatedPictures;
+  const picture = pictureList.find((picture) => picture.id === generationId);
 
   useEffect(() => {
     if (generatePicture.data) {
@@ -46,7 +71,7 @@ const PictureField = ({
 
   return (
     <div
-      className={`${mobile ? 'flex flex-col gap-4' : 'grid grid-cols-2 gap-6'} h-full`}
+      className={`${mobile || type === 'scene' ? 'flex flex-col gap-4' : 'grid grid-cols-2 gap-6'} h-full`}
     >
       <div className="flex flex-col gap-8">
         <ThemeContainer
@@ -55,22 +80,10 @@ const PictureField = ({
           borderColor={accentPrimary}
           overflowHidden={true}
         >
-          <form.Subscribe selector={(state) => state.values.generatedPictureId}>
-            {(generatedPictureId: number) => {
-              const picture = generatedPictureId
-                ? user.generatedPictures.find(
-                    (p) => p.id === generatedPictureId,
-                  )
-                : null;
-
-              return (
-                <CloudinaryPicture
-                  className="bg-secondary h-full overflow-hidden bg-black"
-                  publicId={picture?.publicId}
-                />
-              );
-            }}
-          </form.Subscribe>
+          <CloudinaryPicture
+            className="bg-secondary h-full overflow-hidden bg-black"
+            publicId={picture?.publicId}
+          />
         </ThemeContainer>
       </div>
       <div className="flex flex-col gap-8">
@@ -142,10 +155,7 @@ const PictureField = ({
           </promptForm.Subscribe>
         </div>
         <div className="flex flex-col gap-4">
-          <BtnAuth
-            className="group"
-            onClick={() => navigate('library?type=character')}
-          >
+          <BtnAuth className="group" onClick={() => navigate('library')}>
             Picture Library
           </BtnAuth>
           <promptForm.Subscribe selector={(state) => state.values}>

@@ -1,8 +1,6 @@
 import { Route } from 'react-router-dom';
 import Campaign from 'src/components/Campaign';
-import CampaignCharacterList from 'src/components/CampaignCharacterList';
 import CampaignForm from 'src/components/forms/CampaignForm';
-import Campaigns from 'src/components/Campaigns';
 import Faction from 'src/components/Faction';
 import FactionForm from 'src/components/forms/FactionForm';
 import RollSimulator from 'src/components/RollSimulator';
@@ -46,6 +44,7 @@ import AffiliationForm from 'src/components/forms/AffiliationForm';
 import AffiliationEntitySelectModal from 'src/components/modals/AffiliationEntitySelectModal';
 import CampaignDashboard from 'src/components/CampaignDashboard';
 import Page from 'src/components/Page';
+import CharacterList from 'src/components/characterComponents/CharacterList';
 
 const CampaignTabRoutes = () => {
   return (
@@ -108,7 +107,7 @@ const CampaignTabRoutes = () => {
             path=""
             element={
               <Page title="Campaign Characters">
-                <CampaignCharacterList />
+                <CharacterList />
               </Page>
             }
           >

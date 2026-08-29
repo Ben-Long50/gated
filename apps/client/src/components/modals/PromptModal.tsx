@@ -19,6 +19,10 @@ const PromptModal = () => {
       placeholder =
         'e.g. a long, slender sword with glowing blue circuitry running along the length of the blade. The sword is modeled after a katana and is sitting on an ornate, decorative stand.';
       break;
+    case 'scene':
+      placeholder =
+        'e.g. a mob of cybernetically enhanced gangsters running down the street while a large ghastly entity chases them from behind.';
+      break;
   }
   return (
     <Modal>

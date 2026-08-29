@@ -15,6 +15,7 @@ import CharacterRadialMenu from '../radialMenus/characterRadialMenu/CharacterRad
 import useRadialMenuStore from 'src/stores/radialMenuStore';
 import Icon from '@mdi/react';
 import { mdiCrown } from '@mdi/js';
+import StatBarContainer from '../StatBarContainer';
 
 const CharacterCardSmall = ({
   characterList,
@@ -112,7 +113,7 @@ const CharacterCardSmall = ({
         )}
       </div>
 
-      <div className={`relative flex items-center`}>
+      <div className={`relative flex items-center gap-2`}>
         <CharacterPictureRound
           className={`${active && 'liveToken'}`}
           character={character}
@@ -120,9 +121,7 @@ const CharacterCardSmall = ({
         {character?.conditions && character?.conditions.length > 0 && (
           <div className="absolute left-0 top-0 z-10 size-3 rounded-full bg-red-600 shadow-md shadow-black"></div>
         )}
-        <div
-          className={`${characterList ? 'visible ml-4 max-h-20 translate-x-0 gap-2 opacity-100' : 'invisible ml-0 max-h-0 -translate-x-full gap-0 opacity-0'} timing grid w-full grid-cols-[auto_auto_1fr_auto] place-items-center gap-y-0`}
-        >
+        <StatBarContainer>
           <CharacterStatBars
             characterId={character?.id}
             size="small"
@@ -134,7 +133,7 @@ const CharacterCardSmall = ({
             }}
             cardWidth={300}
           />
-        </div>
+        </StatBarContainer>
       </div>
       {expanding && (
         <div

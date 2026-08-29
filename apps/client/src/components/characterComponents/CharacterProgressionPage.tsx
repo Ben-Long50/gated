@@ -48,7 +48,7 @@ const CharacterProgressionPage = () => {
     <>
       <CharacterHeader character={character} />
       <div className="grid gap-8 max-sm:grid-flow-row sm:grid-cols-[1fr,_2fr]">
-        {character?.generatedPicture.imageUrl && (
+        {character?.generatedPicture?.publicId && (
           <CharacterPicture character={character} />
         )}
 

@@ -42,7 +42,7 @@ const CharacterStatBars = ({
     <>
       {stats.maxHealth !== undefined && (
         <StatBar
-          title="Health"
+          title="HLT"
           current={stats.currentHealth ?? stats.maxHealth}
           total={stats.maxHealth}
           color={statColorMap['Health']}
@@ -72,7 +72,7 @@ const CharacterStatBars = ({
       )}
       {stats.maxSanity !== undefined && (
         <StatBar
-          title="Sanity"
+          title="SAN"
           current={stats.currentSanity ?? stats.maxSanity}
           total={stats.maxSanity}
           color={statColorMap['Sanity']}
@@ -102,7 +102,7 @@ const CharacterStatBars = ({
       )}
       {stats.maxCyber ? (
         <StatBar
-          title="Cyber"
+          title="CBR"
           current={stats.cyber ?? stats.maxCyber}
           total={stats.maxCyber}
           color={statColorMap['Cyber']}
@@ -118,7 +118,7 @@ const CharacterStatBars = ({
       ) : null}
       {stats.maxEquip ? (
         <StatBar
-          title="Equip"
+          title="EQP"
           current={stats.weight ?? stats.maxEquip}
           total={stats.maxEquip}
           color={statColorMap['Equip']}
@@ -134,7 +134,7 @@ const CharacterStatBars = ({
       ) : null}
       {stats.speed != undefined && (
         <StatBar
-          title="Speed"
+          title="SPD"
           current={stats.speed}
           color={statColorMap['SPD']}
           size={size}
@@ -149,7 +149,7 @@ const CharacterStatBars = ({
       )}
       {stats.evasion != undefined && (
         <StatBar
-          title="Evasion"
+          title="EV"
           current={stats.evasion}
           color={statColorMap['EV']}
           size={size}
@@ -164,7 +164,7 @@ const CharacterStatBars = ({
       )}
       {stats.equippedArmor > 0 && (
         <StatBar
-          title="Armor"
+          title="AV"
           current={stats.armor}
           total={stats.equippedArmor}
           color={statColorMap['AV']}
@@ -175,7 +175,7 @@ const CharacterStatBars = ({
       )}
       {stats.equippedWard > 0 && (
         <StatBar
-          title="Ward"
+          title="WV"
           current={stats.ward}
           total={stats.equippedWard}
           color={statColorMap['WV']}
@@ -186,7 +186,7 @@ const CharacterStatBars = ({
       )}
       {stats.blockPoints > 0 && (
         <StatBar
-          title="Block Points"
+          title="BP"
           current={stats.currentBlockPoints}
           total={stats.blockPoints}
           color={statColorMap['BP']}
@@ -197,7 +197,7 @@ const CharacterStatBars = ({
       )}
       {stats.size !== undefined && (
         <StatBar
-          title="Size"
+          title="SZE"
           current={stats.size}
           color={statColorMap['SZE']}
           size={size}
@@ -213,7 +213,7 @@ const CharacterStatBars = ({
 
       {stats.hands !== undefined && (
         <StatBar
-          title="Hands"
+          title="HND"
           current={stats.hands}
           color={statColorMap['Hands']}
           size={size}
@@ -228,7 +228,7 @@ const CharacterStatBars = ({
       )}
       {stats.feet !== undefined && (
         <StatBar
-          title="Feet"
+          title="FT"
           current={stats.feet}
           color={statColorMap['Feet']}
           size={size}
@@ -243,7 +243,7 @@ const CharacterStatBars = ({
       )}
       {stats.actions !== undefined && (
         <StatBar
-          title="Actions"
+          title="ACT"
           current={stats.actions}
           color={statColorMap['Actions']}
           size={size}
@@ -258,7 +258,7 @@ const CharacterStatBars = ({
       )}
       {stats.reactions !== undefined && (
         <StatBar
-          title="Reactions"
+          title="RCT"
           current={stats.reactions}
           color={statColorMap['Reactions']}
           size={size}
@@ -273,7 +273,7 @@ const CharacterStatBars = ({
       )}
       {stats.permanentInjuries !== undefined && (
         <>
-          {size === 'large' && <h4>Injuries</h4>}
+          {size === 'large' && <h4>INJ</h4>}
           <InjuryIcon className="text-secondary size-8" />
           <div className="col-span-2 flex items-center justify-end gap-4 place-self-end">
             <div className={`flex grow items-center gap-2 justify-self-end`}>
@@ -313,7 +313,7 @@ const CharacterStatBars = ({
       )}
       {stats.permanentInsanities !== undefined && (
         <>
-          {size === 'large' && <h4>Insanities</h4>}
+          {size === 'large' && <h4>INS</h4>}
           <InsanityIcon className="text-secondary size-8" />
           <div className="col-span-2 flex items-center justify-end gap-4 place-self-end">
             <div className={`flex grow items-center gap-2 justify-self-end`}>

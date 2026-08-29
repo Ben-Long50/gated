@@ -1,32 +1,47 @@
-import {
-  useNavigate,
-  useOutletContext,
-  useSearchParams,
-} from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import BtnRect from '../buttons/BtnRect';
 import Modal from './Modal';
 import useModalStore from 'src/stores/modalStore';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { AuthContext } from 'src/contexts/AuthContext';
 import Divider from '../Divider';
 import { PictureCard } from '../PictureCard';
 import NavTabs from '../NavTabs';
 import BtnAuth from '../buttons/BtnAuth';
 import InventoryGrid from '../InventoryGrid';
+import InputSelectField from '../formFields/InputSelectField';
+import useStandardLibraryQuery from 'src/hooks/useStandardLibraryQuery/useStandardLibraryQuery';
 
 const PictureLibraryModal = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const [searchParams, setSearchParams] = useSearchParams();
-  const type = searchParams.get('type');
+  const { data: standardLibrary } = useStandardLibraryQuery();
+
+  const [libraryType, setLibraryType] = useState(
+    user.generatedPictures.length > 0 ? 'personal' : 'standard',
+  );
+  const [type, setType] = useState('character');
 
   const backgroundPath = useModalStore((state) => state.backgroundPath);
   const { form } = useOutletContext();
 
-  const pictures = user.generatedPictures.filter(
-    (picture) => picture.type === type,
-  );
+  let pictures = [];
+
+  switch (libraryType) {
+    case 'personal':
+      pictures = user.generatedPictures.filter(
+        (picture) => picture.type === type,
+      );
+      break;
+    case 'standard':
+      pictures =
+        standardLibrary?.filter((picture) => picture.type === type) ?? [];
+      break;
+    default:
+      pictures = [];
+      break;
+  }
 
   return (
     <Modal
@@ -45,35 +60,45 @@ const PictureLibraryModal = () => {
     >
       <h1>Library</h1>
       <Divider />
-      <NavTabs className="grid-cols-2">
+      <InputSelectField
+        label="Library Type"
+        value={libraryType}
+        options={['standard', 'personal']}
+        onChange={(value) => setLibraryType(value)}
+      />
+      <NavTabs className="grid-cols-3">
         <BtnAuth
           active={type === 'character'}
-          onClick={() => setSearchParams({ type: 'character' })}
+          onClick={() => setType('character')}
         >
           Characters
         </BtnAuth>
-        <BtnAuth
-          active={type === 'item'}
-          onClick={() => setSearchParams({ type: 'item' })}
-        >
+        <BtnAuth active={type === 'item'} onClick={() => setType('item')}>
           Items
+        </BtnAuth>
+        <BtnAuth active={type === 'scene'} onClick={() => setType('scene')}>
+          Scenes
         </BtnAuth>
       </NavTabs>
       <InventoryGrid minWidth={175}>
-        {pictures.map(
-          (picture: { id: number; publicId: string }, index: number) => (
-            <PictureCard
-              key={index}
-              publicId={picture.publicId}
-              onClick={() => {
-                form.setFieldValue('generatedPictureId', picture.id);
-                if (backgroundPath) {
-                  navigate(backgroundPath, { replace: true });
-                }
-              }}
-            />
-          ),
-        )}
+        <form.Field name="generatedPictureId">
+          {(field) => {
+            return pictures.map(
+              (picture: { id: number; publicId: string }, index: number) => (
+                <PictureCard
+                  key={index}
+                  publicId={picture.publicId}
+                  onClick={() => {
+                    field.handleChange(picture.id);
+                    if (backgroundPath) {
+                      navigate(backgroundPath, { replace: true });
+                    }
+                  }}
+                />
+              ),
+            );
+          }}
+        </form.Field>
       </InventoryGrid>
     </Modal>
   );

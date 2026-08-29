@@ -29,6 +29,7 @@ import NpcPreferenceModal from 'src/components/modals/NpcPreferenceModal';
 import CodexCharacters from 'src/components/characterComponents/CodexCharacters';
 import PromptModal from 'src/components/modals/PromptModal';
 import CharacterRoutes from './CharacterRoutes';
+import GenerateStandardPictureForm from 'src/components/forms/GenerateStandardPictureForm';
 
 const CodexTabRoutes = () => {
   return (
@@ -300,6 +301,14 @@ const CodexTabRoutes = () => {
           }
         />
       </Route>
+      <Route
+        path="pictures/create"
+        element={
+          <Page title="Generate Standard Picture">
+            <GenerateStandardPictureForm />
+          </Page>
+        }
+      ></Route>
     </Route>
   );
 };

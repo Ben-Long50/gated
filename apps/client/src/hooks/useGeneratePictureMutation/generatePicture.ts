@@ -11,7 +11,7 @@ const generatePicture = async (
   },
 ) => {
   try {
-    const response = await fetch(`${apiUrl}/users/generate`, {
+    const response = await fetch(`${apiUrl}/generations?generationType=user`, {
       method: 'POST',
       credentials: 'include',
       headers: {

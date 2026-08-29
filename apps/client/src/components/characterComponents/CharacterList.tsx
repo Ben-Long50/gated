@@ -14,10 +14,11 @@ import { mdiCropSquare, mdiGrid, mdiSync } from '@mdi/js';
 import { useParams } from 'react-router-dom';
 import IconBtnMedium from '../buttons/IconBtnMedium';
 import { LayoutContext } from 'src/contexts/LayoutContext';
+import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 
 const CharacterList = ({
   characterIds,
-  menu = true,
+  menu = false,
 }: {
   characterIds?: number[];
   menu?: boolean;
@@ -29,8 +30,11 @@ const CharacterList = ({
 
   const cardSize = mobile || size === 'small' ? 'small' : 'large';
 
-  const characterIdList =
-    characterIds || user.characters.map((character) => character.id);
+  const { data: campaign } = useCampaignQuery(Number(campaignId));
+
+  const characterIdList = campaign
+    ? campaign.characters.map((character) => character.id)
+    : user.characters.map((character) => character.id);
 
   const {
     characters,
@@ -87,24 +91,17 @@ const CharacterList = ({
                   }
                 }}
               >
-                <Icon path={size === 'small' ? mdiGrid : mdiCropSquare} />
+                <Icon path={size === 'large' ? mdiGrid : mdiCropSquare} />
               </IconBtnMedium>
             )}
           </div>
         </div>
 
         {!characters || characters?.length === 0 ? (
-          <>
-            <p className="text-center">No Characters Found</p>
-            <Link to="create">
-              <BtnRect ariaLabel="Create character" type="button">
-                Character creator
-              </BtnRect>
-            </Link>
-          </>
+          <p className="text-center">No Characters Found</p>
         ) : (
           <div
-            className={`${mobile ? 'gap-4' : 'gap-8'} ${cardSize === 'large' ? 'grid-cols-1' : 'grid-cols-[repeat(auto-fit,minmax(350px,400px))]'} grid w-full`}
+            className={`${mobile ? 'gap-4' : 'gap-8'} ${cardSize === 'large' ? 'grid-cols-1' : 'grid-cols-[repeat(auto-fit,minmax(350px,1fr))]'} grid w-full`}
           >
             {characters.map((character: Character, index: number) => (
               <CharacterCard

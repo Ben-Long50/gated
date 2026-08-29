@@ -6,7 +6,7 @@ const deleteUnusedPictures = async (formData: {
   count: number;
 }) => {
   try {
-    const response = await fetch(`${apiUrl}/users/unusedPictures`, {
+    const response = await fetch(`${apiUrl}/generations/unusedPictures`, {
       method: 'DELETE',
       credentials: 'include',
       headers: {

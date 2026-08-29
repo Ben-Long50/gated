@@ -30,7 +30,9 @@ export const PictureCard = ({
               e.preventDefault();
               onClick();
             }
-          : undefined
+          : (e) => {
+              e.preventDefault();
+            }
       }
       onDoubleClick={onDoubleClick}
       onMouseEnter={() => setHover(true)}

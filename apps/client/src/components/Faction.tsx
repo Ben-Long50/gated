@@ -35,7 +35,7 @@ const Faction = () => {
 
   return (
     <>
-      <CoverPicture picture={faction?.picture} />
+      <CoverPicture publicId={faction?.generatedPicture?.publicId} />
       <div className="timing absolute left-8 right-8 top-8 flex items-center justify-between">
         <h2 className="w-full font-zen text-4xl">{faction?.name}</h2>
         <p className="!text-accent text-right font-semibold">

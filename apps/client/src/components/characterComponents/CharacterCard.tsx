@@ -94,7 +94,7 @@ const CharacterCard = ({
               if (menu) {
                 handleMenu(e);
               } else {
-                navigate(`${character?.id}`);
+                navigate(`/glam/characters/${character?.id}`);
               }
             }}
           >
@@ -144,9 +144,15 @@ const CharacterCard = ({
               <div className="flex w-full items-center justify-start gap-4">
                 <ArrowHeader2 title={constructName(character)} />
                 <NpcTypeList npcTypes={character?.npcTypes} />
-                <p className="!text-accent ml-auto flex size-8 shrink-0 items-center justify-center text-3xl font-semibold sm:pt-1">
-                  {character?.level}
-                </p>
+                {character?.level ? (
+                  <p className="!text-accent ml-auto flex size-8 shrink-0 items-center justify-center text-3xl font-semibold sm:pt-1">
+                    {character?.level}
+                  </p>
+                ) : (
+                  <p className="!text-accent ml-auto size-8 font-semibold">
+                    NPC
+                  </p>
+                )}
               </div>
               {character?.location && (
                 <div className="flex gap-4">
