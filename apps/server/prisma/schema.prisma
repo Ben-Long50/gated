@@ -55,8 +55,6 @@ model GeneratedPicture {
 enum GeneratedPictureType {
   character
   item
-  faction
-  gang
   scene
 }
 

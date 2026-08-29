@@ -113,11 +113,28 @@ export const generatFalPicture = async (
   try {
     const url = 'fal-ai/z-image/turbo/lora';
 
-    const data = req.body.prompt;
+    const validatedData = PromptInput.parse(req.body.prompt);
 
-    const validatedData = PromptInput.parse(data);
+    let prompt = '';
 
-    const prompt = `in the style of cksc and japanese anime with muted colors, create a picutre of a character that can be described as ${validatedData.description}. The background setting of the picture should be ${validatedData.setting} at ${validatedData.time}. The focus of the picture is the character themself. The picture should be sharp with clearly defined lines.`;
+    switch (validatedData.type) {
+      case 'character':
+        prompt = `in the style of cksc and japanese anime with muted colors, create a picutre of a character that can be described as ${validatedData.description}. The background setting of the picture should be ${validatedData.setting} at ${validatedData.time}. The focus of the picture is the character themself. The picture should be sharp with clearly defined lines.`;
+        break;
+      case 'item':
+        prompt = `in the style of cksc and japanese anime with muted colors, create a picutre of ${validatedData.description}. The background setting of the picture should be ${validatedData.setting} at ${validatedData.time}. The focus of the picture is the item itself. The picture should be sharp with clearly defined lines.`;
+        break;
+      case 'scene':
+        prompt = `in the style of cksc and japanese anime with muted colors, create a picutre of a scene that can be described as ${validatedData.description}. The background scene of the picture should be ${validatedData.setting} at ${validatedData.time}. The picture should be sharp with clearly defined lines.`;
+        break;
+      default:
+        prompt = '';
+        break;
+    }
+
+    if (!prompt) {
+      throw new Error('Failed to generate prompt');
+    }
 
     const result = await fal.subscribe(url, {
       input: {
@@ -132,10 +149,16 @@ export const generatFalPicture = async (
             scale: 0.3,
           },
         ],
-        image_size: {
-          width: 1024,
-          height: 1024,
-        },
+        image_size:
+          validatedData.type === 'scene'
+            ? {
+                width: 1024,
+                height: 576,
+              }
+            : {
+                width: 1024,
+                height: 1024,
+              },
         num_images: validatedData.pictureCount,
         num_inference_steps: 8,
         output_format: 'png',
@@ -152,71 +175,11 @@ export const generatFalPicture = async (
       return;
     }
 
-    const { pictureCount, ...promptData } = validatedData;
+    const { pictureCount, type, ...promptData } = validatedData;
 
     req.body.generatedPictureUrls = urls;
     req.body.prompt = promptData;
-    req.body.type = 'character';
-  } catch (error: any) {
-    handleControllerError(res, error);
-    return;
-  }
-
-  next();
-};
-
-export const generatFalItemPicture = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const url = 'fal-ai/z-image/turbo/lora';
-
-    const data = req.body.prompt;
-
-    const validatedData = PromptInput.parse(data);
-
-    const prompt = `in the style of cksc and japanese anime with muted colors, create a picutre of ${data.description}. The background setting of the picture should be ${validatedData.setting} at ${validatedData.time}. The focus of the picture is the item itself. The picture should be sharp with clearly defined lines.`;
-
-    const result = await fal.subscribe(url, {
-      input: {
-        prompt,
-        loras: [
-          {
-            path: 'https://huggingface.co/benjlong50/gated/resolve/main/ZIT_CPA_PRO_V1.5.safetensors',
-            scale: 1,
-          },
-          {
-            path: 'https://huggingface.co/benjlong50/gated/resolve/main/ck-NeurocoreShadowCircuit-ZIT_000003000.safetensors',
-            scale: 0.3,
-          },
-        ],
-        image_size: {
-          width: 1024,
-          height: 1024,
-        },
-        num_images: validatedData.pictureCount,
-        num_inference_steps: 8,
-        output_format: 'png',
-      },
-    });
-
-    const urls = result.data.images.map((image) => image.url);
-
-    if (urls.length === 0) {
-      handleControllerError(
-        res,
-        new Error('All image generation requests failed'),
-      );
-      return;
-    }
-
-    const { pictureCount, ...promptData } = validatedData;
-
-    req.body.generatedPictureUrls = urls;
-    req.body.prompt = promptData;
-    req.body.type = 'item';
+    req.body.type = type;
   } catch (error: any) {
     handleControllerError(res, error);
     return;

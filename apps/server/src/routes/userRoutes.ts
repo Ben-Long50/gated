@@ -2,7 +2,6 @@ import express from 'express';
 import userController from '../controllers/userController.js';
 import authentication from '../middleware/authentication.js';
 import {
-  generatFalItemPicture,
   generatFalPicture,
   validatePictureGeneration,
 } from '../middleware/pictureGenerationMiddleware.js';
@@ -34,16 +33,6 @@ router.post(
   authentication.authenticateProUser,
   validatePictureGeneration,
   generatFalPicture,
-  uploadGeneratedPictureToCloudinary,
-  userController.addUserGeneratedPicture,
-);
-
-router.post(
-  '/users/generateItem',
-  authentication.authenticate,
-  authentication.authenticateProUser,
-  validatePictureGeneration,
-  generatFalItemPicture,
   uploadGeneratedPictureToCloudinary,
   userController.addUserGeneratedPicture,
 );

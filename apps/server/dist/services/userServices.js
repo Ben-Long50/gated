@@ -1,5 +1,30 @@
 import prisma from '../config/database.js';
 import { deleteManyFromCloudinary } from '../utils/cloudinary.js';
+const userInclude = {
+    generatedPictures: {
+        select: { id: true, publicId: true, type: true },
+        orderBy: { createdAt: 'desc' },
+    },
+    characters: {
+        select: {
+            id: true,
+            playerCharacter: true,
+            characterInventory: {
+                include: {
+                    _count: {
+                        select: {
+                            items: true,
+                        },
+                    },
+                },
+            },
+        },
+        orderBy: { firstName: 'asc' },
+    },
+    ownerCampaigns: { select: { id: true } },
+    playerCampaigns: { select: { id: true } },
+    pendingCampaigns: { select: { id: true } },
+};
 const userServices = {
     getAuthenticatedUser: async (userId) => {
         try {
@@ -7,38 +32,7 @@ const userServices = {
                 where: {
                     id: userId,
                 },
-                select: {
-                    id: true,
-                    username: true,
-                    email: true,
-                    firstName: true,
-                    lastName: true,
-                    role: true,
-                    profilePicture: true,
-                    generatedPictures: {
-                        select: { id: true, publicId: true, type: true },
-                        orderBy: { createdAt: 'desc' },
-                    },
-                    characters: {
-                        select: {
-                            id: true,
-                            playerCharacter: true,
-                            characterInventory: {
-                                include: {
-                                    _count: {
-                                        select: {
-                                            items: true,
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                        orderBy: { firstName: 'asc' },
-                    },
-                    ownerCampaigns: { select: { id: true } },
-                    playerCampaigns: { select: { id: true } },
-                    pendingCampaigns: { select: { id: true } },
-                },
+                include: userInclude,
             });
             return user;
         }
@@ -211,7 +205,7 @@ const userServices = {
     },
     addUserGeneratedPicture: async (pictures, prompt, type, userId) => {
         try {
-            const newPictures = await prisma.user.update({
+            const user = await prisma.user.update({
                 where: { id: userId },
                 data: {
                     generatedPictures: {
@@ -224,14 +218,16 @@ const userServices = {
                             })),
                         },
                     },
-                    generationCount: { increment: 1 },
+                    generationCount: { increment: pictures.length },
                 },
+                include: userInclude,
             });
-            return newPictures;
+            const newPictures = user.generatedPictures.slice(0, pictures.length);
+            return { user, newPictures };
         }
         catch (error) {
             console.error(error);
-            throw new Error('Failed to update account information');
+            throw new Error('Failed to generate pictures');
         }
     },
     deleteUnusedGeneratedPictures: async (userId, type, count) => {

@@ -113,9 +113,10 @@ const userController = {
             }
             const { id: userId } = req.user;
             if (req.body.pictures) {
-                const pictures = await userServices.addUserGeneratedPicture(req.body.pictures, req.body.prompt, req.body.type, userId);
+                const data = await userServices.addUserGeneratedPicture(req.body.pictures, req.body.prompt, req.body.type, userId);
                 res.status(200).json({
-                    pictures,
+                    user: data.user,
+                    newPictures: data.newPictures,
                     message: 'Successfully generated and saved images',
                 });
                 return;
