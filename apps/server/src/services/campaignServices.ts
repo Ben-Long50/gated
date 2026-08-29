@@ -180,6 +180,7 @@ const campaignServices = {
       id,
       playerIds,
       pendingPlayerIds,
+      generatedPictureId,
       factions,
       briefing,
       affiliation,
@@ -208,11 +209,7 @@ const campaignServices = {
                 name: 'Introduction',
                 sessionNumber: 0,
                 briefing,
-                picture: {
-                  imageUrl: '',
-                  publicId: '',
-                  position: { x: 50, y: 50 },
-                },
+                generatedPictureId,
               },
             },
             date: { month: 'arctus', day: 1 },
@@ -221,6 +218,7 @@ const campaignServices = {
             pendingPlayers: {
               connect: pendingPlayerIds.map((id) => ({ id })),
             },
+            generatedPictureId,
           },
           include: campaignInclude,
         });

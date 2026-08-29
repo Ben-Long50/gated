@@ -28,6 +28,7 @@ import propertyRouter from './routes/propertyRoutes.js';
 import notesRouter from './routes/notesRoutes.js';
 import mapRouter from './routes/mapRoutes.js';
 import affiliationRouter from './routes/affiliationRoutes.js';
+import generationRouter from './routes/generationRoutes.js';
 import './passport/passport.js';
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
@@ -77,6 +78,7 @@ app.use('/', characterStatRouter);
 app.use('/', propertyRouter);
 app.use('/', mapRouter);
 app.use('/', notesRouter);
+app.use('/', generationRouter);
 // catch 404 and forward to error handler
 app.use((_req, _res, next) => {
     next(createError(404));

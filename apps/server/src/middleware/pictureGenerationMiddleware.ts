@@ -226,6 +226,18 @@ export const validatePictureGeneration = async (
       );
     }
 
+    switch (req.query.generationType) {
+      case 'standard':
+        req.body.folder = `/gated/standard/${req.body.prompt.type}`;
+        break;
+      case 'user':
+        req.body.folder = `/gated/users/${req.user.id}/${req.body.prompt.type}`;
+        break;
+      default:
+        req.body.folder = '/gated';
+        break;
+    }
+
     next();
   } catch (error: any) {
     handleControllerError(res, error);

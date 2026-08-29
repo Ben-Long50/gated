@@ -1,6 +1,6 @@
 import prisma from '../config/database.js';
 import { deleteManyFromCloudinary } from '../utils/cloudinary.js';
-const userInclude = {
+export const userInclude = {
     generatedPictures: {
         select: { id: true, publicId: true, type: true },
         orderBy: { createdAt: 'desc' },

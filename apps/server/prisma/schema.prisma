@@ -71,7 +71,6 @@ model Campaign {
   factions           Faction[]
   name               String
   location           String
-  picture            Json?
   generatedPicture   GeneratedPicture? @relation(fields: [generatedPictureId], references: [id])
   generatedPictureId Int?
   gangs              Gang[]
@@ -117,7 +116,6 @@ model Map {
   userId             Int
   campaign           Campaign?         @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   campaignId         Int?
-  picture            Json?
   generatedPicture   GeneratedPicture? @relation(fields: [generatedPictureId], references: [id])
   generatedPictureId Int?
   draft              Boolean
@@ -223,7 +221,6 @@ model Faction {
   id                 Int               @id @default(autoincrement())
   factionType        FactionType
   name               String
-  picture            Json?
   generatedPicture   GeneratedPicture? @relation(fields: [generatedPictureId], references: [id])
   generatedPictureId Int?
   background         Json?
@@ -259,7 +256,6 @@ model Session {
   campaign           Campaign           @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   campaignId         Int
   briefing           Json
-  picture            Json?
   generatedPicture   GeneratedPicture?  @relation(fields: [generatedPictureId], references: [id])
   generatedPictureId Int?
   notes              Note[]
@@ -304,7 +300,6 @@ model Note {
 model Gang {
   id                 Int                @id @default(autoincrement())
   name               String
-  picture            Json?
   generatedPicture   GeneratedPicture?  @relation(fields: [generatedPictureId], references: [id])
   generatedPictureId Int?
   background         Json?
@@ -338,7 +333,6 @@ model Property {
   id                 Int               @id @default(autoincrement())
   updatedAt          DateTime          @default(now())
   name               String
-  picture            Json?
   generatedPicture   GeneratedPicture? @relation(fields: [generatedPictureId], references: [id])
   generatedPictureId Int?
   description        String
@@ -356,7 +350,7 @@ model Character {
   createdAt             DateTime                      @default(now())
   user                  User?                         @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId                Int?
-  level                 Int?                          @default(1)
+  level                 Int?
   profits               Int                           @default(10)
   stats                 Json                          @default("{}")
   generatedPicture      GeneratedPicture?             @relation(fields: [generatedPictureId], references: [id])

@@ -3,7 +3,7 @@ import passport from 'passport';
 import userController from '../controllers/userController.js';
 import { sendAuthStatus } from '../passport/passport.js';
 import authentication from '../middleware/authentication.js';
-import cloudinary from '../utils/cloudinary.js';
+import generationController from '../controllers/generationController.js';
 const router = express.Router();
 router.post('/auth/signup', userController.createUser);
 router.post('/auth/signin', (req, res, next) => {
@@ -41,16 +41,7 @@ router.post('/auth/signout', authentication.authenticate, (_req, res) => {
             message: `You have been signed out`,
         });
 });
-router.get('/auth/picture', async (_req, res) => {
-    const result = await cloudinary.search
-        .expression('folder=gated/scenes')
-        .max_results(100)
-        .execute();
-    const random = result.resources[Math.floor(Math.random() * result.resources.length)];
-    res.status(200).json({
-        url: random.public_id,
-    });
-});
+router.get('/auth/picture', generationController.getTitlePicture);
 router.get('/auth/status', sendAuthStatus);
 router.get('/auth/google', passport.authenticate('google'));
 router.get('/auth/google/callback', passport.authenticate('google', {

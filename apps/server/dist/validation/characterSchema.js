@@ -3,7 +3,8 @@ import { Attributes, CharacterStats, Description, FirstName, LastName, } from '.
 import { NpcType, Sex } from './enums.js';
 import prisma from '../config/database.js';
 import validateLevelUpBonus from '../utils/validateLevelUpBonus.js';
-export const CharacterInput = z.object({
+export const CharacterInput = z
+    .object({
     campaignId: z.number().int().optional(),
     firstName: FirstName,
     lastName: LastName,
@@ -36,6 +37,14 @@ export const CharacterInput = z.object({
     stats: CharacterStats,
     attributes: Attributes,
     perkIds: z.array(z.coerce.number().int().nonnegative()),
+})
+    .refine((data) => data.playerCharacter && !data.level, {
+    message: 'Player Characters must have a level',
+    path: ['level'],
+})
+    .refine((data) => !data.playerCharacter && data.level != null, {
+    message: 'Non-Player Characters must not have a level',
+    path: ['level'],
 });
 export const CharacterUpdateInput = z.object({
     id: z.number().int().optional(),

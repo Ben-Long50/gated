@@ -1,0 +1,50 @@
+import express from 'express';
+import authentication from '../middleware/authentication.js';
+import {
+  generatFalPicture,
+  validatePictureGeneration,
+} from '../middleware/pictureGenerationMiddleware.js';
+import { uploadGeneratedPictureToCloudinary } from '../utils/cloudinary.js';
+import generationController from '../controllers/generationController.js';
+
+const router = express.Router();
+
+router.get(
+  '/generations/standard',
+  authentication.authenticate,
+  generationController.getStandardPictures,
+);
+
+router.post(
+  '/generations/standard',
+  authentication.authenticate,
+  authentication.authenticateAdmin,
+  validatePictureGeneration,
+  generatFalPicture,
+  uploadGeneratedPictureToCloudinary,
+  generationController.addStandardPicture,
+);
+
+router.get(
+  '/generations/:generationId',
+  authentication.authenticate,
+  generationController.getGenerationById,
+);
+
+router.post(
+  '/generations',
+  authentication.authenticate,
+  authentication.authenticateProUser,
+  validatePictureGeneration,
+  generatFalPicture,
+  uploadGeneratedPictureToCloudinary,
+  generationController.addUserGeneratedPicture,
+);
+
+router.delete(
+  '/generations/unusedPictures',
+  authentication.authenticate,
+  generationController.deleteUnusedGeneratedPictures,
+);
+
+export default router;

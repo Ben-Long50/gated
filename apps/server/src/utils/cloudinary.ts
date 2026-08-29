@@ -3,6 +3,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs';
 import dotenv from 'dotenv';
 import { NextFunction } from 'express';
+// import prisma from '../config/database';
 
 dotenv.config();
 
@@ -74,7 +75,7 @@ export const uploadGeneratedPictureToCloudinary = async (
 
       const uploadOptions = {
         quality: 'auto:eco',
-        folder: `/gated/${req.user.id}`,
+        folder: req.body.folder,
       };
 
       const result = await cloudinary.uploader.upload(
@@ -105,7 +106,7 @@ export const uploadGeneratedPictureToCloudinary = async (
       for (const url of req.body.generatedPictureUrls) {
         const uploadOptions = {
           quality: 'auto:eco',
-          folder: `/gated/${req.user.id}`,
+          folder: req.body.folder,
         };
 
         const result = await cloudinary.uploader.upload(url, uploadOptions);
@@ -149,3 +150,29 @@ export const deleteManyFromCloudinary = async (publicIds: string[]) => {
 };
 
 export default cloudinary;
+
+// const deleteUnusedFromCloudinary = async () => {
+//   const generatedPublicIds = await prisma.generatedPicture.findMany({
+//     select: { publicId: true },
+//   });
+
+//   const ids = generatedPublicIds.map((g) => g.publicId);
+
+//   const result = await cloudinary.api.resources({
+//     type: 'upload',
+//     prefix: 'gated/',
+//     max_results: 500,
+//   });
+
+//   const publicIds = result.resources.map((resource: any) => resource.public_id);
+
+//   const unusedPublicIds = publicIds
+//     .filter((id: string) => !ids.includes(id))
+//     .slice(0, 100);
+
+//   const deleted = await deleteManyFromCloudinary(unusedPublicIds);
+
+//   console.log(`Deleted ${Object.keys(deleted.deleted).length}`);
+// };
+
+// deleteUnusedFromCloudinary();

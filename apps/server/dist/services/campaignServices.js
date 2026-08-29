@@ -165,7 +165,7 @@ const campaignServices = {
         }
     },
     createOrUpdateCampaign: async (formData, ownerId) => {
-        const { id, playerIds, pendingPlayerIds, factions, briefing, affiliation } = formData, data = __rest(formData, ["id", "playerIds", "pendingPlayerIds", "factions", "briefing", "affiliation"]);
+        const { id, playerIds, pendingPlayerIds, generatedPictureId, factions, briefing, affiliation } = formData, data = __rest(formData, ["id", "playerIds", "pendingPlayerIds", "generatedPictureId", "factions", "briefing", "affiliation"]);
         try {
             const campaign = await prisma.$transaction(async (tx) => {
                 const campaign = await tx.campaign.upsert({
@@ -180,15 +180,11 @@ const campaignServices = {
                                 name: 'Introduction',
                                 sessionNumber: 0,
                                 briefing,
-                                picture: {
-                                    imageUrl: '',
-                                    publicId: '',
-                                    position: { x: 50, y: 50 },
-                                },
+                                generatedPictureId,
                             },
                         }, date: { month: 'arctus', day: 1 }, time: { hour: 0, minute: 0, second: 0 }, factions: { createMany: { data: factions } }, pendingPlayers: {
                             connect: pendingPlayerIds.map((id) => ({ id })),
-                        } }),
+                        }, generatedPictureId }),
                     include: campaignInclude,
                 });
                 await tx.affiliation.create({

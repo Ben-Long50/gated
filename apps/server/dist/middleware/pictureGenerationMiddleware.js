@@ -171,6 +171,17 @@ export const validatePictureGeneration = async (req, res, next) => {
         if (newStorageCount > storageLimit) {
             throw new Error(`Cannot process picture generations since it would put you over your availbable generation storage limit by ${newStorageCount - storageLimit}. Delete unused pictures from your storage and try again.`);
         }
+        switch (req.query.generationType) {
+            case 'standard':
+                req.body.folder = `/gated/standard/${req.body.prompt.type}`;
+                break;
+            case 'user':
+                req.body.folder = `/gated/users/${req.user.id}/${req.body.prompt.type}`;
+                break;
+            default:
+                req.body.folder = '/gated';
+                break;
+        }
         next();
     }
     catch (error) {
