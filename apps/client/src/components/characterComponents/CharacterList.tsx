@@ -32,9 +32,11 @@ const CharacterList = ({
 
   const { data: campaign } = useCampaignQuery(Number(campaignId));
 
-  const characterIdList = campaign
-    ? campaign.characters.map((character) => character.id)
-    : user.characters.map((character) => character.id);
+  const characterIdList =
+    characterIds ||
+    (campaign
+      ? campaign.characters.map((character) => character.id)
+      : user.characters.map((character) => character.id));
 
   const {
     characters,
