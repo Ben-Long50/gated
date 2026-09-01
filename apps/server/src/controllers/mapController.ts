@@ -1,6 +1,4 @@
 import { Request, Response } from 'express';
-import upload from '../utils/multer.js';
-import { uploadToCloudinary } from '../utils/cloudinary.js';
 import { MapInput } from '../validation/mapSchema.js';
 import parseRequestBody from '../utils/parseRequestBody.js';
 import mapServices from '../services/mapServices.js';
@@ -33,32 +31,28 @@ const mapController = {
     }
   },
 
-  createOrUpdateMap: [
-    upload.single('pictureFile'),
-    uploadToCloudinary,
-    async (req: Request, res: Response) => {
-      try {
-        if (!req.user) {
-          throw new Error('You must be logged in to create or update a map');
-        }
-
-        const parsedBody = parseRequestBody(req.body);
-
-        const validatedMap = MapInput.parse(parsedBody);
-
-        const map = await mapServices.createOrUpdateMap(
-          req.user.id,
-          validatedMap,
-        );
-
-        res
-          .status(200)
-          .json({ map, message: `Successfully created map: ${map.name}` });
-      } catch (error: any) {
-        res.status(500).json({ error: error.message });
+  createOrUpdateMap: async (req: Request, res: Response) => {
+    try {
+      if (!req.user) {
+        throw new Error('You must be logged in to create or update a map');
       }
-    },
-  ],
+
+      const parsedBody = parseRequestBody(req.body);
+
+      const validatedMap = MapInput.parse(parsedBody);
+
+      const map = await mapServices.createOrUpdateMap(
+        req.user.id,
+        validatedMap,
+      );
+
+      res
+        .status(200)
+        .json({ map, message: `Successfully created map: ${map.name}` });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  },
 
   deleteMap: async (req: Request, res: Response) => {
     try {

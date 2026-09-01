@@ -19,66 +19,46 @@ const mapInclude = {
 
 const mapServices = {
   getBatchMaps: async (mapIds: number[]) => {
-    try {
-      const maps = await prisma.map.findMany({
-        where: { id: { in: mapIds } },
-        include: mapInclude,
-      });
+    const maps = await prisma.map.findMany({
+      where: { id: { in: mapIds } },
+      include: mapInclude,
+    });
 
-      return maps;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to fetch characters');
-    }
+    return maps;
   },
 
   getMapById: async (mapId: number) => {
-    try {
-      const map = await prisma.map.findUnique({
-        where: { id: mapId },
-        include: mapInclude,
-      });
+    const map = await prisma.map.findUnique({
+      where: { id: mapId },
+      include: mapInclude,
+    });
 
-      return map;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to fetch map');
-    }
+    return map;
   },
 
   createOrUpdateMap: async (userId: number, formData: MapInput) => {
     const { id, ...data } = formData;
 
-    try {
-      const map = await prisma.map.upsert({
-        where: { id: id || 0 },
-        update: data,
-        create: {
-          ...data,
-          userId,
-        },
-        include: mapInclude,
-      });
+    const map = await prisma.map.upsert({
+      where: { id: id || 0 },
+      update: data,
+      create: {
+        ...data,
+        userId,
+      },
+      include: mapInclude,
+    });
 
-      return map;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to create or update map');
-    }
+    return map;
   },
 
   deleteMap: async (mapId: number, userId: number) => {
-    try {
-      await prisma.map.delete({
-        where: {
-          id: mapId,
-          OR: [{ userId }, { campaign: { ownerId: userId } }],
-        },
-      });
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to delete map');
-    }
+    await prisma.map.delete({
+      where: {
+        id: mapId,
+        OR: [{ userId }, { campaign: { ownerId: userId } }],
+      },
+    });
   },
 };
 

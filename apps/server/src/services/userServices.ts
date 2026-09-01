@@ -29,10 +29,17 @@ export const userInclude = {
     },
     orderBy: { firstName: 'asc' as const },
   },
+  maps: {
+    select: {
+      id: true,
+    },
+    orderBy: { createdAt: 'desc' as const },
+  },
   ownerCampaigns: { select: { id: true } },
   playerCampaigns: { select: { id: true } },
   pendingCampaigns: { select: { id: true } },
 };
+
 const userServices = {
   getAuthenticatedUser: async (userId: number) => {
     try {

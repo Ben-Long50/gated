@@ -21,6 +21,12 @@ export const userInclude = {
         },
         orderBy: { firstName: 'asc' },
     },
+    maps: {
+        select: {
+            id: true,
+        },
+        orderBy: { createdAt: 'desc' },
+    },
     ownerCampaigns: { select: { id: true } },
     playerCampaigns: { select: { id: true } },
     pendingCampaigns: { select: { id: true } },

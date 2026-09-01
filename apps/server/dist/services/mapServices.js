@@ -27,60 +27,36 @@ const mapInclude = {
 };
 const mapServices = {
     getBatchMaps: async (mapIds) => {
-        try {
-            const maps = await prisma.map.findMany({
-                where: { id: { in: mapIds } },
-                include: mapInclude,
-            });
-            return maps;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to fetch characters');
-        }
+        const maps = await prisma.map.findMany({
+            where: { id: { in: mapIds } },
+            include: mapInclude,
+        });
+        return maps;
     },
     getMapById: async (mapId) => {
-        try {
-            const map = await prisma.map.findUnique({
-                where: { id: mapId },
-                include: mapInclude,
-            });
-            return map;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to fetch map');
-        }
+        const map = await prisma.map.findUnique({
+            where: { id: mapId },
+            include: mapInclude,
+        });
+        return map;
     },
     createOrUpdateMap: async (userId, formData) => {
         const { id } = formData, data = __rest(formData, ["id"]);
-        try {
-            const map = await prisma.map.upsert({
-                where: { id: id || 0 },
-                update: data,
-                create: Object.assign(Object.assign({}, data), { userId }),
-                include: mapInclude,
-            });
-            return map;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to create or update map');
-        }
+        const map = await prisma.map.upsert({
+            where: { id: id || 0 },
+            update: data,
+            create: Object.assign(Object.assign({}, data), { userId }),
+            include: mapInclude,
+        });
+        return map;
     },
     deleteMap: async (mapId, userId) => {
-        try {
-            await prisma.map.delete({
-                where: {
-                    id: mapId,
-                    OR: [{ userId }, { campaign: { ownerId: userId } }],
-                },
-            });
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to delete map');
-        }
+        await prisma.map.delete({
+            where: {
+                id: mapId,
+                OR: [{ userId }, { campaign: { ownerId: userId } }],
+            },
+        });
     },
 };
 export default mapServices;
