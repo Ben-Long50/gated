@@ -1,5 +1,5 @@
 import { ReactNode, useContext } from 'react';
-import { NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { LayoutContext } from '../../contexts/LayoutContext';
 import useNavigationStore from 'src/stores/navbarStore';
 
@@ -20,10 +20,8 @@ const LinkSidebar = ({
   const setSidebar = useNavigationStore((state) => state.setSidebar);
 
   return (
-    <NavLink
-      className={({ isActive }) =>
-        isActive ? 'text-accent group flex' : 'text-secondary group flex'
-      }
+    <Link
+      className={'text-secondary group flex'}
       to={path}
       onClick={() => {
         if (mobile) {
@@ -33,7 +31,6 @@ const LinkSidebar = ({
           onClick();
         }
       }}
-      end
     >
       {icon}
       {
@@ -45,7 +42,7 @@ const LinkSidebar = ({
           </div>
         </button>
       }
-    </NavLink>
+    </Link>
   );
 };
 

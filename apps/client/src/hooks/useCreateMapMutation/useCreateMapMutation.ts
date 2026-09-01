@@ -3,23 +3,19 @@ import createMap from './createMap';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-const useCreateMapMutation = (campaignId: number, mapId?: number) => {
+const useCreateMapMutation = (mapId?: number) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   return useMutation({
     mutationFn: (formData: FormData) => {
-      return createMap(campaignId, formData);
+      return createMap(formData);
     },
     onSuccess: (data) => {
       toast.success(data.message);
 
+      queryClient.setQueryData(['map', mapId], data.map);
+
       navigate(-1);
-      queryClient.invalidateQueries({
-        queryKey: ['map', mapId],
-      });
-      return queryClient.invalidateQueries({
-        queryKey: ['maps', campaignId],
-      });
     },
     onError: (data) => {
       toast.error(data.message);

@@ -12,7 +12,6 @@ import {
 } from '@mdi/js';
 import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import useCreateMapMutation from 'src/hooks/useCreateMapMutation/useCreateMapMutation';
-import useCampaignMapQuery from 'src/hooks/useCampaignMapQuery/useCampaignMapQuery';
 import Loading from '../../Loading';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import { Component, Layer } from 'src/types/map';
@@ -30,11 +29,13 @@ import TilePicker from './TilePicker';
 import ArrowHeader4 from 'src/components/ArrowHeader4';
 import { capitalCase } from 'change-case';
 import useMapForm from 'src/hooks/form hooks/useMapForm';
+import IconBtnMedium from 'src/components/buttons/IconBtnMedium';
+import useMapQuery from 'src/hooks/useMapQueries/useMapQuery';
 
 const MapBuilder = () => {
   const { mobile } = useContext(LayoutContext);
 
-  const { campaignId, mapId } = useParams();
+  const { mapId } = useParams();
   const navigate = useNavigate();
   const [folders, setFolders] = useState({});
   const [currentFolder, setCurrentFolder] = useState({});
@@ -44,7 +45,7 @@ const MapBuilder = () => {
   const [gridDisplay, setGridDisplay] = useState(false);
   const [mapScale, setMapScale] = useState(1);
 
-  const { data: map, isLoading } = useCampaignMapQuery(Number(mapId));
+  const { data: map, isLoading } = useMapQuery(Number(mapId));
 
   const [activeLayerId, setActiveLayerId] = useState<number | null>(() =>
     map ? map.layers[0].id : 1,
@@ -103,9 +104,9 @@ const MapBuilder = () => {
     }
   }, [path]);
 
-  const createMap = useCreateMapMutation(Number(campaignId), Number(mapId));
+  const createMap = useCreateMapMutation(Number(mapId));
 
-  const mapForm = useMapForm(createMap, mapRef, map);
+  const mapForm = useMapForm(createMap, map);
 
   const handleAddLayer = () => {
     const currentLayers = mapForm.getFieldValue('layers');
@@ -275,11 +276,6 @@ const MapBuilder = () => {
     } else {
       mapForm.setFieldValue('layers', layers);
     }
-  };
-
-  const autoSave = () => {
-    const currentLayers = mapForm.getFieldValue('layers');
-    localStorage.setItem('mapDraft', JSON.stringify(currentLayers));
   };
 
   const handleTileSelect = (row: number, col: number) => {
@@ -487,7 +483,9 @@ const MapBuilder = () => {
 
   return (
     <>
-      <div className={`timing flex w-full flex-col items-center gap-8`}>
+      <div
+        className={`timing fixed inset-0 flex w-full flex-col items-center gap-8 bg-black`}
+      >
         {!mobile && (
           <MapHeader
             gridDisplay={gridDisplay}
@@ -607,55 +605,34 @@ const MapBuilder = () => {
                 )}
               </mapForm.Field>
               <div className="mr-auto flex items-center gap-4">
-                <button
-                  className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
-                  aria-label="Open save modal"
-                  type="button"
+                <IconBtnMedium
                   onClick={() => {
                     setTempComponent(null);
                     navigate('tileList');
                   }}
                 >
-                  <Icon
-                    path={mdiGrid}
-                    className="text-tertiary group-hover:text-accent timing size-8"
-                  />
-                </button>
+                  <Icon path={mdiGrid} />
+                </IconBtnMedium>
                 {activeLayerId && (
-                  <button
-                    className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
-                    aria-label="Clear active layer"
-                    type="button"
+                  <IconBtnMedium
                     onClick={() => {
                       setActiveLayerId(null);
                       setTempComponent(null);
                     }}
                   >
-                    <Icon
-                      path={mdiLayersOffOutline}
-                      className="text-tertiary group-hover:text-accent timing size-8"
-                    />
-                  </button>
+                    <Icon path={mdiLayersOffOutline} />
+                  </IconBtnMedium>
                 )}
                 {tempComponent && (
-                  <button
-                    className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
-                    aria-label="Clear temporary component"
-                    type="button"
+                  <IconBtnMedium
                     onClick={() => {
                       setTempComponent(null);
                     }}
                   >
-                    <Icon
-                      path={mdiCancel}
-                      className="text-tertiary group-hover:text-accent timing size-8"
-                    />
-                  </button>
+                    <Icon path={mdiCancel} />
+                  </IconBtnMedium>
                 )}
-                <button
-                  className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
-                  aria-label="Load autosaved map"
-                  type="button"
+                <IconBtnMedium
                   onClick={() => {
                     if (mapDraft) {
                       mapForm.setFieldValue('name', mapDraft.name);
@@ -673,48 +650,30 @@ const MapBuilder = () => {
                   }}
                 >
                   {mapDraft ? (
-                    <Icon
-                      path={mdiContentSaveCheckOutline}
-                      className="text-tertiary group-hover:text-accent timing size-8"
-                    />
+                    <Icon path={mdiContentSaveCheckOutline} />
                   ) : (
-                    <Icon
-                      path={mdiContentSaveOffOutline}
-                      className="text-tertiary group-hover:text-accent timing size-8"
-                    />
+                    <Icon path={mdiContentSaveOffOutline} />
                   )}
-                </button>
+                </IconBtnMedium>
 
-                <button
-                  className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
-                  aria-label="Clear autosaved map"
-                  type="button"
+                <IconBtnMedium
                   onClick={() => {
                     localStorage.removeItem('mapDraft');
                     setMapDraft(null);
                     mapForm.reset();
                   }}
                 >
-                  <Icon
-                    path={mdiContentSaveMinusOutline}
-                    className="text-tertiary group-hover:text-accent timing size-8"
-                  />
-                </button>
-                <button
-                  className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
-                  aria-label="Open save modal"
-                  type="button"
+                  <Icon path={mdiContentSaveMinusOutline} />
+                </IconBtnMedium>
+                <IconBtnMedium
                   onClick={() => {
                     setActiveLayerId(null);
                     setTempComponent(null);
                     navigate('save');
                   }}
                 >
-                  <Icon
-                    path={mdiContentSaveOutline}
-                    className="text-tertiary group-hover:text-accent timing size-8"
-                  />
-                </button>
+                  <Icon path={mdiContentSaveOutline} />
+                </IconBtnMedium>
               </div>
               <Outlet
                 context={{

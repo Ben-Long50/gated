@@ -15,6 +15,7 @@ const defaultUser: User = {
   ownerCampaigns: [] as { id: number }[],
   pendingCampaigns: [] as { id: number }[],
   playerCampaigns: [] as { id: number }[],
+  maps: [] as { id: number }[],
 };
 
 export const AuthContext = createContext({ user: defaultUser });

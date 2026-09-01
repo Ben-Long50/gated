@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import Modal from '../../modals/Modal';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import BtnRect from '../../buttons/BtnRect';
@@ -18,10 +18,14 @@ import useMaps from 'src/hooks/useMaps';
 import CloudinaryPicture from 'src/components/CloudinaryPicture';
 import TilePicker from './TilePicker';
 import useMapFavoriteStore from 'src/stores/mapFavoriteStore';
+import { AuthContext } from 'src/contexts/AuthContext';
 
 const TileListModal = () => {
   const navigate = useNavigate();
-  const { maps: components } = useMaps(false, 'component');
+  const { user } = useContext(AuthContext);
+
+  const mapIds = user.maps.map((map) => map.id);
+  const { maps: components } = useMaps(mapIds);
 
   const { favorites, addFavorite, removeFavorite, hasPath, tab, setTab } =
     useMapFavoriteStore();

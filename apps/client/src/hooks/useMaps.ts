@@ -1,29 +1,18 @@
-import { useContext } from 'react';
-import useCampaignMapsQuery from './useCampaignMapsQuery/useCampaignMapsQuery';
-import { useParams } from 'react-router-dom';
-import { AuthContext } from 'src/contexts/AuthContext';
+import { useSearchParams } from 'react-router-dom';
+import useMapQueries from './useMapQueries/useMapQueries';
 
-const useMaps = (draft: boolean, mapType: string | null) => {
-  const { user } = useContext(AuthContext);
-  const { campaignId } = useParams();
+const useMaps = (mapIds: number[]) => {
+  const [searchParams] = useSearchParams();
 
-  const { data: maps, isLoading } = useCampaignMapsQuery(Number(campaignId));
+  const mapType = searchParams.get('mapType') || '';
+  const draft = searchParams.get('draft');
 
-  const filteredMaps = maps
-    ?.filter((map) => {
-      if (mapType) {
-        return map.type === mapType;
-      } else {
-        return true;
-      }
-    })
-    .filter((map) => {
-      if (draft) {
-        return map.draft && map.userId === user.id;
-      } else {
-        return !map.draft;
-      }
-    });
+  const { maps, isLoading } = useMapQueries(mapIds);
+
+  const filteredMaps = maps?.filter((map) => {
+    const draftBool = draft === 'true' ? true : false;
+    return map.draft === draftBool && map.type === mapType;
+  });
 
   return {
     maps: maps ? filteredMaps : [],

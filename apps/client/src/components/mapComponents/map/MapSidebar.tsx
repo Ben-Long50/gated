@@ -21,7 +21,7 @@ const MapSidebar = ({
 }) => {
   const { campaignId, mapId } = useParams();
   const { gameMaster } = useContext(CampaignContext);
-  const [layerSidebar, setLayerSidebar] = useState(false);
+  const [layerSidebar, setLayerSidebar] = useState(true);
 
   const locatedCharacterIds = locations.map((location) => location.characterId);
 

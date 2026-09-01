@@ -50,7 +50,7 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
   return (
     <nav
       ref={sidebarRef}
-      className={`${mobile ? mobileSidebarStyle : sidebarStyle} timing shadow-color fixed bottom-2 left-2 top-2 z-10 flex overflow-x-hidden shadow-lg`}
+      className={`${mobile ? mobileSidebarStyle : sidebarStyle} timing shadow-color fixed bottom-2 left-2 top-2 z-20 flex overflow-x-hidden shadow-lg`}
       style={{
         top: mobile ? navbarHeight + 8 : 16,
         bottom: 16,

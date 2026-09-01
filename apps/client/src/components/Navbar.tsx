@@ -1,6 +1,6 @@
 import { RefObject, useContext, useEffect, useLayoutEffect } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
-import { Link, NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { LayoutContext } from '../contexts/LayoutContext';
 import Icon from '@mdi/react';
 import { mdiBellOutline, mdiMenu, mdiMenuClose, mdiMenuOpen } from '@mdi/js';
@@ -38,7 +38,7 @@ const Navbar = ({
   return mobile ? (
     <nav
       ref={navbarRef}
-      className={`bg-primary timing shadow-color sticky top-0 z-10 flex w-full flex-col items-center justify-start shadow-md`}
+      className={`bg-primary timing shadow-color sticky top-0 flex w-full flex-col items-center justify-start shadow-md`}
     >
       <div className="flex w-full items-center justify-between px-2 py-2">
         <button
@@ -102,17 +102,6 @@ const Navbar = ({
         </div>
       </div>
       <NavMenuMobile>
-        <Link className="w-full p-1" to="campaigns">
-          <button
-            className="text-primary w-full text-left"
-            onClick={() => {
-              setNavbar(false);
-            }}
-          >
-            Campaigns
-          </button>
-        </Link>
-        <Divider />
         <Link className="w-full p-1" to="codex?tab=equipment">
           <button
             className="text-primary w-full text-left"
@@ -124,6 +113,17 @@ const Navbar = ({
           </button>
         </Link>
         <Divider />
+        <Link className="w-full p-1" to="campaigns">
+          <button
+            className="text-primary w-full text-left"
+            onClick={() => {
+              setNavbar(false);
+            }}
+          >
+            Campaigns
+          </button>
+        </Link>
+        <Divider />
         <Link className="w-full p-1" to="characters">
           <button
             className="text-primary w-full text-left"
@@ -132,6 +132,17 @@ const Navbar = ({
             }}
           >
             Characters
+          </button>
+        </Link>
+        <Divider />
+        <Link className="w-full p-1" to="maps">
+          <button
+            className="text-primary w-full text-left"
+            onClick={() => {
+              setNavbar(false);
+            }}
+          >
+            Maps
           </button>
         </Link>
       </NavMenuMobile>
@@ -153,19 +164,20 @@ const Navbar = ({
           </h2>
         </Link>
         <div className="flex w-full items-center justify-end gap-8">
-          <div className="relative grid grow grid-cols-3 items-center justify-items-end gap-4">
+          <div className="relative grid grow grid-cols-4 items-center justify-items-end gap-4">
             <LinkNavbar path="codex?tab=equipment">Codex</LinkNavbar>
             <LinkNavbar path="campaigns">Campaigns</LinkNavbar>
             <LinkNavbar path="characters?excludedNpcType=template">
               Characters
             </LinkNavbar>
+            <LinkNavbar path="maps">Maps</LinkNavbar>
           </div>
           <Link className="relative" to={`account/${user?.id}/notifications`}>
             <Icon path={mdiBellOutline} className="text-secondary size-8" />
           </Link>
-          <NavLink to={`account/${user?.id}`}>
+          <Link to={`account/${user?.id}`}>
             <AccountPicture user={user} />
-          </NavLink>
+          </Link>
         </div>
       </nav>
     </div>

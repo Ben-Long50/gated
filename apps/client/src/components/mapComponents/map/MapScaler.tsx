@@ -1,5 +1,6 @@
 import { mdiMagnifyMinusOutline, mdiMagnifyPlusOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import IconBtnMedium from 'src/components/buttons/IconBtnMedium';
 
 const MapScaler = ({
   mapScale,
@@ -10,10 +11,7 @@ const MapScaler = ({
 }) => {
   return (
     <div className="flex items-center gap-4">
-      <button
-        className="bg-tertiary group my-auto flex justify-self-start rounded p-1.5 shadow-md shadow-black"
-        aria-label="Open save modal"
-        type="button"
+      <IconBtnMedium
         onClick={() =>
           setMapScale((prev: number) => {
             if (prev > 0.2) {
@@ -24,15 +22,9 @@ const MapScaler = ({
           })
         }
       >
-        <Icon
-          path={mdiMagnifyMinusOutline}
-          className={`text-tertiary group-hover:text-accent timing size-8`}
-        />
-      </button>
-      <button
-        className="bg-tertiary group my-auto flex justify-self-start rounded p-1.5 shadow-md shadow-black"
-        aria-label="Open save modal"
-        type="button"
+        <Icon path={mdiMagnifyMinusOutline} />
+      </IconBtnMedium>
+      <IconBtnMedium
         onClick={() =>
           setMapScale((prev: number) => {
             if (prev < 2) {
@@ -43,11 +35,8 @@ const MapScaler = ({
           })
         }
       >
-        <Icon
-          path={mdiMagnifyPlusOutline}
-          className={`text-tertiary group-hover:text-accent timing size-8`}
-        />
-      </button>
+        <Icon path={mdiMagnifyPlusOutline} />
+      </IconBtnMedium>
       <h3 className="w-20">{Math.floor(mapScale * 100)}%</h3>
     </div>
   );

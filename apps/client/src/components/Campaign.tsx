@@ -173,7 +173,10 @@ const Campaign = () => {
               >
                 <div className="flex w-full items-center justify-between gap-4">
                   <div className="flex items-center justify-start gap-4">
-                    <EntityAvater entity={session} />
+                    <EntityAvater
+                      publicId={session.generatedPicture?.publicId}
+                      label={session.name}
+                    />
                     <p className="font-semibold">
                       {session.sessionNumber}. {session.name}
                     </p>

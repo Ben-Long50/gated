@@ -13,6 +13,7 @@ import { CampaignContext } from 'src/contexts/CampaignContext';
 import DieIcon from 'src/components/icons/DieIcon';
 import CharacterLinks from 'src/components/sidebars/CharacterLinks';
 import { ToastContainer } from 'react-toastify';
+import MapLinks from 'src/components/sidebars/MapLinks';
 
 const MainLayout = () => {
   const { theme, accentPrimary } = useContext(ThemeContext);
@@ -54,6 +55,7 @@ const MainLayout = () => {
             )
           ) : null}
           {pathname.startsWith('/glam/campaigns') && <CampaignLinks />}
+          {pathname.startsWith('/glam/maps') && <MapLinks />}
           {pathname.startsWith('/glam/account') && <AccountLinks />}
         </Sidebar>
       )}

@@ -56,7 +56,7 @@ const MapBuilderSidebar = ({
     callback: (layers: Layer[]) => void,
   ) => void;
 }) => {
-  const [layerSidebar, setLayerSidebar] = useState(false);
+  const [layerSidebar, setLayerSidebar] = useState(true);
   const [sidebarMode, setSidebarMode] = useState<'layer' | 'component'>(
     'layer',
   );

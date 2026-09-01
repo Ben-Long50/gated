@@ -22,7 +22,10 @@ const EntityCard = ({
       ref={containerRef}
       className={`${className} ${reverse ? 'flex-row-reverse' : 'flex-row'} timing relative flex items-center gap-4`}
     >
-      <EntityAvater entity={entity} />
+      <EntityAvater
+        publicId={entity.generatedPicture?.publicId}
+        label={constructName(entity)}
+      />
       <ArrowHeader4
         className="text-primary"
         reverse={reverse}

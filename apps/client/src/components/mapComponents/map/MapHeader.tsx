@@ -5,6 +5,7 @@ import SizeIcon from 'src/components/icons/SizeIcon';
 import { useContext } from 'react';
 import { AuthContext } from 'src/contexts/AuthContext';
 import { EncounterContext } from 'src/contexts/EncounterContext';
+import IconBtnMedium from 'src/components/buttons/IconBtnMedium';
 
 const MapHeader = ({
   mapName,
@@ -32,39 +33,22 @@ const MapHeader = ({
     <div className="flex w-full items-center justify-center gap-8">
       <h1 className="text-center">{mapName}</h1>
       <div className="flex items-center justify-start gap-4">
-        <button
-          className="bg-tertiary group my-auto flex justify-self-start rounded p-1.5 shadow-md shadow-black"
-          aria-label="Open save modal"
-          type="button"
+        <IconBtnMedium
           onClick={() => setGridDisplay((prev) => !prev)}
+          active={gridDisplay}
         >
-          <Icon
-            path={mdiGrid}
-            className={`${gridDisplay ? 'text-accent' : 'text-tertiary'} group-hover:text-accent timing size-8`}
-          />
-        </button>
-        <button
-          className="bg-tertiary group my-auto flex justify-self-start rounded p-1.5 shadow-md shadow-black"
-          aria-label="Open save modal"
-          type="button"
+          <Icon path={mdiGrid} />
+        </IconBtnMedium>
+        <IconBtnMedium
           onClick={() => setMeasureMode((prev) => !prev)}
+          active={measureMode}
         >
-          <SizeIcon
-            className={`${measureMode ? 'text-accent' : 'text-tertiary'} group-hover:text-accent timing size-8`}
-          />
-        </button>
+          <SizeIcon />
+        </IconBtnMedium>
         {measuring && (
-          <button
-            className="bg-tertiary group my-auto flex justify-self-start rounded p-1.5 shadow-md shadow-black"
-            aria-label="Open save modal"
-            type="button"
-            onClick={() => removeTarget(`user ${user.id}`)}
-          >
-            <Icon
-              path={mdiCancel}
-              className={`group-hover:text-accent text-tertiary timing size-8`}
-            />
-          </button>
+          <IconBtnMedium onClick={() => removeTarget(`user ${user.id}`)}>
+            <Icon path={mdiCancel} />
+          </IconBtnMedium>
         )}
         <MapScaler mapScale={mapScale} setMapScale={setMapScale} />
       </div>
