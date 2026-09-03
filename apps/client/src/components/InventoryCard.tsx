@@ -1,10 +1,8 @@
 import { Item } from 'src/types/item';
 import { PictureCard } from './PictureCard';
 import rarityColorMap from 'src/utils/rarityColorMap';
-import useToggleEquipmentMutation from 'src/hooks/useEquipmentToggleMutation/useEquipmentToggleMutation';
 import Icon from '@mdi/react';
-import { mdiCheckCircle, mdiCircleOutline, mdiDotsHorizontal } from '@mdi/js';
-import IconBtnSmall from './buttons/IconBtnSmall';
+import { mdiCheckCircle } from '@mdi/js';
 import InventoryCardMenu from './InventoryCardMenu';
 
 const InventoryCard = ({

@@ -36,17 +36,22 @@ const MapHeader = ({
         <IconBtnMedium
           onClick={() => setGridDisplay((prev) => !prev)}
           active={gridDisplay}
+          tooltip={gridDisplay ? 'Hide Grid' : 'Show Grid'}
         >
           <Icon path={mdiGrid} />
         </IconBtnMedium>
         <IconBtnMedium
           onClick={() => setMeasureMode((prev) => !prev)}
           active={measureMode}
+          tooltip={measureMode ? 'Enable Measure Mode' : 'Disable Measure Mode'}
         >
           <SizeIcon />
         </IconBtnMedium>
         {measuring && (
-          <IconBtnMedium onClick={() => removeTarget(`user ${user.id}`)}>
+          <IconBtnMedium
+            onClick={() => removeTarget(`user ${user.id}`)}
+            tooltip="Remove Measurement"
+          >
             <Icon path={mdiCancel} />
           </IconBtnMedium>
         )}

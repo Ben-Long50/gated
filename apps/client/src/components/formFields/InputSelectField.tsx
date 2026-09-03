@@ -99,6 +99,7 @@ const InputSelectField = ({
               onClick={() => {
                 setQuery('');
               }}
+              tooltip="Reset Search"
             >
               <Icon path={mdiSync} />
             </IconBtnSmall>

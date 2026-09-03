@@ -35,18 +35,12 @@ const ExpandingList = ({
             }
             setListExpanded((prev) => !prev);
           }}
+          tooltip={listExpanded ? 'Retract All' : 'Expand All'}
         >
-          {listExpanded ? (
-            <Icon
-              path={mdiCollapseAllOutline}
-              className="text-secondary timing group-hover:text-accent"
-            />
-          ) : (
-            <Icon
-              path={mdiExpandAllOutline}
-              className="text-secondary timing group-hover:text-accent"
-            />
-          )}
+          <Icon
+            path={listExpanded ? mdiCollapseAllOutline : mdiExpandAllOutline}
+            className="text-secondary timing group-hover:text-accent"
+          />
         </IconBtnSmall>
       </div>
       {childCount > 0 && (

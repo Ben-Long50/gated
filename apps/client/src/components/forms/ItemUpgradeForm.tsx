@@ -63,6 +63,7 @@ const ItemUpgradeForm = () => {
                   <IconBtnSmall
                     active={item?.grade && field.state.value > item?.grade}
                     onClick={() => field.handleChange(field.state.value - 1)}
+                    tooltip="Decrease"
                   >
                     <Icon path={mdiMinus} />
                   </IconBtnSmall>
@@ -89,6 +90,7 @@ const ItemUpgradeForm = () => {
                   <IconBtnSmall
                     active={field.state.value < 10}
                     onClick={() => field.handleChange(field.state.value + 1)}
+                    tooltip="Increase"
                   >
                     <Icon path={mdiPlus} />
                   </IconBtnSmall>
@@ -183,6 +185,7 @@ const ItemUpgradeForm = () => {
                             onClick={() =>
                               subField.handleChange(subField.state.value - 1)
                             }
+                            tooltip="Decrease"
                           >
                             <Icon path={mdiMinus} />
                           </IconBtnSmall>
@@ -194,6 +197,7 @@ const ItemUpgradeForm = () => {
                             onClick={() =>
                               subField.handleChange(subField.state.value + 1)
                             }
+                            tooltip="Increase"
                           >
                             <Icon path={mdiPlus} />
                           </IconBtnSmall>

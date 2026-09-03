@@ -43,6 +43,7 @@ const CartCard = ({
               });
             }
           }}
+          tooltip="Decrease"
         >
           <Icon path={mdiMinus} />
         </IconBtnSmall>
@@ -56,6 +57,7 @@ const CartCard = ({
               });
             }
           }}
+          tooltip="Increase"
         >
           <Icon path={mdiPlus} />
         </IconBtnSmall>
@@ -74,6 +76,7 @@ const CartCard = ({
             });
           }
         }}
+        tooltip="Delete"
       >
         <Icon path={mdiTrashCanOutline} />
       </IconBtnSmall>

@@ -63,6 +63,7 @@ const Actions = ({ form }: { form?: FormApi }) => {
               setCategory('');
               setSubCategory('');
             }}
+            tooltip="Reset Search"
           >
             <Icon path={mdiSync} />
           </IconBtnMedium>

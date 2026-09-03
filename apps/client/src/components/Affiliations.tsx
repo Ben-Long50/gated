@@ -80,6 +80,7 @@ const Affiliations = ({ affiliations }: { affiliations: Affiliation[] }) => {
           onClick={() => {
             setEntity(null);
           }}
+          tooltip="Reset Search"
         >
           <Icon path={mdiSync} />
         </IconBtnMedium>

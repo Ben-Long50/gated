@@ -6,7 +6,6 @@ import { capitalCase } from 'change-case';
 import ArrowHeader3 from '../ArrowHeader3';
 import useBulkItemForm from 'src/hooks/form hooks/useBulkItemForm';
 import useAddBulkCartItemsMutation from 'src/hooks/useAddBulkCartItemsMutation.ts/useAddBulkCartItemsMutation';
-import InputField from '../formFields/InputField';
 import Divider from '../Divider';
 import IconBtnSmall from '../buttons/IconBtnSmall';
 import Icon from '@mdi/react';
@@ -29,6 +28,7 @@ const BulkItemForm = () => {
               <IconBtnSmall
                 active={field.state.value > 1}
                 onClick={() => field.handleChange((prev) => prev - 1)}
+                tooltip="Decrease"
               >
                 <Icon path={mdiMinus} />
               </IconBtnSmall>
@@ -36,6 +36,7 @@ const BulkItemForm = () => {
               <IconBtnSmall
                 active={field.state.value < 10}
                 onClick={() => field.handleChange((prev) => prev + 1)}
+                tooltip="Increase"
               >
                 <Icon path={mdiPlus} />
               </IconBtnSmall>

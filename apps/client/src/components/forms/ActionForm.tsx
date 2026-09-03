@@ -111,7 +111,10 @@ const ActionForm = () => {
                       )}
                     </actionForm.Subscribe>
                   </div>
-                  <IconBtnSmall onClick={() => field.removeValue(j)}>
+                  <IconBtnSmall
+                    onClick={() => field.removeValue(j)}
+                    tooltip="Remove"
+                  >
                     <Icon path={mdiClose} />
                   </IconBtnSmall>
                 </div>
@@ -150,7 +153,10 @@ const ActionForm = () => {
                         );
                       }}
                     </actionForm.Field>
-                    <IconBtnSmall onClick={() => field.removeValue(i)}>
+                    <IconBtnSmall
+                      onClick={() => field.removeValue(i)}
+                      tooltip="Remove"
+                    >
                       <Icon path={mdiClose} />
                     </IconBtnSmall>
                   </div>
@@ -205,7 +211,10 @@ const ActionForm = () => {
                   />
                 )}
               </actionForm.Field>
-              <IconBtnSmall onClick={() => field.handleChange(null)}>
+              <IconBtnSmall
+                onClick={() => field.handleChange(null)}
+                tooltip="Remove"
+              >
                 <Icon path={mdiClose} />
               </IconBtnSmall>
             </div>
@@ -260,7 +269,10 @@ const ActionForm = () => {
                   />
                 )}
               </actionForm.Field>
-              <IconBtnSmall onClick={() => field.handleChange(null)}>
+              <IconBtnSmall
+                onClick={() => field.handleChange(null)}
+                tooltip="Remove"
+              >
                 <Icon path={mdiClose} />
               </IconBtnSmall>
             </div>

@@ -1,9 +1,7 @@
 import { useContext, useRef } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import { capitalCase } from 'change-case';
-import BtnIcon from './buttons/BtnIcon';
 import { mdiSync } from '@mdi/js';
-import Divider from './Divider';
 import IconBtnSmall from './buttons/IconBtnSmall';
 import Icon from '@mdi/react';
 
@@ -19,7 +17,7 @@ const AccountPreferences = () => {
         <p>Theme</p>
         <div className="flex items-center gap-4">
           <p>{capitalCase(theme)}</p>
-          <IconBtnSmall onClick={() => changeTheme()}>
+          <IconBtnSmall onClick={() => changeTheme()} tooltip="Toggle Theme">
             <Icon path={mdiSync} />
           </IconBtnSmall>
         </div>

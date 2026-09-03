@@ -1,19 +1,15 @@
-import { useContext, useEffect, useRef, useState } from 'react';
-import InputField from '../../formFields/InputField';
+import { useEffect, useState } from 'react';
 import Icon from '@mdi/react';
 import {
   mdiCancel,
-  mdiContentSaveCheckOutline,
-  mdiContentSaveMinusOutline,
-  mdiContentSaveOffOutline,
   mdiContentSaveOutline,
   mdiGrid,
-  mdiLayersOffOutline,
+  mdiViewGridOutline,
+  mdiViewGridPlusOutline,
 } from '@mdi/js';
 import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import useCreateMapMutation from 'src/hooks/useCreateMapMutation/useCreateMapMutation';
 import Loading from '../../Loading';
-import { LayoutContext } from 'src/contexts/LayoutContext';
 import { Component, Layer } from 'src/types/map';
 import MapBuilderSidebar from './MapBuilderSidebar';
 import {
@@ -24,17 +20,13 @@ import {
 } from '@dnd-kit/core';
 import MapBuilderGrid from './MapBuilderGrid';
 import getOccupiedTiles from '../mapUtils/getOccupiedTiles';
-import MapHeader from '../map/MapHeader';
 import TilePicker from './TilePicker';
-import ArrowHeader4 from 'src/components/ArrowHeader4';
-import { capitalCase } from 'change-case';
 import useMapForm from 'src/hooks/form hooks/useMapForm';
 import IconBtnMedium from 'src/components/buttons/IconBtnMedium';
 import useMapQuery from 'src/hooks/useMapQueries/useMapQuery';
+import MapScaler from '../map/MapScaler';
 
 const MapBuilder = () => {
-  const { mobile } = useContext(LayoutContext);
-
   const { mapId } = useParams();
   const navigate = useNavigate();
   const [folders, setFolders] = useState({});
@@ -54,21 +46,13 @@ const MapBuilder = () => {
   const [activeComponentId, setActiveComponentId] = useState<number | null>(
     null,
   );
-  const [quickTilePicker, setQuickTilePicker] = useState(false);
-
-  const [mapDraft, setMapDraft] = useState(() =>
-    localStorage.getItem('mapDraft')
-      ? JSON.parse(localStorage.getItem('mapDraft'))
-      : null,
-  );
-
-  const pngName = path[path.length - 1].split('.')[0];
+  const [quickTilePicker, setQuickTilePicker] = useState({
+    open: false,
+    enabled: false,
+  });
 
   const isPng = path[path.length - 1].endsWith('.png');
   const pngPath = isPng ? path.join('/') : null;
-
-  const mapRef = useRef(null);
-  const colorRef = useRef(null);
 
   useEffect(() => {
     const length = Object.values(folders).length;
@@ -484,226 +468,137 @@ const MapBuilder = () => {
   return (
     <>
       <div
-        className={`timing fixed inset-0 flex w-full flex-col items-center gap-8 bg-black`}
+        className={`timing fixed inset-0 flex flex-col items-center justify-center bg-black`}
       >
-        {!mobile && (
-          <MapHeader
-            gridDisplay={gridDisplay}
-            setGridDisplay={setGridDisplay}
-            mapScale={mapScale}
-            setMapScale={setMapScale}
-          />
-        )}
-        <mapForm.Subscribe
-          selector={(state) => [
-            state.values.baseColor,
-            state.values.width,
-            state.values.height,
-          ]}
+        <DndContext
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          sensors={sensors}
         >
-          {([baseColor, width, height]) => (
-            <mapForm.Field name="layers">
-              {(field) => (
-                <DndContext
-                  onDragStart={handleDragStart}
-                  onDragEnd={handleDragEnd}
-                  sensors={sensors}
-                >
-                  <MapBuilderGrid
-                    ref={mapRef}
-                    field={field}
-                    width={width}
-                    height={height}
-                    baseColor={baseColor}
-                    layers={field.state.value}
-                    gridDisplay={gridDisplay}
-                    mapScale={mapScale}
-                    dragging={dragging}
-                    findConflict={findConflict}
-                    activeLayerId={activeLayerId}
-                    activeComponentId={activeComponentId}
-                    previewLayerId={previewLayerId}
-                    setActiveComponentId={setActiveComponentId}
-                    tempComponent={tempComponent}
-                    setTempComponent={setTempComponent}
-                    handleAddComponent={handleAddComponent}
-                    handleDeleteComponent={handleDeleteComponent}
-                  />
-                </DndContext>
-              )}
-            </mapForm.Field>
-          )}
-        </mapForm.Subscribe>
-      </div>
-      <mapForm.Field name="layers">
-        {(field) => (
-          <MapBuilderSidebar
-            field={field}
-            layers={field.state.value}
+          <MapBuilderGrid
+            form={mapForm}
+            gridDisplay={gridDisplay}
+            mapScale={mapScale}
+            dragging={dragging}
+            findConflict={findConflict}
             activeLayerId={activeLayerId}
-            setActiveLayerId={setActiveLayerId}
-            setPreviewLayerId={setPreviewLayerId}
+            activeComponentId={activeComponentId}
+            previewLayerId={previewLayerId}
             setActiveComponentId={setActiveComponentId}
-            quickTilePicker={quickTilePicker}
-            setQuickTilePicker={setQuickTilePicker}
-            handleAddLayer={handleAddLayer}
-            handleDeleteLayer={handleDeleteLayer}
-            handleEditLayerName={handleEditLayerName}
-            handleHiddenLayer={handleHiddenLayer}
-            handleEditComponentName={handleEditComponentName}
-            handleDeleteComponent={handleDeleteComponent}
-            handleLayerReorder={handleLayerReorder}
-          >
-            <form
-              className="flex flex-col gap-4"
-              onSubmit={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                mapForm.handleSubmit();
-              }}
-            >
-              <mapForm.Field name="width">
-                {(field) => (
-                  <InputField
-                    type="number"
-                    label="Map Width"
-                    value={field.state.value}
-                    onChange={(value) => field.handleChange(value)}
-                  />
-                )}
-              </mapForm.Field>
-              <mapForm.Field name="height">
-                {(field) => (
-                  <InputField
-                    type="number"
-                    label="Map Height"
-                    value={field.state.value}
-                    onChange={(value) => field.handleChange(value)}
-                  />
-                )}
-              </mapForm.Field>
-              <mapForm.Field name="baseColor">
-                {(field) => (
-                  <div className="flex items-center justify-between gap-4">
-                    {!mobile && <p>Base Color</p>}
-                    <label
-                      className="shadow-color size-8 shrink-0 cursor-pointer rounded-full shadow-md"
-                      style={{ backgroundColor: field.state.value }}
-                      htmlFor="baseColor"
-                      onClick={() => colorRef.current?.focus()}
-                    >
-                      <input
-                        ref={colorRef}
-                        className="size-0"
-                        id="baseColor"
-                        name="baseColor"
-                        type="color"
-                        onChange={(e) => field.handleChange(e.target.value)}
-                      />
-                    </label>
-                  </div>
-                )}
-              </mapForm.Field>
-              <div className="mr-auto flex items-center gap-4">
-                <IconBtnMedium
-                  onClick={() => {
-                    setTempComponent(null);
-                    navigate('tileList');
-                  }}
-                >
-                  <Icon path={mdiGrid} />
-                </IconBtnMedium>
-                {activeLayerId && (
-                  <IconBtnMedium
-                    onClick={() => {
-                      setActiveLayerId(null);
-                      setTempComponent(null);
-                    }}
-                  >
-                    <Icon path={mdiLayersOffOutline} />
-                  </IconBtnMedium>
-                )}
-                {tempComponent && (
-                  <IconBtnMedium
-                    onClick={() => {
-                      setTempComponent(null);
-                    }}
-                  >
-                    <Icon path={mdiCancel} />
-                  </IconBtnMedium>
-                )}
-                <IconBtnMedium
-                  onClick={() => {
-                    if (mapDraft) {
-                      mapForm.setFieldValue('name', mapDraft.name);
-                      mapForm.setFieldValue('type', mapDraft.type);
-                      mapForm.setFieldValue('draft', mapDraft.draft);
-                      mapForm.setFieldValue(
-                        'description',
-                        mapDraft.description,
-                      );
-                      mapForm.setFieldValue('width', mapDraft.width);
-                      mapForm.setFieldValue('height', mapDraft.height);
-                      mapForm.setFieldValue('baseColor', mapDraft.baseColor);
-                      mapForm.setFieldValue('layers', mapDraft.layers);
-                    }
-                  }}
-                >
-                  {mapDraft ? (
-                    <Icon path={mdiContentSaveCheckOutline} />
-                  ) : (
-                    <Icon path={mdiContentSaveOffOutline} />
-                  )}
-                </IconBtnMedium>
-
-                <IconBtnMedium
-                  onClick={() => {
-                    localStorage.removeItem('mapDraft');
-                    setMapDraft(null);
-                    mapForm.reset();
-                  }}
-                >
-                  <Icon path={mdiContentSaveMinusOutline} />
-                </IconBtnMedium>
-                <IconBtnMedium
-                  onClick={() => {
-                    setActiveLayerId(null);
-                    setTempComponent(null);
-                    navigate('save');
-                  }}
-                >
-                  <Icon path={mdiContentSaveOutline} />
-                </IconBtnMedium>
-              </div>
-              <Outlet
-                context={{
-                  form: mapForm,
-                  isPending: createMap.isPending,
-                  currentFolder,
-                  setCurrentFolder,
-                  path,
-                  setPath,
-                  isPng,
-                  pngPath,
-                  handleTileSelect,
-                  tempComponent,
-                  setTempComponent,
-                }}
-              />
-            </form>
-          </MapBuilderSidebar>
-        )}
-      </mapForm.Field>
-      {pngPath && quickTilePicker && (
-        <div className="bg-primary timing absolute bottom-4 left-4 z-10 flex origin-bottom-left scale-50 flex-col items-start gap-4 rounded-md p-4 shadow-md shadow-black hover:scale-100">
-          <ArrowHeader4 className="text-primary" title={capitalCase(pngName)} />
-          <TilePicker
-            pngPath={pngPath}
             tempComponent={tempComponent}
-            handleTileSelect={handleTileSelect}
+            setTempComponent={setTempComponent}
+            handleAddComponent={handleAddComponent}
+            handleDeleteComponent={handleDeleteComponent}
           />
+        </DndContext>
+        <MapBuilderSidebar
+          form={mapForm}
+          activeLayerId={activeLayerId}
+          setActiveLayerId={setActiveLayerId}
+          setPreviewLayerId={setPreviewLayerId}
+          setActiveComponentId={setActiveComponentId}
+          setTempComponent={setTempComponent}
+          handleAddLayer={handleAddLayer}
+          handleDeleteLayer={handleDeleteLayer}
+          handleEditLayerName={handleEditLayerName}
+          handleHiddenLayer={handleHiddenLayer}
+          handleEditComponentName={handleEditComponentName}
+          handleDeleteComponent={handleDeleteComponent}
+          handleLayerReorder={handleLayerReorder}
+        />
+        <div
+          className={`${quickTilePicker.open ? 'gap-4' : 'gap-0'} bg-base shadow-color timing absolute bottom-2 z-10 mx-auto flex flex-col items-center rounded-md p-4`}
+          onMouseEnter={() => {
+            if (quickTilePicker.enabled) {
+              setQuickTilePicker((prev) => ({ ...prev, open: true }));
+            }
+          }}
+          onMouseLeave={() => {
+            if (quickTilePicker.enabled) {
+              setQuickTilePicker((prev) => ({ ...prev, open: false }));
+            }
+          }}
+        >
+          {pngPath && (
+            <div
+              className={`${quickTilePicker.open ? 'max-h-[500px]' : 'max-h-0'} timing overflow-hidden`}
+            >
+              <TilePicker
+                pngPath={pngPath}
+                tempComponent={tempComponent}
+                handleTileSelect={handleTileSelect}
+              />
+            </div>
+          )}
+          <div className={`flex w-full items-center justify-center gap-4`}>
+            <IconBtnMedium
+              tooltip={gridDisplay ? 'Hide Grid' : 'Show Grid'}
+              onClick={() => setGridDisplay((prev) => !prev)}
+              active={gridDisplay}
+            >
+              <Icon path={mdiGrid} />
+            </IconBtnMedium>
+            <MapScaler mapScale={mapScale} setMapScale={setMapScale} />
+            <IconBtnMedium
+              tooltip="Tile Picker"
+              onClick={() => navigate('tileList')}
+            >
+              <Icon path={mdiViewGridOutline} />
+            </IconBtnMedium>
+            <IconBtnMedium
+              tooltip={
+                quickTilePicker.enabled
+                  ? 'Disable Quick Picker'
+                  : 'Enable Quick Picker'
+              }
+              active={quickTilePicker.enabled}
+              onClick={() =>
+                setQuickTilePicker((prev) => ({
+                  open: quickTilePicker.enabled ? false : true,
+                  enabled: !prev.enabled,
+                }))
+              }
+            >
+              <Icon path={mdiViewGridPlusOutline} />
+            </IconBtnMedium>
+            {tempComponent && (
+              <IconBtnMedium
+                tooltip="Deselect Component"
+                onClick={() => {
+                  setTempComponent(null);
+                }}
+              >
+                <Icon path={mdiCancel} />
+              </IconBtnMedium>
+            )}
+            <IconBtnMedium
+              onClick={() => {
+                setActiveLayerId(null);
+                setTempComponent(null);
+                navigate('save');
+              }}
+              tooltip="Save Map"
+            >
+              <Icon path={mdiContentSaveOutline} />
+            </IconBtnMedium>
+          </div>
         </div>
-      )}
+      </div>
+      <Outlet
+        context={{
+          form: mapForm,
+          isPending: createMap.isPending,
+          currentFolder,
+          setCurrentFolder,
+          path,
+          setPath,
+          isPng,
+          pngPath,
+          handleTileSelect,
+          tempComponent,
+          setTempComponent,
+        }}
+      />
     </>
   );
 };

@@ -145,6 +145,7 @@ const Items = ({
           {!mobile && (
             <IconBtnMedium
               onClick={() => setSize(size === 'large' ? 'small' : 'large')}
+              tooltip={size === 'large' ? 'Grid Display' : 'List Display'}
             >
               <Icon path={size === 'large' ? mdiGrid : mdiCropSquare} />
             </IconBtnMedium>
@@ -156,6 +157,7 @@ const Items = ({
               setPriceFilter('');
               setRarity('');
             }}
+            tooltip="Reset Search"
           >
             <Icon path={mdiSync} />
           </IconBtnMedium>
@@ -194,6 +196,7 @@ const Items = ({
                           onClick={() => {
                             field.handleChange((prev) => [...prev, item.id]);
                           }}
+                          tooltip="Link Item"
                         >
                           <Icon path={mdiLinkVariant} />
                         </IconBtnMedium>

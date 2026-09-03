@@ -1,7 +1,6 @@
-import { Layer } from 'src/types/map';
+import { Component, Layer } from 'src/types/map';
 import {
   mdiCheckOutline,
-  mdiCircleOutline,
   mdiDrag,
   mdiEye,
   mdiEyeClosed,
@@ -11,33 +10,34 @@ import {
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import { useState } from 'react';
-import ArrowHeader3 from '../../ArrowHeader3';
-import Divider from '../../Divider';
 import { capitalCase } from 'change-case';
 import BtnRect from '../../buttons/BtnRect';
 import InputField from '../../formFields/InputField';
 import ArrowHeader4 from '../../ArrowHeader4';
 import { DndContext, useDraggable, useDroppable } from '@dnd-kit/core';
+import BtnAuth from 'src/components/buttons/BtnAuth';
+import { FormApi } from '@tanstack/react-form';
+import IconBtnSmall from 'src/components/buttons/IconBtnSmall';
 
 const MapLayerList = ({
-  field,
-  layers,
+  form,
   activeLayerId,
   setActiveLayerId,
   setPreviewLayerId,
   setSidebarMode,
+  setTempComponent,
   handleAddLayer,
   handleDeleteLayer,
   handleEditLayerName,
   handleHiddenLayer,
   handleLayerReorder,
 }: {
-  field: FieldApi;
-  layers: Layer[];
+  form: FormApi;
   activeLayerId: number;
   setActiveLayerId: (id: number) => void;
   setPreviewLayerId: (id: number) => void;
   setSidebarMode: (mode: 'layer' | 'component') => void;
+  setTempComponent: (component: Component | null) => void;
   handleAddLayer: () => void;
   handleDeleteLayer: (id: number) => void;
   handleEditLayerName: (id: number, newName: string) => void;
@@ -71,7 +71,7 @@ const MapLayerList = ({
     setIndices({ ...indices, new: over.data.current.index });
   };
 
-  const handleDragEnd = (e) => {
+  const handleDragEnd = (e, field) => {
     const { over, active } = e;
 
     handleLayerReorder(
@@ -84,42 +84,54 @@ const MapLayerList = ({
 
   return (
     <>
-      <ArrowHeader3 className="whitespace-nowrap" title="Map Layers" />
-      <Divider />
       <BtnRect type="button" ariaLabel="Add layer" onClick={handleAddLayer}>
         Add Layer
       </BtnRect>
-      <DndContext
-        onDragStart={handleDragStart}
-        onDragOver={handleDragOver}
-        onDragEnd={handleDragEnd}
-      >
-        <div className="scrollbar-primary-2 my-4 flex h-full flex-col gap-3 overflow-y-auto pb-2">
-          {layers?.map((layer, index) => {
-            const active = layer.id === activeLayerId;
+      {activeLayerId && (
+        <BtnAuth
+          onClick={() => {
+            setActiveLayerId(null);
+            setTempComponent(null);
+          }}
+        >
+          Deselect Layer
+        </BtnAuth>
+      )}
+      <form.Field name="layers">
+        {(field) => (
+          <DndContext
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDragEnd={(e) => handleDragEnd(e, field)}
+          >
+            <div className="scrollbar-primary-2 flex h-full flex-col gap-2 overflow-y-auto">
+              {field.state.value.map((layer, index) => {
+                const active = layer.id === activeLayerId;
 
-            return (
-              <LayerListItem
-                key={index}
-                index={index}
-                indices={indices}
-                layer={layer}
-                active={active}
-                editId={editId}
-                setEditId={setEditId}
-                newLayerName={newLayerName}
-                setNewLayerName={setNewLayerName}
-                setActiveLayerId={setActiveLayerId}
-                setPreviewLayerId={setPreviewLayerId}
-                setSidebarMode={setSidebarMode}
-                handleDeleteLayer={handleDeleteLayer}
-                handleEditLayerName={handleEditLayerName}
-                handleHiddenLayer={handleHiddenLayer}
-              />
-            );
-          })}
-        </div>
-      </DndContext>
+                return (
+                  <LayerListItem
+                    key={index}
+                    index={index}
+                    indices={indices}
+                    layer={layer}
+                    active={active}
+                    editId={editId}
+                    setEditId={setEditId}
+                    newLayerName={newLayerName}
+                    setNewLayerName={setNewLayerName}
+                    setActiveLayerId={setActiveLayerId}
+                    setPreviewLayerId={setPreviewLayerId}
+                    setSidebarMode={setSidebarMode}
+                    handleDeleteLayer={handleDeleteLayer}
+                    handleEditLayerName={handleEditLayerName}
+                    handleHiddenLayer={handleHiddenLayer}
+                  />
+                );
+              })}
+            </div>
+          </DndContext>
+        )}
+      </form.Field>
     </>
   );
 };
@@ -196,7 +208,7 @@ const LayerListItem = ({
           <Icon className="text-primary" path={mdiDrag} size={1} />
         </button>
         <div
-          className={`text-secondary layers-center group flex w-full cursor-pointer select-none items-center gap-2`}
+          className={`text-secondary layers-center flex w-full cursor-pointer select-none items-center gap-2`}
           onClick={() => setActiveLayerId(layer.id)}
           onMouseEnter={() => setPreviewLayerId(layer.id)}
           onMouseLeave={() => setPreviewLayerId(null)}
@@ -208,73 +220,55 @@ const LayerListItem = ({
                 value={layer.name || newLayerName}
                 onChange={(value) => setNewLayerName(value)}
               />
-              <button
-                className="hover:text-accent timing p-0.5"
-                onClick={(e) => {
-                  e.stopPropagation();
-
+              <IconBtnSmall
+                onClick={() => {
                   if (typeof newLayerName === 'string') {
                     handleEditLayerName(layer.id, newLayerName);
                   }
                   setNewLayerName(null);
                   setEditId(null);
                 }}
-                onPointerDown={(e) => e.stopPropagation()}
+                tooltip="Confirm"
               >
-                <Icon path={mdiCheckOutline} size={1} />
-              </button>
+                <Icon path={mdiCheckOutline} />
+              </IconBtnSmall>
             </>
           ) : (
             <>
-              {active ? (
-                <ArrowHeader4
-                  title={capitalCase(layer.name)}
-                  className={`!text-accent grow whitespace-nowrap`}
-                />
-              ) : (
-                <h4
-                  className={`group-hover:text-accent grow whitespace-nowrap`}
-                >
-                  {capitalCase(layer.name)}
-                </h4>
-              )}
-              <button
-                className="hover:text-accent timing p-0.5"
-                onClick={(e) => {
-                  e.stopPropagation();
+              <p
+                className={`${active && '!text-accent font-semibold'} timing hover:text-accent grow whitespace-nowrap`}
+              >
+                {capitalCase(layer.name)}
+              </p>
+              <IconBtnSmall
+                onClick={() => {
                   handleHiddenLayer(layer.id);
                 }}
-                onPointerDown={(e) => e.stopPropagation()}
+                tooltip={layer.hidden ? 'Show Layer' : 'Hide Layer'}
               >
-                <Icon path={layer.hidden ? mdiEyeClosed : mdiEye} size={1} />
-              </button>
-              <button
-                className="hover:text-accent timing p-0.5"
+                <Icon path={layer.hidden ? mdiEyeClosed : mdiEye} />
+              </IconBtnSmall>
+              <IconBtnSmall
                 onClick={() => {
                   setActiveLayerId(layer.id);
                   setSidebarMode('component');
                 }}
-                onPointerDown={(e) => e.stopPropagation()}
+                tooltip="Component List"
               >
-                <Icon path={mdiPuzzleOutline} size={1} />
-              </button>
-              <button
-                className="hover:text-accent timing p-0.5"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setEditId(layer.id);
-                }}
-                onPointerDown={(e) => e.stopPropagation()}
+                <Icon path={mdiPuzzleOutline} />
+              </IconBtnSmall>
+              <IconBtnSmall
+                onClick={() => setEditId(layer.id)}
+                tooltip="Edit Name"
               >
-                <Icon path={mdiNoteEditOutline} size={1} />
-              </button>
-              <button
-                className="hover:text-accent timing p-0.5"
+                <Icon path={mdiNoteEditOutline} />
+              </IconBtnSmall>
+              <IconBtnSmall
                 onClick={() => handleDeleteLayer(layer.id)}
-                onPointerDown={(e) => e.stopPropagation()}
+                tooltip="Delete"
               >
-                <Icon path={mdiTrashCanOutline} size={1} />
-              </button>
+                <Icon path={mdiTrashCanOutline} />
+              </IconBtnSmall>
             </>
           )}
         </div>

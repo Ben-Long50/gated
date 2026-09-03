@@ -95,6 +95,7 @@ const Perks = ({
               setAttributeQuery('');
               setSkillQuery('');
             }}
+            tooltip="Reset Search"
           >
             <Icon path={mdiSync} />
           </IconBtnMedium>

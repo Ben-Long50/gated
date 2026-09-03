@@ -298,11 +298,13 @@ const CharacterStatBars = ({
               <>
                 <IconBtnSmall
                   onClick={() => handleChange('permanentInjuries', -1)}
+                  tooltip="Decrease"
                 >
                   <Icon path={mdiMinus} />
                 </IconBtnSmall>
                 <IconBtnSmall
                   onClick={() => handleChange('permanentInjuries', 1)}
+                  tooltip="Increase"
                 >
                   <Icon path={mdiPlus} />
                 </IconBtnSmall>
@@ -338,11 +340,13 @@ const CharacterStatBars = ({
               <>
                 <IconBtnSmall
                   onClick={() => handleChange('permanentInsanities', -1)}
+                  tooltip="Decrease"
                 >
                   <Icon path={mdiMinus} />
                 </IconBtnSmall>
                 <IconBtnSmall
                   onClick={() => handleChange('permanentInsanities', 1)}
+                  tooltip="Increase"
                 >
                   <Icon path={mdiPlus} />
                 </IconBtnSmall>

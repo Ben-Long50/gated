@@ -1,23 +1,20 @@
-import { Layer } from 'src/types/map';
+import { Component, Layer } from 'src/types/map';
 import { mdiLayersOutline, mdiPuzzleOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { ReactNode, useState } from 'react';
-import useNavigationStore from 'src/stores/navbarStore';
+import { useState } from 'react';
 import MapLayerList from './MapLayerList';
 import MapComponentList from './MapComponentList';
-import { FieldApi } from '@tanstack/react-form';
-import InputFieldCheckbox from 'src/components/formFields/InputFieldCheckbox';
+import { FormApi } from '@tanstack/react-form';
+import ArrowHeader3 from 'src/components/ArrowHeader3';
+import InputField from 'src/components/formFields/InputField';
 
 const MapBuilderSidebar = ({
-  children,
-  field,
-  layers,
+  form,
   activeLayerId,
   setActiveLayerId,
   setPreviewLayerId,
   setActiveComponentId,
-  quickTilePicker,
-  setQuickTilePicker,
+  setTempComponent,
   handleAddLayer,
   handleDeleteLayer,
   handleEditLayerName,
@@ -26,15 +23,12 @@ const MapBuilderSidebar = ({
   handleDeleteComponent,
   handleLayerReorder,
 }: {
-  children: ReactNode;
-  field: FieldApi;
-  layers: Layer[];
-  activeLayerId: number;
+  form: FormApi;
+  activeLayerId: number | null;
   setActiveLayerId: (id: number) => void;
   setPreviewLayerId: (id: number) => void;
   setActiveComponentId: (id: number | null) => void;
-  quickTilePicker: boolean;
-  setQuickTilePicker: (mode: boolean) => void;
+  setTempComponent: (component: Component) => void;
   handleAddLayer: () => void;
   handleDeleteLayer: (id: number) => void;
   handleEditLayerName: (id: number, newName: string) => void;
@@ -61,40 +55,52 @@ const MapBuilderSidebar = ({
     'layer',
   );
 
-  const navbarHeight = useNavigationStore((state) => state.navbarHeight);
-
   return (
     <div
-      className={`${layerSidebar ? 'w-96' : 'w-[72px]'} scrollbar-primary-2 timing bg-base shadow-color fixed bottom-0 right-0 top-0 z-10 my-4 mr-4 flex gap-2 overflow-x-hidden rounded-md p-3 shadow-md`}
+      className={`${layerSidebar ? 'w-96' : 'w-[72px]'} scrollbar-primary-2 timing bg-base shadow-color fixed bottom-0 right-0 top-0 z-10 my-4 mr-2 grid grid-rows-[auto,1fr] gap-4 overflow-x-hidden rounded-md p-3 shadow-md`}
       onMouseEnter={() => setLayerSidebar(true)}
       onMouseLeave={() => {
         setLayerSidebar(false);
       }}
     >
-      {sidebarMode === 'layer' ? (
-        <Icon
-          path={mdiLayersOutline}
-          className="text-primary ml-1 size-10 shrink-0"
-        />
-      ) : (
-        <Icon
-          path={mdiPuzzleOutline}
-          className="text-primary ml-1 size-10 shrink-0"
-        />
-      )}
+      <form.Subscribe selector={(state) => state.values.layers}>
+        {(layers) => {
+          const activeLayer = layers.find(
+            (layer) => layer.id === activeLayerId,
+          );
+
+          return (
+            <div className="flex items-center justify-start gap-4">
+              <Icon
+                path={
+                  sidebarMode === 'layer' ? mdiLayersOutline : mdiPuzzleOutline
+                }
+                className="text-primary ml-1 size-10 shrink-0"
+              />
+              <ArrowHeader3
+                className={`${layerSidebar ? 'opacity-100' : 'opacity-0'} timing truncate`}
+                title={
+                  sidebarMode === 'layer'
+                    ? 'Layers'
+                    : `${activeLayer.name} Components`
+                }
+              />
+            </div>
+          );
+        }}
+      </form.Subscribe>
 
       <div
-        className={`${layerSidebar ? 'visible max-w-full px-4 opacity-100' : 'invisible max-w-0 opacity-0'} timing bg-base shadow-color absolute bottom-0 right-0 z-10 flex w-full max-w-96 flex-col gap-4 rounded py-4 shadow-lg`}
-        style={{ top: navbarHeight }}
+        className={`${layerSidebar ? 'visible opacity-100' : 'invisible max-w-0 opacity-0'} timing flex w-full max-w-96 flex-col gap-4`}
       >
         {sidebarMode === 'layer' ? (
           <MapLayerList
-            field={field}
-            layers={layers}
+            form={form}
             activeLayerId={activeLayerId}
             setActiveLayerId={setActiveLayerId}
             setPreviewLayerId={setPreviewLayerId}
             setSidebarMode={setSidebarMode}
+            setTempComponent={setTempComponent}
             handleAddLayer={handleAddLayer}
             handleDeleteLayer={handleDeleteLayer}
             handleEditLayerName={handleEditLayerName}
@@ -103,7 +109,7 @@ const MapBuilderSidebar = ({
           />
         ) : (
           <MapComponentList
-            layers={layers}
+            form={form}
             activeLayerId={activeLayerId}
             setActiveComponentId={setActiveComponentId}
             setSidebarMode={setSidebarMode}
@@ -111,15 +117,26 @@ const MapBuilderSidebar = ({
             handleDeleteComponent={handleDeleteComponent}
           />
         )}
-        <InputFieldCheckbox
-          label="Quick Tile Picker"
-          value={quickTilePicker}
-          checked={quickTilePicker}
-          onChange={() => {
-            setQuickTilePicker((prev) => !prev);
-          }}
-        />
-        {children}
+        <form.Field name="width">
+          {(field) => (
+            <InputField
+              type="number"
+              label="Map Width"
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
+            />
+          )}
+        </form.Field>
+        <form.Field name="height">
+          {(field) => (
+            <InputField
+              type="number"
+              label="Map Height"
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
+            />
+          )}
+        </form.Field>
       </div>
     </div>
   );

@@ -14,6 +14,7 @@ import CharacterPictureRound from './characterComponents/CharacterPictureRound';
 import NoteIcon from './icons/NoteIcon';
 import BtnAuth from './buttons/BtnAuth';
 import IconBtnMedium from './buttons/IconBtnMedium';
+import constructName from 'src/utils/constructName';
 
 const Session = () => {
   const { user } = useContext(AuthContext);
@@ -80,6 +81,7 @@ const Session = () => {
               </Link>
               <IconBtnMedium
                 onClick={() => navigate(`characters/${character.id}/notes`)}
+                tooltip={`${constructName(character)}'s Notes`}
               >
                 <NoteIcon />
               </IconBtnMedium>

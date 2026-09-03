@@ -12,6 +12,7 @@ const MapScaler = ({
   return (
     <div className="flex items-center gap-4">
       <IconBtnMedium
+        tooltip="Zoom Out Map"
         onClick={() =>
           setMapScale((prev: number) => {
             if (prev > 0.2) {
@@ -25,6 +26,7 @@ const MapScaler = ({
         <Icon path={mdiMagnifyMinusOutline} />
       </IconBtnMedium>
       <IconBtnMedium
+        tooltip="Zoom In Map"
         onClick={() =>
           setMapScale((prev: number) => {
             if (prev < 2) {
@@ -37,7 +39,7 @@ const MapScaler = ({
       >
         <Icon path={mdiMagnifyPlusOutline} />
       </IconBtnMedium>
-      <h3 className="w-20">{Math.floor(mapScale * 100)}%</h3>
+      <p>{Math.floor(mapScale * 100)}%</p>
     </div>
   );
 };

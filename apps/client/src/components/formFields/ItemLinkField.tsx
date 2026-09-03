@@ -42,6 +42,7 @@ const ItemLinkField = ({ form }: { form: FormApi }) => {
                             ),
                           );
                         }}
+                        tooltip="Unlink Item"
                       >
                         <Icon path={mdiLinkVariantOff} />
                       </IconBtnMedium>

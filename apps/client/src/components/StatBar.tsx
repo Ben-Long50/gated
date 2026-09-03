@@ -116,10 +116,10 @@ const StatBar = ({
           </div>
           {handleChange && (
             <>
-              <IconBtnSmall onClick={() => handleChange(-1)}>
+              <IconBtnSmall onClick={() => handleChange(-1)} tooltip="Decrease">
                 <Icon path={mdiMinus} />
               </IconBtnSmall>
-              <IconBtnSmall onClick={() => handleChange(1)}>
+              <IconBtnSmall onClick={() => handleChange(1)} tooltip="Increase">
                 <Icon path={mdiPlus} />
               </IconBtnSmall>
             </>

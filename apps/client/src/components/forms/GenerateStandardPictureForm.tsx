@@ -54,6 +54,7 @@ const GenerateStandardPictureForm = () => {
               <IconBtnSmall
                 active={field.state.value > 1}
                 onClick={() => field.handleChange((prev) => prev - 1)}
+                tooltip="Decrease"
               >
                 <Icon path={mdiMinus} />
               </IconBtnSmall>
@@ -61,6 +62,7 @@ const GenerateStandardPictureForm = () => {
               <IconBtnSmall
                 active={field.state.value < 4}
                 onClick={() => field.handleChange((prev) => prev + 1)}
+                tooltip="Increase"
               >
                 <Icon path={mdiPlus} />
               </IconBtnSmall>

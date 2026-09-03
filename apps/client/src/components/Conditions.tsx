@@ -55,6 +55,7 @@ const Conditions = ({
               setQuery('');
               setCategory('');
             }}
+            tooltip="Reset Search"
           >
             <Icon path={mdiSync} />
           </IconBtnMedium>

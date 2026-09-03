@@ -37,7 +37,7 @@ const UserRoleForm = () => {
             setQuery(value);
           }}
         />
-        <IconBtnMedium onClick={() => setQuery('')}>
+        <IconBtnMedium onClick={() => setQuery('')} tooltip="Reset Search">
           <Icon path={mdiSync} />
         </IconBtnMedium>
       </div>

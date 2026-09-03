@@ -57,6 +57,7 @@ const Keywords = ({ form }: { form?: FormApi }) => {
               setQuery('');
               setCategory('');
             }}
+            tooltip="Reset Search"
           >
             <Icon path={mdiSync} />
           </IconBtnMedium>

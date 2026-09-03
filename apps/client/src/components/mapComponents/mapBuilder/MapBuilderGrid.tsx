@@ -1,4 +1,4 @@
-import { FieldApi } from '@tanstack/react-form';
+import { FieldApi, FormApi } from '@tanstack/react-form';
 import { useContext } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import { Component, Layer } from 'src/types/map';
@@ -10,12 +10,7 @@ import getComponentStyle from '../mapUtils/getComponentStyle';
 import getCoords from '../mapUtils/getCoords';
 
 const MapBuilderGrid = ({
-  ref,
-  field,
-  width,
-  height,
-  baseColor,
-  layers,
+  form,
   gridDisplay,
   mapScale,
   dragging,
@@ -29,21 +24,16 @@ const MapBuilderGrid = ({
   handleAddComponent,
   handleDeleteComponent,
 }: {
-  ref?: any;
-  field?: FieldApi;
-  width: number;
-  height: number;
-  baseColor: string;
-  layers: Layer[];
+  form?: FormApi;
   gridDisplay: boolean;
   mapScale: number;
   dragging?: boolean;
-  findConflict?: (component: Component) => boolean;
-  activeLayerId?: number;
-  previewLayerId?: number;
-  activeComponentId?: number | null;
+  findConflict?: (component: Component) => boolean | undefined;
+  activeLayerId: number | null;
+  previewLayerId: number | null;
+  activeComponentId: number | null;
   setActiveComponentId?: (id: number | null) => void;
-  tempComponent?: Component;
+  tempComponent: Component | null;
   setTempComponent?: (component: Component | null) => void;
   handleAddComponent: (
     component: Component,
@@ -69,97 +59,112 @@ const MapBuilderGrid = ({
   return (
     <DragScrollContainer
       draggable={tempComponent === null && activeLayerId === null}
-      className={`scrollbar-primary timing pointer-events-auto relative mx-auto mb-auto max-h-full max-w-full overflow-y-auto rounded border-2`}
+      className={`scrollbar-primary timing pointer-events-auto relative max-h-full max-w-full overflow-y-auto rounded border-2`}
       style={{ borderColor: accentPrimary }}
     >
-      <div
-        ref={ref}
-        className={`${dragging && 'cursor-grabbing'} timing relative grid overflow-hidden`}
-        style={{
-          backgroundColor: baseColor,
-          width: width * 48 * mapScale,
-          height: height * 48 * mapScale,
-          gridTemplateColumns: `repeat(${width},  ${48 * mapScale}px)`,
-          gridTemplateRows: `repeat(${height},  ${48 * mapScale}px)`,
-        }}
+      <form.Subscribe
+        selector={(state) => [
+          state.values.baseColor,
+          state.values.width,
+          state.values.height,
+        ]}
       >
-        {Array.from({ length: width * height }).map((_, index) => {
-          const { row, col } = getCoords(width, index);
+        {([baseColor, width, height]) => (
+          <div
+            className={`${dragging && 'cursor-grabbing'} timing relative grid overflow-hidden`}
+            style={{
+              backgroundColor: baseColor,
+              width: width * 48 * mapScale,
+              height: height * 48 * mapScale,
+              gridTemplateColumns: `repeat(${width},  ${48 * mapScale}px)`,
+              gridTemplateRows: `repeat(${height},  ${48 * mapScale}px)`,
+            }}
+          >
+            {Array.from({ length: width * height }).map((_, index) => {
+              const { row, col } = getCoords(width, index);
 
-          return (
-            <MapBuilderTile
-              key={index}
-              field={field}
-              width={width}
-              height={height}
-              row={row}
-              col={col}
-              gridDisplay={gridDisplay}
-              tempComponent={tempComponent}
-              setTempComponent={setTempComponent}
-              dragging={dragging}
-              handleAddComponent={handleAddComponent}
-              handleDeleteComponent={handleDeleteComponent}
-            />
-          );
-        })}
-        {layers.map((layer) => {
-          if (!layer.hidden) {
-            return (
-              <div
-                id={`layer ${layer.id}`}
-                className={`${activeLayerId !== layer.id && 'pointer-events-none'} layout absolute inset-px grid overflow-hidden rounded`}
-                style={{
-                  gridTemplateColumns: `repeat(${width}, ${48 * mapScale}px)`,
-                  gridTemplateRows: `repeat(${height},  ${48 * mapScale}px)`,
-                }}
-              >
-                {layer.components.map((component, index) => {
-                  return (
-                    <MapBuilderComponent
-                      key={index}
-                      field={field}
-                      component={component}
-                      mapScale={mapScale}
-                      activeComponentId={activeComponentId}
-                      activeLayerId={activeLayerId}
-                      layerId={layer.id}
-                      previewLayerId={previewLayerId}
-                      setActiveComponentId={setActiveComponentId}
-                      handleDeleteComponent={handleDeleteComponent}
-                    />
-                  );
-                })}
-                {tempComponent && getOccupiedTiles && (
-                  <div
-                    className="pointer-events-none relative opacity-50"
-                    data-tiles={JSON.stringify(getOccupiedTiles(tempComponent))}
-                    style={getComponentStyle(tempComponent, mapScale)}
-                  >
-                    {tempComponent.subComponents &&
-                      tempComponent.subComponents.length > 0 &&
-                      tempComponent.subComponents.map((component) => {
-                        const subComponentStyle = getComponentStyle(
-                          component,
-                          mapScale,
-                        );
-
-                        return <div style={subComponentStyle} />;
-                      })}
-                    {conflict && (
+              return (
+                <MapBuilderTile
+                  key={index}
+                  form={form}
+                  width={width}
+                  height={height}
+                  row={row}
+                  col={col}
+                  gridDisplay={gridDisplay}
+                  tempComponent={tempComponent}
+                  setTempComponent={setTempComponent}
+                  dragging={dragging}
+                  handleAddComponent={handleAddComponent}
+                  handleDeleteComponent={handleDeleteComponent}
+                />
+              );
+            })}
+            <form.Field name="layers">
+              {(field) =>
+                field.state.value.map((layer) => {
+                  if (!layer.hidden) {
+                    return (
                       <div
-                        className={`absolute inset-0 bg-red-500 opacity-40`}
-                      />
-                    )}
-                  </div>
-                )}
-              </div>
-            );
-          } else {
-            return;
-          }
-        })}
-      </div>
+                        id={`layer ${layer.id}`}
+                        className={`${activeLayerId !== layer.id && 'pointer-events-none'} layout absolute inset-px grid overflow-hidden rounded`}
+                        style={{
+                          gridTemplateColumns: `repeat(${width}, ${48 * mapScale}px)`,
+                          gridTemplateRows: `repeat(${height},  ${48 * mapScale}px)`,
+                        }}
+                      >
+                        {layer.components.map((component, index) => {
+                          return (
+                            <MapBuilderComponent
+                              key={index}
+                              field={field}
+                              component={component}
+                              mapScale={mapScale}
+                              activeComponentId={activeComponentId}
+                              activeLayerId={activeLayerId}
+                              layerId={layer.id}
+                              previewLayerId={previewLayerId}
+                              setActiveComponentId={setActiveComponentId}
+                              handleDeleteComponent={handleDeleteComponent}
+                            />
+                          );
+                        })}
+                        {tempComponent && getOccupiedTiles && (
+                          <div
+                            className="pointer-events-none relative opacity-50"
+                            data-tiles={JSON.stringify(
+                              getOccupiedTiles(tempComponent),
+                            )}
+                            style={getComponentStyle(tempComponent, mapScale)}
+                          >
+                            {tempComponent.subComponents &&
+                              tempComponent.subComponents.length > 0 &&
+                              tempComponent.subComponents.map((component) => {
+                                const subComponentStyle = getComponentStyle(
+                                  component,
+                                  mapScale,
+                                );
+
+                                return <div style={subComponentStyle} />;
+                              })}
+                            {conflict && (
+                              <div
+                                className={`absolute inset-0 bg-red-500 opacity-40`}
+                              />
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  } else {
+                    return;
+                  }
+                })
+              }
+            </form.Field>
+          </div>
+        )}
+      </form.Subscribe>
     </DragScrollContainer>
   );
 };

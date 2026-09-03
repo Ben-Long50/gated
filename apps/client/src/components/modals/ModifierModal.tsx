@@ -163,6 +163,7 @@ const ModifierModal = () => {
                                     setInputType('skill');
                                     subfield.handleChange('chromebits');
                                   }}
+                                  tooltip="Toggle Value Type"
                                 >
                                   <Icon path={mdiSync} />
                                 </IconBtnSmall>
@@ -183,6 +184,7 @@ const ModifierModal = () => {
                                     setInputType('number');
                                     subfield.handleChange(1);
                                   }}
+                                  tooltip="Toggle Value Type"
                                 >
                                   <Icon path={mdiSync} />
                                 </IconBtnSmall>

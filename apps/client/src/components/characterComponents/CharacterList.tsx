@@ -80,6 +80,7 @@ const CharacterList = ({
                 setCampaignId(null);
                 setQuery('');
               }}
+              tooltip="Reset Search"
             >
               <Icon path={mdiSync} />
             </IconBtnMedium>
@@ -92,6 +93,7 @@ const CharacterList = ({
                     setSize('large');
                   }
                 }}
+                tooltip={size === 'large' ? 'Grid Display' : 'List Display'}
               >
                 <Icon path={size === 'large' ? mdiGrid : mdiCropSquare} />
               </IconBtnMedium>

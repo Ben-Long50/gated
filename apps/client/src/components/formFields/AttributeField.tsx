@@ -125,6 +125,7 @@ const AttributeField = ({
                                     });
                                   }
                                 }}
+                                tooltip="Decrease"
                               >
                                 <Icon path={mdiMinus} />
                               </IconBtnSmall>
@@ -177,6 +178,7 @@ const AttributeField = ({
                                     });
                                   }
                                 }}
+                                tooltip="Increase"
                               >
                                 <Icon path={mdiPlus} />
                               </IconBtnSmall>
@@ -221,6 +223,7 @@ const AttributeField = ({
                                                   );
                                                 }
                                               }}
+                                              tooltip="Decrease"
                                             >
                                               <Icon path={mdiMinus} />
                                             </IconBtnSmall>
@@ -275,6 +278,7 @@ const AttributeField = ({
                                                   );
                                                 }
                                               }}
+                                              tooltip="Increase"
                                             >
                                               <Icon path={mdiPlus} />
                                             </IconBtnSmall>

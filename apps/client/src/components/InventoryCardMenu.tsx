@@ -23,6 +23,7 @@ const InventoryCardMenu = ({ item }: { item: Item }) => {
         onClick={() => {
           setMenuOpen((prev) => !prev);
         }}
+        tooltip="Item Menu"
       >
         <Icon path={mdiDotsHorizontal} />
       </IconBtnSmall>

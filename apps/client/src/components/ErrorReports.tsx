@@ -37,6 +37,7 @@ const ErrorReports = () => {
               onClick={() => {
                 deleteErrorReport.mutate(report.id);
               }}
+              tooltip="Delete"
             >
               <Icon path={mdiTrashCanOutline} />
             </IconBtnSmall>
