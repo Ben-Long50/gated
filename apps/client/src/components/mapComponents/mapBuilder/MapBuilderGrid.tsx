@@ -1,4 +1,4 @@
-import { FieldApi, FormApi } from '@tanstack/react-form';
+import { FormApi } from '@tanstack/react-form';
 import { useContext } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import { Component, Layer } from 'src/types/map';

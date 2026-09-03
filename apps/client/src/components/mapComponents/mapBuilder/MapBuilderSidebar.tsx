@@ -57,7 +57,7 @@ const MapBuilderSidebar = ({
 
   return (
     <div
-      className={`${layerSidebar ? 'w-96' : 'w-[72px]'} scrollbar-primary-2 timing bg-base shadow-color fixed bottom-0 right-0 top-0 z-10 my-4 mr-2 grid grid-rows-[auto,1fr] gap-4 overflow-x-hidden rounded-md p-3 shadow-md`}
+      className={`${layerSidebar ? 'w-96' : 'w-[72px]'} scrollbar-primary-2 timing bg-base shadow-color fixed bottom-0 right-0 top-0 z-20 my-4 mr-2 grid grid-rows-[auto,1fr] gap-4 overflow-x-hidden rounded-md p-3 shadow-md`}
       onMouseEnter={() => setLayerSidebar(true)}
       onMouseLeave={() => {
         setLayerSidebar(false);
@@ -91,7 +91,7 @@ const MapBuilderSidebar = ({
       </form.Subscribe>
 
       <div
-        className={`${layerSidebar ? 'visible opacity-100' : 'invisible max-w-0 opacity-0'} timing flex w-full max-w-96 flex-col gap-4`}
+        className={`${layerSidebar ? 'visible opacity-100' : 'invisible max-w-0 opacity-0'} timing flex h-full w-full max-w-[400px] flex-col gap-4`}
       >
         {sidebarMode === 'layer' ? (
           <MapLayerList

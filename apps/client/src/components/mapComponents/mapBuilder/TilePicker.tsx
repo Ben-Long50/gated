@@ -6,10 +6,12 @@ const TilePicker = ({
   pngPath,
   tempComponent,
   handleTileSelect,
+  gridDisplay,
 }: {
   pngPath: string | null;
   tempComponent: Component | null;
   handleTileSelect: (row: number, col: number) => void;
+  gridDisplay: boolean;
 }) => {
   const [grid, setGrid] = useState({ rows: 0, cols: 0 });
 
@@ -67,7 +69,7 @@ const TilePicker = ({
         return (
           <div
             key={index}
-            className={`${selected ? 'bg-yellow-300/50 hover:bg-yellow-300/80' : 'hover:bg-gray-400/50'} size-[48px] ring-1 ring-inset ring-gray-400/50`}
+            className={`${gridDisplay && 'ring-1 ring-inset ring-gray-400/50'} ${selected ? 'bg-yellow-300/50 hover:bg-yellow-300/80' : 'hover:bg-gray-400/50'} size-[48px]`}
             style={{ gridRow: row, gridColumn: col }}
             onClick={() => {
               handleTileSelect(row, col);

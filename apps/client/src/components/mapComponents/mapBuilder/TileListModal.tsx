@@ -10,6 +10,7 @@ import {
   mdiFolderOutline,
   mdiStar,
   mdiStarOutline,
+  mdiViewGridOutline,
 } from '@mdi/js';
 import Divider from '../../Divider';
 import ArrowHeader3 from '../../ArrowHeader3';
@@ -19,10 +20,13 @@ import CloudinaryPicture from 'src/components/CloudinaryPicture';
 import TilePicker from './TilePicker';
 import useMapFavoriteStore from 'src/stores/mapFavoriteStore';
 import { AuthContext } from 'src/contexts/AuthContext';
+import IconBtnMedium from 'src/components/buttons/IconBtnMedium';
 
 const TileListModal = () => {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
+
+  const [gridDisplay, setGridDisplay] = useState(true);
 
   const mapIds = user.maps.map((map) => map.id);
   const { maps: components } = useMaps(mapIds);
@@ -79,30 +83,39 @@ const TileListModal = () => {
             {path.slice(1).map((part: string, index: number) => (
               <ArrowHeader3 key={index} title={capitalCase(part)} />
             ))}
-            {tempComponent && (
-              <button
-                className="bg-tertiary group ml-auto flex rounded p-1.5 shadow-md shadow-black"
-                aria-label="Clear temporary component"
-                type="button"
-                onClick={() => {
-                  setTempComponent(null);
-                }}
-              >
-                <Icon
-                  path={mdiCancel}
-                  className="text-tertiary group-hover:text-accent timing size-8"
-                />
-              </button>
-            )}
           </div>
           <Divider className="!my-0" />
-          <div className="scrollbar-primary flex h-full w-full items-start justify-start overflow-auto">
+          <div className="scrollbar-primary flex h-full w-full items-start justify-start">
             {isPng ? (
-              <TilePicker
-                pngPath={pngPath}
-                tempComponent={tempComponent}
-                handleTileSelect={handleTileSelect}
-              />
+              <>
+                <div className="flex flex-col gap-4">
+                  <IconBtnMedium
+                    onClick={() => {
+                      setTempComponent(null);
+                    }}
+                    tooltip={gridDisplay ? 'Hide Grid' : 'Show Grid'}
+                    active={gridDisplay}
+                  >
+                    <Icon path={mdiCancel} />
+                  </IconBtnMedium>
+                  {tempComponent && (
+                    <IconBtnMedium
+                      onClick={() => {
+                        setTempComponent(null);
+                      }}
+                      tooltip="Deselect Tiles"
+                    >
+                      <Icon path={mdiCancel} />
+                    </IconBtnMedium>
+                  )}
+                </div>
+                <TilePicker
+                  pngPath={pngPath}
+                  tempComponent={tempComponent}
+                  handleTileSelect={handleTileSelect}
+                  gridDisplay={gridDisplay}
+                />
+              </>
             ) : (
               <div className="col-span-2 grid w-full grid-cols-3 gap-4">
                 {favorites.map((file: string, index: number) => {
@@ -145,10 +158,7 @@ const TileListModal = () => {
       {tab === 'tiles' && (
         <>
           <div className="flex w-full flex-col items-center gap-4 sm:flex-row">
-            <button
-              className="bg-tertiary group my-auto flex rounded p-1.5 shadow-md shadow-black"
-              aria-label="Clear autosaved map"
-              type="button"
+            <IconBtnMedium
               onClick={() => {
                 if (path.length === 2) {
                   return;
@@ -156,29 +166,22 @@ const TileListModal = () => {
 
                 setPath((prev) => prev.slice(0, -1));
               }}
+              tooltip="Back"
             >
-              <Icon
-                path={mdiArrowULeftBottom}
-                className="text-tertiary group-hover:text-accent timing size-8"
-              />
-            </button>
+              <Icon path={mdiArrowULeftBottom} />
+            </IconBtnMedium>
             {path.slice(1).map((part: string, index: number) => (
               <ArrowHeader3 key={index} title={capitalCase(part)} />
             ))}
             {tempComponent && (
-              <button
-                className="bg-tertiary group ml-auto flex rounded p-1.5 shadow-md shadow-black"
-                aria-label="Clear temporary component"
-                type="button"
+              <IconBtnMedium
                 onClick={() => {
                   setTempComponent(null);
                 }}
+                tooltip="Deselect Tiles"
               >
-                <Icon
-                  path={mdiCancel}
-                  className="text-tertiary group-hover:text-accent timing size-8"
-                />
-              </button>
+                <Icon path={mdiCancel} />
+              </IconBtnMedium>
             )}
           </div>
           <Divider className="!my-0" />
@@ -186,13 +189,37 @@ const TileListModal = () => {
       )}
 
       {tab === 'tiles' && (
-        <div className="scrollbar-primary flex h-full w-full items-start justify-start overflow-auto">
+        <div className="scrollbar-primary flex h-full w-full items-start justify-start">
           {isPng ? (
-            <TilePicker
-              pngPath={pngPath}
-              tempComponent={tempComponent}
-              handleTileSelect={handleTileSelect}
-            />
+            <>
+              <div className="flex flex-col gap-4">
+                <IconBtnMedium
+                  onClick={() => {
+                    setGridDisplay((prev) => !prev);
+                  }}
+                  tooltip={gridDisplay ? 'Hide Grid' : 'Show Grid'}
+                  active={gridDisplay}
+                >
+                  <Icon path={mdiViewGridOutline} />
+                </IconBtnMedium>
+                {tempComponent && (
+                  <IconBtnMedium
+                    onClick={() => {
+                      setTempComponent(null);
+                    }}
+                    tooltip="Deselect Tiles"
+                  >
+                    <Icon path={mdiCancel} />
+                  </IconBtnMedium>
+                )}
+              </div>
+              <TilePicker
+                pngPath={pngPath}
+                tempComponent={tempComponent}
+                handleTileSelect={handleTileSelect}
+                gridDisplay={gridDisplay}
+              />
+            </>
           ) : (
             <div className="scrollbar-primary mb-auto grid w-full grid-cols-1 gap-4 overflow-y-auto rounded pb-2 sm:grid-cols-2">
               {Object.entries(currentFolder).map(([key, value], index) =>
@@ -222,7 +249,7 @@ const TileListModal = () => {
                         return (
                           <div
                             key={index}
-                            className="hover:border-accent relative aspect-square size-full rounded border-2 border-gray-500 shadow-md shadow-black"
+                            className={`hover:border-accent relative aspect-square size-full rounded border-2 border-gray-500 shadow-md shadow-black`}
                             style={{
                               backgroundImage: `url(${filePath})`,
                               backgroundSize: 'contain',
@@ -281,19 +308,14 @@ const TileListModal = () => {
               <ArrowHeader3 key={index} title={capitalCase(part)} />
             ))}
             {tempComponent && (
-              <button
-                className="bg-tertiary group ml-auto flex rounded p-1.5 shadow-md shadow-black"
-                aria-label="Clear temporary component"
-                type="button"
+              <IconBtnMedium
                 onClick={() => {
                   setTempComponent(null);
                 }}
+                tooltip="Deselect Tiles"
               >
-                <Icon
-                  path={mdiCancel}
-                  className="text-tertiary group-hover:text-accent timing size-8"
-                />
-              </button>
+                <Icon path={mdiCancel} />
+              </IconBtnMedium>
             )}
           </div>
           <Divider className="!my-0" />

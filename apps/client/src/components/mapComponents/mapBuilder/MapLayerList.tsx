@@ -104,7 +104,7 @@ const MapLayerList = ({
             onDragOver={handleDragOver}
             onDragEnd={(e) => handleDragEnd(e, field)}
           >
-            <div className="scrollbar-primary-2 flex h-full flex-col gap-2 overflow-y-auto">
+            <div className="scrollbar-primary-2 flex h-full flex-col gap-2">
               {field.state.value.map((layer, index) => {
                 const active = layer.id === activeLayerId;
 
@@ -217,7 +217,7 @@ const LayerListItem = ({
             <>
               <InputField
                 label="Layer Name"
-                value={layer.name || newLayerName}
+                value={newLayerName ?? layer.name}
                 onChange={(value) => setNewLayerName(value)}
               />
               <IconBtnSmall
@@ -236,7 +236,7 @@ const LayerListItem = ({
           ) : (
             <>
               <p
-                className={`${active && '!text-accent font-semibold'} timing hover:text-accent grow whitespace-nowrap`}
+                className={`${active && '!text-accent font-semibold'} timing hover:text-accent max-w-32 grow truncate whitespace-nowrap`}
               >
                 {capitalCase(layer.name)}
               </p>
