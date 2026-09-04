@@ -113,8 +113,8 @@ model Event {
 model Map {
   id                 Int               @id @default(autoincrement())
   createdAt          DateTime          @default(now())
-  user               User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId             Int
+  user               User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId             Int?
   campaign           Campaign?         @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   campaignId         Int?
   generatedPicture   GeneratedPicture? @relation(fields: [generatedPictureId], references: [id])
@@ -132,6 +132,10 @@ model Map {
   encounters         Encounter[]
   gang               Gang?             @relation(fields: [gangId], references: [id])
   gangId             Int?
+  baseMap            Map?              @relation("BaseRelation", fields: [mapId], references: [id])
+  baseMapId          Int?
+  maps               Map[]             @relation("BaseRelation")
+  mapId              Int?
 }
 
 enum MapType {

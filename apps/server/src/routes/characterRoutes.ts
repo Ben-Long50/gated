@@ -7,11 +7,7 @@ const router = express.Router();
 
 router.get('/social/characters', characterController.getSocialCharacters);
 
-router.get(
-  '/characters/base',
-  authentication.authenticate,
-  characterController.getCodexCharacters,
-);
+router.get('/characters/base', characterController.getCodexCharacters);
 
 router.get(
   '/characters/batch',

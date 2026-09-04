@@ -4,6 +4,8 @@ import mapController from '../controllers/mapController.js';
 
 const router = express.Router();
 
+router.get('/maps/codex', mapController.getCodexMaps);
+
 router.get(
   '/maps/batch',
   authentication.authenticate,
@@ -14,6 +16,12 @@ router.get(
   '/maps/:mapId',
   authentication.authenticate,
   mapController.getMapById,
+);
+
+router.post(
+  '/maps/codex',
+  authentication.authenticateAdmin,
+  mapController.createOrUpdateCodexMap,
 );
 
 router.post(

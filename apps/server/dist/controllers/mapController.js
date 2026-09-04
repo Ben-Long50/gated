@@ -11,6 +11,15 @@ const mapController = {
             handleControllerError(res, error);
         }
     },
+    getCodexMaps: async (_req, res) => {
+        try {
+            const maps = await mapServices.getCodexMaps();
+            res.status(200).json(maps);
+        }
+        catch (error) {
+            handleControllerError(res, error);
+        }
+    },
     getBatchMaps: async (req, res) => {
         try {
             if (!req.user) {
@@ -24,6 +33,24 @@ const mapController = {
             handleControllerError(res, error);
         }
     },
+    createOrUpdateCodexMap: async (req, res) => {
+        try {
+            if (!req.user) {
+                throw new Error('You must be logged in to create or update a map');
+            }
+            const validatedMap = MapInput.parse(req.body);
+            const map = await mapServices.createOrUpdateCodexMap(validatedMap);
+            res.status(200).json({
+                map,
+                message: validatedMap.id
+                    ? `Successfully updated map: ${map.name}`
+                    : `Successfully created map: ${map.name}`,
+            });
+        }
+        catch (error) {
+            handleControllerError(res, error);
+        }
+    },
     createOrUpdateMap: async (req, res) => {
         try {
             if (!req.user) {
@@ -31,9 +58,7 @@ const mapController = {
             }
             const validatedMap = MapInput.parse(req.body);
             const map = await mapServices.createOrUpdateMap(req.user.id, validatedMap);
-            res
-                .status(200)
-                .json({
+            res.status(200).json({
                 map,
                 message: validatedMap.id
                     ? `Successfully updated map: ${map.name}`

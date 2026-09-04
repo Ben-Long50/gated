@@ -4,7 +4,7 @@ import characterController from '../controllers/characterController.js';
 import conditionController from '../controllers/conditionController.js';
 const router = express.Router();
 router.get('/social/characters', characterController.getSocialCharacters);
-router.get('/characters/base', authentication.authenticate, characterController.getCodexCharacters);
+router.get('/characters/base', characterController.getCodexCharacters);
 router.get('/characters/batch', authentication.authenticate, characterController.getBatchCharacters);
 router.get('/characters/:characterId', authentication.authenticate, characterController.getCharacterById);
 router.get('/characters/:characterId/notes', authentication.authenticate, characterController.getCharacterNotes);

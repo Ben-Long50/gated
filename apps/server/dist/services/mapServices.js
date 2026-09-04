@@ -26,9 +26,17 @@ const mapInclude = {
     generatedPicture: { select: { publicId: true } },
 };
 const mapServices = {
+    getCodexMaps: async () => {
+        const maps = await prisma.map.findMany({
+            where: { userId: null, baseMapId: null },
+            select: { id: true },
+        });
+        return maps;
+    },
     getBatchMaps: async (mapIds) => {
         const maps = await prisma.map.findMany({
             where: { id: { in: mapIds } },
+            orderBy: { name: 'asc' },
             include: mapInclude,
         });
         return maps;
@@ -36,6 +44,16 @@ const mapServices = {
     getMapById: async (mapId) => {
         const map = await prisma.map.findUnique({
             where: { id: mapId },
+            include: mapInclude,
+        });
+        return map;
+    },
+    createOrUpdateCodexMap: async (formData) => {
+        const { id } = formData, data = __rest(formData, ["id"]);
+        const map = await prisma.map.upsert({
+            where: { id: id || 0 },
+            update: data,
+            create: data,
             include: mapInclude,
         });
         return map;
