@@ -4,12 +4,16 @@ import useMapQueries from './useMapQueries/useMapQueries';
 const useMaps = (mapIds: number[]) => {
   const [searchParams] = useSearchParams();
 
-  const mapType = searchParams.get('mapType') || '';
+  const mapType = searchParams.get('mapType');
   const draft = searchParams.get('draft');
 
   const { maps, isLoading } = useMapQueries(mapIds);
 
   const filteredMaps = maps?.filter((map) => {
+    if (draft == null && mapType == null) {
+      return true;
+    }
+
     const draftBool = draft === 'true' ? true : false;
     return map.draft === draftBool && map.type === mapType;
   });

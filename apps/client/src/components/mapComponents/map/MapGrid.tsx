@@ -14,6 +14,7 @@ const MapGrid = ({
   mapScale,
   locations,
   gridDisplay,
+  className,
 }: {
   width: number;
   height: number;
@@ -22,13 +23,14 @@ const MapGrid = ({
   mapScale: number;
   locations: Location[];
   gridDisplay: boolean;
+  className?: string;
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
 
   return (
     <DragScrollContainer
       draggable={true}
-      className={`scrollbar-primary timing pointer-events-auto relative mx-auto mb-auto max-h-full max-w-full overflow-y-auto rounded border-2`}
+      className={`${className} scrollbar-primary timing relative max-h-full max-w-full overflow-y-auto rounded border-2`}
       style={{ borderColor: accentPrimary }}
     >
       <div

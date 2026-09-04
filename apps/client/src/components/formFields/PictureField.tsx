@@ -75,13 +75,18 @@ const PictureField = ({
     >
       <div className="flex flex-col gap-8">
         <ThemeContainer
-          className="mx-auto my-auto w-full max-w-3xl"
+          className="mx-auto my-auto w-full"
           chamfer="medium"
           borderColor={accentPrimary}
           overflowHidden={true}
         >
           <CloudinaryPicture
             className="bg-secondary h-full overflow-hidden bg-black"
+            style={
+              type === 'scene'
+                ? { aspectRatio: '16/9' }
+                : { aspectRatio: 'square' }
+            }
             publicId={picture?.publicId}
           />
         </ThemeContainer>

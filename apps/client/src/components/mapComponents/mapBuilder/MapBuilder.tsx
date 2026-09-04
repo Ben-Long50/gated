@@ -527,6 +527,7 @@ const MapBuilder = () => {
                 pngPath={pngPath}
                 tempComponent={tempComponent}
                 handleTileSelect={handleTileSelect}
+                gridDisplay={gridDisplay}
               />
             </div>
           )}

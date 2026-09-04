@@ -18,14 +18,12 @@ const MapTabRoutes = () => {
           </Page>
         }
       />
-      <Route
-        path=":mapId"
-        element={
-          <Page title="Map">
-            <Map />
-          </Page>
-        }
-      />
+      <Route path=":mapId" element={<Map />} />
+      <Route path=":mapId/update" element={<MapBuilder />}>
+        <Route path="save" element={<MapSaveModal />} />
+        <Route path="tileList" element={<TileListModal />} />
+        {PictureRoutes()}
+      </Route>
       <Route path="create" element={<MapBuilder />}>
         <Route path="save" element={<MapSaveModal />} />
         <Route path="tileList" element={<TileListModal />} />

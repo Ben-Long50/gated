@@ -1,6 +1,21 @@
 import { Encounter } from './encounter';
 import { Item } from './item';
 
+export interface MapInput {
+  id: number;
+  campaignId: number;
+  draft: boolean;
+  name: string;
+  description?: string;
+  type: MapType;
+  width: number;
+  height: number;
+  baseColor: string;
+  layerCount: number;
+  layers: Layer[];
+  generatedPictureId: number | null;
+}
+
 export interface Map {
   id: number;
   user: User;

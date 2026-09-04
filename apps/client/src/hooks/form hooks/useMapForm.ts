@@ -1,6 +1,6 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
-import constructFormData from './constructFormData';
+import { filterFormData } from './constructFormData';
 import { Map, MapType } from 'src/types/map';
 import { useParams } from 'react-router-dom';
 
@@ -34,7 +34,8 @@ const useMapForm = (
       generatedPictureId: map?.generatedPictureId ?? null,
     },
     onSubmit: async ({ value }) => {
-      const formData = constructFormData(value);
+      const formData = filterFormData(value);
+      console.log(formData);
 
       mutation.mutate(formData);
     },

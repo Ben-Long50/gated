@@ -6,6 +6,7 @@ import TextAreaField from '../../formFields/TextAreaField';
 import BtnRect from '../../buttons/BtnRect';
 import Loading from '../../Loading';
 import InputFieldCheckbox from 'src/components/formFields/InputFieldCheckbox';
+import PictureField from 'src/components/formFields/PictureField';
 
 const MapSaveModal = () => {
   const { form, isPending } = useOutletContext() || {};
@@ -42,6 +43,7 @@ const MapSaveModal = () => {
             />
           )}
         </form.Field>
+        <PictureField form={form} type="scene" />
         <form.Field name="draft">
           {(field) => (
             <InputFieldCheckbox

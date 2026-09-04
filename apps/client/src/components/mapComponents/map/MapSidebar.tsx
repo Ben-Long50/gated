@@ -40,8 +40,7 @@ const MapSidebar = ({
 
   return (
     <div
-      className={`${layerSidebar ? 'w-96' : 'w-[72px]'} bg-primary scrollbar-primary-2 timing fixed bottom-0 right-0 z-10 flex h-full flex-col gap-2 overflow-x-hidden p-3 shadow-md shadow-black`}
-      style={{ top: navbarHeight }}
+      className={`${layerSidebar ? 'w-96' : 'w-[72px]'} bg-base scrollbar-primary-2 timing fixed bottom-4 right-2 top-4 z-20 flex flex-col gap-2 overflow-x-hidden rounded-md p-3 shadow-md shadow-black`}
       onMouseEnter={() => setLayerSidebar(true)}
       onMouseLeave={() => {
         setLayerSidebar(false);
@@ -56,7 +55,7 @@ const MapSidebar = ({
             className="text-primary ml-1 size-10 shrink-0"
           />
           <div
-            className={`${layerSidebar ? 'visible translate-x-0 px-4 opacity-100' : 'invisible translate-x-full opacity-0'} scrollbar-secondary-2 timing bg-primary fixed bottom-0 right-0 z-10 flex w-full max-w-96 flex-col overflow-y-auto rounded py-4 shadow-lg shadow-black`}
+            className={`${layerSidebar ? 'visible translate-x-0 px-4 opacity-100' : 'invisible translate-x-full opacity-0'} scrollbar-secondary-2 timing z-10 flex w-full max-w-96 flex-col overflow-y-auto rounded py-4`}
             style={{ top: navbarHeight }}
           >
             <div className="flex w-full flex-col gap-4">
@@ -89,7 +88,7 @@ const MapSidebar = ({
                   );
                 })
               ) : (
-                <h3>N/A</h3>
+                <p>No map characters</p>
               )}
             </div>
             {gameMaster && (

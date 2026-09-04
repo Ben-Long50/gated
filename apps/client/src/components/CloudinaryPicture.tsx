@@ -36,7 +36,10 @@ const CloudinaryPicture = ({
           plugins={[responsive({ steps: 100 }), lazyload()]}
         />
       ) : (
-        <div className="flex aspect-square size-full items-center justify-center">
+        <div
+          className="flex aspect-square size-full items-center justify-center"
+          style={style}
+        >
           <Icon
             path={mdiImageOutline}
             className="text-tertiary w-1/2 max-w-64 opacity-50"

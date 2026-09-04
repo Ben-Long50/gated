@@ -1,8 +1,8 @@
-import useCampaignMapQuery from './useCampaignMapQuery/useCampaignMapQuery';
 import useLocationQueries from './useCampaignMapQuery/useLocationQueries';
+import useMapQuery from './useMapQueries/useMapQuery';
 
 const useMap = (mapId: number) => {
-  const { data: map, isLoading: mapLoading } = useCampaignMapQuery(mapId);
+  const { data: map, isLoading: mapLoading } = useMapQuery(mapId);
 
   const {
     locations,

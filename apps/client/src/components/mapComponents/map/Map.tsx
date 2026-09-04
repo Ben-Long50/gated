@@ -1,10 +1,9 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import useMap from 'src/hooks/useMap';
 import Loading from '../../Loading';
-import { mdiGrid } from '@mdi/js';
+import { mdiGrid, mdiSquareEditOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { LayoutContext } from 'src/contexts/LayoutContext';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import MapSidebar from './MapSidebar';
 import {
   DndContext,
@@ -18,15 +17,17 @@ import {
 import useUpdateCharacterLocationMutation from 'src/hooks/useUpdateCharacterLocationMutation/useUpdateCharacterLocationMutation';
 import MapGrid from './MapGrid';
 import CharacterToken from './CharacterToken';
-import MapHeader from './MapHeader';
+import IconBtnMedium from 'src/components/buttons/IconBtnMedium';
+import MapScaler from './MapScaler';
+import ArrowHeader3 from 'src/components/ArrowHeader3';
 
 const Map = () => {
-  const { mobile } = useContext(LayoutContext);
   const { mapId } = useParams();
   const [dragging, setDragging] = useState(false);
   const [draggingId, setDraggingId] = useState<number | null>(null);
   const [gridDisplay, setGridDisplay] = useState(false);
   const [mapScale, setMapScale] = useState(1);
+  const navigate = useNavigate();
 
   const { map, locations, mapLoading, locationsLoading } = useMap(
     Number(mapId),
@@ -69,16 +70,7 @@ const Map = () => {
   if (!map) return <h1>No Map Found</h1>;
 
   return (
-    <div className="flex h-full w-full max-w-85dvw flex-col items-center gap-4 sm:gap-8">
-      {!mobile && (
-        <MapHeader
-          mapName={map.name}
-          gridDisplay={gridDisplay}
-          setGridDisplay={setGridDisplay}
-          mapScale={mapScale}
-          setMapScale={setMapScale}
-        />
-      )}
+    <div className="fixed inset-0 flex h-full w-full flex-col items-center justify-center gap-4 sm:gap-8">
       <DndContext
         sensors={sensors}
         onDragStart={onDragStart}
@@ -104,6 +96,30 @@ const Map = () => {
           ) : null}
         </DragOverlay>
       </DndContext>
+      <div
+        className={`bg-base shadow-color timing absolute bottom-2 z-10 mx-auto flex items-center justify-between gap-8 rounded-md p-4`}
+      >
+        <ArrowHeader3 title={map.name} />
+        <div className={`flex w-full items-center justify-center gap-4`}>
+          <IconBtnMedium
+            tooltip={gridDisplay ? 'Hide Grid' : 'Show Grid'}
+            onClick={() => setGridDisplay((prev) => !prev)}
+            active={gridDisplay}
+          >
+            <Icon path={mdiGrid} />
+          </IconBtnMedium>
+          <MapScaler mapScale={mapScale} setMapScale={setMapScale} />
+
+          <IconBtnMedium
+            onClick={() => {
+              navigate(`update`);
+            }}
+            tooltip="Edit Map"
+          >
+            <Icon path={mdiSquareEditOutline} />
+          </IconBtnMedium>
+        </div>
+      </div>
     </div>
   );
 };

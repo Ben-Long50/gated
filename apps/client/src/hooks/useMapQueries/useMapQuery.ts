@@ -4,7 +4,7 @@ import { Map } from 'src/types/map';
 
 const useMapQuery = (mapId: number) => {
   return useQuery<Map>({
-    queryKey: ['character', mapId],
+    queryKey: ['map', mapId],
     queryFn: () => getMap.fetch(mapId),
     throwOnError: false,
     enabled: !!mapId,

@@ -1,6 +1,5 @@
-import { capitalCase } from 'change-case';
 import { useContext, useRef } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Loading from '../../Loading';
 import useMaps from 'src/hooks/useMaps';
 import BtnRect from '../../buttons/BtnRect';
@@ -23,7 +22,7 @@ const MapList = () => {
     <div ref={containerRef} className="flex w-full flex-col items-center gap-8">
       {maps && maps.length === 0 ? (
         <>
-          <p className="text-center">No user created maps found</p>
+          <p className="text-center">No maps found</p>
           <BtnRect
             className="w-full"
             type="button"
@@ -34,7 +33,7 @@ const MapList = () => {
           </BtnRect>
         </>
       ) : (
-        <div className="grid w-full grid-cols-[repeat(auto-fit,minmax(360px,1fr))] gap-4">
+        <div className="grid w-full grid-cols-[repeat(auto-fit,minmax(360px,500px))] gap-4">
           {maps.map((map) => (
             <MapCard key={map.id} mapId={map.id} />
           ))}
