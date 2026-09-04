@@ -1,5 +1,4 @@
 import { MapInput } from '../validation/mapSchema.js';
-import parseRequestBody from '../utils/parseRequestBody.js';
 import mapServices from '../services/mapServices.js';
 import handleControllerError from './handleControllerError.js';
 const mapController = {
@@ -30,15 +29,19 @@ const mapController = {
             if (!req.user) {
                 throw new Error('You must be logged in to create or update a map');
             }
-            const parsedBody = parseRequestBody(req.body);
-            const validatedMap = MapInput.parse(parsedBody);
+            const validatedMap = MapInput.parse(req.body);
             const map = await mapServices.createOrUpdateMap(req.user.id, validatedMap);
             res
                 .status(200)
-                .json({ map, message: `Successfully created map: ${map.name}` });
+                .json({
+                map,
+                message: validatedMap.id
+                    ? `Successfully updated map: ${map.name}`
+                    : `Successfully created map: ${map.name}`,
+            });
         }
         catch (error) {
-            res.status(500).json({ error: error.message });
+            handleControllerError(res, error);
         }
     },
     deleteMap: async (req, res) => {

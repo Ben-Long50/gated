@@ -5,15 +5,15 @@ import mapController from '../controllers/mapController.js';
 const router = express.Router();
 
 router.get(
-  '/maps/:mapId',
-  authentication.authenticate,
-  mapController.getMapById,
-);
-
-router.get(
   '/maps/batch',
   authentication.authenticate,
   mapController.getBatchMaps,
+);
+
+router.get(
+  '/maps/:mapId',
+  authentication.authenticate,
+  mapController.getMapById,
 );
 
 router.post(

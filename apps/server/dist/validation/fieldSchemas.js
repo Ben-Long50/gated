@@ -2,11 +2,11 @@ import z from 'zod';
 import { Attribute, Month, Skill } from './enums.js';
 import sanitizeHtml from 'sanitize-html';
 export const Name = z
-    .string()
+    .string('Provide a name')
     .min(2, 'Name must be at least 2 characters')
     .max(100, 'Name must be under 100 characters');
 export const FirstName = z
-    .string()
+    .string('Provide a first name')
     .min(2, 'First name must be at least 2 characters')
     .max(100, 'First name must be under 100 characters');
 export const LastName = z
@@ -15,7 +15,7 @@ export const LastName = z
     .max(100, 'Last name must be under 100 characters')
     .optional();
 export const Description = z
-    .string()
+    .string('Provide a description')
     .min(10, 'Description must be at least 10 characters')
     .max(1000, 'Description must be under 1000 characters');
 export const RichText = z.object({
