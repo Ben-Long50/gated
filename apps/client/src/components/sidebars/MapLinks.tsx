@@ -24,6 +24,7 @@ const MapLinks = () => {
         }
         title="Map Categories"
       >
+        <SubLinkSidebar title="All Maps" path="maps" />
         <SubLinkSidebar title="Maps" path="maps?mapType=map" />
         <SubLinkSidebar title="Map Drafts" path="maps?draft=true&mapType=map" />
         <SubLinkSidebar title="Components" path="maps?mapType=component" />
@@ -46,6 +47,7 @@ const MapLinks = () => {
         maps.map((map) => {
           return (
             <LinkSidebar
+              key={map.id}
               title={map.name}
               icon={
                 <EntityAvater

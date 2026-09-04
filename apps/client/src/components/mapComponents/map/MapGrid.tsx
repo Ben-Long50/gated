@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import { Layer, Location } from 'src/types/map';
 import DragScrollContainer from '../DragScrollContainer';

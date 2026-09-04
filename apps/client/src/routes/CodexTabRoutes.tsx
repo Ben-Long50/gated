@@ -30,6 +30,13 @@ import CodexCharacters from 'src/components/characterComponents/CodexCharacters'
 import PromptModal from 'src/components/modals/PromptModal';
 import CharacterRoutes from './CharacterRoutes';
 import GenerateStandardPictureForm from 'src/components/forms/GenerateStandardPictureForm';
+import MapBuilder from 'src/components/mapComponents/mapBuilder/MapBuilder';
+import MapSaveModal from 'src/components/mapComponents/mapBuilder/MapSaveModal';
+import TileListModal from 'src/components/mapComponents/mapBuilder/TileListModal';
+import Map from 'src/components/mapComponents/map/Map';
+import MapList from 'src/components/mapComponents/map/MapList';
+import MapTabRoutes from './MapTabRoutes';
+import CodexMapList from 'src/components/mapComponents/map/CodexMapList';
 
 const CodexTabRoutes = () => {
   return (
@@ -308,7 +315,28 @@ const CodexTabRoutes = () => {
             <GenerateStandardPictureForm />
           </Page>
         }
-      ></Route>
+      />
+      <Route path="maps">
+        <Route
+          path=""
+          element={
+            <Page title="Maps">
+              <CodexMapList />
+            </Page>
+          }
+        />
+        <Route path=":mapId" element={<Map />} />
+        <Route path=":mapId/update" element={<MapBuilder />}>
+          <Route path="save" element={<MapSaveModal />} />
+          <Route path="tileList" element={<TileListModal />} />
+          {PictureRoutes()}
+        </Route>
+        <Route path="create" element={<MapBuilder />}>
+          <Route path="save" element={<MapSaveModal />} />
+          <Route path="tileList" element={<TileListModal />} />
+          {PictureRoutes()}
+        </Route>
+      </Route>
     </Route>
   );
 };

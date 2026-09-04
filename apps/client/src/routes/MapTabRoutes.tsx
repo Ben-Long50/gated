@@ -1,11 +1,11 @@
 import { Route } from 'react-router-dom';
 import Page from 'src/components/Page';
 import PictureRoutes from './PictureRoutes';
-import MapList from 'src/components/mapComponents/map/MapList';
 import MapBuilder from 'src/components/mapComponents/mapBuilder/MapBuilder';
 import MapSaveModal from 'src/components/mapComponents/mapBuilder/MapSaveModal';
 import TileListModal from 'src/components/mapComponents/mapBuilder/TileListModal';
 import Map from 'src/components/mapComponents/map/Map';
+import UserMapList from 'src/components/mapComponents/map/UserMapList';
 
 const MapTabRoutes = () => {
   return (
@@ -14,7 +14,7 @@ const MapTabRoutes = () => {
         path=""
         element={
           <Page title="Maps">
-            <MapList />
+            <UserMapList />
           </Page>
         }
       />

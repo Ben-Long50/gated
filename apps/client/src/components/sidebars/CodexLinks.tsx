@@ -20,6 +20,7 @@ import PotionIcon from '../icons/PotionIcon';
 import PropertyIcon from '../icons/PropertyIcon';
 import AdminIcon from '../icons/AdminIcon';
 import CharacterIcon from '../icons/CharacterIcon';
+import MapIcon from '../icons/MapIcon';
 
 const CodexLinks = () => {
   const { user } = useContext(AuthContext);
@@ -58,6 +59,19 @@ const CodexLinks = () => {
         <SubLinkSidebar
           title="Monsters"
           path="codex/characters?characterType=nonPlayerCharacter&npcType=monster"
+        />
+      </LinkListSidebar>
+      <LinkListSidebar
+        icon={
+          <MapIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
+        }
+        title="Maps"
+      >
+        <SubLinkSidebar title="All Maps" path="codex/maps" />
+        <SubLinkSidebar title="Maps" path="codex/maps?mapType=map" />
+        <SubLinkSidebar
+          title="Components"
+          path="codex/maps?mapType=component"
         />
       </LinkListSidebar>
       <LinkListSidebar
@@ -211,6 +225,10 @@ const CodexLinks = () => {
           <SubLinkSidebar
             title="Create Character"
             path="codex/characters/create?formType=codex"
+          />
+          <SubLinkSidebar
+            title="Create Map"
+            path="codex/maps/create?formType=codex"
           />
           <SubLinkSidebar
             title="Create Item"

@@ -7,7 +7,12 @@ import {
   mdiViewGridOutline,
   mdiViewGridPlusOutline,
 } from '@mdi/js';
-import { Outlet, useNavigate, useParams } from 'react-router-dom';
+import {
+  Outlet,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from 'react-router-dom';
 import useCreateMapMutation from 'src/hooks/useCreateMapMutation/useCreateMapMutation';
 import Loading from '../../Loading';
 import { Component, Layer } from 'src/types/map';
@@ -25,6 +30,7 @@ import useMapForm from 'src/hooks/form hooks/useMapForm';
 import IconBtnMedium from 'src/components/buttons/IconBtnMedium';
 import useMapQuery from 'src/hooks/useMapQueries/useMapQuery';
 import MapScaler from '../map/MapScaler';
+import useCreateCodexMapMutation from 'src/hooks/useCreateCodexMapMutation/useCreateCodexMapMutation';
 
 const MapBuilder = () => {
   const { mapId } = useParams();
@@ -36,6 +42,10 @@ const MapBuilder = () => {
   const [dragging, setDragging] = useState(false);
   const [gridDisplay, setGridDisplay] = useState(false);
   const [mapScale, setMapScale] = useState(1);
+
+  const [searchParams] = useSearchParams();
+
+  const formType = searchParams.get('formType');
 
   const { data: map, isLoading } = useMapQuery(Number(mapId));
 
@@ -89,8 +99,12 @@ const MapBuilder = () => {
   }, [path]);
 
   const createMap = useCreateMapMutation(Number(mapId));
+  const createCodexMap = useCreateCodexMapMutation();
 
-  const mapForm = useMapForm(createMap, map);
+  const mapForm = useMapForm(
+    formType === 'codex' ? createCodexMap : createMap,
+    map,
+  );
 
   const handleAddLayer = () => {
     const currentLayers = mapForm.getFieldValue('layers');
