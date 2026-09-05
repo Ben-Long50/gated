@@ -1,7 +1,7 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
 import { Condition } from 'src/types/condition';
-import { filterFormData } from './constructFormData';
+import { filterFormData } from './filterFormData';
 
 const useConditionForm = (
   mutation: UseMutationResult<any, Error, object>,

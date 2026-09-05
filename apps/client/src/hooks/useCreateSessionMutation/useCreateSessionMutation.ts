@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 const useCreateSessionMutation = (campaignId: number, sessionId?: number) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (formData: FormData) => {
+    mutationFn: (formData: object) => {
       return createSession(formData, campaignId);
     },
     onSuccess: (data) => {

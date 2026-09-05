@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 const useCreateCampaignMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (formData: FormData) => {
+    mutationFn: (formData: object) => {
       return createCampaign(formData);
     },
     onSuccess: (data) => {

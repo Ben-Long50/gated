@@ -8,7 +8,6 @@ import SpeedIcon from '../icons/SpeedIcon';
 import EvasionIcon from '../icons/EvasionIcon';
 import ArmorIcon from '../icons/ArmorIcon';
 import useMapStore from 'src/stores/mapStore';
-import { motion } from 'motion/react';
 import ConditionTag from '../ConditionTag';
 import { useLayoutEffect, useRef, useState } from 'react';
 import CharacterRadialMenu from '../radialMenus/characterRadialMenu/CharacterRadialMenu';
@@ -117,7 +116,7 @@ const CharacterCardSmall = ({
         {character?.conditions && character?.conditions.length > 0 && (
           <div className="absolute left-0 top-0 z-10 size-3 rounded-full bg-red-600 shadow-md shadow-black"></div>
         )}
-        <StatBarContainer>
+        <StatBarContainer size="small">
           <CharacterStatBars
             characterId={character?.id}
             size="small"
@@ -133,57 +132,47 @@ const CharacterCardSmall = ({
       </div>
       {expanding && (
         <div
-          className={`${characterList ? 'visible translate-x-0 opacity-100' : 'invisible -translate-x-full opacity-0'} timing w-full overflow-hidden`}
+          className={`${characterList ? 'visible max-h-40 opacity-100' : 'invisible max-h-0 opacity-0'} timing flex w-full flex-col items-center justify-around gap-2 overflow-hidden pt-2`}
         >
-          <motion.div
-            ref={detailRef}
-            className="flex w-full flex-col items-center justify-around gap-2 pt-2"
-            initial={{ marginTop: -detailHeight - 8 }}
-            animate={{
-              marginTop: id === characterId ? 0 : -detailHeight - 8,
-            }}
-            transition={{ duration: 0.2 }}
-          >
-            {character?.conditions && character.conditions.length > 0 && (
-              <div className="flex w-full justify-start gap-1">
-                {character?.conditions.map((condition) => (
-                  <ConditionTag key={condition.id} condition={condition} />
-                ))}
-              </div>
-            )}
-            <div className="flex w-full items-center justify-around gap-2">
-              <div className="flex flex-col items-center justify-between gap-2">
-                <div className="flex items-center justify-center gap-2">
-                  <SpeedIcon className="text-secondary size-7" />
-                  <p className="text-secondary text-xl sm:pt-1">
-                    {character?.stats.speed}
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col items-center justify-between gap-2">
-                <div className="flex items-center justify-center gap-2">
-                  <EvasionIcon className="text-secondary size-7" />
-                  <p className="text-secondary text-xl sm:pt-1">
-                    {character?.stats.evasion}
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col items-center justify-between gap-2">
-                <div className="flex items-center justify-center gap-2">
-                  <ArmorIcon className="text-secondary size-7" />
-                  <p className="text-secondary text-xl sm:pt-1">
-                    {character?.stats.armor}
-                  </p>
-                </div>
-              </div>
+          {character?.conditions && character.conditions.length > 0 && (
+            <div className="flex w-full justify-start gap-1">
+              {character?.conditions.map((condition) => (
+                <ConditionTag key={condition.id} condition={condition} />
+              ))}
+            </div>
+          )}
+          <div className="flex w-full items-center justify-around gap-2">
+            <div className="flex flex-col items-center justify-between gap-2">
               <div className="flex items-center justify-center gap-2">
-                <WardIcon className="text-secondary size-7" />
+                <SpeedIcon className="text-secondary size-7" />
                 <p className="text-secondary text-xl sm:pt-1">
-                  {character?.stats.ward}
+                  {character?.stats.speed}
                 </p>
               </div>
             </div>
-          </motion.div>
+            <div className="flex flex-col items-center justify-between gap-2">
+              <div className="flex items-center justify-center gap-2">
+                <EvasionIcon className="text-secondary size-7" />
+                <p className="text-secondary text-xl sm:pt-1">
+                  {character?.stats.evasion}
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-col items-center justify-between gap-2">
+              <div className="flex items-center justify-center gap-2">
+                <ArmorIcon className="text-secondary size-7" />
+                <p className="text-secondary text-xl sm:pt-1">
+                  {character?.stats.armor}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center justify-center gap-2">
+              <WardIcon className="text-secondary size-7" />
+              <p className="text-secondary text-xl sm:pt-1">
+                {character?.stats.ward}
+              </p>
+            </div>
+          </div>
         </div>
       )}
     </div>

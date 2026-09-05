@@ -1,6 +1,6 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
-import { filterFormData } from './constructFormData';
+import { filterFormData } from './filterFormData';
 import { Map, MapInput, MapType } from 'src/types/map';
 import { useParams } from 'react-router-dom';
 

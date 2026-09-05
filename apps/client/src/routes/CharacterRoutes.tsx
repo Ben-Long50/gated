@@ -11,9 +11,7 @@ import Resume from 'src/components/Resume';
 import ResumeForm from 'src/components/forms/ResumeForm';
 import InventoryModal from 'src/components/modals/InventoryModal';
 import NpcPreferenceModal from 'src/components/modals/NpcPreferenceModal';
-import PerkLinkModal from 'src/components/modals/PerkLinkModal';
 import KeywordLinkModal from 'src/components/modals/KeywordLinkModal';
-import ItemUpdateModal from 'src/components/modals/ItemUpdateModal';
 import ConditionModal from 'src/components/modals/ConditionModal';
 import DescriptionModal from 'src/components/modals/DescriptionModal';
 import Shop from 'src/components/Shop';
@@ -25,7 +23,6 @@ import LevelBonusModal from 'src/components/LevelBonusModal';
 import Page from 'src/components/Page';
 import CharacterProgressionPage from 'src/components/characterComponents/CharacterProgressionPage';
 import PictureRoutes from './PictureRoutes';
-import ActionLinkModal from 'src/components/modals/ActionLinkModal';
 import ItemForm from 'src/components/forms/ItemForm';
 
 const CharacterRoutes = () => {

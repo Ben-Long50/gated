@@ -1,6 +1,6 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
-import { filterFormData } from './constructFormData';
+import { filterFormData } from './filterFormData';
 
 const usePromptForm = (mutation: UseMutationResult<any, Error, any>) => {
   const promptForm = useForm({

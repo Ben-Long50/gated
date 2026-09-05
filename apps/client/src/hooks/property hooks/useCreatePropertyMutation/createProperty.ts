@@ -1,12 +1,15 @@
 import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../../handleResponse';
 
-const createProperty = async (formData: FormData) => {
+const createProperty = async (formData: object) => {
   try {
     const response = await fetch(`${apiUrl}/properties/create`, {
       method: 'POST',
       credentials: 'include',
-      body: formData,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
     });
     const data = await handleResponse(response);
     return data;

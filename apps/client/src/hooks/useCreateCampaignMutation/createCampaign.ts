@@ -1,12 +1,15 @@
 import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const createCampaign = async (formData: FormData) => {
+const createCampaign = async (formData: object) => {
   try {
     const response = await fetch(`${apiUrl}/campaigns`, {
       method: 'POST',
       credentials: 'include',
-      body: formData,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
     });
     const data = await handleResponse(response);
     return data;

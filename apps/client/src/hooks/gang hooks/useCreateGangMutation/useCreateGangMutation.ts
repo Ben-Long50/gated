@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 const useCreateGangMutation = (campaignId: number, gangId?: number) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (formData: FormData) => {
+    mutationFn: (formData: object) => {
       return createGang(campaignId, formData);
     },
     onSuccess: (data) => {

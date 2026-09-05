@@ -12,7 +12,7 @@ const useCreateCharacterMutation = () => {
   const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: (formData: FormData) => {
+    mutationFn: (formData: object) => {
       return createCharacter(formData);
     },
     onSuccess: (data) => {

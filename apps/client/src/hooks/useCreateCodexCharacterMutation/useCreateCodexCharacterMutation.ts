@@ -8,7 +8,7 @@ const useCreateCodexCharacterMutation = () => {
   const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: (formData: FormData) => {
+    mutationFn: (formData: object) => {
       return createCodexCharacter(formData);
     },
     onSuccess: (data) => {

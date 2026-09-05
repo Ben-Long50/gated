@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 const useUpdateFactionMutation = (campaignId: number, factionId: number) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (formData: FormData) => {
+    mutationFn: (formData: object) => {
       return updateFaction(formData, campaignId, factionId);
     },
     onSuccess: (data) => {

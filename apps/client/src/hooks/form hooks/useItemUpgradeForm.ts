@@ -1,11 +1,11 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
 import { Item } from 'src/types/item';
-import constructFormData from './constructFormData';
 import upgradePointMap from '../upgradePointMap';
+import { filterFormData } from './filterFormData';
 
 const useItemUpgradeForm = (
-  mutation: UseMutationResult<any, Error, FormData>,
+  mutation: UseMutationResult<any, Error, any>,
   item?: Item,
 ) => {
   const emptyStats = item?.stats
@@ -37,7 +37,7 @@ const useItemUpgradeForm = (
         Object.entries(value.modifiedStats).filter(([_, val]) => val),
       );
 
-      const formData = constructFormData({
+      const formData = filterFormData({
         ...value,
         modifiedStats: filteredStats,
       });

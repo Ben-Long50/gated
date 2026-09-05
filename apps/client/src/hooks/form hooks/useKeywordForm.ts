@@ -1,7 +1,7 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
 import { Keyword } from 'src/types/keyword';
-import { filterFormData } from './constructFormData';
+import { filterFormData } from './filterFormData';
 
 const useKeywordForm = (
   mutation: UseMutationResult<any, Error, any>,

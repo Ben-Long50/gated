@@ -1,11 +1,11 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
-import constructFormData from './constructFormData';
 import { Session } from 'src/types/campaign';
 import { useParams } from 'react-router-dom';
+import { filterFormData } from './filterFormData';
 
 const useSessionForm = (
-  mutation: UseMutationResult<any, Error, FormData>,
+  mutation: UseMutationResult<any, Error, any>,
   session?: Session,
 ) => {
   const { campaignId } = useParams();
@@ -24,7 +24,7 @@ const useSessionForm = (
     },
 
     onSubmit: async ({ value }) => {
-      const formData = constructFormData(value);
+      const formData = filterFormData(value);
 
       await mutation.mutate(formData);
     },

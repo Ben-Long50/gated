@@ -1,11 +1,9 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
-import constructFormData, { filterStats } from './constructFormData';
+import { filterFormData, filterStats } from './filterFormData';
 import useAttributeTree from '../useAttributeTree';
 
-const useCharacterForm = (
-  mutation: UseMutationResult<any, Error, FormData>,
-) => {
+const useCharacterForm = (mutation: UseMutationResult<any, Error, any>) => {
   const { emptyAttributeTree } = useAttributeTree();
 
   const characterForm = useForm({
@@ -50,7 +48,7 @@ const useCharacterForm = (
     onSubmit: async ({ value }) => {
       const filteredStats = filterStats(value.stats);
 
-      const formData = constructFormData({ ...value, stats: filteredStats });
+      const formData = filterFormData({ ...value, stats: filteredStats });
 
       await mutation.mutate(formData);
     },

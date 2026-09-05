@@ -1,10 +1,10 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
 import { Campaign } from 'src/types/campaign';
-import constructFormData from './constructFormData';
+import { filterFormData } from './filterFormData';
 
 const useCampaignForm = (
-  mutation: UseMutationResult<any, Error, FormData>,
+  mutation: UseMutationResult<any, Error, any>,
   campaign?: Campaign,
 ) => {
   const campaignForm = useForm({
@@ -28,7 +28,7 @@ const useCampaignForm = (
     },
 
     onSubmit: async ({ value }) => {
-      const formData = constructFormData(value);
+      const formData = filterFormData(value);
 
       await mutation.mutate(formData);
     },

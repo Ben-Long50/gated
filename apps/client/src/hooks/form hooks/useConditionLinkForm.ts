@@ -1,7 +1,7 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
 import { Item } from 'src/types/item';
-import { filterFormData } from './constructFormData';
+import { filterFormData } from './filterFormData';
 
 const useConditionLinkForm = (
   characterMutation: UseMutationResult<any, Error, any>,

@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 const useCreateItemMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (formData: FormData) => {
+    mutationFn: (formData: object) => {
       return createItem(formData);
     },
     onSuccess: (data) => {

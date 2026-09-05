@@ -1,11 +1,11 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
-import constructFormData from './constructFormData';
 import { Gang } from 'src/types/gang';
 import { useParams } from 'react-router-dom';
+import { filterFormData } from './filterFormData';
 
 const useGangForm = (
-  mutation: UseMutationResult<any, Error, FormData>,
+  mutation: UseMutationResult<any, Error, any>,
   gang?: Gang,
 ) => {
   const { campaignId } = useParams();
@@ -26,7 +26,7 @@ const useGangForm = (
     },
 
     onSubmit: async ({ value }) => {
-      const formData = constructFormData(value);
+      const formData = filterFormData(value);
 
       await mutation.mutate(formData);
     },

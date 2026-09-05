@@ -1,10 +1,10 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
-import constructFormData from './constructFormData';
 import { Faction } from 'src/types/faction';
+import { filterFormData } from './filterFormData';
 
 const useFactionForm = (
-  mutation: UseMutationResult<any, Error, FormData>,
+  mutation: UseMutationResult<any, Error, any>,
   faction?: Faction,
 ) => {
   const factionForm = useForm({
@@ -18,7 +18,7 @@ const useFactionForm = (
     },
 
     onSubmit: async ({ value }) => {
-      const formData = constructFormData(value);
+      const formData = filterFormData(value);
 
       await mutation.mutate(formData);
     },

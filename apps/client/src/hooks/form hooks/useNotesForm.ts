@@ -2,7 +2,7 @@ import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { Notes } from 'src/types/campaign';
-import { filterFormData } from './constructFormData';
+import { filterFormData } from './filterFormData';
 
 const useNotesForm = (
   sessionId: number,

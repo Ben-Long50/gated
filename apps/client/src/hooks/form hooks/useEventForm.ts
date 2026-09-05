@@ -2,7 +2,7 @@ import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
 import { Event } from 'src/types/campaign';
 import { useParams } from 'react-router-dom';
-import { filterFormData } from './constructFormData';
+import { filterFormData } from './filterFormData';
 
 const useEventForm = (
   mutation: UseMutationResult<any, Error, object>,

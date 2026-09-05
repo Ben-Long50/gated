@@ -1,7 +1,7 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
 import { Action, ActionCosts } from 'src/types/action';
-import { filterFormData } from './constructFormData';
+import { filterFormData } from './filterFormData';
 
 const useActionForm = (
   mutation: UseMutationResult<any, Error, any>,

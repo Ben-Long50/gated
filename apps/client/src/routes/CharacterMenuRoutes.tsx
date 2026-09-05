@@ -14,7 +14,6 @@ import NpcPreferenceModal from 'src/components/modals/NpcPreferenceModal';
 import PerkLinkModal from 'src/components/modals/PerkLinkModal';
 import ItemUpgradeTutorialModal from 'src/components/modals/tutorials/ItemUpgradeTutorialModal';
 import KeywordLinkModal from 'src/components/modals/KeywordLinkModal';
-import ItemUpdateModal from 'src/components/modals/ItemUpdateModal';
 import ConditionModal from 'src/components/modals/ConditionModal';
 import DescriptionModal from 'src/components/modals/DescriptionModal';
 import Shop from 'src/components/Shop';
@@ -133,7 +132,6 @@ const CharacterMenuRoutes = () => {
               </Modal>
             }
           >
-            <Route path="update" element={<ItemUpdateModal />} />
             <Route
               path="conditions/:conditionId"
               element={<DescriptionModal />}

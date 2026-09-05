@@ -1,10 +1,10 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
 import { Item } from 'src/types/item';
-import constructFormData from './constructFormData';
+import { filterFormData, filterStats } from './filterFormData';
 
 const useItemForm = (
-  mutation: UseMutationResult<any, Error, FormData>,
+  mutation: UseMutationResult<any, Error, any>,
   item?: Item,
 ) => {
   const itemForm = useForm({
@@ -68,9 +68,7 @@ const useItemForm = (
       value.stats.currentPower = value.stats.power ? value.stats.power : 0;
       value.stats.currentHull = value.stats.hull ? value.stats.hull : 0;
 
-      const filteredStats = Object.fromEntries(
-        Object.entries(value.stats).filter(([_, val]) => val),
-      );
+      const filteredStats = filterStats(value.stats);
 
       if (filteredStats.cargo) {
         filteredStats.currentCargo = 0;
@@ -80,9 +78,9 @@ const useItemForm = (
         filteredStats.currentPass = 0;
       }
 
-      value.stats = { ...filteredStats };
+      value.stats = filteredStats;
 
-      const formData = constructFormData(value);
+      const formData = filterFormData(value);
 
       await mutation.mutate(formData);
     },

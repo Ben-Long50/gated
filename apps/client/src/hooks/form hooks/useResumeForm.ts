@@ -1,10 +1,10 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
 import { Resume } from 'src/types/character';
-import constructFormData from './constructFormData';
+import { filterFormData } from './filterFormData';
 
 const useResumeForm = (
-  mutation: UseMutationResult<any, Error, FormData>,
+  mutation: UseMutationResult<any, Error, any>,
   resume?: Resume,
 ) => {
   const resumeForm = useForm({
@@ -15,7 +15,7 @@ const useResumeForm = (
         resume?.badMedicine ?? ({} as { html: string; nodes: object }),
     },
     onSubmit: async ({ value }) => {
-      const formData = constructFormData(value);
+      const formData = filterFormData(value);
 
       await mutation.mutate(formData);
     },

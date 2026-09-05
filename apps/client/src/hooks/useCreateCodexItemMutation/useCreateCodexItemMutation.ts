@@ -5,7 +5,7 @@ import createCodexItem from './createCodexItem';
 const useCreateCodexItemMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (formData: FormData) => {
+    mutationFn: (formData: object) => {
       return createCodexItem(formData);
     },
     onSuccess: (data) => {

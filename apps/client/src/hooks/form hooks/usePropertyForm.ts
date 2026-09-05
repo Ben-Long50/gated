@@ -1,10 +1,10 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
 import { Property } from 'src/types/property';
-import constructFormData from './constructFormData';
+import { filterFormData } from './filterFormData';
 
 const usePropertyForm = (
-  mutation: UseMutationResult<any, Error, FormData>,
+  mutation: UseMutationResult<any, Error, any>,
   property?: Property,
 ) => {
   const propertyForm = useForm({
@@ -17,7 +17,7 @@ const usePropertyForm = (
       type: property?.type ?? '',
     },
     onSubmit: async ({ value }) => {
-      const formData = constructFormData(value);
+      const formData = filterFormData(value);
 
       await mutation.mutate(formData);
     },

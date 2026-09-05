@@ -1,7 +1,6 @@
 import { mdiChevronDown } from '@mdi/js';
 import Icon from '@mdi/react';
 import { ReactNode, Ref, useContext, useEffect, useRef, useState } from 'react';
-import { motion } from 'motion/react';
 import ThemeContainer from './ThemeContainer';
 import { ThemeContext } from '../contexts/ThemeContext';
 
@@ -22,7 +21,7 @@ const ItemCardSmall = ({
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
   const [detailsOpen, setDetailsOpen] = useState(child);
-  const [detailHeight, setDetailHeight] = useState(1000);
+  const [detailHeight, setDetailHeight] = useState(0);
 
   const detailRef = useRef<HTMLDivElement>(null);
 
@@ -64,19 +63,9 @@ const ItemCardSmall = ({
         </summary>
         {children && (
           <div
-            className={`${(detailsOpen || expanded) && 'pb-4'} timing overflow-hidden px-4`}
+            className={`${detailsOpen || expanded ? 'max-h-[500px] pb-4' : 'max-h-0 pb-0'} scrollbar-secondary-2 timing flex flex-col gap-4 overflow-y-auto px-4`}
           >
-            <motion.div
-              ref={detailRef}
-              className="flex flex-col gap-4"
-              initial={{ marginTop: -detailHeight - 4 }}
-              animate={{
-                marginTop: detailsOpen || expanded ? 0 : -detailHeight - 4,
-              }}
-              transition={{ duration: 0.2 }}
-            >
-              {children}
-            </motion.div>
+            {children}
           </div>
         )}
       </div>

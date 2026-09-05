@@ -1,10 +1,10 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
 import { Character } from 'src/types/character';
-import constructFormData, { filterStats } from './constructFormData';
+import { filterFormData, filterStats } from './filterFormData';
 
 const useCharacterUpdateForm = (
-  mutation: UseMutationResult<any, Error, FormData>,
+  mutation: UseMutationResult<any, Error, any>,
   character?: Character,
 ) => {
   const characterUpdateForm = useForm({
@@ -53,7 +53,7 @@ const useCharacterUpdateForm = (
     onSubmit: async ({ value }) => {
       const filteredStats = filterStats(value.stats);
 
-      const formData = constructFormData({ ...value, stats: filteredStats });
+      const formData = filterFormData({ ...value, stats: filteredStats });
 
       await mutation.mutate(formData);
     },

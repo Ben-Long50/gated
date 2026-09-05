@@ -2,10 +2,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import createProperty from './createProperty';
 import { toast } from 'react-toastify';
 
-const useCreatePropertyMutation = (propertyId?: number) => {
+const useCreatePropertyMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (formData: FormData) => {
+    mutationFn: (formData: object) => {
       return createProperty(formData);
     },
     onSuccess: (data) => {

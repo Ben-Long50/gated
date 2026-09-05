@@ -8,7 +8,7 @@ const useModifyItemMutation = (characterId: number, itemId: number) => {
   const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: (formData: FormData) => {
+    mutationFn: (formData: object) => {
       return modifyItem(formData, characterId, itemId);
     },
     onSuccess: (data) => {

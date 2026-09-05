@@ -2,7 +2,7 @@ import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
 import { Perk } from 'src/types/perk';
 import useAttributeTree from '../useAttributeTree';
-import { filterFormData } from './constructFormData';
+import { filterFormData } from './filterFormData';
 
 const usePerkForm = (
   mutation: UseMutationResult<any, Error, any>,

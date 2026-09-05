@@ -1,7 +1,7 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
 import { PatchNote } from 'src/types/patchNote';
-import { filterFormData } from './constructFormData';
+import { filterFormData } from './filterFormData';
 
 const usePatchNoteForm = (
   mutation: UseMutationResult<any, Error, any>,

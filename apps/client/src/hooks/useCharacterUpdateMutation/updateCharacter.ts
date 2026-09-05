@@ -1,12 +1,15 @@
 import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const updateCharacter = async (formData: FormData, characterId: number) => {
+const updateCharacter = async (formData: object, characterId: number) => {
   try {
     const response = await fetch(`${apiUrl}/characters/${characterId}`, {
       method: 'PUT',
       credentials: 'include',
-      body: formData,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
     });
     const data = await handleResponse(response);
     return data;
