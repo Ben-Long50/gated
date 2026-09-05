@@ -96,7 +96,7 @@ const CharacterForm = () => {
         name="playerCharacter"
         listeners={{
           onChange: ({ value }) => {
-            if (value) {
+            if (value === true) {
               characterForm.setFieldValue('npcTypes', null);
               characterForm.setFieldValue('profits', null);
               characterForm.setFieldValue('level', 1);
@@ -105,13 +105,14 @@ const CharacterForm = () => {
                 permanentInjuries: 5,
                 permanentInsanities: 5,
               });
-            } else if (!value) {
+            } else if (value === false) {
               characterForm.setFieldValue('npcTypes', []);
               characterForm.setFieldValue('profits', 10);
               characterForm.setFieldValue('level', null);
               characterForm.setFieldValue('description', '');
-              characterForm.setFieldValue('stats', (prev) => ({
-                ...prev,
+              characterForm.setFieldValue('stats', {
+                permanentInjuries: 1,
+                permanentInsanities: 1,
                 maxHealth: 0,
                 maxSanity: 0,
                 maxCyber: 0,
@@ -120,7 +121,7 @@ const CharacterForm = () => {
                 evasion: 0,
                 hands: 0,
                 feet: 0,
-              }));
+              });
             }
           },
         }}
