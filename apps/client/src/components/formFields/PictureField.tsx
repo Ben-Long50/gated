@@ -32,7 +32,7 @@ const PictureField = ({
   const { mobile } = useContext(LayoutContext);
   const navigate = useNavigateWithQuery();
   const location = useLocation();
-  const path = location.pathname.split('/');
+  const parts = location.pathname.split('/');
 
   const { data: standardLibrary } = useStandardLibraryQuery();
 
@@ -40,7 +40,7 @@ const PictureField = ({
   const formType = searchParams.get('formType');
 
   const generatePicture =
-    formType === 'codex'
+    parts.includes('pictures') && formType === 'codex'
       ? useGenerateStandardPictureMutation(type)
       : useGeneratePictureMutation(type);
 
@@ -209,7 +209,7 @@ const PictureField = ({
           </promptForm.Subscribe>
         </div>
       </div>
-      {(path.includes('library') || path.includes('prompt')) && (
+      {(parts.includes('library') || parts.includes('prompt')) && (
         <Outlet context={{ type, form, promptForm, generatePicture }} />
       )}
     </div>
