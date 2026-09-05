@@ -1,6 +1,4 @@
 import { Request, Response } from 'express';
-import upload from '../utils/multer.js';
-import { uploadToCloudinary } from '../utils/cloudinary.js';
 import parseRequestBody from '../utils/parseRequestBody.js';
 import propertyServices from '../services/propertyServices.js';
 import { PropertyInput } from '../validation/propertySchema.js';
@@ -51,36 +49,32 @@ const propertyController = {
     }
   },
 
-  createOrUpdateBaseProperty: [
-    upload.single('pictureFile'),
-    uploadToCloudinary,
-    async (req: Request, res: Response) => {
-      try {
-        if (!req.user) {
-          res.status(401).json({
-            error:
-              'You do not have the required permissions to create a property',
-          });
-          return;
-        }
-
-        const parsedBody = parseRequestBody(req.body);
-
-        const validatedProperty = PropertyInput.parse(parsedBody);
-
-        const property =
-          await propertyServices.createOrUpdateBaseProperty(validatedProperty);
-
-        res
-          .status(200)
-          .json({ property, message: 'Successfully created property' });
-      } catch (error: any) {
-        if (error instanceof Error) {
-          res.status(500).json({ error: error.message });
-        }
+  createOrUpdateBaseProperty: async (req: Request, res: Response) => {
+    try {
+      if (!req.user) {
+        res.status(401).json({
+          error:
+            'You do not have the required permissions to create a property',
+        });
+        return;
       }
-    },
-  ],
+
+      const parsedBody = parseRequestBody(req.body);
+
+      const validatedProperty = PropertyInput.parse(parsedBody);
+
+      const property =
+        await propertyServices.createOrUpdateBaseProperty(validatedProperty);
+
+      res
+        .status(200)
+        .json({ property, message: 'Successfully created property' });
+    } catch (error: any) {
+      if (error instanceof Error) {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  },
 
   deleteProperty: async (req: Request, res: Response) => {
     try {

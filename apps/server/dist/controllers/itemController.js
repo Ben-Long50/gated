@@ -1,6 +1,4 @@
 import itemServices from '../services/itemServices.js';
-import upload from '../utils/multer.js';
-import { uploadToCloudinary } from '../utils/cloudinary.js';
 import parseRequestBody from '../utils/parseRequestBody.js';
 import { ItemInput, ItemUpgradeInput } from '../validation/itemSchema.js';
 import handleControllerError from './handleControllerError.js';
@@ -51,46 +49,38 @@ const itemController = {
             handleControllerError(res, error);
         }
     },
-    createCodexItem: [
-        upload.single('pictureFile'),
-        uploadToCloudinary,
-        async (req, res) => {
-            try {
-                const parsedBody = parseRequestBody(req.body);
-                const validatedItem = ItemInput.parse(parsedBody);
-                const item = await itemServices.createOrUpdateItem(validatedItem);
-                res.status(200).json({
-                    item,
-                    message: parsedBody.id
-                        ? `Successfully updated ${item.name}`
-                        : `Successfully created ${item.name}`,
-                });
-            }
-            catch (error) {
-                res.status(500).json({ error: error.message });
-            }
-        },
-    ],
-    createOrUpdateItem: [
-        upload.single('pictureFile'),
-        uploadToCloudinary,
-        async (req, res) => {
-            try {
-                const parsedBody = parseRequestBody(req.body);
-                const validatedItem = ItemInput.parse(parsedBody);
-                const item = await itemServices.createOrUpdateItem(validatedItem);
-                res.status(200).json({
-                    item,
-                    message: parsedBody.id
-                        ? `Successfully updated ${item.name}`
-                        : `Successfully created ${item.name}`,
-                });
-            }
-            catch (error) {
-                res.status(500).json({ error: error.message });
-            }
-        },
-    ],
+    createCodexItem: async (req, res) => {
+        try {
+            const parsedBody = parseRequestBody(req.body);
+            const validatedItem = ItemInput.parse(parsedBody);
+            const item = await itemServices.createOrUpdateItem(validatedItem);
+            res.status(200).json({
+                item,
+                message: parsedBody.id
+                    ? `Successfully updated ${item.name}`
+                    : `Successfully created ${item.name}`,
+            });
+        }
+        catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
+    createOrUpdateItem: async (req, res) => {
+        try {
+            const parsedBody = parseRequestBody(req.body);
+            const validatedItem = ItemInput.parse(parsedBody);
+            const item = await itemServices.createOrUpdateItem(validatedItem);
+            res.status(200).json({
+                item,
+                message: parsedBody.id
+                    ? `Successfully updated ${item.name}`
+                    : `Successfully created ${item.name}`,
+            });
+        }
+        catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
     createItemCopy: async (req, res) => {
         try {
             const item = await itemServices.createItemCopy(Number(req.params.itemId));
@@ -103,28 +93,24 @@ const itemController = {
             handleControllerError(res, error);
         }
     },
-    upgradeItem: [
-        upload.single('pictureFile'),
-        uploadToCloudinary,
-        async (req, res) => {
-            try {
-                if (!req.user) {
-                    throw new Error('You must be signed in to complete this action');
-                }
-                const parsedBody = parseRequestBody(req.body);
-                const validatedItem = ItemUpgradeInput.parse(parsedBody);
-                const { character, item } = await itemServices.upgradeItem(validatedItem);
-                res.status(200).json({
-                    character,
-                    item,
-                    message: `Successfully upgraded ${item.name}`,
-                });
+    upgradeItem: async (req, res) => {
+        try {
+            if (!req.user) {
+                throw new Error('You must be signed in to complete this action');
             }
-            catch (error) {
-                res.status(500).json({ error: error.message });
-            }
-        },
-    ],
+            const parsedBody = parseRequestBody(req.body);
+            const validatedItem = ItemUpgradeInput.parse(parsedBody);
+            const { character, item } = await itemServices.upgradeItem(validatedItem);
+            res.status(200).json({
+                character,
+                item,
+                message: `Successfully upgraded ${item.name}`,
+            });
+        }
+        catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
     createItemConditions: async (req, res) => {
         try {
             if (!req.user) {

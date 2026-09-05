@@ -1,5 +1,3 @@
-import upload from '../utils/multer.js';
-import { uploadToCloudinary } from '../utils/cloudinary.js';
 import parseRequestBody from '../utils/parseRequestBody.js';
 import gangServices from '../services/gangServices.js';
 import { GangInput, GangSessionBonusInput } from '../validation/gangSchema.js';
@@ -29,29 +27,25 @@ const gangController = {
             handleControllerError(res, error);
         }
     },
-    createGang: [
-        upload.single('pictureFile'),
-        uploadToCloudinary,
-        async (req, res) => {
-            try {
-                if (!req.user) {
-                    res.status(401).json({
-                        error: 'You do not have the required permissions to create a gang',
-                    });
-                    return;
-                }
-                const parsedBody = parseRequestBody(req.body);
-                const validatedGang = GangInput.parse(parsedBody);
-                const gang = await gangServices.createOrUpdateGang(validatedGang);
-                res
-                    .status(200)
-                    .json({ gang, message: `Successfully created ${gang.name}` });
+    createGang: async (req, res) => {
+        try {
+            if (!req.user) {
+                res.status(401).json({
+                    error: 'You do not have the required permissions to create a gang',
+                });
+                return;
             }
-            catch (error) {
-                res.status(500).json({ error: error.message });
-            }
-        },
-    ],
+            const parsedBody = parseRequestBody(req.body);
+            const validatedGang = GangInput.parse(parsedBody);
+            const gang = await gangServices.createOrUpdateGang(validatedGang);
+            res
+                .status(200)
+                .json({ gang, message: `Successfully created ${gang.name}` });
+        }
+        catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
     updateGangCharacters: async (req, res) => {
         try {
             if (!req.user) {

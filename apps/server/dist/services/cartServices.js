@@ -10,49 +10,43 @@ const cartServices = {
         if (cartItem && cartItem.quantity + value === 0) {
             remove = true;
         }
-        try {
-            const character = await client.character.update({
-                where: { id: characterId },
-                data: {
-                    characterCart: {
-                        update: {
-                            items: remove
-                                ? {
-                                    delete: {
+        const character = await client.character.update({
+            where: { id: characterId },
+            data: {
+                characterCart: {
+                    update: {
+                        items: remove
+                            ? {
+                                delete: {
+                                    characterCartId_itemId: {
+                                        characterCartId: cartId,
+                                        itemId,
+                                    },
+                                },
+                            }
+                            : {
+                                upsert: {
+                                    where: {
                                         characterCartId_itemId: {
                                             characterCartId: cartId,
                                             itemId,
                                         },
                                     },
-                                }
-                                : {
-                                    upsert: {
-                                        where: {
-                                            characterCartId_itemId: {
-                                                characterCartId: cartId,
-                                                itemId,
-                                            },
-                                        },
-                                        update: {
-                                            quantity: { increment: value },
-                                        },
-                                        create: {
-                                            itemId,
-                                            quantity: value,
-                                        },
+                                    update: {
+                                        quantity: { increment: value },
+                                    },
+                                    create: {
+                                        itemId,
+                                        quantity: value,
                                     },
                                 },
-                        },
+                            },
                     },
                 },
-                include: characterInclude,
-            });
-            return character;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to add item to cart');
-        }
+            },
+            include: characterInclude,
+        });
+        return character;
     },
     addBulkItems: async (characterId, formData) => {
         const character = await prisma.$transaction(async (tx) => {

@@ -1,6 +1,4 @@
 import characterServices from '../services/characterServices.js';
-import { uploadToCloudinary } from '../utils/cloudinary.js';
-import upload from '../utils/multer.js';
 import parseRequestBody from '../utils/parseRequestBody.js';
 import cartServices from '../services/cartServices.js';
 import { CharacterInput, CharacterLevelBonus, CharacterUpdateInput, } from '../validation/characterSchema.js';
@@ -129,66 +127,58 @@ const characterController = {
         }
         catch (error) { }
     },
-    createCharacter: [
-        upload.single('pictureFile'),
-        uploadToCloudinary,
-        async (req, res) => {
-            try {
-                if (!req.user) {
-                    throw new Error('Could not find authenticated user');
-                }
-                const parsedBody = parseRequestBody(req.body);
-                const validatedCharacter = CharacterInput.parse(parsedBody);
-                const character = await characterServices.createCharacter(validatedCharacter, req.user.id);
-                if (!character) {
-                    throw new Error('Failed to create character');
-                }
-                const io = getIO();
-                if (character.campaignId) {
-                    io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
-                        character,
-                    });
-                }
-                res.status(200).json({
+    createCharacter: async (req, res) => {
+        try {
+            if (!req.user) {
+                throw new Error('Could not find authenticated user');
+            }
+            const parsedBody = parseRequestBody(req.body);
+            const validatedCharacter = CharacterInput.parse(parsedBody);
+            const character = await characterServices.createCharacter(validatedCharacter, req.user.id);
+            if (!character) {
+                throw new Error('Failed to create character');
+            }
+            const io = getIO();
+            if (character.campaignId) {
+                io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
                     character,
-                    message: `Successfully created ${character.name}`,
                 });
             }
-            catch (error) {
-                handleControllerError(res, error);
+            res.status(200).json({
+                character,
+                message: `Successfully created ${character.name}`,
+            });
+        }
+        catch (error) {
+            handleControllerError(res, error);
+        }
+    },
+    createCodexCharacter: async (req, res) => {
+        try {
+            if (!req.user) {
+                throw new Error('Could not find authenticated user');
             }
-        },
-    ],
-    createCodexCharacter: [
-        upload.single('pictureFile'),
-        uploadToCloudinary,
-        async (req, res) => {
-            try {
-                if (!req.user) {
-                    throw new Error('Could not find authenticated user');
-                }
-                const parsedBody = parseRequestBody(req.body);
-                const validatedCharacter = CharacterInput.parse(parsedBody);
-                const character = await characterServices.createCharacter(validatedCharacter);
-                if (!character) {
-                    throw new Error('Failed to create character');
-                }
-                const io = getIO();
-                if (character.campaignId) {
-                    io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
-                        character,
-                    });
-                }
-                res.status(200).json({
+            const parsedBody = parseRequestBody(req.body);
+            const validatedCharacter = CharacterInput.parse(parsedBody);
+            const character = await characterServices.createCharacter(validatedCharacter);
+            if (!character) {
+                throw new Error('Failed to create character');
+            }
+            const io = getIO();
+            if (character.campaignId) {
+                io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
                     character,
-                    message: `Successfully created ${character.name}`,
                 });
             }
-            catch (error) {
-                handleControllerError(res, error);
-            }
-        },
-    ],
+            res.status(200).json({
+                character,
+                message: `Successfully created ${character.name}`,
+            });
+        }
+        catch (error) {
+            handleControllerError(res, error);
+        }
+    },
     createTemplateCharacter: async (req, res) => {
         try {
             if (!req.user) {
@@ -204,36 +194,32 @@ const characterController = {
             handleControllerError(res, error);
         }
     },
-    updateCharacter: [
-        upload.single('pictureFile'),
-        uploadToCloudinary,
-        async (req, res) => {
-            try {
-                if (!req.user) {
-                    throw new Error('Could not find authenticated user');
-                }
-                const parsedBody = parseRequestBody(req.body);
-                const validatedCharacter = CharacterUpdateInput.parse(parsedBody);
-                const character = await characterServices.updateCharacter(validatedCharacter);
-                const io = getIO();
-                if (character.campaignId) {
-                    io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
-                        character,
-                    });
-                }
-                res.status(200).json({
+    updateCharacter: async (req, res) => {
+        try {
+            if (!req.user) {
+                throw new Error('Could not find authenticated user');
+            }
+            const parsedBody = parseRequestBody(req.body);
+            const validatedCharacter = CharacterUpdateInput.parse(parsedBody);
+            const character = await characterServices.updateCharacter(validatedCharacter);
+            const io = getIO();
+            if (character.campaignId) {
+                io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
                     character,
-                    message: `Successfully updated ${character.name}`,
                 });
             }
-            catch (error) {
-                console.error(error);
-                if (error instanceof Error) {
-                    res.status(500).json({ error: error.message });
-                }
+            res.status(200).json({
+                character,
+                message: `Successfully updated ${character.name}`,
+            });
+        }
+        catch (error) {
+            console.error(error);
+            if (error instanceof Error) {
+                res.status(500).json({ error: error.message });
             }
-        },
-    ],
+        }
+    },
     updateCharacterLevel: async (req, res) => {
         try {
             if (!req.user) {

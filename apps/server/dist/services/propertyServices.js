@@ -16,71 +16,41 @@ const propertyInclude = {
 };
 const propertyServices = {
     getBaseProperties: async () => {
-        try {
-            const properties = await prisma.property.findMany({
-                where: { basePropertyId: null },
-                include: propertyInclude,
-            });
-            return properties;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to fetch owner properties');
-        }
+        const properties = await prisma.property.findMany({
+            where: { basePropertyId: null },
+            include: propertyInclude,
+        });
+        return properties;
     },
     getBatchProperties: async (propertyIds) => {
-        try {
-            const properties = await prisma.property.findMany({
-                where: { id: { in: propertyIds } },
-                include: propertyInclude,
-            });
-            return properties;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to fetch properties');
-        }
+        const properties = await prisma.property.findMany({
+            where: { id: { in: propertyIds } },
+            include: propertyInclude,
+        });
+        return properties;
     },
     getPropertyById: async (propertyId) => {
-        try {
-            const property = await prisma.property.findUnique({
-                where: { id: propertyId },
-                include: propertyInclude,
-            });
-            return property;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to fetch property');
-        }
+        const property = await prisma.property.findUnique({
+            where: { id: propertyId },
+            include: propertyInclude,
+        });
+        return property;
     },
     createOrUpdateBaseProperty: async (formData) => {
-        try {
-            const { id } = formData, data = __rest(formData, ["id"]);
-            const property = await prisma.property.upsert({
-                where: { id: id || 0 },
-                update: data,
-                create: data,
-            });
-            return property;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to create or update property');
-        }
+        const { id } = formData, data = __rest(formData, ["id"]);
+        const property = await prisma.property.upsert({
+            where: { id: id || 0 },
+            update: data,
+            create: data,
+        });
+        return property;
     },
     deleteProperty: async (propertyId) => {
-        try {
-            await prisma.property.delete({
-                where: {
-                    id: propertyId,
-                },
-            });
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error(error.message || 'Failed to delete property');
-        }
+        await prisma.property.delete({
+            where: {
+                id: propertyId,
+            },
+        });
     },
 };
 export default propertyServices;

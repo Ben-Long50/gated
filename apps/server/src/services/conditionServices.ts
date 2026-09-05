@@ -3,154 +3,107 @@ import { ConditionInput } from '../validation/conditionSchema.js';
 
 const conditionServices = {
   getConditions: async () => {
-    try {
-      const conditions = await prisma.condition.findMany({
-        orderBy: { name: 'asc' },
-      });
-      return conditions;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to fetch conditions');
-    }
+    const conditions = await prisma.condition.findMany({
+      orderBy: { name: 'asc' },
+    });
+    return conditions;
   },
 
   getConditionById: async (conditionId: number) => {
-    try {
-      const condition = await prisma.condition.findUnique({
-        where: { id: conditionId },
-      });
-      return condition;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to fetch condition');
-    }
+    const condition = await prisma.condition.findUnique({
+      where: { id: conditionId },
+    });
+    return condition;
   },
 
   getConditionByName: async (conditionName: string) => {
-    try {
-      const condition = await prisma.condition.findUnique({
-        where: { name: conditionName },
-      });
+    const condition = await prisma.condition.findUnique({
+      where: { name: conditionName },
+    });
 
-      return condition;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to fetch condition');
-    }
+    return condition;
   },
 
   createCondition: async (formData: ConditionInput) => {
-    try {
-      const { id, ...data } = formData;
+    const { id, ...data } = formData;
 
-      const condition = await prisma.condition.upsert({
-        where: { id: formData.id || 0 },
-        update: data,
-        create: data,
-      });
+    const condition = await prisma.condition.upsert({
+      where: { id: formData.id || 0 },
+      update: data,
+      create: data,
+    });
 
-      return condition;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to create or update condition');
-    }
+    return condition;
   },
 
   updateCharacterConditionStacks: async (
     conditionId: number,
     value: number,
   ) => {
-    try {
-      const conditionReference =
-        await prisma.characterConditionReference.findUnique({
-          where: { id: conditionId },
-          select: { stacks: true },
-        });
-
-      if (!conditionReference) {
-        throw new Error('Failed to find condition reference');
-      }
-
-      const condition = await prisma.characterConditionReference.update({
+    const conditionReference =
+      await prisma.characterConditionReference.findUnique({
         where: { id: conditionId },
-        data: {
-          stacks: conditionReference.stacks ? { increment: value } : value,
-        },
-        include: { condition: { select: { name: true } } },
+        select: { stacks: true },
       });
 
-      return condition.condition.name;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to udpate character condition stacks');
+    if (!conditionReference) {
+      throw new Error('Failed to find condition reference');
     }
+
+    const condition = await prisma.characterConditionReference.update({
+      where: { id: conditionId },
+      data: {
+        stacks: conditionReference.stacks ? { increment: value } : value,
+      },
+      include: { condition: { select: { name: true } } },
+    });
+
+    return condition.condition.name;
   },
 
   updateItemConditionStacks: async (conditionId: number, value: number) => {
-    try {
-      const conditionReference = await prisma.itemConditionReference.findUnique(
-        {
-          where: { id: conditionId },
-          select: { stacks: true },
-        },
-      );
+    const conditionReference = await prisma.itemConditionReference.findUnique({
+      where: { id: conditionId },
+      select: { stacks: true },
+    });
 
-      if (!conditionReference) {
-        throw new Error('Failed to find condition reference');
-      }
-
-      const condition = await prisma.itemConditionReference.update({
-        where: { id: conditionId },
-        data: {
-          stacks: conditionReference.stacks ? { increment: value } : value,
-        },
-        include: { condition: { select: { name: true } } },
-      });
-
-      return condition.condition.name;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to udpate item condition stacks');
+    if (!conditionReference) {
+      throw new Error('Failed to find condition reference');
     }
+
+    const condition = await prisma.itemConditionReference.update({
+      where: { id: conditionId },
+      data: {
+        stacks: conditionReference.stacks ? { increment: value } : value,
+      },
+      include: { condition: { select: { name: true } } },
+    });
+
+    return condition.condition.name;
   },
 
   deleteCondition: async (conditionId: number) => {
-    try {
-      await prisma.condition.delete({
-        where: {
-          id: conditionId,
-        },
-      });
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to delete condition');
-    }
+    await prisma.condition.delete({
+      where: {
+        id: conditionId,
+      },
+    });
   },
 
   deleteCharacterCondition: async (conditionId: number) => {
-    try {
-      await prisma.characterConditionReference.delete({
-        where: {
-          id: conditionId,
-        },
-      });
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to delete character condition');
-    }
+    await prisma.characterConditionReference.delete({
+      where: {
+        id: conditionId,
+      },
+    });
   },
 
   deleteItemCondition: async (conditionId: number) => {
-    try {
-      await prisma.itemConditionReference.delete({
-        where: {
-          id: conditionId,
-        },
-      });
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to delete item condition');
-    }
+    await prisma.itemConditionReference.delete({
+      where: {
+        id: conditionId,
+      },
+    });
   },
 };
 

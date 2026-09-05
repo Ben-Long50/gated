@@ -17,78 +17,54 @@ const factionInclude = {
 };
 const factionServices = {
     getBatchFactions: async (factionIds) => {
-        try {
-            const factions = await prisma.faction.findMany({
-                where: { id: { in: factionIds } },
-                include: factionInclude,
-            });
-            return factions;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to fetch factions');
-        }
+        const factions = await prisma.faction.findMany({
+            where: { id: { in: factionIds } },
+            include: factionInclude,
+        });
+        return factions;
     },
     getFactionById: async (factionId) => {
-        try {
-            const faction = await prisma.faction.findUnique({
-                where: { id: factionId },
-                include: factionInclude,
-            });
-            return faction;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to fetch faction');
-        }
+        const faction = await prisma.faction.findUnique({
+            where: { id: factionId },
+            include: factionInclude,
+        });
+        return faction;
     },
     updateFaction: async (formData) => {
-        try {
-            const { id } = formData, data = __rest(formData, ["id"]);
-            const faction = await prisma.faction.update({
-                where: { id },
-                data,
-                include: factionInclude,
-            });
-            return faction;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to update faction');
-        }
+        const { id } = formData, data = __rest(formData, ["id"]);
+        const faction = await prisma.faction.update({
+            where: { id },
+            data,
+            include: factionInclude,
+        });
+        return faction;
     },
     deleteFaction: async (factionId) => {
-        try {
-            const faction = await prisma.faction.findUnique({
+        const faction = await prisma.faction.findUnique({
+            where: {
+                id: factionId,
+            },
+            select: {
+                affiliations: { select: { id: true } },
+            },
+        });
+        if (!faction) {
+            throw new Error('Failed to find faction');
+        }
+        await prisma.$transaction(async (tx) => {
+            await tx.affiliation.deleteMany({
+                where: {
+                    id: {
+                        in: faction.affiliations.map((affiliation) => affiliation.id),
+                    },
+                },
+            });
+            await tx.faction.delete({
                 where: {
                     id: factionId,
                 },
-                select: {
-                    affiliations: { select: { id: true } },
-                },
             });
-            if (!faction) {
-                throw new Error('Failed to find faction');
-            }
-            await prisma.$transaction(async (tx) => {
-                await tx.affiliation.deleteMany({
-                    where: {
-                        id: {
-                            in: faction.affiliations.map((affiliation) => affiliation.id),
-                        },
-                    },
-                });
-                await tx.faction.delete({
-                    where: {
-                        id: factionId,
-                    },
-                });
-            });
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to delete faction');
-        }
+        });
     },
 };
 export default factionServices;

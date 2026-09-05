@@ -12,56 +12,32 @@ var __rest = (this && this.__rest) || function (s, e) {
 import prisma from '../config/database.js';
 const patchNoteServices = {
     getPatchNotes: async () => {
-        try {
-            const patchNotes = await prisma.patchNote.findMany({
-                orderBy: { createdAt: 'desc' },
-            });
-            return patchNotes;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to fetch patch notes');
-        }
+        const patchNotes = await prisma.patchNote.findMany({
+            orderBy: { createdAt: 'desc' },
+        });
+        return patchNotes;
     },
     getPatchNoteById: async (patchNoteId) => {
-        try {
-            const patchNote = await prisma.patchNote.findUnique({
-                where: { id: patchNoteId },
-            });
-            return patchNote;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to fetch patch note');
-        }
+        const patchNote = await prisma.patchNote.findUnique({
+            where: { id: patchNoteId },
+        });
+        return patchNote;
     },
     createPatchNote: async (formData) => {
-        try {
-            const { id } = formData, data = __rest(formData, ["id"]);
-            const patchNote = await prisma.patchNote.upsert({
-                where: { id: id || 0 },
-                update: data,
-                create: data,
-            });
-            return patchNote;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to create or update patch note');
-        }
+        const { id } = formData, data = __rest(formData, ["id"]);
+        const patchNote = await prisma.patchNote.upsert({
+            where: { id: id || 0 },
+            update: data,
+            create: data,
+        });
+        return patchNote;
     },
     deletePatchNote: async (patchNoteId) => {
-        try {
-            await prisma.patchNote.delete({
-                where: {
-                    id: patchNoteId,
-                },
-            });
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to delete patch note');
-        }
+        await prisma.patchNote.delete({
+            where: {
+                id: patchNoteId,
+            },
+        });
     },
 };
 export default patchNoteServices;

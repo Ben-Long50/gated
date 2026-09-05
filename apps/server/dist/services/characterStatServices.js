@@ -3,78 +3,60 @@ import combineObjects from '../utils/combineObjects.js';
 import { characterInclude } from './characterServices.js';
 const characterStatServices = {
     editCharacterStat: async (characterId, stats) => {
-        try {
-            const character = await prisma.character.findUnique({
-                where: {
-                    id: characterId,
-                },
-                select: { stats: true },
-            });
-            if (!character) {
-                throw new Error('Character not found');
-            }
-            const typedStats = character.stats;
-            const updatedCharacter = await prisma.character.update({
-                where: {
-                    id: Number(characterId),
-                },
-                data: {
-                    stats: combineObjects(typedStats, stats),
-                },
-                include: characterInclude,
-            });
-            return updatedCharacter;
+        const character = await prisma.character.findUnique({
+            where: {
+                id: characterId,
+            },
+            select: { stats: true },
+        });
+        if (!character) {
+            throw new Error('Character not found');
         }
-        catch (error) {
-            console.error(error);
-            throw new Error(`Failed to update character stats`);
-        }
+        const typedStats = character.stats;
+        const updatedCharacter = await prisma.character.update({
+            where: {
+                id: Number(characterId),
+            },
+            data: {
+                stats: combineObjects(typedStats, stats),
+            },
+            include: characterInclude,
+        });
+        return updatedCharacter;
     },
     resetCharacterStat: async (characterId, stats) => {
-        try {
-            const character = await prisma.character.findUnique({
-                where: {
-                    id: characterId,
-                },
-                select: { stats: true },
-            });
-            if (!character) {
-                throw new Error('Character not found');
-            }
-            const typedStats = character.stats;
-            const updatedCharacter = await prisma.character.update({
-                where: {
-                    id: characterId,
-                },
-                data: {
-                    stats: Object.assign(Object.assign({}, typedStats), { stats }),
-                },
-                include: characterInclude,
-            });
-            return updatedCharacter;
+        const character = await prisma.character.findUnique({
+            where: {
+                id: characterId,
+            },
+            select: { stats: true },
+        });
+        if (!character) {
+            throw new Error('Character not found');
         }
-        catch (error) {
-            console.error(error);
-            throw new Error(`Failed to reset character stats}`);
-        }
+        const typedStats = character.stats;
+        const updatedCharacter = await prisma.character.update({
+            where: {
+                id: characterId,
+            },
+            data: {
+                stats: Object.assign(Object.assign({}, typedStats), { stats }),
+            },
+            include: characterInclude,
+        });
+        return updatedCharacter;
     },
     editProfits: async (characterId, value) => {
-        try {
-            const character = await prisma.character.update({
-                where: {
-                    id: characterId,
-                },
-                data: {
-                    profits: { increment: value },
-                },
-                include: characterInclude,
-            });
-            return character;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to update current profits');
-        }
+        const character = await prisma.character.update({
+            where: {
+                id: characterId,
+            },
+            data: {
+                profits: { increment: value },
+            },
+            include: characterInclude,
+        });
+        return character;
     },
 };
 export default characterStatServices;

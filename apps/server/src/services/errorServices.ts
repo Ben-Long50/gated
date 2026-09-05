@@ -3,45 +3,30 @@ import { ErrorReportInput } from '../validation/errorReportSchema.js';
 
 const errorServices = {
   getErrorReports: async () => {
-    try {
-      const errorReports = await prisma.error.findMany({
-        include: { user: true },
-        orderBy: { createdAt: 'desc' },
-      });
+    const errorReports = await prisma.error.findMany({
+      include: { user: true },
+      orderBy: { createdAt: 'desc' },
+    });
 
-      return errorReports;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to fetch error reports');
-    }
+    return errorReports;
   },
 
   createErrorReport: async (formData: ErrorReportInput, userId: number) => {
-    try {
-      const { id, ...data } = formData;
+    const { id, ...data } = formData;
 
-      const errorReport = await prisma.error.create({
-        data: { ...data, userId },
-      });
+    const errorReport = await prisma.error.create({
+      data: { ...data, userId },
+    });
 
-      return errorReport;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to create error report');
-    }
+    return errorReport;
   },
 
   deleteErrorReport: async (errorId: number) => {
-    try {
-      await prisma.error.delete({
-        where: {
-          id: errorId,
-        },
-      });
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to delete error report');
-    }
+    await prisma.error.delete({
+      where: {
+        id: errorId,
+      },
+    });
   },
 };
 

@@ -12,56 +12,32 @@ var __rest = (this && this.__rest) || function (s, e) {
 import prisma from '../config/database.js';
 const keywordServices = {
     getKeywords: async () => {
-        try {
-            const keywords = await prisma.keyword.findMany({
-                orderBy: { name: 'asc' },
-            });
-            return keywords;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to fetch keywords');
-        }
+        const keywords = await prisma.keyword.findMany({
+            orderBy: { name: 'asc' },
+        });
+        return keywords;
     },
     getKeywordById: async (keywordId) => {
-        try {
-            const keyword = await prisma.keyword.findUnique({
-                where: { id: keywordId },
-            });
-            return keyword;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to fetch keyword');
-        }
+        const keyword = await prisma.keyword.findUnique({
+            where: { id: keywordId },
+        });
+        return keyword;
     },
     createKeyword: async (formData) => {
-        try {
-            const { id } = formData, data = __rest(formData, ["id"]);
-            const keyword = await prisma.keyword.upsert({
-                where: { id: id || 0 },
-                update: data,
-                create: data,
-            });
-            return keyword;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to create or update keyword');
-        }
+        const { id } = formData, data = __rest(formData, ["id"]);
+        const keyword = await prisma.keyword.upsert({
+            where: { id: id || 0 },
+            update: data,
+            create: data,
+        });
+        return keyword;
     },
     deleteKeyword: async (keywordId) => {
-        try {
-            await prisma.keyword.delete({
-                where: {
-                    id: keywordId,
-                },
-            });
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to delete keyword');
-        }
+        await prisma.keyword.delete({
+            where: {
+                id: keywordId,
+            },
+        });
     },
 };
 export default keywordServices;

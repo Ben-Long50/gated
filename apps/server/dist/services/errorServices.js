@@ -12,43 +12,25 @@ var __rest = (this && this.__rest) || function (s, e) {
 import prisma from '../config/database.js';
 const errorServices = {
     getErrorReports: async () => {
-        try {
-            const errorReports = await prisma.error.findMany({
-                include: { user: true },
-                orderBy: { createdAt: 'desc' },
-            });
-            return errorReports;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to fetch error reports');
-        }
+        const errorReports = await prisma.error.findMany({
+            include: { user: true },
+            orderBy: { createdAt: 'desc' },
+        });
+        return errorReports;
     },
     createErrorReport: async (formData, userId) => {
-        try {
-            const { id } = formData, data = __rest(formData, ["id"]);
-            const errorReport = await prisma.error.create({
-                data: Object.assign(Object.assign({}, data), { userId }),
-            });
-            return errorReport;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to create error report');
-        }
+        const { id } = formData, data = __rest(formData, ["id"]);
+        const errorReport = await prisma.error.create({
+            data: Object.assign(Object.assign({}, data), { userId }),
+        });
+        return errorReport;
     },
     deleteErrorReport: async (errorId) => {
-        try {
-            await prisma.error.delete({
-                where: {
-                    id: errorId,
-                },
-            });
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to delete error report');
-        }
+        await prisma.error.delete({
+            where: {
+                id: errorId,
+            },
+        });
     },
 };
 export default errorServices;

@@ -3,57 +3,37 @@ import { KeywordInput } from '../validation/keywordSchema.js';
 
 const keywordServices = {
   getKeywords: async () => {
-    try {
-      const keywords = await prisma.keyword.findMany({
-        orderBy: { name: 'asc' },
-      });
-      return keywords;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to fetch keywords');
-    }
+    const keywords = await prisma.keyword.findMany({
+      orderBy: { name: 'asc' },
+    });
+    return keywords;
   },
 
   getKeywordById: async (keywordId: number) => {
-    try {
-      const keyword = await prisma.keyword.findUnique({
-        where: { id: keywordId },
-      });
-      return keyword;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to fetch keyword');
-    }
+    const keyword = await prisma.keyword.findUnique({
+      where: { id: keywordId },
+    });
+    return keyword;
   },
 
   createKeyword: async (formData: KeywordInput) => {
-    try {
-      const { id, ...data } = formData;
+    const { id, ...data } = formData;
 
-      const keyword = await prisma.keyword.upsert({
-        where: { id: id || 0 },
-        update: data,
-        create: data,
-      });
+    const keyword = await prisma.keyword.upsert({
+      where: { id: id || 0 },
+      update: data,
+      create: data,
+    });
 
-      return keyword;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to create or update keyword');
-    }
+    return keyword;
   },
 
   deleteKeyword: async (keywordId: number) => {
-    try {
-      await prisma.keyword.delete({
-        where: {
-          id: keywordId,
-        },
-      });
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to delete keyword');
-    }
+    await prisma.keyword.delete({
+      where: {
+        id: keywordId,
+      },
+    });
   },
 };
 

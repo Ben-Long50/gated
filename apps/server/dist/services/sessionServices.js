@@ -18,93 +18,63 @@ const sessionInclude = {
 };
 const sessionServices = {
     getCampaignSessions: async (campaignId) => {
-        try {
-            const sessions = await prisma.session.findMany({
-                where: { campaignId },
-                orderBy: { sessionNumber: 'asc' },
-            });
-            return sessions;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to fetch campaign sessions');
-        }
+        const sessions = await prisma.session.findMany({
+            where: { campaignId },
+            orderBy: { sessionNumber: 'asc' },
+        });
+        return sessions;
     },
     getSessionById: async (campaignId, sessionId) => {
-        try {
-            const session = await prisma.session.findUnique({
-                where: { id: sessionId, campaignId: campaignId },
-                include: sessionInclude,
-            });
-            return session;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to fetch session');
-        }
+        const session = await prisma.session.findUnique({
+            where: { id: sessionId, campaignId: campaignId },
+            include: sessionInclude,
+        });
+        return session;
     },
     createOrUpdateSessionNotes: async (formData) => {
-        try {
-            const validatedNotes = NotesInput.parse(formData);
-            const { id } = validatedNotes, data = __rest(validatedNotes, ["id"]);
-            const notes = await prisma.note.upsert({
-                where: {
-                    sessionId_characterId: {
-                        sessionId: data.sessionId,
-                        characterId: data.characterId,
-                    },
+        const validatedNotes = NotesInput.parse(formData);
+        const { id } = validatedNotes, data = __rest(validatedNotes, ["id"]);
+        const notes = await prisma.note.upsert({
+            where: {
+                sessionId_characterId: {
+                    sessionId: data.sessionId,
+                    characterId: data.characterId,
                 },
-                update: {
-                    content: data.content,
-                },
-                create: data,
-            });
-            return notes;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to create or update notes');
-        }
+            },
+            update: {
+                content: data.content,
+            },
+            create: data,
+        });
+        return notes;
     },
     createOrUpdateSession: async (formData) => {
-        try {
-            const validatedSession = SessionInput.parse(formData);
-            const { id, characterIds } = validatedSession, data = __rest(validatedSession, ["id", "characterIds"]);
-            const previousSession = await prisma.session.findFirst({
-                where: { campaignId: data.campaignId },
-                orderBy: {
-                    sessionNumber: 'desc',
-                },
-                select: { sessionNumber: true },
-            });
-            const sessionNumber = previousSession
-                ? (previousSession === null || previousSession === void 0 ? void 0 : previousSession.sessionNumber) + 1
-                : 0;
-            const session = await prisma.session.upsert({
-                where: { id: id || 0 },
-                update: Object.assign(Object.assign({}, data), { characters: { set: characterIds.map((id) => ({ id })) } }),
-                create: Object.assign(Object.assign({}, data), { sessionNumber, characters: { connect: characterIds.map((id) => ({ id })) } }),
-                include: sessionInclude,
-            });
-            return session;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to create or update session');
-        }
+        const validatedSession = SessionInput.parse(formData);
+        const { id, characterIds } = validatedSession, data = __rest(validatedSession, ["id", "characterIds"]);
+        const previousSession = await prisma.session.findFirst({
+            where: { campaignId: data.campaignId },
+            orderBy: {
+                sessionNumber: 'desc',
+            },
+            select: { sessionNumber: true },
+        });
+        const sessionNumber = previousSession
+            ? (previousSession === null || previousSession === void 0 ? void 0 : previousSession.sessionNumber) + 1
+            : 0;
+        const session = await prisma.session.upsert({
+            where: { id: id || 0 },
+            update: Object.assign(Object.assign({}, data), { characters: { set: characterIds.map((id) => ({ id })) } }),
+            create: Object.assign(Object.assign({}, data), { sessionNumber, characters: { connect: characterIds.map((id) => ({ id })) } }),
+            include: sessionInclude,
+        });
+        return session;
     },
     deleteSession: async (sessionId) => {
-        try {
-            await prisma.session.delete({
-                where: {
-                    id: sessionId,
-                },
-            });
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Failed to delete session');
-        }
+        await prisma.session.delete({
+            where: {
+                id: sessionId,
+            },
+        });
     },
 };
 export default sessionServices;

@@ -1,7 +1,5 @@
 import { Request, Response } from 'express';
 import characterServices from '../services/characterServices.js';
-import { uploadToCloudinary } from '../utils/cloudinary.js';
-import upload from '../utils/multer.js';
 import parseRequestBody from '../utils/parseRequestBody.js';
 import cartServices from '../services/cartServices.js';
 import {
@@ -173,83 +171,75 @@ const characterController = {
     } catch (error: any) {}
   },
 
-  createCharacter: [
-    upload.single('pictureFile'),
-    uploadToCloudinary,
-    async (req: Request, res: Response) => {
-      try {
-        if (!req.user) {
-          throw new Error('Could not find authenticated user');
-        }
-
-        const parsedBody = parseRequestBody(req.body);
-
-        const validatedCharacter = CharacterInput.parse(parsedBody);
-
-        const character = await characterServices.createCharacter(
-          validatedCharacter,
-          req.user.id,
-        );
-
-        if (!character) {
-          throw new Error('Failed to create character');
-        }
-
-        const io = getIO();
-
-        if (character.campaignId) {
-          io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
-            character,
-          });
-        }
-
-        res.status(200).json({
-          character,
-          message: `Successfully created ${character.name}`,
-        });
-      } catch (error: any) {
-        handleControllerError(res, error);
+  createCharacter: async (req: Request, res: Response) => {
+    try {
+      if (!req.user) {
+        throw new Error('Could not find authenticated user');
       }
-    },
-  ],
 
-  createCodexCharacter: [
-    upload.single('pictureFile'),
-    uploadToCloudinary,
-    async (req: Request, res: Response) => {
-      try {
-        if (!req.user) {
-          throw new Error('Could not find authenticated user');
-        }
+      const parsedBody = parseRequestBody(req.body);
 
-        const parsedBody = parseRequestBody(req.body);
+      const validatedCharacter = CharacterInput.parse(parsedBody);
 
-        const validatedCharacter = CharacterInput.parse(parsedBody);
+      const character = await characterServices.createCharacter(
+        validatedCharacter,
+        req.user.id,
+      );
 
-        const character =
-          await characterServices.createCharacter(validatedCharacter);
-
-        if (!character) {
-          throw new Error('Failed to create character');
-        }
-
-        const io = getIO();
-
-        if (character.campaignId) {
-          io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
-            character,
-          });
-        }
-
-        res.status(200).json({
-          character,
-          message: `Successfully created ${character.name}`,
-        });
-      } catch (error: any) {
-        handleControllerError(res, error);
+      if (!character) {
+        throw new Error('Failed to create character');
       }
-    },
-  ],
+
+      const io = getIO();
+
+      if (character.campaignId) {
+        io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
+          character,
+        });
+      }
+
+      res.status(200).json({
+        character,
+        message: `Successfully created ${character.name}`,
+      });
+    } catch (error: any) {
+      handleControllerError(res, error);
+    }
+  },
+
+  createCodexCharacter: async (req: Request, res: Response) => {
+    try {
+      if (!req.user) {
+        throw new Error('Could not find authenticated user');
+      }
+
+      const parsedBody = parseRequestBody(req.body);
+
+      const validatedCharacter = CharacterInput.parse(parsedBody);
+
+      const character =
+        await characterServices.createCharacter(validatedCharacter);
+
+      if (!character) {
+        throw new Error('Failed to create character');
+      }
+
+      const io = getIO();
+
+      if (character.campaignId) {
+        io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
+          character,
+        });
+      }
+
+      res.status(200).json({
+        character,
+        message: `Successfully created ${character.name}`,
+      });
+    } catch (error: any) {
+      handleControllerError(res, error);
+    }
+  },
 
   createTemplateCharacter: async (req: Request, res: Response) => {
     try {
@@ -270,42 +260,38 @@ const characterController = {
     }
   },
 
-  updateCharacter: [
-    upload.single('pictureFile'),
-    uploadToCloudinary,
-    async (req: Request, res: Response) => {
-      try {
-        if (!req.user) {
-          throw new Error('Could not find authenticated user');
-        }
-
-        const parsedBody = parseRequestBody(req.body);
-
-        const validatedCharacter = CharacterUpdateInput.parse(parsedBody);
-
-        const character =
-          await characterServices.updateCharacter(validatedCharacter);
-
-        const io = getIO();
-
-        if (character.campaignId) {
-          io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
-            character,
-          });
-        }
-
-        res.status(200).json({
-          character,
-          message: `Successfully updated ${character.name}`,
-        });
-      } catch (error: any) {
-        console.error(error);
-        if (error instanceof Error) {
-          res.status(500).json({ error: error.message });
-        }
+  updateCharacter: async (req: Request, res: Response) => {
+    try {
+      if (!req.user) {
+        throw new Error('Could not find authenticated user');
       }
-    },
-  ],
+
+      const parsedBody = parseRequestBody(req.body);
+
+      const validatedCharacter = CharacterUpdateInput.parse(parsedBody);
+
+      const character =
+        await characterServices.updateCharacter(validatedCharacter);
+
+      const io = getIO();
+
+      if (character.campaignId) {
+        io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
+          character,
+        });
+      }
+
+      res.status(200).json({
+        character,
+        message: `Successfully updated ${character.name}`,
+      });
+    } catch (error: any) {
+      console.error(error);
+      if (error instanceof Error) {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  },
 
   updateCharacterLevel: async (req: Request, res: Response) => {
     try {

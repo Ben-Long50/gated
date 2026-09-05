@@ -41,146 +41,116 @@ export const characterInclude = {
 
 const characterServices = {
   getSocialCharacters: async () => {
-    try {
-      const characters = await prisma.character.findMany({
-        orderBy: {
-          name: 'asc',
+    const characters = await prisma.character.findMany({
+      orderBy: {
+        name: 'asc',
+      },
+      include: {
+        characterInventory: {
+          include: { items: { select: { id: true } } },
         },
-        include: {
-          characterInventory: {
-            include: { items: { select: { id: true } } },
-          },
-          characterLevelBonuses: {
-            include: { perks: { include: { actions: true } } },
-          },
+        characterLevelBonuses: {
+          include: { perks: { include: { actions: true } } },
         },
-      });
+      },
+    });
 
-      if (characters.length === 0) {
-        throw new Error('No public characters exist');
-      }
-
-      return characters;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to fetch social characters');
+    if (characters.length === 0) {
+      throw new Error('No public characters exist');
     }
+
+    return characters;
   },
 
   getCodexCharacters: async () => {
-    try {
-      const characters = await prisma.character.findMany({
-        where: { userId: null },
-        select: { id: true },
-        orderBy: { name: 'asc' },
-      });
+    const characters = await prisma.character.findMany({
+      where: { userId: null },
+      select: { id: true },
+      orderBy: { name: 'asc' },
+    });
 
-      if (characters.length === 0) {
-        throw new Error('No public characters exist');
-      }
-
-      return characters;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to fetch social characters');
+    if (characters.length === 0) {
+      throw new Error('No public characters exist');
     }
+
+    return characters;
   },
 
   getBatchCharacters: async (characterIds: number[]) => {
-    try {
-      const characters = await prisma.character.findMany({
-        where: {
-          id: { in: characterIds },
-        },
-        include: characterInclude,
-        orderBy: { name: 'asc' },
-      });
+    const characters = await prisma.character.findMany({
+      where: {
+        id: { in: characterIds },
+      },
+      include: characterInclude,
+      orderBy: { name: 'asc' },
+    });
 
-      return characters;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to fetch characters');
-    }
+    return characters;
   },
 
   getCharacterById: async (characterId: number) => {
-    try {
-      const character = await prisma.character.findUnique({
-        where: {
-          id: characterId,
-        },
-        include: characterInclude,
-      });
+    const character = await prisma.character.findUnique({
+      where: {
+        id: characterId,
+      },
+      include: characterInclude,
+    });
 
-      return character;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to fetch character');
-    }
+    return character;
   },
 
   getCharacterNotes: async (characterId: number) => {
-    try {
-      const notes = await prisma.note.findMany({
-        where: { characterId },
-        include: {
-          character: {
-            select: {
-              userId: true,
-              name: true,
-              title: true,
-              generatedPicture: { select: { publicId: true } },
-            },
-          },
-          session: {
-            select: { sessionNumber: true, createdAt: true, name: true },
+    const notes = await prisma.note.findMany({
+      where: { characterId },
+      include: {
+        character: {
+          select: {
+            userId: true,
+            name: true,
+            title: true,
+            generatedPicture: { select: { publicId: true } },
           },
         },
-        orderBy: { session: { sessionNumber: 'asc' } },
-      });
+        session: {
+          select: { sessionNumber: true, createdAt: true, name: true },
+        },
+      },
+      orderBy: { session: { sessionNumber: 'asc' } },
+    });
 
-      return notes;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to fetch notes');
-    }
+    return notes;
   },
 
   toggleEquipment: async (inventoryId: number, itemId: number) => {
-    try {
-      const item = await prisma.item.findUnique({
-        where: {
-          id: Number(itemId),
-          characterInventoryId: Number(inventoryId),
-        },
-        select: {
-          id: true,
-          equipped: true,
-          linkedItems: { select: { id: true } },
-        },
-      });
+    const item = await prisma.item.findUnique({
+      where: {
+        id: Number(itemId),
+        characterInventoryId: Number(inventoryId),
+      },
+      select: {
+        id: true,
+        equipped: true,
+        linkedItems: { select: { id: true } },
+      },
+    });
 
-      if (!item) {
-        throw new Error('Item not found');
-      }
-      const itemIds = [...item?.linkedItems.map((item) => item.id), item.id];
-      const equipped = item?.equipped;
-
-      await prisma.item.updateMany({
-        where: { id: { in: itemIds } },
-        data: { equipped: !equipped },
-      });
-
-      const updatedItem = await prisma.item.findUnique({
-        where: { id: item.id },
-        include: itemInclude,
-      });
-
-      return updatedItem;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to toggle equipment');
+    if (!item) {
+      throw new Error('Item not found');
     }
+    const itemIds = [...item?.linkedItems.map((item) => item.id), item.id];
+    const equipped = item?.equipped;
+
+    await prisma.item.updateMany({
+      where: { id: { in: itemIds } },
+      data: { equipped: !equipped },
+    });
+
+    const updatedItem = await prisma.item.findUnique({
+      where: { id: item.id },
+      include: itemInclude,
+    });
+
+    return updatedItem;
   },
 
   createCharacter: async (
@@ -280,97 +250,92 @@ const characterServices = {
   },
 
   createTemplateCharacter: async (characterId: number) => {
-    try {
-      const templateCharacter = await prisma.character.findUnique({
-        where: { id: characterId },
-        select: {
-          userId: true,
-          name: true,
-          title: true,
-          level: true,
-          stats: true,
-          generatedPictureId: true,
-          height: true,
-          weight: true,
-          age: true,
-          sex: true,
-          backstory: true,
-          firstTaste: true,
-          badMedicine: true,
-          playerCharacter: true,
-          npcTypes: true,
-          preferences: true,
-          campaignId: true,
-          gangId: true,
-          controlledGangId: true,
-          characterInventory: {
-            include: { items: { select: { id: true } } },
-          },
-          characterLevelBonuses: {
-            include: { perks: { include: { actions: true } } },
-          },
+    const templateCharacter = await prisma.character.findUnique({
+      where: { id: characterId },
+      select: {
+        userId: true,
+        name: true,
+        title: true,
+        level: true,
+        stats: true,
+        generatedPictureId: true,
+        height: true,
+        weight: true,
+        age: true,
+        sex: true,
+        backstory: true,
+        firstTaste: true,
+        badMedicine: true,
+        playerCharacter: true,
+        npcTypes: true,
+        preferences: true,
+        campaignId: true,
+        gangId: true,
+        controlledGangId: true,
+        characterInventory: {
+          include: { items: { select: { id: true } } },
         },
-      });
-
-      if (!templateCharacter) {
-        throw new Error('Failed to find template character');
-      }
-
-      const { npcTypes, characterInventory, characterLevelBonuses, ...data } =
-        templateCharacter;
-
-      const filteredData = Object.fromEntries(
-        Object.entries(data)
-          .map(([key, value]) => {
-            if (value) {
-              return [key, value];
-            } else {
-              return [];
-            }
-          })
-          .filter((item) => item.length > 0),
-      );
-
-      const character = await prisma.character.create({
-        data: {
-          ...filteredData,
-          npcTypes: npcTypes.filter((type) => type !== 'template'),
-          characterCart: { create: {} },
-          characterInventory: { create: {} },
-          characterLevelBonuses: {
-            createMany: {
-              data: characterLevelBonuses.map((bonus) => ({
-                characterId: bonus.characterId,
-                level: bonus.level,
-                attributes: bonus.attributes ? bonus.attributes : undefined,
-                perk: bonus.perks
-                  ? { connect: bonus.perks.map((perk) => ({ id: perk.id })) }
-                  : null,
-              })),
-            },
-          },
+        characterLevelBonuses: {
+          include: { perks: { include: { actions: true } } },
         },
-        include: characterInclude,
-      });
+      },
+    });
 
-      if (characterInventory && character.characterInventory) {
-        const itemList = characterInventory.items.map((item) => ({
-          itemId: item.id,
-          price: null,
-          quantity: 1,
-        }));
-
-        await itemServices.createCharacterItemCopy(
-          character.characterInventory.id,
-          itemList,
-        );
-      }
-
-      return character;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to create character');
+    if (!templateCharacter) {
+      throw new Error('Failed to find template character');
     }
+
+    const { npcTypes, characterInventory, characterLevelBonuses, ...data } =
+      templateCharacter;
+
+    const filteredData = Object.fromEntries(
+      Object.entries(data)
+        .map(([key, value]) => {
+          if (value) {
+            return [key, value];
+          } else {
+            return [];
+          }
+        })
+        .filter((item) => item.length > 0),
+    );
+
+    const character = await prisma.character.create({
+      data: {
+        ...filteredData,
+        npcTypes: npcTypes.filter((type) => type !== 'template'),
+        characterCart: { create: {} },
+        characterInventory: { create: {} },
+        characterLevelBonuses: {
+          createMany: {
+            data: characterLevelBonuses.map((bonus) => ({
+              characterId: bonus.characterId,
+              level: bonus.level,
+              attributes: bonus.attributes ? bonus.attributes : undefined,
+              perk: bonus.perks
+                ? { connect: bonus.perks.map((perk) => ({ id: perk.id })) }
+                : null,
+            })),
+          },
+        },
+      },
+      include: characterInclude,
+    });
+
+    if (characterInventory && character.characterInventory) {
+      const itemList = characterInventory.items.map((item) => ({
+        itemId: item.id,
+        price: null,
+        quantity: 1,
+      }));
+
+      await itemServices.createCharacterItemCopy(
+        character.characterInventory.id,
+        itemList,
+      );
+    }
+
+    return character;
   },
 
   addToInventory: async (
@@ -378,152 +343,132 @@ const characterServices = {
     inventoryId: number,
     tx?: Prisma.TransactionClient,
   ) => {
-    try {
-      const client = tx ?? prisma;
+    const client = tx ?? prisma;
 
-      const character = await client.character.findUnique({
-        where: { id: characterId },
-        select: {
-          profits: true,
-          characterCart: {
-            select: {
-              items: {
-                include: {
-                  item: { select: { id: true, price: true, itemTypes: true } },
-                },
+    const character = await client.character.findUnique({
+      where: { id: characterId },
+      select: {
+        profits: true,
+        characterCart: {
+          select: {
+            items: {
+              include: {
+                item: { select: { id: true, price: true, itemTypes: true } },
               },
             },
           },
         },
-      });
+      },
+    });
 
-      const profits = character?.profits || 0;
-      const cart = character?.characterCart;
+    const profits = character?.profits || 0;
+    const cart = character?.characterCart;
 
-      const items =
-        cart?.items.map((item) => ({
-          itemId: item.item.id,
-          quantity: item.quantity,
-          price: item.item.price,
-        })) || [];
+    const items =
+      cart?.items.map((item) => ({
+        itemId: item.item.id,
+        quantity: item.quantity,
+        price: item.item.price,
+      })) || [];
 
-      const totalPrice = cart?.items
-        .flat()
-        .map((reference) => {
-          const targetObject = Object.values(reference).find(
-            (item) => typeof item === 'object',
-          );
-          return targetObject?.price
-            ? reference.quantity * targetObject.price
-            : 0;
-        })
-        .reduce((sum, item) => sum + item, 0);
-
-      if (typeof totalPrice !== 'number') {
-        throw new Error('Failed to calculate total cart price');
-      }
-
-      if (totalPrice > profits) {
-        throw new Error(
-          'You do not have enough profits to complete this purchase',
+    const totalPrice = cart?.items
+      .flat()
+      .map((reference) => {
+        const targetObject = Object.values(reference).find(
+          (item) => typeof item === 'object',
         );
-      }
+        return targetObject?.price
+          ? reference.quantity * targetObject.price
+          : 0;
+      })
+      .reduce((sum, item) => sum + item, 0);
 
-      if (items.length > 0) {
-        await itemServices.createCharacterItemCopy(inventoryId, items, client);
-      }
-
-      const updatedCharacter = await client.character.update({
-        where: { id: characterId },
-        data: { profits: { decrement: totalPrice } },
-        include: characterInclude,
-      });
-
-      return updatedCharacter;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to add items to inventory');
+    if (typeof totalPrice !== 'number') {
+      throw new Error('Failed to calculate total cart price');
     }
+
+    if (totalPrice > profits) {
+      throw new Error(
+        'You do not have enough profits to complete this purchase',
+      );
+    }
+
+    if (items.length > 0) {
+      await itemServices.createCharacterItemCopy(inventoryId, items, client);
+    }
+
+    const updatedCharacter = await client.character.update({
+      where: { id: characterId },
+      data: { profits: { decrement: totalPrice } },
+      include: characterInclude,
+    });
+
+    return updatedCharacter;
   },
 
   clearCart: async (characterId: number, tx?: Prisma.TransactionClient) => {
-    try {
-      const client = tx ?? prisma;
+    const client = tx ?? prisma;
 
-      await client.characterCart.update({
-        where: { characterId: Number(characterId) },
-        data: {
-          items: {
-            deleteMany: {},
-          },
+    await client.characterCart.update({
+      where: { characterId: Number(characterId) },
+      data: {
+        items: {
+          deleteMany: {},
         },
-      });
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to clear cart');
-    }
+      },
+    });
   },
 
   updateCharacter: async (formData: CharacterUpdateInput) => {
-    try {
-      const { id, stats, ...data } = formData;
+    const { id, stats, ...data } = formData;
 
-      const oldCharacter = await prisma.character.findUnique({
-        where: { id },
-        select: {
-          characterInventory: {
-            select: {
-              id: true,
-            },
+    const oldCharacter = await prisma.character.findUnique({
+      where: { id },
+      select: {
+        characterInventory: {
+          select: {
+            id: true,
           },
-          stats: true,
         },
-      });
+        stats: true,
+      },
+    });
 
-      const newStats = {
-        ...(oldCharacter?.stats as Record<string, number>),
-        ...stats,
-      };
+    const newStats = {
+      ...(oldCharacter?.stats as Record<string, number>),
+      ...stats,
+    };
 
-      const character = await prisma.$transaction(async (tx) => {
-        const character = await tx.character.update({
-          where: {
-            id,
-          },
-          data: {
-            ...data,
-            stats: newStats,
-          },
-          include: characterInclude,
-        });
-
-        return character;
-      });
-
-      return character;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to update character');
-    }
-  },
-
-  updateCharacterLevel: async (characterId: number, levelChange: number) => {
-    try {
-      const character = await prisma.character.update({
+    const character = await prisma.$transaction(async (tx) => {
+      const character = await tx.character.update({
         where: {
-          id: characterId,
+          id,
         },
         data: {
-          level: { increment: levelChange },
+          ...data,
+          stats: newStats,
         },
         include: characterInclude,
       });
 
       return character;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to change character level');
-    }
+    });
+
+    return character;
+  },
+
+  updateCharacterLevel: async (characterId: number, levelChange: number) => {
+    const character = await prisma.character.update({
+      where: {
+        id: characterId,
+      },
+      data: {
+        level: { increment: levelChange },
+      },
+      include: characterInclude,
+    });
+
+    return character;
   },
 
   selectLevelUpBonus: async (bonus: CharacterLevelBonus) => {
@@ -591,113 +536,93 @@ const characterServices = {
   ) => {
     const validatedConditionReference = ConditionReferenceInput.parse(formData);
 
-    try {
-      const character = await prisma.character.update({
-        where: {
-          id: characterId,
+    const character = await prisma.character.update({
+      where: {
+        id: characterId,
+      },
+      data: {
+        conditions: {
+          deleteMany: {},
+          createMany: { data: validatedConditionReference },
         },
-        data: {
-          conditions: {
-            deleteMany: {},
-            createMany: { data: validatedConditionReference },
-          },
-        },
-        include: characterInclude,
-      });
+      },
+      include: characterInclude,
+    });
 
-      return character;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to create character conditions');
-    }
+    return character;
   },
 
   createOrUpdateLocation: async (
     characterId: number,
     formData: { mapId: number; row: number; col: number },
   ) => {
-    try {
-      const io = getIO();
+    const io = getIO();
 
-      const location = await prisma.location.upsert({
-        where: {
-          characterId: characterId || 0,
-        },
-        update: {
-          map: { connect: { id: formData.mapId } },
-          row: formData.row,
-          col: formData.col,
-        },
-        create: {
-          character: { connect: { id: characterId } },
-          map: { connect: { id: formData.mapId } },
-          row: formData.row,
-          col: formData.col,
-        },
-        include: { character: { select: { campaignId: true } } },
-      });
+    const location = await prisma.location.upsert({
+      where: {
+        characterId: characterId || 0,
+      },
+      update: {
+        map: { connect: { id: formData.mapId } },
+        row: formData.row,
+        col: formData.col,
+      },
+      create: {
+        character: { connect: { id: characterId } },
+        map: { connect: { id: formData.mapId } },
+        row: formData.row,
+        col: formData.col,
+      },
+      include: { character: { select: { campaignId: true } } },
+    });
 
-      io.to(`campaign ${location.character?.campaignId}`).emit('location', {
-        characterId,
-        locationId: location.id,
-        mapId: location.mapId,
-        row: location.row,
-        col: location.col,
-      });
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to update character location');
-    }
+    io.to(`campaign ${location.character?.campaignId}`).emit('location', {
+      characterId,
+      locationId: location.id,
+      mapId: location.mapId,
+      row: location.row,
+      col: location.col,
+    });
   },
 
   deleteLocation: async (characterId: number) => {
-    try {
-      await prisma.location.delete({
-        where: {
-          characterId,
-        },
-      });
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to delete character location');
-    }
+    await prisma.location.delete({
+      where: {
+        characterId,
+      },
+    });
   },
 
   deleteCharacter: async (userId: number, characterId: number) => {
-    try {
-      const character = await prisma.character.findUnique({
+    const character = await prisma.character.findUnique({
+      where: {
+        id: characterId,
+      },
+      select: {
+        affiliations: { select: { id: true } },
+      },
+    });
+
+    if (!character) {
+      throw new Error('Failed to find character');
+    }
+
+    await prisma.$transaction(async (tx) => {
+      await tx.affiliation.deleteMany({
+        where: {
+          id: {
+            in: character.affiliations.map((affiliation) => affiliation.id),
+          },
+        },
+      });
+
+      await tx.character.delete({
         where: {
           id: characterId,
-        },
-        select: {
-          affiliations: { select: { id: true } },
+          userId,
         },
       });
-
-      if (!character) {
-        throw new Error('Failed to find character');
-      }
-
-      await prisma.$transaction(async (tx) => {
-        await tx.affiliation.deleteMany({
-          where: {
-            id: {
-              in: character.affiliations.map((affiliation) => affiliation.id),
-            },
-          },
-        });
-
-        await tx.character.delete({
-          where: {
-            id: characterId,
-            userId,
-          },
-        });
-      });
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to delete character');
-    }
+    });
   },
 };
 

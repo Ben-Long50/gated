@@ -42,183 +42,133 @@ export const userInclude = {
 
 const userServices = {
   getAuthenticatedUser: async (userId: number) => {
-    try {
-      const user = await prisma.user.findUnique({
-        where: {
-          id: userId,
-        },
-        include: userInclude,
-      });
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      include: userInclude,
+    });
 
-      return user;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to fetch users');
-    }
+    return user;
   },
 
   getAllUsers: async (query: string, userId: number) => {
-    try {
-      if (!query) return [];
-      const users = await prisma.user.findMany({
-        where: {
-          id: { not: userId },
-          username: {
-            contains: query,
-            mode: 'insensitive',
-          },
+    if (!query) return [];
+    const users = await prisma.user.findMany({
+      where: {
+        id: { not: userId },
+        username: {
+          contains: query,
+          mode: 'insensitive',
         },
-        select: { id: true, username: true, profilePicture: true, role: true },
-        take: 10,
-      });
+      },
+      select: { id: true, username: true, profilePicture: true, role: true },
+      take: 10,
+    });
 
-      return users;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to fetch users');
-    }
+    return users;
   },
 
   getBatchUsers: async (userIds: number[]) => {
-    try {
-      const users = await prisma.user.findMany({
-        where: {
-          id: { in: userIds },
-        },
-        select: {
-          id: true,
-          username: true,
-          email: true,
-          firstName: true,
-          lastName: true,
-          role: true,
-          profilePicture: true,
-        },
-      });
+    const users = await prisma.user.findMany({
+      where: {
+        id: { in: userIds },
+      },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        profilePicture: true,
+      },
+    });
 
-      return users;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to fetch users');
-    }
+    return users;
   },
 
   getUsersByUsernameQuery: async (query: string) => {
-    try {
-      const users = await prisma.user.findMany({
-        where: query
-          ? {
-              username: {
-                contains: query,
-                mode: 'insensitive',
-              },
-            }
-          : undefined,
-        select: {
-          id: true,
-          username: true,
-          profilePicture: true,
-          role: true,
-        },
-        orderBy: { username: 'asc' },
-        take: 20,
-      });
+    const users = await prisma.user.findMany({
+      where: query
+        ? {
+            username: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          }
+        : undefined,
+      select: {
+        id: true,
+        username: true,
+        profilePicture: true,
+        role: true,
+      },
+      orderBy: { username: 'asc' },
+      take: 20,
+    });
 
-      return users;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to fetch users');
-    }
+    return users;
   },
 
   getUserById: async (id: number) => {
-    try {
-      const user = await prisma.user.findUnique({
-        where: { id: Number(id) },
-        select: {
-          id: true,
-          username: true,
-          email: true,
-          firstName: true,
-          lastName: true,
-          role: true,
-          profilePicture: true,
-          characters: { select: { id: true }, orderBy: { name: 'asc' } },
-          ownerCampaigns: { select: { id: true } },
-          playerCampaigns: { select: { id: true } },
-          pendingCampaigns: { select: { id: true } },
-        },
-      });
-      return user;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to fetch user');
-    }
+    const user = await prisma.user.findUnique({
+      where: { id: Number(id) },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        profilePicture: true,
+        characters: { select: { id: true }, orderBy: { name: 'asc' } },
+        ownerCampaigns: { select: { id: true } },
+        playerCampaigns: { select: { id: true } },
+        pendingCampaigns: { select: { id: true } },
+      },
+    });
+    return user;
   },
 
   getUserByEmail: async (email: string) => {
-    try {
-      const user = await prisma.user.findUnique({
-        where: { email },
-        select: {
-          username: true,
-          id: true,
-          firstName: true,
-          lastName: true,
-          role: true,
-          profilePicture: true,
-        },
-      });
-      return user;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to fetch user');
-    }
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: {
+        username: true,
+        id: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        profilePicture: true,
+      },
+    });
+    return user;
   },
 
   createUser: async (userData: Omit<SignUpInput, 'confirmPassword'>) => {
-    try {
-      await prisma.user.create({
-        data: userData,
-      });
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to create user');
-    }
+    await prisma.user.create({
+      data: userData,
+    });
   },
 
   createFacebookUser: async (userData: FacebookSignUpInput) => {
-    try {
-      await prisma.user.create({
-        data: userData,
-      });
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to create user with Facebook login');
-    }
+    await prisma.user.create({
+      data: userData,
+    });
   },
 
   createGoogleUser: async (userData: GoogleSignUpInput) => {
-    try {
-      await prisma.user.create({
-        data: userData,
-      });
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to create user with Google login');
-    }
+    await prisma.user.create({
+      data: userData,
+    });
   },
 
   updateUser: async (userData: UserUpdateInput, userId: number) => {
-    try {
-      await prisma.user.update({
-        where: { id: userId },
-        data: userData,
-      });
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to update account information');
-    }
+    await prisma.user.update({
+      where: { id: userId },
+      data: userData,
+    });
   },
 
   addUserGeneratedPicture: async (
@@ -227,32 +177,27 @@ const userServices = {
     type: $Enums.GeneratedPictureType,
     userId: number,
   ) => {
-    try {
-      const user = await prisma.user.update({
-        where: { id: userId },
-        data: {
-          generatedPictures: {
-            createMany: {
-              data: pictures.map((picture) => ({
-                imageUrl: picture.imageUrl,
-                publicId: picture.publicId,
-                type,
-                prompt,
-              })),
-            },
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        generatedPictures: {
+          createMany: {
+            data: pictures.map((picture) => ({
+              imageUrl: picture.imageUrl,
+              publicId: picture.publicId,
+              type,
+              prompt,
+            })),
           },
-          generationCount: { increment: pictures.length },
         },
-        include: userInclude,
-      });
+        generationCount: { increment: pictures.length },
+      },
+      include: userInclude,
+    });
 
-      const newPictures = user.generatedPictures.slice(0, pictures.length);
+    const newPictures = user.generatedPictures.slice(0, pictures.length);
 
-      return { user, newPictures };
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to generate pictures');
-    }
+    return { user, newPictures };
   },
 
   deleteUnusedGeneratedPictures: async (
@@ -260,63 +205,53 @@ const userServices = {
     type: $Enums.GeneratedPictureType,
     count: number,
   ) => {
-    try {
-      const publicIds = await prisma.$transaction(async (tx) => {
-        const pictures = await tx.generatedPicture.findMany({
-          where: {
-            userId,
-            type,
-            characters: { none: {} },
-            items: { none: {} },
-            properties: { none: {} },
-            gangs: { none: {} },
-            sessions: { none: {} },
-            factions: { none: {} },
-            maps: { none: {} },
-            campaigns: { none: {} },
-          },
-          orderBy: { createdAt: 'asc' },
-          take: count,
-          select: { id: true, publicId: true },
-        });
-
-        const publicIds = pictures.map((picture) => picture.publicId);
-
-        await tx.generatedPicture.deleteMany({
-          // where: { publicId: publicIds[0] },
-          where: { publicId: { in: publicIds } },
-        });
-
-        return publicIds;
+    const publicIds = await prisma.$transaction(async (tx) => {
+      const pictures = await tx.generatedPicture.findMany({
+        where: {
+          userId,
+          type,
+          characters: { none: {} },
+          items: { none: {} },
+          properties: { none: {} },
+          gangs: { none: {} },
+          sessions: { none: {} },
+          factions: { none: {} },
+          maps: { none: {} },
+          campaigns: { none: {} },
+        },
+        orderBy: { createdAt: 'asc' },
+        take: count,
+        select: { id: true, publicId: true },
       });
 
-      await deleteManyFromCloudinary(publicIds);
+      const publicIds = pictures.map((picture) => picture.publicId);
 
-      return publicIds.length;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to update account information');
-    }
+      await tx.generatedPicture.deleteMany({
+        // where: { publicId: publicIds[0] },
+        where: { publicId: { in: publicIds } },
+      });
+
+      return publicIds;
+    });
+
+    await deleteManyFromCloudinary(publicIds);
+
+    return publicIds.length;
   },
 
   updateUserRoles: async (formData: { id: number; role: UserRole }[]) => {
-    try {
-      const updatePromises = [];
+    const updatePromises = [];
 
-      for (const user of formData) {
-        updatePromises.push(
-          prisma.user.update({
-            where: { id: user.id },
-            data: { role: user.role },
-          }),
-        );
-      }
-
-      await Promise.all(updatePromises);
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to update account information');
+    for (const user of formData) {
+      updatePromises.push(
+        prisma.user.update({
+          where: { id: user.id },
+          data: { role: user.role },
+        }),
+      );
     }
+
+    await Promise.all(updatePromises);
   },
 };
 

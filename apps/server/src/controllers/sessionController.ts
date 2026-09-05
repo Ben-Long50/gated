@@ -1,8 +1,6 @@
 import { Request, Response } from 'express';
 import sessionServices from '../services/sessionServices.js';
 import parseRequestBody from '../utils/parseRequestBody.js';
-import upload from '../utils/multer.js';
-import { uploadToCloudinary } from '../utils/cloudinary.js';
 import { NotesInput } from '../validation/notesSchema.js';
 import { SessionInput } from '../validation/sessionSchema.js';
 import handleControllerError from './handleControllerError.js';
@@ -58,31 +56,27 @@ const sessionController = {
     }
   },
 
-  createOrUpdateSession: [
-    upload.single('pictureFile'),
-    uploadToCloudinary,
-    async (req: Request, res: Response) => {
-      try {
-        const parsedBody = parseRequestBody(req.body);
+  createOrUpdateSession: async (req: Request, res: Response) => {
+    try {
+      const parsedBody = parseRequestBody(req.body);
 
-        const validatedSession = SessionInput.parse(parsedBody);
+      const validatedSession = SessionInput.parse(parsedBody);
 
-        const session =
-          await sessionServices.createOrUpdateSession(validatedSession);
+      const session =
+        await sessionServices.createOrUpdateSession(validatedSession);
 
-        res.status(200).json({
-          session,
-          message: validatedSession.id
-            ? `Successfully updated session: ${session.name}`
-            : `Successfully created session: ${session.name}`,
-        });
-      } catch (error: any) {
-        if (error instanceof Error) {
-          res.status(500).json({ error: error.message });
-        }
+      res.status(200).json({
+        session,
+        message: validatedSession.id
+          ? `Successfully updated session: ${session.name}`
+          : `Successfully created session: ${session.name}`,
+      });
+    } catch (error: any) {
+      if (error instanceof Error) {
+        res.status(500).json({ error: error.message });
       }
-    },
-  ],
+    }
+  },
 
   deleteSession: async (req: Request, res: Response) => {
     try {

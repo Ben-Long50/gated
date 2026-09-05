@@ -22,49 +22,44 @@ const cartServices = {
       remove = true;
     }
 
-    try {
-      const character = await client.character.update({
-        where: { id: characterId },
-        data: {
-          characterCart: {
-            update: {
-              items: remove
-                ? {
-                    delete: {
+    const character = await client.character.update({
+      where: { id: characterId },
+      data: {
+        characterCart: {
+          update: {
+            items: remove
+              ? {
+                  delete: {
+                    characterCartId_itemId: {
+                      characterCartId: cartId,
+                      itemId,
+                    },
+                  },
+                }
+              : {
+                  upsert: {
+                    where: {
                       characterCartId_itemId: {
                         characterCartId: cartId,
                         itemId,
                       },
                     },
-                  }
-                : {
-                    upsert: {
-                      where: {
-                        characterCartId_itemId: {
-                          characterCartId: cartId,
-                          itemId,
-                        },
-                      },
-                      update: {
-                        quantity: { increment: value },
-                      },
-                      create: {
-                        itemId,
-                        quantity: value,
-                      },
+                    update: {
+                      quantity: { increment: value },
+                    },
+                    create: {
+                      itemId,
+                      quantity: value,
                     },
                   },
-            },
+                },
           },
         },
-        include: characterInclude,
-      });
+      },
+      include: characterInclude,
+    });
 
-      return character;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to add item to cart');
-    }
+    return character;
   },
 
   addBulkItems: async (

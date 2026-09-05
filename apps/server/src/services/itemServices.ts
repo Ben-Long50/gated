@@ -53,393 +53,358 @@ export const itemInclude = {
 
 const itemServices = {
   getCodexPreviewItems: async () => {
-    try {
-      const itemData = [
-        {
-          itemTypes: { hasEvery: ['weapon'] },
-          baseItemId: null,
-        },
-        {
-          itemTypes: { hasEvery: ['weapon'] },
-          keywords: { some: { keyword: { name: 'Ranged' } } },
-          baseItemId: null,
-        },
-        {
-          itemTypes: { hasEvery: ['weapon'] },
-          keywords: { some: { keyword: { name: 'Melee' } } },
-          baseItemId: null,
-        },
-        {
-          itemTypes: { hasEvery: ['weapon'] },
-          keywords: {
-            some: {
-              keyword: {
-                OR: [{ name: 'Consumable' }, { name: 'Light Consumable' }],
-              },
+    const itemData = [
+      {
+        itemTypes: { hasEvery: ['weapon'] },
+        baseItemId: null,
+      },
+      {
+        itemTypes: { hasEvery: ['weapon'] },
+        keywords: { some: { keyword: { name: 'Ranged' } } },
+        baseItemId: null,
+      },
+      {
+        itemTypes: { hasEvery: ['weapon'] },
+        keywords: { some: { keyword: { name: 'Melee' } } },
+        baseItemId: null,
+      },
+      {
+        itemTypes: { hasEvery: ['weapon'] },
+        keywords: {
+          some: {
+            keyword: {
+              OR: [{ name: 'Consumable' }, { name: 'Light Consumable' }],
             },
           },
-          baseItemId: null,
         },
-        {
-          itemTypes: { hasEvery: ['armor'] },
-          baseItemId: null,
-        },
-        {
-          itemTypes: { hasEvery: ['armor'] },
-          keywords: { some: { keyword: { name: 'Head' } } },
-          baseItemId: null,
-        },
-        {
-          itemTypes: { hasEvery: ['armor'] },
-          keywords: { some: { keyword: { name: 'Body' } } },
-          baseItemId: null,
-        },
-        {
-          itemTypes: { hasEvery: ['armor'] },
-          keywords: { some: { keyword: { name: 'Cloak' } } },
-          baseItemId: null,
-        },
-        {
-          itemTypes: { hasEvery: ['cybernetic'] },
-          baseItemId: null,
-        },
-        {
-          itemTypes: { hasEvery: ['mutation'] },
-          baseItemId: null,
-        },
-        {
-          itemTypes: { hasEvery: ['vehicle'] },
-          baseItemId: null,
-        },
-        {
-          itemTypes: { hasEvery: ['weapon'] },
-          keywords: { some: { keyword: { name: 'Vehicle Weapon' } } },
-          baseItemId: null,
-        },
-        {
-          itemTypes: { hasEvery: ['drone'] },
-          baseItemId: null,
-        },
-        {
-          itemTypes: { hasEvery: ['weapon'] },
-          keywords: { some: { keyword: { name: 'Drone Weapon' } } },
-          baseItemId: null,
-        },
-        {
-          itemTypes: { hasEvery: ['reusable'] },
-          baseItemId: null,
-        },
-        {
-          itemTypes: { hasEvery: ['consumable'] },
-          baseItemId: null,
-        },
-      ];
+        baseItemId: null,
+      },
+      {
+        itemTypes: { hasEvery: ['armor'] },
+        baseItemId: null,
+      },
+      {
+        itemTypes: { hasEvery: ['armor'] },
+        keywords: { some: { keyword: { name: 'Head' } } },
+        baseItemId: null,
+      },
+      {
+        itemTypes: { hasEvery: ['armor'] },
+        keywords: { some: { keyword: { name: 'Body' } } },
+        baseItemId: null,
+      },
+      {
+        itemTypes: { hasEvery: ['armor'] },
+        keywords: { some: { keyword: { name: 'Cloak' } } },
+        baseItemId: null,
+      },
+      {
+        itemTypes: { hasEvery: ['cybernetic'] },
+        baseItemId: null,
+      },
+      {
+        itemTypes: { hasEvery: ['mutation'] },
+        baseItemId: null,
+      },
+      {
+        itemTypes: { hasEvery: ['vehicle'] },
+        baseItemId: null,
+      },
+      {
+        itemTypes: { hasEvery: ['weapon'] },
+        keywords: { some: { keyword: { name: 'Vehicle Weapon' } } },
+        baseItemId: null,
+      },
+      {
+        itemTypes: { hasEvery: ['drone'] },
+        baseItemId: null,
+      },
+      {
+        itemTypes: { hasEvery: ['weapon'] },
+        keywords: { some: { keyword: { name: 'Drone Weapon' } } },
+        baseItemId: null,
+      },
+      {
+        itemTypes: { hasEvery: ['reusable'] },
+        baseItemId: null,
+      },
+      {
+        itemTypes: { hasEvery: ['consumable'] },
+        baseItemId: null,
+      },
+    ];
 
-      const characterData = [
-        { playerCharacter: true, userId: null },
-        { playerCharacter: false, npcTypes: { isEmpty: true }, userId: null },
-        {
-          playerCharacter: false,
-          npcTypes: { hasEvery: ['goon'] },
-          userId: null,
-        },
-        {
-          playerCharacter: false,
-          npcTypes: { hasEvery: ['shop'] },
-          userId: null,
-        },
-        {
-          playerCharacter: false,
-          npcTypes: { hasEvery: ['monster'] },
-          userId: null,
-        },
-      ];
+    const characterData = [
+      { playerCharacter: true, userId: null },
+      { playerCharacter: false, npcTypes: { isEmpty: true }, userId: null },
+      {
+        playerCharacter: false,
+        npcTypes: { hasEvery: ['goon'] },
+        userId: null,
+      },
+      {
+        playerCharacter: false,
+        npcTypes: { hasEvery: ['shop'] },
+        userId: null,
+      },
+      {
+        playerCharacter: false,
+        npcTypes: { hasEvery: ['monster'] },
+        userId: null,
+      },
+    ];
 
-      const itemCounts = await Promise.all(
-        itemData.map((data) =>
-          prisma.item.count({
-            //@ts-ignore
-            where: data,
-          }),
-        ),
-      );
-
-      const characterCounts = await Promise.all(
-        characterData.map((data) =>
-          prisma.character.count({
-            //@ts-ignore
-            where: data,
-          }),
-        ),
-      );
-
-      const itemPromises = itemData.map((data, index) => {
-        const count = itemCounts[index];
-
-        if (count === 0) {
-          return null;
-        }
-
-        return prisma.item.findFirst({
+    const itemCounts = await Promise.all(
+      itemData.map((data) =>
+        prisma.item.count({
           //@ts-ignore
           where: data,
-          skip: Math.floor(Math.random() * count),
-          select: { generatedPicture: { select: { publicId: true } } },
-        });
-      });
+        }),
+      ),
+    );
 
-      const characterPromises = characterData.map((data, index) => {
-        const count = characterCounts[index];
-
-        if (count === 0) {
-          return null;
-        }
-
-        return prisma.character.findFirst({
+    const characterCounts = await Promise.all(
+      characterData.map((data) =>
+        prisma.character.count({
           //@ts-ignore
           where: data,
-          skip: Math.floor(Math.random() * count),
-          select: { generatedPicture: { select: { publicId: true } } },
-        });
+        }),
+      ),
+    );
+
+    const itemPromises = itemData.map((data, index) => {
+      const count = itemCounts[index];
+
+      if (count === 0) {
+        return null;
+      }
+
+      return prisma.item.findFirst({
+        //@ts-ignore
+        where: data,
+        skip: Math.floor(Math.random() * count),
+        select: { generatedPicture: { select: { publicId: true } } },
       });
+    });
 
-      const [items, characters] = await Promise.all([
-        Promise.all(itemPromises),
-        Promise.all(characterPromises),
-      ]);
+    const characterPromises = characterData.map((data, index) => {
+      const count = characterCounts[index];
 
-      return { items, characters };
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to fetch items');
-    }
+      if (count === 0) {
+        return null;
+      }
+
+      return prisma.character.findFirst({
+        //@ts-ignore
+        where: data,
+        skip: Math.floor(Math.random() * count),
+        select: { generatedPicture: { select: { publicId: true } } },
+      });
+    });
+
+    const [items, characters] = await Promise.all([
+      Promise.all(itemPromises),
+      Promise.all(characterPromises),
+    ]);
+
+    return { items, characters };
   },
 
   getCodexItems: async (types: $Enums.ItemType[]) => {
-    try {
-      const items = await prisma.item.findMany({
-        where: types
-          ? {
-              baseItemId: null,
-              parentItemId: null,
-              itemTypes: { hasSome: types },
-            }
-          : { baseItemId: null, parentItemId: null },
-        include: itemInclude,
-        orderBy: { name: 'asc' },
-      });
+    const items = await prisma.item.findMany({
+      where: types
+        ? {
+            baseItemId: null,
+            parentItemId: null,
+            itemTypes: { hasSome: types },
+          }
+        : { baseItemId: null, parentItemId: null },
+      include: itemInclude,
+      orderBy: { name: 'asc' },
+    });
 
-      return items;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to fetch items');
-    }
+    return items;
   },
 
   getBatchItems: async (itemIds: number[]) => {
-    try {
-      const items = await prisma.item.findMany({
-        where: { id: { in: itemIds } },
-        include: itemInclude,
-      });
+    const items = await prisma.item.findMany({
+      where: { id: { in: itemIds } },
+      include: itemInclude,
+    });
 
-      return items;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to fetch item');
-    }
+    return items;
   },
 
   getItemById: async (itemId: number) => {
-    try {
-      const item = await prisma.item.findUnique({
-        where: { id: itemId },
-        include: itemInclude,
-      });
+    const item = await prisma.item.findUnique({
+      where: { id: itemId },
+      include: itemInclude,
+    });
 
-      if (!item) {
-        throw new Error('Failed to find item');
-      }
-
-      return item;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to fetch item');
+    if (!item) {
+      throw new Error('Failed to find item');
     }
+
+    return item;
   },
 
   createOrUpdateItem: async (formData: ItemInput) => {
-    try {
-      const { id, itemIds, actionIds, keywords, stats, ...data } = formData;
+    const { id, itemIds, actionIds, keywords, stats, ...data } = formData;
 
-      const newStats = addVariableStats(stats);
+    const newStats = addVariableStats(stats);
 
-      formData.id &&
-        (await enforceSingularLinking(formData.id, itemIds, actionIds));
+    formData.id &&
+      (await enforceSingularLinking(formData.id, itemIds, actionIds));
 
-      const item = await prisma.item.upsert({
-        where: { id: id || 0 },
-        update: {
-          ...data,
-          stats: newStats,
-          updatedAt: new Date(),
-          linkedItems: {
-            set: itemIds?.map((id) => ({ id })),
-          },
-          linkedActions: {
-            set: actionIds?.map((id) => ({ id })),
-          },
-          keywords: { deleteMany: {}, createMany: { data: keywords } },
+    const item = await prisma.item.upsert({
+      where: { id: id || 0 },
+      update: {
+        ...data,
+        stats: newStats,
+        updatedAt: new Date(),
+        linkedItems: {
+          set: itemIds?.map((id) => ({ id })),
         },
-        create: {
-          ...data,
-          stats: newStats,
-          linkedItems: {
-            connect: itemIds?.map((id) => ({ id })),
+        linkedActions: {
+          set: actionIds?.map((id) => ({ id })),
+        },
+        keywords: { deleteMany: {}, createMany: { data: keywords } },
+      },
+      create: {
+        ...data,
+        stats: newStats,
+        linkedItems: {
+          connect: itemIds?.map((id) => ({ id })),
+        },
+        linkedActions: {
+          connect: actionIds?.map((id) => ({ id })),
+        },
+        keywords: { createMany: { data: keywords } },
+      },
+      include: itemInclude,
+    });
+
+    if (id) {
+      await prisma.item.updateMany({
+        where: { baseItemId: item.id },
+        data: { ...data, stats: newStats, updatedAt: new Date() },
+      });
+    }
+
+    return item;
+  },
+
+  upgradeItem: async (formData: ItemUpgradeInput) => {
+    const prevCharacter = await prisma.character.findUnique({
+      where: { id: formData.characterId },
+      select: { profits: true },
+    });
+
+    if (!prevCharacter || prevCharacter.profits < formData.upgradePrice) {
+      throw new Error(
+        'You do not have enough profits to purchase the chosen upgrades',
+      );
+    }
+
+    const { character, item } = await prisma.$transaction(async (tx) => {
+      const character = await tx.character.update({
+        where: { id: formData.characterId },
+
+        data: { profits: { decrement: formData.upgradePrice } },
+      });
+
+      const item = await tx.item.update({
+        where: { id: formData.id },
+        data: {
+          name: formData.name,
+          description: formData.description,
+          generatedPictureId: formData.generatedPictureId,
+          modifiedStats: formData.modifiedStats,
+          modifiedKeywords: {
+            deleteMany: {},
+            createMany: { data: formData.keywords },
           },
-          linkedActions: {
-            connect: actionIds?.map((id) => ({ id })),
-          },
-          keywords: { createMany: { data: keywords } },
         },
         include: itemInclude,
       });
 
-      if (id) {
-        await prisma.item.updateMany({
-          where: { baseItemId: item.id },
-          data: { ...data, stats: newStats, updatedAt: new Date() },
-        });
-      }
+      return { character, item };
+    });
 
-      return item;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to create or update item');
-    }
-  },
-
-  upgradeItem: async (formData: ItemUpgradeInput) => {
-    try {
-      const prevCharacter = await prisma.character.findUnique({
-        where: { id: formData.characterId },
-        select: { profits: true },
-      });
-
-      if (!prevCharacter || prevCharacter.profits < formData.upgradePrice) {
-        throw new Error(
-          'You do not have enough profits to purchase the chosen upgrades',
-        );
-      }
-
-      const { character, item } = await prisma.$transaction(async (tx) => {
-        const character = await tx.character.update({
-          where: { id: formData.characterId },
-
-          data: { profits: { decrement: formData.upgradePrice } },
-        });
-
-        const item = await tx.item.update({
-          where: { id: formData.id },
-          data: {
-            name: formData.name,
-            description: formData.description,
-            generatedPictureId: formData.generatedPictureId,
-            modifiedStats: formData.modifiedStats,
-            modifiedKeywords: {
-              deleteMany: {},
-              createMany: { data: formData.keywords },
-            },
-          },
-          include: itemInclude,
-        });
-
-        return { character, item };
-      });
-
-      return { item, character };
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to create or update item');
-    }
+    return { item, character };
   },
 
   createItemCopy: async (itemId: number) => {
-    try {
-      const itemDetails = await prisma.item.findUnique({
-        where: { id: itemId },
-        select: {
-          id: true,
-          name: true,
-          rarity: true,
-          description: true,
-          stats: true,
-          generatedPictureId: true,
-          itemTypes: true,
-          grade: true,
-          price: true,
-          baseItemId: true,
-          linkedItems: { select: { id: true } },
-          linkedActions: { select: { id: true } },
-          keywords: { select: { keywordId: true, value: true } },
-        },
-      });
+    const itemDetails = await prisma.item.findUnique({
+      where: { id: itemId },
+      select: {
+        id: true,
+        name: true,
+        rarity: true,
+        description: true,
+        stats: true,
+        generatedPictureId: true,
+        itemTypes: true,
+        grade: true,
+        price: true,
+        baseItemId: true,
+        linkedItems: { select: { id: true } },
+        linkedActions: { select: { id: true } },
+        keywords: { select: { keywordId: true, value: true } },
+      },
+    });
 
-      if (!itemDetails) {
-        throw new Error('Failed to find original item');
-      }
-
-      const {
-        id,
-        baseItemId,
-        stats,
-        keywords,
-        linkedItems,
-        linkedActions,
-        ...data
-      } = itemDetails;
-
-      const typedStats = stats as ItemStats;
-
-      const itemIds = [] as number[];
-      const actionIds = [] as number[];
-
-      if (linkedItems.length > 0) {
-        for (let item of linkedItems) {
-          const newItem = await itemServices.createItemCopy(item.id);
-
-          itemIds.push(newItem.id);
-        }
-      }
-
-      if (linkedActions.length > 0) {
-        for (let action of linkedActions) {
-          const newItem = await actionServices.createActionCopy(action.id);
-
-          actionIds.push(newItem.id);
-        }
-      }
-
-      const item = await prisma.item.create({
-        data: {
-          ...data,
-          stats: typedStats,
-          linkedItems: {
-            connect: itemIds.map((id) => ({ id })),
-          },
-          linkedActions: {
-            connect: actionIds.map((id) => ({ id })),
-          },
-          keywords: { createMany: { data: keywords } },
-          baseItemId: id,
-        },
-      });
-
-      return item;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to create item copy');
+    if (!itemDetails) {
+      throw new Error('Failed to find original item');
     }
+
+    const {
+      id,
+      baseItemId,
+      stats,
+      keywords,
+      linkedItems,
+      linkedActions,
+      ...data
+    } = itemDetails;
+
+    const typedStats = stats as ItemStats;
+
+    const itemIds = [] as number[];
+    const actionIds = [] as number[];
+
+    if (linkedItems.length > 0) {
+      for (let item of linkedItems) {
+        const newItem = await itemServices.createItemCopy(item.id);
+
+        itemIds.push(newItem.id);
+      }
+    }
+
+    if (linkedActions.length > 0) {
+      for (let action of linkedActions) {
+        const newItem = await actionServices.createActionCopy(action.id);
+
+        actionIds.push(newItem.id);
+      }
+    }
+
+    const item = await prisma.item.create({
+      data: {
+        ...data,
+        stats: typedStats,
+        linkedItems: {
+          connect: itemIds.map((id) => ({ id })),
+        },
+        linkedActions: {
+          connect: actionIds.map((id) => ({ id })),
+        },
+        keywords: { createMany: { data: keywords } },
+        baseItemId: id,
+      },
+    });
+
+    return item;
   },
 
   createCharacterItemCopy: async (
@@ -651,90 +616,60 @@ const itemServices = {
   ) => {
     const validatedConditionReference = ConditionReferenceInput.parse(formData);
 
-    try {
-      const item = await prisma.item.update({
-        where: {
-          id: itemId,
+    const item = await prisma.item.update({
+      where: {
+        id: itemId,
+      },
+      data: {
+        conditions: {
+          deleteMany: {},
+          createMany: { data: validatedConditionReference },
         },
-        data: {
-          conditions: {
-            deleteMany: {},
-            createMany: { data: validatedConditionReference },
-          },
-        },
-        include: itemInclude,
-      });
+      },
+      include: itemInclude,
+    });
 
-      return item;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to create item conditions');
-    }
+    return item;
   },
 
   setItemAvailable: async (itemId: number) => {
-    try {
-      const item = await prisma.item.update({
-        where: { id: itemId },
-        data: { available: true },
-        include: itemInclude,
-      });
+    const item = await prisma.item.update({
+      where: { id: itemId },
+      data: { available: true },
+      include: itemInclude,
+    });
 
-      return item;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to set item availability to true');
-    }
+    return item;
   },
 
   setAllCharacterItemsAvailable: async (characterId: number) => {
-    try {
-      await prisma.item.updateMany({
-        where: { characterInventory: { characterId }, available: false },
-        data: { available: true },
-      });
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to set item availability to true');
-    }
+    await prisma.item.updateMany({
+      where: { characterInventory: { characterId }, available: false },
+      data: { available: true },
+    });
   },
 
   setItemNotAvailable: async (itemId: number) => {
-    try {
-      await prisma.item.update({
-        where: { id: itemId },
-        data: { available: false },
-      });
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to set item availability to false');
-    }
+    await prisma.item.update({
+      where: { id: itemId },
+      data: { available: false },
+    });
   },
 
   deleteItem: async (itemId: number) => {
-    try {
-      await prisma.item.delete({
-        where: {
-          id: itemId,
-        },
-      });
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to delete item');
-    }
+    await prisma.item.delete({
+      where: {
+        id: itemId,
+      },
+    });
   },
 
   deleteItems: async (itemIds: number[]) => {
-    try {
-      await prisma.item.deleteMany({
-        where: {
-          id: { in: itemIds },
-        },
-      });
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to delete items');
-    }
+    await prisma.item.deleteMany({
+      where: {
+        id: { in: itemIds },
+      },
+    });
   },
 };
 

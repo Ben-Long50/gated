@@ -1,7 +1,5 @@
 import { Request, Response } from 'express';
 import campaignServices from '../services/campaignServices.js';
-import upload from '../utils/multer.js';
-import { uploadToCloudinary } from '../utils/cloudinary.js';
 import parseRequestBody from '../utils/parseRequestBody.js';
 import { CampaignInput } from '../validation/campaignSchema.js';
 import { EventInput } from '../validation/eventSchema.js';
@@ -78,50 +76,46 @@ const campaignController = {
     }
   },
 
-  createOrUpdateCampaign: [
-    upload.single('pictureFile'),
-    uploadToCloudinary,
-    async (req: Request, res: Response) => {
-      try {
-        if (!req.user) {
-          res.status(401).json({
-            error:
-              'You do not have the required permissions to create a campaign',
-          });
-          return;
-        }
-
-        const parsedBody = parseRequestBody(req.body);
-
-        const validatedCampaign = CampaignInput.parse(parsedBody);
-
-        const campaign = await campaignServices.createOrUpdateCampaign(
-          validatedCampaign,
-          req.user.id,
-        );
-
-        const io = getIO();
-
-        const players = campaign?.players.map((player) => player.id) || [];
-
-        const pendingPlayers =
-          campaign?.pendingPlayers.map((player) => player.id) || [];
-
-        const playerIds = [campaign?.ownerId, ...players, ...pendingPlayers];
-
-        io.emit('globalCampaign', { campaignId: campaign.id, playerIds });
-
-        res.status(200).json({
-          campaign,
-          message: `Successfully created ${campaign.name}`,
+  createOrUpdateCampaign: async (req: Request, res: Response) => {
+    try {
+      if (!req.user) {
+        res.status(401).json({
+          error:
+            'You do not have the required permissions to create a campaign',
         });
-      } catch (error: any) {
-        if (error instanceof Error) {
-          res.status(500).json({ error: error.message });
-        }
+        return;
       }
-    },
-  ],
+
+      const parsedBody = parseRequestBody(req.body);
+
+      const validatedCampaign = CampaignInput.parse(parsedBody);
+
+      const campaign = await campaignServices.createOrUpdateCampaign(
+        validatedCampaign,
+        req.user.id,
+      );
+
+      const io = getIO();
+
+      const players = campaign?.players.map((player) => player.id) || [];
+
+      const pendingPlayers =
+        campaign?.pendingPlayers.map((player) => player.id) || [];
+
+      const playerIds = [campaign?.ownerId, ...players, ...pendingPlayers];
+
+      io.emit('globalCampaign', { campaignId: campaign.id, playerIds });
+
+      res.status(200).json({
+        campaign,
+        message: `Successfully created ${campaign.name}`,
+      });
+    } catch (error: any) {
+      if (error instanceof Error) {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  },
 
   getCampaignMaps: async (req: Request, res: Response) => {
     try {
@@ -253,12 +247,10 @@ const campaignController = {
         req.user.id,
       );
 
-      res
-        .status(200)
-        .json({
-          campaign,
-          message: `Successfully rejected the invite to ${campaign.name}`,
-        });
+      res.status(200).json({
+        campaign,
+        message: `Successfully rejected the invite to ${campaign.name}`,
+      });
     } catch (error: any) {
       handleControllerError(res, error);
     }

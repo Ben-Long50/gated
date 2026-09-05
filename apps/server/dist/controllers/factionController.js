@@ -1,6 +1,4 @@
 import factionServices from '../services/factionServices.js';
-import upload from '../utils/multer.js';
-import { uploadToCloudinary } from '../utils/cloudinary.js';
 import parseRequestBody from '../utils/parseRequestBody.js';
 import { FactionInput } from '../validation/factionSchema.js';
 import handleControllerError from './handleControllerError.js';
@@ -27,31 +25,27 @@ const factionController = {
             handleControllerError(res, error);
         }
     },
-    updateFaction: [
-        upload.single('pictureFile'),
-        uploadToCloudinary,
-        async (req, res) => {
-            try {
-                if (!req.user) {
-                    res.status(401).json({
-                        error: 'You do not have the required permissions to update a faction',
-                    });
-                    return;
-                }
-                const parsedBody = parseRequestBody(req.body);
-                const validatedFaction = FactionInput.parse(parsedBody);
-                const faction = await factionServices.updateFaction(validatedFaction);
-                res
-                    .status(200)
-                    .json({ faction, message: `Successfully updated ${faction.name}` });
+    updateFaction: async (req, res) => {
+        try {
+            if (!req.user) {
+                res.status(401).json({
+                    error: 'You do not have the required permissions to update a faction',
+                });
+                return;
             }
-            catch (error) {
-                if (error instanceof Error) {
-                    res.status(500).json({ error: error.message });
-                }
+            const parsedBody = parseRequestBody(req.body);
+            const validatedFaction = FactionInput.parse(parsedBody);
+            const faction = await factionServices.updateFaction(validatedFaction);
+            res
+                .status(200)
+                .json({ faction, message: `Successfully updated ${faction.name}` });
+        }
+        catch (error) {
+            if (error instanceof Error) {
+                res.status(500).json({ error: error.message });
             }
-        },
-    ],
+        }
+    },
     deleteFaction: async (req, res) => {
         try {
             if (!req.user) {

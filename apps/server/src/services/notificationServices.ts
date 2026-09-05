@@ -3,23 +3,18 @@ import prisma from '../config/database.js';
 
 const notificationServices = {
   getNotifications: async (userId: number) => {
-    try {
-      const notifications = await prisma.notification.findMany({
-        where: { recipientId: userId },
-        include: {
-          sender: {
-            select: { profilePicture: true, username: true },
-          },
-          campaign: { select: { id: true, name: true } },
+    const notifications = await prisma.notification.findMany({
+      where: { recipientId: userId },
+      include: {
+        sender: {
+          select: { profilePicture: true, username: true },
         },
-        orderBy: { createdAt: 'desc' },
-      });
+        campaign: { select: { id: true, name: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
 
-      return notifications;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to fetch notifications');
-    }
+    return notifications;
   },
 
   createCampaignNotification: async (
@@ -28,57 +23,37 @@ const notificationServices = {
     sender: number,
     campaignId: number,
   ) => {
-    try {
-      await prisma.notification.createMany({
-        data: recipients.map((recipient) => ({
-          type,
-          recipientId: recipient,
-          senderId: sender,
-          campaignId,
-        })),
-      });
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to create or update notification');
-    }
+    await prisma.notification.createMany({
+      data: recipients.map((recipient) => ({
+        type,
+        recipientId: recipient,
+        senderId: sender,
+        campaignId,
+      })),
+    });
   },
 
   markNotificationsRead: async (userId: number) => {
-    try {
-      await prisma.notification.updateMany({
-        where: { recipientId: userId },
-        data: { read: true },
-      });
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to create or update notification');
-    }
+    await prisma.notification.updateMany({
+      where: { recipientId: userId },
+      data: { read: true },
+    });
   },
 
   deleteNotification: async (notificationId: number) => {
-    try {
-      await prisma.notification.delete({
-        where: {
-          id: notificationId,
-        },
-      });
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to delete notification');
-    }
+    await prisma.notification.delete({
+      where: {
+        id: notificationId,
+      },
+    });
   },
 
   deleteNotifications: async (userId: number) => {
-    try {
-      await prisma.notification.deleteMany({
-        where: {
-          recipientId: userId,
-        },
-      });
-    } catch (error: any) {
-      console.error(error);
-      throw new Error('Failed to delete notifications');
-    }
+    await prisma.notification.deleteMany({
+      where: {
+        recipientId: userId,
+      },
+    });
   },
 };
 
