@@ -48,11 +48,11 @@ export const CharacterInput = z
     attributes: Attributes,
     perkIds: z.array(z.coerce.number().int().nonnegative()),
   })
-  .refine((data) => data.playerCharacter && !data.level, {
+  .refine((data) => !data.playerCharacter || data.level != null, {
     message: 'Player Characters must have a level',
     path: ['level'],
   })
-  .refine((data) => !data.playerCharacter && data.level != null, {
+  .refine((data) => data.playerCharacter || data.level == null, {
     message: 'Non-Player Characters must not have a level',
     path: ['level'],
   });
