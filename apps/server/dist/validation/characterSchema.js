@@ -1,19 +1,23 @@
 import z from 'zod';
-import { Attributes, CharacterStats, Description, FirstName, LastName, } from './fieldSchemas.js';
+import { Attributes, CharacterStats, Description, FirstName, LastName, Name, } from './fieldSchemas.js';
 import { NpcType, Sex } from './enums.js';
 import prisma from '../config/database.js';
 import validateLevelUpBonus from '../utils/validateLevelUpBonus.js';
 export const CharacterInput = z
     .object({
     campaignId: z.number().int().optional(),
-    firstName: FirstName,
-    lastName: LastName,
+    name: Name,
+    title: z
+        .string()
+        .min(2, 'Title length must be greater than 2 characters')
+        .max(100, 'Title length must be less than 100 characters')
+        .optional(),
     playerCharacter: z.boolean(),
     profits: z.number().int().nonnegative().optional(),
     npcTypes: z.array(NpcType).optional(),
     preferences: z.object({
-        firstName: z.boolean(),
-        lastName: z.boolean(),
+        name: z.boolean(),
+        title: z.boolean(),
         age: z.boolean(),
         height: z.boolean(),
         weight: z.boolean(),
@@ -38,25 +42,25 @@ export const CharacterInput = z
     attributes: Attributes,
     perkIds: z.array(z.coerce.number().int().nonnegative()),
 })
-    .refine((data) => data.playerCharacter && !data.level, {
+    .refine((data) => !data.playerCharacter || data.level != null, {
     message: 'Player Characters must have a level',
     path: ['level'],
 })
-    .refine((data) => !data.playerCharacter && data.level != null, {
+    .refine((data) => data.playerCharacter || data.level == null, {
     message: 'Non-Player Characters must not have a level',
     path: ['level'],
 });
 export const CharacterUpdateInput = z.object({
     id: z.number().int().optional(),
     campaignId: z.number().int().optional(),
-    firstName: FirstName,
-    lastName: LastName,
+    name: FirstName,
+    title: LastName,
     playerCharacter: z.boolean(),
     profits: z.number().int().nonnegative().optional(),
     npcTypes: z.array(NpcType).optional(),
     preferences: z.object({
-        firstName: z.boolean(),
-        lastName: z.boolean(),
+        name: z.boolean(),
+        title: z.boolean(),
         age: z.boolean(),
         height: z.boolean(),
         weight: z.boolean(),

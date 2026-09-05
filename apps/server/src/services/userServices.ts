@@ -27,7 +27,7 @@ export const userInclude = {
         },
       },
     },
-    orderBy: { firstName: 'asc' as const },
+    orderBy: { name: 'asc' as const },
   },
   maps: {
     select: {
@@ -143,7 +143,7 @@ const userServices = {
           lastName: true,
           role: true,
           profilePicture: true,
-          characters: { select: { id: true }, orderBy: { firstName: 'asc' } },
+          characters: { select: { id: true }, orderBy: { name: 'asc' } },
           ownerCampaigns: { select: { id: true } },
           playerCampaigns: { select: { id: true } },
           pendingCampaigns: { select: { id: true } },

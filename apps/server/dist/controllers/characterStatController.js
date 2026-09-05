@@ -1,6 +1,5 @@
 import characterStatServices from '../services/characterStatServices.js';
 import { CharacterStats } from '../validation/fieldSchemas.js';
-import constructName from '../utils/constructName.js';
 import { capitalCase } from 'change-case';
 import handleControllerError from './handleControllerError.js';
 const characterStatController = {
@@ -12,7 +11,7 @@ const characterStatController = {
             const statsMessage = statMessages.join(', ');
             res.status(200).json({
                 character,
-                message: `Successfully updated the following stats on ${constructName(character)}: ${statsMessage}`,
+                message: `Successfully updated the following stats on ${character.name}: ${statsMessage}`,
             });
         }
         catch (error) {
@@ -38,7 +37,7 @@ const characterStatController = {
             const character = await characterStatServices.editProfits(Number(req.params.characterId), Number(req.body.value));
             res.status(200).json({
                 character,
-                message: `Successfully adjusted the profits of ${constructName(character)} by ${req.body.value}`,
+                message: `Successfully adjusted the profits of ${character.name} by ${req.body.value}`,
             });
         }
         catch (error) {

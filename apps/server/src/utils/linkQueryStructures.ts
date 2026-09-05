@@ -19,7 +19,7 @@ export const includeCharacterCart: Prisma.CharacterCartInclude = {
           linkedActions: { orderBy: { name: 'asc' } },
           characterInventory: {
             include: {
-              character: { select: { firstName: true, lastName: true } },
+              character: { select: { name: true, title: true } },
             },
           },
         },

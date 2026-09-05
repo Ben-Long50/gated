@@ -369,7 +369,7 @@ const encounterServices = {
 
           rolls.set(character?.id, {
             characterId: character?.id,
-            name: character?.firstName,
+            name: character?.name,
             playerCharacter: character?.playerCharacter,
             diceArray: rollResults.result,
             successes: rollResults.successes,
@@ -452,7 +452,7 @@ const encounterServices = {
       if (rollResults) {
         rolls.set(character?.id, {
           characterId: character?.id,
-          name: `${character?.firstName} ${character?.lastName}`,
+          name: character?.name,
           playerCharacter: character?.playerCharacter,
           diceArray: rollResults.result,
           successes: rollResults.successes,

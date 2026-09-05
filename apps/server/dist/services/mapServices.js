@@ -20,7 +20,7 @@ const mapInclude = {
         select: {
             id: true,
         },
-        orderBy: { character: { firstName: 'asc' } },
+        orderBy: { character: { name: 'asc' } },
     },
     encounters: true,
     generatedPicture: { select: { publicId: true } },

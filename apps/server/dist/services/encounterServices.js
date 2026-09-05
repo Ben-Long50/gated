@@ -310,7 +310,7 @@ const encounterServices = {
                     const rollResults = calculateRoll(character === null || character === void 0 ? void 0 : character.attributes, { roll: violenceRolls }, []) || { result: [], successes: 0 };
                     rolls.set(character === null || character === void 0 ? void 0 : character.id, {
                         characterId: character === null || character === void 0 ? void 0 : character.id,
-                        name: character === null || character === void 0 ? void 0 : character.firstName,
+                        name: character === null || character === void 0 ? void 0 : character.name,
                         playerCharacter: character === null || character === void 0 ? void 0 : character.playerCharacter,
                         diceArray: rollResults.result,
                         successes: rollResults.successes,
@@ -357,7 +357,7 @@ const encounterServices = {
             if (rollResults) {
                 rolls.set(character === null || character === void 0 ? void 0 : character.id, {
                     characterId: character === null || character === void 0 ? void 0 : character.id,
-                    name: `${character === null || character === void 0 ? void 0 : character.firstName} ${character === null || character === void 0 ? void 0 : character.lastName}`,
+                    name: character === null || character === void 0 ? void 0 : character.name,
                     playerCharacter: character === null || character === void 0 ? void 0 : character.playerCharacter,
                     diceArray: rollResults.result,
                     successes: rollResults.successes,

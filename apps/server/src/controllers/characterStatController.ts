@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import characterStatServices from '../services/characterStatServices.js';
 import { CharacterStats } from '../validation/fieldSchemas.js';
-import constructName from '../utils/constructName.js';
 import { capitalCase } from 'change-case';
 import handleControllerError from './handleControllerError.js';
 
@@ -23,7 +22,7 @@ const characterStatController = {
 
       res.status(200).json({
         character,
-        message: `Successfully updated the following stats on ${constructName(character)}: ${statsMessage}`,
+        message: `Successfully updated the following stats on ${character.name}: ${statsMessage}`,
       });
     } catch (error: any) {
       handleControllerError(res, error);
@@ -62,7 +61,7 @@ const characterStatController = {
 
       res.status(200).json({
         character,
-        message: `Successfully adjusted the profits of ${constructName(character)} by ${req.body.value}`,
+        message: `Successfully adjusted the profits of ${character.name} by ${req.body.value}`,
       });
     } catch (error: any) {
       handleControllerError(res, error);

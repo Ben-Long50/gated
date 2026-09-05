@@ -47,7 +47,7 @@ const characterServices = {
         try {
             const characters = await prisma.character.findMany({
                 orderBy: {
-                    firstName: 'asc',
+                    name: 'asc',
                 },
                 include: {
                     characterInventory: {
@@ -73,7 +73,7 @@ const characterServices = {
             const characters = await prisma.character.findMany({
                 where: { userId: null },
                 select: { id: true },
-                orderBy: { firstName: 'asc' },
+                orderBy: { name: 'asc' },
             });
             if (characters.length === 0) {
                 throw new Error('No public characters exist');
@@ -92,7 +92,7 @@ const characterServices = {
                     id: { in: characterIds },
                 },
                 include: characterInclude,
-                orderBy: { firstName: 'asc' },
+                orderBy: { name: 'asc' },
             });
             return characters;
         }
@@ -124,8 +124,8 @@ const characterServices = {
                     character: {
                         select: {
                             userId: true,
-                            firstName: true,
-                            lastName: true,
+                            name: true,
+                            title: true,
                             generatedPicture: { select: { publicId: true } },
                         },
                     },
@@ -236,8 +236,8 @@ const characterServices = {
                 where: { id: characterId },
                 select: {
                     userId: true,
-                    firstName: true,
-                    lastName: true,
+                    name: true,
+                    title: true,
                     level: true,
                     stats: true,
                     generatedPictureId: true,

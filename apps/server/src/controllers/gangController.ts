@@ -6,7 +6,6 @@ import gangServices from '../services/gangServices.js';
 import { GangInput, GangSessionBonusInput } from '../validation/gangSchema.js';
 import z from 'zod';
 import handleControllerError from './handleControllerError.js';
-import constructName from '../utils/constructName.js';
 import { getIO } from '../sockets/socket.js';
 
 const gangController = {
@@ -182,7 +181,7 @@ const gangController = {
       res.status(200).json({
         gang,
         character,
-        message: `Distributed ${req.body.value} profits from ${gang.name} to ${constructName(character)}`,
+        message: `Distributed ${req.body.value} profits from ${gang.name} to ${character.name}`,
       });
     } catch (error: any) {
       handleControllerError(res, error);

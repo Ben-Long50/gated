@@ -5,6 +5,7 @@ import {
   Description,
   FirstName,
   LastName,
+  Name,
 } from './fieldSchemas.js';
 import { NpcType, Sex } from './enums.js';
 import prisma from '../config/database.js';
@@ -13,14 +14,18 @@ import validateLevelUpBonus from '../utils/validateLevelUpBonus.js';
 export const CharacterInput = z
   .object({
     campaignId: z.number().int().optional(),
-    firstName: FirstName,
-    lastName: LastName,
+    name: Name,
+    title: z
+      .string()
+      .min(2, 'Title length must be greater than 2 characters')
+      .max(100, 'Title length must be less than 100 characters')
+      .optional(),
     playerCharacter: z.boolean(),
     profits: z.number().int().nonnegative().optional(),
     npcTypes: z.array(NpcType).optional(),
     preferences: z.object({
-      firstName: z.boolean(),
-      lastName: z.boolean(),
+      name: z.boolean(),
+      title: z.boolean(),
       age: z.boolean(),
       height: z.boolean(),
       weight: z.boolean(),
@@ -60,14 +65,14 @@ export const CharacterInput = z
 export const CharacterUpdateInput = z.object({
   id: z.number().int().optional(),
   campaignId: z.number().int().optional(),
-  firstName: FirstName,
-  lastName: LastName,
+  name: FirstName,
+  title: LastName,
   playerCharacter: z.boolean(),
   profits: z.number().int().nonnegative().optional(),
   npcTypes: z.array(NpcType).optional(),
   preferences: z.object({
-    firstName: z.boolean(),
-    lastName: z.boolean(),
+    name: z.boolean(),
+    title: z.boolean(),
     age: z.boolean(),
     height: z.boolean(),
     weight: z.boolean(),

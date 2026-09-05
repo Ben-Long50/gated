@@ -368,8 +368,8 @@ model Character {
   firstTaste            Json?
   badMedicine           Json?
   description           String?
-  firstName             String
-  lastName              String?
+  name                  String
+  title                 String?
   playerCharacter       Boolean                       @default(false)
   npcTypes              NpcTypes[]
   preferences           Json?

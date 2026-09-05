@@ -11,7 +11,7 @@ const mapInclude = {
     select: {
       id: true,
     },
-    orderBy: { character: { firstName: 'asc' as const } },
+    orderBy: { character: { name: 'asc' as const } },
   },
   encounters: true,
   generatedPicture: { select: { publicId: true } },

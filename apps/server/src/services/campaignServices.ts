@@ -31,19 +31,19 @@ const campaignInclude = {
   characters: {
     select: {
       id: true,
-      firstName: true,
-      lastName: true,
+      name: true,
+      title: true,
       generatedPicture: { select: { publicId: true } },
       userId: true,
       playerCharacter: true,
     },
-    orderBy: { firstName: 'asc' as const },
+    orderBy: { name: 'asc' as const },
   },
   events: {
     include: {
       character: {
         select: {
-          firstName: true,
+          name: true,
           generatedPicture: { select: { publicId: true } },
         },
       },
@@ -79,8 +79,8 @@ const campaignServices = {
           ],
         },
         include: {
-          players: { orderBy: { firstName: 'desc' } },
-          pendingPlayers: { orderBy: { firstName: 'desc' } },
+          players: { orderBy: { username: 'desc' } },
+          pendingPlayers: { orderBy: { username: 'desc' } },
           owner: true,
         },
         orderBy: { name: 'asc' },
@@ -257,7 +257,7 @@ const campaignServices = {
             select: {
               id: true,
             },
-            orderBy: { character: { firstName: 'asc' } },
+            orderBy: { character: { name: 'asc' } },
           },
           encounters: true,
         },
@@ -285,7 +285,7 @@ const campaignServices = {
             select: {
               id: true,
             },
-            orderBy: { character: { firstName: 'asc' } },
+            orderBy: { character: { name: 'asc' } },
           },
           encounters: { select: { active: true } },
         },
@@ -305,8 +305,8 @@ const campaignServices = {
         include: {
           character: {
             select: {
-              firstName: true,
-              lastName: true,
+              name: true,
+              title: true,
               id: true,
               userId: true,
               campaignId: true,

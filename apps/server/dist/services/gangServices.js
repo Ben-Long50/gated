@@ -15,8 +15,8 @@ const gangInclude = {
     leaders: {
         select: {
             id: true,
-            firstName: true,
-            lastName: true,
+            name: true,
+            title: true,
             generatedPicture: { select: { publicId: true } },
             userId: true,
         },
@@ -24,14 +24,14 @@ const gangInclude = {
     characters: {
         select: {
             id: true,
-            firstName: true,
-            lastName: true,
+            name: true,
+            title: true,
             generatedPicture: { select: { publicId: true } },
             userId: true,
             playerCharacter: true,
             level: true,
         },
-        orderBy: { firstName: 'asc' },
+        orderBy: { name: 'asc' },
     },
     turf: true,
     properties: true,

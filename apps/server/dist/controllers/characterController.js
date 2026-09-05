@@ -5,7 +5,6 @@ import parseRequestBody from '../utils/parseRequestBody.js';
 import cartServices from '../services/cartServices.js';
 import { CharacterInput, CharacterLevelBonus, CharacterUpdateInput, } from '../validation/characterSchema.js';
 import { getIO } from '../sockets/socket.js';
-import constructName from '../utils/constructName.js';
 import handleControllerError from './handleControllerError.js';
 import prisma from '../config/database.js';
 const characterController = {
@@ -74,7 +73,7 @@ const characterController = {
             const character = await cartServices.editCartItem(Number(req.params.characterId), Number(req.params.cartId), Number(req.body.itemId), Number(req.body.value));
             res.status(200).json({
                 character,
-                message: `Successfully added ${req.body.value} item(s) to ${constructName(character)}'s cart`,
+                message: `Successfully added ${req.body.value} item(s) to ${character.name}'s cart`,
             });
         }
         catch (error) {
@@ -89,7 +88,7 @@ const characterController = {
             }
             res.status(200).json({
                 character,
-                message: `Successfully added bulk item(s) to ${constructName(character)}'s cart`,
+                message: `Successfully added bulk item(s) to ${character.name}'s cart`,
             });
         }
         catch (error) {
@@ -152,7 +151,7 @@ const characterController = {
                 }
                 res.status(200).json({
                     character,
-                    message: `Successfully created ${constructName(character)}`,
+                    message: `Successfully created ${character.name}`,
                 });
             }
             catch (error) {
@@ -182,7 +181,7 @@ const characterController = {
                 }
                 res.status(200).json({
                     character,
-                    message: `Successfully created ${constructName(character)}`,
+                    message: `Successfully created ${character.name}`,
                 });
             }
             catch (error) {
@@ -198,7 +197,7 @@ const characterController = {
             const character = await characterServices.createTemplateCharacter(Number(req.params.characterId));
             res.status(200).json({
                 character,
-                message: `Successfully created a character copy of ${constructName(character)}`,
+                message: `Successfully created a character copy of ${character.name}`,
             });
         }
         catch (error) {
@@ -224,7 +223,7 @@ const characterController = {
                 }
                 res.status(200).json({
                     character,
-                    message: `Successfully updated ${constructName(character)}`,
+                    message: `Successfully updated ${character.name}`,
                 });
             }
             catch (error) {
@@ -249,7 +248,7 @@ const characterController = {
             }
             res.status(200).json({
                 character,
-                message: `Successfully updated the level of ${constructName(character)} by ${req.body.levelChange}`,
+                message: `Successfully updated the level of ${character.name} by ${req.body.levelChange}`,
             });
         }
         catch (error) {
@@ -274,7 +273,7 @@ const characterController = {
             }
             res.status(200).json({
                 character,
-                message: `Successfully selected level up bonus for ${constructName(character)}`,
+                message: `Successfully selected level up bonus for ${character.name}`,
             });
         }
         catch (error) {
@@ -298,7 +297,7 @@ const characterController = {
             }
             res.status(200).json({
                 character,
-                message: `Successfully created conditions on ${constructName(character)}`,
+                message: `Successfully created conditions on ${character.name}`,
             });
         }
         catch (error) {
