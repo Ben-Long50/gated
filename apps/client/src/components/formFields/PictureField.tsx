@@ -7,12 +7,7 @@ import { mdiMinus, mdiPlus } from '@mdi/js';
 import useGeneratePictureMutation from 'src/hooks/useGeneratePictureMutation/useGeneratePictureMutation';
 import BtnRect from '../buttons/BtnRect';
 import Loading from '../Loading';
-import {
-  Outlet,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from 'react-router-dom';
+import { Outlet, useLocation, useSearchParams } from 'react-router-dom';
 import IconBtnSmall from '../buttons/IconBtnSmall';
 import usePromptForm from 'src/hooks/form hooks/usePromptForm';
 import BtnAuth from '../buttons/BtnAuth';
@@ -23,6 +18,7 @@ import { LayoutContext } from 'src/contexts/LayoutContext';
 import { AuthContext } from 'src/contexts/AuthContext';
 import useStandardLibraryQuery from 'src/hooks/useStandardLibraryQuery/useStandardLibraryQuery';
 import useGenerateStandardPictureMutation from 'src/hooks/useGenerateStandardPictureMutation/useGenerateStandardPictureMutation';
+import { useNavigateWithQuery } from 'src/hooks/useNavigateWithQuery';
 
 const PictureField = ({
   form,
@@ -34,7 +30,7 @@ const PictureField = ({
   const { user } = useContext(AuthContext);
   const { accentPrimary } = useContext(ThemeContext);
   const { mobile } = useContext(LayoutContext);
-  const navigate = useNavigate();
+  const navigate = useNavigateWithQuery();
   const location = useLocation();
   const path = location.pathname.split('/');
 

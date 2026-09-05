@@ -236,18 +236,27 @@ const CodexLinks = () => {
           />
           <SubLinkSidebar
             title="Create Property"
-            path="codex/properties/create"
+            path="codex/properties/create?formType=codex"
           />
-          <SubLinkSidebar title="Create Perk" path="codex/perks/create" />
-          <SubLinkSidebar title="Create Trait" path="codex/keywords/create" />
-          <SubLinkSidebar title="Create Action" path="codex/actions/create" />
+          <SubLinkSidebar
+            title="Create Perk"
+            path="codex/perks/create?formType=codex"
+          />
+          <SubLinkSidebar
+            title="Create Trait"
+            path="codex/keywords/create?formType=codex"
+          />
+          <SubLinkSidebar
+            title="Create Action"
+            path="codex/actions/create?formType=codex"
+          />
           <SubLinkSidebar
             title="Create Condition"
-            path="codex/conditions/create"
+            path="codex/conditions/create?formType=codex"
           />
           <SubLinkSidebar
             title="Create Standard Picture"
-            path="codex/pictures/create"
+            path="codex/pictures/create?formType=codex"
           />
         </LinkListSidebar>
       )}

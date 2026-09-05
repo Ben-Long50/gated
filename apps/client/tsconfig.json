@@ -45,7 +45,8 @@
   },
   "include": [
     "src",
-    "scripts"
+    "scripts",
+    "src/components/formFields/ItemLinkField.tsx"
   ] /* Include the source folder for compilation. */,
   "exclude": ["node_modules", "dist"] /* Exclude unnecessary folders. */
 }

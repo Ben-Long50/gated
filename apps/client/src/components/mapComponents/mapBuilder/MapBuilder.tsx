@@ -31,10 +31,11 @@ import IconBtnMedium from 'src/components/buttons/IconBtnMedium';
 import useMapQuery from 'src/hooks/useMapQueries/useMapQuery';
 import MapScaler from '../map/MapScaler';
 import useCreateCodexMapMutation from 'src/hooks/useCreateCodexMapMutation/useCreateCodexMapMutation';
+import { useNavigateWithQuery } from 'src/hooks/useNavigateWithQuery';
 
 const MapBuilder = () => {
   const { mapId } = useParams();
-  const navigate = useNavigate();
+  const navigate = useNavigateWithQuery();
   const [folders, setFolders] = useState({});
   const [currentFolder, setCurrentFolder] = useState({});
   const [path, setPath] = useState(['/assets', 'tiles']);

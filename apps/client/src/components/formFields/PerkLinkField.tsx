@@ -7,20 +7,19 @@ import InputFieldCheckbox from './InputFieldCheckbox';
 import { useContext } from 'react';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import ArrowHeader2 from '../ArrowHeader2';
+import { useNavigateWithQuery } from 'src/hooks/useNavigateWithQuery';
 
 const PerkLinkField = ({
   form,
-  path,
   level,
   attributeTree,
 }: {
   form: FormApi;
-  path: string;
   level: number;
   attributeTree: AttributeTree;
 }) => {
   const { mobile } = useContext(LayoutContext);
-  const navigate = useNavigate();
+  const navigate = useNavigateWithQuery();
   const location = useLocation();
   const parts = location.pathname.split('/');
 
@@ -63,7 +62,7 @@ const PerkLinkField = ({
       <BtnAuth
         className="w-full min-w-48"
         onClick={() => {
-          navigate(path || 'perks?mode=form');
+          navigate('perks?mode=form');
         }}
       >
         Link Perks

@@ -1,16 +1,17 @@
 import { FormApi } from '@tanstack/react-form';
 import ItemCardSmall from '../ItemCardSmall';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import useKeywords from 'src/hooks/useKeywords';
 import BtnAuth from '../buttons/BtnAuth';
 import InputFieldCheckbox from './InputFieldCheckbox';
 import { useContext } from 'react';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import ArrowHeader2 from '../ArrowHeader2';
+import { useNavigateWithQuery } from 'src/hooks/useNavigateWithQuery';
 
 const KeywordLinkField = ({ form, mode }: { form: FormApi; mode?: string }) => {
   const { mobile } = useContext(LayoutContext);
-  const navigate = useNavigate();
+  const navigate = useNavigateWithQuery();
   const location = useLocation();
   const parts = location.pathname.split('/');
 

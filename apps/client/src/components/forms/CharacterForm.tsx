@@ -335,7 +335,6 @@ const CharacterForm = () => {
             form={characterForm}
             level={level}
             attributeTree={attributes}
-            path="perks?formType=codex&mode=form"
           />
         )}
       </characterForm.Subscribe>
