@@ -6,6 +6,7 @@ import InputField from './InputField';
 import Divider from '../Divider';
 import useInputState from 'src/hooks/useInputState';
 import IconBtnSmall from '../buttons/IconBtnSmall';
+import { capitalCase } from 'change-case';
 
 const InputSelectField = ({
   options,
@@ -30,13 +31,13 @@ const InputSelectField = ({
     }
     if (typeof value === 'number') {
       const option = options.find((option) => option.id === value);
-      return option.name;
+      return capitalCase(option.name);
     }
     if (typeof value === 'string') {
-      return value;
+      return capitalCase(value);
     }
     if (value.name) {
-      return value.name;
+      return capitalCase(value.name);
     }
   };
 
@@ -69,10 +70,13 @@ const InputSelectField = ({
     return () => document.removeEventListener('click', minimizeSelect);
   }, []);
 
-  const filteredOptions =
-    options?.filter((entity) =>
-      entity.name.toLowerCase().includes(query.toLowerCase()),
-    ) || [];
+  const filteredOptions = options
+    ? options.filter((entity: any) =>
+        constructDisplayValue(entity)
+          .toLowerCase()
+          .includes(query.toLowerCase()),
+      )
+    : [];
 
   return (
     <div
@@ -129,7 +133,7 @@ const InputSelectField = ({
                   handleValue(option);
                 }}
               >
-                <p>{option.name}</p>
+                <p>{constructDisplayValue(option)}</p>
               </button>
             ))}
           </div>
