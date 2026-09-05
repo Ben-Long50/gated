@@ -21,7 +21,7 @@ const ItemCardSmall = ({
   child?: boolean;
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
-  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(child);
   const [detailHeight, setDetailHeight] = useState(1000);
 
   const detailRef = useRef<HTMLDivElement>(null);

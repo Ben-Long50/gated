@@ -216,7 +216,12 @@ const Items = ({
             <Loading />
           ) : (
             items?.map((item: Item) => (
-              <ItemCard itemId={item.id} size={cardSize} menu={false} />
+              <ItemCard
+                key={item.id}
+                itemId={item.id}
+                size={cardSize}
+                menu={false}
+              />
             ))
           )}
         </div>

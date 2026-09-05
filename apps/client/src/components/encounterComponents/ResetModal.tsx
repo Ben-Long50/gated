@@ -1,7 +1,6 @@
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import Modal from '../modals/Modal';
 import { useForm } from '@tanstack/react-form';
-import BtnIcon from '../buttons/BtnIcon';
 import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
 import ActionIcon from '../icons/ActionIcon';
 import ReactionIcon from '../icons/ReactionIcon';
@@ -11,6 +10,8 @@ import Divider from '../Divider';
 import Loading from '../Loading';
 import useResetCharacterStatMutation from 'src/hooks/character stat hooks/useResetCharacterStatMutation/useResetCharacterStatMutation';
 import FootIcon from '../icons/FootIcon';
+import IconBtnSmall from '../buttons/IconBtnSmall';
+import Icon from '@mdi/react';
 
 const ResetModal = () => {
   const { character } = useOutletContext();
@@ -46,120 +47,137 @@ const ResetModal = () => {
           <resetForm.Field name="currentActions">
             {(field) => (
               <div className="flex min-w-20 flex-col gap-4">
-                <BtnIcon
-                  path={mdiChevronUp}
+                <IconBtnSmall
                   active={true}
+                  tooltip="Increase"
                   onClick={() => {
                     if (field.state.value < character.stats.actions) {
                       field.handleChange(field.state.value + 1);
                     }
                   }}
-                />
+                >
+                  <Icon path={mdiChevronUp} />
+                </IconBtnSmall>
                 <div className="flex items-center gap-4">
                   <ActionIcon className="text-primary size-10" />
                   <h2 className="flex size-8 items-center justify-center">
                     {field.state.value}
                   </h2>
                 </div>
-                <BtnIcon
-                  path={mdiChevronDown}
+                <IconBtnSmall
                   active={true}
+                  tooltip="Decrease"
                   onClick={() => {
                     if (field.state.value > 0) {
                       field.handleChange(field.state.value - 1);
                     }
                   }}
-                />
+                >
+                  <Icon path={mdiChevronDown} />
+                </IconBtnSmall>
               </div>
             )}
           </resetForm.Field>
           <resetForm.Field name="currentReactions">
             {(field) => (
               <div className="flex min-w-20 flex-col gap-4">
-                <BtnIcon
-                  path={mdiChevronUp}
+                <IconBtnSmall
                   active={true}
+                  tooltip="Increase"
                   onClick={() => {
                     if (field.state.value < character.stats.reactions) {
                       field.handleChange(field.state.value + 1);
                     }
                   }}
-                />
+                >
+                  <Icon path={mdiChevronUp} />
+                </IconBtnSmall>
                 <div className="flex items-center gap-4">
                   <ReactionIcon className="text-primary size-10" />
                   <h2 className="flex size-8 items-center justify-center">
                     {field.state.value}
                   </h2>
                 </div>
-                <BtnIcon
-                  path={mdiChevronDown}
+                <IconBtnSmall
                   active={true}
+                  tooltip="Decrease"
                   onClick={() => {
                     if (field.state.value > 0) {
                       field.handleChange(field.state.value - 1);
                     }
                   }}
-                />
+                >
+                  <Icon path={mdiChevronDown} />
+                </IconBtnSmall>
               </div>
             )}
           </resetForm.Field>
           <resetForm.Field name="currentHands">
             {(field) => (
               <div className="flex min-w-20 flex-col gap-4">
-                <BtnIcon
-                  path={mdiChevronUp}
+                <IconBtnSmall
                   active={true}
+                  tooltip="Increase"
                   onClick={() => {
                     if (field.state.value < character.stats.hands) {
                       field.handleChange(field.state.value + 1);
                     }
                   }}
-                />
+                >
+                  <Icon path={mdiChevronUp} />
+                </IconBtnSmall>
                 <div className="flex items-center gap-4">
                   <HandIcon className="text-primary size-10" />
                   <h2 className="flex size-8 items-center justify-center">
                     {field.state.value}
                   </h2>
                 </div>
-                <BtnIcon
-                  path={mdiChevronDown}
+                <IconBtnSmall
                   active={true}
+                  tooltip="Decrease"
                   onClick={() => {
                     if (field.state.value > 0) {
                       field.handleChange(field.state.value - 1);
                     }
                   }}
-                />
+                >
+                  <Icon path={mdiChevronDown} />
+                </IconBtnSmall>
               </div>
             )}
           </resetForm.Field>
           <resetForm.Field name="currentFeet">
             {(field) => (
               <div className="flex min-w-20 flex-col gap-4">
-                <BtnIcon
-                  path={mdiChevronUp}
+                <IconBtnSmall
                   active={true}
+                  tooltip="Increase"
                   onClick={() => {
                     if (field.state.value < character.stats.feet) {
                       field.handleChange(field.state.value + 1);
                     }
                   }}
-                />
+                >
+                  <Icon path={mdiChevronUp} />
+                </IconBtnSmall>
+
                 <div className="flex items-center gap-4">
                   <FootIcon className="text-primary size-10" />
                   <h2 className="flex size-8 items-center justify-center">
                     {field.state.value}
                   </h2>
                 </div>
-                <BtnIcon
-                  path={mdiChevronDown}
+                <IconBtnSmall
                   active={true}
+                  tooltip="Decrease"
                   onClick={() => {
                     if (field.state.value > 0) {
                       field.handleChange(field.state.value - 1);
                     }
                   }}
-                />
+                >
+                  <Icon path={mdiChevronDown} />
+                </IconBtnSmall>
               </div>
             )}
           </resetForm.Field>
@@ -171,7 +189,7 @@ const ResetModal = () => {
           ariaLabel="Submet"
           onClick={() => {
             resetForm.handleSubmit();
-            navigate('..');
+            navigate(-1);
           }}
         >
           {resetCharacterStat.isPending ? (

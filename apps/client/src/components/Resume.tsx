@@ -7,7 +7,6 @@ import BtnAuth from './buttons/BtnAuth';
 import { LayoutContext } from '../contexts/LayoutContext';
 import useCharacter from 'src/hooks/useCharacter';
 import Divider from './Divider';
-import constructName from 'src/utils/constructName';
 import NpcTypeList from './NpcTypeList';
 import ArrowHeader2 from './ArrowHeader2';
 
@@ -52,7 +51,7 @@ const Resume = () => {
       <div className="flex w-full items-center justify-between gap-4">
         <div className="flex items-center justify-start gap-4">
           <h2 className="text-5xl font-bold tracking-widest">
-            {constructName(character)}
+            {character?.name}
           </h2>
           <NpcTypeList npcTypes={character?.npcTypes} />
         </div>
@@ -90,8 +89,7 @@ const Resume = () => {
         <div className="flex w-full flex-col items-start gap-8">
           <p>
             You have not created a {resume.toLowerCase()} resume entry for{' '}
-            {character?.firstName + ' ' + character?.lastName}. Click the button
-            below to create one.
+            {character?.name}. Click the button below to create one.
           </p>
           <Link className="w-full" to="../resume/update">
             <BtnRect
@@ -105,9 +103,8 @@ const Resume = () => {
         </div>
       ) : (
         <h3 className="text-center">
-          A {resume.toLowerCase()} resume entry for{' '}
-          {character?.firstName + ' ' + character?.lastName} has not been
-          created.
+          A {resume.toLowerCase()} resume entry for {character?.name} has not
+          been created.
         </h3>
       )}
     </>

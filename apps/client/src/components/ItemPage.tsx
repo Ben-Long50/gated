@@ -139,7 +139,6 @@ const ItemPage = () => {
           </div>
         </>
       )}
-      <Divider />
       <div className="flex w-full flex-col gap-4">
         {((parts.includes('codex') && user?.role === 'ADMIN') ||
           (parts.includes('codex') && user?.role === 'SUPERADMIN')) && (
@@ -154,11 +153,13 @@ const ItemPage = () => {
         )}
         {item.characterIventory &&
           item.characterInventory.character.userId === user.id && (
-            <Link className="w-full" to="upgrade">
-              <BtnRect ariaLabel="Navigate to modify weapon form" type="button">
-                {'Upgrade ' + item.name}
-              </BtnRect>
-            </Link>
+            <BtnRect
+              ariaLabel="Navigate to weapon upgrade form"
+              type="button"
+              onClick={() => navigate('upgrade')}
+            >
+              {'Upgrade ' + item.name}
+            </BtnRect>
           )}
       </div>
     </div>

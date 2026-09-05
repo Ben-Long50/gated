@@ -9,6 +9,8 @@ import usePerkQuery from 'src/hooks/usePerkQuery/usePerkQuery';
 import ActionCard from './ActionCard';
 import ArrowHeader3 from './ArrowHeader3';
 import Divider from './Divider';
+import ActionIcon from './icons/ActionIcon';
+import ReactionIcon from './icons/ReactionIcon';
 
 const PerkCard = ({
   perkId,
@@ -37,17 +39,27 @@ const PerkCard = ({
       )
     : [];
 
+  const hasAction = perk?.actions.some(
+    (action) => action.actionType === 'action',
+  );
+
+  const hasReaction = perk?.actions.some(
+    (action) => action.actionType === 'reaction',
+  );
+
   return (
     <div className="flex w-full items-center gap-4">
       <ItemCardSmall
         child={child}
         expanded={expanded}
         heading={
-          <div className="flex w-full items-center justify-between gap-4 pr-3">
+          <div className="flex w-full items-center justify-between gap-4 pr-2">
             <h3>{perk?.name}</h3>
             {perk?.attributes && (
               <AttributeListSmall attributeTree={perk?.attributes} />
             )}
+            {hasAction && <ActionIcon className="text-primary size-6" />}
+            {hasReaction && <ReactionIcon className="text-primary size-6" />}
             {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
               <Link to={`/glam/codex/perks/${perk?.id}/update`}>
                 <button className="text-accent hover:underline">Edit</button>

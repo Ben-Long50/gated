@@ -27,7 +27,7 @@ const MapCard = ({ mapId }: { mapId: number }) => {
   return (
     <ThemeContainer chamfer="medium" borderColor={accentPrimary}>
       <div
-        className="hover:bg-secondary bg-primary flex cursor-pointer flex-col items-center gap-4 p-4 clip-6"
+        className="hover:bg-secondary timing bg-primary flex cursor-pointer flex-col items-center gap-4 rounded-bl-sm rounded-tr-sm p-4 clip-6"
         onClick={(e) => {
           e.stopPropagation();
           navigate(`${map.id}`);
@@ -42,23 +42,6 @@ const MapCard = ({ mapId }: { mapId: number }) => {
               </p>
             )}
             <p className="ml-auto whitespace-nowrap">{`${map.width} x ${map.height}`}</p>
-          </div>
-          <div className="ml-auto flex w-full items-center gap-4">
-            <p className="mr-auto">{`Author - ${map.user.username}`}</p>
-            <IconBtnSmall
-              onClick={() => {
-                navigate(`${map.id}/update`);
-              }}
-            >
-              <Icon path={mdiTagEdit} />
-            </IconBtnSmall>
-            <IconBtnSmall
-              onClick={() => {
-                navigate(`${map.id}/delete`);
-              }}
-            >
-              <Icon path={mdiTrashCanOutline} />
-            </IconBtnSmall>
           </div>
           {locations.length > 0 && (
             <div className="flex items-center gap-2">
@@ -83,16 +66,6 @@ const MapCard = ({ mapId }: { mapId: number }) => {
           gridDisplay={false}
           className="pointer-events-none"
         />
-        {/* <ThemeContainer
-        className="flex w-full items-center justify-center"
-        borderColor={accentPrimary}
-        chamfer="medium"
-      >
-        <CloudinaryPicture
-          className="timing w-full clip-6"
-          publicId={map.generatedPicture?.publicId}
-        />
-      </ThemeContainer> */}
       </div>
     </ThemeContainer>
   );

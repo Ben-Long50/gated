@@ -1,4 +1,3 @@
-import constructName from 'src/utils/constructName';
 import CharacterIcon from '../icons/CharacterIcon';
 import LinkListSidebar from './LinkListSidebar';
 import SubLinkSidebar from './SubLinkSidebar';
@@ -70,17 +69,13 @@ const CharacterListLinks = () => {
       {isLoading ? (
         <Loading size={1.5} />
       ) : (
-        characters.map((character) => {
-          const characterName = constructName(character);
-
-          return (
-            <LinkSidebar
-              title={characterName}
-              icon={<CharacterPictureRound character={character} />}
-              path={`characters/${character.id}`}
-            />
-          );
-        })
+        characters.map((character) => (
+          <LinkSidebar
+            title={character?.name}
+            icon={<CharacterPictureRound character={character} />}
+            path={`characters/${character.id}`}
+          />
+        ))
       )}
     </>
   );

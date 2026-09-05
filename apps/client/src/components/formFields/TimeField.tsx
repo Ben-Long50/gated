@@ -1,8 +1,9 @@
 import { FormApi, useStore } from '@tanstack/react-form';
-import BtnIcon from '../buttons/BtnIcon';
 import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
 import { format } from 'date-fns';
 import { useEffect, useRef } from 'react';
+import IconBtnSmall from '../buttons/IconBtnSmall';
+import Icon from '@mdi/react';
 
 const TimeField = ({
   form,
@@ -41,9 +42,9 @@ const TimeField = ({
       <form.Field name="time.hour">
         {(field) => (
           <div className="flex min-w-20 flex-col gap-4">
-            <BtnIcon
-              path={mdiChevronUp}
+            <IconBtnSmall
               active={true}
+              tooltip="Increase"
               onClick={() => {
                 field.handleChange(field.state.value + 1);
               }}
@@ -54,11 +55,13 @@ const TimeField = ({
                 }, 100);
               }}
               onMouseUp={clear}
-            />
+            >
+              <Icon path={mdiChevronUp} />
+            </IconBtnSmall>
             <h1 className="text-center text-5xl">{format(time, 'HH')}</h1>
-            <BtnIcon
-              path={mdiChevronDown}
+            <IconBtnSmall
               active={true}
+              tooltip="Decrease"
               onClick={() => {
                 field.handleChange(field.state.value - 1);
               }}
@@ -69,7 +72,9 @@ const TimeField = ({
                 }, 100);
               }}
               onMouseUp={clear}
-            />
+            >
+              <Icon path={mdiChevronDown} />
+            </IconBtnSmall>
           </div>
         )}
       </form.Field>
@@ -77,9 +82,9 @@ const TimeField = ({
       <form.Field name="time.minute">
         {(field) => (
           <div className="flex min-w-20 flex-col gap-4">
-            <BtnIcon
-              path={mdiChevronUp}
+            <IconBtnSmall
               active={true}
+              tooltip="Increase"
               onClick={() => {
                 field.handleChange(field.state.value + 1);
               }}
@@ -90,11 +95,13 @@ const TimeField = ({
                 }, 100);
               }}
               onMouseUp={clear}
-            />
+            >
+              <Icon path={mdiChevronUp} />
+            </IconBtnSmall>
             <h1 className="text-center text-5xl">{format(time, 'mm')}</h1>
-            <BtnIcon
-              path={mdiChevronDown}
+            <IconBtnSmall
               active={true}
+              tooltip="Decrease"
               onClick={() => {
                 field.handleChange(field.state.value - 1);
               }}
@@ -105,7 +112,9 @@ const TimeField = ({
                 }, 100);
               }}
               onMouseUp={clear}
-            />
+            >
+              <Icon path={mdiChevronDown} />
+            </IconBtnSmall>
           </div>
         )}
       </form.Field>
@@ -113,9 +122,9 @@ const TimeField = ({
       <form.Field name="time.second">
         {(field) => (
           <div className="flex min-w-20 flex-col gap-4">
-            <BtnIcon
-              path={mdiChevronUp}
+            <IconBtnSmall
               active={true}
+              tooltip="Increase"
               onClick={() => {
                 field.handleChange(field.state.value + 1);
               }}
@@ -126,11 +135,14 @@ const TimeField = ({
                 }, 100);
               }}
               onMouseUp={clear}
-            />
+            >
+              <Icon path={mdiChevronUp} />
+            </IconBtnSmall>
+
             <h1 className="text-center text-5xl">{format(time, 'ss')}</h1>
-            <BtnIcon
-              path={mdiChevronDown}
+            <IconBtnSmall
               active={true}
+              tooltip="Decrease"
               onClick={() => {
                 field.handleChange(field.state.value - 1);
               }}
@@ -141,7 +153,9 @@ const TimeField = ({
                 }, 100);
               }}
               onMouseUp={clear}
-            />
+            >
+              <Icon path={mdiChevronDown} />
+            </IconBtnSmall>
           </div>
         )}
       </form.Field>

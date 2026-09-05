@@ -3,7 +3,6 @@ import Modal from './Modal';
 import BtnRect from '../buttons/BtnRect';
 import Die from '../encounterComponents/Die';
 import ArrowHeader3 from '../ArrowHeader3';
-import constructName from 'src/utils/constructName';
 import CharacterPictureRound from '../characterComponents/CharacterPictureRound';
 import Divider from '../Divider';
 import { capitalCase } from 'change-case';
@@ -25,7 +24,7 @@ const RollModal = () => {
         <div className="flex w-full grow flex-col items-start gap-4">
           <div className="flex items-center gap-4">
             <CharacterPictureRound character={roll.character} />
-            <ArrowHeader3 title={constructName(roll.character)} />
+            <ArrowHeader3 title={roll.character.name} />
           </div>
           <div className="flex w-full items-center justify-between">
             <p>{roll.action.name}</p>

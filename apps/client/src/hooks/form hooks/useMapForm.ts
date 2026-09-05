@@ -35,7 +35,6 @@ const useMapForm = (
     },
     onSubmit: async ({ value }) => {
       const formData = filterFormData(value);
-      console.log(formData);
 
       mutation.mutate(formData);
     },

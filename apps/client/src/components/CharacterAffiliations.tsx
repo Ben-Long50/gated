@@ -66,7 +66,7 @@ const CharacterAffiliations = () => {
 
   return (
     <div className="flex w-full max-w-7xl flex-col items-center gap-8">
-      <h1 className="text-center">{`${character?.firstName}'s Affiliations`}</h1>
+      <h1 className="text-center">{`${character?.name}'s Affiliations`}</h1>
       <ThemeContainer
         className={`ml-auto w-full`}
         chamfer="medium"

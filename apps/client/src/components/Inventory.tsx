@@ -92,7 +92,13 @@ const Inventory = () => {
               <InventoryCard
                 key={item.id}
                 item={item}
-                onClick={() => navigate(`items/${item.id}`)}
+                onClick={() =>
+                  navigate(
+                    parts.includes('inventory')
+                      ? `items/${item.id}`
+                      : `inventory/items/${item.id}`,
+                  )
+                }
               />
             ))
           ) : (

@@ -15,8 +15,8 @@ const useCharacterUpdateForm = (
       campaignId: character?.campaignId ?? null,
       npcTypes: character?.npcTypes ?? (character?.playerCharacter ? null : []),
       preferences: {
-        firstName: character?.preferences?.firstName ?? true,
-        lastName: character?.preferences?.lastName ?? true,
+        name: character?.preferences?.name ?? true,
+        title: character?.preferences?.title ?? true,
         age: character?.preferences?.age ?? true,
         height: character?.preferences?.height ?? true,
         weight: character?.preferences?.weight ?? true,
@@ -30,8 +30,8 @@ const useCharacterUpdateForm = (
         perks: character?.preferences?.perks ?? true,
         equipment: character?.preferences?.equipment ?? true,
       },
-      firstName: character?.firstName ?? null,
-      lastName: character?.lastName ?? null,
+      name: character?.name ?? null,
+      title: character?.title ?? null,
       description: character?.description ?? null,
       stats: {
         maxHealth: character?.stats.maxHealth ?? 0,

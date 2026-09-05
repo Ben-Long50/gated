@@ -24,7 +24,6 @@ import { CampaignContext } from 'src/contexts/CampaignContext';
 import PassIcon from '../icons/PassIcon';
 import { Gang } from 'src/types/gang';
 import CharacterPictureRound from '../characterComponents/CharacterPictureRound';
-import constructName from 'src/utils/constructName';
 
 const CampaignLinks = () => {
   const { user } = useContext(AuthContext);
@@ -54,11 +53,9 @@ const CampaignLinks = () => {
             path="campaigns/create"
           ></LinkSidebar>
           {campaigns.map((campaign) => {
-            const characterName = constructName(campaign);
-
             return (
               <LinkSidebar
-                title={characterName}
+                title={campaign.name}
                 icon={<CharacterPictureRound character={campaign} />}
                 path={`campaigns/${campaign.id}`}
               />
@@ -181,7 +178,7 @@ const CampaignLinks = () => {
             {playerCharacters.map((character) => (
               <SubLinkSidebar
                 key={character?.id}
-                title={`${character?.firstName}'s Notes`}
+                title={`${character?.name}'s Notes`}
                 path={`campaigns/${campaignId}/characters/${character?.id}/notes`}
               />
             ))}

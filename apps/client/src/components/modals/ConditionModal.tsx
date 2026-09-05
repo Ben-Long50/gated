@@ -56,7 +56,7 @@ const ConditionModal = () => {
       }
     >
       <Conditions
-        title={character?.firstName + "'s Conditions"}
+        title={character?.name + "'s Conditions"}
         form={conditionLinkForm}
       />
     </Modal>

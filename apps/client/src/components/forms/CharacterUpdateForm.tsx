@@ -1,11 +1,5 @@
 import InputField from '../formFields/InputField';
-import {
-  Outlet,
-  useLocation,
-  useNavigate,
-  useParams,
-  useSearchParams,
-} from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import useUpdateCharacterMutation from '../../hooks/useCharacterUpdateMutation/useCharacterUpdateMutation';
 import useDeleteCharacterMutation from '../../hooks/useDeleteCharacterMutation/useDeleteCharacterMutation';
 import Loading from '../Loading';
@@ -18,7 +12,6 @@ import InputSelectField from '../formFields/InputSelectField';
 import NpcPreferenceField from '../formFields/NpcPreferenceField';
 import PictureField from '../formFields/PictureField';
 import useCharacterUpdateForm from 'src/hooks/form hooks/useCharacterUpdateForm';
-import constructName from 'src/utils/constructName';
 import CharacterStatBars from '../characterComponents/CharacterStatBars';
 import useCharacterQuery from 'src/hooks/useCharacterQuery/useCharacterQuery';
 import { useContext } from 'react';
@@ -56,7 +49,7 @@ const CharacterUpdateForm = () => {
 
   return (
     <FormLayout
-      label={character ? constructName(character) : 'Character'}
+      label={character ? character?.name : 'Character'}
       form={characterUpdateForm}
       itemId={characterId}
       createMutation={updateCharacter}
@@ -77,19 +70,19 @@ const CharacterUpdateForm = () => {
       <Divider />
       <ArrowHeader2 title="Character Information" />
       <div className="grid w-full grid-cols-2 gap-4">
-        <characterUpdateForm.Field name="firstName">
+        <characterUpdateForm.Field name="name">
           {(field) => (
             <InputField
-              label="First name"
+              label="Name"
               value={field.state.value}
               onChange={(value) => field.handleChange(value)}
             />
           )}
         </characterUpdateForm.Field>
-        <characterUpdateForm.Field name="lastName">
+        <characterUpdateForm.Field name="title">
           {(field) => (
             <InputField
-              label="Last name"
+              label="Title"
               value={field.state.value}
               onChange={(value) => field.handleChange(value)}
             />

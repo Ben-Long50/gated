@@ -22,6 +22,8 @@ import AttributeCard from '../AttributeCard';
 import { useContext } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import ArrowHeader2 from '../ArrowHeader2';
+import IconBtnMedium from '../buttons/IconBtnMedium';
+import ProgressionIcon from '../icons/ProgressionIcon';
 
 const CharacterProgressionPage = () => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -47,15 +49,13 @@ const CharacterProgressionPage = () => {
   return (
     <>
       <CharacterHeader character={character} />
-      <div className="grid gap-8 max-sm:grid-flow-row sm:grid-cols-[1fr,_2fr]">
+      <div className="grid items-center gap-8 max-sm:grid-flow-row sm:grid-cols-[2fr,3fr]">
         {character?.generatedPicture?.publicId && (
           <CharacterPicture character={character} />
         )}
 
         {character?.playerCharacter ? (
           <div className="flex flex-col items-start gap-4">
-            <ArrowHeader3 title="Available Points" />
-            <Divider />
             <div className="flex w-full grow flex-col items-center justify-start gap-4">
               <div className="bg-secondary flex w-full items-center justify-between gap-2 rounded-md p-4 shadow-md shadow-black">
                 <ArrowHeader4
@@ -187,6 +187,7 @@ const CharacterProgressionPage = () => {
           </BtnRect>
         )}
       </div>
+      <Divider />
       {character?.playerCharacter && (
         <div className="flex flex-col gap-4">
           <ExpandingList title="Level Bonuses" className="flex flex-col gap-4">
@@ -282,13 +283,12 @@ const CharacterProgressionPage = () => {
                       )}
                     </ItemCardSmall>
                     {!characterLevelBonus && (
-                      <BtnRect
-                        className="w-80"
-                        ariaLabel="Select level up bonus"
+                      <IconBtnMedium
+                        tooltip="Select Level Bonus"
                         onClick={() => navigate(`levelBonus?level=${level}`)}
                       >
-                        Select Level Up Bonus
-                      </BtnRect>
+                        <ProgressionIcon />
+                      </IconBtnMedium>
                     )}
                   </div>
                 );

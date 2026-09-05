@@ -6,10 +6,8 @@ const useCampaignCharacters = (characterIds: number[]) => {
 
   const [query, setQuery] = useState('');
 
-  const filteredCharacters = characters.filter(
-    (character) =>
-      character?.firstName?.toLowerCase().includes(query.toLowerCase()) ||
-      character?.lastName?.toLowerCase().includes(query.toLowerCase()),
+  const filteredCharacters = characters.filter((character) =>
+    character?.name?.toLowerCase().includes(query.toLowerCase()),
   );
 
   const playerCharacters =

@@ -3,6 +3,7 @@ import editCart from './editCart';
 import { useRef } from 'react';
 import { Character } from 'src/types/character';
 import { toast } from 'react-toastify';
+import { Item } from 'src/types/item';
 
 const useEditCartMutation = (characterId: number, cartId: number) => {
   const queryClient = useQueryClient();
@@ -32,74 +33,95 @@ const useEditCartMutation = (characterId: number, cartId: number) => {
       });
     },
 
-    onMutate: (value) => {
+    onMutate: (data) => {
       queryClient.cancelQueries({ queryKey: ['character', characterId] });
 
       const prevCharacterData: Character | undefined = queryClient.getQueryData(
         ['character', characterId],
       );
 
-      queryClient.setQueryData(
-        ['character', characterId],
-        (prev: Character) => {
-          const targetItem = prev.characterCart.items.find(
-            (item) =>
-              Object.values(item).find((value) => typeof value === 'object')
-                .id === value.itemId,
-          );
+      const item: Item | undefined = queryClient.getQueryData([
+        'item',
+        data.itemId,
+      ]);
 
-          if (targetItem && targetItem.quantity + value.value <= 0) {
-            return {
+      const cartItem = prevCharacterData?.characterCart.items.find(
+        (item) =>
+          Object.values(item).find((value) => typeof value === 'object').id ===
+          data.itemId,
+      );
+
+      if (cartItem) {
+        if (cartItem.quantity + data.value <= 0) {
+          queryClient.setQueryData(
+            ['character', characterId],
+            (prev: Character) => ({
               ...prev,
               characterCart: {
                 ...prev.characterCart,
                 items: prev.characterCart.items.filter(
-                  (item) => item.id !== targetItem.id,
+                  (i) => i.itemId !== cartItem.item.id,
                 ),
               },
-            };
-          }
+            }),
+          );
 
-          return !targetItem
-            ? {
-                ...prev,
-                characterCart: {
-                  ...prev.characterCart,
-                  items: [
-                    ...prev.characterCart.items,
-                    {
-                      quantity: value.value,
-                      item: { id: value.itemId },
-                    },
-                  ],
+          toast.success(`Removed ${cartItem.item.name} from cart`);
+        } else {
+          queryClient.setQueryData(
+            ['character', characterId],
+            (prev: Character) => ({
+              ...prev,
+              characterCart: {
+                ...prev.characterCart,
+                items: prev.characterCart.items.map((i) =>
+                  i.itemId === cartItem.item.id
+                    ? {
+                        ...i,
+                        quantity: cartItem.quantity + data.value,
+                      }
+                    : i,
+                ),
+              },
+            }),
+          );
+
+          toast.success(`Added ${cartItem.item.name} to cart`);
+        }
+      } else {
+        queryClient.setQueryData(
+          ['character', characterId],
+          (prev: Character) => ({
+            ...prev,
+            characterCart: {
+              ...prev.characterCart,
+              items: [
+                ...prev.characterCart.items,
+                {
+                  characterCartId: prev.characterCartId,
+                  quantity: data.value,
+                  item,
+                  itemId: item.id,
                 },
-              }
-            : {
-                ...prev,
-                characterCart: {
-                  ...prev.characterCart,
-                  items: prev.characterCart.items.map((item) =>
-                    item.id === targetItem.id
-                      ? {
-                          ...item,
-                          quantity: item.quantity + value.value,
-                        }
-                      : item,
-                  ),
-                },
-              };
-        },
-      );
+              ],
+            },
+          }),
+        );
+
+        toast.success(`Added ${item?.name} to cart`);
+      }
 
       return { prevCharacterData };
     },
 
     onSuccess: (data) => {
-      toast.success(data.message);
-
       queryClient.setQueryData(['character', characterId], data.character);
     },
-    onError: (data) => {
+    onError: (data, __, context) => {
+      queryClient.setQueryData(
+        ['character', characterId],
+        context?.prevCharacterData,
+      );
       toast.error(data.message);
     },
     throwOnError: false,

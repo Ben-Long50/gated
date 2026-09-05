@@ -1,13 +1,14 @@
 import { useQueries } from '@tanstack/react-query';
 import { Item, ItemType } from 'src/types/item';
 import getItems from './getItems';
+import { itemTypes } from 'src/utils/constants/itemConstants';
 
-const useItemTypeQueries = (itemTypes: ItemType[]) => {
+const useItemTypeQueries = (types: ItemType[]) => {
   return useQueries({
-    queries: itemTypes?.map((type) => ({
+    queries: types?.map((type) => ({
       queryKey: [type],
       queryFn: () => getItems.fetch(type),
-      enabled: !!type,
+      enabled: itemTypes.some((t) => t === type),
     })),
     combine: (results) => {
       return {

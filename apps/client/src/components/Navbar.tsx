@@ -38,7 +38,7 @@ const Navbar = ({
   return mobile ? (
     <nav
       ref={navbarRef}
-      className={`bg-primary timing shadow-color sticky top-0 flex w-full flex-col items-center justify-start shadow-md`}
+      className={`bg-primary timing shadow-color sticky top-0 z-10 flex w-full flex-col items-center justify-start shadow-md`}
     >
       <div className="flex w-full items-center justify-between px-2 py-2">
         <button
@@ -153,7 +153,7 @@ const Navbar = ({
       ref={navbarRef}
     >
       <nav
-        className={`bg-base timing shadow-color mx-auto mt-3 grid w-full max-w-9xl grid-cols-[1fr_2fr] items-center justify-center gap-4 rounded-md px-8 py-2 shadow-lg`}
+        className={`bg-base timing shadow-color mx-auto mt-3 flex w-full max-w-9xl items-center gap-8 rounded-md px-8 py-2 shadow-lg`}
       >
         <Link to="/glam/codex">
           <h2
@@ -163,7 +163,7 @@ const Navbar = ({
             EDO
           </h2>
         </Link>
-        <div className="flex w-full items-center justify-end gap-8">
+        <div className="flex w-full grow items-center justify-end gap-4">
           <div className="relative grid grow grid-cols-4 items-center justify-items-end gap-4">
             <LinkNavbar path="codex?tab=equipment">Codex</LinkNavbar>
             <LinkNavbar path="campaigns">Campaigns</LinkNavbar>

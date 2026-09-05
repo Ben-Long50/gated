@@ -4,7 +4,7 @@ import useEditCartMutation from 'src/hooks/useEditCartMutation/useEditCartMutati
 import { PictureCard } from './PictureCard';
 import IconBtnSmall from './buttons/IconBtnSmall';
 import Icon from '@mdi/react';
-import constructName from 'src/utils/constructName';
+import rarityColorMap from 'src/utils/rarityColorMap';
 
 const CartCard = ({
   item,
@@ -20,14 +20,15 @@ const CartCard = ({
   const editCart = useEditCartMutation(Number(characterId), cartId);
 
   const shopName = item?.characterInventory
-    ? constructName(item?.characterInventory.character) + "'s Shop"
+    ? item?.characterInventory.character.name + "'s Shop"
     : 'Global Shop';
 
   return (
     <div className="flex h-full w-full items-center justify-between gap-8">
       <PictureCard
-        className="max-w-48"
-        publicId={item.generatedPicture.publicId}
+        className="max-w-40"
+        color={rarityColorMap[item.rarity]}
+        publicId={item.generatedPicture?.publicId}
       />
       <div className="flex grow flex-col items-start justify-center gap-1">
         <h3>{item?.name}</h3>

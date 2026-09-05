@@ -159,19 +159,19 @@ const CharacterForm = () => {
       <Divider />
       <ArrowHeader2 title="Character Information" />
       <div className="grid w-full grid-cols-2 gap-4">
-        <characterForm.Field name="firstName">
+        <characterForm.Field name="name">
           {(field) => (
             <InputField
-              label="First name"
+              label="Name"
               value={field.state.value}
               onChange={(value) => field.handleChange(value)}
             />
           )}
         </characterForm.Field>
-        <characterForm.Field name="lastName">
+        <characterForm.Field name="title">
           {(field) => (
             <InputField
-              label="Last name"
+              label="Title"
               value={field.state.value}
               onChange={(value) => field.handleChange(value)}
             />

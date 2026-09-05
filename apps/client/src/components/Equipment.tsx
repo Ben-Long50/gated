@@ -54,7 +54,9 @@ const Equipment = () => {
   return (
     <>
       <CharacterHeader character={character} />
-      <div className="flex w-full flex-col gap-8 sm:flex-row">
+      <div
+        className={`${mobile ? 'flex flex-col gap-4' : 'grid grid-cols-[2fr,3fr] gap-8'} w-full items-center`}
+      >
         {character?.generatedPicture?.publicId && (
           <CharacterPicture character={character} />
         )}

@@ -5,7 +5,6 @@ import ArrowHeader4 from '../ArrowHeader4';
 import { useRef } from 'react';
 import CharacterRadialMenu from '../radialMenus/characterRadialMenu/CharacterRadialMenu';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
-import constructName from 'src/utils/constructName';
 
 const CharacterCardXSmall = ({
   characterList,
@@ -69,7 +68,7 @@ const CharacterCardXSmall = ({
         )}
         <ArrowHeader4
           className={`${characterList ? 'visible h-8 translate-x-0 opacity-100' : 'invisible h-0 -translate-x-full opacity-0'} ${active ? 'text-accent' : 'text-primary'} timing w-full`}
-          title={constructName(character)}
+          title={character?.name}
         />
       </div>
     </div>

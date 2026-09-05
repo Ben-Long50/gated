@@ -14,10 +14,6 @@ const CharacterInitiativeRoll = ({ characterId }: { characterId: number }) => {
   const { filteredCharacter: character, isLoading } = useCharacter(characterId);
   const [roll, setRoll] = useState<any>(null);
 
-  const characterName = character?.lastName
-    ? character?.firstName + ' ' + character?.lastName
-    : character?.firstName;
-
   useEffect(() => {
     if (rolls) {
       setRoll(rolls.get(characterId));
@@ -30,7 +26,7 @@ const CharacterInitiativeRoll = ({ characterId }: { characterId: number }) => {
     <div className="flex flex-col justify-between gap-4 sm:grid sm:grid-cols-[1fr_2fr_auto]">
       <div className="flex w-full items-center gap-4">
         <CharacterPictureRound character={character} />
-        <ArrowHeader3 title={characterName} />
+        <ArrowHeader3 title={character?.name} />
         {mobile && (
           <div className="ml-auto flex items-center gap-2 self-end justify-self-end">
             {roll?.successes != null && !rolling && (

@@ -9,7 +9,6 @@ import {
   mdiAlphaSCircleOutline,
   mdiAlphaTCircleOutline,
 } from '@mdi/js';
-import constructName from 'src/utils/constructName';
 
 const CharacterPictureRound = ({
   character,
@@ -21,8 +20,6 @@ const CharacterPictureRound = ({
   style?: CSSProperties;
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
-
-  const name = constructName(character);
 
   const awol =
     (typeof character?.stats?.injuries === 'number' &&
@@ -51,7 +48,7 @@ const CharacterPictureRound = ({
             style={{ backgroundColor: accentPrimary }}
           >
             <h2 className="size-10 select-none pl-0.5 pt-1 text-center !text-zinc-950">
-              {name?.charAt(0)}
+              {character?.name.charAt(0)}
             </h2>
           </div>
         )}
@@ -59,7 +56,7 @@ const CharacterPictureRound = ({
           className={`${awol && !insane && 'bg-red-600'} ${insane && !awol && 'bg-blue-600'} ${awol && insane && 'bg-purple-600'} absolute inset-0 bg-opacity-35`}
         />
       </div>
-      {character.npcTypes && character.npcTypes.length > 0 && (
+      {character?.npcTypes && character?.npcTypes.length > 0 && (
         <div className="absolute -right-1 -top-1 flex flex-wrap items-center gap-1">
           {character?.npcTypes.includes('shop') && (
             <Icon

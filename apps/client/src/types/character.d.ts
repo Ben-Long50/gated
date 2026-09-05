@@ -29,8 +29,8 @@ interface Character {
   badMedicine?: { html: string; nodes: object };
   description?: string;
   attributes: AttributeTree;
-  firstName: string;
-  lastName: string;
+  name: string;
+  title?: string;
   active: boolean;
   playerCharacter: boolean;
   pushCount: number;
@@ -78,8 +78,8 @@ interface CharacterStats {
 }
 
 interface CharacterPreferences {
-  firstName: boolean;
-  lastName: boolean;
+  name: boolean;
+  title: boolean;
   age: boolean;
   height: boolean;
   weight: boolean;

@@ -1,6 +1,5 @@
 import ArrowHeader4 from './ArrowHeader4';
 import { useRef } from 'react';
-import constructName from 'src/utils/constructName';
 import { Faction } from 'src/types/faction';
 import { Gang } from 'src/types/gang';
 import { Character } from 'src/types/character';
@@ -24,12 +23,12 @@ const EntityCard = ({
     >
       <EntityAvater
         publicId={entity.generatedPicture?.publicId}
-        label={constructName(entity)}
+        label={entity.name}
       />
       <ArrowHeader4
         className="text-primary"
         reverse={reverse}
-        title={constructName(entity)}
+        title={entity.name}
       />
     </div>
   );

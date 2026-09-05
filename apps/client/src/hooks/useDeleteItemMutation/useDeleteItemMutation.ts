@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import deleteItem from './deleteItem';
 import { toast } from 'react-toastify';
-import constructName from 'src/utils/constructName';
 import { Character } from 'src/types/character';
 import { Item } from 'src/types/item';
 
@@ -47,7 +46,7 @@ const useDeleteItemMutation = (itemId: number) => {
           data.character,
         );
 
-        toast.success(`Updated ${constructName(data.character)}`);
+        toast.success(`Updated ${data.character.name}`);
       }
     },
     onError: (data, __, context) => {

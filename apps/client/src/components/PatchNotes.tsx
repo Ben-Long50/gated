@@ -2,11 +2,11 @@ import { useContext, useState } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import Loading from './Loading';
 import { Link } from 'react-router-dom';
-import BtnRect from './buttons/BtnRect';
 import usePatchNotesQuery from '../hooks/usePatchNotesQuery/usePatchNotesQuery';
 import { format } from 'date-fns';
 import { mdiChevronLeft, mdiChevronRight } from '@mdi/js';
-import BtnIcon from './buttons/BtnIcon';
+import IconBtnSmall from './buttons/IconBtnSmall';
+import Icon from '@mdi/react';
 
 const PatchNotes = () => {
   const { user } = useContext(AuthContext);
@@ -24,18 +24,22 @@ const PatchNotes = () => {
     <div className="flex w-full max-w-4xl flex-col gap-8">
       <div className="flex w-full justify-end gap-4">
         {patchNotes[index - 1] && (
-          <BtnIcon
+          <IconBtnSmall
             active={true}
-            path={mdiChevronLeft}
+            tooltip="Previous"
             onClick={() => setIndex((prevIndex) => prevIndex - 1)}
-          />
+          >
+            <Icon path={mdiChevronLeft} />
+          </IconBtnSmall>
         )}
         {patchNotes[index + 1] && (
-          <BtnIcon
+          <IconBtnSmall
             active={true}
-            path={mdiChevronRight}
+            tooltip="Next"
             onClick={() => setIndex((prevIndex) => prevIndex + 1)}
-          />
+          >
+            <Icon path={mdiChevronRight} />
+          </IconBtnSmall>
         )}
       </div>
       <div className="flex w-full items-center justify-between">
@@ -50,18 +54,22 @@ const PatchNotes = () => {
       />
       <div className="flex w-full justify-end gap-4">
         {patchNotes[index - 1] && (
-          <BtnIcon
+          <IconBtnSmall
             active={true}
-            path={mdiChevronLeft}
+            tooltip="Previous"
             onClick={() => setIndex((prevIndex) => prevIndex - 1)}
-          />
+          >
+            <Icon path={mdiChevronLeft} />
+          </IconBtnSmall>
         )}
         {patchNotes[index + 1] && (
-          <BtnIcon
+          <IconBtnSmall
             active={true}
-            path={mdiChevronRight}
+            tooltip="Next"
             onClick={() => setIndex((prevIndex) => prevIndex + 1)}
-          />
+          >
+            <Icon path={mdiChevronRight} />
+          </IconBtnSmall>
         )}
       </div>
       {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (

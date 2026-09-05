@@ -11,7 +11,6 @@ import Icon from '@mdi/react';
 import { mdiChevronDown } from '@mdi/js';
 import BlockIcon from '../icons/BlockIcon';
 import useCharacter from 'src/hooks/useCharacter';
-import constructName from 'src/utils/constructName';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import { socket } from 'src/socket';
 import { useParams } from 'react-router-dom';
@@ -105,7 +104,7 @@ const BlockField = ({
     <div className="flex w-full flex-col gap-4">
       <ArrowHeader3
         className="w-full"
-        title={`Assign Blocks for ${constructName(target)}`}
+        title={`Assign Blocks for ${target?.name}`}
       />
       {results.damage > 0 && (
         <>

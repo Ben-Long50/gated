@@ -14,7 +14,6 @@ import Loading from '../Loading';
 import LinkListSidebar from './LinkListSidebar';
 import CampaignIcon from '../icons/CampaignIcon';
 import LinkSublistSidebar from './LinkSublistSidebar';
-import constructName from 'src/utils/constructName';
 
 const Sidebar = ({ children }: { children: ReactNode }) => {
   const { user } = useContext(AuthContext);
@@ -102,8 +101,6 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
                       ) : (
                         <LinkSublistSidebar title="Your Characters">
                           {campaignCharacters.map((character, index) => {
-                            const characterName = constructName(character);
-
                             const cartLength = Object.values(
                               character?.characterCart || {},
                             )
@@ -122,7 +119,7 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
                                       character={character}
                                     />
                                   }
-                                  title={characterName}
+                                  title={character?.name}
                                   path={`/glam/characters/${character?.id}`}
                                 />
                                 {cartLength > 0 && (
@@ -143,7 +140,7 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
                                         </p>
                                       </div>
                                     }
-                                    title={`${character?.firstName}'s Cart`}
+                                    title={`${character?.name}'s Cart`}
                                     path={`/glam/campaigns/${campaign?.id}/characters/${character?.id}/cart`}
                                   />
                                 )}

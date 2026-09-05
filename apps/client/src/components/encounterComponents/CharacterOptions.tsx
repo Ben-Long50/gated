@@ -82,10 +82,6 @@ const CharacterOptions = ({
   const setItem = useCombatStore((state) => state.setItem);
   const setRangeData = useCombatStore((state) => state.setRangeData);
 
-  const characterName = character?.lastName
-    ? character?.firstName + ' ' + character?.lastName
-    : character?.firstName;
-
   return (
     <ThemeContainer
       className={`${characterOptions ? 'visible opacity-100' : 'invisible opacity-0'} timing mx-auto w-full max-w-5xl`}
@@ -142,7 +138,7 @@ const CharacterOptions = ({
         >
           <div className="timing grid w-full grid-cols-[auto_.5fr_1fr_auto] items-center gap-4">
             <CharacterPictureRound key={character?.id} character={character} />
-            {!mobile && <ArrowHeader3 title={characterName} />}
+            {!mobile && <ArrowHeader3 title={character?.name} />}
             <div className="grid w-full grow grid-cols-[auto_auto_1fr_auto] place-items-center gap-2 gap-y-0">
               <CharacterStatBars
                 size="large"

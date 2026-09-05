@@ -41,15 +41,13 @@ const useCharacters = (characterIds: number[]) => {
 
   const filteredCharacters = campaignId
     ? sortedCharacters?.filter((character: Character) => {
-        const characterName = character?.firstName + ' ' + character?.lastName;
         return (
           character?.campaignId === campaignId &&
-          characterName?.toLowerCase().includes(query.toLowerCase())
+          character?.name.toLowerCase().includes(query.toLowerCase())
         );
       })
     : (sortedCharacters?.filter((character: Character) => {
-        const characterName = character?.firstName + ' ' + character?.lastName;
-        return characterName?.toLowerCase().includes(query.toLowerCase());
+        return character?.name.toLowerCase().includes(query.toLowerCase());
       }) ?? []);
 
   return {

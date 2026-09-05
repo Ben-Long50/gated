@@ -4,7 +4,6 @@ import { mdiChevronDown, mdiSync } from '@mdi/js';
 import Icon from '@mdi/react';
 import InputField from './InputField';
 import Divider from '../Divider';
-import constructName from 'src/utils/constructName';
 import useInputState from 'src/hooks/useInputState';
 import IconBtnSmall from '../buttons/IconBtnSmall';
 
@@ -25,10 +24,23 @@ const InputSelectField = ({
   className?: string;
   reverse?: boolean;
 }) => {
-  let displayValue =
-    typeof value === 'number'
-      ? constructName(options.find((option) => option.id === value))
-      : constructName(value);
+  const constructDisplayValue = (value: any) => {
+    if (!value) {
+      return '';
+    }
+    if (typeof value === 'number') {
+      const option = options.find((option) => option.id === value);
+      return option.name;
+    }
+    if (typeof value === 'string') {
+      return value;
+    }
+    if (value.name) {
+      return value.name;
+    }
+  };
+
+  const displayValue = constructDisplayValue(value);
 
   const { fieldState, focus, setFocus } = useInputState(displayValue, errors);
   const [query, setQuery] = useState('');
@@ -59,7 +71,7 @@ const InputSelectField = ({
 
   const filteredOptions =
     options?.filter((entity) =>
-      constructName(entity).toLowerCase().includes(query.toLowerCase()),
+      entity.name.toLowerCase().includes(query.toLowerCase()),
     ) || [];
 
   return (
@@ -110,14 +122,14 @@ const InputSelectField = ({
               <button
                 className="hover:bg-tertiary text-secondary w-full rounded-md p-2 text-left text-lg"
                 key={index}
-                value={constructName(option)}
+                value={option.name}
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={(e) => {
                   e.preventDefault();
                   handleValue(option);
                 }}
               >
-                <p>{constructName(option)}</p>
+                <p>{option.name}</p>
               </button>
             ))}
           </div>

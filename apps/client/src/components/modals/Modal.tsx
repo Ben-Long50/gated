@@ -1,6 +1,5 @@
 import RootPortal from '../../layouts/RootPortal';
 import { ReactNode, useContext, useEffect } from 'react';
-import BtnIcon from '../buttons/BtnIcon';
 import { mdiClose } from '@mdi/js';
 import { useNavigate } from 'react-router-dom';
 import useModalStore from 'src/stores/modalStore';
@@ -51,6 +50,7 @@ const Modal = ({
       >
         <IconBtnSmall
           className="sticky right-2 top-2 z-10 ml-auto"
+          tooltip="Close"
           active={true}
           onClick={() => {
             if (backgroundPath) {

@@ -62,13 +62,13 @@ const useCharacter = (characterId: number) => {
 
     return {
       ...character,
-      firstName:
-        characterOwner || character?.preferences?.firstName
-          ? character?.firstName
+      name:
+        characterOwner || character?.preferences?.name
+          ? character?.name
           : '???',
-      lastName:
-        characterOwner || character?.preferences?.lastName
-          ? character?.lastName
+      title:
+        characterOwner || character?.preferences?.title
+          ? character?.title
           : '???',
       level:
         characterOwner || character?.preferences?.level

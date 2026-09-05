@@ -8,13 +8,13 @@ import ArrowHeader3 from '../ArrowHeader3';
 import BtnRect from '../buttons/BtnRect';
 import ItemCardSmall from '../ItemCardSmall';
 import ExpandingList from '../ExpandingList';
-import BtnIcon from '../buttons/BtnIcon';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import { useContext } from 'react';
 import Loading from '../Loading';
 import useSetCampaignDateMutation from 'src/hooks/useSetCampaignDateMutation/useSetCampaignDateMutation';
 import { format } from 'date-fns';
 import { CampaignContext } from 'src/contexts/CampaignContext';
+import IconBtnSmall from '../buttons/IconBtnSmall';
 
 const CalendarModal = () => {
   const { gameMaster } = useContext(CampaignContext);
@@ -77,7 +77,7 @@ const CalendarModal = () => {
                       {event.character && (
                         <div className="flex justify-between">
                           <p>Organizer</p>
-                          <p>{event.character?.firstName}</p>
+                          <p>{event.character?.name}</p>
                         </div>
                       )}
                       <p>{event.description}</p>
@@ -98,22 +98,25 @@ const CalendarModal = () => {
               <h4>Set Current Date</h4>
               {campaign?.date.month === month &&
               campaign?.date.day === Number(day) ? (
-                <BtnIcon
-                  active={true}
-                  path={mdiCheckCircleOutline}
+                <IconBtnSmall
+                  active={false}
+                  tooltip="Current Date"
                   onClick={() => {}}
-                />
+                >
+                  <Icon path={mdiCheckCircleOutline} />
+                </IconBtnSmall>
               ) : (
-                <BtnIcon
+                <IconBtnSmall
                   active={true}
-                  loading={setCampaignDate.isPending}
-                  path={mdiCircleOutline}
+                  tooltip="Set Date"
                   onClick={() => {
                     if (month && day) {
                       setCampaignDate.mutate({ month, day: Number(day) });
                     }
                   }}
-                />
+                >
+                  <Icon path={mdiCircleOutline} />
+                </IconBtnSmall>
               )}
             </div>
           </div>

@@ -19,11 +19,8 @@ import InventoryIcon from './icons/InventoryIcon';
 import DroneIcon from './icons/DroneIcon';
 import PotionIcon from './icons/PotionIcon';
 import ModificationIcon from './icons/ModificationIcon';
-import ArrowHeader4 from './ArrowHeader4';
 import PerkIcon from './icons/PerkIcon';
 import { LayoutContext } from 'src/contexts/LayoutContext';
-import ExpandingList from './ExpandingList';
-import Divider from './Divider';
 import ArrowHeader3 from './ArrowHeader3';
 
 const ActionCard = ({
@@ -174,6 +171,7 @@ const ActionCard = ({
             {action?.keywordModifiers.map((keyword, index) => (
               <ItemCardSmall
                 key={index}
+                expanded={true}
                 className={`${index !== action?.keywordModifiers.length - 1 && 'mr-1'} bg-tertiary`}
                 heading={
                   <h4>
@@ -188,7 +186,7 @@ const ActionCard = ({
               >
                 <p>{keyword.keyword?.description}</p>
               </ItemCardSmall>
-            ))}{' '}
+            ))}
           </div>
         )}
 

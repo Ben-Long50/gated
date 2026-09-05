@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import completePurchase from './completePurchase';
 import { toast } from 'react-toastify';
-import constructName from 'src/utils/constructName';
 
 const useCompletePurchaseMutation = (
   characterId: number,
@@ -19,7 +18,7 @@ const useCompletePurchaseMutation = (
           data.character,
         );
 
-        toast.success(`Updated ${constructName(data.character)}'s inventory`);
+        toast.success(`Updated ${data.character.name}'s inventory`);
       }
 
       return queryClient.invalidateQueries({

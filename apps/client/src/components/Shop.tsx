@@ -10,8 +10,7 @@ import DroneIcon from './icons/DroneIcon';
 import Icon from '@mdi/react';
 import { mdiCartOutline } from '@mdi/js';
 import CharacterPictureRound from './characterComponents/CharacterPictureRound';
-import ShopIcon from './icons/ShopIcon';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import useCharacter from 'src/hooks/useCharacter';
 import Divider from './Divider';
 import { ThemeContext } from 'src/contexts/ThemeContext';
@@ -20,7 +19,6 @@ import Cart from './Cart';
 import NavTabs from './NavTabs';
 import BulkItemForm from './forms/BulkItemForm';
 import { ItemType } from 'src/types/item';
-import useItemTypeQueries from 'src/hooks/useItemQueries/useItemTypeQueries';
 
 const Shop = () => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -30,22 +28,10 @@ const Shop = () => {
   const { filteredCharacter: character } = useCharacter(Number(characterId));
   const { filteredCharacter: shop } = useCharacter(Number(shopId));
 
-  const { items, isLoading } = useItemTypeQueries(types);
-
   const cartLength = Object.values(character?.characterCart || {})
     .filter(Array.isArray)
     .flat()
     .reduce((sum, item) => sum + item.quantity, 0);
-
-  const shopItems = shopId ? shop?.inventory : items;
-
-  const categorizedShopItems = shop?.inventory
-    ? shop?.inventory.filter((item) =>
-        item.itemTypes.some(
-          (type: ItemType) => types.includes(type) || types.length === 0,
-        ),
-      )
-    : [];
 
   return (
     <>

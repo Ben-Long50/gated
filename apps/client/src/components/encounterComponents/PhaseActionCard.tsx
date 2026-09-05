@@ -13,7 +13,6 @@ import CharacterStatBars from '../characterComponents/CharacterStatBars';
 import { ActionData } from 'src/types/actionData';
 import BlockField from './BlockField';
 import Divider from '../Divider';
-import constructName from 'src/utils/constructName';
 import calculateItemStats from 'src/utils/calculateItemStats';
 
 const PhaseActionCard = ({
@@ -48,10 +47,7 @@ const PhaseActionCard = ({
     <div className="bg-primary flex w-full flex-col gap-8 rounded-md p-4 shadow-md shadow-black">
       <div className="flex w-full items-center gap-8">
         <div className="flex w-full flex-col items-start gap-4">
-          <ArrowHeader4
-            className="text-primary"
-            title={constructName(character)}
-          />
+          <ArrowHeader4 className="text-primary" title={character?.name} />
           <div className={`relative flex w-full items-center`}>
             <CharacterPictureRound character={character} />
             {character?.conditions && character?.conditions.length > 0 && (
@@ -82,10 +78,7 @@ const PhaseActionCard = ({
               className="text-tertiary shrink-0"
             />
             <div className="flex w-full flex-col items-start gap-4">
-              <ArrowHeader4
-                className="text-primary"
-                title={constructName(target)}
-              />
+              <ArrowHeader4 className="text-primary" title={target?.name} />
               <div className={`relative flex w-full items-center`}>
                 <CharacterPictureRound character={target} />
                 {target.conditions && target.conditions.length > 0 && (

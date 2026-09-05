@@ -1,4 +1,3 @@
-import constructName from 'src/utils/constructName';
 import CharacterIcon from '../icons/CharacterIcon';
 import Loading from '../Loading';
 import LinkSidebar from './LinkSidebar';
@@ -33,7 +32,7 @@ const CharacterLinks = () => {
         path={`/glam/characters`}
       />
       <LinkSidebar
-        title={constructName(character)}
+        title={character?.name}
         icon={<CharacterPictureRound character={character} />}
         path={`/glam/characters/${character?.id}`}
       />

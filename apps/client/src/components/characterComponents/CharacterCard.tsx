@@ -18,7 +18,6 @@ import { useInView } from 'react-intersection-observer';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
 import CharacterRadialMenu from '../radialMenus/characterRadialMenu/CharacterRadialMenu';
 import LocationIcon from '../icons/LocationIcon';
-import constructName from 'src/utils/constructName';
 import NpcTypeList from '../NpcTypeList';
 import StatBarContainer from '../StatBarContainer';
 
@@ -79,7 +78,7 @@ const CharacterCard = ({
   }
 
   return (
-    <div className="w-full" ref={ref}>
+    <div className={`${size === 'small' && 'max-w-[500px]'} w-full`} ref={ref}>
       {inView && (
         <ThemeContainer
           className="group w-full"
@@ -142,7 +141,7 @@ const CharacterCard = ({
               className={`${size === 'small' ? 'col-start-1 row-span-2 row-start-2 gap-4 p-4' : 'col-span-2 col-start-2 row-start-1 gap-6 p-6'} relative flex h-full w-full flex-col justify-between`}
             >
               <div className="flex w-full items-center justify-start gap-4">
-                <ArrowHeader2 title={constructName(character)} />
+                <ArrowHeader2 title={character?.name} />
                 <NpcTypeList npcTypes={character?.npcTypes} />
                 {character?.level ? (
                   <p className="!text-accent ml-auto flex size-8 shrink-0 items-center justify-center text-3xl font-semibold sm:pt-1">
@@ -154,6 +153,11 @@ const CharacterCard = ({
                   </p>
                 )}
               </div>
+              {character?.title && (
+                <p className="text-tertiary font-semibold">
+                  {character?.title}
+                </p>
+              )}
               {character?.location && (
                 <div className="flex gap-4">
                   <LocationIcon className="text-accent size-6" />

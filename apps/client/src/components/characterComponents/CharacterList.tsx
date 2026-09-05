@@ -75,15 +75,6 @@ const CharacterList = ({
               value={query}
               onChange={(value) => setQuery(value)}
             />
-            <IconBtnMedium
-              onClick={() => {
-                setCampaignId(null);
-                setQuery('');
-              }}
-              tooltip="Reset Search"
-            >
-              <Icon path={mdiSync} />
-            </IconBtnMedium>
             {!mobile && (
               <IconBtnMedium
                 onClick={() => {
@@ -98,6 +89,15 @@ const CharacterList = ({
                 <Icon path={size === 'large' ? mdiGrid : mdiCropSquare} />
               </IconBtnMedium>
             )}
+            <IconBtnMedium
+              onClick={() => {
+                setCampaignId(null);
+                setQuery('');
+              }}
+              tooltip="Reset Search"
+            >
+              <Icon path={mdiSync} />
+            </IconBtnMedium>
           </div>
         </div>
 
@@ -105,7 +105,7 @@ const CharacterList = ({
           <p className="text-center">No Characters Found</p>
         ) : (
           <div
-            className={`${mobile ? 'gap-4' : 'gap-8'} ${cardSize === 'large' ? 'grid-cols-1' : 'grid-cols-[repeat(auto-fit,minmax(350px,1fr))]'} grid w-full`}
+            className={`${mobile ? 'gap-4' : 'gap-8'} ${cardSize === 'large' ? 'w-full grid-cols-1' : 'grid-cols-[repeat(auto-fit,minmax(350px,1fr))]'} grid`}
           >
             {characters.map((character: Character, index: number) => (
               <CharacterCard

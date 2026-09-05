@@ -19,9 +19,7 @@ import CharacterStatBars from './CharacterStatBars';
 import { capitalCase } from 'change-case';
 import ConditionTag from '../ConditionTag';
 import ExpandingList from '../ExpandingList';
-import ArrowHeader4 from '../ArrowHeader4';
 import StatBarContainer from '../StatBarContainer';
-import constructName from 'src/utils/constructName';
 import CharacterHeader from './CharacterHeader';
 import NavTabs from '../NavTabs';
 import ArrowHeader2 from '../ArrowHeader2';
@@ -120,7 +118,7 @@ const CharacterSheet = () => {
         >
           <div className="scrollbar-secondary-2 flex h-full flex-col gap-4 overflow-y-auto p-4">
             <div className="flex w-full items-center justify-between">
-              <ArrowHeader3 title={constructName(character) + "'s Info"} />
+              <ArrowHeader3 title={character?.name + "'s Info"} />
               <button
                 type="button"
                 className="text-tertiary hover:underline"

@@ -11,7 +11,6 @@ import NotesForm from './forms/NotesForm';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import CharacterPictureRound from './characterComponents/CharacterPictureRound';
 import BtnAuth from './buttons/BtnAuth';
-import constructName from 'src/utils/constructName';
 
 const Notes = () => {
   const { user } = useContext(AuthContext);
@@ -41,7 +40,7 @@ const Notes = () => {
       {character && (
         <div className="flex items-center justify-center gap-8">
           <CharacterPictureRound character={character} />
-          <h2 className="font-zen text-4xl">{constructName(character)}</h2>
+          <h2 className="font-zen text-4xl">{character?.name}</h2>
         </div>
       )}
       {campaign?.sessions.map((session, index) => {
