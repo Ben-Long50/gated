@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import characterServices from '../services/characterServices.js';
-import parseRequestBody from '../utils/parseRequestBody.js';
 import cartServices from '../services/cartServices.js';
 import {
   CharacterInput,
@@ -177,9 +176,7 @@ const characterController = {
         throw new Error('Could not find authenticated user');
       }
 
-      const parsedBody = parseRequestBody(req.body);
-
-      const validatedCharacter = CharacterInput.parse(parsedBody);
+      const validatedCharacter = CharacterInput.parse(req.body);
 
       const character = await characterServices.createCharacter(
         validatedCharacter,
@@ -213,9 +210,7 @@ const characterController = {
         throw new Error('Could not find authenticated user');
       }
 
-      const parsedBody = parseRequestBody(req.body);
-
-      const validatedCharacter = CharacterInput.parse(parsedBody);
+      const validatedCharacter = CharacterInput.parse(req.body);
 
       const character =
         await characterServices.createCharacter(validatedCharacter);
@@ -266,9 +261,7 @@ const characterController = {
         throw new Error('Could not find authenticated user');
       }
 
-      const parsedBody = parseRequestBody(req.body);
-
-      const validatedCharacter = CharacterUpdateInput.parse(parsedBody);
+      const validatedCharacter = CharacterUpdateInput.parse(req.body);
 
       const character =
         await characterServices.updateCharacter(validatedCharacter);

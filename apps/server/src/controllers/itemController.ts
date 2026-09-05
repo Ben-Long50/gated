@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import itemServices from '../services/itemServices.js';
-import parseRequestBody from '../utils/parseRequestBody.js';
 import { ItemType } from '@prisma/client';
 import { ItemInput, ItemUpgradeInput } from '../validation/itemSchema.js';
 import handleControllerError from './handleControllerError.js';
@@ -61,15 +60,13 @@ const itemController = {
 
   createCodexItem: async (req: Request, res: Response) => {
     try {
-      const parsedBody = parseRequestBody(req.body);
-
-      const validatedItem = ItemInput.parse(parsedBody);
+      const validatedItem = ItemInput.parse(req.body);
 
       const item = await itemServices.createOrUpdateItem(validatedItem);
 
       res.status(200).json({
         item,
-        message: parsedBody.id
+        message: item.id
           ? `Successfully updated ${item.name}`
           : `Successfully created ${item.name}`,
       });
@@ -80,15 +77,13 @@ const itemController = {
 
   createOrUpdateItem: async (req: Request, res: Response) => {
     try {
-      const parsedBody = parseRequestBody(req.body);
-
-      const validatedItem = ItemInput.parse(parsedBody);
+      const validatedItem = ItemInput.parse(req.body);
 
       const item = await itemServices.createOrUpdateItem(validatedItem);
 
       res.status(200).json({
         item,
-        message: parsedBody.id
+        message: item.id
           ? `Successfully updated ${item.name}`
           : `Successfully created ${item.name}`,
       });
@@ -116,9 +111,7 @@ const itemController = {
         throw new Error('You must be signed in to complete this action');
       }
 
-      const parsedBody = parseRequestBody(req.body);
-
-      const validatedItem = ItemUpgradeInput.parse(parsedBody);
+      const validatedItem = ItemUpgradeInput.parse(req.body);
 
       const { character, item } = await itemServices.upgradeItem(validatedItem);
 

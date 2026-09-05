@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import factionServices from '../services/factionServices.js';
-import parseRequestBody from '../utils/parseRequestBody.js';
 import { FactionInput } from '../validation/factionSchema.js';
 import handleControllerError from './handleControllerError.js';
 
@@ -41,9 +40,7 @@ const factionController = {
         return;
       }
 
-      const parsedBody = parseRequestBody(req.body);
-
-      const validatedFaction = FactionInput.parse(parsedBody);
+      const validatedFaction = FactionInput.parse(req.body);
 
       const faction = await factionServices.updateFaction(validatedFaction);
 

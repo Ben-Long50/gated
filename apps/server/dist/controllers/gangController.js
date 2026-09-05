@@ -1,4 +1,3 @@
-import parseRequestBody from '../utils/parseRequestBody.js';
 import gangServices from '../services/gangServices.js';
 import { GangInput, GangSessionBonusInput } from '../validation/gangSchema.js';
 import z from 'zod';
@@ -35,8 +34,7 @@ const gangController = {
                 });
                 return;
             }
-            const parsedBody = parseRequestBody(req.body);
-            const validatedGang = GangInput.parse(parsedBody);
+            const validatedGang = GangInput.parse(req.body);
             const gang = await gangServices.createOrUpdateGang(validatedGang);
             res
                 .status(200)

@@ -1,4 +1,3 @@
-import parseRequestBody from '../utils/parseRequestBody.js';
 import propertyServices from '../services/propertyServices.js';
 import { PropertyInput } from '../validation/propertySchema.js';
 import handleControllerError from './handleControllerError.js';
@@ -47,8 +46,7 @@ const propertyController = {
                 });
                 return;
             }
-            const parsedBody = parseRequestBody(req.body);
-            const validatedProperty = PropertyInput.parse(parsedBody);
+            const validatedProperty = PropertyInput.parse(req.body);
             const property = await propertyServices.createOrUpdateBaseProperty(validatedProperty);
             res
                 .status(200)

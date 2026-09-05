@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import sessionServices from '../services/sessionServices.js';
-import parseRequestBody from '../utils/parseRequestBody.js';
 import { NotesInput } from '../validation/notesSchema.js';
 import { SessionInput } from '../validation/sessionSchema.js';
 import handleControllerError from './handleControllerError.js';
@@ -58,9 +57,7 @@ const sessionController = {
 
   createOrUpdateSession: async (req: Request, res: Response) => {
     try {
-      const parsedBody = parseRequestBody(req.body);
-
-      const validatedSession = SessionInput.parse(parsedBody);
+      const validatedSession = SessionInput.parse(req.body);
 
       const session =
         await sessionServices.createOrUpdateSession(validatedSession);

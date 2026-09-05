@@ -1,5 +1,4 @@
 import characterServices from '../services/characterServices.js';
-import parseRequestBody from '../utils/parseRequestBody.js';
 import cartServices from '../services/cartServices.js';
 import { CharacterInput, CharacterLevelBonus, CharacterUpdateInput, } from '../validation/characterSchema.js';
 import { getIO } from '../sockets/socket.js';
@@ -132,8 +131,7 @@ const characterController = {
             if (!req.user) {
                 throw new Error('Could not find authenticated user');
             }
-            const parsedBody = parseRequestBody(req.body);
-            const validatedCharacter = CharacterInput.parse(parsedBody);
+            const validatedCharacter = CharacterInput.parse(req.body);
             const character = await characterServices.createCharacter(validatedCharacter, req.user.id);
             if (!character) {
                 throw new Error('Failed to create character');
@@ -158,8 +156,7 @@ const characterController = {
             if (!req.user) {
                 throw new Error('Could not find authenticated user');
             }
-            const parsedBody = parseRequestBody(req.body);
-            const validatedCharacter = CharacterInput.parse(parsedBody);
+            const validatedCharacter = CharacterInput.parse(req.body);
             const character = await characterServices.createCharacter(validatedCharacter);
             if (!character) {
                 throw new Error('Failed to create character');
@@ -199,8 +196,7 @@ const characterController = {
             if (!req.user) {
                 throw new Error('Could not find authenticated user');
             }
-            const parsedBody = parseRequestBody(req.body);
-            const validatedCharacter = CharacterUpdateInput.parse(parsedBody);
+            const validatedCharacter = CharacterUpdateInput.parse(req.body);
             const character = await characterServices.updateCharacter(validatedCharacter);
             const io = getIO();
             if (character.campaignId) {

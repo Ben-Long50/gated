@@ -1,5 +1,4 @@
 import campaignServices from '../services/campaignServices.js';
-import parseRequestBody from '../utils/parseRequestBody.js';
 import { CampaignInput } from '../validation/campaignSchema.js';
 import { EventInput } from '../validation/eventSchema.js';
 import { Date, Time } from '../validation/fieldSchemas.js';
@@ -70,8 +69,7 @@ const campaignController = {
                 });
                 return;
             }
-            const parsedBody = parseRequestBody(req.body);
-            const validatedCampaign = CampaignInput.parse(parsedBody);
+            const validatedCampaign = CampaignInput.parse(req.body);
             const campaign = await campaignServices.createOrUpdateCampaign(validatedCampaign, req.user.id);
             const io = getIO();
             const players = (campaign === null || campaign === void 0 ? void 0 : campaign.players.map((player) => player.id)) || [];

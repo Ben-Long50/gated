@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import campaignServices from '../services/campaignServices.js';
-import parseRequestBody from '../utils/parseRequestBody.js';
 import { CampaignInput } from '../validation/campaignSchema.js';
 import { EventInput } from '../validation/eventSchema.js';
 import { Date, Time } from '../validation/fieldSchemas.js';
@@ -86,9 +85,7 @@ const campaignController = {
         return;
       }
 
-      const parsedBody = parseRequestBody(req.body);
-
-      const validatedCampaign = CampaignInput.parse(parsedBody);
+      const validatedCampaign = CampaignInput.parse(req.body);
 
       const campaign = await campaignServices.createOrUpdateCampaign(
         validatedCampaign,
