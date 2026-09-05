@@ -2,7 +2,7 @@ import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
 import { Item } from 'src/types/item';
 import upgradePointMap from '../upgradePointMap';
-import { filterFormData } from './filterFormData';
+import { filterFormData, filterStats } from './filterFormData';
 
 const useItemUpgradeForm = (
   mutation: UseMutationResult<any, Error, any>,
@@ -33,9 +33,7 @@ const useItemUpgradeForm = (
       characterId: item?.characterInventory?.characterId ?? null,
     },
     onSubmit: async ({ value }) => {
-      const filteredStats = Object.fromEntries(
-        Object.entries(value.modifiedStats).filter(([_, val]) => val),
-      );
+      const filteredStats = filterStats(value.modifiedStats);
 
       const formData = filterFormData({
         ...value,

@@ -78,9 +78,7 @@ const useItemForm = (
         filteredStats.currentPass = 0;
       }
 
-      value.stats = filteredStats;
-
-      const formData = filterFormData(value);
+      const formData = filterFormData({ ...value, stats: filterStats });
 
       await mutation.mutate(formData);
     },

@@ -1,7 +1,7 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
 import { Action, ActionCosts } from 'src/types/action';
-import { filterFormData } from './filterFormData';
+import { filterFormData, filterStats } from './filterFormData';
 
 const useActionForm = (
   mutation: UseMutationResult<any, Error, any>,
@@ -43,15 +43,13 @@ const useActionForm = (
         })) ?? ([] as { keywordId: number; value: number | null }[]),
     },
     onSubmit: async ({ value }) => {
-      const data = {
+      const filteredCosts = filterStats(value.costs);
+
+      const filteredData = filterFormData({
         ...value,
         actionSubtypes: value.actionSubtypes.filter(Boolean),
-        costs: Object.fromEntries(
-          Object.entries(value.costs).filter(([_, value]) => value !== null),
-        ) as ActionCosts,
-      };
-
-      const filteredData = filterFormData(data);
+        costs: filteredCosts,
+      });
 
       await mutation.mutate(filteredData);
     },
