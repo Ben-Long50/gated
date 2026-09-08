@@ -58,6 +58,7 @@ const campaignInclude = {
     },
     affiliations: { select: { id: true } },
     owner: true,
+    maps: { select: { id: true } },
     encounters: {
         select: {
             id: true,

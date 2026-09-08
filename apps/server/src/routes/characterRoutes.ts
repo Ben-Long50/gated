@@ -91,7 +91,7 @@ router.post(
 router.post(
   '/characters/:characterId/createTemplate',
   authentication.authenticate,
-  characterController.createTemplateCharacter,
+  characterController.createTemplateCharacters,
 );
 
 router.put(

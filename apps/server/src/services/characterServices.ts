@@ -9,8 +9,9 @@ import {
   CharacterUpdateInput,
 } from '../validation/characterSchema.js';
 import { ConditionReferenceInput } from '../validation/conditionSchema.js';
-import { Prisma } from '@prisma/client';
+import { NpcTypes, Prisma } from '@prisma/client';
 import perkServices from './perkServices.js';
+import { filterObject } from '../utils/filterObject.js';
 
 export const characterInclude = {
   campaign: {
@@ -249,93 +250,87 @@ const characterServices = {
     return newCharacter;
   },
 
-  createTemplateCharacter: async (characterId: number) => {
-    const templateCharacter = await prisma.character.findUnique({
-      where: { id: characterId },
-      select: {
-        userId: true,
-        name: true,
-        title: true,
-        level: true,
-        stats: true,
-        generatedPictureId: true,
-        height: true,
-        weight: true,
-        age: true,
-        sex: true,
-        backstory: true,
-        firstTaste: true,
-        badMedicine: true,
-        playerCharacter: true,
-        npcTypes: true,
-        preferences: true,
-        campaignId: true,
-        gangId: true,
-        controlledGangId: true,
-        characterInventory: {
-          include: { items: { select: { id: true } } },
-        },
-        characterLevelBonuses: {
-          include: { perks: { include: { actions: true } } },
-        },
-      },
-    });
+  createTemplateCharacters: async (
+    characterList: { characterId: number; quantity: number }[],
+    userId: number,
+    campaignId: number,
+    gangId?: number,
+  ) => {
+    const characterIds = characterList.map((data) => data.characterId);
 
-    if (!templateCharacter) {
-      throw new Error('Failed to find template character');
-    }
-
-    const { npcTypes, characterInventory, characterLevelBonuses, ...data } =
-      templateCharacter;
-
-    const filteredData = Object.fromEntries(
-      Object.entries(data)
-        .map(([key, value]) => {
-          if (value) {
-            return [key, value];
-          } else {
-            return [];
-          }
-        })
-        .filter((item) => item.length > 0),
-    );
-
-    const character = await prisma.character.create({
-      data: {
-        ...filteredData,
-        npcTypes: npcTypes.filter((type) => type !== 'template'),
-        characterCart: { create: {} },
-        characterInventory: { create: {} },
-        characterLevelBonuses: {
-          createMany: {
-            data: characterLevelBonuses.map((bonus) => ({
-              characterId: bonus.characterId,
-              level: bonus.level,
-              attributes: bonus.attributes ? bonus.attributes : undefined,
-              perk: bonus.perks
-                ? { connect: bonus.perks.map((perk) => ({ id: perk.id })) }
-                : null,
-            })),
+    await prisma.$transaction(async (tx) => {
+      const templateCharacters = await tx.character.findMany({
+        where: { id: { in: characterIds } },
+        select: {
+          userId: true,
+          name: true,
+          title: true,
+          level: true,
+          stats: true,
+          generatedPictureId: true,
+          height: true,
+          weight: true,
+          age: true,
+          sex: true,
+          backstory: true,
+          firstTaste: true,
+          badMedicine: true,
+          playerCharacter: true,
+          npcTypes: true,
+          preferences: true,
+          characterInventory: {
+            include: { items: { select: { id: true, baseItemId: true } } },
+          },
+          characterLevelBonuses: {
+            include: {
+              perks: {
+                include: {
+                  actions: { select: { id: true, baseActionId: true } },
+                },
+              },
+            },
           },
         },
-      },
-      include: characterInclude,
-    });
+      });
 
-    if (characterInventory && character.characterInventory) {
-      const itemList = characterInventory.items.map((item) => ({
-        itemId: item.id,
-        price: null,
-        quantity: 1,
-      }));
-
-      await itemServices.createCharacterItemCopy(
-        character.characterInventory.id,
-        itemList,
+      const itemIds = templateCharacters.flatMap(
+        (character) =>
+          character.characterInventory?.items.map(
+            (item) => item.baseItemId ?? item.id,
+          ) ?? [],
       );
-    }
 
-    return character;
+      const items = await tx.item.findMany({
+        where: {
+          id: {
+            in: itemIds,
+          },
+        },
+      });
+
+      console.log(items);
+
+      throw new Error('Done');
+
+      const filteredCharacterData = templateCharacters.map((data) =>
+        filterObject(data),
+      );
+
+      await tx.character.createManyAndReturn({
+        data: filteredCharacterData.map((data) => ({
+          ...data,
+          npcTypes: data.npcTypes.filter(
+            (type: NpcTypes) => type !== 'template',
+          ),
+          characterCart: { create: {} },
+          characterInventory: { create: {} },
+          userId,
+          campaignId,
+          gangId,
+        })),
+        include: characterInclude,
+      });
+    });
   },
 
   addToInventory: async (

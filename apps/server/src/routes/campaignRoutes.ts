@@ -2,6 +2,7 @@ import express from 'express';
 import authentication from '../middleware/authentication.js';
 import campaignController from '../controllers/campaignController.js';
 import campaignAuthentication from '../middleware/campaignAuthentication.js';
+import characterController from '../controllers/characterController.js';
 
 const router = express.Router();
 
@@ -71,6 +72,13 @@ router.patch(
   '/campaigns/:campaignId/active',
   authentication.authenticate,
   campaignController.toggleCampaign,
+);
+
+router.patch(
+  '/campaigns/:campaignId/characters/add',
+  authentication.authenticate,
+  campaignAuthentication.validateGameMaster,
+  characterController.createTemplateCharacters,
 );
 
 router.patch(

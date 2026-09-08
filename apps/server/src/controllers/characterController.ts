@@ -236,19 +236,22 @@ const characterController = {
     }
   },
 
-  createTemplateCharacter: async (req: Request, res: Response) => {
+  createTemplateCharacters: async (req: Request, res: Response) => {
     try {
       if (!req.user) {
         throw new Error('Could not find authenticated user');
       }
 
-      const character = await characterServices.createTemplateCharacter(
-        Number(req.params.characterId),
+      const character = await characterServices.createTemplateCharacters(
+        req.body.characterList,
+        req.user.id,
+        Number(req.body.campaignId),
+        Number(req.body.gangId),
       );
 
       res.status(200).json({
         character,
-        message: `Successfully created a character copy of ${character.name}`,
+        message: `Successfully added characters to campaign`,
       });
     } catch (error: any) {
       handleControllerError(res, error);
