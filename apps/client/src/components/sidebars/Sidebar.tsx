@@ -14,6 +14,7 @@ import Loading from '../Loading';
 import LinkListSidebar from './LinkListSidebar';
 import CampaignIcon from '../icons/CampaignIcon';
 import LinkSublistSidebar from './LinkSublistSidebar';
+import EntityAvater from '../EntityAvatar';
 
 const Sidebar = ({ children }: { children: ReactNode }) => {
   const { user } = useContext(AuthContext);
@@ -67,7 +68,7 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
           <>
             <LinkListSidebar
               icon={
-                <CampaignIcon className="timing group-hover:text-accent bg-secondary z-10 size-12 shrink-0 p-2 text-inherit" />
+                <CampaignIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
               }
               title="Active Campaigns"
             >
@@ -85,15 +86,12 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
                     <LinkSidebar
                       title={campaign?.name}
                       icon={
-                        <div className="liveCampaign z-10 size-12 shrink-0 rounded-full">
-                          <img
-                            className="bg-secondary size-full shrink-0 rounded-full object-cover"
-                            src={campaign?.generatedPictureId.imageUrl}
-                            alt={campaign?.name + ' ' + "'s cover picture"}
-                          />
-                        </div>
+                        <EntityAvater
+                          label={campaign?.name}
+                          publicId={campaign?.generatedPicture?.publicId}
+                        />
                       }
-                      path={`/glam/campaigns/${campaign?.id}?npcType=shop`}
+                      path={`/glam/campaigns/${campaign?.id}`}
                     />
                     {campaignCharacters.length > 0 &&
                       (charactersLoading ? (

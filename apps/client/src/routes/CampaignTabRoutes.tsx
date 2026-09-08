@@ -45,6 +45,10 @@ import AffiliationEntitySelectModal from 'src/components/modals/AffiliationEntit
 import CampaignDashboard from 'src/components/CampaignDashboard';
 import Page from 'src/components/Page';
 import CharacterList from 'src/components/characterComponents/CharacterList';
+import CampaignMapList from 'src/components/mapComponents/map/CampaignMapList';
+import PictureRoutes from './PictureRoutes';
+import CharacterSelectModal from 'src/components/characterComponents/CharacterSelectModal';
+import CharacterAddModal from 'src/components/characterComponents/CharacterAddModal';
 
 const CampaignTabRoutes = () => {
   return (
@@ -126,6 +130,7 @@ const CampaignTabRoutes = () => {
           />
           {CharacterRoutes()}
         </Route>
+        <Route path="characters/add" element={<CharacterAddModal />} />
         <Route path="gangs">
           <Route
             path=""
@@ -188,7 +193,7 @@ const CampaignTabRoutes = () => {
             path=""
             element={
               <Page title="Campaign Maps">
-                <MapList />
+                <CampaignMapList />
               </Page>
             }
           />
@@ -207,6 +212,7 @@ const CampaignTabRoutes = () => {
           <Route path="create" element={<MapBuilder />}>
             <Route path="save" element={<MapSaveModal />} />
             <Route path="tileList" element={<TileListModal />} />
+            {PictureRoutes()}
           </Route>
           <Route
             path=":mapId/update"
@@ -218,6 +224,7 @@ const CampaignTabRoutes = () => {
           >
             <Route path="save" element={<MapSaveModal />} />
             <Route path="tileList" element={<TileListModal />} />
+            {PictureRoutes()}
           </Route>
           <Route
             path=":mapId/encounters/:encounterId"
@@ -236,6 +243,7 @@ const CampaignTabRoutes = () => {
             <Route path="reset" element={<ResetModal />} />
           </Route>
         </Route>
+        <Route path="maps/add" element={<CharacterAddModal />} />
         <Route path="encounters">
           <Route
             path="create"
@@ -306,6 +314,7 @@ const CampaignTabRoutes = () => {
         }
       >
         <Route path="managePlayers" element={<PlayerSelectModal />} />
+        {PictureRoutes()}
       </Route>
       <Route
         path="rollSimulator"

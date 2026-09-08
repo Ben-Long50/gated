@@ -3,10 +3,17 @@ import useCreateCombatMutation from 'src/hooks/encounter hooks/useCreateCombatMu
 import { Outlet, useLocation, useParams } from 'react-router-dom';
 import { useForm } from '@tanstack/react-form';
 import Loading from '../Loading';
+import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
+import FormLayout from 'src/layouts/FormLayout';
+import MapList from '../mapComponents/map/MapList';
+import ArrowHeader2 from '../ArrowHeader2';
 
 const EncounterForm = () => {
   const { campaignId } = useParams();
-  const { maps, isLoading } = useMaps(false, 'map');
+  const { data: campaign, isLoading } = useCampaignQuery(Number(campaignId));
+
+  const mapIds = campaign?.maps.map((map) => map.id);
+
   const location = useLocation();
   const parts = location.pathname.split('/');
 
@@ -30,15 +37,12 @@ const EncounterForm = () => {
     return <Loading />;
   }
 
-  if (!maps) {
-    return <h1>This Campaign has no Maps available for an Encounter</h1>;
-  }
-
   return (
-    <div className="flex max-h-full w-full flex-col items-center gap-8">
-      <h1>Create Encounter</h1>
-      <Outlet context={{ maps, form: encounterForm, createEncounter, parts }} />
-    </div>
+    <FormLayout label="Encounter" form={encounterForm}>
+      <ArrowHeader2 title="Select Encounter Map" />
+      <MapList mapIds={mapIds} />
+      {/* <Outlet context={{ maps, form: encounterForm, createEncounter, parts }} /> */}
+    </FormLayout>
   );
 };
 

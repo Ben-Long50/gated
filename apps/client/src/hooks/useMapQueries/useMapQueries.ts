@@ -10,7 +10,7 @@ const useMapQueries = (mapIds: number[]) => {
     })),
     combine: (results) => {
       return {
-        maps: results.map((result) => result.data).filter(Boolean),
+        maps: results.map((result) => result.data).filter(Boolean) ?? [],
         isLoading: results.some((result) => result.isLoading),
       };
     },

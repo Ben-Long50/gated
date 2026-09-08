@@ -58,16 +58,10 @@ const EncounterList = () => {
   if (campaignLoading || isLoading) return <Loading />;
 
   return (
-    <div
-      ref={containerRef}
-      className="flex w-full max-w-5xl flex-col items-center gap-8"
-    >
-      <h1>{capitalCase(mode)} Encounters</h1>
+    <>
       {encounters.length === 0 ? (
         <>
-          <h3 className="text-center">
-            Your campaign has no {mode} encounters
-          </h3>
+          <p className="text-center">No encounters found</p>
         </>
       ) : (
         <div className="flex w-full flex-col gap-4">
@@ -140,7 +134,7 @@ const EncounterList = () => {
           })}
         </div>
       )}
-    </div>
+    </>
   );
 };
 

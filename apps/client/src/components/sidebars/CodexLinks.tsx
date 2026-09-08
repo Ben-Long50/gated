@@ -53,6 +53,10 @@ const CodexLinks = () => {
           path="codex/characters?characterType=nonPlayerCharacter"
         />
         <SubLinkSidebar
+          title="Merchants"
+          path="codex/characters?characterType=nonPlayerCharacter&npcType=merchant"
+        />
+        <SubLinkSidebar
           title="Goons"
           path="codex/characters?characterType=nonPlayerCharacter&npcType=goon"
         />

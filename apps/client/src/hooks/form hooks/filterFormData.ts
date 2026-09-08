@@ -1,6 +1,8 @@
 export const filterFormData = (data: object) => {
   const filteredData = Object.fromEntries(
-    Object.entries(data).filter(([, value]) => value != null && value !== ''),
+    Object.entries(data).filter(
+      ([, value]) => value != null && value !== '' && !Number.isNaN(value),
+    ),
   );
 
   return filteredData;

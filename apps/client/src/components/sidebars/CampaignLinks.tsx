@@ -1,7 +1,6 @@
 import LinkListSidebar from './LinkListSidebar';
 import SubLinkSidebar from './SubLinkSidebar';
 import { useContext } from 'react';
-import { AuthContext } from '../../contexts/AuthContext';
 import CampaignIcon from '../icons/CampaignIcon';
 import LinkSidebar from './LinkSidebar';
 import DieIcon from '../icons/DieIcon';
@@ -26,7 +25,6 @@ import { Gang } from 'src/types/gang';
 import CharacterPictureRound from '../characterComponents/CharacterPictureRound';
 
 const CampaignLinks = () => {
-  const { user } = useContext(AuthContext);
   const { campaigns } = useContext(CampaignContext);
   const { layoutSize } = useContext(LayoutContext);
   const { gameMaster } = useContext(CampaignContext);
@@ -84,12 +82,6 @@ const CampaignLinks = () => {
                 path={`campaigns/${campaignId}/sessions/${session.id}`}
               />
             ))}
-            {campaign?.ownerId === user.id && (
-              <SubLinkSidebar
-                title={`Create a new session`}
-                path={`campaigns/${campaignId}/sessions/create`}
-              />
-            )}
           </LinkListSidebar>
           <LinkListSidebar
             icon={
@@ -99,11 +91,23 @@ const CampaignLinks = () => {
           >
             <SubLinkSidebar
               title="Player Characters"
-              path={`campaigns/${campaignId}/characters?list=playerCharacters`}
+              path={`campaigns/${campaignId}/characters?characterType=playerCharacter`}
             />
             <SubLinkSidebar
-              title="Non-player Characters"
-              path={`campaigns/${campaignId}/characters?list=nonPlayerCharacters`}
+              title="NPCs"
+              path={`campaigns/${campaignId}/characters?characterType=nonPlayerCharacter`}
+            />
+            <SubLinkSidebar
+              title="Merchants"
+              path={`campaigns/${campaignId}/characters?characterType=nonPlayerCharacter&npcType=merchant`}
+            />
+            <SubLinkSidebar
+              title="Goons"
+              path={`campaigns/${campaignId}/characters?characterType=nonPlayerCharacter&npcType=goon`}
+            />
+            <SubLinkSidebar
+              title="Monsters"
+              path={`campaigns/${campaignId}/characters?characterType=nonPlayerCharacter&npcType=monster`}
             />
           </LinkListSidebar>
           <LinkListSidebar
@@ -118,10 +122,6 @@ const CampaignLinks = () => {
                 path={`campaigns/${campaignId}/gangs/${gang.id}`}
               />
             ))}
-            <SubLinkSidebar
-              title="Create a Gang"
-              path={`campaigns/${campaignId}/gangs/create`}
-            />
           </LinkListSidebar>
           <LinkListSidebar
             icon={
@@ -156,18 +156,6 @@ const CampaignLinks = () => {
               title={`Completed Encounters`}
               path={`campaigns/${campaignId}/encounters/completed`}
             />
-            {gameMaster && (
-              <>
-                <SubLinkSidebar
-                  title={`Pending Encounters`}
-                  path={`campaigns/${campaignId}/encounters/pending`}
-                />
-                <SubLinkSidebar
-                  title={`Create an Encounter`}
-                  path={`campaigns/${campaignId}/encounters/create`}
-                />
-              </>
-            )}
           </LinkListSidebar>
           <LinkListSidebar
             icon={
@@ -198,7 +186,6 @@ const CampaignLinks = () => {
               path={`campaigns/${campaignId}/affiliations/create`}
             />
           </LinkListSidebar>
-
           <LinkSidebar
             title="Roll Simulator"
             icon={
@@ -211,8 +198,32 @@ const CampaignLinks = () => {
               icon={
                 <CrownIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
               }
-              title="GM Options"
+              title="GM Tools"
             >
+              <SubLinkSidebar
+                title={`Add Template Character`}
+                path={`campaigns/${campaignId}/characters/add?characterType=nonPlayerCharacter`}
+              />
+              <SubLinkSidebar
+                title={`Add Template Map`}
+                path={`campaigns/${campaignId}/maps/add?mapType=map`}
+              />
+              <SubLinkSidebar
+                title={`Create a Session`}
+                path={`campaigns/${campaignId}/sessions/create`}
+              />
+              <SubLinkSidebar
+                title="Create a Gang"
+                path={`campaigns/${campaignId}/gangs/create`}
+              />
+              <SubLinkSidebar
+                title={`Create an Encounter`}
+                path={`campaigns/${campaignId}/encounters/create`}
+              />
+              <SubLinkSidebar
+                title={`Pending Encounters`}
+                path={`campaigns/${campaignId}/encounters/pending`}
+              />
               <div className="text-secondary group flex gap-4">
                 <button
                   className="w-full pl-4 text-left text-inherit"

@@ -61,14 +61,16 @@ const PlayerSelectModal = () => {
                   <InputFieldCheckbox
                     value={user.id}
                     checked={field.state.value.some(
-                      (id: number) => user.id === id,
+                      (id: number) => user.id === Number(id),
                     )}
                     onChange={(value) => {
                       field.handleChange((prev: number[]) => {
-                        if (prev.some((id: number) => value === id)) {
-                          return prev.filter((id: number) => value !== id);
+                        if (prev.some((id: number) => Number(value) === id)) {
+                          return prev.filter(
+                            (id: number) => Number(value) !== id,
+                          );
                         } else {
-                          return [...prev, value];
+                          return [...prev, Number(value)];
                         }
                       });
                     }}
@@ -84,10 +86,12 @@ const PlayerSelectModal = () => {
                     )}
                     onChange={(value) => {
                       field.handleChange((prev: number[]) => {
-                        if (prev.some((id: number) => value === id)) {
-                          return prev.filter((id: number) => value !== id);
+                        if (prev.some((id: number) => Number(value) === id)) {
+                          return prev.filter(
+                            (id: number) => Number(value) !== id,
+                          );
                         } else {
-                          return [...prev, value];
+                          return [...prev, Number(value)];
                         }
                       });
                     }}

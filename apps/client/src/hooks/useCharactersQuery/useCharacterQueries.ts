@@ -10,15 +10,15 @@ const useCharacterQueries = (characterIds: number[]) => {
     })),
     combine: (results) => {
       return {
-        characters: results.map((result) => result.data),
+        characters: results.map((result) => result.data) ?? [],
         playerCharacters:
           results
             .map((result) => result.data)
-            .filter((character) => character?.playerCharacter) || [],
+            .filter((character) => character?.playerCharacter) ?? [],
         nonPlayerCharacters:
           results
             .map((result) => result.data)
-            .filter((character) => !character?.playerCharacter) || [],
+            .filter((character) => !character?.playerCharacter) ?? [],
         isLoading: results.some((result) => result.isLoading),
         isPending: results.some((result) => result.isPending),
       };

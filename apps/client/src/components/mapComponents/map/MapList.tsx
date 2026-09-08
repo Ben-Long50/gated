@@ -43,7 +43,17 @@ const MapList = ({ mapIds }: { mapIds: number[] }) => {
         />
       </div>
       {!maps || maps.length === 0 ? (
-        <p className="text-center">No maps found</p>
+        <>
+          <p className="text-center">No maps found</p>
+
+          <BtnRect
+            ariaLabel="Create map"
+            className="w-full"
+            onClick={() => navigate('/glam/maps/create')}
+          >
+            Create Map
+          </BtnRect>
+        </>
       ) : (
         <div className="grid w-full grid-cols-[repeat(auto-fit,minmax(360px,500px))] gap-8">
           {maps.map((map) => (

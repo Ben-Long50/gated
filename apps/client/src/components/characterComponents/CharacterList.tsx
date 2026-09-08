@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react';
 import CharacterCard from './CharacterCard';
 import BtnRect from '../buttons/BtnRect';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Loading from '../Loading';
 import { Character } from 'src/types/character';
 import { AuthContext } from '../../contexts/AuthContext';
@@ -27,6 +27,8 @@ const CharacterList = ({
   const { mobile } = useContext(LayoutContext);
   const { campaignId } = useParams();
   const [size, setSize] = useState<'small' | 'large'>('small');
+  const location = useLocation();
+  const parts = location.pathname.split('/');
 
   const cardSize = mobile || size === 'small' ? 'small' : 'large';
 
@@ -61,14 +63,16 @@ const CharacterList = ({
     <>
       <div className={`${mobile ? 'gap-4' : 'gap-8'} flex flex-col`}>
         <div className="flex w-full flex-col gap-4">
-          {availableCampaigns && availableCampaigns?.length > 1 && (
-            <InputSelectField
-              label="Filter By Campaign"
-              options={availableCampaigns}
-              value={selectedCampaignId}
-              onChange={(value) => setCampaignId(value.id)}
-            />
-          )}
+          {!parts.includes('codex') &&
+            availableCampaigns &&
+            availableCampaigns?.length > 1 && (
+              <InputSelectField
+                label="Filter By Campaign"
+                options={availableCampaigns}
+                value={selectedCampaignId}
+                onChange={(value) => setCampaignId(value.id)}
+              />
+            )}
           <div className="flex w-full items-center gap-4">
             <InputField
               label="Search Characters"

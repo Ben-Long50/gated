@@ -30,7 +30,7 @@ const CampaignCard = ({ campaign }: { campaign: Campaign }) => {
       <div className="relative grid w-full cursor-pointer select-none grid-cols-[1fr_1fr_4fr]">
         <div className="-z-10 col-span-2 col-start-1 row-start-1">
           <CloudinaryPicture
-            publicId={campaign?.picture?.publicId}
+            publicId={campaign?.generatedPicture?.publicId}
             style={{
               maskImage: 'linear-gradient(to right, black 0%, transparent 90%',
             }}

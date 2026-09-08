@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Character } from 'src/types/character';
 import useCharacterQueries from './useCharactersQuery/useCharacterQueries';
 import { useSearchParams } from 'react-router-dom';
+import { checkArrayMatch } from 'src/utils/checkArrayMatch';
 
 const useCharacters = (characterIds: number[]) => {
   const [searchParams] = useSearchParams();
@@ -31,10 +32,7 @@ const useCharacters = (characterIds: number[]) => {
         ? character.playerCharacter === playerCharacter
         : true;
 
-    const matchesNpcType =
-      npcTypes && npcTypes.length > 0
-        ? character.npcTypes?.some((type) => npcTypes.includes(type))
-        : true;
+    const matchesNpcType = checkArrayMatch(npcTypes, character.npcTypes);
 
     return playerCharacter ? matchesType : matchesType && matchesNpcType;
   });
@@ -52,6 +50,7 @@ const useCharacters = (characterIds: number[]) => {
 
   return {
     characters: filteredCharacters,
+    params: characterType + ' ' + npcTypes.join(' '),
     query,
     campaignId,
     setQuery,

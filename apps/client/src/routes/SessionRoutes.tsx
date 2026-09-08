@@ -36,7 +36,14 @@ const SessionRoutes = () => {
         </Route>
         <Route path="characters">{CharacterMenuRoutes()}</Route>
       </Route>
-      <Route path="create" element={<SessionForm />}>
+      <Route
+        path="create"
+        element={
+          <Page title="Create a Session">
+            <SessionForm />
+          </Page>
+        }
+      >
         <Route path="sessionCharacters" element={<CharacterSelectModal />} />
       </Route>
     </Route>

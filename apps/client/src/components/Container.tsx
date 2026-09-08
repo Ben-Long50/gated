@@ -6,7 +6,7 @@ const Container = ({ children }: { children: ReactNode }) => {
 
   return (
     <div
-      className={`${mobile ? 'gap-6 p-4' : 'gap-8 rounded-lg p-8'} bg-base shadow-color relative flex w-full flex-col overflow-hidden shadow-lg`}
+      className={`${mobile ? 'gap-6 p-4' : 'gap-8 rounded-lg p-8'} bg-base shadow-color relative flex w-full flex-col shadow-lg`}
     >
       {children}
     </div>

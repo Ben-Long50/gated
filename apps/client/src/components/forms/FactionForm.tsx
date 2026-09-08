@@ -43,15 +43,7 @@ const FactionForm = () => {
       deleteMutation={deleteFaction}
     >
       <ArrowHeader2 title="Basic Faction Information" />
-      <factionForm.Field
-        name="name"
-        validators={{
-          onChange: ({ value }) =>
-            value.length < 2
-              ? 'Faction name must be at least 2 characters long'
-              : undefined,
-        }}
-      >
+      <factionForm.Field name="name">
         {(field) => (
           <InputField
             label="Faction name"
@@ -63,15 +55,7 @@ const FactionForm = () => {
       <PictureField form={factionForm} type="scene" />
       <Divider />
       <ArrowHeader2 title="Faction Background" />
-      <factionForm.Field
-        name="background"
-        validators={{
-          onChange: ({ value }) =>
-            value.html.length < 20
-              ? 'Section content has not met the minimum length requirement'
-              : undefined,
-        }}
-      >
+      <factionForm.Field name="background">
         {(field) => (
           <>
             <LexicalEditor field={field} />
