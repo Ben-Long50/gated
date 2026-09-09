@@ -24,18 +24,23 @@ const useCharacters = (characterIds: number[]) => {
   const [query, setQuery] = useState('');
   const [campaignId, setCampaignId] = useState<number | null>(null);
 
-  const sortedCharacters = characters?.filter((character) => {
-    if (!character) return false;
+  const sortedCharacters = characters
+    ?.filter((character) => {
+      if (!character) return false;
 
-    const matchesType =
-      playerCharacter != null
-        ? character.playerCharacter === playerCharacter
-        : true;
+      const matchesType =
+        playerCharacter != null
+          ? character.playerCharacter === playerCharacter
+          : true;
 
-    const matchesNpcType = checkArrayMatch(npcTypes, character.npcTypes);
+      const matchesNpcType =
+        npcTypes.length > 0
+          ? character.npcTypes?.every((type) => npcTypes.includes(type))
+          : true;
 
-    return playerCharacter ? matchesType : matchesType && matchesNpcType;
-  });
+      return playerCharacter ? matchesType : matchesType && matchesNpcType;
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   const filteredCharacters = campaignId
     ? sortedCharacters?.filter((character: Character) => {

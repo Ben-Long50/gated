@@ -1,19 +1,20 @@
 import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
 
-const addCharacters = async (campaignId: number, formData: object) => {
+const addCharacter = async (
+  characterId: number,
+  campaignId?: number,
+  gangId?: number,
+) => {
   try {
-    const response = await fetch(
-      `${apiUrl}/campaigns/${campaignId}/characters/add`,
-      {
-        method: 'PATCH',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+    const response = await fetch(`${apiUrl}/characters/add`, {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
       },
-    );
+      body: JSON.stringify({ characterId, campaignId, gangId }),
+    });
     const data = await handleResponse(response);
     return data;
   } catch (error) {
@@ -24,4 +25,4 @@ const addCharacters = async (campaignId: number, formData: object) => {
   }
 };
 
-export default addCharacters;
+export default addCharacter;

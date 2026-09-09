@@ -2,16 +2,10 @@ import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
 import { filterFormData } from './filterFormData';
 
-const useCharacterAddForm = (
-  mutation: UseMutationResult<any, Error, any>,
-  campaignId: number,
-  gangId?: number,
-) => {
+const useCharacterAddForm = (mutation: UseMutationResult<any, Error, any>) => {
   const characterAddForm = useForm({
     defaultValues: {
-      campaignId: campaignId,
-      gangId: gangId ?? null,
-      characterList: [] as { characterId: number; quantity: number }[],
+      characterId: null as number | null,
     },
 
     onSubmit: async ({ value }) => {
