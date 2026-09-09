@@ -250,23 +250,22 @@ const characterServices = {
     return newCharacter;
   },
 
-  createTemplateCharacters: async (
-    characterList: { characterId: number; quantity: number }[],
+  createTemplateCharacter: async (
     userId: number,
-    campaignId: number,
+    characterId: number,
+    campaignId?: number,
     gangId?: number,
   ) => {
-    const characterIds = characterList.map((data) => data.characterId);
-
-    await prisma.$transaction(async (tx) => {
-      const templateCharacters = await tx.character.findMany({
-        where: { id: { in: characterIds } },
+    const character = await prisma.$transaction(async (tx) => {
+      const templateCharacter = await tx.character.findUnique({
+        where: { id: characterId },
         select: {
-          userId: true,
+          id: true,
           name: true,
           title: true,
           level: true,
           stats: true,
+          profits: true,
           generatedPictureId: true,
           height: true,
           weight: true,
@@ -275,9 +274,11 @@ const characterServices = {
           backstory: true,
           firstTaste: true,
           badMedicine: true,
+          description: true,
           playerCharacter: true,
           npcTypes: true,
           preferences: true,
+          baseCharacterId: true,
           characterInventory: {
             include: { items: { select: { id: true, baseItemId: true } } },
           },
@@ -285,7 +286,7 @@ const characterServices = {
             include: {
               perks: {
                 include: {
-                  actions: { select: { id: true, baseActionId: true } },
+                  actions: { include: { keywordModifiers: true } },
                 },
               },
             },
@@ -293,50 +294,124 @@ const characterServices = {
         },
       });
 
-      const itemIds = templateCharacters.flatMap(
-        (character) =>
-          character.characterInventory?.items.map(
-            (item) => item.baseItemId ?? item.id,
-          ) ?? [],
-      );
+      if (!templateCharacter) {
+        throw new Error('Failed to find template character');
+      }
 
-      const items = await tx.item.findMany({
-        where: {
-          id: {
-            in: itemIds,
-          },
-        },
+      const itemMap = new Map();
+
+      templateCharacter.characterInventory?.items.forEach((item) => {
+        const existingItemCount = itemMap.get(item.baseItemId);
+        if (existingItemCount) {
+          itemMap.set(item.baseItemId, existingItemCount + 1);
+        } else {
+          itemMap.set(item.baseItemId, 1);
+        }
       });
 
-      console.log(items);
+      const { id, characterLevelBonuses, ...filteredCharacter } =
+        filterObject(templateCharacter);
 
-      throw new Error('Done');
-
-      const filteredCharacterData = templateCharacters.map((data) =>
-        filterObject(data),
-      );
-
-      await tx.character.createManyAndReturn({
-        data: filteredCharacterData.map((data) => ({
-          ...data,
-          npcTypes: data.npcTypes.filter(
+      const character = await tx.character.create({
+        data: {
+          ...filteredCharacter,
+          npcTypes: filteredCharacter.npcTypes?.filter(
             (type: NpcTypes) => type !== 'template',
           ),
-          characterCart: { create: {} },
+          baseCharacterId: id,
+          characterCart: {
+            create: {
+              items: {
+                createMany: {
+                  data: Array.from(itemMap).map(([itemId, quantity]) => ({
+                    itemId,
+                    quantity,
+                  })),
+                },
+              },
+            },
+          },
           characterInventory: { create: {} },
+          characterLevelBonuses: {
+            create: templateCharacter.characterLevelBonuses.map(
+              ({ id, perks, characterId, ...bonus }) => ({
+                ...bonus,
+                perks: {
+                  create: perks.map(
+                    ({
+                      id,
+                      basePerkId,
+                      actions,
+                      characterLevelBonusId,
+                      ...perk
+                    }) => ({
+                      ...perk,
+                      basePerkId: basePerkId ?? id,
+                      actions: {
+                        create: actions.map(
+                          ({
+                            id,
+                            baseActionId,
+                            keywordModifiers,
+                            perkId,
+                            ...action
+                          }) => ({
+                            ...action,
+                            baseActionId: baseActionId ?? id,
+                            keywordModifiers: {
+                              create: keywordModifiers.map(
+                                ({ actionId, ...keyword }) => ({
+                                  keywordId: keyword.id,
+                                  value: keyword.value,
+                                }),
+                              ),
+                            },
+                          }),
+                        ),
+                      },
+                    }),
+                  ),
+                },
+              }),
+            ),
+          },
           userId,
           campaignId,
           gangId,
-        })),
-        include: characterInclude,
+        },
+        select: { id: true, characterInventory: true },
       });
+
+      if (!character.characterInventory) {
+        throw new Error('Failed to find character inventory');
+      }
+
+      const finalCharacter = await characterServices.addToInventory(
+        character.id,
+        character.characterInventory.id,
+        tx,
+        true,
+      );
+
+      await characterServices.clearCart(finalCharacter.id, tx);
+
+      return {
+        name: finalCharacter.name,
+        id: finalCharacter.id,
+        userId: finalCharacter.userId,
+        campaignId: finalCharacter.campaignId,
+        gangId: finalCharacter.gangId,
+      };
     });
+
+    return character;
   },
 
   addToInventory: async (
     characterId: number,
     inventoryId: number,
     tx?: Prisma.TransactionClient,
+    template: boolean = false,
   ) => {
     const client = tx ?? prisma;
 
@@ -382,7 +457,7 @@ const characterServices = {
       throw new Error('Failed to calculate total cart price');
     }
 
-    if (totalPrice > profits) {
+    if (totalPrice > profits && !template) {
       throw new Error(
         'You do not have enough profits to complete this purchase',
       );
@@ -394,7 +469,7 @@ const characterServices = {
 
     const updatedCharacter = await client.character.update({
       where: { id: characterId },
-      data: { profits: { decrement: totalPrice } },
+      data: { profits: { decrement: template ? 0 : totalPrice } },
       include: characterInclude,
     });
 

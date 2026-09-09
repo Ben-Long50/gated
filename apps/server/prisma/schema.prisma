@@ -353,6 +353,7 @@ model Property {
 model Character {
   id                    Int                           @id @default(autoincrement())
   createdAt             DateTime                      @default(now())
+  updatedAt             DateTime                      @default(now())
   user                  User?                         @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId                Int?
   level                 Int?
@@ -372,6 +373,8 @@ model Character {
   title                 String?
   playerCharacter       Boolean                       @default(false)
   npcTypes              NpcTypes[]
+  baseCharacter         Character?                    @relation("BaseRelation", fields: [baseCharacterId], references: [id])
+  baseCharacterId       Int?
   preferences           Json?
   location              Location?
   locationId            Int?
@@ -391,6 +394,7 @@ model Character {
   events                Event[]
   encounters            Encounter[]
   characterLevelBonuses CharacterLevelBonus[]
+  derivedCharacters     Character[]                   @relation("BaseRelation")
 
   @@index([userId])
 }

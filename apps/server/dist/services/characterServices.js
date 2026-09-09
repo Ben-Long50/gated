@@ -195,17 +195,18 @@ const characterServices = {
         const newCharacter = await characterServices.getCharacterById(character.id);
         return newCharacter;
     },
-    createTemplateCharacters: async (characterList, userId, campaignId, gangId) => {
-        const characterIds = characterList.map((data) => data.characterId);
-        await prisma.$transaction(async (tx) => {
-            const templateCharacters = await tx.character.findMany({
-                where: { id: { in: characterIds } },
+    createTemplateCharacter: async (userId, characterId, campaignId, gangId) => {
+        const character = await prisma.$transaction(async (tx) => {
+            var _a, _b;
+            const templateCharacter = await tx.character.findUnique({
+                where: { id: characterId },
                 select: {
-                    userId: true,
+                    id: true,
                     name: true,
                     title: true,
                     level: true,
                     stats: true,
+                    profits: true,
                     generatedPictureId: true,
                     height: true,
                     weight: true,
@@ -214,9 +215,11 @@ const characterServices = {
                     backstory: true,
                     firstTaste: true,
                     badMedicine: true,
+                    description: true,
                     playerCharacter: true,
                     npcTypes: true,
                     preferences: true,
+                    baseCharacterId: true,
                     characterInventory: {
                         include: { items: { select: { id: true, baseItemId: true } } },
                     },
@@ -224,36 +227,83 @@ const characterServices = {
                         include: {
                             perks: {
                                 include: {
-                                    actions: { select: { id: true, baseActionId: true } },
+                                    actions: { include: { keywordModifiers: true } },
                                 },
                             },
                         },
                     },
                 },
             });
-            const itemIds = templateCharacters.flatMap((character) => {
-                var _a, _b;
-                return (_b = (_a = character.characterInventory) === null || _a === void 0 ? void 0 : _a.items.map((item) => { var _a; return (_a = item.baseItemId) !== null && _a !== void 0 ? _a : item.id; })) !== null && _b !== void 0 ? _b : [];
+            if (!templateCharacter) {
+                throw new Error('Failed to find template character');
+            }
+            const itemMap = new Map();
+            (_a = templateCharacter.characterInventory) === null || _a === void 0 ? void 0 : _a.items.forEach((item) => {
+                const existingItemCount = itemMap.get(item.baseItemId);
+                if (existingItemCount) {
+                    itemMap.set(item.baseItemId, existingItemCount + 1);
+                }
+                else {
+                    itemMap.set(item.baseItemId, 1);
+                }
             });
-            const items = await tx.item.findMany({
-                where: {
-                    id: {
-                        in: itemIds,
-                    },
-                },
-            });
-            console.log(items);
-            throw new Error('Done');
-            const filteredCharacterData = templateCharacters.map((data) => filterObject(data));
-            await tx.character.createManyAndReturn({
-                data: filteredCharacterData.map((data) => (Object.assign(Object.assign({}, data), { npcTypes: data.npcTypes.filter((type) => type !== 'template'), characterCart: { create: {} }, characterInventory: { create: {} }, userId,
+            const _c = filterObject(templateCharacter), { id, characterLevelBonuses } = _c, filteredCharacter = __rest(_c, ["id", "characterLevelBonuses"]);
+            const character = await tx.character.create({
+                data: Object.assign(Object.assign({}, filteredCharacter), { npcTypes: (_b = filteredCharacter.npcTypes) === null || _b === void 0 ? void 0 : _b.filter((type) => type !== 'template'), baseCharacterId: id, characterCart: {
+                        create: {
+                            items: {
+                                createMany: {
+                                    data: Array.from(itemMap).map(([itemId, quantity]) => ({
+                                        itemId,
+                                        quantity,
+                                    })),
+                                },
+                            },
+                        },
+                    }, characterInventory: { create: {} }, characterLevelBonuses: {
+                        create: templateCharacter.characterLevelBonuses.map((_a) => {
+                            var { id, perks, characterId } = _a, bonus = __rest(_a, ["id", "perks", "characterId"]);
+                            return (Object.assign(Object.assign({}, bonus), { perks: {
+                                    create: perks.map((_a) => {
+                                        var { id, basePerkId, actions, characterLevelBonusId } = _a, perk = __rest(_a, ["id", "basePerkId", "actions", "characterLevelBonusId"]);
+                                        return (Object.assign(Object.assign({}, perk), { basePerkId: basePerkId !== null && basePerkId !== void 0 ? basePerkId : id, actions: {
+                                                create: actions.map((_a) => {
+                                                    var { id, baseActionId, keywordModifiers, perkId } = _a, action = __rest(_a, ["id", "baseActionId", "keywordModifiers", "perkId"]);
+                                                    return (Object.assign(Object.assign({}, action), { baseActionId: baseActionId !== null && baseActionId !== void 0 ? baseActionId : id, keywordModifiers: {
+                                                            create: keywordModifiers.map((_a) => {
+                                                                var { actionId } = _a, keyword = __rest(_a, ["actionId"]);
+                                                                return ({
+                                                                    keywordId: keyword.id,
+                                                                    value: keyword.value,
+                                                                });
+                                                            }),
+                                                        } }));
+                                                }),
+                                            } }));
+                                    }),
+                                } }));
+                        }),
+                    }, userId,
                     campaignId,
-                    gangId }))),
-                include: characterInclude,
+                    gangId }),
+                select: { id: true, characterInventory: true },
             });
+            if (!character.characterInventory) {
+                throw new Error('Failed to find character inventory');
+            }
+            const finalCharacter = await characterServices.addToInventory(character.id, character.characterInventory.id, tx, true);
+            await characterServices.clearCart(finalCharacter.id, tx);
+            return {
+                name: finalCharacter.name,
+                id: finalCharacter.id,
+                userId: finalCharacter.userId,
+                campaignId: finalCharacter.campaignId,
+                gangId: finalCharacter.gangId,
+            };
         });
+        return character;
     },
-    addToInventory: async (characterId, inventoryId, tx) => {
+    addToInventory: async (characterId, inventoryId, tx, template = false) => {
         const client = tx !== null && tx !== void 0 ? tx : prisma;
         const character = await client.character.findUnique({
             where: { id: characterId },
@@ -286,7 +336,7 @@ const characterServices = {
         if (typeof totalPrice !== 'number') {
             throw new Error('Failed to calculate total cart price');
         }
-        if (totalPrice > profits) {
+        if (totalPrice > profits && !template) {
             throw new Error('You do not have enough profits to complete this purchase');
         }
         if (items.length > 0) {
@@ -294,7 +344,7 @@ const characterServices = {
         }
         const updatedCharacter = await client.character.update({
             where: { id: characterId },
-            data: { profits: { decrement: totalPrice } },
+            data: { profits: { decrement: template ? 0 : totalPrice } },
             include: characterInclude,
         });
         return updatedCharacter;

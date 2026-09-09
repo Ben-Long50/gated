@@ -18,7 +18,7 @@ router.post('/characters', authentication.authenticate, characterController.crea
 router.post('/characters/base', authentication.authenticate, authentication.authenticateAdmin, characterController.createCodexCharacter);
 router.post('/characters/:characterId/conditions', authentication.authenticate, characterController.createCharacterConditions);
 router.post('/characters/:characterId/location', authentication.authenticate, characterController.updateCharacterLocation);
-router.post('/characters/:characterId/createTemplate', authentication.authenticate, characterController.createTemplateCharacters);
+router.patch('/characters/add', authentication.authenticate, characterController.createTemplateCharacter);
 router.put('/characters/:characterId', authentication.authenticate, characterController.updateCharacter);
 router.put('/characters/:characterId/cart/:cartId', authentication.authenticate, characterController.clearCart);
 router.delete('/characters/:characterId/conditions/:conditionId', authentication.authenticate, conditionController.deleteCharacterCondition);

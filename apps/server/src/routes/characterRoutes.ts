@@ -88,10 +88,10 @@ router.post(
   characterController.updateCharacterLocation,
 );
 
-router.post(
-  '/characters/:characterId/createTemplate',
+router.patch(
+  '/characters/add',
   authentication.authenticate,
-  characterController.createTemplateCharacters,
+  characterController.createTemplateCharacter,
 );
 
 router.put(

@@ -78,7 +78,7 @@ router.patch(
   '/campaigns/:campaignId/characters/add',
   authentication.authenticate,
   campaignAuthentication.validateGameMaster,
-  characterController.createTemplateCharacters,
+  characterController.createTemplateCharacter,
 );
 
 router.patch(

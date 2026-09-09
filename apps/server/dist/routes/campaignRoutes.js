@@ -15,7 +15,7 @@ router.post('/campaigns', authentication.authenticate, campaignController.create
 router.post('/campaigns/:campaignId/events', authentication.authenticate, campaignController.createOrUpdateEvent);
 router.post('/campaigns/:campaignId/roll', authentication.authenticate, campaignController.campaignRoll);
 router.patch('/campaigns/:campaignId/active', authentication.authenticate, campaignController.toggleCampaign);
-router.patch('/campaigns/:campaignId/characters/add', authentication.authenticate, campaignAuthentication.validateGameMaster, characterController.createTemplateCharacters);
+router.patch('/campaigns/:campaignId/characters/add', authentication.authenticate, campaignAuthentication.validateGameMaster, characterController.createTemplateCharacter);
 router.patch('/campaigns/:campaignId/date', authentication.authenticate, campaignController.setCampaignDate);
 router.patch('/campaigns/:campaignId/time', authentication.authenticate, campaignController.setCampaignTime);
 router.delete('/campaigns/:campaignId', authentication.authenticate, campaignController.deleteCampaign);

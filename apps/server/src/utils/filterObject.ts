@@ -2,7 +2,7 @@ export const filterObject = (data: object) =>
   Object.fromEntries(
     Object.entries(data)
       .map(([key, value]) => {
-        if (value) {
+        if (value != null) {
           return [key, value];
         } else {
           return [];
