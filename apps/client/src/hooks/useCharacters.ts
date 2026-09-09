@@ -33,7 +33,10 @@ const useCharacters = (characterIds: number[]) => {
           ? character.playerCharacter === playerCharacter
           : true;
 
-      const matchesNpcType = checkArrayMatch(npcTypes, character.npcTypes);
+      const matchesNpcType =
+        npcTypes.length > 0
+          ? checkArrayMatch(npcTypes, character.npcTypes)
+          : true;
 
       return playerCharacter ? matchesType : matchesType && matchesNpcType;
     })
