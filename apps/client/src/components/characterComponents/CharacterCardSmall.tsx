@@ -10,7 +10,6 @@ import ArmorIcon from '../icons/ArmorIcon';
 import useMapStore from 'src/stores/mapStore';
 import ConditionTag from '../ConditionTag';
 import { useLayoutEffect, useRef, useState } from 'react';
-import CharacterRadialMenu from '../radialMenus/characterRadialMenu/CharacterRadialMenu';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
 import Icon from '@mdi/react';
 import { mdiCrown } from '@mdi/js';
@@ -62,14 +61,12 @@ const CharacterCardSmall = ({
     }
   }, [detailRef.current]);
 
-  const id = useMapStore((state) => state.characterId);
-
   if (isLoading) return <Loading size={1.25} />;
 
   return (
     <div
       ref={containerRef}
-      className={`${className} timing relative flex cursor-pointer flex-col`}
+      className={`${className} timing relative flex flex-col`}
       onClick={(e) => {
         e.stopPropagation();
         handleMenu(e);
@@ -85,7 +82,6 @@ const CharacterCardSmall = ({
         }
       }}
     >
-      <CharacterRadialMenu character={character} containerRef={containerRef} />
       <div className="mb-2 flex items-center justify-between gap-8">
         <ArrowHeader4
           className={`${characterList ? 'visible h-8 translate-x-0 opacity-100' : 'invisible h-0 -translate-x-full opacity-0'} ${active ? 'text-accent' : 'text-primary'} timing w-full`}

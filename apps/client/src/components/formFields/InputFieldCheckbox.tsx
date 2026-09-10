@@ -21,7 +21,7 @@ const InputFieldCheckbox = ({
 
   return (
     <div
-      className={`${className} ${label ? 'w-full justify-between' : 'justify-end'} flex items-center gap-8`}
+      className={`${className} ${label ? 'w-full justify-between' : 'justify-end'} flex items-center gap-8 place-self-center`}
     >
       {label && (
         <label

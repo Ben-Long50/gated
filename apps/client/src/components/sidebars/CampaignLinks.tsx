@@ -11,7 +11,6 @@ import { Session } from 'src/types/campaign';
 import SessionIcon from '../icons/SessionIcon';
 import AffiliationIcon from '../icons/AffiliationIcon';
 import NoteIcon from '../icons/NoteIcon';
-import useCampaignCharactersQuery from 'src/hooks/useCampaignCharactersQuery/useCampaignCharactersQuery';
 import MapIcon from '../icons/MapIcon';
 import useNavigationStore from 'src/stores/navbarStore';
 import { LayoutContext } from 'src/contexts/LayoutContext';
@@ -23,6 +22,7 @@ import { CampaignContext } from 'src/contexts/CampaignContext';
 import PassIcon from '../icons/PassIcon';
 import { Gang } from 'src/types/gang';
 import CharacterPictureRound from '../characterComponents/CharacterPictureRound';
+import useCharacterQueries from 'src/hooks/character hooks/useUpdateCharacterLevelMutation/useCharactersQuery/useCharacterQueries';
 
 const CampaignLinks = () => {
   const { campaigns } = useContext(CampaignContext);
@@ -35,7 +35,7 @@ const CampaignLinks = () => {
 
   const setSidebar = useNavigationStore((state) => state.setSidebar);
 
-  const { playerCharacters } = useCampaignCharactersQuery(
+  const { playerCharacters } = useCharacterQueries(
     campaign?.characters.map((character) => character.id) || [],
   );
 

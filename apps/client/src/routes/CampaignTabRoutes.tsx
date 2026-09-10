@@ -15,7 +15,6 @@ import EventForm from 'src/components/forms/EventForm';
 import TimeModal from 'src/components/modals/TimeModal';
 import MapBuilder from 'src/components/mapComponents/mapBuilder/MapBuilder';
 import MapSaveModal from 'src/components/mapComponents/mapBuilder/MapSaveModal';
-import MapList from 'src/components/mapComponents/map/MapList';
 import DeleteModal from 'src/components/modals/DeleteModal';
 import TileListModal from 'src/components/mapComponents/mapBuilder/TileListModal';
 import Map from 'src/components/mapComponents/map/Map';
@@ -39,7 +38,7 @@ import LevelNodeModal from 'src/components/LevelNodeModal';
 import CharacterLevelsModal from 'src/components/characterComponents/CharacterLevelsModal';
 import GangProfitsModal from 'src/components/GangProfitsModal';
 import PlayerSelectModal from 'src/components/modals/PlayerSelectModal';
-import GangCharacterSelectModal from 'src/components/CampaignCharacterSelectModal';
+import GangCharacterSelectModal from 'src/components/GangCharacterSelectModal';
 import AffiliationForm from 'src/components/forms/AffiliationForm';
 import AffiliationEntitySelectModal from 'src/components/modals/AffiliationEntitySelectModal';
 import CampaignDashboard from 'src/components/CampaignDashboard';
@@ -47,7 +46,6 @@ import Page from 'src/components/Page';
 import CharacterList from 'src/components/characterComponents/CharacterList';
 import CampaignMapList from 'src/components/mapComponents/map/CampaignMapList';
 import PictureRoutes from './PictureRoutes';
-import CharacterSelectModal from 'src/components/characterComponents/CharacterSelectModal';
 import CharacterAddModal from 'src/components/characterComponents/CharacterAddModal';
 
 const CampaignTabRoutes = () => {

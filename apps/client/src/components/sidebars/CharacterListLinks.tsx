@@ -66,13 +66,21 @@ const CharacterListLinks = () => {
           path="characters?characterType=nonPlayerCharacter&npcType=template"
         />
       </LinkListSidebar>
-      <LinkSidebar
+      <LinkListSidebar
         icon={
           <CreateCharacterIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
         }
         title="Create Character"
-        path="characters/create"
-      />
+      >
+        <SubLinkSidebar
+          title="Create Custom Character"
+          path="characters/create"
+        />
+        <SubLinkSidebar
+          title="Create Template Character"
+          path="characters/add"
+        />
+      </LinkListSidebar>
 
       {isLoading ? (
         <Loading size={1.5} />

@@ -62,7 +62,7 @@ const CharacterUpdateForm = () => {
             label="Campaign"
             options={campaigns || []}
             value={field.state.value}
-            onChange={() => field.handleChange(value.id)}
+            onChange={(value) => field.handleChange(value.id)}
           />
         )}
       </characterUpdateForm.Field>

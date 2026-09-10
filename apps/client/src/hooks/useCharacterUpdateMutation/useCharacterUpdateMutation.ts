@@ -16,6 +16,12 @@ const useUpdateCharacterMutation = (characterId: number) => {
 
       queryClient.setQueryData(['character', characterId], data.character);
 
+      if (data.campaignId) {
+        queryClient.invalidateQueries({
+          queryKey: ['campaign', data.campaignId],
+        });
+      }
+
       navigate(-1);
     },
     onError: (data) => {

@@ -43,7 +43,7 @@ const Modal = ({
   return (
     <RootPortal>
       <div
-        className="scrollbar-primary-2 bg-base shadow-color relative flex max-h-85dvh w-full max-w-6xl flex-col overflow-y-auto rounded-lg shadow-lg"
+        className="scrollbar-primary-2 bg-base shadow-color relative flex h-full max-h-85dvh w-full max-w-6xl flex-col overflow-y-auto overflow-x-hidden rounded-lg shadow-lg"
         onClick={(e) => {
           e.stopPropagation();
         }}

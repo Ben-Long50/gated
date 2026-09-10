@@ -1,93 +1,104 @@
 import Modal from '../modals/Modal';
 import Loading from '../Loading';
 import CharacterCardXSmall from './CharacterCardXSmall';
-import useCodexCharactersQuery from 'src/hooks/useCodexCharactersQuery/useCodexCharactersQuery';
 import IconBtnSmall from '../buttons/IconBtnSmall';
 import NavTabs from '../NavTabs';
 import BtnAuth from '../buttons/BtnAuth';
-import useCharacters from 'src/hooks/useCharacters';
 import { useParams, useSearchParams } from 'react-router-dom';
 import useAddCharacterMutation from 'src/hooks/useCharacterAddMutation/useCharacterAddMutation';
 import CreateCharacterIcon from '../icons/CreateCharacterIcon';
+import useCharacters from 'src/hooks/useCharacters';
+import useTemplateCharactersQuery from 'src/hooks/character hooks/useUpdateCharacterLevelMutation/useCharactersQuery/useTemplateCharactersQuery';
+import Divider from '../Divider';
 
 const CharacterAddModal = () => {
   const { campaignId, gangId } = useParams();
-  const { data: codexCharacters, isLoading } = useCodexCharactersQuery();
-
-  const [searchParams, setSearchParams] = useSearchParams();
 
   const addCharacter = useAddCharacterMutation(
     Number(campaignId),
     Number(gangId),
   );
 
-  const characterIds = codexCharacters?.map((character) => character.id) ?? [];
+  const { data, isLoading } = useTemplateCharactersQuery();
 
-  const { characters, params } = useCharacters(characterIds);
-
-  if (isLoading) return <Loading />;
+  const { characters, filters, setFilters } = useCharacters(
+    data?.map((character) => character.id) ?? [],
+  );
 
   return (
     <Modal>
       <h1>Add Characters</h1>
-      <NavTabs>
+      <Divider />
+      <NavTabs className="grid-cols-5">
         <BtnAuth
-          active={params === 'nonPlayerCharacter '}
-          onClick={() =>
-            setSearchParams({ characterType: 'nonPlayerCharacter' })
-          }
+          active={filters.playerCharacter === true}
+          onClick={() => setFilters({ playerCharacter: true, npcTypes: [] })}
         >
-          NPCs
+          Player Classes
         </BtnAuth>
         <BtnAuth
-          active={params === 'nonPlayerCharacter goon'}
+          active={
+            filters.playerCharacter === false && filters.npcTypes?.length === 0
+          }
+          onClick={() => setFilters({ playerCharacter: false, npcTypes: [] })}
+        >
+          Unique NPCs
+        </BtnAuth>
+        <BtnAuth
+          active={filters.npcTypes?.includes('goon')}
           onClick={() =>
-            setSearchParams({
-              characterType: 'nonPlayerCharacter',
-              npcType: 'goon',
-            })
+            setFilters({ playerCharacter: false, npcTypes: ['goon'] })
           }
         >
           Goons
         </BtnAuth>
         <BtnAuth
-          active={params === 'nonPlayerCharacter monster'}
+          active={filters.npcTypes?.includes('shop')}
           onClick={() =>
-            setSearchParams({
-              characterType: 'nonPlayerCharacter',
-              npcType: 'monster',
-            })
+            setFilters({ playerCharacter: false, npcTypes: ['shop'] })
+          }
+        >
+          Merchants
+        </BtnAuth>
+        <BtnAuth
+          active={filters.npcTypes?.includes('monster')}
+          onClick={() =>
+            setFilters({ playerCharacter: false, npcTypes: ['monster'] })
           }
         >
           Monsters
         </BtnAuth>
       </NavTabs>
-      <div className="flex w-full flex-col gap-4">
-        {characters?.map((character) => (
-          <div
-            className="flex w-full items-center justify-between gap-8"
-            key={character.id}
-          >
-            <CharacterCardXSmall
-              characterList={true}
-              characterId={character.id}
-              active={false}
-            />
-
-            <IconBtnSmall
-              active={!addCharacter.isPending}
-              tooltip={`Create ${character.name}`}
-              onClick={() => addCharacter.mutate(character.id)}
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <div className="flex w-full flex-col gap-4">
+          {characters?.map((character) => (
+            <div
+              className="flex w-full items-center justify-between gap-8"
+              key={character.id}
             >
-              {addCharacter.isPending ? (
-                <Loading size={1.15} />
-              ) : (
-                <CreateCharacterIcon />
-              )}
-            </IconBtnSmall>
-          </div>
-        ))}
-      </div>
+              <CharacterCardXSmall
+                characterList={true}
+                characterId={character.id}
+                active={false}
+              />
+
+              <IconBtnSmall
+                active={!addCharacter.isPending}
+                tooltip={`Create ${character.name}`}
+                onClick={() => addCharacter.mutate(character.id)}
+              >
+                {addCharacter.isPending ? (
+                  <Loading size={1.15} />
+                ) : (
+                  <CreateCharacterIcon />
+                )}
+              </IconBtnSmall>
+            </div>
+          ))}
+        </div>
+      )}
     </Modal>
   );
 };

@@ -10,11 +10,11 @@ import { capitalCase } from 'change-case';
 import EntityCard from '../EntityCard';
 import useFactionQueries from 'src/hooks/faction hooks/useFactionQueries';
 import useGangQueries from 'src/hooks/gang hooks/useGangQueries/useGangQueries';
-import useCharacterQueries from 'src/hooks/useCharactersQuery/useCharacterQueries';
 import Loading from '../Loading';
 import { Faction } from 'src/types/faction';
 import { Gang } from 'src/types/gang';
 import InputFieldCheckbox from '../formFields/InputFieldCheckbox';
+import useCharacterQueries from 'src/hooks/character hooks/useUpdateCharacterLevelMutation/useCharactersQuery/useCharacterQueries';
 
 const AffiliationEntitySelectModal = () => {
   const { campaignId, gangId } = useParams();

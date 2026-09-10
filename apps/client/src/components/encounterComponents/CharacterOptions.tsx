@@ -15,7 +15,6 @@ import { ThemeContext } from 'src/contexts/ThemeContext';
 import HandIcon from '../icons/HandIcon';
 import { socket } from 'src/socket';
 import InputSelectField from '../formFields/InputSelectField';
-import useCharacterQueries from 'src/hooks/useCharactersQuery/useCharacterQueries';
 import useCombatStore from 'src/stores/combatStore';
 import { EncounterContext } from 'src/contexts/EncounterContext';
 import usePassAllReactionsMutation from 'src/hooks/encounter hooks/usePassAllReactionsMutation/usePassAllReactionsMutation';
@@ -23,6 +22,7 @@ import useScheduleReactionMutation from 'src/hooks/encounter hooks/useScheduleRe
 import usePassReactionMutation from 'src/hooks/encounter hooks/usePassReactionMutation/usePassReactionMutation';
 import useFinishReactionMutation from 'src/hooks/encounter hooks/useFinishReactionMutation/useFinishReactionMutation';
 import FootIcon from '../icons/FootIcon';
+import useCharacterQueries from 'src/hooks/character hooks/useUpdateCharacterLevelMutation/useCharactersQuery/useCharacterQueries';
 
 const CharacterOptions = ({
   setActionSidebar,

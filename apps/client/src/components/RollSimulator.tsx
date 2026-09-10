@@ -15,7 +15,7 @@ import { LayoutContext } from '../contexts/LayoutContext';
 import { capitalCase } from 'change-case';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import calculateDiceCount from 'src/utils/calculateDiceCount';
-import useCharacterQueries from 'src/hooks/useCharactersQuery/useCharacterQueries';
+import useCharacterQueries from 'src/hooks/character hooks/useUpdateCharacterLevelMutation/useCharactersQuery/useCharacterQueries';
 
 const RollSimulator = () => {
   const { mobile } = useContext(LayoutContext);

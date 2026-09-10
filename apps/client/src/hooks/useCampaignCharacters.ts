@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import useCharacterQueries from './useCharactersQuery/useCharacterQueries';
+import useCharacterQueries from './character hooks/useUpdateCharacterLevelMutation/useCharactersQuery/useCharacterQueries';
 
 const useCampaignCharacters = (characterIds: number[]) => {
   const { characters, isLoading } = useCharacterQueries(characterIds || []);

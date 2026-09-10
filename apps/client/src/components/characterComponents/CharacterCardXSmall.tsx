@@ -11,13 +11,11 @@ const CharacterCardXSmall = ({
   characterId,
   className,
   active,
-  menu = true,
 }: {
   characterList: boolean;
   characterId: number;
   className?: string;
   active: boolean;
-  menu?: boolean;
 }) => {
   const { filteredCharacter: character, isLoading } = useCharacter(characterId);
   const containerRef = useRef(null);
@@ -46,18 +44,12 @@ const CharacterCardXSmall = ({
   return (
     <div
       ref={containerRef}
-      className={`${className} ${menu && 'cursor-pointer'} timing relative flex flex-col`}
+      className={`${className} timing relative flex flex-col`}
       onClick={(e) => {
         e.stopPropagation();
         handleMenu(e);
       }}
     >
-      {menu && (
-        <CharacterRadialMenu
-          character={character}
-          containerRef={containerRef}
-        />
-      )}
       <div className={`relative flex items-center gap-4`}>
         <CharacterPictureRound
           className={`${active && 'liveToken'}`}
@@ -66,10 +58,15 @@ const CharacterCardXSmall = ({
         {character?.conditions && character?.conditions.length > 0 && (
           <div className="absolute left-0 top-0 z-10 size-3 rounded-full bg-red-600 shadow-md shadow-black"></div>
         )}
-        <ArrowHeader4
-          className={`${characterList ? 'visible h-8 translate-x-0 opacity-100' : 'invisible h-0 -translate-x-full opacity-0'} ${active ? 'text-accent' : 'text-primary'} timing w-full`}
-          title={character?.name}
-        />
+        <div className="flex flex-col items-start">
+          <ArrowHeader4
+            className={`${characterList ? 'visible h-8 translate-x-0 opacity-100' : 'invisible h-0 -translate-x-full opacity-0'} ${active ? 'text-accent' : 'text-primary'} timing w-full`}
+            title={character?.name}
+          />
+          {character?.title && (
+            <p className="text-tertiary text-base">{character?.title}</p>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -34,6 +34,8 @@ const Campaign = () => {
 
   const { data: campaign, isLoading } = useCampaignQuery(Number(campaignId));
 
+  console.log(campaign);
+
   const accentCampaignInvitation = useJoinCampaignMutation(Number(campaignId));
   const rejectCampaignInvitation = useRejectCampaignMutation(
     Number(campaignId),

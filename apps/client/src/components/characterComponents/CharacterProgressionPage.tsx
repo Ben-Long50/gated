@@ -169,12 +169,19 @@ const CharacterProgressionPage = () => {
         )}
         {character?.characterLevelBonuses && character?.perks.length > 0 && (
           <>
-            <ArrowHeader2 title="Perks" />
-            <div className="grid grid-cols-2 gap-4 lg:gap-8">
-              {character?.characterLevelBonuses[0].perks.map((perk: Perk) => (
-                <PerkCard perkId={perk.id} />
-              ))}
-            </div>
+            <Divider />
+            <ExpandingList
+              title="Perks"
+              className="grid grid-cols-1 gap-4 md:grid-cols-2"
+            >
+              {character?.perks ? (
+                character?.perks.map((perk) => (
+                  <PerkCard key={perk.id} perkId={perk.id} />
+                ))
+              ) : (
+                <h2 className="pl-6">???</h2>
+              )}
+            </ExpandingList>
           </>
         )}
         {!character?.playerCharacter && (

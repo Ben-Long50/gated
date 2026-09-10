@@ -8,6 +8,7 @@ import CharacterDashboard from 'src/components/characterComponents/CharacterDash
 import Page from 'src/components/Page';
 import PictureRoutes from './PictureRoutes';
 import ActionLinkModal from 'src/components/modals/ActionLinkModal';
+import CharacterAddModal from 'src/components/characterComponents/CharacterAddModal';
 
 const CharacterTabRoutes = () => {
   return (
@@ -28,6 +29,7 @@ const CharacterTabRoutes = () => {
         <Route path="npcPreferences" element={<NpcPreferenceModal />} />
         <Route path="actions" element={<ActionLinkModal />} />
       </Route>
+      <Route path="add" element={<CharacterAddModal />} />
       {CharacterRoutes()}
     </Route>
   );

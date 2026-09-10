@@ -267,19 +267,6 @@ const CharacterSheet = () => {
           </ExpandingList>
         </>
       )}
-      {user?.id === character?.userId && (
-        <>
-          <Divider />
-          <BtnRect
-            type="button"
-            className="w-full"
-            ariaLabel="Update character information"
-            onClick={() => navigate('update?mode=form')}
-          >
-            Update Character Info
-          </BtnRect>
-        </>
-      )}
       {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') &&
         character?.userId === null && (
           <>

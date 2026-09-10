@@ -11,12 +11,12 @@ import useDeleteAffiliationMutation from '../../hooks/useDeleteAffiliationMutati
 import useAffiliationForm from 'src/hooks/form hooks/useAffiliationForm';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import useGangQueries from 'src/hooks/gang hooks/useGangQueries/useGangQueries';
-import useCharacterQueries from 'src/hooks/useCharactersQuery/useCharacterQueries';
 import useFactionQueries from 'src/hooks/faction hooks/useFactionQueries';
 import { Gang } from 'src/types/gang';
 import { Character } from 'src/types/character';
 import BtnAuth from '../buttons/BtnAuth';
 import EntityCard from '../EntityCard';
+import useCharacterQueries from 'src/hooks/character hooks/useUpdateCharacterLevelMutation/useCharactersQuery/useCharacterQueries';
 
 const AffiliationForm = () => {
   const { mobile } = useContext(LayoutContext);

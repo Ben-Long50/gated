@@ -10,8 +10,12 @@ import DroneIcon from '../icons/DroneIcon';
 import VehicleIcon from '../icons/VehicleIcon';
 import ProgressionIcon from '../icons/ProgressionIcon';
 import ShopIcon from '../icons/ShopIcon';
+import EditCharacterIcon from '../icons/EditCharacterIcon';
+import { useContext } from 'react';
+import { AuthContext } from 'src/contexts/AuthContext';
 
 const CharacterLinks = () => {
+  const { user } = useContext(AuthContext);
   const { characterId } = useParams();
 
   const { filteredCharacter: character, isLoading } = useCharacter(
@@ -78,6 +82,15 @@ const CharacterLinks = () => {
         }
         path={`/glam/characters/${character?.id}/shop/global`}
       />
+      {character?.userId === user.id && (
+        <LinkSidebar
+          title="Update Character"
+          icon={
+            <EditCharacterIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
+          }
+          path={`/glam/characters/${character?.id}/update`}
+        />
+      )}
     </>
   );
 };

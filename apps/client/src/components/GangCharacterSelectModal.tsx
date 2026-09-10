@@ -54,9 +54,9 @@ const GangCharacterSelectModal = () => {
         onChange={(value) => setQuery(value)}
       />
       <div className="grid w-full grid-cols-[8fr_1fr_1fr] items-center gap-4">
-        <h4>Character</h4>
-        <h4 className="justify-self-center">Leader</h4>
-        <h4 className="justify-self-center">Member</h4>
+        <p>Character</p>
+        <p className="justify-self-center">Leader</p>
+        <p className="justify-self-center">Member</p>
         {characters
           .filter((character) => character != null)
           .map((character: Character) => (

@@ -1,22 +1,25 @@
 import { useState } from 'react';
 import { Character } from 'src/types/character';
-import useCharacterQueries from './useCharactersQuery/useCharacterQueries';
 import { useSearchParams } from 'react-router-dom';
 import { checkArrayMatch } from 'src/utils/checkArrayMatch';
+import useCharacterQueries from './character hooks/useUpdateCharacterLevelMutation/useCharactersQuery/useCharacterQueries';
 
 const useCharacters = (characterIds: number[]) => {
+  const [filters, setFilters] = useState<{
+    playerCharacter: boolean | null;
+    npcTypes: string[] | null;
+  }>({
+    playerCharacter: null,
+    npcTypes: null,
+  });
   const [searchParams] = useSearchParams();
 
   const characterType = searchParams.get('characterType');
-  const npcTypes = searchParams.getAll('npcType');
 
-  let playerCharacter = null;
-
-  if (characterType && characterType === 'playerCharacter') {
-    playerCharacter = true;
-  } else if (characterType && characterType === 'nonPlayerCharacter') {
-    playerCharacter = false;
-  }
+  const playerCharacter =
+    filters.playerCharacter ??
+    (characterType === 'playerCharacter' ? true : false);
+  const npcTypes = filters.npcTypes ?? searchParams.getAll('npcType');
 
   const { characters, isLoading: charactersLoading } =
     useCharacterQueries(characterIds);
@@ -33,10 +36,7 @@ const useCharacters = (characterIds: number[]) => {
           ? character.playerCharacter === playerCharacter
           : true;
 
-      const matchesNpcType =
-        npcTypes.length > 0
-          ? checkArrayMatch(npcTypes, character.npcTypes)
-          : true;
+      const matchesNpcType = checkArrayMatch(npcTypes, character.npcTypes);
 
       return playerCharacter ? matchesType : matchesType && matchesNpcType;
     })
@@ -55,7 +55,8 @@ const useCharacters = (characterIds: number[]) => {
 
   return {
     characters: filteredCharacters,
-    params: characterType + ' ' + npcTypes.join(' '),
+    filters,
+    setFilters,
     query,
     campaignId,
     setQuery,

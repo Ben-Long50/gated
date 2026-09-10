@@ -1,9 +1,9 @@
 import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../../../handleResponse';
 
-const getCharacters = async () => {
+const getTemplateCharacters = async () => {
   try {
-    const response = await fetch(`${apiUrl}/characters`, {
+    const response = await fetch(`${apiUrl}/characters/template`, {
       method: 'GET',
       credentials: 'include',
     });
@@ -18,4 +18,4 @@ const getCharacters = async () => {
   }
 };
 
-export default getCharacters;
+export default getTemplateCharacters;
