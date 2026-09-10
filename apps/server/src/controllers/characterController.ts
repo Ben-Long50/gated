@@ -20,6 +20,22 @@ const characterController = {
     }
   },
 
+  getTemplateCharacters: async (req: Request, res: Response) => {
+    try {
+      if (!req.user) {
+        throw new Error('Failed to find user');
+      }
+
+      const characters = await characterServices.getTemplateCharacters(
+        req.user.id,
+      );
+
+      res.status(200).json(characters);
+    } catch (error: any) {
+      handleControllerError(res, error);
+    }
+  },
+
   getCodexCharacters: async (_: Request, res: Response) => {
     try {
       const characters = await characterServices.getCodexCharacters();
@@ -422,12 +438,14 @@ const characterController = {
       if (!req.user) {
         throw new Error('Could not find authenticated user');
       }
-      await characterServices.deleteCharacter(
+      const character = await characterServices.deleteCharacter(
         req.user.id,
         Number(req.params.characterId),
       );
 
-      res.status(200).json({ message: 'Successfully deleted character' });
+      res
+        .status(200)
+        .json({ character, message: `Successfully deleted ${character.name}` });
     } catch (error: any) {
       handleControllerError(res, error);
     }

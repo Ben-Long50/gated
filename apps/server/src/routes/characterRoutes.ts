@@ -16,6 +16,12 @@ router.get(
 );
 
 router.get(
+  '/characters/template',
+  authentication.authenticate,
+  characterController.getTemplateCharacters,
+);
+
+router.get(
   '/characters/:characterId',
   authentication.authenticate,
   characterController.getCharacterById,

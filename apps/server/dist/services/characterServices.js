@@ -98,6 +98,23 @@ const characterServices = {
         }
         return characters;
     },
+    getTemplateCharacters: async (userId) => {
+        const characters = await prisma.character.findMany({
+            where: {
+                OR: [
+                    { id: userId, baseCharacterId: null, npcTypes: { has: 'template' } },
+                    { userId: null, baseCharacterId: null },
+                ],
+            },
+            orderBy: {
+                name: 'asc',
+            },
+            select: {
+                id: true,
+            },
+        });
+        return characters;
+    },
     getCodexCharacters: async () => {
         const characters = await prisma.character.findMany({
             where: { userId: null },
@@ -539,7 +556,7 @@ const characterServices = {
         if (!character) {
             throw new Error('Failed to find character');
         }
-        await prisma.$transaction(async (tx) => {
+        const deletedCharacter = await prisma.$transaction(async (tx) => {
             await tx.affiliation.deleteMany({
                 where: {
                     id: {
@@ -547,13 +564,15 @@ const characterServices = {
                     },
                 },
             });
-            await tx.character.delete({
+            return await tx.character.delete({
                 where: {
                     id: characterId,
                     userId,
                 },
+                select: { name: true, userId: true, campaignId: true, gangId: true },
             });
         });
+        return deletedCharacter;
     },
 };
 export default characterServices;
