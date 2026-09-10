@@ -2,8 +2,24 @@ import { Prisma } from '@prisma/client';
 import prisma from '../config/database.js';
 import addVariableStats from '../utils/addVariableStats.js';
 import { ActionInput } from '../validation/actionSchema.js';
+import { keywordSelectForCopy } from './keywordServices.js';
 
-const actionInclude = {
+export const actionSelectForCopy = {
+  id: true,
+  name: true,
+  description: true,
+  costs: true,
+  roll: true,
+  actionType: true,
+  actionSubtypes: true,
+  duration: true,
+  cooldown: true,
+  modifiers: true,
+  keywordModifiers: { select: keywordSelectForCopy },
+  baseActionId: true,
+};
+
+export const actionInclude = {
   keywordModifiers: { select: { keyword: true, value: true } },
   perk: { select: { name: true, id: true } },
   parentItem: { select: { name: true, id: true, itemTypes: true } },

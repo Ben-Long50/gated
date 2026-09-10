@@ -1,12 +1,54 @@
 import prisma from '../config/database.js';
 import { enforceSingularLinking } from '../utils/enforceSingularLinking.js';
 import { $Enums, Prisma } from '@prisma/client';
-import actionServices from './actionServices.js';
+import actionServices, { actionSelectForCopy } from './actionServices.js';
 import { ItemInput, ItemUpgradeInput } from '../validation/itemSchema.js';
 import { ItemStats } from '../validation/fieldSchemas.js';
 import { ConditionReferenceInput } from '../validation/conditionSchema.js';
 import addVariableStats from '../utils/addVariableStats.js';
 import { ActionInput } from '../validation/actionSchema.js';
+import { keywordSelectForCopy } from './keywordServices.js';
+
+export const itemSelectForCopy = {
+  id: true,
+  name: true,
+  itemTypes: true,
+  rarity: true,
+  grade: true,
+  generatedPictureId: true,
+  description: true,
+  stats: true,
+  modifiedStats: true,
+  price: true,
+  equipped: true,
+  keywords: { select: keywordSelectForCopy },
+  modifiedKeywords: { select: keywordSelectForCopy },
+  baseItemId: true,
+  linkedItems: {
+    select: {
+      id: true,
+      name: true,
+      itemTypes: true,
+      rarity: true,
+      grade: true,
+      generatedPictureId: true,
+      description: true,
+      stats: true,
+      modifiedStats: true,
+      price: true,
+      equipped: true,
+      keywords: { select: keywordSelectForCopy },
+      modifiedKeywords: { select: keywordSelectForCopy },
+      baseItemId: true,
+      linkedActions: {
+        select: actionSelectForCopy,
+      },
+    },
+  },
+  linkedActions: {
+    select: actionSelectForCopy,
+  },
+};
 
 export const itemInclude = {
   baseItem: true,

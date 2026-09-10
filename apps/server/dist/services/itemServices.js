@@ -11,11 +11,52 @@ var __rest = (this && this.__rest) || function (s, e) {
 };
 import prisma from '../config/database.js';
 import { enforceSingularLinking } from '../utils/enforceSingularLinking.js';
-import actionServices from './actionServices.js';
+import actionServices, { actionSelectForCopy } from './actionServices.js';
 import { ItemInput } from '../validation/itemSchema.js';
 import { ConditionReferenceInput } from '../validation/conditionSchema.js';
 import addVariableStats from '../utils/addVariableStats.js';
 import { ActionInput } from '../validation/actionSchema.js';
+import { keywordSelectForCopy } from './keywordServices.js';
+export const itemSelectForCopy = {
+    id: true,
+    name: true,
+    itemTypes: true,
+    rarity: true,
+    grade: true,
+    generatedPictureId: true,
+    description: true,
+    stats: true,
+    modifiedStats: true,
+    price: true,
+    equipped: true,
+    keywords: { select: keywordSelectForCopy },
+    modifiedKeywords: { select: keywordSelectForCopy },
+    baseItemId: true,
+    linkedItems: {
+        select: {
+            id: true,
+            name: true,
+            itemTypes: true,
+            rarity: true,
+            grade: true,
+            generatedPictureId: true,
+            description: true,
+            stats: true,
+            modifiedStats: true,
+            price: true,
+            equipped: true,
+            keywords: { select: keywordSelectForCopy },
+            modifiedKeywords: { select: keywordSelectForCopy },
+            baseItemId: true,
+            linkedActions: {
+                select: actionSelectForCopy,
+            },
+        },
+    },
+    linkedActions: {
+        select: actionSelectForCopy,
+    },
+};
 export const itemInclude = {
     baseItem: true,
     characterInventory: {

@@ -12,7 +12,22 @@ var __rest = (this && this.__rest) || function (s, e) {
 import prisma from '../config/database.js';
 import addVariableStats from '../utils/addVariableStats.js';
 import { ActionInput } from '../validation/actionSchema.js';
-const actionInclude = {
+import { keywordSelectForCopy } from './keywordServices.js';
+export const actionSelectForCopy = {
+    id: true,
+    name: true,
+    description: true,
+    costs: true,
+    roll: true,
+    actionType: true,
+    actionSubtypes: true,
+    duration: true,
+    cooldown: true,
+    modifiers: true,
+    keywordModifiers: { select: keywordSelectForCopy },
+    baseActionId: true,
+};
+export const actionInclude = {
     keywordModifiers: { select: { keyword: true, value: true } },
     perk: { select: { name: true, id: true } },
     parentItem: { select: { name: true, id: true, itemTypes: true } },

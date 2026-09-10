@@ -10,6 +10,8 @@ datasource db {
 
 model User {
   id                    Int                @id @default(autoincrement())
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @default(now())
   username              String             @unique
   firstName             String
   lastName              String
@@ -19,7 +21,6 @@ model User {
   email                 String             @unique
   password              String?
   role                  UserRole           @default(USER)
-  createdAt             DateTime           @default(now())
   generatedPictures     GeneratedPicture[]
   generationCount       Int                @default(0)
   characters            Character[]
@@ -36,6 +37,7 @@ model User {
 model GeneratedPicture {
   id         Int                  @id @default(autoincrement())
   createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @default(now())
   imageUrl   String               @unique
   publicId   String               @unique
   prompt     Json?
@@ -61,6 +63,7 @@ enum GeneratedPictureType {
 model Campaign {
   id                 Int               @id @default(autoincrement())
   createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @default(now())
   active             Boolean           @default(false)
   date               Json?
   time               Json?
@@ -97,6 +100,8 @@ enum Month {
 
 model Event {
   id          Int        @id @default(autoincrement())
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @default(now())
   campaign    Campaign   @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   campaignId  Int
   character   Character? @relation(fields: [characterId], references: [id], onDelete: Cascade)
@@ -113,7 +118,8 @@ model Event {
 model Map {
   id                 Int               @id @default(autoincrement())
   createdAt          DateTime          @default(now())
-  user               User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  updatedAt          DateTime          @default(now())
+  user               User?             @relation(fields: [userId], references: [id])
   userId             Int?
   campaign           Campaign?         @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   campaignId         Int?
@@ -145,6 +151,8 @@ enum MapType {
 
 model Location {
   id          Int        @id @default(autoincrement())
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @default(now())
   row         Int?
   col         Int?
   map         Map        @relation(fields: [mapId], references: [id], onDelete: Cascade)
@@ -158,6 +166,7 @@ model Location {
 model Encounter {
   id           Int            @id @default(autoincrement())
   createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @default(now())
   name         String
   active       Boolean        @default(false)
   campaign     Campaign       @relation(fields: [campaignId], references: [id], onDelete: Cascade)
@@ -188,9 +197,10 @@ enum CombatPhase {
 model PhaseHistory {
   id          Int        @id @default(autoincrement())
   createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @default(now())
   turn        Int        @default(0)
   round       Int        @default(0)
-  encounter   Encounter? @relation(fields: [encounterId], references: [id])
+  encounter   Encounter? @relation(fields: [encounterId], references: [id], onDelete: Cascade)
   encounterId Int?
   action      History?   @relation(name: "phaseAction")
   reactions   History[]  @relation(name: "phaseReactions")
@@ -199,6 +209,7 @@ model PhaseHistory {
 model History {
   id                     Int           @id @default(autoincrement())
   createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @default(now())
   campaign               Campaign      @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   campaignId             Int
   encounter              Encounter?    @relation(name: "history", fields: [encounterId], references: [id], onDelete: Cascade)
@@ -224,6 +235,8 @@ model History {
 
 model Faction {
   id                 Int               @id @default(autoincrement())
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @default(now())
   factionType        FactionType
   name               String
   generatedPicture   GeneratedPicture? @relation(fields: [generatedPictureId], references: [id])
@@ -237,6 +250,8 @@ model Faction {
 
 model Affiliation {
   id         Int         @id @default(autoincrement())
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @default(now())
   campaign   Campaign    @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   campaignId Int
   value      Int         @default(0)
@@ -255,6 +270,7 @@ enum FactionType {
 model Session {
   id                 Int                @id @default(autoincrement())
   createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @default(now())
   sessionNumber      Int
   name               String
   location           String?
@@ -274,10 +290,11 @@ model Session {
 model Notification {
   id          Int              @id @default(autoincrement())
   createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @default(now())
   type        NotificationType
   recipient   User             @relation("received", fields: [recipientId], references: [id], onDelete: Cascade)
   recipientId Int
-  sender      User             @relation("sent", fields: [senderId], references: [id])
+  sender      User             @relation("sent", fields: [senderId], references: [id], onDelete: Cascade)
   senderId    Int
   read        Boolean          @default(false)
   readAt      DateTime?
@@ -293,6 +310,8 @@ enum NotificationType {
 
 model Note {
   id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now())
   character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
   characterId Int
   content     Json
@@ -304,6 +323,8 @@ model Note {
 
 model Gang {
   id                 Int                @id @default(autoincrement())
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @default(now())
   name               String
   generatedPicture   GeneratedPicture?  @relation(fields: [generatedPictureId], references: [id])
   generatedPictureId Int?
@@ -313,7 +334,7 @@ model Gang {
   profits            Int                @default(0)
   campaign           Campaign           @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   campaignId         Int
-  faction            Faction?           @relation(fields: [factionId], references: [id], onDelete: Cascade)
+  faction            Faction?           @relation(fields: [factionId], references: [id])
   factionId          Int?
   leaders            Character[]        @relation("leader")
   characters         Character[]        @relation("member")
@@ -324,9 +345,11 @@ model Gang {
 }
 
 model GangSessionBonus {
-  gang            Gang    @relation(fields: [gangId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @default(now())
+  gang            Gang     @relation(fields: [gangId], references: [id], onDelete: Cascade)
   gangId          Int
-  session         Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  session         Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   sessionId       Int
   reputationBonus Json?
   levelNodeBonus  Json?
@@ -336,6 +359,7 @@ model GangSessionBonus {
 
 model Property {
   id                 Int               @id @default(autoincrement())
+  createdAt          DateTime          @default(now())
   updatedAt          DateTime          @default(now())
   name               String
   generatedPicture   GeneratedPicture? @relation(fields: [generatedPictureId], references: [id])
@@ -343,7 +367,7 @@ model Property {
   description        String
   gpPrice            Int
   type               String            @default("property")
-  gang               Gang?             @relation(fields: [gangId], references: [id])
+  gang               Gang?             @relation(fields: [gangId], references: [id], onDelete: Cascade)
   gangId             Int?
   baseProperty       Property?         @relation("copyProperty", fields: [basePropertyId], references: [id])
   basePropertyId     Int?
@@ -401,6 +425,8 @@ model Character {
 
 model CharacterLevelBonus {
   id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now())
   character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
   characterId Int
   level       Int
@@ -412,6 +438,8 @@ model CharacterLevelBonus {
 
 model CharacterCart {
   id          Int                @id @default(autoincrement())
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @default(now())
   character   Character?         @relation(fields: [characterId], references: [id], onDelete: Cascade)
   characterId Int?               @unique
   items       CartItemRelation[]
@@ -422,7 +450,7 @@ model CartItemRelation {
   item            Item           @relation(fields: [itemId], references: [id], onDelete: Cascade)
   itemId          Int
   quantity        Int            @default(1)
-  characterCart   CharacterCart? @relation(fields: [characterCartId], references: [id])
+  characterCart   CharacterCart? @relation(fields: [characterCartId], references: [id], onDelete: Cascade)
   characterCartId Int?
 
   @@unique([characterCartId, itemId])
@@ -430,6 +458,8 @@ model CartItemRelation {
 
 model CharacterInventory {
   id          Int        @id @default(autoincrement())
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @default(now())
   character   Character? @relation(fields: [characterId], references: [id], onDelete: Cascade)
   characterId Int?       @unique
   items       Item[]
@@ -452,6 +482,8 @@ model KeywordReference {
 
 model Condition {
   id                           Int                           @id @default(autoincrement())
+  createdAt                    DateTime                      @default(now())
+  updatedAt                    DateTime                      @default(now())
   name                         String                        @unique
   conditionType                ConditionType
   description                  String
@@ -484,6 +516,8 @@ model ItemConditionReference {
 
 model Keyword {
   id               Int                @id @default(autoincrement())
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @default(now())
   keywordType      KeywordType
   name             String
   description      String
@@ -497,6 +531,8 @@ model Keyword {
 
 model Action {
   id               Int                @id @default(autoincrement())
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @default(now())
   name             String
   description      String
   costs            Json?
@@ -514,12 +550,13 @@ model Action {
   derivedActions   Action[]           @relation("BaseRelation")
   perk             Perk?              @relation(fields: [perkId], references: [id])
   perkId           Int?
-  parentItem       Item?              @relation("linkedActions", fields: [parentItemId], references: [id])
+  parentItem       Item?              @relation("linkedActions", fields: [parentItemId], references: [id], onDelete: Cascade)
   parentItemId     Int?
 }
 
 model Item {
   id                   Int                      @id @default(autoincrement())
+  createdAt            DateTime                 @default(now())
   updatedAt            DateTime                 @default(now())
   name                 String
   itemTypes            ItemType[]
@@ -596,6 +633,8 @@ enum DurationUnit {
 
 model Perk {
   id                    Int                  @id @default(autoincrement())
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @default(now())
   name                  String
   description           String
   type                  PerkType             @default(character)
@@ -611,6 +650,7 @@ model Perk {
 model PatchNote {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
   version   Float    @unique
   title     String
   content   Json
@@ -619,6 +659,7 @@ model PatchNote {
 model Error {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
   title     String
   content   String
   userId    Int

@@ -1,9 +1,19 @@
 import { Prisma } from '@prisma/client';
 import prisma from '../config/database.js';
 import { PerkSchema } from '../validation/perkSchema.js';
-import actionServices from './actionServices.js';
+import actionServices, { actionSelectForCopy } from './actionServices.js';
 
-const perkInclude = {
+export const perkSelectForCopy = {
+  id: true,
+  name: true,
+  description: true,
+  type: true,
+  attributes: true,
+  basePerkId: true,
+  actions: { select: actionSelectForCopy },
+};
+
+export const perkInclude = {
   actions: true,
 };
 
@@ -58,14 +68,7 @@ const perkServices = {
 
     const perk = await client.perk.findUnique({
       where: { id: perkId, basePerkId: null },
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        type: true,
-        attributes: true,
-        actions: { select: { id: true } },
-      },
+      select: perkSelectForCopy,
     });
 
     if (!perk) {

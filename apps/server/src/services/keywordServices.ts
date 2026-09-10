@@ -1,6 +1,8 @@
 import prisma from '../config/database.js';
 import { KeywordInput } from '../validation/keywordSchema.js';
 
+export const keywordSelectForCopy = { value: true, keywordId: true };
+
 const keywordServices = {
   getKeywords: async () => {
     const keywords = await prisma.keyword.findMany({

@@ -11,12 +11,47 @@ var __rest = (this && this.__rest) || function (s, e) {
 };
 import prisma from '../config/database.js';
 import { includeCharacterCart } from '../utils/linkQueryStructures.js';
-import itemServices, { itemInclude } from './itemServices.js';
+import itemServices, { itemInclude, itemSelectForCopy, } from './itemServices.js';
 import { getIO } from '../sockets/socket.js';
 import validateLevelUpBonus from '../utils/validateLevelUpBonus.js';
 import { ConditionReferenceInput } from '../validation/conditionSchema.js';
-import perkServices from './perkServices.js';
+import perkServices, { perkSelectForCopy } from './perkServices.js';
 import { filterObject } from '../utils/filterObject.js';
+export const characterSelectForCopy = {
+    id: true,
+    name: true,
+    title: true,
+    level: true,
+    stats: true,
+    profits: true,
+    generatedPictureId: true,
+    height: true,
+    weight: true,
+    age: true,
+    sex: true,
+    backstory: true,
+    firstTaste: true,
+    badMedicine: true,
+    description: true,
+    playerCharacter: true,
+    npcTypes: true,
+    preferences: true,
+    baseCharacterId: true,
+    characterInventory: {
+        select: {
+            items: {
+                select: itemSelectForCopy,
+            },
+        },
+    },
+    characterLevelBonuses: {
+        select: {
+            level: true,
+            attributes: true,
+            perks: { select: perkSelectForCopy },
+        },
+    },
+};
 export const characterInclude = {
     campaign: {
         select: {
@@ -200,83 +235,81 @@ const characterServices = {
             var _a, _b;
             const templateCharacter = await tx.character.findUnique({
                 where: { id: characterId },
-                select: {
-                    id: true,
-                    name: true,
-                    title: true,
-                    level: true,
-                    stats: true,
-                    profits: true,
-                    generatedPictureId: true,
-                    height: true,
-                    weight: true,
-                    age: true,
-                    sex: true,
-                    backstory: true,
-                    firstTaste: true,
-                    badMedicine: true,
-                    description: true,
-                    playerCharacter: true,
-                    npcTypes: true,
-                    preferences: true,
-                    baseCharacterId: true,
-                    characterInventory: {
-                        include: { items: { select: { id: true, baseItemId: true } } },
-                    },
-                    characterLevelBonuses: {
-                        include: {
-                            perks: {
-                                include: {
-                                    actions: { include: { keywordModifiers: true } },
-                                },
-                            },
-                        },
-                    },
-                },
+                select: characterSelectForCopy,
             });
             if (!templateCharacter) {
                 throw new Error('Failed to find template character');
             }
-            const itemMap = new Map();
-            (_a = templateCharacter.characterInventory) === null || _a === void 0 ? void 0 : _a.items.forEach((item) => {
-                const existingItemCount = itemMap.get(item.baseItemId);
-                if (existingItemCount) {
-                    itemMap.set(item.baseItemId, existingItemCount + 1);
-                }
-                else {
-                    itemMap.set(item.baseItemId, 1);
-                }
-            });
             const _c = filterObject(templateCharacter), { id, characterLevelBonuses } = _c, filteredCharacter = __rest(_c, ["id", "characterLevelBonuses"]);
             const character = await tx.character.create({
-                data: Object.assign(Object.assign({}, filteredCharacter), { npcTypes: (_b = filteredCharacter.npcTypes) === null || _b === void 0 ? void 0 : _b.filter((type) => type !== 'template'), baseCharacterId: id, characterCart: {
+                data: Object.assign(Object.assign({}, filteredCharacter), { npcTypes: (_a = filteredCharacter.npcTypes) === null || _a === void 0 ? void 0 : _a.filter((type) => type !== 'template'), baseCharacterId: id, characterInventory: {
                         create: {
                             items: {
-                                createMany: {
-                                    data: Array.from(itemMap).map(([itemId, quantity]) => ({
-                                        itemId,
-                                        quantity,
-                                    })),
-                                },
+                                create: (_b = templateCharacter.characterInventory) === null || _b === void 0 ? void 0 : _b.items.map((_a) => {
+                                    var { id, baseItemId, keywords, modifiedKeywords, linkedItems, linkedActions } = _a, item = __rest(_a, ["id", "baseItemId", "keywords", "modifiedKeywords", "linkedItems", "linkedActions"]);
+                                    return (Object.assign(Object.assign({}, item), { baseItemId: baseItemId !== null && baseItemId !== void 0 ? baseItemId : id, keywords: {
+                                            create: keywords.map((keyword) => ({
+                                                keywordId: keyword.keywordId,
+                                                value: keyword.value,
+                                            })),
+                                        }, modifiedKeywords: {
+                                            create: modifiedKeywords.map((keyword) => ({
+                                                keywordId: keyword.keywordId,
+                                                value: keyword.value,
+                                            })),
+                                        }, linkedItems: {
+                                            create: linkedItems.map((_a) => {
+                                                var { id, baseItemId, keywords, modifiedKeywords, linkedActions } = _a, item = __rest(_a, ["id", "baseItemId", "keywords", "modifiedKeywords", "linkedActions"]);
+                                                return (Object.assign(Object.assign({}, item), { baseItemId: baseItemId !== null && baseItemId !== void 0 ? baseItemId : id, keywords: {
+                                                        create: keywords.map((keyword) => ({
+                                                            keywordId: keyword.keywordId,
+                                                            value: keyword.value,
+                                                        })),
+                                                    }, modifiedKeywords: {
+                                                        create: modifiedKeywords.map((keyword) => ({
+                                                            keywordId: keyword.keywordId,
+                                                            value: keyword.value,
+                                                        })),
+                                                    }, linkedActions: {
+                                                        create: linkedActions.map((_a) => {
+                                                            var { id, baseActionId, keywordModifiers } = _a, action = __rest(_a, ["id", "baseActionId", "keywordModifiers"]);
+                                                            return (Object.assign(Object.assign({}, action), { baseActionId: baseActionId !== null && baseActionId !== void 0 ? baseActionId : id, keywordModifiers: {
+                                                                    create: keywordModifiers.map((keyword) => ({
+                                                                        keywordId: keyword.keywordId,
+                                                                        value: keyword.value,
+                                                                    })),
+                                                                } }));
+                                                        }),
+                                                    } }));
+                                            }),
+                                        }, linkedActions: {
+                                            create: linkedActions.map((_a) => {
+                                                var { id, baseActionId, keywordModifiers } = _a, action = __rest(_a, ["id", "baseActionId", "keywordModifiers"]);
+                                                return (Object.assign(Object.assign({}, action), { baseActionId: baseActionId !== null && baseActionId !== void 0 ? baseActionId : id, keywordModifiers: {
+                                                        create: keywordModifiers.map((keyword) => ({
+                                                            keywordId: keyword.keywordId,
+                                                            value: keyword.value,
+                                                        })),
+                                                    } }));
+                                            }),
+                                        } }));
+                                }),
                             },
                         },
-                    }, characterInventory: { create: {} }, characterLevelBonuses: {
+                    }, characterLevelBonuses: {
                         create: templateCharacter.characterLevelBonuses.map((_a) => {
-                            var { id, perks, characterId } = _a, bonus = __rest(_a, ["id", "perks", "characterId"]);
+                            var { perks } = _a, bonus = __rest(_a, ["perks"]);
                             return (Object.assign(Object.assign({}, bonus), { perks: {
                                     create: perks.map((_a) => {
-                                        var { id, basePerkId, actions, characterLevelBonusId } = _a, perk = __rest(_a, ["id", "basePerkId", "actions", "characterLevelBonusId"]);
+                                        var { id, basePerkId, actions } = _a, perk = __rest(_a, ["id", "basePerkId", "actions"]);
                                         return (Object.assign(Object.assign({}, perk), { basePerkId: basePerkId !== null && basePerkId !== void 0 ? basePerkId : id, actions: {
                                                 create: actions.map((_a) => {
-                                                    var { id, baseActionId, keywordModifiers, perkId } = _a, action = __rest(_a, ["id", "baseActionId", "keywordModifiers", "perkId"]);
+                                                    var { id, baseActionId, keywordModifiers } = _a, action = __rest(_a, ["id", "baseActionId", "keywordModifiers"]);
                                                     return (Object.assign(Object.assign({}, action), { baseActionId: baseActionId !== null && baseActionId !== void 0 ? baseActionId : id, keywordModifiers: {
-                                                            create: keywordModifiers.map((_a) => {
-                                                                var { actionId } = _a, keyword = __rest(_a, ["actionId"]);
-                                                                return ({
-                                                                    keywordId: keyword.id,
-                                                                    value: keyword.value,
-                                                                });
-                                                            }),
+                                                            create: keywordModifiers.map((keyword) => ({
+                                                                keywordId: keyword.keywordId,
+                                                                value: keyword.value,
+                                                            })),
                                                         } }));
                                                 }),
                                             } }));
@@ -286,24 +319,19 @@ const characterServices = {
                     }, userId,
                     campaignId,
                     gangId }),
-                select: { id: true, characterInventory: true },
+                select: {
+                    name: true,
+                    id: true,
+                    userId: true,
+                    campaignId: true,
+                    gangId: true,
+                },
             });
-            if (!character.characterInventory) {
-                throw new Error('Failed to find character inventory');
-            }
-            const finalCharacter = await characterServices.addToInventory(character.id, character.characterInventory.id, tx, true);
-            await characterServices.clearCart(finalCharacter.id, tx);
-            return {
-                name: finalCharacter.name,
-                id: finalCharacter.id,
-                userId: finalCharacter.userId,
-                campaignId: finalCharacter.campaignId,
-                gangId: finalCharacter.gangId,
-            };
+            return character;
         });
         return character;
     },
-    addToInventory: async (characterId, inventoryId, tx, template = false) => {
+    addToInventory: async (characterId, inventoryId, tx) => {
         const client = tx !== null && tx !== void 0 ? tx : prisma;
         const character = await client.character.findUnique({
             where: { id: characterId },
@@ -336,7 +364,7 @@ const characterServices = {
         if (typeof totalPrice !== 'number') {
             throw new Error('Failed to calculate total cart price');
         }
-        if (totalPrice > profits && !template) {
+        if (totalPrice > profits) {
             throw new Error('You do not have enough profits to complete this purchase');
         }
         if (items.length > 0) {
@@ -344,7 +372,7 @@ const characterServices = {
         }
         const updatedCharacter = await client.character.update({
             where: { id: characterId },
-            data: { profits: { decrement: template ? 0 : totalPrice } },
+            data: { profits: { decrement: totalPrice } },
             include: characterInclude,
         });
         return updatedCharacter;

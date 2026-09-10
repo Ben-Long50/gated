@@ -10,8 +10,17 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 import prisma from '../config/database.js';
-import actionServices from './actionServices.js';
-const perkInclude = {
+import actionServices, { actionSelectForCopy } from './actionServices.js';
+export const perkSelectForCopy = {
+    id: true,
+    name: true,
+    description: true,
+    type: true,
+    attributes: true,
+    basePerkId: true,
+    actions: { select: actionSelectForCopy },
+};
+export const perkInclude = {
     actions: true,
 };
 const perkServices = {
@@ -54,14 +63,7 @@ const perkServices = {
         const client = tx !== null && tx !== void 0 ? tx : prisma;
         const perk = await client.perk.findUnique({
             where: { id: perkId, basePerkId: null },
-            select: {
-                id: true,
-                name: true,
-                description: true,
-                type: true,
-                attributes: true,
-                actions: { select: { id: true } },
-            },
+            select: perkSelectForCopy,
         });
         if (!perk) {
             throw new Error('Failed to find base perk');

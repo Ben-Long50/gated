@@ -10,6 +10,7 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 import prisma from '../config/database.js';
+export const keywordSelectForCopy = { value: true, keywordId: true };
 const keywordServices = {
     getKeywords: async () => {
         const keywords = await prisma.keyword.findMany({
