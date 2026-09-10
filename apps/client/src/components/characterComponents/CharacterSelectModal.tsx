@@ -57,7 +57,7 @@ const CharacterSelectModal = () => {
             >
               <CharacterCardXSmall
                 characterList={true}
-                characterId={character.id}
+                character={character}
                 active={false}
               />
               <form.Field name="characterIds">

@@ -5,19 +5,20 @@ import ArrowHeader4 from '../ArrowHeader4';
 import { useRef } from 'react';
 import CharacterRadialMenu from '../radialMenus/characterRadialMenu/CharacterRadialMenu';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
+import { Character } from 'src/types/character';
 
 const CharacterCardXSmall = ({
   characterList,
-  characterId,
+  character,
   className,
   active,
 }: {
   characterList: boolean;
-  characterId: number;
+  character: Character;
   className?: string;
   active: boolean;
 }) => {
-  const { filteredCharacter: character, isLoading } = useCharacter(characterId);
+  // const { filteredCharacter: character, isLoading } = useCharacter(characterId);
   const containerRef = useRef(null);
 
   const menuOpen = useRadialMenuStore((state) => state.menuOpen);
@@ -39,7 +40,7 @@ const CharacterCardXSmall = ({
     setMenuOpen(!menuOpen);
   };
 
-  if (isLoading) return <Loading size={1.25} />;
+  // if (isLoading) return <Loading size={1.25} />;
 
   return (
     <div

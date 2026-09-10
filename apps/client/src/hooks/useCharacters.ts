@@ -18,7 +18,12 @@ const useCharacters = (characterIds: number[]) => {
 
   const playerCharacter =
     filters.playerCharacter ??
-    (characterType === 'playerCharacter' ? true : false);
+    (characterType == null
+      ? null
+      : characterType === 'playerCharacter'
+        ? true
+        : false);
+
   const npcTypes = filters.npcTypes ?? searchParams.getAll('npcType');
 
   const { characters, isLoading: charactersLoading } =
@@ -36,7 +41,11 @@ const useCharacters = (characterIds: number[]) => {
           ? character.playerCharacter === playerCharacter
           : true;
 
-      const matchesNpcType = checkArrayMatch(npcTypes, character.npcTypes);
+      const matchesNpcType =
+        playerCharacter == null
+          ? true
+          : checkArrayMatch(npcTypes, character.npcTypes) ||
+            character.npcTypes?.some((type) => npcTypes.includes(type));
 
       return playerCharacter ? matchesType : matchesType && matchesNpcType;
     })

@@ -89,7 +89,7 @@ const GangProfitsModal = () => {
               <CharacterCardXSmall
                 key={character.id}
                 className="grow"
-                characterId={character.id}
+                character={character}
                 characterList={true}
                 active={false}
               />
@@ -138,7 +138,7 @@ const GangProfitsModal = () => {
             <div className="flex items-center justify-between gap-8">
               <CharacterCardXSmall
                 key={character.id}
-                characterId={character.id}
+                character={character}
                 characterList={true}
                 active={false}
               />

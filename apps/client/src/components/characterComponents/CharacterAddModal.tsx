@@ -10,6 +10,7 @@ import CreateCharacterIcon from '../icons/CreateCharacterIcon';
 import useCharacters from 'src/hooks/useCharacters';
 import useTemplateCharactersQuery from 'src/hooks/character hooks/useUpdateCharacterLevelMutation/useCharactersQuery/useTemplateCharactersQuery';
 import Divider from '../Divider';
+import { Character } from 'src/types/character';
 
 const CharacterAddModal = () => {
   const { campaignId, gangId } = useParams();
@@ -73,14 +74,14 @@ const CharacterAddModal = () => {
         <Loading />
       ) : (
         <div className="flex w-full flex-col gap-4">
-          {characters?.map((character) => (
+          {characters?.map((character: Character) => (
             <div
               className="flex w-full items-center justify-between gap-8"
               key={character.id}
             >
               <CharacterCardXSmall
                 characterList={true}
-                characterId={character.id}
+                character={character}
                 active={false}
               />
 

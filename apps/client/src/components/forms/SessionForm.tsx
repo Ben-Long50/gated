@@ -11,12 +11,16 @@ import PictureField from '../formFields/PictureField';
 import useSessionForm from 'src/hooks/form hooks/useSessionForm';
 import BtnAuth from '../buttons/BtnAuth';
 import CharacterCardXSmall from '../characterComponents/CharacterCardXSmall';
+import { useQueryClient } from '@tanstack/react-query';
+import { Character } from 'src/types/character';
 
 const SessionForm = () => {
   const { campaignId, sessionId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const parts = location.pathname.split('/');
+
+  const queryClient = useQueryClient();
 
   const createSession = useCreateSessionMutation(
     Number(campaignId),
@@ -64,13 +68,20 @@ const SessionForm = () => {
         <ArrowHeader2 title="Session Characters" />
         <sessionForm.Subscribe selector={(state) => state.values.characterIds}>
           {(characterIds) =>
-            characterIds.map((characterId) => (
-              <CharacterCardXSmall
-                characterId={characterId}
-                characterList={true}
-                active={false}
-              />
-            ))
+            characterIds.map((characterId) => {
+              const character: Character = queryClient.getQueryData([
+                'character',
+                characterId,
+              ]);
+
+              return (
+                <CharacterCardXSmall
+                  character={character}
+                  characterList={true}
+                  active={false}
+                />
+              );
+            })
           }
         </sessionForm.Subscribe>
         <BtnAuth onClick={() => navigate('sessionCharacters')}>

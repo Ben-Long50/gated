@@ -62,9 +62,8 @@ const GangCharacterSelectModal = () => {
           .map((character: Character) => (
             <Fragment key={character.id}>
               <CharacterCardXSmall
-                menu={false}
                 characterList={true}
-                characterId={character.id}
+                character={character}
                 active={false}
               />
               <form.Subscribe selector={(state) => state.values.characterIds}>

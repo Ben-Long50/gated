@@ -57,7 +57,7 @@ const CharacterPictureRound = ({
         />
       </div>
       {character?.npcTypes && character?.npcTypes.length > 0 && (
-        <div className="absolute -right-1 -top-1 flex flex-wrap items-center gap-1">
+        <div className="absolute -right-1 -top-1 flex flex-wrap items-center">
           {character?.npcTypes.includes('shop') && (
             <Icon
               className="text-primary"

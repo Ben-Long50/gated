@@ -2,9 +2,8 @@ import { useContext } from 'react';
 import ThemeContainer from './ThemeContainer';
 import { ThemeContext } from '../contexts/ThemeContext';
 import BtnRect from './buttons/BtnRect';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Character } from 'src/types/character';
-import CharacterCardSmall from './characterComponents/CharacterCardSmall';
 import ArrowHeader2 from './ArrowHeader2';
 import Divider from './Divider';
 import ArrowHeader3 from './ArrowHeader3';
@@ -71,7 +70,7 @@ const GangCard = ({ gangId }: { gangId: number }) => {
               {gang?.leaders.map((character: Character) => (
                 <CharacterCardXSmall
                   key={character.id}
-                  characterId={character.id}
+                  character={character}
                   characterList={true}
                   active={false}
                 />
