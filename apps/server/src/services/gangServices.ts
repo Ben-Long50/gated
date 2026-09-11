@@ -1,5 +1,6 @@
 import prisma from '../config/database.js';
 import { GangInput, GangSessionBonusInput } from '../validation/gangSchema.js';
+import { characterInclude } from './characterServices.js';
 
 const gangInclude = {
   faction: { select: { id: true, name: true, factionType: true } },
@@ -111,6 +112,7 @@ const gangServices = {
           })),
         },
       },
+      include: gangInclude,
     });
 
     return gang;
@@ -205,6 +207,7 @@ const gangServices = {
         data: {
           profits: { decrement: value },
         },
+        include: gangInclude,
       });
 
       const character = await tx.character.update({
@@ -212,6 +215,7 @@ const gangServices = {
         data: {
           profits: { increment: value },
         },
+        include: characterInclude,
       });
 
       return { gang, character };

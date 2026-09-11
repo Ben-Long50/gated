@@ -8,3 +8,7 @@ export const KeywordInput = z.object({
     description: Description,
     gpCost: z.number().int().nonnegative().optional(),
 });
+export const KeywordReferenceCopyInput = z.object({
+    keywordId: z.number().int().nonnegative(),
+    value: z.number().int().nullish(),
+});

@@ -2,12 +2,17 @@ import prisma from '../config/database.js';
 import { enforceSingularLinking } from '../utils/enforceSingularLinking.js';
 import { $Enums, Prisma } from '@prisma/client';
 import actionServices, { actionSelectForCopy } from './actionServices.js';
-import { ItemInput, ItemUpgradeInput } from '../validation/itemSchema.js';
+import {
+  ItemCopyInput,
+  ItemInput,
+  ItemUpgradeInput,
+} from '../validation/itemSchema.js';
 import { ItemStats } from '../validation/fieldSchemas.js';
 import { ConditionReferenceInput } from '../validation/conditionSchema.js';
 import addVariableStats from '../utils/addVariableStats.js';
-import { ActionInput } from '../validation/actionSchema.js';
+import { ActionCopyInput } from '../validation/actionSchema.js';
 import { keywordSelectForCopy } from './keywordServices.js';
+import { KeywordReferenceCopyInput } from '../validation/keywordSchema.js';
 
 export const itemSelectForCopy = {
   id: true,
@@ -519,13 +524,11 @@ const itemServices = {
         const quantity =
           itemList.find((i) => i.itemId === item.id)?.quantity ?? 1;
 
-        const validatedItem = ItemInput.parse(item);
-
-        const { id, keywords, ...data } = validatedItem;
+        const { id, ...validatedItem } = ItemCopyInput.parse(item);
 
         return Array.from({ length: quantity }, () => ({
-          ...data,
-          baseItemId: item.baseItemId ?? id,
+          ...validatedItem,
+          baseItemId: validatedItem.baseItemId ?? id,
           characterInventoryId: inventoryId,
         }));
       }),
@@ -537,13 +540,11 @@ const itemServices = {
         const linkedItems = nested.get(`item ${item.baseItemId}`).items;
 
         const l = linkedItems.map((i: any) => {
-          const validatedItem = ItemInput.parse(i);
-
-          const { id, keywords, ...data } = validatedItem;
+          const { id, ...validatedItem } = ItemCopyInput.parse(i);
 
           return {
-            ...data,
-            baseItemId: i.baseItemId ?? i.id,
+            ...validatedItem,
+            baseItemId: validatedItem.baseItemId ?? id,
             parentItemId: item.id,
           };
         });
@@ -558,13 +559,11 @@ const itemServices = {
         const linkedActions = nested.get(`item ${item.baseItemId}`).actions;
 
         const l = linkedActions.map((a: any) => {
-          const validatedAction = ActionInput.parse(a);
-
-          const { id, keywords, ...data } = validatedAction;
+          const { id, ...validatedAction } = ActionCopyInput.parse(a);
 
           return {
-            ...data,
-            baseActionId: a.baseActionId ?? a.id,
+            ...validatedAction,
+            baseActionId: validatedAction.baseActionId ?? id,
             parentItemId: item.id,
           };
         });
@@ -581,13 +580,11 @@ const itemServices = {
         ).actions;
 
         const l = linkedActions.map((a: any) => {
-          const validatedAction = ActionInput.parse(a);
-
-          const { id, keywords, ...data } = validatedAction;
+          const { id, ...validatedAction } = ActionCopyInput.parse(a);
 
           return {
-            ...data,
-            baseActionId: a.baseActionId ?? a.id,
+            ...validatedAction,
+            baseActionId: validatedAction.baseActionId ?? id,
             parentItemId: item.id,
           };
         });
@@ -600,10 +597,13 @@ const itemServices = {
     const keywordData = newItems.flatMap((item) => {
       const keywords = nested.get(`item ${item.baseItemId}`).keywords;
 
-      const l = keywords.map((k: any) => ({
-        ...k,
-        itemId: item.id,
-      }));
+      const l = keywords.map((k: any) => {
+        const validatedKeyword = KeywordReferenceCopyInput.parse(k);
+        return {
+          ...validatedKeyword,
+          itemId: item.id,
+        };
+      });
 
       return l;
     });
@@ -612,8 +612,10 @@ const itemServices = {
       const keywords = nested.get(`linked item ${item.baseItemId}`).keywords;
 
       keywords.map((k: any) => {
+        const validatedKeyword = KeywordReferenceCopyInput.parse(k);
+
         keywordData.push({
-          ...k,
+          ...validatedKeyword,
           itemId: item.id,
         });
       });
@@ -625,8 +627,10 @@ const itemServices = {
       ).keywords;
 
       keywords.map((k: any) => {
+        const validatedKeyword = KeywordReferenceCopyInput.parse(k);
+
         keywordData.push({
-          ...k,
+          ...validatedKeyword,
           actionId: action.id,
         });
       });
@@ -638,8 +642,10 @@ const itemServices = {
       ).keywords;
 
       keywords.map((k: any) => {
+        const validatedKeyword = KeywordReferenceCopyInput.parse(k);
+
         keywordData.push({
-          ...k,
+          ...validatedKeyword,
           actionId: action.id,
         });
       });

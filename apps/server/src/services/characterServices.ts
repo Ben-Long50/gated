@@ -106,7 +106,7 @@ const characterServices = {
     const characters = await prisma.character.findMany({
       where: {
         OR: [
-          { id: userId, baseCharacterId: null, npcTypes: { has: 'template' } },
+          { userId, npcTypes: { has: 'template' } },
           { userId: null, baseCharacterId: null },
         ],
       },

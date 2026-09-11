@@ -4,11 +4,11 @@ import { ItemType, Rarity } from './enums.js';
 import prisma from '../config/database.js';
 export const ItemInput = z
     .object({
-    id: z.number().int().optional(),
+    id: z.number().int().nonnegative().optional(),
     name: Name,
     itemTypes: z.array(ItemType).min(1),
     rarity: Rarity,
-    grade: z.number().int().min(1).nonnegative(),
+    grade: z.number().int().min(0).max(10).nonnegative(),
     description: Description,
     price: z.number().int().nonnegative().optional().nullable(),
     stats: ItemStats,
@@ -40,9 +40,9 @@ export const ItemInput = z
 });
 export const ItemUpgradeInput = z
     .object({
-    id: z.number().int(),
+    id: z.number().int().nonnegative(),
     name: Name,
-    grade: z.number().int().min(1),
+    grade: z.number().int().min(1).max(10),
     description: Description,
     generatedPictureId: z.number().int().nullish(),
     upgradePrice: z.number().int().nonnegative(),
@@ -73,6 +73,30 @@ export const ItemUpgradeInput = z
     if (!result.success) {
         for (const issue of result.error.issues) {
             ctx.addIssue(Object.assign(Object.assign({}, issue), { path: ['modifiedStats', ...issue.path] }));
+        }
+    }
+});
+export const ItemCopyInput = z
+    .object({
+    id: z.number().int().nonnegative(),
+    name: Name,
+    itemTypes: z.array(ItemType).min(1),
+    rarity: Rarity,
+    grade: z.number().int().min(0).max(10).nonnegative(),
+    description: Description,
+    price: z.number().int().nonnegative().optional().nullable(),
+    stats: ItemStats,
+    generatedPictureId: z.number().int().nullish(),
+    equipped: z.boolean(),
+    baseItemId: z.number().int().nonnegative().nullable(),
+})
+    .superRefine((data, ctx) => {
+    const mergedShape = data.itemTypes.reduce((acc, type) => (Object.assign(Object.assign({}, acc), StatsSchemaByItemType[type].shape)), {});
+    const mergedSchema = z.object(mergedShape).strict();
+    const result = mergedSchema.safeParse(data.stats);
+    if (!result.success) {
+        for (const issue of result.error.issues) {
+            ctx.addIssue(Object.assign(Object.assign({}, issue), { path: ['stats', ...issue.path] }));
         }
     }
 });

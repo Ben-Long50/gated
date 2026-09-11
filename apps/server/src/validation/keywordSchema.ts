@@ -10,4 +10,13 @@ export const KeywordInput = z.object({
   gpCost: z.number().int().nonnegative().optional(),
 });
 
+export const KeywordReferenceCopyInput = z.object({
+  keywordId: z.number().int().nonnegative(),
+  value: z.number().int().nullish(),
+});
+
 export type KeywordInput = z.infer<typeof KeywordInput>;
+
+export type KeywordReferenceCopyInput = z.infer<
+  typeof KeywordReferenceCopyInput
+>;

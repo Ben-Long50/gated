@@ -12,11 +12,12 @@ var __rest = (this && this.__rest) || function (s, e) {
 import prisma from '../config/database.js';
 import { enforceSingularLinking } from '../utils/enforceSingularLinking.js';
 import actionServices, { actionSelectForCopy } from './actionServices.js';
-import { ItemInput } from '../validation/itemSchema.js';
+import { ItemCopyInput, } from '../validation/itemSchema.js';
 import { ConditionReferenceInput } from '../validation/conditionSchema.js';
 import addVariableStats from '../utils/addVariableStats.js';
-import { ActionInput } from '../validation/actionSchema.js';
+import { ActionCopyInput } from '../validation/actionSchema.js';
 import { keywordSelectForCopy } from './keywordServices.js';
+import { KeywordReferenceCopyInput } from '../validation/keywordSchema.js';
 export const itemSelectForCopy = {
     id: true,
     name: true,
@@ -427,11 +428,10 @@ const itemServices = {
             data: items.flatMap((item) => {
                 var _a, _b;
                 const quantity = (_b = (_a = itemList.find((i) => i.itemId === item.id)) === null || _a === void 0 ? void 0 : _a.quantity) !== null && _b !== void 0 ? _b : 1;
-                const validatedItem = ItemInput.parse(item);
-                const { id, keywords } = validatedItem, data = __rest(validatedItem, ["id", "keywords"]);
+                const _c = ItemCopyInput.parse(item), { id } = _c, validatedItem = __rest(_c, ["id"]);
                 return Array.from({ length: quantity }, () => {
                     var _a;
-                    return (Object.assign(Object.assign({}, data), { baseItemId: (_a = item.baseItemId) !== null && _a !== void 0 ? _a : id, characterInventoryId: inventoryId }));
+                    return (Object.assign(Object.assign({}, validatedItem), { baseItemId: (_a = validatedItem.baseItemId) !== null && _a !== void 0 ? _a : id, characterInventoryId: inventoryId }));
                 });
             }),
             select: { id: true, baseItemId: true },
@@ -441,9 +441,8 @@ const itemServices = {
                 const linkedItems = nested.get(`item ${item.baseItemId}`).items;
                 const l = linkedItems.map((i) => {
                     var _a;
-                    const validatedItem = ItemInput.parse(i);
-                    const { id, keywords } = validatedItem, data = __rest(validatedItem, ["id", "keywords"]);
-                    return Object.assign(Object.assign({}, data), { baseItemId: (_a = i.baseItemId) !== null && _a !== void 0 ? _a : i.id, parentItemId: item.id });
+                    const _b = ItemCopyInput.parse(i), { id } = _b, validatedItem = __rest(_b, ["id"]);
+                    return Object.assign(Object.assign({}, validatedItem), { baseItemId: (_a = validatedItem.baseItemId) !== null && _a !== void 0 ? _a : id, parentItemId: item.id });
                 });
                 return l;
             }),
@@ -454,9 +453,8 @@ const itemServices = {
                 const linkedActions = nested.get(`item ${item.baseItemId}`).actions;
                 const l = linkedActions.map((a) => {
                     var _a;
-                    const validatedAction = ActionInput.parse(a);
-                    const { id, keywords } = validatedAction, data = __rest(validatedAction, ["id", "keywords"]);
-                    return Object.assign(Object.assign({}, data), { baseActionId: (_a = a.baseActionId) !== null && _a !== void 0 ? _a : a.id, parentItemId: item.id });
+                    const _b = ActionCopyInput.parse(a), { id } = _b, validatedAction = __rest(_b, ["id"]);
+                    return Object.assign(Object.assign({}, validatedAction), { baseActionId: (_a = validatedAction.baseActionId) !== null && _a !== void 0 ? _a : id, parentItemId: item.id });
                 });
                 return l;
             }),
@@ -467,9 +465,8 @@ const itemServices = {
                 const linkedActions = nested.get(`linked item ${item.baseItemId}`).actions;
                 const l = linkedActions.map((a) => {
                     var _a;
-                    const validatedAction = ActionInput.parse(a);
-                    const { id, keywords } = validatedAction, data = __rest(validatedAction, ["id", "keywords"]);
-                    return Object.assign(Object.assign({}, data), { baseActionId: (_a = a.baseActionId) !== null && _a !== void 0 ? _a : a.id, parentItemId: item.id });
+                    const _b = ActionCopyInput.parse(a), { id } = _b, validatedAction = __rest(_b, ["id"]);
+                    return Object.assign(Object.assign({}, validatedAction), { baseActionId: (_a = validatedAction.baseActionId) !== null && _a !== void 0 ? _a : id, parentItemId: item.id });
                 });
                 return l;
             }),
@@ -477,25 +474,31 @@ const itemServices = {
         });
         const keywordData = newItems.flatMap((item) => {
             const keywords = nested.get(`item ${item.baseItemId}`).keywords;
-            const l = keywords.map((k) => (Object.assign(Object.assign({}, k), { itemId: item.id })));
+            const l = keywords.map((k) => {
+                const validatedKeyword = KeywordReferenceCopyInput.parse(k);
+                return Object.assign(Object.assign({}, validatedKeyword), { itemId: item.id });
+            });
             return l;
         });
         newLinkedItems.forEach((item) => {
             const keywords = nested.get(`linked item ${item.baseItemId}`).keywords;
             keywords.map((k) => {
-                keywordData.push(Object.assign(Object.assign({}, k), { itemId: item.id }));
+                const validatedKeyword = KeywordReferenceCopyInput.parse(k);
+                keywordData.push(Object.assign(Object.assign({}, validatedKeyword), { itemId: item.id }));
             });
         });
         newLinkedActions.forEach((action) => {
             const keywords = nested.get(`linked action ${action.baseActionId}`).keywords;
             keywords.map((k) => {
-                keywordData.push(Object.assign(Object.assign({}, k), { actionId: action.id }));
+                const validatedKeyword = KeywordReferenceCopyInput.parse(k);
+                keywordData.push(Object.assign(Object.assign({}, validatedKeyword), { actionId: action.id }));
             });
         });
         newLinkedLinkedActions.forEach((action) => {
             const keywords = nested.get(`linked linked action ${action.baseActionId}`).keywords;
             keywords.map((k) => {
-                keywordData.push(Object.assign(Object.assign({}, k), { actionId: action.id }));
+                const validatedKeyword = KeywordReferenceCopyInput.parse(k);
+                keywordData.push(Object.assign(Object.assign({}, validatedKeyword), { actionId: action.id }));
             });
         });
         await client.keywordReference.createManyAndReturn({

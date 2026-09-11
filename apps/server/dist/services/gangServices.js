@@ -10,6 +10,7 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 import prisma from '../config/database.js';
+import { characterInclude } from './characterServices.js';
 const gangInclude = {
     faction: { select: { id: true, name: true, factionType: true } },
     leaders: {
@@ -96,6 +97,7 @@ const gangServices = {
                     })),
                 },
             },
+            include: gangInclude,
         });
         return gang;
     },
@@ -170,12 +172,14 @@ const gangServices = {
                 data: {
                     profits: { decrement: value },
                 },
+                include: gangInclude,
             });
             const character = await tx.character.update({
                 where: { id: characterId },
                 data: {
                     profits: { increment: value },
                 },
+                include: characterInclude,
             });
             return { gang, character };
         });
