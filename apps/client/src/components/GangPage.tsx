@@ -41,7 +41,8 @@ const GangPage = () => {
   } = useGang(Number(gangId));
 
   const levelUpAvailable = characters.some(
-    (character) => character.level < levelData.level,
+    (character) =>
+      character?.playerCharacter && character.level < levelData.level,
   );
 
   const createGang = useUpdateGangCharactersMutation(
@@ -179,8 +180,8 @@ const GangPage = () => {
               <BtnAuth onClick={() => navigate('manageGangCharacters')}>
                 Manage Gang Characters
               </BtnAuth>
-              <BtnAuth onClick={() => navigate('')}>
-                Purchase Properties
+              <BtnAuth onClick={() => navigate('characters/add')}>
+                Add Template Character
               </BtnAuth>
             </div>
           </div>

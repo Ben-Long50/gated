@@ -16,18 +16,9 @@ const CharacterLevelsModal = () => {
 
   const changeCharacterLevel = useUpdateCharacterLevelMutation();
 
-  const playerCharacters = [] as Character[];
-  const nonPlayerCharacters = [] as Character[];
-
-  characters
-    .sort((a, b) => a.firstName.localeCompare(b))
-    .forEach((character) => {
-      if (character.playerCharacter) {
-        playerCharacters.push(character);
-      } else {
-        nonPlayerCharacters.push(character);
-      }
-    });
+  const playerCharacters = characters.filter(
+    (character) => character?.playerCharacter,
+  );
 
   return (
     <Modal>
@@ -44,43 +35,11 @@ const CharacterLevelsModal = () => {
           <p>Character Level</p>
         </div>
         <div className="flex flex-col gap-4">
-          {playerCharacters.map((character: Character) => (
+          {playerCharacters.map((character) => (
             <div className="flex items-center justify-between gap-8">
               <CharacterCardXSmall
                 key={character.id}
                 className="grow"
-                character={character}
-                characterList={true}
-                active={false}
-              />
-              <div className="flex items-center gap-8">
-                {levelData.level > character.level && (
-                  <BtnRect
-                    className="min-w-32"
-                    type="button"
-                    ariaLabel="Level up"
-                    onClick={() => {
-                      changeCharacterLevel.mutate({
-                        characterId: character.id,
-                        levelChange: 1,
-                      });
-                    }}
-                  >
-                    Level Up
-                  </BtnRect>
-                )}
-                <h2>{character.level}</h2>
-              </div>
-            </div>
-          ))}
-        </div>
-        <Divider />
-        <ArrowHeader3 title="Non-Player Characters" />
-        <div className="flex flex-col gap-4">
-          {nonPlayerCharacters.map((character: Character) => (
-            <div className="flex items-center justify-between gap-8">
-              <CharacterCardXSmall
-                key={character.id}
                 character={character}
                 characterList={true}
                 active={false}

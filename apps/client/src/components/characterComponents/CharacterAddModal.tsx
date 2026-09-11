@@ -30,7 +30,7 @@ const CharacterAddModal = () => {
     <Modal>
       <h1>Add Characters</h1>
       <Divider />
-      <NavTabs className="grid-cols-5">
+      <NavTabs className="grid-cols-3 grid-rows-2">
         <BtnAuth
           active={filters.playerCharacter === true}
           onClick={() => setFilters({ playerCharacter: true, npcTypes: [] })}
@@ -68,6 +68,14 @@ const CharacterAddModal = () => {
           }
         >
           Monsters
+        </BtnAuth>
+        <BtnAuth
+          active={filters.npcTypes?.includes('template')}
+          onClick={() =>
+            setFilters({ playerCharacter: false, npcTypes: ['template'] })
+          }
+        >
+          Templates
         </BtnAuth>
       </NavTabs>
       {isLoading ? (

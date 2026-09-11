@@ -157,6 +157,7 @@ const CampaignTabRoutes = () => {
               path="manageGangCharacters"
               element={<GangCharacterSelectModal />}
             />
+            <Route path="characters/add" element={<CharacterAddModal />} />
           </Route>
           <Route
             path="create"
@@ -170,6 +171,7 @@ const CampaignTabRoutes = () => {
               path="characterSelect"
               element={<GangCharacterSelectModal />}
             />
+            {PictureRoutes()}
           </Route>
           <Route
             path=":gangId/update"

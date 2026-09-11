@@ -123,7 +123,9 @@ const GangForm = () => {
           Select Gang Characters
         </BtnAuth>
       </div>
-      <Outlet context={{ form: gangForm, parts }} />
+      {parts.includes('characterSelect') && (
+        <Outlet context={{ form: gangForm, parts }} />
+      )}
     </FormLayout>
   );
 };

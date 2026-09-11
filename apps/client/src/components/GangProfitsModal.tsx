@@ -36,9 +36,9 @@ const GangProfitsModal = () => {
   const nonPlayerCharacters = [] as Character[];
 
   characters
-    .sort((a, b) => a.firstName.localeCompare(b))
+    .sort((a, b) => a.name.localeCompare(b.name))
     .forEach((character) => {
-      if (character.playerCharacter) {
+      if (character?.playerCharacter) {
         playerCharacters.push(character);
       } else {
         nonPlayerCharacters.push(character);
@@ -65,7 +65,7 @@ const GangProfitsModal = () => {
           <h1 className="!text-accent w-12 text-center">{gang?.profits}</h1>
           {gameMaster && (
             <IconBtnSmall
-              active={gang?.profits > 0 && gameMaster}
+              active={gang?.profits >= 0 && gameMaster}
               tooltip="Increase"
               onClick={() => {
                 editGangProfits.mutate(1);
@@ -79,13 +79,11 @@ const GangProfitsModal = () => {
 
       <div className="flex w-full flex-col gap-4">
         <Divider />
-        <div className="flex w-full items-center justify-between gap-8">
-          <ArrowHeader3 title="Player Characters" />
-          <p>Profits</p>
-        </div>
-        <div className="flex flex-col gap-4">
+        <ArrowHeader3 title="Player Characters" />
+
+        <div className="grid grid-cols-[1fr,auto,auto,auto] items-center gap-x-8 gap-y-4">
           {playerCharacters.map((character: Character) => (
-            <div className="flex items-center justify-between gap-8">
+            <>
               <CharacterCardXSmall
                 key={character.id}
                 className="grow"
@@ -93,89 +91,86 @@ const GangProfitsModal = () => {
                 characterList={true}
                 active={false}
               />
-              <div className="flex items-center gap-8">
-                <IconBtnSmall
-                  active={
-                    character.profits > 0 &&
-                    (user?.id === character.userId || gameMaster)
-                  }
-                  tooltip="Give To Gang"
-                  onClick={() => {
-                    distributeProfits.mutate({
-                      characterId: character.id,
-                      value: -1,
-                    });
-                  }}
-                >
-                  <Icon path={mdiMinus} />
-                </IconBtnSmall>
-                <p className="w-8 text-center text-2xl">
-                  {character.profits.toLocaleString()} p
-                </p>
-                <IconBtnSmall
-                  active={
-                    gang?.profits &&
-                    (user?.id === character.userId || gameMaster)
-                  }
-                  tooltip="Take From Gang"
-                  onClick={() => {
-                    distributeProfits.mutate({
-                      characterId: character.id,
-                      value: 1,
-                    });
-                  }}
-                >
-                  <Icon path={mdiPlus} />
-                </IconBtnSmall>
-              </div>
-            </div>
+              <IconBtnSmall
+                active={
+                  character.profits > 0 &&
+                  (user?.id === character.userId || gameMaster)
+                }
+                tooltip="Give To Gang"
+                onClick={() => {
+                  distributeProfits.mutate({
+                    characterId: character.id,
+                    value: -1,
+                  });
+                }}
+              >
+                <Icon path={mdiMinus} />
+              </IconBtnSmall>
+              <p className="justify-self-end text-2xl">
+                {character.profits.toLocaleString()} p
+              </p>
+              <IconBtnSmall
+                active={
+                  gang?.profits && (user?.id === character.userId || gameMaster)
+                }
+                tooltip="Take From Gang"
+                onClick={() => {
+                  distributeProfits.mutate({
+                    characterId: character.id,
+                    value: 1,
+                  });
+                }}
+              >
+                <Icon path={mdiPlus} />
+              </IconBtnSmall>
+            </>
           ))}
         </div>
         <Divider />
         <ArrowHeader3 title="Non-Player Characters" />
-        <div className="flex flex-col gap-4">
+        <div className="grid grid-cols-[1fr,auto,auto,auto] items-center gap-x-8 gap-y-4">
           {nonPlayerCharacters.map((character: Character) => (
-            <div className="flex items-center justify-between gap-8">
+            <>
               <CharacterCardXSmall
                 key={character.id}
                 character={character}
                 characterList={true}
                 active={false}
               />
-              <div className="flex items-center gap-8">
-                <IconBtnSmall
-                  active={
-                    character.profits > 0 &&
-                    (user?.id === character.userId || gameMaster)
-                  }
-                  tooltip="Give To Gang"
-                  onClick={() => {
-                    distributeProfits.mutate({
-                      characterId: character.id,
-                      value: -1,
-                    });
-                  }}
-                >
-                  <Icon path={mdiMinus} />
-                </IconBtnSmall>
-                <p className="w-8 text-center text-2xl">{character.profits}</p>
-                <IconBtnSmall
-                  active={
-                    gang?.profits > 0 &&
-                    (user?.id === character.userId || gameMaster)
-                  }
-                  tooltip="Take From Gang"
-                  onClick={() => {
-                    distributeProfits.mutate({
-                      characterId: character.id,
-                      value: 1,
-                    });
-                  }}
-                >
-                  <Icon path={mdiPlus} />
-                </IconBtnSmall>
-              </div>
-            </div>
+              <IconBtnSmall
+                active={
+                  character.profits > 0 &&
+                  (user?.id === character.userId || gameMaster)
+                }
+                tooltip="Give To Gang"
+                onClick={() => {
+                  distributeProfits.mutate({
+                    characterId: character.id,
+                    value: -1,
+                  });
+                }}
+              >
+                <Icon path={mdiMinus} />
+              </IconBtnSmall>
+              <p className="justify-self-end text-2xl">
+                {character.profits.toLocaleString()} p
+              </p>
+              <IconBtnSmall
+                active={
+                  gang?.profits > 0 &&
+                  (user?.id === character.userId || gameMaster)
+                }
+                tooltip="Take From Gang"
+                onClick={() => {
+                  distributeProfits.mutate({
+                    characterId: character.id,
+                    value: 1,
+                  });
+                }}
+              >
+                <Icon path={mdiPlus} />
+              </IconBtnSmall>
+            </>
           ))}
         </div>
       </div>

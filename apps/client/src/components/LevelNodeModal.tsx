@@ -197,28 +197,30 @@ const LevelNodeModal = () => {
       </levelNodeForm.Field>
       <levelNodeForm.Field name="bonus">
         {(field) => (
-          <div className="flex w-full flex-col gap-8">
+          <div className="flex w-full flex-col gap-4">
             <ArrowHeader3 title="Level Node Bonuses" />
             {reputationBonusData.map((bonus) => (
               <InputFieldCheckbox
                 label={sentenceCase(bonus.description)}
-                value={bonus}
+                value={bonus.description}
                 checked={field.state.value.some(
                   (b) => b.description === bonus.description,
                 )}
                 onChange={(value) => {
-                  if (
-                    field.state.value.some(
-                      (b) => b.description === value.description,
-                    )
-                  ) {
+                  if (field.state.value.some((b) => b.description === value)) {
                     field.handleChange(
-                      field.state.value.filter(
-                        (b) => b.description !== value.description,
-                      ),
+                      field.state.value.filter((b) => b.description !== value),
                     );
                   } else {
-                    field.handleChange([...field.state.value, value]);
+                    const newBonus = reputationBonusData.find(
+                      (bonus) => bonus.description === value,
+                    );
+
+                    if (!newBonus) {
+                      return;
+                    }
+
+                    field.handleChange([...field.state.value, newBonus]);
                   }
                 }}
               />

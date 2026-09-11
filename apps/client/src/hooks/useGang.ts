@@ -9,6 +9,8 @@ import { Affiliation } from 'src/types/faction';
 const useGang = (gangId: number) => {
   const { data: gang, isLoading } = useGangQuery(Number(gangId));
 
+  console.log(gang);
+
   const { data: affiliations, isLoading: affiliationsLoading } =
     useAffiliationQueries(
       gang?.affiliations.map((affiliation: Affiliation) => affiliation.id) ||
