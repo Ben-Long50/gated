@@ -449,7 +449,7 @@ const itemServices = {
     return item;
   },
 
-  createCharacterItemCopy: async (
+  createCharacterItemCopies: async (
     inventoryId: number,
     itemList: { itemId: number; quantity: number }[],
     tx?: Prisma.TransactionClient,
@@ -460,50 +460,7 @@ const itemServices = {
 
     const items = await client.item.findMany({
       where: { id: { in: itemIds } },
-      select: {
-        id: true,
-        name: true,
-        rarity: true,
-        description: true,
-        stats: true,
-        generatedPictureId: true,
-        itemTypes: true,
-        grade: true,
-        price: true,
-        baseItemId: true,
-        linkedItems: {
-          select: {
-            id: true,
-            name: true,
-            rarity: true,
-            description: true,
-            stats: true,
-            generatedPictureId: true,
-            itemTypes: true,
-            grade: true,
-            price: true,
-            baseItemId: true,
-            keywords: { select: { keywordId: true, value: true } },
-          },
-        },
-        linkedActions: {
-          select: {
-            id: true,
-            name: true,
-            description: true,
-            costs: true,
-            roll: true,
-            actionType: true,
-            actionSubtypes: true,
-            duration: true,
-            cooldown: true,
-            modifiers: true,
-            keywordModifiers: { select: { keywordId: true, value: true } },
-            baseActionId: true,
-          },
-        },
-        keywords: { select: { keywordId: true, value: true } },
-      },
+      select: itemSelectForCopy,
     });
 
     if (items.length === 0) {
@@ -513,11 +470,9 @@ const itemServices = {
     let nested = new Map();
 
     items.forEach((item) => {
-      if (item.baseItemId) {
-        throw new Error('Cannot create an item copy from a non-base item');
-      }
+      const id = item.baseItemId ?? item.id;
 
-      nested.set(`item ${item.id}`, {
+      nested.set(`item ${id}`, {
         items: item.linkedItems ?? [],
         actions: item.linkedActions ?? [],
         keywords: item.keywords ?? [],
@@ -525,27 +480,34 @@ const itemServices = {
 
       if (item.linkedItems.length > 0) {
         item.linkedItems.forEach((item) => {
-          if (item.baseItemId) {
-            throw new Error(
-              'Cannot create an item copy from a non-base linked item',
-            );
-          }
+          const id = item.baseItemId ?? item.id;
 
-          nested.set(`linked item ${item.id}`, {
+          nested.set(`linked item ${id}`, {
             keywords: item.keywords ?? [],
+            actions: item.linkedActions ?? [],
           });
         });
       }
 
       if (item.linkedActions.length > 0) {
         item.linkedActions.forEach((action) => {
-          if (action.baseActionId) {
-            throw new Error(
-              'Cannot create an item copy from a non-base linked action',
-            );
-          }
+          const id = action.baseActionId ?? action.id;
 
-          nested.set(`linked action ${action.id}`, {
+          nested.set(`linked action ${id}`, {
+            keywords: action.keywordModifiers ?? [],
+          });
+        });
+      }
+
+      const linkedLinkedActions = item.linkedItems.flatMap(
+        (item) => item.linkedActions,
+      );
+
+      if (linkedLinkedActions.length > 0) {
+        linkedLinkedActions.forEach((action) => {
+          const id = action.baseActionId ?? action.id;
+
+          nested.set(`linked linked action ${id}`, {
             keywords: action.keywordModifiers ?? [],
           });
         });
@@ -612,6 +574,29 @@ const itemServices = {
       select: { id: true, baseActionId: true },
     });
 
+    const newLinkedLinkedActions = await client.action.createManyAndReturn({
+      data: newLinkedItems.flatMap((item) => {
+        const linkedActions = nested.get(
+          `linked item ${item.baseItemId}`,
+        ).actions;
+
+        const l = linkedActions.map((a: any) => {
+          const validatedAction = ActionInput.parse(a);
+
+          const { id, keywords, ...data } = validatedAction;
+
+          return {
+            ...data,
+            baseActionId: a.baseActionId ?? a.id,
+            parentItemId: item.id,
+          };
+        });
+
+        return l;
+      }),
+      select: { id: true, baseActionId: true },
+    });
+
     const keywordData = newItems.flatMap((item) => {
       const keywords = nested.get(`item ${item.baseItemId}`).keywords;
 
@@ -637,6 +622,19 @@ const itemServices = {
     newLinkedActions.forEach((action) => {
       const keywords = nested.get(
         `linked action ${action.baseActionId}`,
+      ).keywords;
+
+      keywords.map((k: any) => {
+        keywordData.push({
+          ...k,
+          actionId: action.id,
+        });
+      });
+    });
+
+    newLinkedLinkedActions.forEach((action) => {
+      const keywords = nested.get(
+        `linked linked action ${action.baseActionId}`,
       ).keywords;
 
       keywords.map((k: any) => {

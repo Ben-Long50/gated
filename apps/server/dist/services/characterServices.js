@@ -68,7 +68,7 @@ export const characterInclude = {
     controlledGang: { select: { name: true } },
     characterInventory: {
         include: {
-            items: { select: { id: true } },
+            items: { select: { id: true }, orderBy: { name: 'asc' } },
         },
     },
     characterCart: {
@@ -136,8 +136,9 @@ const characterServices = {
         });
         return characters;
     },
-    getCharacterById: async (characterId) => {
-        const character = await prisma.character.findUnique({
+    getCharacterById: async (characterId, tx) => {
+        const client = tx !== null && tx !== void 0 ? tx : prisma;
+        const character = await client.character.findUnique({
             where: {
                 id: characterId,
             },
@@ -238,7 +239,7 @@ const characterServices = {
                 if (!character.characterInventory) {
                     throw new Error('Failed to create character inventory');
                 }
-                await itemServices.createCharacterItemCopy(character.characterInventory.id, [{ itemId: unarmed.id, quantity: 1 }], tx);
+                await itemServices.createCharacterItemCopies(character.characterInventory.id, [{ itemId: unarmed.id, quantity: 1 }], tx);
             }
             return character;
         }, {
@@ -249,7 +250,7 @@ const characterServices = {
     },
     createTemplateCharacter: async (userId, characterId, campaignId, gangId) => {
         const character = await prisma.$transaction(async (tx) => {
-            var _a, _b;
+            var _a, _b, _c;
             const templateCharacter = await tx.character.findUnique({
                 where: { id: characterId },
                 select: characterSelectForCopy,
@@ -257,63 +258,12 @@ const characterServices = {
             if (!templateCharacter) {
                 throw new Error('Failed to find template character');
             }
-            const _c = filterObject(templateCharacter), { id, characterLevelBonuses } = _c, filteredCharacter = __rest(_c, ["id", "characterLevelBonuses"]);
+            const _d = filterObject(templateCharacter), { id, characterLevelBonuses } = _d, filteredCharacter = __rest(_d, ["id", "characterLevelBonuses"]);
+            const characterItems = (_b = (_a = templateCharacter.characterInventory) === null || _a === void 0 ? void 0 : _a.items) !== null && _b !== void 0 ? _b : [];
             const character = await tx.character.create({
-                data: Object.assign(Object.assign({}, filteredCharacter), { npcTypes: (_a = filteredCharacter.npcTypes) === null || _a === void 0 ? void 0 : _a.filter((type) => type !== 'template'), baseCharacterId: id, characterInventory: {
-                        create: {
-                            items: {
-                                create: (_b = templateCharacter.characterInventory) === null || _b === void 0 ? void 0 : _b.items.map((_a) => {
-                                    var { id, baseItemId, keywords, modifiedKeywords, linkedItems, linkedActions } = _a, item = __rest(_a, ["id", "baseItemId", "keywords", "modifiedKeywords", "linkedItems", "linkedActions"]);
-                                    return (Object.assign(Object.assign({}, item), { baseItemId: baseItemId !== null && baseItemId !== void 0 ? baseItemId : id, keywords: {
-                                            create: keywords.map((keyword) => ({
-                                                keywordId: keyword.keywordId,
-                                                value: keyword.value,
-                                            })),
-                                        }, modifiedKeywords: {
-                                            create: modifiedKeywords.map((keyword) => ({
-                                                keywordId: keyword.keywordId,
-                                                value: keyword.value,
-                                            })),
-                                        }, linkedItems: {
-                                            create: linkedItems.map((_a) => {
-                                                var { id, baseItemId, keywords, modifiedKeywords, linkedActions } = _a, item = __rest(_a, ["id", "baseItemId", "keywords", "modifiedKeywords", "linkedActions"]);
-                                                return (Object.assign(Object.assign({}, item), { baseItemId: baseItemId !== null && baseItemId !== void 0 ? baseItemId : id, keywords: {
-                                                        create: keywords.map((keyword) => ({
-                                                            keywordId: keyword.keywordId,
-                                                            value: keyword.value,
-                                                        })),
-                                                    }, modifiedKeywords: {
-                                                        create: modifiedKeywords.map((keyword) => ({
-                                                            keywordId: keyword.keywordId,
-                                                            value: keyword.value,
-                                                        })),
-                                                    }, linkedActions: {
-                                                        create: linkedActions.map((_a) => {
-                                                            var { id, baseActionId, keywordModifiers } = _a, action = __rest(_a, ["id", "baseActionId", "keywordModifiers"]);
-                                                            return (Object.assign(Object.assign({}, action), { baseActionId: baseActionId !== null && baseActionId !== void 0 ? baseActionId : id, keywordModifiers: {
-                                                                    create: keywordModifiers.map((keyword) => ({
-                                                                        keywordId: keyword.keywordId,
-                                                                        value: keyword.value,
-                                                                    })),
-                                                                } }));
-                                                        }),
-                                                    } }));
-                                            }),
-                                        }, linkedActions: {
-                                            create: linkedActions.map((_a) => {
-                                                var { id, baseActionId, keywordModifiers } = _a, action = __rest(_a, ["id", "baseActionId", "keywordModifiers"]);
-                                                return (Object.assign(Object.assign({}, action), { baseActionId: baseActionId !== null && baseActionId !== void 0 ? baseActionId : id, keywordModifiers: {
-                                                        create: keywordModifiers.map((keyword) => ({
-                                                            keywordId: keyword.keywordId,
-                                                            value: keyword.value,
-                                                        })),
-                                                    } }));
-                                            }),
-                                        } }));
-                                }),
-                            },
-                        },
-                    }, characterLevelBonuses: {
+                data: Object.assign(Object.assign({}, filteredCharacter), { npcTypes: (_c = filteredCharacter.npcTypes) === null || _c === void 0 ? void 0 : _c.filter((type) => type !== 'template'), baseCharacterId: id, characterCart: {
+                        create: {},
+                    }, characterInventory: { create: {} }, characterLevelBonuses: {
                         create: templateCharacter.characterLevelBonuses.map((_a) => {
                             var { perks } = _a, bonus = __rest(_a, ["perks"]);
                             return (Object.assign(Object.assign({}, bonus), { perks: {
@@ -337,14 +287,22 @@ const characterServices = {
                     campaignId,
                     gangId }),
                 select: {
-                    name: true,
                     id: true,
-                    userId: true,
-                    campaignId: true,
-                    gangId: true,
+                    characterInventory: { select: { id: true } },
                 },
             });
-            return character;
+            if (!character.characterInventory) {
+                throw new Error('Failed to create character inventory');
+            }
+            await itemServices.createCharacterItemCopies(character.characterInventory.id, characterItems.map((item) => ({
+                itemId: item.id,
+                quantity: 1,
+            })), tx);
+            const completeCharacter = await characterServices.getCharacterById(character.id, tx);
+            if (!completeCharacter) {
+                throw new Error('Failed to find copied template character');
+            }
+            return completeCharacter;
         });
         return character;
     },
@@ -370,7 +328,6 @@ const characterServices = {
         const items = (cart === null || cart === void 0 ? void 0 : cart.items.map((item) => ({
             itemId: item.item.id,
             quantity: item.quantity,
-            price: item.item.price,
         }))) || [];
         const totalPrice = cart === null || cart === void 0 ? void 0 : cart.items.flat().map((reference) => {
             const targetObject = Object.values(reference).find((item) => typeof item === 'object');
@@ -385,7 +342,7 @@ const characterServices = {
             throw new Error('You do not have enough profits to complete this purchase');
         }
         if (items.length > 0) {
-            await itemServices.createCharacterItemCopy(inventoryId, items, client);
+            await itemServices.createCharacterItemCopies(inventoryId, items, client);
         }
         const updatedCharacter = await client.character.update({
             where: { id: characterId },

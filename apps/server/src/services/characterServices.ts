@@ -68,7 +68,7 @@ export const characterInclude = {
   controlledGang: { select: { name: true } },
   characterInventory: {
     include: {
-      items: { select: { id: true } },
+      items: { select: { id: true }, orderBy: { name: 'asc' as const } },
     },
   },
   characterCart: {
@@ -147,8 +147,13 @@ const characterServices = {
     return characters;
   },
 
-  getCharacterById: async (characterId: number) => {
-    const character = await prisma.character.findUnique({
+  getCharacterById: async (
+    characterId: number,
+    tx?: Prisma.TransactionClient,
+  ) => {
+    const client = tx ?? prisma;
+
+    const character = await client.character.findUnique({
       where: {
         id: characterId,
       },
@@ -289,7 +294,7 @@ const characterServices = {
             throw new Error('Failed to create character inventory');
           }
 
-          await itemServices.createCharacterItemCopy(
+          await itemServices.createCharacterItemCopies(
             character.characterInventory.id,
             [{ itemId: unarmed.id, quantity: 1 }],
             tx,
@@ -327,6 +332,8 @@ const characterServices = {
       const { id, characterLevelBonuses, ...filteredCharacter } =
         filterObject(templateCharacter);
 
+      const characterItems = templateCharacter.characterInventory?.items ?? [];
+
       const character = await tx.character.create({
         data: {
           ...filteredCharacter,
@@ -334,103 +341,10 @@ const characterServices = {
             (type: NpcTypes) => type !== 'template',
           ),
           baseCharacterId: id,
-          characterInventory: {
-            create: {
-              items: {
-                create: templateCharacter.characterInventory?.items.map(
-                  ({
-                    id,
-                    baseItemId,
-                    keywords,
-                    modifiedKeywords,
-                    linkedItems,
-                    linkedActions,
-                    ...item
-                  }) => ({
-                    ...item,
-                    baseItemId: baseItemId ?? id,
-                    keywords: {
-                      create: keywords.map((keyword) => ({
-                        keywordId: keyword.keywordId,
-                        value: keyword.value,
-                      })),
-                    },
-                    modifiedKeywords: {
-                      create: modifiedKeywords.map((keyword) => ({
-                        keywordId: keyword.keywordId,
-                        value: keyword.value,
-                      })),
-                    },
-                    linkedItems: {
-                      create: linkedItems.map(
-                        ({
-                          id,
-                          baseItemId,
-                          keywords,
-                          modifiedKeywords,
-                          linkedActions,
-                          ...item
-                        }) => ({
-                          ...item,
-                          baseItemId: baseItemId ?? id,
-                          keywords: {
-                            create: keywords.map((keyword) => ({
-                              keywordId: keyword.keywordId,
-                              value: keyword.value,
-                            })),
-                          },
-                          modifiedKeywords: {
-                            create: modifiedKeywords.map((keyword) => ({
-                              keywordId: keyword.keywordId,
-                              value: keyword.value,
-                            })),
-                          },
-                          linkedActions: {
-                            create: linkedActions.map(
-                              ({
-                                id,
-                                baseActionId,
-                                keywordModifiers,
-                                ...action
-                              }) => ({
-                                ...action,
-                                baseActionId: baseActionId ?? id,
-                                keywordModifiers: {
-                                  create: keywordModifiers.map((keyword) => ({
-                                    keywordId: keyword.keywordId,
-                                    value: keyword.value,
-                                  })),
-                                },
-                              }),
-                            ),
-                          },
-                        }),
-                      ),
-                    },
-                    linkedActions: {
-                      create: linkedActions.map(
-                        ({
-                          id,
-                          baseActionId,
-                          keywordModifiers,
-                          ...action
-                        }) => ({
-                          ...action,
-                          baseActionId: baseActionId ?? id,
-                          keywordModifiers: {
-                            create: keywordModifiers.map((keyword) => ({
-                              keywordId: keyword.keywordId,
-                              value: keyword.value,
-                            })),
-                          },
-                        }),
-                      ),
-                    },
-                  }),
-                ),
-              },
-            },
+          characterCart: {
+            create: {},
           },
+          characterInventory: { create: {} },
           characterLevelBonuses: {
             create: templateCharacter.characterLevelBonuses.map(
               ({ perks, ...bonus }) => ({
@@ -468,15 +382,34 @@ const characterServices = {
           gangId,
         },
         select: {
-          name: true,
           id: true,
-          userId: true,
-          campaignId: true,
-          gangId: true,
+          characterInventory: { select: { id: true } },
         },
       });
 
-      return character;
+      if (!character.characterInventory) {
+        throw new Error('Failed to create character inventory');
+      }
+
+      await itemServices.createCharacterItemCopies(
+        character.characterInventory.id,
+        characterItems.map((item) => ({
+          itemId: item.id,
+          quantity: 1,
+        })),
+        tx,
+      );
+
+      const completeCharacter = await characterServices.getCharacterById(
+        character.id,
+        tx,
+      );
+
+      if (!completeCharacter) {
+        throw new Error('Failed to find copied template character');
+      }
+
+      return completeCharacter;
     });
 
     return character;
@@ -512,7 +445,6 @@ const characterServices = {
       cart?.items.map((item) => ({
         itemId: item.item.id,
         quantity: item.quantity,
-        price: item.item.price,
       })) || [];
 
     const totalPrice = cart?.items
@@ -538,7 +470,7 @@ const characterServices = {
     }
 
     if (items.length > 0) {
-      await itemServices.createCharacterItemCopy(inventoryId, items, client);
+      await itemServices.createCharacterItemCopies(inventoryId, items, client);
     }
 
     const updatedCharacter = await client.character.update({

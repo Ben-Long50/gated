@@ -374,89 +374,51 @@ const itemServices = {
         });
         return item;
     },
-    createCharacterItemCopy: async (inventoryId, itemList, tx) => {
+    createCharacterItemCopies: async (inventoryId, itemList, tx) => {
         const client = tx !== null && tx !== void 0 ? tx : prisma;
         const itemIds = itemList === null || itemList === void 0 ? void 0 : itemList.map((item) => item.itemId);
         const items = await client.item.findMany({
             where: { id: { in: itemIds } },
-            select: {
-                id: true,
-                name: true,
-                rarity: true,
-                description: true,
-                stats: true,
-                generatedPictureId: true,
-                itemTypes: true,
-                grade: true,
-                price: true,
-                baseItemId: true,
-                linkedItems: {
-                    select: {
-                        id: true,
-                        name: true,
-                        rarity: true,
-                        description: true,
-                        stats: true,
-                        generatedPictureId: true,
-                        itemTypes: true,
-                        grade: true,
-                        price: true,
-                        baseItemId: true,
-                        keywords: { select: { keywordId: true, value: true } },
-                    },
-                },
-                linkedActions: {
-                    select: {
-                        id: true,
-                        name: true,
-                        description: true,
-                        costs: true,
-                        roll: true,
-                        actionType: true,
-                        actionSubtypes: true,
-                        duration: true,
-                        cooldown: true,
-                        modifiers: true,
-                        keywordModifiers: { select: { keywordId: true, value: true } },
-                        baseActionId: true,
-                    },
-                },
-                keywords: { select: { keywordId: true, value: true } },
-            },
+            select: itemSelectForCopy,
         });
         if (items.length === 0) {
             throw new Error('No items found');
         }
         let nested = new Map();
         items.forEach((item) => {
-            var _a, _b, _c;
-            if (item.baseItemId) {
-                throw new Error('Cannot create an item copy from a non-base item');
-            }
-            nested.set(`item ${item.id}`, {
-                items: (_a = item.linkedItems) !== null && _a !== void 0 ? _a : [],
-                actions: (_b = item.linkedActions) !== null && _b !== void 0 ? _b : [],
-                keywords: (_c = item.keywords) !== null && _c !== void 0 ? _c : [],
+            var _a, _b, _c, _d;
+            const id = (_a = item.baseItemId) !== null && _a !== void 0 ? _a : item.id;
+            nested.set(`item ${id}`, {
+                items: (_b = item.linkedItems) !== null && _b !== void 0 ? _b : [],
+                actions: (_c = item.linkedActions) !== null && _c !== void 0 ? _c : [],
+                keywords: (_d = item.keywords) !== null && _d !== void 0 ? _d : [],
             });
             if (item.linkedItems.length > 0) {
                 item.linkedItems.forEach((item) => {
-                    var _a;
-                    if (item.baseItemId) {
-                        throw new Error('Cannot create an item copy from a non-base linked item');
-                    }
-                    nested.set(`linked item ${item.id}`, {
-                        keywords: (_a = item.keywords) !== null && _a !== void 0 ? _a : [],
+                    var _a, _b, _c;
+                    const id = (_a = item.baseItemId) !== null && _a !== void 0 ? _a : item.id;
+                    nested.set(`linked item ${id}`, {
+                        keywords: (_b = item.keywords) !== null && _b !== void 0 ? _b : [],
+                        actions: (_c = item.linkedActions) !== null && _c !== void 0 ? _c : [],
                     });
                 });
             }
             if (item.linkedActions.length > 0) {
                 item.linkedActions.forEach((action) => {
-                    var _a;
-                    if (action.baseActionId) {
-                        throw new Error('Cannot create an item copy from a non-base linked action');
-                    }
-                    nested.set(`linked action ${action.id}`, {
-                        keywords: (_a = action.keywordModifiers) !== null && _a !== void 0 ? _a : [],
+                    var _a, _b;
+                    const id = (_a = action.baseActionId) !== null && _a !== void 0 ? _a : action.id;
+                    nested.set(`linked action ${id}`, {
+                        keywords: (_b = action.keywordModifiers) !== null && _b !== void 0 ? _b : [],
+                    });
+                });
+            }
+            const linkedLinkedActions = item.linkedItems.flatMap((item) => item.linkedActions);
+            if (linkedLinkedActions.length > 0) {
+                linkedLinkedActions.forEach((action) => {
+                    var _a, _b;
+                    const id = (_a = action.baseActionId) !== null && _a !== void 0 ? _a : action.id;
+                    nested.set(`linked linked action ${id}`, {
+                        keywords: (_b = action.keywordModifiers) !== null && _b !== void 0 ? _b : [],
                     });
                 });
             }
@@ -500,6 +462,19 @@ const itemServices = {
             }),
             select: { id: true, baseActionId: true },
         });
+        const newLinkedLinkedActions = await client.action.createManyAndReturn({
+            data: newLinkedItems.flatMap((item) => {
+                const linkedActions = nested.get(`linked item ${item.baseItemId}`).actions;
+                const l = linkedActions.map((a) => {
+                    var _a;
+                    const validatedAction = ActionInput.parse(a);
+                    const { id, keywords } = validatedAction, data = __rest(validatedAction, ["id", "keywords"]);
+                    return Object.assign(Object.assign({}, data), { baseActionId: (_a = a.baseActionId) !== null && _a !== void 0 ? _a : a.id, parentItemId: item.id });
+                });
+                return l;
+            }),
+            select: { id: true, baseActionId: true },
+        });
         const keywordData = newItems.flatMap((item) => {
             const keywords = nested.get(`item ${item.baseItemId}`).keywords;
             const l = keywords.map((k) => (Object.assign(Object.assign({}, k), { itemId: item.id })));
@@ -513,6 +488,12 @@ const itemServices = {
         });
         newLinkedActions.forEach((action) => {
             const keywords = nested.get(`linked action ${action.baseActionId}`).keywords;
+            keywords.map((k) => {
+                keywordData.push(Object.assign(Object.assign({}, k), { actionId: action.id }));
+            });
+        });
+        newLinkedLinkedActions.forEach((action) => {
+            const keywords = nested.get(`linked linked action ${action.baseActionId}`).keywords;
             keywords.map((k) => {
                 keywordData.push(Object.assign(Object.assign({}, k), { actionId: action.id }));
             });
