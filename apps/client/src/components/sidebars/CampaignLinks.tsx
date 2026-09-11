@@ -99,7 +99,7 @@ const CampaignLinks = () => {
             />
             <SubLinkSidebar
               title="Merchants"
-              path={`campaigns/${campaignId}/characters?characterType=nonPlayerCharacter&npcType=merchant`}
+              path={`campaigns/${campaignId}/characters?characterType=nonPlayerCharacter&npcType=shop`}
             />
             <SubLinkSidebar
               title="Goons"
