@@ -156,23 +156,25 @@ const gangController = {
 
   distributeProfits: async (req: Request, res: Response) => {
     try {
-      const { gang, character } = await gangServices.distributeProfits(
+      const { gang, characters } = await gangServices.distributeProfits(
         Number(req.params.gangId),
-        Number(req.params.characterId),
-        Number(req.body.value),
+        req.body,
       );
 
       const io = getIO();
 
       io.to(`campaign ${gang.campaignId}`).emit('updateGang', { gang });
-      io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
-        character,
-      });
+
+      for (const character of characters) {
+        io.to(`campaign ${character.campaignId}`).emit('updateCharacter', {
+          character,
+        });
+      }
 
       res.status(200).json({
         gang,
-        character,
-        message: `Distributed ${req.body.value} profits from ${gang.name} to ${character.name}`,
+        characters,
+        message: `Successfully distributed profits`,
       });
     } catch (error: any) {
       handleControllerError(res, error);

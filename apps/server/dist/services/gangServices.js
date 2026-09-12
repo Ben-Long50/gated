@@ -165,8 +165,9 @@ const gangServices = {
         });
         return gang;
     },
-    distributeProfits: async (gangId, characterId, value) => {
-        const { gang, character } = await prisma.$transaction(async (tx) => {
+    distributeProfits: async (gangId, distributions) => {
+        const value = distributions.reduce((sum, [_, value]) => sum + value, 0);
+        const { gang, characters } = await prisma.$transaction(async (tx) => {
             const gang = await tx.gang.update({
                 where: { id: gangId },
                 data: {
@@ -174,16 +175,16 @@ const gangServices = {
                 },
                 include: gangInclude,
             });
-            const character = await tx.character.update({
+            const characters = await Promise.all(distributions.map(([characterId, value]) => tx.character.update({
                 where: { id: characterId },
                 data: {
                     profits: { increment: value },
                 },
                 include: characterInclude,
-            });
-            return { gang, character };
+            })));
+            return { gang, characters };
         });
-        return { gang, character };
+        return { gang, characters };
     },
     deleteGang: async (gangId) => {
         const gang = await prisma.gang.findUnique({

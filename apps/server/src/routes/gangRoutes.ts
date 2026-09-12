@@ -32,7 +32,7 @@ router.patch(
 );
 
 router.patch(
-  '/campaigns/:campaignId/gangs/:gangId/characters/:characterId/profits',
+  '/campaigns/:campaignId/gangs/:gangId/profits',
   authentication.authenticate,
   campaignAuthentication.validateGameMaster,
   gangController.distributeProfits,
