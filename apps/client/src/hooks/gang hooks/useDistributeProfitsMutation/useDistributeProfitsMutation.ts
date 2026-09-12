@@ -7,8 +7,9 @@ import { toast } from 'react-toastify';
 
 const useDistributeProfitsMutation = (campaignId: number, gangId: number) => {
   const queryClient = useQueryClient();
-  const updateBuffer = useRef(0);
   const timeoutRef = useRef(0);
+
+  const distributionMapRef = useRef(new Map());
 
   const editProfitsMutation = useMutation({
     mutationFn: async ({
@@ -22,19 +23,28 @@ const useDistributeProfitsMutation = (campaignId: number, gangId: number) => {
         clearTimeout(timeoutRef.current);
       }
 
-      updateBuffer.current += value;
+      const map = distributionMapRef.current;
+      const entry = map.get(characterId);
+
+      if (entry) {
+        map.set(characterId, value + entry);
+      } else {
+        map.set(characterId, value);
+      }
+
+      distributionMapRef.current = map;
 
       return new Promise((resolve, reject) => {
         timeoutRef.current = setTimeout(async () => {
           try {
-            const finalValue = updateBuffer.current;
-            updateBuffer.current = 0;
+            const distributions = Array.from(distributionMapRef.current);
+
+            distributionMapRef.current = new Map();
 
             const result = await distributeProfits(
               campaignId,
               gangId,
-              characterId,
-              finalValue,
+              distributions,
             );
 
             resolve(result);
@@ -73,8 +83,6 @@ const useDistributeProfitsMutation = (campaignId: number, gangId: number) => {
             ? prevCharacterData?.profits + data.value
             : data.value,
       }));
-
-      return { prevCharacterData, prevGangData };
     },
 
     onSuccess: (data) => {
@@ -82,23 +90,28 @@ const useDistributeProfitsMutation = (campaignId: number, gangId: number) => {
 
       queryClient.setQueryData(['gang', data.gang.id], data.gang);
 
-      queryClient.setQueryData(
-        ['character', data.character.id],
-        data.character,
-      );
+      for (const character of data.characters) {
+        queryClient.setQueryData(['character', character.id], character);
+      }
     },
-    onError: (data, __, context) => {
+    onError: (data) => {
       toast.error(data.message);
 
-      queryClient.setQueryData(
-        ['gang', context?.prevGangData?.id],
-        context?.prevGangData,
+      const distributions = Array.from(distributionMapRef.current);
+
+      distributions.forEach(([characterId, value]) =>
+        queryClient.setQueryData(['character', characterId], (prev) => ({
+          ...prev,
+          profits: prev.profits - value,
+        })),
       );
 
-      queryClient.setQueryData(
-        ['character', context?.prevCharacterData?.id],
-        context?.prevCharacterData,
-      );
+      const value = distributions.reduce((sum, [_, value]) => sum + value, 0);
+
+      queryClient.setQueryData(['gang', gangId], (prev) => ({
+        ...prev,
+        profits: prev.profits + value,
+      }));
     },
     throwOnError: false,
   });

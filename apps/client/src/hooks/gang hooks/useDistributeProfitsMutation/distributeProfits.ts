@@ -4,21 +4,18 @@ import handleResponse from '../../handleResponse';
 const distributeProfits = async (
   campaignId: number,
   gangId: number,
-  characterId: number,
-  value: number,
+  distributions: [number, number][],
 ) => {
   try {
     const response = await fetch(
-      `${apiUrl}/campaigns/${campaignId}/gangs/${gangId}/characters/${characterId}/profits`,
+      `${apiUrl}/campaigns/${campaignId}/gangs/${gangId}/profits`,
       {
         method: 'PATCH',
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          value,
-        }),
+        body: JSON.stringify(distributions),
       },
     );
     const data = await handleResponse(response);
