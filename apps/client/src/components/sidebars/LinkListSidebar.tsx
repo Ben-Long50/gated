@@ -1,6 +1,7 @@
 import { mdiChevronDown } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Children, isValidElement, ReactNode, useState } from 'react';
+import useTimeout from 'src/hooks/useTimeout';
 import useNavigationStore from 'src/stores/navbarStore';
 
 const LinkListSidebar = ({
@@ -15,6 +16,10 @@ const LinkListSidebar = ({
   const [detailsOpen, setDetailsOpen] = useState(false);
 
   const sidebar = useNavigationStore((state) => state.sidebar);
+
+  const { timer, cancel } = useTimeout(300, () => {
+    setDetailsOpen(false);
+  });
 
   function countChildren(children: ReactNode) {
     let count = 0;
@@ -42,11 +47,12 @@ const LinkListSidebar = ({
       className={`timing relative flex flex-col clip-4`}
       onMouseEnter={(e) => {
         e.stopPropagation();
+        cancel();
         setDetailsOpen(true);
       }}
       onMouseLeave={(e) => {
         e.stopPropagation();
-        setDetailsOpen(false);
+        timer();
       }}
     >
       <div className="text-primary group z-10 flex items-center">

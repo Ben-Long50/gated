@@ -28,7 +28,7 @@ const Inventory = () => {
 
   const items = character?.inventory
     ? character?.inventory.filter((item) =>
-        item.itemTypes.some(
+        item?.itemTypes.some(
           (type: ItemType) => types.includes(type) || types.length === 0,
         ),
       )

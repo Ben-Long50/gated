@@ -15,6 +15,7 @@ import LinkListSidebar from './LinkListSidebar';
 import CampaignIcon from '../icons/CampaignIcon';
 import LinkSublistSidebar from './LinkSublistSidebar';
 import EntityAvater from '../EntityAvatar';
+import useTimeout from 'src/hooks/useTimeout';
 
 const Sidebar = ({ children }: { children: ReactNode }) => {
   const { user } = useContext(AuthContext);
@@ -27,6 +28,10 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
   const sidebar = useNavigationStore((state) => state.sidebar);
   const setSidebar = useNavigationStore((state) => state.setSidebar);
   const navbarHeight = useNavigationStore((state) => state.navbarHeight);
+
+  const { timer, cancel } = useTimeout(500, () => {
+    setSidebar(false);
+  });
 
   const { playerCharacters, isLoading: charactersLoading } =
     useCampaignCharacters(
@@ -57,10 +62,13 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
         borderColor: accentPrimary,
       }}
       onMouseEnter={() => {
-        if (!mobile) setSidebar(true);
+        if (!mobile) {
+          cancel();
+          setSidebar(true);
+        }
       }}
       onMouseLeave={() => {
-        if (!mobile) setSidebar(false);
+        if (!mobile) timer();
       }}
     >
       <div className="scrollbar-secondary bg-base shadow-color flex w-full flex-col gap-4 overflow-y-auto overflow-x-hidden rounded-md px-2 py-4 shadow-lg">
