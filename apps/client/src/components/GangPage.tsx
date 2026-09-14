@@ -17,6 +17,7 @@ import useUpdateGangCharactersMutation from 'src/hooks/gang hooks/updateGangChar
 import NavTabs from './NavTabs';
 import CharacterList from './characterComponents/CharacterList';
 import Affiliations from './Affiliations';
+import useCharacters from 'src/hooks/useCharacters';
 
 const GangPage = () => {
   const { campaignId, gangId } = useParams();
@@ -28,7 +29,6 @@ const GangPage = () => {
 
   const {
     gang,
-    characters,
     gangPoints,
     usedGangPoints,
     reputationData,
@@ -39,6 +39,17 @@ const GangPage = () => {
     affiliations,
     gangLoading,
   } = useGang(Number(gangId));
+
+  const {
+    characters,
+    filters,
+    setFilters,
+    isLoading: charactersLoading,
+  } = useCharacters(
+    gang
+      ? [...gang?.leaders, ...gang?.characters].map((character) => character.id)
+      : [],
+  );
 
   const levelUpAvailable = characters.some(
     (character) =>
@@ -63,7 +74,9 @@ const GangPage = () => {
     },
   });
 
-  if (gangLoading) {
+  const isLoading = charactersLoading || gangLoading;
+
+  if (isLoading) {
     return <Loading />;
   }
 
@@ -205,9 +218,10 @@ const GangPage = () => {
           </NavTabs>
           {subTab === 'characters' && (
             <CharacterList
-              characterIds={[...gang?.leaders, ...gang?.characters].map(
-                (character) => character.id,
-              )}
+              characters={characters}
+              filters={filters}
+              setFilters={setFilters}
+              isLoading={charactersLoading}
             />
           )}
           {subTab === 'properties' && (

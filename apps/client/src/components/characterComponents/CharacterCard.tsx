@@ -25,12 +25,12 @@ import { mdiCrown } from '@mdi/js';
 
 const CharacterCard = ({
   characterId,
-  menu = true,
   size = 'large',
+  onClick,
 }: {
   characterId: number;
-  menu?: boolean;
   size?: 'small' | 'large';
+  onClick?: (value: number) => void;
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
   const navigate = useNavigate();
@@ -98,8 +98,8 @@ const CharacterCard = ({
             className={`${size === 'small' ? 'grid grid-cols-1 grid-rows-[1fr_96px_auto]' : 'grid grid-cols-[1fr_96px_4fr] grid-rows-1'} relative w-full cursor-pointer select-none`}
             onClick={(e) => {
               e.stopPropagation();
-              if (menu) {
-                handleMenu(e);
+              if (onClick) {
+                onClick(character?.id);
               } else {
                 navigate(`/glam/characters/${character?.id}`);
               }

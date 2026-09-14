@@ -47,6 +47,7 @@ import CharacterList from 'src/components/characterComponents/CharacterList';
 import CampaignMapList from 'src/components/mapComponents/map/CampaignMapList';
 import PictureRoutes from './PictureRoutes';
 import CharacterAddModal from 'src/components/characterComponents/CharacterAddModal';
+import CampaignCharacters from 'src/components/characterComponents/CampaignCharacters';
 
 const CampaignTabRoutes = () => {
   return (
@@ -109,7 +110,7 @@ const CampaignTabRoutes = () => {
             path=""
             element={
               <Page title="Campaign Characters">
-                <CharacterList />
+                <CampaignCharacters />
               </Page>
             }
           >

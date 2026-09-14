@@ -1,16 +1,13 @@
 import Modal from '../modals/Modal';
 import Loading from '../Loading';
-import CharacterCardXSmall from './CharacterCardXSmall';
-import IconBtnSmall from '../buttons/IconBtnSmall';
 import NavTabs from '../NavTabs';
 import BtnAuth from '../buttons/BtnAuth';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import useAddCharacterMutation from 'src/hooks/useCharacterAddMutation/useCharacterAddMutation';
-import CreateCharacterIcon from '../icons/CreateCharacterIcon';
 import useCharacters from 'src/hooks/useCharacters';
 import useTemplateCharactersQuery from 'src/hooks/character hooks/useUpdateCharacterLevelMutation/useCharactersQuery/useTemplateCharactersQuery';
 import Divider from '../Divider';
-import { Character } from 'src/types/character';
+import CharacterList from './CharacterList';
 
 const CharacterAddModal = () => {
   const { campaignId, gangId } = useParams();
@@ -20,11 +17,16 @@ const CharacterAddModal = () => {
     Number(gangId),
   );
 
-  const { data, isLoading } = useTemplateCharactersQuery();
+  const { data, isLoading: templatesLoading } = useTemplateCharactersQuery();
 
-  const { characters, filters, setFilters } = useCharacters(
-    data?.map((character) => character.id) ?? [],
-  );
+  const {
+    characters,
+    filters,
+    setFilters,
+    isLoading: charactersLoading,
+  } = useCharacters(data?.map((character) => character.id) ?? []);
+
+  const isLoading = templatesLoading || charactersLoading;
 
   return (
     <Modal>
@@ -33,7 +35,13 @@ const CharacterAddModal = () => {
       <NavTabs className="grid-cols-3 grid-rows-2">
         <BtnAuth
           active={filters.playerCharacter === true}
-          onClick={() => setFilters({ playerCharacter: true, npcTypes: [] })}
+          onClick={() =>
+            setFilters((prev) => ({
+              ...prev,
+              playerCharacter: true,
+              npcTypes: [],
+            }))
+          }
         >
           Player Classes
         </BtnAuth>
@@ -41,14 +49,24 @@ const CharacterAddModal = () => {
           active={
             filters.playerCharacter === false && filters.npcTypes?.length === 0
           }
-          onClick={() => setFilters({ playerCharacter: false, npcTypes: [] })}
+          onClick={() =>
+            setFilters((prev) => ({
+              ...prev,
+              playerCharacter: false,
+              npcTypes: [],
+            }))
+          }
         >
           Unique NPCs
         </BtnAuth>
         <BtnAuth
           active={filters.npcTypes?.includes('goon')}
           onClick={() =>
-            setFilters({ playerCharacter: false, npcTypes: ['goon'] })
+            setFilters((prev) => ({
+              ...prev,
+              playerCharacter: false,
+              npcTypes: ['goon'],
+            }))
           }
         >
           Goons
@@ -56,7 +74,11 @@ const CharacterAddModal = () => {
         <BtnAuth
           active={filters.npcTypes?.includes('shop')}
           onClick={() =>
-            setFilters({ playerCharacter: false, npcTypes: ['shop'] })
+            setFilters((prev) => ({
+              ...prev,
+              playerCharacter: false,
+              npcTypes: ['shop'],
+            }))
           }
         >
           Merchants
@@ -64,7 +86,11 @@ const CharacterAddModal = () => {
         <BtnAuth
           active={filters.npcTypes?.includes('monster')}
           onClick={() =>
-            setFilters({ playerCharacter: false, npcTypes: ['monster'] })
+            setFilters((prev) => ({
+              ...prev,
+              playerCharacter: false,
+              npcTypes: ['monster'],
+            }))
           }
         >
           Monsters
@@ -72,7 +98,11 @@ const CharacterAddModal = () => {
         <BtnAuth
           active={filters.npcTypes?.includes('template')}
           onClick={() =>
-            setFilters({ playerCharacter: false, npcTypes: ['template'] })
+            setFilters((prev) => ({
+              ...prev,
+              playerCharacter: false,
+              npcTypes: ['template'],
+            }))
           }
         >
           Templates
@@ -81,32 +111,17 @@ const CharacterAddModal = () => {
       {isLoading ? (
         <Loading />
       ) : (
-        <div className="flex w-full flex-col gap-4">
-          {characters?.map((character: Character) => (
-            <div
-              className="flex w-full items-center justify-between gap-8"
-              key={character.id}
-            >
-              <CharacterCardXSmall
-                characterList={true}
-                character={character}
-                active={false}
-              />
-
-              <IconBtnSmall
-                active={!addCharacter.isPending}
-                tooltip={`Create ${character.name}`}
-                onClick={() => addCharacter.mutate(character.id)}
-              >
-                {addCharacter.isPending ? (
-                  <Loading size={1.15} />
-                ) : (
-                  <CreateCharacterIcon />
-                )}
-              </IconBtnSmall>
-            </div>
-          ))}
-        </div>
+        <CharacterList
+          characters={characters}
+          filters={filters}
+          setFilters={setFilters}
+          isLoading={charactersLoading}
+          onClick={(value: number) => {
+            if (!addCharacter.isPending) {
+              addCharacter.mutate(value);
+            }
+          }}
+        />
       )}
     </Modal>
   );

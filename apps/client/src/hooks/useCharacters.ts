@@ -8,9 +8,13 @@ const useCharacters = (characterIds: number[]) => {
   const [filters, setFilters] = useState<{
     playerCharacter: boolean | null;
     npcTypes: string[] | null;
+    query: string;
+    campaignId: number | null;
   }>({
     playerCharacter: null,
     npcTypes: null,
+    query: '',
+    campaignId: null,
   });
   const [searchParams] = useSearchParams();
 
@@ -28,9 +32,6 @@ const useCharacters = (characterIds: number[]) => {
 
   const { characters, isLoading: charactersLoading } =
     useCharacterQueries(characterIds);
-
-  const [query, setQuery] = useState('');
-  const [campaignId, setCampaignId] = useState<number | null>(null);
 
   const sortedCharacters = characters
     ?.filter((character) => {
@@ -51,25 +52,23 @@ const useCharacters = (characterIds: number[]) => {
     })
     .sort((a, b) => a.name.localeCompare(b.name));
 
-  const filteredCharacters = campaignId
-    ? sortedCharacters?.filter((character: Character) => {
+  const filteredCharacters = filters.campaignId
+    ? sortedCharacters?.filter((character) => {
         return (
-          character?.campaignId === campaignId &&
-          character?.name.toLowerCase().includes(query.toLowerCase())
+          character?.campaignId === filters.campaignId &&
+          character?.name.toLowerCase().includes(filters.query.toLowerCase())
         );
       })
-    : (sortedCharacters?.filter((character: Character) => {
-        return character?.name.toLowerCase().includes(query.toLowerCase());
+    : (sortedCharacters?.filter((character) => {
+        return character?.name
+          .toLowerCase()
+          .includes(filters.query.toLowerCase());
       }) ?? []);
 
   return {
     characters: filteredCharacters,
     filters,
     setFilters,
-    query,
-    campaignId,
-    setQuery,
-    setCampaignId,
     isLoading: charactersLoading,
   };
 };

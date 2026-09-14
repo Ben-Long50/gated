@@ -1,18 +1,22 @@
 import useCodexCharactersQuery from 'src/hooks/useCodexCharactersQuery/useCodexCharactersQuery';
 import CharacterList from './CharacterList';
-import Loading from '../Loading';
+import useCharacters from 'src/hooks/useCharacters';
 
 const CodexCharacters = () => {
-  const { data: codexCharacters, isLoading } = useCodexCharactersQuery();
+  const { data: codexCharacters } = useCodexCharactersQuery();
 
-  const codexCharacterIds =
-    codexCharacters?.map((character) => character.id) || [];
+  const { characters, filters, setFilters, isLoading } = useCharacters(
+    codexCharacters?.map((character) => character.id) ?? [],
+  );
 
-  if (isLoading) {
-    return <Loading />;
-  }
-
-  return <CharacterList characterIds={codexCharacterIds} menu={false} />;
+  return (
+    <CharacterList
+      characters={characters}
+      filters={filters}
+      setFilters={setFilters}
+      isLoading={isLoading}
+    />
+  );
 };
 
 export default CodexCharacters;

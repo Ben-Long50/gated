@@ -25,6 +25,7 @@ import NavTabs from './NavTabs';
 import GangCard from './GangCard';
 import FactionCard from './FactionCard';
 import CharacterCardSmall from './characterComponents/CharacterCardSmall';
+import useCharacters from 'src/hooks/useCharacters';
 
 const Campaign = () => {
   const { user } = useContext(AuthContext);
@@ -32,7 +33,15 @@ const Campaign = () => {
   const navigate = useNavigate();
   const [tab, setTab] = useState('characters');
 
-  const { data: campaign, isLoading } = useCampaignQuery(Number(campaignId));
+  const { data: campaign, isLoading: campaignLoading } = useCampaignQuery(
+    Number(campaignId),
+  );
+  const {
+    characters,
+    filters,
+    setFilters,
+    isLoading: charactersLoading,
+  } = useCharacters(campaign?.characters.map((character) => character.id));
 
   const accentCampaignInvitation = useJoinCampaignMutation(Number(campaignId));
   const rejectCampaignInvitation = useRejectCampaignMutation(
@@ -47,6 +56,8 @@ const Campaign = () => {
 
   const pendingIds =
     campaign?.pendingPlayers.map((player: User) => player.id) || [];
+
+  const isLoading = charactersLoading || campaignLoading;
 
   if (isLoading) return <Loading />;
 
@@ -215,7 +226,10 @@ const Campaign = () => {
         ))}
       {tab === 'characters' && (
         <CharacterList
-          characterIds={campaign?.characters.map((character) => character.id)}
+          characters={characters}
+          filters={filters}
+          setFilters={setFilters}
+          isLoading={charactersLoading}
         />
       )}
     </>
