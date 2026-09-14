@@ -224,6 +224,10 @@ const CampaignLinks = () => {
                 title={`Pending Encounters`}
                 path={`campaigns/${campaignId}/encounters/pending`}
               />
+              <SubLinkSidebar
+                title="Update Campaign"
+                path={`campaigns/${campaignId}/update`}
+              />
               <div className="text-secondary group flex gap-4">
                 <button
                   className="w-full pl-4 text-left text-inherit"

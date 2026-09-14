@@ -3,7 +3,6 @@ import ThemeContainer from './ThemeContainer';
 import ItemRarity from './ItemRarity';
 import CartButton from './CartButton';
 import { KeywordReference } from 'src/types/keyword';
-import { Item } from 'src/types/item';
 import ItemPicture from './ItemPicture';
 import ArrowHeader2 from './ArrowHeader2';
 import StatBars from './StatBars';

@@ -34,9 +34,7 @@ const Items = ({
   const include = searchParams.getAll('include');
   const exclude = searchParams.getAll('exclude');
 
-  const [size, setSize] = useState<'small' | 'large'>(() =>
-    mobile ? 'small' : 'large',
-  );
+  const [size, setSize] = useState<'small' | 'large'>('small');
 
   const cardSize = mobile || size === 'small' ? 'small' : 'large';
 

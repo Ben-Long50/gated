@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, Outlet, useNavigate, useParams } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import Loading from './Loading';
 import useCampaignQuery from '../hooks/useCampaignQuery/useCampaignQuery';
@@ -33,8 +33,6 @@ const Campaign = () => {
   const [tab, setTab] = useState('characters');
 
   const { data: campaign, isLoading } = useCampaignQuery(Number(campaignId));
-
-  console.log(campaign);
 
   const accentCampaignInvitation = useJoinCampaignMutation(Number(campaignId));
   const rejectCampaignInvitation = useRejectCampaignMutation(
@@ -219,20 +217,6 @@ const Campaign = () => {
         <CharacterList
           characterIds={campaign?.characters.map((character) => character.id)}
         />
-      )}
-      {campaign?.ownerId === user?.id && (
-        <>
-          <Divider />
-          <Link className="col-start-2" to={`update`}>
-            <BtnRect
-              className="w-full"
-              type="button"
-              ariaLabel="Update campaign"
-            >
-              Update Campaign
-            </BtnRect>
-          </Link>
-        </>
       )}
     </>
   );

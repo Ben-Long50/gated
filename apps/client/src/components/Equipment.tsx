@@ -143,7 +143,7 @@ const Equipment = () => {
                 <InventoryCard
                   key={item.id}
                   item={item}
-                  onClick={() => navigate(`inventory/items/${item.id}`)}
+                  onClick={() => navigate(`items/${item.id}`)}
                 />
               ))}
             </InventoryGrid>

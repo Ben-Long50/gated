@@ -23,13 +23,11 @@ const useConditionLinkForm = (
         ([] as { conditionId: number; stacks: number | null }[]),
     },
     onSubmit: async ({ value }) => {
-      const filteredData = filterFormData(value.conditions);
-
       if (item) {
-        await itemMutation.mutate(filteredData);
+        await itemMutation.mutate(value.conditions);
       }
       if (character) {
-        await characterMutation.mutate(filteredData);
+        await characterMutation.mutate(value.conditions);
       }
     },
   });

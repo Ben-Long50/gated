@@ -126,7 +126,7 @@ const CampaignTabRoutes = () => {
               </Page>
             }
           />
-          {CharacterRoutes()}
+          {CharacterMenuRoutes()}
         </Route>
         <Route path="characters/add" element={<CharacterAddModal />} />
         <Route path="gangs">
@@ -158,6 +158,7 @@ const CampaignTabRoutes = () => {
               element={<GangCharacterSelectModal />}
             />
             <Route path="characters/add" element={<CharacterAddModal />} />
+            <Route path="characters">{CharacterMenuRoutes()}</Route>
           </Route>
           <Route
             path="create"

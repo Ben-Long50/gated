@@ -13,13 +13,15 @@ import CharacterStatBars from './CharacterStatBars';
 import useCharacter from 'src/hooks/useCharacter';
 import Loading from '../Loading';
 import ConditionTag from '../ConditionTag';
-import { useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useInView } from 'react-intersection-observer';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
-import CharacterRadialMenu from '../radialMenus/characterRadialMenu/CharacterRadialMenu';
 import LocationIcon from '../icons/LocationIcon';
 import NpcTypeList from '../NpcTypeList';
 import StatBarContainer from '../StatBarContainer';
+import CharacterCardMenu from './CharacterCardMenu';
+import Icon from '@mdi/react';
+import { mdiCrown } from '@mdi/js';
 
 const CharacterCard = ({
   characterId,
@@ -32,6 +34,8 @@ const CharacterCard = ({
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
   const navigate = useNavigate();
+  const location = useLocation();
+  const parts = location.pathname.split('/');
 
   const { filteredCharacter: character, isLoading } = useCharacter(characterId);
 
@@ -78,7 +82,11 @@ const CharacterCard = ({
   }
 
   return (
-    <div className={`${size === 'small' && 'max-w-[500px]'} w-full`} ref={ref}>
+    <div
+      className={`${size === 'small' && 'max-w-[500px]'} relative w-full`}
+      ref={ref}
+    >
+      <CharacterCardMenu character={character} />
       {inView && (
         <ThemeContainer
           className="group w-full"
@@ -97,12 +105,6 @@ const CharacterCard = ({
               }
             }}
           >
-            {menu && (
-              <CharacterRadialMenu
-                character={character}
-                containerRef={containerRef}
-              />
-            )}
             <div
               className={`${size === 'small' ? 'row-span-2 aspect-square w-full' : 'col-span-2 aspect-[4/3] w-[425px]'} relative col-start-1 row-start-1 flex h-full items-center overflow-hidden rounded-bl clip-6`}
             >
@@ -129,7 +131,7 @@ const CharacterCard = ({
               )}
               {
                 <div
-                  className={`${size === 'small' ? 'right-2 top-2' : 'bottom-2 left-2'} absolute flex grow flex-wrap items-center justify-start gap-1`}
+                  className={`${size === 'small' ? 'bottom-24 right-2' : 'bottom-2 left-2'} absolute flex grow flex-wrap items-center justify-start gap-1`}
                 >
                   {character?.conditions?.map((condition) => (
                     <ConditionTag key={condition.id} condition={condition} />
@@ -153,10 +155,29 @@ const CharacterCard = ({
                   </p>
                 )}
               </div>
-              {character?.title && (
-                <p className="text-tertiary font-semibold">
-                  {character?.title}
-                </p>
+              {(character?.title ||
+                character?.gang ||
+                character?.controlledGang) && (
+                <div className="flex w-full items-center justify-between">
+                  {character?.title && (
+                    <p className="text-tertiary font-semibold">
+                      {character?.title}
+                    </p>
+                  )}
+                  {character?.gang && (
+                    <p className="!text-accent ml-auto">
+                      {character?.gang.name}
+                    </p>
+                  )}
+                  {character?.controlledGang && (
+                    <div className="ml-auto flex items-center gap-2">
+                      <p className="!text-accent">
+                        {character?.controlledGang.name}
+                      </p>
+                      <Icon className="text-accent" path={mdiCrown} size={1} />
+                    </div>
+                  )}
+                </div>
               )}
               {character?.location && (
                 <div className="flex gap-4">
@@ -274,6 +295,9 @@ const CharacterCard = ({
             </div>
           </div>
         </ThemeContainer>
+      )}
+      {parts.includes('menu') && parts.includes(String(characterId)) && (
+        <Outlet />
       )}
     </div>
   );

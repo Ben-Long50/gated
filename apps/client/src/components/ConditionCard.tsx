@@ -88,13 +88,13 @@ const ConditionCard = ({
                   if (!conditionData) {
                     field.handleChange([
                       ...field.state.value,
-                      { conditionId: value, stacks: null },
+                      { conditionId: Number(value), stacks: null },
                     ]);
                   } else {
                     field.handleChange(
                       field.state.value.filter(
                         (c: { conditionId: number; stacks: number | null }) =>
-                          c.conditionId !== value,
+                          c.conditionId !== Number(value),
                       ),
                     );
                   }

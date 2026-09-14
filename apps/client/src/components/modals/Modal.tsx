@@ -61,7 +61,7 @@ const Modal = ({
           <Icon path={mdiClose} />
         </IconBtnSmall>
         <div
-          className={`${className} ${mobile ? 'gap-4 p-4' : 'gap-8 p-8'} flex flex-col items-center`}
+          className={`${className} ${mobile ? 'gap-4 p-4' : 'gap-8 p-8'} flex flex-col`}
         >
           {children}
         </div>

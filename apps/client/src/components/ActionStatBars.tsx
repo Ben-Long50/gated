@@ -24,7 +24,7 @@ const ActionStatBars = ({
     <>
       {stats.currentActions && (
         <StatBar
-          title="Actions"
+          title="AP"
           current={stats.currentActions}
           color={statColorMap['AP']}
           size={size}
@@ -34,7 +34,7 @@ const ActionStatBars = ({
       )}
       {stats.currentReactions && (
         <StatBar
-          title="Reactions"
+          title="RP"
           current={stats.currentReactions}
           color={statColorMap['RP']}
           size={size}
@@ -44,7 +44,7 @@ const ActionStatBars = ({
       )}
       {stats.currentHealth && (
         <StatBar
-          title="Health"
+          title="HLT"
           current={stats.currentHealth}
           color={statColorMap['Health']}
           size={size}
@@ -54,7 +54,7 @@ const ActionStatBars = ({
       )}
       {stats.currentSanity && (
         <StatBar
-          title="Sanity"
+          title="SAN"
           current={stats.currentSanity}
           color={statColorMap['Sanity']}
           size={size}
@@ -84,7 +84,7 @@ const ActionStatBars = ({
       )}
       {stats.wyrmShells && (
         <StatBar
-          title="Wyrm"
+          title="WYRM"
           current={stats.wyrmShells}
           color={statColorMap['wyrmShells']}
           size={size}
@@ -94,7 +94,7 @@ const ActionStatBars = ({
       )}
       {stats.currentHands && (
         <StatBar
-          title="Hands"
+          title="HND"
           current={stats.currentHands}
           color={statColorMap['Health']}
           size={size}
@@ -104,7 +104,7 @@ const ActionStatBars = ({
       )}
       {stats.currentFeet && (
         <StatBar
-          title="Feet"
+          title="FT"
           current={stats.currentFeet}
           color={statColorMap['Health']}
           size={size}

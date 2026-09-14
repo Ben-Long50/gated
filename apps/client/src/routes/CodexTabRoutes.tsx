@@ -37,6 +37,7 @@ import Map from 'src/components/mapComponents/map/Map';
 import MapList from 'src/components/mapComponents/map/MapList';
 import MapTabRoutes from './MapTabRoutes';
 import CodexMapList from 'src/components/mapComponents/map/CodexMapList';
+import CharacterMenuRoutes from './CharacterMenuRoutes';
 
 const CodexTabRoutes = () => {
   return (
@@ -72,21 +73,7 @@ const CodexTabRoutes = () => {
           }
         />
         {CharacterRoutes()}
-
-        {/* <Route
-            path="update"
-            element={
-              <Page title="Update Character">
-                <CharacterUpdateForm />
-              </Page>
-            }
-          >
-            {PictureRoutes()}
-            <Route path="perks" element={<PerkLinkModal />} />
-            <Route path="npcPreferences" element={<NpcPreferenceModal />} />
-            <Route path="actions" element={<ActionLinkModal />} />
-          </Route> */}
-
+        {CharacterMenuRoutes()}
         <Route
           path="create"
           element={
