@@ -43,7 +43,6 @@ import AffiliationForm from 'src/components/forms/AffiliationForm';
 import AffiliationEntitySelectModal from 'src/components/modals/AffiliationEntitySelectModal';
 import CampaignDashboard from 'src/components/CampaignDashboard';
 import Page from 'src/components/Page';
-import CharacterList from 'src/components/characterComponents/CharacterList';
 import CampaignMapList from 'src/components/mapComponents/map/CampaignMapList';
 import PictureRoutes from './PictureRoutes';
 import CharacterAddModal from 'src/components/characterComponents/CharacterAddModal';
@@ -76,6 +75,7 @@ const CampaignTabRoutes = () => {
           <Route path="time" element={<TimeModal />} />
           <Route path="date" element={<CalendarModal />} />
           <Route path="event" element={<EventForm />} />
+          <Route path="characters">{CharacterMenuRoutes()}</Route>
         </Route>
         <Route
           path="update"

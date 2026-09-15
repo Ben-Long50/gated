@@ -86,7 +86,6 @@ const CharacterCard = ({
       className={`${size === 'small' && 'max-w-[500px]'} relative w-full`}
       ref={ref}
     >
-      <CharacterCardMenu character={character} />
       {inView && (
         <ThemeContainer
           className="group w-full"
@@ -139,6 +138,7 @@ const CharacterCard = ({
                 </div>
               }
             </div>
+
             <div
               className={`${size === 'small' ? 'col-start-1 row-span-2 row-start-2 gap-4 p-4' : 'col-span-2 col-start-2 row-start-1 gap-6 p-6'} relative flex h-full w-full flex-col justify-between`}
             >
@@ -293,6 +293,7 @@ const CharacterCard = ({
                 </div>
               </div>
             </div>
+            <CharacterCardMenu character={character} />
           </div>
         </ThemeContainer>
       )}

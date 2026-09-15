@@ -1,7 +1,7 @@
 import { ReactNode, useContext, useRef } from 'react';
 import LinkSidebar from './LinkSidebar';
 import { LayoutContext } from '../../contexts/LayoutContext';
-import { mdiCartOutline } from '@mdi/js';
+import { mdiCartOutline, mdiChevronLeft } from '@mdi/js';
 import Icon from '@mdi/react';
 import CharacterPictureRound from '../characterComponents/CharacterPictureRound';
 import { AuthContext } from 'src/contexts/AuthContext';
@@ -16,6 +16,7 @@ import CampaignIcon from '../icons/CampaignIcon';
 import LinkSublistSidebar from './LinkSublistSidebar';
 import EntityAvater from '../EntityAvatar';
 import useTimeout from 'src/hooks/useTimeout';
+import IconBtnSmall from '../buttons/IconBtnSmall';
 
 const Sidebar = ({ children }: { children: ReactNode }) => {
   const { user } = useContext(AuthContext);
@@ -55,10 +56,8 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
   return (
     <nav
       ref={sidebarRef}
-      className={`${mobile ? mobileSidebarStyle : sidebarStyle} timing shadow-color fixed bottom-2 left-2 top-2 z-20 flex overflow-x-hidden shadow-lg`}
+      className={`${mobile ? mobileSidebarStyle : sidebarStyle} timing shadow-color fixed bottom-0 left-0 top-0 z-20 my-4 ml-2 overflow-x-hidden`}
       style={{
-        top: mobile ? navbarHeight + 8 : 16,
-        bottom: 16,
         borderColor: accentPrimary,
       }}
       onMouseEnter={() => {
@@ -71,7 +70,7 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
         if (!mobile) timer();
       }}
     >
-      <div className="scrollbar-secondary bg-base shadow-color flex w-full flex-col gap-4 overflow-y-auto overflow-x-hidden rounded-md px-2 py-4 shadow-lg">
+      <div className="scrollbar-secondary bg-base shadow-color shadow-color flex h-full w-full flex-col gap-4 overflow-y-auto overflow-x-hidden rounded-md px-2 py-4">
         {activeCampaigns.length > 0 && (
           <>
             <LinkListSidebar
@@ -190,6 +189,13 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
         )}
 
         {children}
+        <IconBtnSmall
+          className={`${sidebar ? 'opacity-100' : 'opacity-0'} !absolute bottom-2 right-2`}
+          tooltip="Hide"
+          onClick={() => setSidebar(false)}
+        >
+          <Icon path={mdiChevronLeft} />
+        </IconBtnSmall>
       </div>
     </nav>
   );

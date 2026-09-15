@@ -13,7 +13,7 @@ const Menu = ({ children }: { children: ReactElement }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div className="absolute right-1 top-1 z-10 flex flex-col items-end justify-start gap-2">
+    <div className="absolute right-1 top-1 flex flex-col items-end justify-start gap-2">
       <IconBtnSmall
         onClick={() => {
           setMenuOpen((prev) => !prev);
@@ -25,12 +25,18 @@ const Menu = ({ children }: { children: ReactElement }) => {
       {menuOpen && (
         <div
           className="fixed inset-0 z-10 bg-transparent"
-          onClick={() => setMenuOpen(false)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setMenuOpen(false);
+          }}
         />
       )}
       <div
         className={`${menuOpen ? 'visible max-h-80' : 'invisible max-h-0'} timing bg-primary shadow-color z-10 flex min-w-40 list-none flex-col gap-2 overflow-hidden rounded-md p-2`}
-        onClick={() => setMenuOpen(false)}
+        onClick={(e) => {
+          e.stopPropagation();
+          setMenuOpen(false);
+        }}
       >
         {Children.map(children, (child) => {
           if (!isValidElement(child)) return child;
