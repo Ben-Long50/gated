@@ -46,8 +46,8 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
     [];
 
   const sidebarStyle = sidebar
-    ? 'w-full max-w-[370px]'
-    : 'min-w-0 max-w-[68px]';
+    ? 'w-full max-w-[378px]'
+    : 'min-w-0 max-w-[72px]';
 
   const mobileSidebarStyle = sidebar
     ? 'w-full max-w-85dvw'
@@ -56,7 +56,7 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
   return (
     <nav
       ref={sidebarRef}
-      className={`${mobile ? mobileSidebarStyle : sidebarStyle} timing shadow-color fixed bottom-0 left-0 top-0 z-20 my-4 ml-2 overflow-x-hidden`}
+      className={`${mobile ? mobileSidebarStyle : sidebarStyle} timing shadow-color fixed bottom-0 left-0 top-0 z-20 overflow-x-hidden py-4 pl-2`}
       style={{
         borderColor: accentPrimary,
       }}
@@ -190,7 +190,7 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
 
         {children}
         <IconBtnSmall
-          className={`${sidebar ? 'opacity-100' : 'opacity-0'} !absolute bottom-2 right-2`}
+          className={`${sidebar ? 'opacity-100' : 'opacity-0'} !absolute bottom-6 right-2`}
           tooltip="Hide"
           onClick={() => setSidebar(false)}
         >

@@ -16,11 +16,11 @@ import Divider from '../../Divider';
 import ArrowHeader3 from '../../ArrowHeader3';
 import BtnAuth from 'src/components/buttons/BtnAuth';
 import useMaps from 'src/hooks/useMaps';
-import CloudinaryPicture from 'src/components/CloudinaryPicture';
 import TilePicker from './TilePicker';
 import useMapFavoriteStore from 'src/stores/mapFavoriteStore';
 import { AuthContext } from 'src/contexts/AuthContext';
 import IconBtnMedium from 'src/components/buttons/IconBtnMedium';
+import MapGrid from '../map/MapGrid';
 
 const TileListModal = () => {
   const navigate = useNavigate();
@@ -46,7 +46,17 @@ const TileListModal = () => {
   } = useOutletContext() || {};
 
   return (
-    <Modal className="relative h-full">
+    <Modal
+      button={
+        <BtnRect
+          type="button"
+          ariaLabel="Select category"
+          onClick={() => navigate(-1)}
+        >
+          Select
+        </BtnRect>
+      }
+    >
       <h1>Tile Explorer</h1>
       <div className="grid w-full grid-cols-3 gap-4">
         <BtnAuth
@@ -320,49 +330,62 @@ const TileListModal = () => {
           </div>
           <Divider className="!my-0" />
           <div className="scrollbar-primary grid h-full w-full grid-cols-3 gap-4 overflow-y-auto">
-            {components?.map((component) => (
-              <button
-                key={component.id}
-                className={`hover:border-accent bg-secondary timing mb-auto flex flex-col gap-4 rounded-md border-2 border-transparent p-4 shadow-md shadow-black`}
-                onClick={() => {
-                  const componentParts = component.layers.flatMap((layer) =>
-                    layer.components.map((component) => component),
-                  );
+            {components?.map((component) => {
+              let scale = (464 / (component.width * 48)) * 0.9;
+              scale = scale > 1 ? 1 : scale;
 
-                  setTempComponent({
-                    name: component.name,
-                    id: 0,
-                    mapColStart: 1,
-                    mapRowStart: 1,
-                    width: component.width,
-                    height: component.height,
-                    subComponents: componentParts,
-                  });
-                }}
-              >
-                <div className="flex w-full items-center justify-between">
-                  <ArrowHeader3 title={component.name} />
-                  <p>{`${component.width} x ${component.height}`}</p>
-                </div>
-                <div className="flex w-full items-center justify-center">
-                  <CloudinaryPicture
-                    className="border-accent aspect-square overflow-hidden rounded border"
-                    publicId={component.picture.publicId}
+              return (
+                <button
+                  key={component.id}
+                  className={`hover:border-accent bg-secondary timing mb-auto flex flex-col gap-4 rounded-md border-2 border-transparent p-4 shadow-md shadow-black`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const componentParts = component.layers.flatMap((layer) =>
+                      layer.components.map((component) => component),
+                    );
+
+                    setTempComponent({
+                      name: component.name,
+                      id: 0,
+                      mapColStart: 1,
+                      mapRowStart: 1,
+                      width: component.width,
+                      height: component.height,
+                      subComponents: componentParts,
+                    });
+                  }}
+                >
+                  <div className="flex w-full flex-col items-start gap-2">
+                    <div className="flex w-full items-center gap-2">
+                      <ArrowHeader3 title={component.name} />
+                      {component.draft && (
+                        <p className="text-tertiary text-base">
+                          (
+                          {capitalCase(
+                            component.type + (component.draft ? ' draft' : ''),
+                          )}
+                          )
+                        </p>
+                      )}
+                      <p className="ml-auto whitespace-nowrap">{`${component.width} x ${component.height}`}</p>
+                    </div>
+                  </div>
+                  <MapGrid
+                    width={component.width}
+                    height={component.height}
+                    baseColor={component.baseColor}
+                    layers={component.layers}
+                    mapScale={scale}
+                    locations={[]}
+                    gridDisplay={false}
+                    className="pointer-events-none mx-auto"
                   />
-                </div>
-              </button>
-            ))}
+                </button>
+              );
+            })}
           </div>
         </>
       )}
-      <BtnRect
-        className="sticky bottom-0 w-full"
-        type="button"
-        ariaLabel="Select category"
-        onClick={() => navigate(-1)}
-      >
-        Select
-      </BtnRect>
     </Modal>
   );
 };

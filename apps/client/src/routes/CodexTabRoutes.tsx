@@ -126,8 +126,7 @@ const CodexTabRoutes = () => {
             </Page>
           }
         >
-          <Route path="library" element={<PictureLibraryModal />} />
-          <Route path="prompt" element={<PromptModal />} />
+          {PictureRoutes()}
           <Route path="traits" element={<KeywordLinkModal />} />
           <Route path="links" element={<ItemLinkModal />} />
           <Route path="actions" element={<ActionLinkModal />} />
@@ -140,8 +139,7 @@ const CodexTabRoutes = () => {
             </Page>
           }
         >
-          <Route path="library" element={<PictureLibraryModal />} />
-          <Route path="prompt" element={<PromptModal />} />
+          {PictureRoutes()}
           <Route path="traits" element={<KeywordLinkModal />} />
           <Route path="links" element={<ItemLinkModal />} />
           <Route path="actions" element={<ActionLinkModal />} />
@@ -164,8 +162,7 @@ const CodexTabRoutes = () => {
             </Page>
           }
         >
-          <Route path="library" element={<PictureLibraryModal />} />
-          <Route path="prompt" element={<PromptModal />} />
+          {PictureRoutes()}
         </Route>
         <Route
           path=":propertyId/update"
@@ -175,8 +172,7 @@ const CodexTabRoutes = () => {
             </Page>
           }
         >
-          <Route path="library" element={<PictureLibraryModal />} />
-          <Route path="prompt" element={<PromptModal />} />
+          {PictureRoutes()}
         </Route>
       </Route>
       <Route path="perks">
@@ -314,14 +310,16 @@ const CodexTabRoutes = () => {
         />
         <Route path=":mapId" element={<Map />} />
         <Route path=":mapId/update" element={<MapBuilder />}>
-          <Route path="save" element={<MapSaveModal />} />
+          <Route path="save" element={<MapSaveModal />}>
+            {PictureRoutes()}
+          </Route>
           <Route path="tileList" element={<TileListModal />} />
-          {PictureRoutes()}
         </Route>
         <Route path="create" element={<MapBuilder />}>
-          <Route path="save" element={<MapSaveModal />} />
+          <Route path="save" element={<MapSaveModal />}>
+            {PictureRoutes()}
+          </Route>
           <Route path="tileList" element={<TileListModal />} />
-          {PictureRoutes()}
         </Route>
       </Route>
     </Route>

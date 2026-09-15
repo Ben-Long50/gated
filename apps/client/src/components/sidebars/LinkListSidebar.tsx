@@ -44,7 +44,7 @@ const LinkListSidebar = ({
 
   return (
     <div
-      className={`timing relative flex flex-col clip-4`}
+      className={`timing relative flex flex-col`}
       onMouseEnter={(e) => {
         e.stopPropagation();
         cancel();
@@ -77,7 +77,7 @@ const LinkListSidebar = ({
         }
       </div>
       <div
-        className={`timing flex flex-col gap-4`}
+        className={`timing flex flex-col gap-4 overflow-hidden`}
         style={
           detailsOpen && sidebar ? { maxHeight: height } : { maxHeight: 0 }
         }
