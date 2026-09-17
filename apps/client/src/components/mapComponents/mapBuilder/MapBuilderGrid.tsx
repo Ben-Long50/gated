@@ -1,60 +1,35 @@
 import { FormApi } from '@tanstack/react-form';
 import { useContext } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
-import { Component, Layer } from 'src/types/map';
+import { Layer } from 'src/types/map';
 import DragScrollContainer from '../DragScrollContainer';
 import MapBuilderTile from './MapBuilderTile';
 import MapBuilderComponent from './MapBuilderComponent';
 import getOccupiedTiles from '../mapUtils/getOccupiedTiles';
 import getComponentStyle from '../mapUtils/getComponentStyle';
 import getCoords from '../mapUtils/getCoords';
+import { findConflict } from './mapBuilderUtils/findConflict';
+import useMapBuilderStore from 'src/stores/mapBuilderStore';
 
 const MapBuilderGrid = ({
   form,
   gridDisplay,
   mapScale,
   dragging,
-  findConflict,
-  activeLayerId,
-  previewLayerId,
-  activeComponentId,
-  setActiveComponentId,
-  tempComponent,
-  setTempComponent,
-  handleAddComponent,
-  handleDeleteComponent,
 }: {
   form?: FormApi;
   gridDisplay: boolean;
   mapScale: number;
   dragging?: boolean;
-  findConflict?: (component: Component) => boolean | undefined;
-  activeLayerId: number | null;
-  previewLayerId: number | null;
-  activeComponentId: number | null;
-  setActiveComponentId?: (id: number | null) => void;
-  tempComponent: Component | null;
-  setTempComponent?: (component: Component | null) => void;
-  handleAddComponent: (
-    component: Component,
-    layers: Layer[],
-    callback: (layers: Layer[]) => void,
-  ) => void;
-  handleDeleteComponent?: (
-    e: MouseEvent,
-    id: number | undefined,
-    layers: Layer[],
-    callback: (layers: Layer[]) => void,
-  ) => void;
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
 
-  const conflict =
-    tempComponent && findConflict ? findConflict(tempComponent) : false;
+  const activeLayerId = useMapBuilderStore((state) => state.activeLayerId);
+  const tempComponent = useMapBuilderStore((state) => state.tempComponent);
 
-  const tempComponentStyle = tempComponent
-    ? getComponentStyle(tempComponent, mapScale)
-    : {};
+  const conflict = tempComponent
+    ? findConflict(activeLayerId, tempComponent)
+    : false;
 
   return (
     <DragScrollContainer
@@ -92,17 +67,13 @@ const MapBuilderGrid = ({
                   row={row}
                   col={col}
                   gridDisplay={gridDisplay}
-                  tempComponent={tempComponent}
-                  setTempComponent={setTempComponent}
                   dragging={dragging}
-                  handleAddComponent={handleAddComponent}
-                  handleDeleteComponent={handleDeleteComponent}
                 />
               );
             })}
             <form.Field name="layers">
               {(field) =>
-                field.state.value.map((layer) => {
+                field.state.value.map((layer: Layer) => {
                   if (!layer.hidden) {
                     return (
                       <div
@@ -120,12 +91,7 @@ const MapBuilderGrid = ({
                               field={field}
                               component={component}
                               mapScale={mapScale}
-                              activeComponentId={activeComponentId}
-                              activeLayerId={activeLayerId}
                               layerId={layer.id}
-                              previewLayerId={previewLayerId}
-                              setActiveComponentId={setActiveComponentId}
-                              handleDeleteComponent={handleDeleteComponent}
                             />
                           );
                         })}

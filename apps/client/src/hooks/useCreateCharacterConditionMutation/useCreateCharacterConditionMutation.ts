@@ -15,8 +15,6 @@ const useCreateCharacterConditionMutation = (characterId: number) => {
     mutationFn: (
       formData: { conditionId: number; stacks: number | null }[],
     ) => {
-      console.log(formData);
-
       return createCharacterCondition(characterId, formData);
     },
 

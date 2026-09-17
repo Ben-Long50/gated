@@ -11,8 +11,6 @@ const useCharacterAddForm = (mutation: UseMutationResult<any, Error, any>) => {
     onSubmit: async ({ value }) => {
       const formData = filterFormData(value);
 
-      console.log(formData);
-
       await mutation.mutate(formData);
     },
   });

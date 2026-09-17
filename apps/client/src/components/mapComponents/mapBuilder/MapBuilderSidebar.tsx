@@ -7,53 +7,15 @@ import MapComponentList from './MapComponentList';
 import { FormApi } from '@tanstack/react-form';
 import ArrowHeader3 from 'src/components/ArrowHeader3';
 import InputField from 'src/components/formFields/InputField';
+import useMapBuilderStore from 'src/stores/mapBuilderStore';
 
-const MapBuilderSidebar = ({
-  form,
-  activeLayerId,
-  setActiveLayerId,
-  setPreviewLayerId,
-  setActiveComponentId,
-  setTempComponent,
-  handleAddLayer,
-  handleDeleteLayer,
-  handleEditLayerName,
-  handleHiddenLayer,
-  handleEditComponentName,
-  handleDeleteComponent,
-  handleLayerReorder,
-}: {
-  form: FormApi;
-  activeLayerId: number | null;
-  setActiveLayerId: (id: number) => void;
-  setPreviewLayerId: (id: number) => void;
-  setActiveComponentId: (id: number | null) => void;
-  setTempComponent: (component: Component) => void;
-  handleAddLayer: () => void;
-  handleDeleteLayer: (id: number) => void;
-  handleEditLayerName: (id: number, newName: string) => void;
-  handleHiddenLayer: (id: number) => void;
-  handleEditComponentName: (
-    layerId: number,
-    componentId: number,
-    newNamea: string,
-  ) => void;
-  handleDeleteComponent: (
-    e: MouseEvent,
-    id: number | undefined,
-    layers: Layer[],
-    callback: (layers: Layer[]) => void,
-  ) => void;
-  handleLayerReorder: (
-    oldIndex: number,
-    newIndex: number,
-    callback: (layers: Layer[]) => void,
-  ) => void;
-}) => {
+const MapBuilderSidebar = ({ form }: { form: FormApi }) => {
   const [layerSidebar, setLayerSidebar] = useState(true);
   const [sidebarMode, setSidebarMode] = useState<'layer' | 'component'>(
     'layer',
   );
+
+  const activeLayerId = useMapBuilderStore((state) => state.activeLayerId);
 
   return (
     <div
@@ -64,7 +26,7 @@ const MapBuilderSidebar = ({
       }}
     >
       <form.Subscribe selector={(state) => state.values.layers}>
-        {(layers) => {
+        {(layers: Layer[]) => {
           const activeLayer = layers.find(
             (layer) => layer.id === activeLayerId,
           );
@@ -82,7 +44,7 @@ const MapBuilderSidebar = ({
                 title={
                   sidebarMode === 'layer'
                     ? 'Layers'
-                    : `${activeLayer.name} Components`
+                    : `${activeLayer?.name} Components`
                 }
               />
             </div>
@@ -94,28 +56,9 @@ const MapBuilderSidebar = ({
         className={`${layerSidebar ? 'visible opacity-100' : 'invisible max-w-0 opacity-0'} timing flex h-full w-full max-w-[400px] flex-col gap-4`}
       >
         {sidebarMode === 'layer' ? (
-          <MapLayerList
-            form={form}
-            activeLayerId={activeLayerId}
-            setActiveLayerId={setActiveLayerId}
-            setPreviewLayerId={setPreviewLayerId}
-            setSidebarMode={setSidebarMode}
-            setTempComponent={setTempComponent}
-            handleAddLayer={handleAddLayer}
-            handleDeleteLayer={handleDeleteLayer}
-            handleEditLayerName={handleEditLayerName}
-            handleHiddenLayer={handleHiddenLayer}
-            handleLayerReorder={handleLayerReorder}
-          />
+          <MapLayerList form={form} setSidebarMode={setSidebarMode} />
         ) : (
-          <MapComponentList
-            form={form}
-            activeLayerId={activeLayerId}
-            setActiveComponentId={setActiveComponentId}
-            setSidebarMode={setSidebarMode}
-            handleEditComponentName={handleEditComponentName}
-            handleDeleteComponent={handleDeleteComponent}
-          />
+          <MapComponentList form={form} setSidebarMode={setSidebarMode} />
         )}
         <form.Field name="width">
           {(field) => (

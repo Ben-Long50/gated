@@ -14,6 +14,7 @@ import Items from 'src/components/Items';
 import AffiliationModal from 'src/components/modals/AffiliationModal';
 import Modal from 'src/components/modals/Modal';
 import ItemPage from 'src/components/ItemPage';
+import BtnRect from 'src/components/buttons/BtnRect';
 
 const CharacterMenuRoutes = () => {
   return (

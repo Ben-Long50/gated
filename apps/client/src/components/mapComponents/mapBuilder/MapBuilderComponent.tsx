@@ -1,35 +1,31 @@
 import { useDraggable } from '@dnd-kit/core';
 import { FieldApi } from '@tanstack/react-form';
-import { Component, Layer } from 'src/types/map';
+import { Component } from 'src/types/map';
 import getOccupiedTiles from '../mapUtils/getOccupiedTiles';
 import getComponentStyle from '../mapUtils/getComponentStyle';
+import useMapBuilderStore from 'src/stores/mapBuilderStore';
+import { handleDeleteComponent } from './mapBuilderUtils/handleDeleteComponent';
 
 const MapBuilderComponent = ({
   field,
   component,
   mapScale,
-  activeComponentId,
-  setActiveComponentId,
-  activeLayerId,
   layerId,
-  previewLayerId,
-  handleDeleteComponent,
 }: {
   field: FieldApi;
   component: Component;
   mapScale: number;
-  activeComponentId: number | null;
-  setActiveComponentId: (id: number | null) => void;
-  activeLayerId: number;
   layerId: number;
-  previewLayerId?: number;
-  handleDeleteComponent: (
-    e: MouseEvent,
-    id: number | undefined,
-    layers: Layer[],
-    callback: (layers: Layer[]) => void,
-  ) => void;
 }) => {
+  const activeLayerId = useMapBuilderStore((state) => state.activeLayerId);
+  const activeComponentId = useMapBuilderStore(
+    (state) => state.activeComponentId,
+  );
+  const previewLayerId = useMapBuilderStore((state) => state.previewLayerId);
+  const setActiveComponentId = useMapBuilderStore(
+    (state) => state.setActiveComponentId,
+  );
+
   const { setNodeRef, listeners, attributes, transform } = useDraggable({
     id: `layer ${layerId} component ${component.id}`,
     data: {
@@ -80,6 +76,7 @@ const MapBuilderComponent = ({
           onDoubleClick={(e) => {
             handleDeleteComponent(
               e,
+              activeLayerId,
               undefined,
               field.state.value,
               field.handleChange,

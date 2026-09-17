@@ -1,21 +1,23 @@
 import { useEffect, useRef, useState } from 'react';
-import { Component } from 'src/types/map';
 import getCoords from '../mapUtils/getCoords';
+import useMapBuilderStore from 'src/stores/mapBuilderStore';
+import { handleTileSelect } from './mapBuilderUtils/handleTileSelect';
 
 const TilePicker = ({
   pngPath,
-  tempComponent,
-  handleTileSelect,
   gridDisplay,
 }: {
   pngPath: string | null;
-  tempComponent: Component | null;
-  handleTileSelect: (row: number, col: number) => void;
   gridDisplay: boolean;
 }) => {
   const [grid, setGrid] = useState({ rows: 0, cols: 0 });
 
   const pngRef = useRef<HTMLDivElement | null>(null);
+
+  const tempComponent = useMapBuilderStore((state) => state.tempComponent);
+  const setTempComponent = useMapBuilderStore(
+    (state) => state.setTempComponent,
+  );
 
   useEffect(() => {
     if (!pngPath) return;
@@ -24,7 +26,7 @@ const TilePicker = ({
     if (!div) return;
 
     const img = new Image();
-    img.src = pngPath;
+    img.src = `/assets/tiles/${pngPath}`;
     img.onload = () => {
       const naturalW = img.width;
       const naturalH = img.height;
@@ -43,7 +45,7 @@ const TilePicker = ({
       style={{
         height: `${grid.rows * 48}px`,
         width: `${grid.cols * 48}px`,
-        backgroundImage: `url(${pngPath})`,
+        backgroundImage: `url(/assets/tiles/${pngPath})`,
         backgroundSize: 'cover',
         gridTemplateColumns: `repeat(${grid.cols}, 1fr)`,
         gridTemplateRows: `repeat(${grid.rows}, 1fr)`,
@@ -72,7 +74,13 @@ const TilePicker = ({
             className={`${gridDisplay && 'ring-1 ring-inset ring-gray-400/50'} ${selected ? 'bg-yellow-300/50 hover:bg-yellow-300/80' : 'hover:bg-gray-400/50'} size-[48px]`}
             style={{ gridRow: row, gridColumn: col }}
             onClick={() => {
-              handleTileSelect(row, col);
+              handleTileSelect(
+                row,
+                col,
+                tempComponent,
+                setTempComponent,
+                `/assets/tiles/${pngPath}`,
+              );
             }}
           />
         );

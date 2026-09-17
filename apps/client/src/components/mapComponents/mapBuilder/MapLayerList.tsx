@@ -13,40 +13,23 @@ import { useState } from 'react';
 import { capitalCase } from 'change-case';
 import BtnRect from '../../buttons/BtnRect';
 import InputField from '../../formFields/InputField';
-import ArrowHeader4 from '../../ArrowHeader4';
 import { DndContext, useDraggable, useDroppable } from '@dnd-kit/core';
 import BtnAuth from 'src/components/buttons/BtnAuth';
 import { FormApi } from '@tanstack/react-form';
 import IconBtnSmall from 'src/components/buttons/IconBtnSmall';
+import useMapBuilderStore from 'src/stores/mapBuilderStore';
+import { handleLayerReorder } from './mapBuilderUtils/handleLayerReorder';
+import { handleAddLayer } from './mapBuilderUtils/handleAddLayer';
+import { handleEditLayerName } from './mapBuilderUtils/handleEditLayerName';
+import { handleHiddenLayer } from './mapBuilderUtils/handleHiddenLayer';
+import { handleDeleteLayer } from './mapBuilderUtils/handleDeleteLayer';
 
 const MapLayerList = ({
   form,
-  activeLayerId,
-  setActiveLayerId,
-  setPreviewLayerId,
   setSidebarMode,
-  setTempComponent,
-  handleAddLayer,
-  handleDeleteLayer,
-  handleEditLayerName,
-  handleHiddenLayer,
-  handleLayerReorder,
 }: {
   form: FormApi;
-  activeLayerId: number;
-  setActiveLayerId: (id: number) => void;
-  setPreviewLayerId: (id: number) => void;
   setSidebarMode: (mode: 'layer' | 'component') => void;
-  setTempComponent: (component: Component | null) => void;
-  handleAddLayer: () => void;
-  handleDeleteLayer: (id: number) => void;
-  handleEditLayerName: (id: number, newName: string) => void;
-  handleHiddenLayer: (id: number) => void;
-  handleLayerReorder: (
-    oldIndex: number,
-    newIndex: number,
-    callback: (layers: Layer[]) => void,
-  ) => void;
 }) => {
   const [indices, setIndices] = useState<{
     old: number | null;
@@ -54,6 +37,14 @@ const MapLayerList = ({
   }>({ old: null, new: null });
   const [editId, setEditId] = useState<number | null>(null);
   const [newLayerName, setNewLayerName] = useState<string | null>(null);
+
+  const activeLayerId = useMapBuilderStore((state) => state.activeLayerId);
+  const setActiveLayerId = useMapBuilderStore(
+    (state) => state.setActiveLayerId,
+  );
+  const setTempComponent = useMapBuilderStore(
+    (state) => state.setTempComponent,
+  );
 
   const handleDragStart = (e) => {
     const { active } = e;
@@ -75,6 +66,7 @@ const MapLayerList = ({
     const { over, active } = e;
 
     handleLayerReorder(
+      form,
       active.data.current.index,
       over.data.current.index,
       field.handleChange,
@@ -84,7 +76,11 @@ const MapLayerList = ({
 
   return (
     <>
-      <BtnRect type="button" ariaLabel="Add layer" onClick={handleAddLayer}>
+      <BtnRect
+        type="button"
+        ariaLabel="Add layer"
+        onClick={() => handleAddLayer(form, setActiveLayerId)}
+      >
         Add Layer
       </BtnRect>
       {activeLayerId && (
@@ -105,11 +101,12 @@ const MapLayerList = ({
             onDragEnd={(e) => handleDragEnd(e, field)}
           >
             <div className="scrollbar-primary-2 flex h-full flex-col gap-2">
-              {field.state.value.map((layer, index) => {
+              {field.state.value.map((layer: Layer, index: number) => {
                 const active = layer.id === activeLayerId;
 
                 return (
                   <LayerListItem
+                    form={form}
                     key={index}
                     index={index}
                     indices={indices}
@@ -119,12 +116,7 @@ const MapLayerList = ({
                     setEditId={setEditId}
                     newLayerName={newLayerName}
                     setNewLayerName={setNewLayerName}
-                    setActiveLayerId={setActiveLayerId}
-                    setPreviewLayerId={setPreviewLayerId}
                     setSidebarMode={setSidebarMode}
-                    handleDeleteLayer={handleDeleteLayer}
-                    handleEditLayerName={handleEditLayerName}
-                    handleHiddenLayer={handleHiddenLayer}
                   />
                 );
               })}
@@ -137,6 +129,7 @@ const MapLayerList = ({
 };
 
 const LayerListItem = ({
+  form,
   layer,
   index,
   indices,
@@ -145,13 +138,9 @@ const LayerListItem = ({
   setEditId,
   newLayerName,
   setNewLayerName,
-  setActiveLayerId,
-  setPreviewLayerId,
   setSidebarMode,
-  handleDeleteLayer,
-  handleEditLayerName,
-  handleHiddenLayer,
 }: {
+  form: FormApi;
   layer: Layer;
   index: number;
   indices: { old: number | null; new: number | null };
@@ -160,12 +149,7 @@ const LayerListItem = ({
   setEditId: (id: number | null) => void;
   newLayerName: string | null;
   setNewLayerName: (newName: string | null) => void;
-  setActiveLayerId: (id: number) => void;
-  setPreviewLayerId: (id: number) => void;
   setSidebarMode: (mode: 'layer' | 'component') => void;
-  handleDeleteLayer: (id: number) => void;
-  handleEditLayerName: (id: number, newName: string) => void;
-  handleHiddenLayer: (id: number) => void;
 }) => {
   const {
     attributes,
@@ -178,10 +162,17 @@ const LayerListItem = ({
     disabled: !!editId,
   });
 
-  const { isOver, setNodeRef: droppableNodeRef } = useDroppable({
+  const { setNodeRef: droppableNodeRef } = useDroppable({
     id: layer.id,
     data: { index },
   });
+
+  const setActiveLayerId = useMapBuilderStore(
+    (state) => state.setActiveLayerId,
+  );
+  const setPreviewLayerId = useMapBuilderStore(
+    (state) => state.setPreviewLayerId,
+  );
 
   return (
     <div ref={droppableNodeRef}>
@@ -223,7 +214,7 @@ const LayerListItem = ({
               <IconBtnSmall
                 onClick={() => {
                   if (typeof newLayerName === 'string') {
-                    handleEditLayerName(layer.id, newLayerName);
+                    handleEditLayerName(form, layer.id, newLayerName);
                   }
                   setNewLayerName(null);
                   setEditId(null);
@@ -242,7 +233,7 @@ const LayerListItem = ({
               </p>
               <IconBtnSmall
                 onClick={() => {
-                  handleHiddenLayer(layer.id);
+                  handleHiddenLayer(form, layer.id);
                 }}
                 tooltip={layer.hidden ? 'Show Layer' : 'Hide Layer'}
               >
@@ -264,7 +255,7 @@ const LayerListItem = ({
                 <Icon path={mdiNoteEditOutline} />
               </IconBtnSmall>
               <IconBtnSmall
-                onClick={() => handleDeleteLayer(layer.id)}
+                onClick={() => handleDeleteLayer(form, layer.id)}
                 tooltip="Delete"
               >
                 <Icon path={mdiTrashCanOutline} />

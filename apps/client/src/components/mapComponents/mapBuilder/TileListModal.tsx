@@ -1,8 +1,8 @@
 import { useContext, useState } from 'react';
 import Modal from '../../modals/Modal';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import BtnRect from '../../buttons/BtnRect';
-import { capitalCase } from 'change-case';
+import { capitalCase, sentenceCase } from 'change-case';
 import Icon from '@mdi/react';
 import {
   mdiArrowULeftBottom,
@@ -21,6 +21,8 @@ import useMapFavoriteStore from 'src/stores/mapFavoriteStore';
 import { AuthContext } from 'src/contexts/AuthContext';
 import IconBtnMedium from 'src/components/buttons/IconBtnMedium';
 import MapGrid from '../map/MapGrid';
+import useMapBuilderStore from 'src/stores/mapBuilderStore';
+import { Component } from 'src/types/map';
 
 const TileListModal = () => {
   const navigate = useNavigate();
@@ -31,19 +33,44 @@ const TileListModal = () => {
   const mapIds = user.maps.map((map) => map.id);
   const { maps: components } = useMaps(mapIds);
 
-  const { favorites, addFavorite, removeFavorite, hasPath, tab, setTab } =
+  const { favorites, addFavorite, removeFavorite, hasPath } =
     useMapFavoriteStore();
 
-  const {
-    currentFolder,
-    path,
-    setPath,
-    isPng,
-    pngPath,
-    handleTileSelect,
-    tempComponent,
-    setTempComponent,
-  } = useOutletContext() || {};
+  const tab = useMapBuilderStore((state) => state.tab);
+  const manifest = useMapBuilderStore((state) => state.manifest);
+  const setTab = useMapBuilderStore((state) => state.setTab);
+  const path = useMapBuilderStore((state) => state.path);
+  const pushPath = useMapBuilderStore((state) => state.pushPath);
+  const popPath = useMapBuilderStore((state) => state.popPath);
+
+  const tempComponent = useMapBuilderStore((state) => state.tempComponent);
+  const setTempComponent = useMapBuilderStore(
+    (state) => state.setTempComponent,
+  );
+
+  const isPng =
+    path.length > 0 ? path[path.length - 1].endsWith('.png') : false;
+  const pngPath = isPng ? path.join('/') : null;
+
+  const getContents = (manifest: object, path: string[]) => {
+    if (path.length === 0) {
+      if (typeof manifest === 'object') {
+        const folders = Object.fromEntries(
+          Object.entries(manifest).filter(([key, _]) => key !== 'files'),
+        );
+        const files = manifest['files'] ?? [];
+        return { folders, files };
+      }
+      return {};
+    }
+
+    const p = path[0];
+    const newManifest = manifest[p];
+
+    return getContents(newManifest, path.slice(1));
+  };
+
+  const { folders, files } = getContents(manifest, path);
 
   return (
     <Modal
@@ -63,7 +90,6 @@ const TileListModal = () => {
           active={tab === 'favorites'}
           onClick={() => {
             setTab('favorites');
-            setPath(['/assets', 'favorites']);
           }}
         >
           Favorites
@@ -72,7 +98,6 @@ const TileListModal = () => {
           active={tab === 'tiles'}
           onClick={() => {
             setTab('tiles');
-            setPath(['/assets', 'tiles']);
           }}
         >
           Tiles
@@ -81,7 +106,6 @@ const TileListModal = () => {
           active={tab === 'components'}
           onClick={() => {
             setTab('components');
-            setPath(['/assets', 'components']);
           }}
         >
           Components
@@ -119,12 +143,7 @@ const TileListModal = () => {
                     </IconBtnMedium>
                   )}
                 </div>
-                <TilePicker
-                  pngPath={pngPath}
-                  tempComponent={tempComponent}
-                  handleTileSelect={handleTileSelect}
-                  gridDisplay={gridDisplay}
-                />
+                <TilePicker pngPath={pngPath} gridDisplay={gridDisplay} />
               </>
             ) : (
               <div className="col-span-2 grid w-full grid-cols-3 gap-4">
@@ -142,7 +161,6 @@ const TileListModal = () => {
                         imageRendering: 'pixelated',
                         backgroundRepeat: 'no-repeat',
                       }}
-                      onClick={() => setPath([...splitFile])}
                     >
                       <button
                         className="group absolute right-0 top-0 p-2"
@@ -168,20 +186,15 @@ const TileListModal = () => {
       {tab === 'tiles' && (
         <>
           <div className="flex w-full flex-col items-center gap-4 sm:flex-row">
-            <IconBtnMedium
-              onClick={() => {
-                if (path.length === 2) {
-                  return;
-                }
-
-                setPath((prev) => prev.slice(0, -1));
-              }}
-              tooltip="Back"
-            >
+            <IconBtnMedium onClick={() => popPath()} tooltip="Back">
               <Icon path={mdiArrowULeftBottom} />
             </IconBtnMedium>
-            {path.slice(1).map((part: string, index: number) => (
-              <ArrowHeader3 key={index} title={capitalCase(part)} />
+            <p>All tiles</p>
+            {path.map((p) => (
+              <>
+                <p>-</p>
+                <p>{sentenceCase(p)}</p>
+              </>
             ))}
             {tempComponent && (
               <IconBtnMedium
@@ -197,7 +210,6 @@ const TileListModal = () => {
           <Divider className="!my-0" />
         </>
       )}
-
       {tab === 'tiles' && (
         <div className="scrollbar-primary flex h-full w-full items-start justify-start">
           {isPng ? (
@@ -223,89 +235,78 @@ const TileListModal = () => {
                   </IconBtnMedium>
                 )}
               </div>
-              <TilePicker
-                pngPath={pngPath}
-                tempComponent={tempComponent}
-                handleTileSelect={handleTileSelect}
-                gridDisplay={gridDisplay}
-              />
+              <TilePicker pngPath={pngPath} gridDisplay={gridDisplay} />
             </>
           ) : (
             <div className="scrollbar-primary mb-auto grid w-full grid-cols-1 gap-4 overflow-y-auto rounded pb-2 sm:grid-cols-2">
-              {Object.entries(currentFolder).map(([key, value], index) =>
-                key !== 'files' ? (
-                  <button
-                    key={index}
-                    className="bg-tertiary group flex w-full items-center gap-4 rounded p-2 shadow-md shadow-black"
-                    onClick={() => {
-                      setPath((prev) => [...prev, key]);
-                    }}
-                  >
-                    <Icon
-                      path={mdiFolderOutline}
-                      className="text-secondary group-hover:text-accent timing size-8"
-                    />
-                    <h4 className="group-hover:text-accent timing">
-                      {capitalCase(key)}
-                    </h4>
-                  </button>
-                ) : (
-                  value.length > 0 && (
-                    <div className="col-span-2 grid grid-cols-3 gap-4">
-                      {value.map((file: string, index: number) => {
-                        const fullPath = path.join('/');
+              {Object.entries(folders).map(([key, value], index) => (
+                <button
+                  key={index}
+                  className="bg-tertiary group flex w-full items-center gap-4 rounded p-2 shadow-md shadow-black"
+                  onClick={() => pushPath(key)}
+                >
+                  <Icon
+                    path={mdiFolderOutline}
+                    className="text-secondary group-hover:text-accent timing size-8"
+                  />
+                  <h4 className="group-hover:text-accent timing">
+                    {capitalCase(key)}
+                  </h4>
+                </button>
+              ))}
+              {files.length > 0 && (
+                <div className="col-span-2 grid grid-cols-3 gap-4">
+                  {files.map((file: string, index: number) => {
+                    const fullPath = path.join('/');
 
-                        const filePath = `${fullPath}/${file}`;
-                        return (
-                          <div
-                            key={index}
-                            className={`hover:border-accent relative aspect-square size-full rounded border-2 border-gray-500 shadow-md shadow-black`}
-                            style={{
-                              backgroundImage: `url(${filePath})`,
-                              backgroundSize: 'contain',
-                              backgroundPosition: 'center',
-                              imageRendering: 'pixelated',
-                              backgroundRepeat: 'no-repeat',
+                    const filePath = `/assets/tiles/${fullPath}/${file}`;
+
+                    return (
+                      <div
+                        key={index}
+                        className={`hover:border-accent relative aspect-square size-full rounded border-2 border-gray-500 shadow-md shadow-black`}
+                        style={{
+                          backgroundImage: `url(${filePath})`,
+                          backgroundSize: 'contain',
+                          backgroundPosition: 'center',
+                          imageRendering: 'pixelated',
+                          backgroundRepeat: 'no-repeat',
+                        }}
+                        onClick={() => pushPath(file)}
+                      >
+                        {!hasPath(filePath) ? (
+                          <button
+                            className="group absolute right-0 top-0 p-2"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              addFavorite(filePath);
                             }}
-                            onClick={() =>
-                              setPath((prev) => [...prev, `${file}`])
-                            }
                           >
-                            {!hasPath(filePath) ? (
-                              <button
-                                className="group absolute right-0 top-0 p-2"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  addFavorite(filePath);
-                                }}
-                              >
-                                <Icon
-                                  className="text-tertiary group-hover:text-primary timing"
-                                  path={mdiStarOutline}
-                                  size={1.2}
-                                />
-                              </button>
-                            ) : (
-                              <button
-                                className="group absolute right-0 top-0 p-2"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  removeFavorite(filePath);
-                                }}
-                              >
-                                <Icon
-                                  className="group-hover:text-tertiary timing text-yellow-400"
-                                  path={mdiStar}
-                                  size={1.2}
-                                />
-                              </button>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )
-                ),
+                            <Icon
+                              className="text-tertiary group-hover:text-primary timing"
+                              path={mdiStarOutline}
+                              size={1.2}
+                            />
+                          </button>
+                        ) : (
+                          <button
+                            className="group absolute right-0 top-0 p-2"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              removeFavorite(filePath);
+                            }}
+                          >
+                            <Icon
+                              className="group-hover:text-tertiary timing text-yellow-400"
+                              path={mdiStar}
+                              size={1.2}
+                            />
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               )}
             </div>
           )}

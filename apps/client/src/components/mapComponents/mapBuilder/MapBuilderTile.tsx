@@ -2,7 +2,9 @@ import { useDroppable } from '@dnd-kit/core';
 import { FormApi } from '@tanstack/react-form';
 import { useContext } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
-import { Component, Layer } from 'src/types/map';
+import { handleAddComponent } from './mapBuilderUtils/handleAddComponent';
+import { handleDeleteComponent } from './mapBuilderUtils/handleDeleteComponent';
+import useMapBuilderStore from 'src/stores/mapBuilderStore';
 
 const MapBuilderTile = ({
   form,
@@ -11,11 +13,7 @@ const MapBuilderTile = ({
   row,
   col,
   gridDisplay,
-  tempComponent,
-  setTempComponent,
   dragging,
-  handleAddComponent,
-  handleDeleteComponent,
 }: {
   form: FormApi;
   width: number;
@@ -23,22 +21,15 @@ const MapBuilderTile = ({
   row: number;
   col: number;
   gridDisplay: boolean;
-  tempComponent: Component;
-  setTempComponent: (component: Component | null) => void;
   dragging: boolean;
-  handleAddComponent: (
-    component: Component,
-    layers: Layer[],
-    callback: (layers: Layer[]) => void,
-  ) => void;
-  handleDeleteComponent: (
-    e: MouseEvent,
-    id: number | undefined,
-    layers: Layer[],
-    callback: (layers: Layer[]) => void,
-  ) => void;
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
+
+  const activeLayerId = useMapBuilderStore((state) => state.activeLayerId);
+  const tempComponent = useMapBuilderStore((state) => state.tempComponent);
+  const setTempComponent = useMapBuilderStore(
+    (state) => state.setTempComponent,
+  );
 
   const { setNodeRef } = useDroppable({
     id: `row ${row}, col ${col}`,
@@ -90,6 +81,7 @@ const MapBuilderTile = ({
 
             if (e.buttons === 1 && !dragging) {
               handleAddComponent(
+                activeLayerId,
                 newTempComponent,
                 field.state.value,
                 field.handleChange,
@@ -99,6 +91,7 @@ const MapBuilderTile = ({
           }}
           onMouseDown={() => {
             handleAddComponent(
+              activeLayerId,
               tempComponent,
               field.state.value,
               field.handleChange,
@@ -107,6 +100,7 @@ const MapBuilderTile = ({
           onDoubleClick={(e) => {
             handleDeleteComponent(
               e,
+              activeLayerId,
               undefined,
               field.state.value,
               field.handleChange,
