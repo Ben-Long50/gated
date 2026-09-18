@@ -77,6 +77,7 @@ const MapLayerList = ({
   return (
     <>
       <BtnRect
+        className="whitespace-nowrap"
         type="button"
         ariaLabel="Add layer"
         onClick={() => handleAddLayer(form, setActiveLayerId)}
@@ -85,6 +86,7 @@ const MapLayerList = ({
       </BtnRect>
       {activeLayerId && (
         <BtnAuth
+          className="whitespace-nowrap"
           onClick={() => {
             setActiveLayerId(null);
             setTempComponent(null);
@@ -180,7 +182,7 @@ const LayerListItem = ({
         indices.new === index &&
         indices.new < indices.old && <hr className="border-accent border-2" />}
       <div
-        className="flex w-full items-center"
+        className="flex w-full flex-nowrap items-center"
         style={
           transform
             ? {
@@ -199,7 +201,7 @@ const LayerListItem = ({
           <Icon className="text-primary" path={mdiDrag} size={1} />
         </button>
         <div
-          className={`text-secondary layers-center flex w-full cursor-pointer select-none items-center gap-2`}
+          className={`text-secondary layers-center flex w-full cursor-pointer select-none flex-nowrap items-center gap-2`}
           onClick={() => setActiveLayerId(layer.id)}
           onMouseEnter={() => setPreviewLayerId(layer.id)}
           onMouseLeave={() => setPreviewLayerId(null)}

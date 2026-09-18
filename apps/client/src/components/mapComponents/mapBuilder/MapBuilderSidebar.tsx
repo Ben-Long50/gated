@@ -8,6 +8,7 @@ import { FormApi } from '@tanstack/react-form';
 import ArrowHeader3 from 'src/components/ArrowHeader3';
 import InputField from 'src/components/formFields/InputField';
 import useMapBuilderStore from 'src/stores/mapBuilderStore';
+import Sidebar from 'src/components/sidebars/Sidebar';
 
 const MapBuilderSidebar = ({ form }: { form: FormApi }) => {
   const [layerSidebar, setLayerSidebar] = useState(true);
@@ -18,13 +19,7 @@ const MapBuilderSidebar = ({ form }: { form: FormApi }) => {
   const activeLayerId = useMapBuilderStore((state) => state.activeLayerId);
 
   return (
-    <div
-      className={`${layerSidebar ? 'w-96' : 'w-[72px]'} scrollbar-primary-2 timing bg-base shadow-color fixed bottom-0 right-0 top-0 z-20 my-4 mr-2 grid grid-rows-[auto,1fr] gap-4 overflow-x-hidden rounded-md p-3 shadow-md`}
-      onMouseEnter={() => setLayerSidebar(true)}
-      onMouseLeave={() => {
-        setLayerSidebar(false);
-      }}
-    >
+    <Sidebar position="right" open={layerSidebar} setOpen={setLayerSidebar}>
       <form.Subscribe selector={(state) => state.values.layers}>
         {(layers: Layer[]) => {
           const activeLayer = layers.find(
@@ -53,7 +48,7 @@ const MapBuilderSidebar = ({ form }: { form: FormApi }) => {
       </form.Subscribe>
 
       <div
-        className={`${layerSidebar ? 'visible opacity-100' : 'invisible max-w-0 opacity-0'} timing flex h-full w-full max-w-[400px] flex-col gap-4`}
+        className={`${layerSidebar ? 'visible opacity-100' : 'invisible max-w-0 opacity-0'} timing mb-11 flex h-full w-full max-w-[400px] flex-col gap-4`}
       >
         {sidebarMode === 'layer' ? (
           <MapLayerList form={form} setSidebarMode={setSidebarMode} />
@@ -81,7 +76,7 @@ const MapBuilderSidebar = ({ form }: { form: FormApi }) => {
           )}
         </form.Field>
       </div>
-    </div>
+    </Sidebar>
   );
 };
 

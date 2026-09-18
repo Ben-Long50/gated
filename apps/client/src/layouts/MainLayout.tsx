@@ -14,11 +14,13 @@ import DieIcon from 'src/components/icons/DieIcon';
 import CharacterLinks from 'src/components/sidebars/CharacterLinks';
 import { ToastContainer } from 'react-toastify';
 import MapLinks from 'src/components/sidebars/MapLinks';
+import ActiveCampaignLinks from 'src/components/sidebars/ActiveCampaignLinks';
 
 const MainLayout = () => {
   const { theme, accentPrimary } = useContext(ThemeContext);
-  const { rolls } = useContext(CampaignContext);
+  const { rolls, activeCampaigns } = useContext(CampaignContext);
   const { mobile } = useContext(LayoutContext);
+
   const { pathname } = useLocation();
   const { encounterId, characterId } = useParams();
   const navigate = useNavigate();
@@ -45,7 +47,8 @@ const MainLayout = () => {
       }
     >
       {!encounterId && (
-        <Sidebar>
+        <Sidebar position="left">
+          {activeCampaigns.length > 0 && <ActiveCampaignLinks />}
           {pathname.startsWith('/glam/codex') && <CodexLinks />}
           {pathname.startsWith('/glam/characters') ? (
             characterId ? (
