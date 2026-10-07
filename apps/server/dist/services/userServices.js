@@ -9,6 +9,7 @@ export const userInclude = {
         select: {
             id: true,
             playerCharacter: true,
+            campaignId: true,
             characterInventory: {
                 include: {
                     _count: {

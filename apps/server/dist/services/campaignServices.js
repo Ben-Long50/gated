@@ -14,7 +14,7 @@ import { getIO } from '../sockets/socket.js';
 import { calculateRoll } from '../utils/rollUtilities.js';
 import constructCalendar from '../utils/constructCalendar.js';
 import { Attributes } from '../validation/fieldSchemas.js';
-import { characterInclude } from './characterServices.js';
+import characterServices, { characterInclude } from './characterServices.js';
 import { combineAttributeTrees } from '../utils/combineAttributeTrees.js';
 const campaignInclude = {
     sessions: { orderBy: { sessionNumber: 'desc' } },
@@ -321,18 +321,47 @@ const campaignServices = {
         });
         return history;
     },
-    joinCampaign: async (campaignId, userId) => {
-        const campaign = await prisma.campaign.update({
-            where: {
-                id: campaignId,
-            },
-            data: {
-                pendingPlayers: { disconnect: { id: userId } },
-                players: { connect: { id: userId } },
-            },
-            include: campaignInclude,
+    joinCampaign: async (campaignId, userId, characterId) => {
+        const data = prisma.$transaction(async (tx) => {
+            const c = await tx.campaign.findUnique({
+                where: { id: campaignId },
+                select: {
+                    characters: {
+                        where: { playerCharacter: true },
+                        select: { userId: true },
+                    },
+                },
+            });
+            if (c === null || c === void 0 ? void 0 : c.characters.some((character) => character.userId === userId)) {
+                throw new Error('You already have a player character in this campaign');
+            }
+            const character = await tx.character.findUnique({
+                where: { id: characterId },
+                select: { userId: true, campaignId: true },
+            });
+            if (character === null || character === void 0 ? void 0 : character.campaignId) {
+                throw new Error('This character already belongs to a campaign');
+            }
+            const newCharacter = (character === null || character === void 0 ? void 0 : character.userId) === null
+                ? await characterServices.createTemplateCharacter(userId, characterId, campaignId, undefined, tx)
+                : await tx.character.update({
+                    where: { id: characterId },
+                    data: { campaignId },
+                    include: characterInclude,
+                });
+            const campaign = await tx.campaign.update({
+                where: {
+                    id: campaignId,
+                },
+                data: {
+                    pendingPlayers: { disconnect: { id: userId } },
+                    players: { connect: { id: userId } },
+                },
+                include: campaignInclude,
+            });
+            return { campaign, character: newCharacter };
         });
-        return campaign;
+        return data;
     },
     rejectCampaign: async (campaignId, userId) => {
         const campaign = await prisma.campaign.update({

@@ -6,7 +6,7 @@ import constructCalendar from '../utils/constructCalendar.js';
 import { CampaignInput } from '../validation/campaignSchema.js';
 import { EventInput } from '../validation/eventSchema.js';
 import { Attributes, Date, Time } from '../validation/fieldSchemas.js';
-import { characterInclude } from './characterServices.js';
+import characterServices, { characterInclude } from './characterServices.js';
 import { combineAttributeTrees } from '../utils/combineAttributeTrees.js';
 
 const campaignInclude = {
@@ -431,19 +431,65 @@ const campaignServices = {
     return history;
   },
 
-  joinCampaign: async (campaignId: number, userId: number) => {
-    const campaign = await prisma.campaign.update({
-      where: {
-        id: campaignId,
-      },
-      data: {
-        pendingPlayers: { disconnect: { id: userId } },
-        players: { connect: { id: userId } },
-      },
-      include: campaignInclude,
+  joinCampaign: async (
+    campaignId: number,
+    userId: number,
+    characterId: number,
+  ) => {
+    const data = prisma.$transaction(async (tx) => {
+      const c = await tx.campaign.findUnique({
+        where: { id: campaignId },
+        select: {
+          characters: {
+            where: { playerCharacter: true },
+            select: { userId: true },
+          },
+        },
+      });
+
+      if (c?.characters.some((character) => character.userId === userId)) {
+        throw new Error('You already have a player character in this campaign');
+      }
+
+      const character = await tx.character.findUnique({
+        where: { id: characterId },
+        select: { userId: true, campaignId: true },
+      });
+
+      if (character?.campaignId) {
+        throw new Error('This character already belongs to a campaign');
+      }
+
+      const newCharacter =
+        character?.userId === null
+          ? await characterServices.createTemplateCharacter(
+              userId,
+              characterId,
+              campaignId,
+              undefined,
+              tx,
+            )
+          : await tx.character.update({
+              where: { id: characterId },
+              data: { campaignId },
+              include: characterInclude,
+            });
+
+      const campaign = await tx.campaign.update({
+        where: {
+          id: campaignId,
+        },
+        data: {
+          pendingPlayers: { disconnect: { id: userId } },
+          players: { connect: { id: userId } },
+        },
+        include: campaignInclude,
+      });
+
+      return { campaign, character: newCharacter };
     });
 
-    return campaign;
+    return data;
   },
 
   rejectCampaign: async (campaignId: number, userId: number) => {

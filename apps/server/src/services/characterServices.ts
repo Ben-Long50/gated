@@ -115,6 +115,7 @@ const characterServices = {
       },
       select: {
         id: true,
+        playerCharacter: true,
       },
     });
 
@@ -318,8 +319,9 @@ const characterServices = {
     characterId: number,
     campaignId?: number,
     gangId?: number,
+    tx?: Prisma.TransactionClient,
   ) => {
-    const character = await prisma.$transaction(async (tx) => {
+    const create = async (tx: Prisma.TransactionClient) => {
       const templateCharacter = await tx.character.findUnique({
         where: { id: characterId },
         select: characterSelectForCopy,
@@ -410,9 +412,9 @@ const characterServices = {
       }
 
       return completeCharacter;
-    });
+    };
 
-    return character;
+    return tx ? create(tx) : prisma.$transaction(create);
   },
 
   addToInventory: async (
@@ -676,6 +678,8 @@ const characterServices = {
       },
       select: {
         affiliations: { select: { id: true } },
+        campaignId: true,
+        gangId: true,
       },
     });
 

@@ -9,6 +9,8 @@ import {
 import { getIO } from '../sockets/socket.js';
 import handleControllerError from './handleControllerError.js';
 import prisma from '../config/database.js';
+import campaignServices from '../services/campaignServices.js';
+import gangServices from '../services/gangServices.js';
 
 const characterController = {
   getSocialCharacters: async (_: Request, res: Response) => {
@@ -435,6 +437,8 @@ const characterController = {
 
   deleteCharacter: async (req: Request, res: Response) => {
     try {
+      const io = getIO();
+
       if (!req.user) {
         throw new Error('Could not find authenticated user');
       }
@@ -443,9 +447,28 @@ const characterController = {
         Number(req.params.characterId),
       );
 
-      res
-        .status(200)
-        .json({ character, message: `Successfully deleted ${character.name}` });
+      const campaign = character.campaignId
+        ? await campaignServices.getCampaignById(character.campaignId)
+        : null;
+
+      const gang = character.gangId
+        ? await gangServices.getGangById(character.gangId)
+        : null;
+
+      if (campaign) {
+        io.to(`campaign ${campaign.id}`).emit('updateCampaign', campaign);
+      }
+
+      if (campaign && gang) {
+        io.to(`campaign ${campaign.id}`).emit('updateGang', gang);
+      }
+
+      res.status(200).json({
+        character,
+        campaign,
+        gang,
+        message: `Successfully deleted ${character.name}`,
+      });
     } catch (error: any) {
       handleControllerError(res, error);
     }

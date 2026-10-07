@@ -210,6 +210,8 @@ const campaignController = {
 
   joinCampaign: async (req: Request, res: Response) => {
     try {
+      const io = getIO();
+
       if (!req.user) {
         res
           .status(401)
@@ -217,14 +219,27 @@ const campaignController = {
         return;
       }
 
-      const campaign = await campaignServices.joinCampaign(
+      const { campaign, character } = await campaignServices.joinCampaign(
         Number(req.params.campaignId),
         req.user.id,
+        req.body.characterId,
       );
 
-      res
-        .status(200)
-        .json({ campaign, message: `Successfully joined ${campaign.name}` });
+      io.to(`campaign ${req.params.campaignId}`).emit(
+        'updateCampaign',
+        campaign,
+      );
+
+      io.to(`campaign ${req.params.campaignId}`).emit(
+        'updateCharacter',
+        character,
+      );
+
+      res.status(200).json({
+        campaign,
+        character,
+        message: `Successfully joined ${campaign.name}`,
+      });
     } catch (error: any) {
       handleControllerError(res, error);
     }

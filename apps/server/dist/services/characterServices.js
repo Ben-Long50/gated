@@ -111,6 +111,7 @@ const characterServices = {
             },
             select: {
                 id: true,
+                playerCharacter: true,
             },
         });
         return characters;
@@ -248,8 +249,8 @@ const characterServices = {
         const newCharacter = await characterServices.getCharacterById(character.id);
         return newCharacter;
     },
-    createTemplateCharacter: async (userId, characterId, campaignId, gangId) => {
-        const character = await prisma.$transaction(async (tx) => {
+    createTemplateCharacter: async (userId, characterId, campaignId, gangId, tx) => {
+        const create = async (tx) => {
             var _a, _b, _c;
             const templateCharacter = await tx.character.findUnique({
                 where: { id: characterId },
@@ -303,8 +304,8 @@ const characterServices = {
                 throw new Error('Failed to find copied template character');
             }
             return completeCharacter;
-        });
-        return character;
+        };
+        return tx ? create(tx) : prisma.$transaction(create);
     },
     addToInventory: async (characterId, inventoryId, tx) => {
         const client = tx !== null && tx !== void 0 ? tx : prisma;
@@ -508,6 +509,8 @@ const characterServices = {
             },
             select: {
                 affiliations: { select: { id: true } },
+                campaignId: true,
+                gangId: true,
             },
         });
         if (!character) {
