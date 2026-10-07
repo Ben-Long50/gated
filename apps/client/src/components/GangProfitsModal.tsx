@@ -1,5 +1,4 @@
 import { useParams } from 'react-router-dom';
-import Modal from './modals/Modal';
 import useGang from 'src/hooks/useGang';
 import ArrowHeader2 from './ArrowHeader2';
 import Divider from './Divider';
@@ -46,7 +45,7 @@ const GangProfitsModal = () => {
     });
 
   return (
-    <Modal>
+    <>
       <h1>Distribute Gang Profits</h1>
       <div className="flex w-full items-center justify-between gap-8">
         <ArrowHeader2 title="Gang Profits" />
@@ -174,7 +173,7 @@ const GangProfitsModal = () => {
           ))}
         </div>
       </div>
-    </Modal>
+    </>
   );
 };
 

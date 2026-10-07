@@ -19,6 +19,7 @@ import { AuthContext } from 'src/contexts/AuthContext';
 import useStandardLibraryQuery from 'src/hooks/useStandardLibraryQuery/useStandardLibraryQuery';
 import useGenerateStandardPictureMutation from 'src/hooks/useGenerateStandardPictureMutation/useGenerateStandardPictureMutation';
 import { useNavigateWithQuery } from 'src/hooks/useNavigateWithQuery';
+import useParts from 'src/hooks/useParts';
 
 const PictureField = ({
   form,
@@ -31,8 +32,7 @@ const PictureField = ({
   const { accentPrimary } = useContext(ThemeContext);
   const { mobile } = useContext(LayoutContext);
   const navigate = useNavigateWithQuery();
-  const location = useLocation();
-  const parts = location.pathname.split('/');
+  const { parts } = useParts();
 
   const { data: standardLibrary } = useStandardLibraryQuery();
 
@@ -158,7 +158,7 @@ const PictureField = ({
           </promptForm.Subscribe>
         </div>
         <div className="flex flex-col gap-4">
-          <BtnAuth className="group" onClick={() => navigate('library')}>
+          <BtnAuth className="group" onClick={() => navigate('modal/library')}>
             Picture Library
           </BtnAuth>
           <promptForm.Subscribe selector={(state) => state.values}>
@@ -172,7 +172,7 @@ const PictureField = ({
                   <BtnAuth
                     className="group"
                     onClick={() => {
-                      navigate('prompt');
+                      navigate('modal/prompt');
                     }}
                   >
                     Set Prompt Info
@@ -199,7 +199,7 @@ const PictureField = ({
                   className="group"
                   ariaLabel="Generate picture"
                   onClick={() => {
-                    navigate('prompt');
+                    navigate('modal/prompt');
                   }}
                 >
                   Set Prompt Info
@@ -209,9 +209,10 @@ const PictureField = ({
           </promptForm.Subscribe>
         </div>
       </div>
-      {(parts.includes('library') || parts.includes('prompt')) && (
-        <Outlet context={{ type, form, promptForm, generatePicture }} />
+      {parts.includes('prompt') && (
+        <Outlet context={{ type, promptForm, generatePicture }} />
       )}
+      {parts.includes('library') && <Outlet context={{ type, form }} />}
     </div>
   );
 };

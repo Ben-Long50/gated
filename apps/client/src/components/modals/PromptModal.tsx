@@ -1,5 +1,4 @@
 import { useOutletContext } from 'react-router-dom';
-import Modal from './Modal';
 import FormLayout from 'src/layouts/FormLayout';
 import InputFieldRadio from '../formFields/InputFieldRadio';
 import { capitalCase } from 'change-case';
@@ -7,6 +6,8 @@ import TextAreaField from '../formFields/TextAreaField';
 
 const PromptModal = () => {
   const { type, promptForm, generatePicture } = useOutletContext();
+
+  console.log(promptForm);
 
   let placeholder = '';
 
@@ -25,7 +26,7 @@ const PromptModal = () => {
       break;
   }
   return (
-    <Modal>
+    <>
       <div className="flex w-full flex-col items-center gap-8">
         <h1>{capitalCase(type)} Prompt Info</h1>
         <FormLayout
@@ -71,7 +72,7 @@ const PromptModal = () => {
           </div>
         </FormLayout>
       </div>
-    </Modal>
+    </>
   );
 };
 

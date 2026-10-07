@@ -1,36 +1,15 @@
 import { capitalCase } from 'change-case';
-import BtnRect from '../buttons/BtnRect';
-import Modal from './Modal';
-import { useNavigate, useOutletContext } from 'react-router-dom';
-import useModalStore from 'src/stores/modalStore';
+import { useOutletContext } from 'react-router-dom';
 import ArrowHeader2 from '../ArrowHeader2';
 import InputFieldCheckbox from '../formFields/InputFieldCheckbox';
 import BtnAuth from '../buttons/BtnAuth';
 import Divider from '../Divider';
 
 const NpcPreferenceModal = () => {
-  const navigate = useNavigate();
   const { form } = useOutletContext() || {};
 
-  const backgroundPath = useModalStore((state) => state.backgroundPath);
-
   return (
-    <Modal
-      button={
-        <BtnRect
-          type="button"
-          ariaLabel="Confirm preferences"
-          className="w-full"
-          onClick={() => {
-            if (backgroundPath) {
-              navigate(backgroundPath, { replace: true });
-            }
-          }}
-        >
-          Close
-        </BtnRect>
-      }
-    >
+    <>
       <div
         className="relative flex w-full flex-col items-center gap-8"
         onClick={(e) => {
@@ -97,7 +76,7 @@ const NpcPreferenceModal = () => {
           </div>
         </div>
       </div>
-    </Modal>
+    </>
   );
 };
 export default NpcPreferenceModal;

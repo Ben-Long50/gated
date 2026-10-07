@@ -4,7 +4,6 @@ import TextAreaField from '../formFields/TextAreaField';
 import { capitalCase } from 'change-case';
 import { mdiCircle } from '@mdi/js';
 import Icon from '@mdi/react';
-import Modal from '../modals/Modal';
 import useCreateEventMutation from 'src/hooks/useCreateEventMutation/useCreateEventMutation';
 import { useState } from 'react';
 import TimeField from '../formFields/TimeField';
@@ -21,7 +20,7 @@ const EventForm = () => {
   const eventForm = useEventForm(createEvent);
 
   return (
-    <Modal>
+    <>
       <FormLayout label="Event" form={eventForm} createMutation={createEvent}>
         <div className="flex items-center gap-4">
           <h3>{capitalCase(month) || ''}</h3>
@@ -104,7 +103,7 @@ const EventForm = () => {
           </div>
         </div>
       </FormLayout>
-    </Modal>
+    </>
   );
 };
 

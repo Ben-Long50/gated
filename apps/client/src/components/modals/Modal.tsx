@@ -1,38 +1,62 @@
 import RootPortal from '../../layouts/RootPortal';
-import { ReactNode, useContext, useEffect } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { mdiClose } from '@mdi/js';
-import { useNavigate } from 'react-router-dom';
-import useModalStore from 'src/stores/modalStore';
-import Divider from '../Divider';
+import {
+  Outlet,
+  useLocation,
+  useNavigate,
+  useOutletContext,
+} from 'react-router-dom';
 import useRouteHistoryStore from 'src/stores/routeHistoryStore';
 import IconBtnSmall from '../buttons/IconBtnSmall';
 import Icon from '@mdi/react';
 import { LayoutContext } from 'src/contexts/LayoutContext';
+import useModalNavigationStore from 'src/stores/modalNavigationStore';
 
-const Modal = ({
-  children,
-  button,
-  errors,
-  className,
-}: {
-  children: ReactNode;
-  button?: ReactNode;
-  errors?: ReactNode;
-  className?: string;
-}) => {
+const Modal = ({ className }: { className?: string }) => {
   const { mobile } = useContext(LayoutContext);
+  const location = useLocation();
   const navigate = useNavigate();
-  const backgroundPath = useModalStore((state) => state.backgroundPath);
 
-  const getLastRoute = useRouteHistoryStore((state) => state.getLastRoute);
+  const { backgroundPath, history, start, push, reset } =
+    useModalNavigationStore();
 
-  const setBackgroundPath = useModalStore((state) => state.setBackgroundPath);
+  const initialized = useRef(false);
 
   useEffect(() => {
-    const lastRoute = getLastRoute();
+    if (!initialized.current) {
+      initialized.current = true;
 
-    setBackgroundPath(lastRoute);
+      start(
+        location.state?.backgroundPath ??
+          useRouteHistoryStore.getState().getLastRoute() ??
+          location.pathname,
+      );
 
+      return;
+    }
+
+    push(location.pathname);
+  }, [location.pathname, start, push]);
+
+  const close = () => {
+    if (!backgroundPath) {
+      navigate(-1);
+      return;
+    }
+
+    const backgroundIndex = history.indexOf(backgroundPath);
+    const currentIndex = history.length - 1;
+
+    const delta = backgroundIndex - currentIndex;
+
+    reset();
+    navigate(delta);
+  };
+
+  const context = useOutletContext();
+
+  useEffect(() => {
     document.documentElement.classList.add('no-scroll');
 
     return () => {
@@ -41,9 +65,9 @@ const Modal = ({
   }, []);
 
   return (
-    <RootPortal>
+    <RootPortal close={close}>
       <div
-        className="scrollbar-primary-2 bg-base shadow-color relative flex h-full max-h-85dvh w-full max-w-6xl flex-col overflow-y-auto overflow-x-hidden rounded-lg shadow-lg"
+        className="scrollbar-primary-2 bg-base shadow-color relative flex max-h-85dvh w-full max-w-6xl flex-col overflow-y-auto overflow-x-hidden rounded-lg shadow-lg"
         onClick={(e) => {
           e.stopPropagation();
         }}
@@ -52,26 +76,15 @@ const Modal = ({
           className="sticky right-2 top-2 z-10 ml-auto"
           tooltip="Close"
           active={true}
-          onClick={() => {
-            if (backgroundPath) {
-              navigate(backgroundPath, { replace: true });
-            }
-          }}
+          onClick={close}
         >
           <Icon path={mdiClose} />
         </IconBtnSmall>
         <div
           className={`${className} ${mobile ? 'gap-4 p-4' : 'gap-8 p-8'} flex flex-col`}
         >
-          {children}
+          <Outlet context={context} />
         </div>
-        {(button || errors) && (
-          <div className="bg-base sticky bottom-0 flex w-full flex-col gap-4 px-4 pb-4 sm:px-8 sm:pb-8">
-            <Divider />
-            {errors}
-            {button}
-          </div>
-        )}
       </div>
     </RootPortal>
   );

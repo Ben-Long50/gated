@@ -1,5 +1,4 @@
 import Conditions from '../Conditions';
-import Modal from './Modal';
 import BtnRect from '../buttons/BtnRect';
 import useCreateCharacterConditionMutation from 'src/hooks/useCreateCharacterConditionMutation/useCreateCharacterConditionMutation';
 import useCreateItemConditionMutation from 'src/hooks/useCreateItemConditionMutation/useCreateItemConditionMutation';
@@ -33,33 +32,26 @@ const ConditionModal = () => {
   );
 
   return (
-    <Modal
-      button={
-        <BtnRect
-          className="group w-full"
-          type="button"
-          ariaLabel="Submit conditions"
-          onClick={() => {
-            conditionLinkForm.handleSubmit();
-          }}
-        >
-          {createCharacterCondition.isPending ||
-          createItemCondition.isPending ? (
-            <Loading
-              className="group-hover:text-accent dark:text-gray-900"
-              size={1.15}
-            />
-          ) : (
-            'Submit'
-          )}
-        </BtnRect>
-      }
-    >
-      <Conditions
-        title={character?.name + "'s Conditions"}
-        form={conditionLinkForm}
-      />
-    </Modal>
+    <>
+      <Conditions form={conditionLinkForm} />
+      <BtnRect
+        className="group w-full"
+        type="button"
+        ariaLabel="Submit conditions"
+        onClick={() => {
+          conditionLinkForm.handleSubmit();
+        }}
+      >
+        {createCharacterCondition.isPending || createItemCondition.isPending ? (
+          <Loading
+            className="group-hover:text-accent dark:text-gray-900"
+            size={1.15}
+          />
+        ) : (
+          'Submit'
+        )}
+      </BtnRect>
+    </>
   );
 };
 

@@ -30,16 +30,7 @@ const CharacterSelectModal = () => {
   if (charactersLoading) return <Loading />;
 
   return (
-    <Modal
-      button={
-        <BtnRect
-          ariaLabel="Select characters"
-          onClick={gangId ? () => form.handleSubmit() : () => navigate('..')}
-        >
-          Confirm Selection
-        </BtnRect>
-      }
-    >
+    <>
       <h1>Select Session Characters</h1>
       <InputField
         label="Search Characters"
@@ -82,7 +73,13 @@ const CharacterSelectModal = () => {
             </div>
           ))}
       </div>
-    </Modal>
+      <BtnRect
+        ariaLabel="Select characters"
+        onClick={gangId ? () => form.handleSubmit() : () => navigate('..')}
+      >
+        Confirm Selection
+      </BtnRect>
+    </>
   );
 };
 

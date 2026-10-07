@@ -25,7 +25,7 @@ import CharacterPictureRound from '../characterComponents/CharacterPictureRound'
 import useCharacterQueries from 'src/hooks/character hooks/useUpdateCharacterLevelMutation/useCharactersQuery/useCharacterQueries';
 
 const CampaignLinks = () => {
-  const { campaigns } = useContext(CampaignContext);
+  const { campaigns, pendingCampaignIds } = useContext(CampaignContext);
   const { layoutSize } = useContext(LayoutContext);
   const { gameMaster } = useContext(CampaignContext);
   const { campaignId } = useParams();
@@ -38,6 +38,8 @@ const CampaignLinks = () => {
   const { playerCharacters } = useCharacterQueries(
     campaign?.characters.map((character) => character.id) || [],
   );
+
+  const pending = pendingCampaignIds.includes(Number(campaignId));
 
   return (
     <>
@@ -83,116 +85,120 @@ const CampaignLinks = () => {
               />
             ))}
           </LinkListSidebar>
-          <LinkListSidebar
-            icon={
-              <CharacterIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
-            }
-            title="Characters"
-          >
-            <SubLinkSidebar
-              title="Player Characters"
-              path={`campaigns/${campaignId}/characters?characterType=playerCharacter`}
-            />
-            <SubLinkSidebar
-              title="NPCs"
-              path={`campaigns/${campaignId}/characters?characterType=nonPlayerCharacter`}
-            />
-            <SubLinkSidebar
-              title="Merchants"
-              path={`campaigns/${campaignId}/characters?characterType=nonPlayerCharacter&npcType=shop`}
-            />
-            <SubLinkSidebar
-              title="Goons"
-              path={`campaigns/${campaignId}/characters?characterType=nonPlayerCharacter&npcType=goon`}
-            />
-            <SubLinkSidebar
-              title="Monsters"
-              path={`campaigns/${campaignId}/characters?characterType=nonPlayerCharacter&npcType=monster`}
-            />
-          </LinkListSidebar>
-          <LinkListSidebar
-            icon={
-              <PassIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
-            }
-            title="Gangs"
-          >
-            {campaign?.gangs.map((gang: Gang) => (
-              <SubLinkSidebar
-                title={gang.name}
-                path={`campaigns/${campaignId}/gangs/${gang.id}`}
+          {!pending && (
+            <>
+              <LinkListSidebar
+                icon={
+                  <CharacterIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
+                }
+                title="Characters"
+              >
+                <SubLinkSidebar
+                  title="Player Characters"
+                  path={`campaigns/${campaignId}/characters?characterType=playerCharacter`}
+                />
+                <SubLinkSidebar
+                  title="NPCs"
+                  path={`campaigns/${campaignId}/characters?characterType=nonPlayerCharacter`}
+                />
+                <SubLinkSidebar
+                  title="Merchants"
+                  path={`campaigns/${campaignId}/characters?characterType=nonPlayerCharacter&npcType=shop`}
+                />
+                <SubLinkSidebar
+                  title="Goons"
+                  path={`campaigns/${campaignId}/characters?characterType=nonPlayerCharacter&npcType=goon`}
+                />
+                <SubLinkSidebar
+                  title="Monsters"
+                  path={`campaigns/${campaignId}/characters?characterType=nonPlayerCharacter&npcType=monster`}
+                />
+              </LinkListSidebar>
+              <LinkListSidebar
+                icon={
+                  <PassIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
+                }
+                title="Gangs"
+              >
+                {campaign?.gangs.map((gang: Gang) => (
+                  <SubLinkSidebar
+                    title={gang.name}
+                    path={`campaigns/${campaignId}/gangs/${gang.id}`}
+                  />
+                ))}
+              </LinkListSidebar>
+              <LinkListSidebar
+                icon={
+                  <MapIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
+                }
+                title="Maps"
+              >
+                <SubLinkSidebar
+                  title="Maps"
+                  path={`campaigns/${campaignId}/maps/?mapType=map&draft=false`}
+                />
+                <SubLinkSidebar
+                  title="Components"
+                  path={`campaigns/${campaignId}/maps/?mapType=component&draft=false`}
+                />
+                <SubLinkSidebar
+                  title="Your Drafts"
+                  path={`campaigns/${campaignId}/maps/?draft=true`}
+                />
+                <SubLinkSidebar
+                  title="Create a Map"
+                  path={`campaigns/${campaignId}/maps/create`}
+                />
+              </LinkListSidebar>
+              <LinkListSidebar
+                icon={
+                  <CombatIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
+                }
+                title="Encounters"
+              >
+                <SubLinkSidebar
+                  title={`Completed Encounters`}
+                  path={`campaigns/${campaignId}/encounters/completed`}
+                />
+              </LinkListSidebar>
+              <LinkListSidebar
+                icon={
+                  <NoteIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
+                }
+                title="Notes"
+              >
+                {playerCharacters.map((character) => (
+                  <SubLinkSidebar
+                    key={character?.id}
+                    title={`${character?.name}'s Notes`}
+                    path={`campaigns/${campaignId}/characters/${character?.id}/notes`}
+                  />
+                ))}
+              </LinkListSidebar>
+              <LinkListSidebar
+                title="Affiliations"
+                icon={
+                  <AffiliationIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
+                }
+              >
+                <SubLinkSidebar
+                  title="Affiliations"
+                  path={`campaigns/${campaignId}/affiliations`}
+                />
+                <SubLinkSidebar
+                  title="Create an Affiliation"
+                  path={`campaigns/${campaignId}/affiliations/create`}
+                />
+              </LinkListSidebar>
+              <LinkSidebar
+                title="Roll Simulator"
+                icon={
+                  <DieIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
+                }
+                path={`campaigns/${campaignId}/rollSimulator`}
               />
-            ))}
-          </LinkListSidebar>
-          <LinkListSidebar
-            icon={
-              <MapIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
-            }
-            title="Maps"
-          >
-            <SubLinkSidebar
-              title="Maps"
-              path={`campaigns/${campaignId}/maps/?mapType=map&draft=false`}
-            />
-            <SubLinkSidebar
-              title="Components"
-              path={`campaigns/${campaignId}/maps/?mapType=component&draft=false`}
-            />
-            <SubLinkSidebar
-              title="Your Drafts"
-              path={`campaigns/${campaignId}/maps/?draft=true`}
-            />
-            <SubLinkSidebar
-              title="Create a Map"
-              path={`campaigns/${campaignId}/maps/create`}
-            />
-          </LinkListSidebar>
-          <LinkListSidebar
-            icon={
-              <CombatIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
-            }
-            title="Encounters"
-          >
-            <SubLinkSidebar
-              title={`Completed Encounters`}
-              path={`campaigns/${campaignId}/encounters/completed`}
-            />
-          </LinkListSidebar>
-          <LinkListSidebar
-            icon={
-              <NoteIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
-            }
-            title="Notes"
-          >
-            {playerCharacters.map((character) => (
-              <SubLinkSidebar
-                key={character?.id}
-                title={`${character?.name}'s Notes`}
-                path={`campaigns/${campaignId}/characters/${character?.id}/notes`}
-              />
-            ))}
-          </LinkListSidebar>
-          <LinkListSidebar
-            title="Affiliations"
-            icon={
-              <AffiliationIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
-            }
-          >
-            <SubLinkSidebar
-              title="Affiliations"
-              path={`campaigns/${campaignId}/affiliations`}
-            />
-            <SubLinkSidebar
-              title="Create an Affiliation"
-              path={`campaigns/${campaignId}/affiliations/create`}
-            />
-          </LinkListSidebar>
-          <LinkSidebar
-            title="Roll Simulator"
-            icon={
-              <DieIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
-            }
-            path={`campaigns/${campaignId}/rollSimulator`}
-          />
+            </>
+          )}
           {gameMaster && (
             <LinkListSidebar
               icon={
@@ -202,7 +208,7 @@ const CampaignLinks = () => {
             >
               <SubLinkSidebar
                 title={`Add Template Character`}
-                path={`campaigns/${campaignId}/characters/add?characterType=nonPlayerCharacter`}
+                path={`campaigns/${campaignId}/modal/characters/add?characterType=nonPlayerCharacter`}
               />
               <SubLinkSidebar
                 title={`Add Template Map`}

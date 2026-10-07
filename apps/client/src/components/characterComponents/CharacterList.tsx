@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react';
 import CharacterCard from './CharacterCard';
-import { useLocation } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import Loading from '../Loading';
 import { Character } from 'src/types/character';
 import InputSelectField from '../formFields/InputSelectField';
@@ -11,6 +11,7 @@ import { mdiCropSquare, mdiGrid, mdiSync } from '@mdi/js';
 import { useParams } from 'react-router-dom';
 import IconBtnMedium from '../buttons/IconBtnMedium';
 import { LayoutContext } from 'src/contexts/LayoutContext';
+import useParts from 'src/hooks/useParts';
 
 const CharacterList = ({
   characters,
@@ -36,10 +37,10 @@ const CharacterList = ({
   isLoading?: boolean;
 }) => {
   const { mobile } = useContext(LayoutContext);
-  const { campaignId } = useParams();
+  const { campaignId, characterId } = useParams();
   const [size, setSize] = useState<'small' | 'large'>('small');
-  const location = useLocation();
-  const parts = location.pathname.split('/');
+
+  const { parts } = useParts();
 
   const cardSize = mobile || size === 'small' ? 'small' : 'large';
 
@@ -107,7 +108,7 @@ const CharacterList = ({
           <p className="text-center">No Characters Found</p>
         ) : (
           <div
-            className={`${mobile ? 'gap-4' : 'gap-8'} ${cardSize === 'large' ? 'w-full grid-cols-1' : 'grid-cols-[repeat(auto-fit,minmax(350px,1fr))]'} grid`}
+            className={`${mobile ? 'gap-4' : 'gap-8'} ${cardSize === 'large' ? 'w-full grid-cols-1' : 'grid-cols-[repeat(auto-fill,minmax(350px,1fr))]'} grid`}
           >
             {characters.map((character, index: number) => (
               <CharacterCard
@@ -120,6 +121,7 @@ const CharacterList = ({
           </div>
         )}
       </div>
+      {characterId && <Outlet />}
     </>
   );
 };

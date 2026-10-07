@@ -1,6 +1,5 @@
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import BtnRect from './buttons/BtnRect';
-import Modal from './modals/Modal';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import useCharacters from 'src/hooks/useCharacters';
 import Loading from './Loading';
@@ -33,20 +32,7 @@ const GangCharacterSelectModal = () => {
   if (charactersLoading) return <Loading />;
 
   return (
-    <Modal
-      button={
-        <BtnRect
-          ariaLabel="Select characters"
-          onClick={() => {
-            if (backgroundPath) {
-              navigate(backgroundPath, { replace: true });
-            }
-          }}
-        >
-          Confirm Selection
-        </BtnRect>
-      }
-    >
+    <>
       <h1>Select Gang Characters</h1>
       <InputField
         label="Search Characters"
@@ -136,7 +122,17 @@ const GangCharacterSelectModal = () => {
             </Fragment>
           ))}
       </div>
-    </Modal>
+      <BtnRect
+        ariaLabel="Select characters"
+        onClick={() => {
+          if (backgroundPath) {
+            navigate(backgroundPath, { replace: true });
+          }
+        }}
+      >
+        Confirm Selection
+      </BtnRect>
+    </>
   );
 };
 

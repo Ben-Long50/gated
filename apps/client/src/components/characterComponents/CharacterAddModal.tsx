@@ -1,4 +1,3 @@
-import Modal from '../modals/Modal';
 import Loading from '../Loading';
 import NavTabs from '../NavTabs';
 import BtnAuth from '../buttons/BtnAuth';
@@ -29,7 +28,7 @@ const CharacterAddModal = () => {
   const isLoading = templatesLoading || charactersLoading;
 
   return (
-    <Modal>
+    <>
       <h1>Add Characters</h1>
       <Divider />
       <NavTabs className="grid-cols-3 grid-rows-2">
@@ -108,14 +107,21 @@ const CharacterAddModal = () => {
           Templates
         </BtnAuth>
       </NavTabs>
-      {isLoading ? (
-        <Loading />
+      {addCharacter.isPending ? (
+        <div className="mx-auto flex items-center gap-8">
+          <Loading size={2} />
+          <h2>
+            {gangId
+              ? 'Adding Character to Gang'
+              : 'Adding Character to Campaign'}
+          </h2>
+        </div>
       ) : (
         <CharacterList
           characters={characters}
           filters={filters}
           setFilters={setFilters}
-          isLoading={charactersLoading}
+          isLoading={isLoading}
           onClick={(value: number) => {
             if (!addCharacter.isPending) {
               addCharacter.mutate(value);
@@ -123,7 +129,7 @@ const CharacterAddModal = () => {
           }}
         />
       )}
-    </Modal>
+    </>
   );
 };
 

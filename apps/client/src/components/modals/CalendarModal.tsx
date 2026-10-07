@@ -1,5 +1,4 @@
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
-import Modal from './Modal';
 import { capitalCase } from 'change-case';
 import Icon from '@mdi/react';
 import { mdiCheckCircleOutline, mdiCircle, mdiCircleOutline } from '@mdi/js';
@@ -32,7 +31,7 @@ const CalendarModal = () => {
   if (campaignLoading) return <Loading />;
 
   return (
-    <Modal>
+    <>
       <div className="flex items-center gap-4">
         <h2>{capitalCase(month || '')}</h2>
         <Icon path={mdiCircle} className="text-secondary" size={0.375} />
@@ -130,7 +129,7 @@ const CalendarModal = () => {
       >
         Add Event
       </BtnRect>
-    </Modal>
+    </>
   );
 };
 

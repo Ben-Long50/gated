@@ -22,16 +22,7 @@ const PlayerSelectModal = () => {
   const { data: users, isLoading } = useUsersByUsernameQuery(query);
 
   return (
-    <Modal
-      button={
-        <BtnRect
-          ariaLabel="Confirm"
-          onClick={gangId ? () => form.handleSubmit() : () => navigate('..')}
-        >
-          Confirm Selection
-        </BtnRect>
-      }
-    >
+    <>
       <h1>Select Campaign Players</h1>
       <InputField
         label="Search Players"
@@ -102,7 +93,15 @@ const PlayerSelectModal = () => {
           ))}
         </div>
       )}
-    </Modal>
+      <Divider />
+      <BtnRect
+        className="mt-auto"
+        ariaLabel="Confirm"
+        onClick={gangId ? () => form.handleSubmit() : () => navigate('..')}
+      >
+        Confirm Selection
+      </BtnRect>
+    </>
   );
 };
 

@@ -82,7 +82,9 @@ const Equipment = () => {
           </BtnAuth>
           {character?.userId === user?.id && (
             <>
-              <BtnAuth onClick={() => navigate('inventory')}>Inventory</BtnAuth>
+              <BtnAuth onClick={() => navigate('modal/inventory')}>
+                Inventory
+              </BtnAuth>
               {parts.includes('inventory') && <Outlet />}
             </>
           )}
@@ -143,7 +145,7 @@ const Equipment = () => {
                 <InventoryCard
                   key={item.id}
                   item={item}
-                  onClick={() => navigate(`items/${item.id}`)}
+                  onClick={() => navigate(`modal/inventory/items/${item.id}`)}
                 />
               ))}
             </InventoryGrid>

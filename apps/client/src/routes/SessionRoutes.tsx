@@ -11,6 +11,7 @@ import SessionForm from 'src/components/forms/SessionForm';
 import CharacterSelectModal from 'src/components/characterComponents/CharacterSelectModal';
 import Page from 'src/components/Page';
 import CharacterMenuRoutes from './CharacterMenuRoutes';
+import Modal from 'src/components/modals/Modal';
 
 const SessionRoutes = () => {
   return (
@@ -44,7 +45,9 @@ const SessionRoutes = () => {
           </Page>
         }
       >
-        <Route path="sessionCharacters" element={<CharacterSelectModal />} />
+        <Route path="modal" element={<Modal />}>
+          <Route path="sessionCharacters" element={<CharacterSelectModal />} />
+        </Route>
       </Route>
     </Route>
   );

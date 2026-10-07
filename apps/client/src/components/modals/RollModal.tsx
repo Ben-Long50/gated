@@ -1,5 +1,4 @@
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import Modal from './Modal';
 import BtnRect from '../buttons/BtnRect';
 import Die from '../encounterComponents/Die';
 import ArrowHeader3 from '../ArrowHeader3';
@@ -17,7 +16,7 @@ const RollModal = () => {
   const rollsArray = Array.from(rolls.entries());
 
   return (
-    <Modal className="h-full">
+    <>
       <h1>Roll Results</h1>
       <Divider />
       {rollsArray.map(([_, roll], index) => (
@@ -73,7 +72,7 @@ const RollModal = () => {
           Close
         </BtnRect>
       )}
-    </Modal>
+    </>
   );
 };
 

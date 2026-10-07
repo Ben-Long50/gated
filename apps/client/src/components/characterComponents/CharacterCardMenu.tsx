@@ -12,7 +12,7 @@ const CharacterCardMenu = ({ character }: { character: Character }) => {
   const location = useLocation();
   const parts = location.pathname.split('/');
 
-  const path = parts.includes('characters') ? '' : 'characters/';
+  const path = parts.includes('characters') ? 'modal/' : 'characters/modal/';
 
   if (!character) {
     return;
@@ -20,23 +20,21 @@ const CharacterCardMenu = ({ character }: { character: Character }) => {
 
   return (
     <Menu>
-      <button onClick={() => navigate(`${path}${character.id}/menu`)}>
+      <button onClick={() => navigate(`${path}${character.id}`)}>
         <CharacterIcon className="size-6" />
         Character Sheet
       </button>
-      <button onClick={() => navigate(`${path}${character.id}/menu/equipment`)}>
+      <button onClick={() => navigate(`${path}${character.id}/equipment`)}>
         <EquipmentIcon className="size-6" /> Equipment
       </button>
-      <button onClick={() => navigate(`${path}${character.id}/menu/inventory`)}>
+      <button onClick={() => navigate(`${path}${character.id}/inventory`)}>
         <InventoryIcon className="size-6" /> Inventory
       </button>
-      <button
-        onClick={() => navigate(`${path}${character.id}/menu/conditions`)}
-      >
+      <button onClick={() => navigate(`${path}${character.id}/conditions`)}>
         <ConditionIcon className="size-6" /> Conditions
       </button>
       {character?.npcTypes.includes('shop') && (
-        <button onClick={() => navigate(`${path}${character.id}/menu/shop`)}>
+        <button onClick={() => navigate(`${path}${character.id}/shop`)}>
           <ShopIcon className="size-6" /> Shop
         </button>
       )}

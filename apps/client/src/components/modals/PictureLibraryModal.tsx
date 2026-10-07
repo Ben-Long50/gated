@@ -21,10 +21,11 @@ const PictureLibraryModal = () => {
   const [libraryType, setLibraryType] = useState(
     user.generatedPictures.length > 0 ? 'personal' : 'standard',
   );
-  const [type, setType] = useState('character');
 
   const backgroundPath = useModalStore((state) => state.backgroundPath);
-  const { form } = useOutletContext();
+  const { type: initialType, form } = useOutletContext();
+
+  const [type, setType] = useState(initialType);
 
   let pictures = [];
 
@@ -44,20 +45,7 @@ const PictureLibraryModal = () => {
   }
 
   return (
-    <Modal
-      button={
-        <BtnRect
-          ariaLabel="Close"
-          onClick={() => {
-            if (backgroundPath) {
-              navigate(backgroundPath, { replace: true });
-            }
-          }}
-        >
-          Close
-        </BtnRect>
-      }
-    >
+    <>
       <h1>Library</h1>
       <Divider />
       <InputSelectField
@@ -100,7 +88,7 @@ const PictureLibraryModal = () => {
           }}
         </form.Field>
       </InventoryGrid>
-    </Modal>
+    </>
   );
 };
 

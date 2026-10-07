@@ -38,7 +38,7 @@ const Cart = ({ character }: { character?: Character }) => {
     : 0;
 
   return (
-    <div className="flex w-full flex-col items-center gap-6 sm:gap-8">
+    <>
       {characterObj?.characterCart.items.map((itemReference) => {
         return (
           <CartCard
@@ -89,7 +89,7 @@ const Cart = ({ character }: { character?: Character }) => {
           )}
         </BtnRect>
       </div>
-    </div>
+    </>
   );
 };
 

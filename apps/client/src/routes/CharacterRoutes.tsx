@@ -24,6 +24,8 @@ import Page from 'src/components/Page';
 import CharacterProgressionPage from 'src/components/characterComponents/CharacterProgressionPage';
 import PictureRoutes from './PictureRoutes';
 import ItemForm from 'src/components/forms/ItemForm';
+import InventoryModalRoutes from './InventoryModalRoutes';
+import InventoryRoutes from './InventoryRoutes';
 
 const CharacterRoutes = () => {
   return (
@@ -46,13 +48,13 @@ const CharacterRoutes = () => {
           </Page>
         }
       >
-        <Route path="levelBonus" element={<LevelBonusModal />} />
+        <Route path="modal" element={<Modal />}>
+          <Route path="levelBonus" element={<LevelBonusModal />} />
+        </Route>
       </Route>
       <Route path="conditions" element={<ConditionModal />} />
-      <Route path="affiliations" element={<AffiliationModal />}>
-        <Route index element={<CharacterAffiliations />} />
-        <Route path="create" element={<AffiliationForm />} />
-      </Route>
+      <Route path="affiliations" element={<CharacterAffiliations />} />
+      <Route path="cart" element={<Cart />} />
       <Route path="shop">
         <Route
           path="global"
@@ -74,9 +76,7 @@ const CharacterRoutes = () => {
           }
         >
           <Route path="cart" element={<Cart />} />
-          <Route path=":category" element={<Items />}>
-            <Route path="traits/:traitId" element={<DescriptionModal />} />
-          </Route>
+          <Route path=":category" element={<Items />} />
           <Route path=":category/:itemId" element={<ItemPage />} />
         </Route>
       </Route>
@@ -89,10 +89,11 @@ const CharacterRoutes = () => {
         }
       >
         {PictureRoutes()}
-        <Route path="levelBonus" element={<LevelBonusModal />} />
-        <Route path="npcPreferences" element={<NpcPreferenceModal />} />
+        <Route path="modal" element={<Modal />}>
+          <Route path="levelBonus" element={<LevelBonusModal />} />
+          <Route path="npcPreferences" element={<NpcPreferenceModal />} />
+        </Route>
       </Route>
-      <Route path="cart" element={<Cart />} />
       <Route
         path="resume"
         element={
@@ -117,17 +118,7 @@ const CharacterRoutes = () => {
           </Page>
         }
       >
-        <Route path="inventory" element={<InventoryModal />} />
-        <Route
-          path="inventory/items/:itemId"
-          element={
-            <Modal>
-              <ItemPage />
-            </Modal>
-          }
-        />
-        <Route path="conditions/:conditionId" element={<DescriptionModal />} />
-        <Route path="traits/:traitId" element={<DescriptionModal />} />
+        {InventoryModalRoutes()}
       </Route>
       <Route
         path="drones"
@@ -136,10 +127,7 @@ const CharacterRoutes = () => {
             <Items />
           </Page>
         }
-      >
-        <Route path="conditions/:conditionId" element={<DescriptionModal />} />
-        <Route path="traits/:traitId" element={<DescriptionModal />} />
-      </Route>
+      />
       <Route
         path="vehicles"
         element={
@@ -147,59 +135,8 @@ const CharacterRoutes = () => {
             <Items />
           </Page>
         }
-      >
-        <Route path="conditions/:conditionId" element={<DescriptionModal />} />
-        <Route path="traits/:traitId" element={<DescriptionModal />} />
-      </Route>
-      <Route
-        path="inventory"
-        element={
-          <Page title="Inventory">
-            <Inventory />
-          </Page>
-        }
-      >
-        <Route
-          path="items/:itemId"
-          element={
-            <Modal>
-              <ItemPage />
-            </Modal>
-          }
-        >
-          <Route path=":itemId/conditions" element={<ConditionModal />} />
-          <Route path="" element={<Inventory />}>
-            <Route path="traits/:traitId" element={<DescriptionModal />} />
-            <Route
-              path="conditions/:conditionId"
-              element={<DescriptionModal />}
-            />
-          </Route>
-          <Route
-            path="conditions/:conditionId"
-            element={<DescriptionModal />}
-          />
-          <Route path="traits/:traitId" element={<DescriptionModal />} />
-        </Route>
-        <Route
-          path="items/:itemId/update"
-          element={
-            <Modal>
-              <ItemForm />
-            </Modal>
-          }
-        />
-        <Route
-          path="items/:itemId/upgrade"
-          element={
-            <Modal>
-              <ItemUpgradeForm />
-            </Modal>
-          }
-        >
-          <Route path="traits" element={<KeywordLinkModal />} />
-        </Route>
-      </Route>
+      />
+      {InventoryRoutes()}
     </Route>
   );
 };

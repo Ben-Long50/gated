@@ -1,8 +1,5 @@
 import { useOutletContext, useParams } from 'react-router-dom';
-import Modal from './Modal';
 import BtnRect from '../buttons/BtnRect';
-import { useContext } from 'react';
-import { AuthContext } from 'src/contexts/AuthContext';
 import Loading from '../Loading';
 import Divider from '../Divider';
 import useSetCampaignTimeMutation from 'src/hooks/useSetCampaignTimeMutation/useSetCampaignTimeMutation';
@@ -30,7 +27,7 @@ const TimeModal = () => {
   const setCampaignTime = useSetCampaignTimeMutation(Number(campaignId));
 
   return (
-    <Modal>
+    <>
       <h2>Set Campaign Time</h2>
       <Divider />
       <TimeField form={timeForm} />
@@ -50,7 +47,7 @@ const TimeModal = () => {
           'Save Time'
         )}
       </BtnRect>
-    </Modal>
+    </>
   );
 };
 

@@ -26,12 +26,17 @@ import GangCard from './GangCard';
 import FactionCard from './FactionCard';
 import CharacterCardSmall from './characterComponents/CharacterCardSmall';
 import useCharacters from 'src/hooks/useCharacters';
+import { CampaignContext } from 'src/contexts/CampaignContext';
+import useParts from 'src/hooks/useParts';
 
 const Campaign = () => {
   const { user } = useContext(AuthContext);
+  const { pendingCampaignIds } = useContext(CampaignContext);
   const { campaignId } = useParams();
   const navigate = useNavigate();
   const [tab, setTab] = useState('characters');
+
+  const { parts } = useParts();
 
   const { data: campaign, isLoading: campaignLoading } = useCampaignQuery(
     Number(campaignId),
@@ -43,7 +48,6 @@ const Campaign = () => {
     isLoading: charactersLoading,
   } = useCharacters(campaign?.characters.map((character) => character.id));
 
-  const accentCampaignInvitation = useJoinCampaignMutation(Number(campaignId));
   const rejectCampaignInvitation = useRejectCampaignMutation(
     Number(campaignId),
   );
@@ -54,184 +58,250 @@ const Campaign = () => {
     (character) => character.playerCharacter,
   );
 
+  const pending = pendingCampaignIds.includes(Number(campaignId));
+
   const pendingIds =
     campaign?.pendingPlayers.map((player: User) => player.id) || [];
 
-  const isLoading = charactersLoading || campaignLoading;
-
-  if (isLoading) return <Loading />;
+  if (campaignLoading) return <Loading />;
 
   return (
     <>
       <CoverPicture publicId={campaign?.generatedPicture?.publicId} />
-      <div className="absolute left-8 right-8 top-8 flex items-start justify-between gap-8">
-        <h2 className="w-full font-zen text-4xl">
-          {capitalCase(campaign?.name)}
-        </h2>
-        <div className="flex items-center justify-end gap-4">
-          <LocationIcon className="text-accent size-10" />
-          <h2 className="!text-accent text-right">{campaign?.location}</h2>
-        </div>
-      </div>
-
-      <div className="flex w-full items-center justify-between">
-        <p>
-          Joined Players {playerIds?.length} /{' '}
-          {playerIds?.length + pendingIds?.length}
-        </p>
-      </div>
-      <div className="grid w-full grid-cols-[2fr_1fr]">
-        <div className="flex flex-col items-start gap-4">
-          <ArrowHeader3 title="Players" />
-          <div className="flex items-center justify-start">
-            {campaign?.players.map((player: User) => (
-              <div key={player.id} className="group flex items-center gap-4">
-                <AccountPicture user={player} />
-                <p className="timing max-w-0 overflow-hidden whitespace-nowrap font-semibold group-hover:max-w-40 group-hover:pr-4">
-                  {player.username}
-                </p>
-              </div>
-            ))}
-            {campaign?.pendingPlayers.map((player: User) => (
-              <div key={player.id} className="group flex items-center gap-4">
-                <AccountPicture
-                  className="opacity-50 grayscale"
-                  user={player}
-                />
-                <p className="timing max-w-0 overflow-hidden whitespace-nowrap font-semibold group-hover:max-w-40 group-hover:pr-4">
-                  {player.username}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="flex flex-col items-end gap-4">
-          <ArrowHeader3 reverse={true} title="Game Master" />
-          <div className="group relative flex items-center gap-4">
-            <AccountPicture user={campaign?.owner} />
-            <p className="timing max-w-0 overflow-hidden whitespace-nowrap font-semibold group-hover:max-w-40 group-hover:pr-4">
-              {campaign?.owner.username}
-            </p>
-            <Icon
-              path={mdiCrown}
-              className="absolute -left-2 -top-2 size-5 text-yellow-400"
-            />
+      <div className="absolute left-8 right-8 top-8 flex flex-col">
+        <div className="flex items-start justify-between gap-8">
+          <h2 className="w-full font-zen text-4xl">
+            {capitalCase(campaign?.name)}
+          </h2>
+          <div className="flex items-center justify-end gap-4">
+            <LocationIcon className="text-accent size-10" />
+            <h2 className="!text-accent text-right">{campaign?.location}</h2>
           </div>
         </div>
       </div>
-      {pendingIds?.includes(user?.id) && (
+      {pending ? (
         <>
-          <BtnRect
-            type="button"
-            className="w-full"
-            ariaLabel="Join campaign"
-            onClick={() => {
-              accentCampaignInvitation.mutate();
-            }}
-          >
-            {accentCampaignInvitation.isPending ? (
-              <Loading
-                className="group-hover:text-accent text-gray-900"
-                size={1.15}
-              />
-            ) : (
-              'Join Campaign'
-            )}
-          </BtnRect>
-          <BtnAuth
-            className="w-full"
-            onClick={() => {
-              rejectCampaignInvitation.mutate();
-            }}
-          >
-            {accentCampaignInvitation.isPending ? (
-              <Loading
-                className="group-hover:text-accent text-gray-900"
-                size={1.15}
-              />
-            ) : (
-              'Reject Invitation'
-            )}
-          </BtnAuth>
-        </>
-      )}
-      <Divider />
-      <Calendar />
-      <Divider />
-      <div className="grid grid-cols-2 gap-8">
-        <div className="flex w-full flex-col gap-4">
-          <ArrowHeader3 title="Player Characters" />
-          <div className="scrollbar-primary-2 flex max-h-80 w-full flex-col gap-4 overflow-y-auto px-0.5 py-2 pr-2">
-            {playerCharacters?.map((character) => (
-              <CharacterCardSmall
-                key={character.id}
-                characterList={true}
-                expanding={false}
-                active={false}
-                characterId={character.id}
-              />
-            ))}
+          <h2>Pending Campaign</h2>
+          <div className="flex w-full flex-col gap-4">
+            <BtnRect
+              type="button"
+              className="w-full"
+              ariaLabel="Join campaign"
+              onClick={() => {
+                navigate('modal/selectCharacter');
+              }}
+            >
+              Join Campaign
+            </BtnRect>
+            <BtnAuth
+              className="w-full"
+              onClick={() => {
+                rejectCampaignInvitation.mutate();
+              }}
+            >
+              {rejectCampaignInvitation.isPending ? (
+                <Loading
+                  className="group-hover:text-accent text-gray-900"
+                  size={1.15}
+                />
+              ) : (
+                'Reject Invitation'
+              )}
+            </BtnAuth>
           </div>
-        </div>
-        <div className="flex w-full flex-col gap-4">
-          <ArrowHeader3 reverse={true} className="ml-auto" title="Sessions" />
-          <div className="scrollbar-primary-2 flex max-h-80 w-full flex-col gap-4 overflow-y-auto px-0.5 py-2 pr-2">
-            {campaign?.sessions.map((session: Session) => (
-              <BtnAuth
-                key={session.id}
-                className="timing flex w-full items-center justify-between gap-4"
-                onClick={() => navigate(`sessions/${session.id}`)}
-              >
-                <div className="flex w-full items-center justify-between gap-4">
-                  <div className="flex items-center justify-start gap-4">
-                    <EntityAvater
-                      publicId={session.generatedPicture?.publicId}
-                      label={session.name}
-                    />
-                    <p className="font-semibold">
-                      {session.sessionNumber}. {session.name}
+
+          <div className="flex w-full items-center justify-between">
+            <p>
+              Joined Players {playerIds?.length} /{' '}
+              {playerIds?.length + pendingIds?.length}
+            </p>
+          </div>
+          <div className="grid w-full grid-cols-[2fr_1fr]">
+            <div className="flex flex-col items-start gap-4">
+              <ArrowHeader3 title="Players" />
+              <div className="flex items-center justify-start">
+                {campaign?.players.map((player: User) => (
+                  <div
+                    key={player.id}
+                    className="group flex items-center gap-4"
+                  >
+                    <AccountPicture user={player} />
+                    <p className="timing max-w-0 overflow-hidden whitespace-nowrap font-semibold group-hover:max-w-40 group-hover:pr-4">
+                      {player.username}
                     </p>
                   </div>
-                  <p className="text-right">
-                    {format(session.createdAt, 'PP')}
-                  </p>
-                </div>
-              </BtnAuth>
-            ))}
+                ))}
+                {campaign?.pendingPlayers.map((player: User) => (
+                  <div
+                    key={player.id}
+                    className="group flex items-center gap-4"
+                  >
+                    <AccountPicture
+                      className="opacity-50 grayscale"
+                      user={player}
+                    />
+                    <p className="timing max-w-0 overflow-hidden whitespace-nowrap font-semibold group-hover:max-w-40 group-hover:pr-4">
+                      {player.username}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="flex flex-col items-end gap-4">
+              <ArrowHeader3 reverse={true} title="Game Master" />
+              <div className="group relative flex items-center gap-4">
+                <AccountPicture user={campaign?.owner} />
+                <p className="timing max-w-0 overflow-hidden whitespace-nowrap font-semibold group-hover:max-w-40 group-hover:pr-4">
+                  {campaign?.owner.username}
+                </p>
+                <Icon
+                  path={mdiCrown}
+                  className="absolute -left-2 -top-2 size-5 text-yellow-400"
+                />
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      <Divider className="col-span-2" />
-      <NavTabs className="grid-cols-3">
-        <BtnAuth active={tab === 'factions'} onClick={() => setTab('factions')}>
-          Factions
-        </BtnAuth>
-        <BtnAuth active={tab === 'gangs'} onClick={() => setTab('gangs')}>
-          Gangs
-        </BtnAuth>
-        <BtnAuth
-          active={tab === 'characters'}
-          onClick={() => setTab('characters')}
-        >
-          Characters
-        </BtnAuth>
-      </NavTabs>
-      {tab === 'factions' &&
-        campaign?.factions.map((faction) => (
-          <FactionCard key={faction.id} factionId={faction.id} />
-        ))}
-      {tab === 'gangs' &&
-        campaign?.gangs.map((gang) => (
-          <GangCard key={gang.id} gangId={gang.id} />
-        ))}
-      {tab === 'characters' && (
-        <CharacterList
-          characters={characters}
-          filters={filters}
-          setFilters={setFilters}
-          isLoading={charactersLoading}
-        />
+        </>
+      ) : (
+        <>
+          <div className="flex w-full items-center justify-between">
+            <p>
+              Joined Players {playerIds?.length} /{' '}
+              {playerIds?.length + pendingIds?.length}
+            </p>
+          </div>
+          <div className="grid w-full grid-cols-[2fr_1fr]">
+            <div className="flex flex-col items-start gap-4">
+              <ArrowHeader3 title="Players" />
+              <div className="flex items-center justify-start">
+                {campaign?.players.map((player: User) => (
+                  <div
+                    key={player.id}
+                    className="group flex items-center gap-4"
+                  >
+                    <AccountPicture user={player} />
+                    <p className="timing max-w-0 overflow-hidden whitespace-nowrap font-semibold group-hover:max-w-40 group-hover:pr-4">
+                      {player.username}
+                    </p>
+                  </div>
+                ))}
+                {campaign?.pendingPlayers.map((player: User) => (
+                  <div
+                    key={player.id}
+                    className="group flex items-center gap-4"
+                  >
+                    <AccountPicture
+                      className="opacity-50 grayscale"
+                      user={player}
+                    />
+                    <p className="timing max-w-0 overflow-hidden whitespace-nowrap font-semibold group-hover:max-w-40 group-hover:pr-4">
+                      {player.username}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="flex flex-col items-end gap-4">
+              <ArrowHeader3 reverse={true} title="Game Master" />
+              <div className="group relative flex items-center gap-4">
+                <AccountPicture user={campaign?.owner} />
+                <p className="timing max-w-0 overflow-hidden whitespace-nowrap font-semibold group-hover:max-w-40 group-hover:pr-4">
+                  {campaign?.owner.username}
+                </p>
+                <Icon
+                  path={mdiCrown}
+                  className="absolute -left-2 -top-2 size-5 text-yellow-400"
+                />
+              </div>
+            </div>
+          </div>
+          <Divider />
+          <Calendar />
+          <Divider />
+          <div className="grid grid-cols-2 gap-8">
+            <div className="flex w-full flex-col gap-4">
+              <ArrowHeader3 title="Player Characters" />
+              <div className="scrollbar-primary-2 flex max-h-80 w-full flex-col gap-4 overflow-y-auto px-0.5 py-2 pr-2">
+                {playerCharacters?.map((character) => (
+                  <CharacterCardSmall
+                    key={character.id}
+                    characterList={true}
+                    expanding={false}
+                    active={false}
+                    characterId={character.id}
+                  />
+                ))}
+              </div>
+            </div>
+            <div className="flex w-full flex-col gap-4">
+              <ArrowHeader3
+                reverse={true}
+                className="ml-auto"
+                title="Sessions"
+              />
+              <div className="scrollbar-primary-2 flex max-h-80 w-full flex-col gap-4 overflow-y-auto px-0.5 py-2 pr-2">
+                {campaign?.sessions.map((session: Session) => (
+                  <BtnAuth
+                    key={session.id}
+                    className="timing flex w-full items-center justify-between gap-4"
+                    onClick={() => navigate(`sessions/${session.id}`)}
+                  >
+                    <div className="flex w-full items-center justify-between gap-4">
+                      <div className="flex items-center justify-start gap-4">
+                        <EntityAvater
+                          publicId={session.generatedPicture?.publicId}
+                          label={session.name}
+                        />
+                        <p className="font-semibold">
+                          {session.sessionNumber}. {session.name}
+                        </p>
+                      </div>
+                      <p className="text-right">
+                        {format(session.createdAt, 'PP')}
+                      </p>
+                    </div>
+                  </BtnAuth>
+                ))}
+              </div>
+            </div>
+          </div>
+          <Divider className="col-span-2" />
+          <NavTabs className="grid-cols-3">
+            <BtnAuth
+              active={tab === 'factions'}
+              onClick={() => setTab('factions')}
+            >
+              Factions
+            </BtnAuth>
+            <BtnAuth active={tab === 'gangs'} onClick={() => setTab('gangs')}>
+              Gangs
+            </BtnAuth>
+            <BtnAuth
+              active={tab === 'characters'}
+              onClick={() => setTab('characters')}
+            >
+              Characters
+            </BtnAuth>
+          </NavTabs>
+          {tab === 'factions' &&
+            campaign?.factions.map((faction) => (
+              <FactionCard key={faction.id} factionId={faction.id} />
+            ))}
+          {tab === 'gangs' &&
+            campaign?.gangs.map((gang) => (
+              <GangCard key={gang.id} gangId={gang.id} />
+            ))}
+          {tab === 'characters' && (
+            <CharacterList
+              characters={characters}
+              filters={filters}
+              setFilters={setFilters}
+              isLoading={charactersLoading}
+            />
+          )}
+        </>
       )}
+      {parts.includes('selectCharacter') && <Outlet />}
     </>
   );
 };

@@ -44,6 +44,15 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
 
   const { campaigns, isLoading } = useCampaignQueries(userCampaignIds);
 
+  const pendingCampaignIds = campaigns
+    .filter(
+      (campaign) =>
+        campaign.characters.every(
+          (character) => character.userId !== user.id,
+        ) && campaign?.ownerId !== user.id,
+    )
+    .map((campaign) => campaign.id);
+
   const activeCampaigns =
     campaigns?.filter((campaign) => campaign?.active) || [];
 
@@ -66,10 +75,8 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         username: user.username,
       });
 
-      socket.on('campaign', (campaignId) => {
-        queryClient.invalidateQueries({
-          queryKey: ['campaign', campaignId],
-        });
+      socket.on('updateCampaign', (campaign) => {
+        queryClient.setQueryData(['campaign', campaign.id], campaign);
       });
 
       socket.on('globalCampaign', ({ campaignId, playerIds }) => {
@@ -153,20 +160,8 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       );
     });
 
-    socket.on('character', (characterId) => {
-      queryClient.invalidateQueries({
-        queryKey: ['character', characterId],
-      });
-    });
-
     socket.on('updateGang', (data) => {
       queryClient.setQueryData(['gang', data.gang.id], data.gang);
-    });
-
-    socket.on('gang', (gangId) => {
-      queryClient.invalidateQueries({
-        queryKey: ['gang', gangId],
-      });
     });
 
     socket.on('updateLocation', (location) => {
@@ -203,22 +198,16 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       );
     });
 
-    socket.on('item', (itemId) => {
-      queryClient.invalidateQueries({
-        queryKey: ['item', itemId],
-      });
+    socket.on('updateItem', (item) => {
+      queryClient.setQueryData(['item', item.id], item);
     });
 
-    socket.on('affiliation', (affiliationId) => {
-      queryClient.invalidateQueries({
-        queryKey: ['affiliation', affiliationId],
-      });
+    socket.on('updateAffiliation', (affiliation) => {
+      queryClient.setQueryData(['affiliation', affiliation.id], affiliation);
     });
 
-    socket.on('encounter', (encounterId) => {
-      queryClient.invalidateQueries({
-        queryKey: ['encounter', encounterId],
-      });
+    socket.on('updateEncounter', (encounter) => {
+      queryClient.setQueryData(['encounter', encounter.id], encounter);
     });
 
     socket.on('disconnect', (reason) => {
@@ -239,6 +228,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       value={{
         socket,
         gameMaster,
+        pendingCampaignIds,
         campaigns,
         activeCampaigns,
         activeEncounters,

@@ -45,7 +45,7 @@ const ItemPage = () => {
   if (!item) return <h1>No item found</h1>;
 
   return (
-    <div className="flex w-full flex-col items-center gap-8">
+    <>
       <h1 className="col-start-2 text-center">{item.name}</h1>
       <div className="relative grid h-full w-full grid-rows-[auto_auto] gap-8 sm:grid-cols-2 sm:grid-rows-1">
         <ItemPicture key={item.id} item={item} />
@@ -162,7 +162,7 @@ const ItemPage = () => {
             </BtnRect>
           )}
       </div>
-    </div>
+    </>
   );
 };
 

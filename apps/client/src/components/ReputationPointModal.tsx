@@ -1,7 +1,6 @@
 import { useForm } from '@tanstack/react-form';
 import ArrowHeader3 from './ArrowHeader3';
 import BtnRect from './buttons/BtnRect';
-import Modal from './modals/Modal';
 import Divider from './Divider';
 import InputSelectField from './formFields/InputSelectField';
 import { useParams } from 'react-router-dom';
@@ -104,82 +103,7 @@ const ReputationPointModal = () => {
   });
 
   return (
-    <Modal
-      button={
-        <div className="flex w-full flex-col gap-8">
-          <reputationForm.Field name="bonus">
-            {(field) => {
-              const total = field.state.value.reduce(
-                (sum, bonus) => sum + bonus.value,
-                0,
-              );
-              return (
-                <div className="flex flex-col gap-8">
-                  {field.state.value.length > 0 && (
-                    <div className="flex flex-col gap-2 border-x-2 border-gray-400 border-opacity-50 px-4">
-                      {field.state.value.map((bonus, index) => (
-                        <div className="flex items-center justify-between">
-                          <p>{bonus.description}</p>
-                          <div className="flex items-center gap-4">
-                            <p>{bonus.value}</p>
-                            <button
-                              className="group"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                const newBonuses = field.state.value.filter(
-                                  (_, i) => i !== index,
-                                );
-                                field.handleChange(newBonuses);
-                              }}
-                            >
-                              <Icon
-                                path={mdiClose}
-                                size={1}
-                                className="text-tertiary timing group-hover:text-accent"
-                              />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  <div className="flex w-full items-center justify-between">
-                    <ArrowHeader3 title="Total Reputation Points" />
-                    <h2>{total}</h2>
-                  </div>
-                </div>
-              );
-            }}
-          </reputationForm.Field>
-          <BtnRect
-            className="group"
-            ariaLabel="Confirm"
-            onClick={(e) => {
-              e.preventDefault();
-              reputationForm.handleSubmit();
-            }}
-          >
-            {allocateReputation.isPending ? (
-              <Loading
-                size={1.15}
-                className="group-hover:text-accent text-black"
-              />
-            ) : (
-              'Confirm'
-            )}
-          </BtnRect>
-        </div>
-      }
-      errors={
-        <reputationForm.Subscribe selector={(state) => state.errorMap}>
-          {(errorMap) =>
-            errorMap.onSubmit ? (
-              <em className="text-error text-lg">{errorMap.onSubmit}</em>
-            ) : null
-          }
-        </reputationForm.Subscribe>
-      }
-    >
+    <>
       <h1>Allocate Reputation</h1>
       <Divider />
       <reputationForm.Field
@@ -263,7 +187,76 @@ const ReputationPointModal = () => {
           </div>
         )}
       </reputationForm.Field>
-    </Modal>
+      <div className="flex w-full flex-col gap-8">
+        <reputationForm.Field name="bonus">
+          {(field) => {
+            const total = field.state.value.reduce(
+              (sum, bonus) => sum + bonus.value,
+              0,
+            );
+            return (
+              <div className="flex flex-col gap-8">
+                {field.state.value.length > 0 && (
+                  <div className="flex flex-col gap-2 border-x-2 border-gray-400 border-opacity-50 px-4">
+                    {field.state.value.map((bonus, index) => (
+                      <div className="flex items-center justify-between">
+                        <p>{bonus.description}</p>
+                        <div className="flex items-center gap-4">
+                          <p>{bonus.value}</p>
+                          <button
+                            className="group"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const newBonuses = field.state.value.filter(
+                                (_, i) => i !== index,
+                              );
+                              field.handleChange(newBonuses);
+                            }}
+                          >
+                            <Icon
+                              path={mdiClose}
+                              size={1}
+                              className="text-tertiary timing group-hover:text-accent"
+                            />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div className="flex w-full items-center justify-between">
+                  <ArrowHeader3 title="Total Reputation Points" />
+                  <h2>{total}</h2>
+                </div>
+              </div>
+            );
+          }}
+        </reputationForm.Field>
+        <reputationForm.Subscribe selector={(state) => state.errorMap}>
+          {(errorMap) =>
+            errorMap.onSubmit ? (
+              <em className="text-error text-lg">{errorMap.onSubmit}</em>
+            ) : null
+          }
+        </reputationForm.Subscribe>
+        <BtnRect
+          className="group"
+          ariaLabel="Confirm"
+          onClick={() => {
+            reputationForm.handleSubmit();
+          }}
+        >
+          {allocateReputation.isPending ? (
+            <Loading
+              size={1.15}
+              className="group-hover:text-accent text-black"
+            />
+          ) : (
+            'Confirm'
+          )}
+        </BtnRect>
+      </div>
+    </>
   );
 };
 

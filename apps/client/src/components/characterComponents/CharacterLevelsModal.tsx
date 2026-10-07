@@ -4,7 +4,6 @@ import useGang from 'src/hooks/useGang';
 import ArrowHeader2 from '../ArrowHeader2';
 import Divider from '../Divider';
 import ArrowHeader3 from '../ArrowHeader3';
-import { Character } from 'src/types/character';
 import CharacterCardXSmall from './CharacterCardXSmall';
 import BtnRect from '../buttons/BtnRect';
 import useUpdateCharacterLevelMutation from 'src/hooks/character hooks/useUpdateCharacterLevelMutation/useUpdateCharacterLevelMutation';
@@ -21,7 +20,7 @@ const CharacterLevelsModal = () => {
   );
 
   return (
-    <Modal>
+    <>
       <h1>Level Up Characters</h1>
       <div className="flex w-full items-center justify-between gap-8">
         <ArrowHeader2 title="Gang Level" />
@@ -66,7 +65,7 @@ const CharacterLevelsModal = () => {
           ))}
         </div>
       </div>
-    </Modal>
+    </>
   );
 };
 

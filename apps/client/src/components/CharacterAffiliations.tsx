@@ -65,7 +65,7 @@ const CharacterAffiliations = () => {
   if (isLoading) return <Loading />;
 
   return (
-    <div className="flex w-full max-w-7xl flex-col items-center gap-8">
+    <>
       <h1 className="text-center">{`${character?.name}'s Affiliations`}</h1>
       <ThemeContainer
         className={`ml-auto w-full`}
@@ -106,7 +106,7 @@ const CharacterAffiliations = () => {
         </form>
       </ThemeContainer>
       <Affiliations affiliations={filteredAffiliations} entity={character} />
-    </div>
+    </>
   );
 };
 

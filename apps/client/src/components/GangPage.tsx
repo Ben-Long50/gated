@@ -111,7 +111,6 @@ const GangPage = () => {
       </NavTabs>
       {tab === 'information' && (
         <>
-          {' '}
           <div className="flex w-full flex-col gap-4">
             <div className="flex flex-col items-center gap-2 px-4">
               <h3>{`Reputation - ${reputationData.description}`}</h3>
@@ -169,31 +168,31 @@ const GangPage = () => {
             </div>
             <Divider />
             <div className="grid grid-cols-2 gap-4">
-              <BtnAuth onClick={() => navigate('allocateReputation')}>
+              <BtnAuth onClick={() => navigate('modal/allocateReputation')}>
                 Allocate Reputation
               </BtnAuth>
-              <BtnAuth onClick={() => navigate('allocateNodes')}>
+              <BtnAuth onClick={() => navigate('modal/allocateNodes')}>
                 Allocate Level Nodes
               </BtnAuth>
-              <BtnAuth onClick={() => navigate('distributeProfits')}>
+              <BtnAuth onClick={() => navigate('modal/distributeProfits')}>
                 Distribute Profits
               </BtnAuth>
               {levelUpAvailable ? (
                 <BtnRect
                   ariaLabel="Manage levels"
-                  onClick={() => navigate('manageLevels')}
+                  onClick={() => navigate('modal/manageLevels')}
                 >
                   Manage Character Levels
                 </BtnRect>
               ) : (
-                <BtnAuth onClick={() => navigate('manageLevels')}>
+                <BtnAuth onClick={() => navigate('modal/manageLevels')}>
                   Manage Character Levels
                 </BtnAuth>
               )}
-              <BtnAuth onClick={() => navigate('manageGangCharacters')}>
+              <BtnAuth onClick={() => navigate('modal/manageGangCharacters')}>
                 Manage Gang Characters
               </BtnAuth>
-              <BtnAuth onClick={() => navigate('characters/add')}>
+              <BtnAuth onClick={() => navigate('modal/characters/add')}>
                 Add Template Character
               </BtnAuth>
             </div>
@@ -262,7 +261,14 @@ const GangPage = () => {
       <BtnRect ariaLabel="Update gang" onClick={() => navigate('update')}>
         Update Gang
       </BtnRect>
-      <Outlet context={{ gang, form: gangCharactersForm, parts }} />
+      {parts.includes('allocateReputation') && <Outlet />}
+      {parts.includes('allocateNodes') && <Outlet />}
+      {parts.includes('manageLevels') && <Outlet />}
+      {parts.includes('distributeProfits') && <Outlet />}
+      {parts.includes('manageGangCharacters') && (
+        <Outlet context={{ form: gangCharactersForm }} />
+      )}
+      {parts.includes('add') && <Outlet />}
     </>
   );
 };

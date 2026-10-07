@@ -18,12 +18,13 @@ import useUserQueries from 'src/hooks/user hooks/useUserQueries';
 import { useStore } from '@tanstack/react-form';
 import BtnAuth from '../buttons/BtnAuth';
 import ArrowHeader4 from '../ArrowHeader4';
+import useParts from 'src/hooks/useParts';
 
 const CampaignForm = () => {
   const { campaignId } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
-  const parts = location.pathname.split('/');
+
+  const { parts } = useParts();
 
   const createCampaign = useCreateCampaignMutation();
 
@@ -178,12 +179,12 @@ const CampaignForm = () => {
             ))}
         </div>
       )}
+      <BtnAuth onClick={() => navigate('modal/managePlayers')}>
+        Select Campaign Players
+      </BtnAuth>
       {parts.includes('managePlayers') && (
         <Outlet context={{ form: campaignForm }} />
       )}
-      <BtnAuth onClick={() => navigate('managePlayers')}>
-        Select Campaign Players
-      </BtnAuth>
     </FormLayout>
   );
 };

@@ -1,22 +1,28 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import joinCampaign from './joinCampaign';
-import { AuthContext } from 'src/contexts/AuthContext';
-import { useContext } from 'react';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const useJoinCampaignMutation = (campaignId: number) => {
-  const { user } = useContext(AuthContext);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: () => joinCampaign(campaignId),
+    mutationFn: (characterId: number) => joinCampaign(campaignId, characterId),
     onSuccess: (data) => {
       toast.success(data.message);
 
       queryClient.invalidateQueries({
-        queryKey: ['user', user.id],
+        queryKey: ['authenticatedUser'],
       });
+
       queryClient.setQueryData(['campaign', campaignId], data.campaign);
+      queryClient.setQueryData(
+        ['character', data.character.id],
+        data.character,
+      );
+
+      navigate(-1);
     },
     onError: (data) => {
       toast.error(data.message);

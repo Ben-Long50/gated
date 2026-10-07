@@ -119,12 +119,12 @@ const GangForm = () => {
             </gangForm.Subscribe>
           </div>
         </div>
-        <BtnAuth onClick={() => navigate('characterSelect')}>
+        <BtnAuth onClick={() => navigate('modal/characterSelect')}>
           Select Gang Characters
         </BtnAuth>
       </div>
       {parts.includes('characterSelect') && (
-        <Outlet context={{ form: gangForm, parts }} />
+        <Outlet context={{ form: gangForm }} />
       )}
     </FormLayout>
   );

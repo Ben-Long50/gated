@@ -125,49 +125,7 @@ const LevelNodeModal = () => {
   });
 
   return (
-    <Modal
-      button={
-        <div className="flex w-full flex-col gap-8">
-          <levelNodeForm.Subscribe selector={(state) => state.values.bonus}>
-            {(bonus) => {
-              const total = bonus.reduce((sum, bonus) => sum + bonus.value, 0);
-              return (
-                <div className="flex w-full items-center justify-between">
-                  <ArrowHeader3 title="Total Level Nodes" />
-                  <h2>{total}</h2>
-                </div>
-              );
-            }}
-          </levelNodeForm.Subscribe>
-          <BtnRect
-            className="group"
-            ariaLabel="Confirm"
-            onClick={(e) => {
-              e.preventDefault();
-              levelNodeForm.handleSubmit();
-            }}
-          >
-            {allocateLevelNodes.isPending ? (
-              <Loading
-                size={1.15}
-                className="group-hover:text-accent text-black"
-              />
-            ) : (
-              'Confirm'
-            )}
-          </BtnRect>
-        </div>
-      }
-      errors={
-        <levelNodeForm.Subscribe selector={(state) => state.errorMap}>
-          {(errorMap) =>
-            errorMap.onSubmit ? (
-              <em className="text-error text-lg">{errorMap.onSubmit}</em>
-            ) : null
-          }
-        </levelNodeForm.Subscribe>
-      }
-    >
+    <>
       <h1>Allocate Level Nodes</h1>
       <Divider />
       <levelNodeForm.Field
@@ -228,7 +186,43 @@ const LevelNodeModal = () => {
           </div>
         )}
       </levelNodeForm.Field>
-    </Modal>
+      <div className="flex w-full flex-col gap-8">
+        <levelNodeForm.Subscribe selector={(state) => state.values.bonus}>
+          {(bonus) => {
+            const total = bonus.reduce((sum, bonus) => sum + bonus.value, 0);
+            return (
+              <div className="flex w-full items-center justify-between">
+                <ArrowHeader3 title="Total Level Nodes" />
+                <h2>{total}</h2>
+              </div>
+            );
+          }}
+        </levelNodeForm.Subscribe>
+        <levelNodeForm.Subscribe selector={(state) => state.errorMap}>
+          {(errorMap) =>
+            errorMap.onSubmit ? (
+              <em className="text-error text-lg">{errorMap.onSubmit}</em>
+            ) : null
+          }
+        </levelNodeForm.Subscribe>
+        <BtnRect
+          className="group"
+          ariaLabel="Confirm"
+          onClick={() => {
+            levelNodeForm.handleSubmit();
+          }}
+        >
+          {allocateLevelNodes.isPending ? (
+            <Loading
+              size={1.15}
+              className="group-hover:text-accent text-black"
+            />
+          ) : (
+            'Confirm'
+          )}
+        </BtnRect>
+      </div>
+    </>
   );
 };
 

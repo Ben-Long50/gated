@@ -9,6 +9,7 @@ import Page from 'src/components/Page';
 import PictureRoutes from './PictureRoutes';
 import ActionLinkModal from 'src/components/modals/ActionLinkModal';
 import CharacterAddModal from 'src/components/characterComponents/CharacterAddModal';
+import Modal from 'src/components/modals/Modal';
 
 const CharacterTabRoutes = () => {
   return (
@@ -25,11 +26,15 @@ const CharacterTabRoutes = () => {
         }
       >
         {PictureRoutes()}
-        <Route path="perks" element={<PerkLinkModal />} />
-        <Route path="npcPreferences" element={<NpcPreferenceModal />} />
-        <Route path="actions" element={<ActionLinkModal />} />
+        <Route path="modal" element={<Modal />}>
+          <Route path="perks" element={<PerkLinkModal />} />
+          <Route path="npcPreferences" element={<NpcPreferenceModal />} />
+          <Route path="actions" element={<ActionLinkModal />} />
+        </Route>
       </Route>
-      <Route path="add" element={<CharacterAddModal />} />
+      <Route path="modal" element={<Modal />}>
+        <Route path="add" element={<CharacterAddModal />} />
+      </Route>
       {CharacterRoutes()}
     </Route>
   );
