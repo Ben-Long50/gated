@@ -161,6 +161,7 @@ const TileListModal = () => {
                         imageRendering: 'pixelated',
                         backgroundRepeat: 'no-repeat',
                       }}
+                      onClick={() => pushPath(file)}
                     >
                       <button
                         className="group absolute right-0 top-0 p-2"
