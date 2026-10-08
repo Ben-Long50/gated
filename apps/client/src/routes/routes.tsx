@@ -30,9 +30,6 @@ const router = createBrowserRouter(
           <Route path="signup" element={<SignupForm />} />
           <Route path="signin" element={<SigninForm />} />
         </Route>
-        <Route path="error">
-          <Route path="report" element={<ErrorReport />} />
-        </Route>
         <Route
           path="glam"
           element={

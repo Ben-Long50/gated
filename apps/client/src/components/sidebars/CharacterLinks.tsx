@@ -33,7 +33,7 @@ const CharacterLinks = () => {
         icon={
           <CharacterIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
         }
-        path={`/glam/characters`}
+        path={`/glam/characters/dashboard`}
       />
       <LinkSidebar
         title={character?.name}

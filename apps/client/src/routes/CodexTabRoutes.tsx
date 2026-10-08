@@ -39,7 +39,7 @@ const CodexTabRoutes = () => {
   return (
     <Route path="codex">
       <Route
-        index
+        path="dashboard"
         element={
           <Page title="Codex">
             <CodexDashboard />

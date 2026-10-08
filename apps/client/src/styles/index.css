@@ -39,6 +39,7 @@
     width: 100lvw;
     height: 100lvh;
     background-image: url('/public/nova_viridian.jpeg');
+    z-index: -2;
   }
 
   html.light::after {
@@ -53,6 +54,7 @@
     left: 0;
     width: 100lvw;
     height: 100lvh;
+    z-index: -1;
   }
 
   html.dark::after {
@@ -67,6 +69,7 @@
     left: 0;
     width: 100lvw;
     height: 100lvh;
+    z-index: -1;
   }
 }
 

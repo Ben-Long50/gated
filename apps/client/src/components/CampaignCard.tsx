@@ -80,7 +80,7 @@ const CampaignCard = ({ campaign }: { campaign: Campaign }) => {
               </div>
             </div>
           </div>
-          <Link className="mt-auto w-full" to={`${campaign.id}`}>
+          <Link className="mt-auto w-full" to={`${campaign.id}/dashboard`}>
             <BtnRect ariaLabel="navigate to campaign information ml-auto mt-auto self-end">
               Campaign Info
             </BtnRect>

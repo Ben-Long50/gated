@@ -7,8 +7,6 @@ import TextAreaField from '../formFields/TextAreaField';
 const PromptModal = () => {
   const { type, promptForm, generatePicture } = useOutletContext();
 
-  console.log(promptForm);
-
   let placeholder = '';
 
   switch (type) {

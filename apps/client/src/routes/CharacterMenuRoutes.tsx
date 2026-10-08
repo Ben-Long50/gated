@@ -11,6 +11,7 @@ import Modal from 'src/components/modals/Modal';
 import CharacterAffiliations from 'src/components/CharacterAffiliations';
 import AffiliationForm from 'src/components/forms/AffiliationForm';
 import Shop from 'src/components/Shop';
+import InventoryModalRoutes from './InventoryModalRoutes';
 
 const CharacterMenuRoutes = () => {
   return (
@@ -34,6 +35,7 @@ const CharacterMenuRoutes = () => {
           <Route index element={<Shop />} />
           <Route path="cart" element={<Cart />} />
           <Route path="items/:itemId" element={<ItemPage />} />
+          {InventoryModalRoutes()}
         </Route>
       </Route>
     </Route>

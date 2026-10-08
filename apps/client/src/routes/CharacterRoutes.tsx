@@ -103,7 +103,9 @@ const CharacterRoutes = () => {
           </Page>
         }
       >
-        {InventoryModalRoutes()}
+        <Route path="modal" element={<Modal />}>
+          {InventoryModalRoutes()}
+        </Route>
       </Route>
       <Route
         path="drones"

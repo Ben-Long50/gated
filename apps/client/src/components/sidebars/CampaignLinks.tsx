@@ -69,7 +69,7 @@ const CampaignLinks = () => {
             icon={
               <CampaignIcon className="timing group-hover:text-accent z-10 size-12 shrink-0 p-2 text-inherit" />
             }
-            path={`/glam/campaigns/${campaignId}`}
+            path={`/glam/campaigns/${campaignId}/dashboard`}
           />
           <LinkListSidebar
             icon={
@@ -81,7 +81,7 @@ const CampaignLinks = () => {
               <SubLinkSidebar
                 key={session.id}
                 title={`${session.sessionNumber}. ${session.name}`}
-                path={`campaigns/${campaignId}/sessions/${session.id}`}
+                path={`campaigns/${campaignId}/sessions/${session.id}/dashboard`}
               />
             ))}
           </LinkListSidebar>

@@ -62,7 +62,7 @@ const CampaignTabRoutes = () => {
       />
       <Route path=":campaignId">
         <Route
-          path=""
+          path="dashboard"
           element={
             <Page title="Campaign">
               <Campaign />
@@ -125,10 +125,7 @@ const CampaignTabRoutes = () => {
               </Page>
             }
           >
-            <Route
-              path="conditions/:conditionId"
-              element={<DescriptionModal />}
-            />
+            {CharacterMenuRoutes()}
           </Route>
           <Route
             path=":characterId/notes"
@@ -138,7 +135,6 @@ const CampaignTabRoutes = () => {
               </Page>
             }
           />
-          {CharacterMenuRoutes()}
         </Route>
         <Route path="modal" element={<Modal />}>
           <Route path="characters/add" element={<CharacterAddModal />} />

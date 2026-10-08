@@ -102,7 +102,7 @@ const Navbar = ({
         </div>
       </div>
       <NavMenuMobile>
-        <Link className="w-full p-1" to="codex?tab=equipment">
+        <Link className="w-full p-1" to="codex/dashboard?tab=equipment">
           <button
             className="text-primary w-full text-left"
             onClick={() => {
@@ -113,7 +113,7 @@ const Navbar = ({
           </button>
         </Link>
         <Divider />
-        <Link className="w-full p-1" to="campaigns">
+        <Link className="w-full p-1" to="campaigns/dashboard">
           <button
             className="text-primary w-full text-left"
             onClick={() => {
@@ -124,7 +124,7 @@ const Navbar = ({
           </button>
         </Link>
         <Divider />
-        <Link className="w-full p-1" to="characters">
+        <Link className="w-full p-1" to="characters/dashboard">
           <button
             className="text-primary w-full text-left"
             onClick={() => {
@@ -155,7 +155,7 @@ const Navbar = ({
       <nav
         className={`bg-base timing shadow-color mx-auto mt-3 flex w-full max-w-9xl items-center gap-8 rounded-md px-8 py-2 shadow-lg`}
       >
-        <Link to="/glam/codex">
+        <Link to="/glam/codex/dashboard?tab=equipment">
           <h2
             className="text-shadow-color text-shadow font-zen !text-4xl italic text-shadow-x-1 text-shadow-y-1"
             style={{ color: accentPrimary }}
@@ -165,9 +165,9 @@ const Navbar = ({
         </Link>
         <div className="flex w-full grow items-center justify-end gap-4">
           <div className="relative grid grow grid-cols-4 items-center justify-items-end gap-4">
-            <LinkNavbar path="codex?tab=equipment">Codex</LinkNavbar>
+            <LinkNavbar path="codex/dashboard?tab=equipment">Codex</LinkNavbar>
             <LinkNavbar path="campaigns">Campaigns</LinkNavbar>
-            <LinkNavbar path="characters?excludedNpcType=template">
+            <LinkNavbar path="characters/dashboard?excludedNpcType=template">
               Characters
             </LinkNavbar>
             <LinkNavbar path="maps">Maps</LinkNavbar>

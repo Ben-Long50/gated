@@ -54,8 +54,6 @@ const CharacterList = ({
     return <Loading />;
   }
 
-  console.log(characters);
-
   return (
     <>
       <div className={`${mobile ? 'gap-4' : 'gap-8'} flex flex-col`}>

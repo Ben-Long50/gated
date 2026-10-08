@@ -18,7 +18,7 @@ const SessionRoutes = () => {
     <Route path="sessions">
       <Route path=":sessionId">
         <Route
-          index
+          path="dashboard"
           element={
             <Page title="Session">
               <Session />

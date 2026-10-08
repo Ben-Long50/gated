@@ -6,11 +6,10 @@ import ItemPage from 'src/components/ItemPage';
 import ConditionModal from 'src/components/modals/ConditionModal';
 import DescriptionModal from 'src/components/modals/DescriptionModal';
 import KeywordLinkModal from 'src/components/modals/KeywordLinkModal';
-import Modal from 'src/components/modals/Modal';
 
 const InventoryModalRoutes = () => {
   return (
-    <Route path="modal" element={<Modal />}>
+    <>
       <Route path="inventory" element={<Inventory />} />
       <Route path="inventory/items/:itemId">
         <Route path="" element={<ItemPage />} />
@@ -22,7 +21,7 @@ const InventoryModalRoutes = () => {
           <Route path="traits" element={<KeywordLinkModal />} />
         </Route>
       </Route>
-    </Route>
+    </>
   );
 };
 

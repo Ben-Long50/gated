@@ -14,7 +14,7 @@ import Modal from 'src/components/modals/Modal';
 const CharacterTabRoutes = () => {
   return (
     <Route path="characters">
-      <Route path="" element={<CharacterDashboard />}>
+      <Route path="dashboard" element={<CharacterDashboard />}>
         {CharacterMenuRoutes()}
       </Route>
       <Route

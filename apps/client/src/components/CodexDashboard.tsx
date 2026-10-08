@@ -22,90 +22,90 @@ const CodexDashboard = () => {
   const equipmentLinks = [
     {
       label: 'All Weapons',
-      path: 'items?category=weapon&exclude=Vehicle Weapon&exclude=Drone Weapon',
+      path: '../items?category=weapon&exclude=Vehicle Weapon&exclude=Drone Weapon',
     },
     {
       label: 'Ranged Weapons',
-      path: 'items?category=weapon&include=Ranged&exclude=Vehicle Weapon&exclude=Drone Weapon',
+      path: '../items?category=weapon&include=Ranged&exclude=Vehicle Weapon&exclude=Drone Weapon',
     },
     {
       label: 'Melee Weapons',
-      path: 'items?category=weapon&include=Melee&exclude=Vehicle Weapon&exclude=Drone Weapon',
+      path: '../items?category=weapon&include=Melee&exclude=Vehicle Weapon&exclude=Drone Weapon',
     },
     {
       label: 'Consumable Weapons',
-      path: 'items?category=weapon&include=Consumable&include=Light Consumable&exclude=Vehicle Weapon&exclude=Drone Weapon',
+      path: '../items?category=weapon&include=Consumable&include=Light Consumable&exclude=Vehicle Weapon&exclude=Drone Weapon',
     },
     {
       label: 'All Armors',
-      path: 'items?category=armor',
+      path: '../items?category=armor',
     },
     {
       label: 'Head Armors',
-      path: 'items?category=armor&include=Head',
+      path: '../items?category=armor&include=Head',
     },
     {
       label: 'Body Armors',
-      path: 'items?category=armor&include=Body',
+      path: '../items?category=armor&include=Body',
     },
     {
       label: 'Cloak Armors',
-      path: 'items?category=armor&include=Cloak',
+      path: '../items?category=armor&include=Cloak',
     },
     {
       label: 'Cybernetics',
-      path: 'items?category=cybernetic',
+      path: '../items?category=cybernetic',
     },
     {
       label: 'Mutations',
-      path: 'items?category=mutation',
+      path: '../items?category=mutation',
     },
     {
       label: 'Vehicles',
-      path: 'items?category=vehicle',
+      path: '../items?category=vehicle',
     },
     {
       label: 'Vehicle Weapons',
-      path: 'items?category=weapon&include=Vehicle Weapon',
+      path: '../items?category=weapon&include=Vehicle Weapon',
     },
     {
       label: 'Drones',
-      path: 'items?category=drone',
+      path: '../items?category=drone',
     },
     {
       label: 'Drone Weapons',
-      path: 'items?category=weapon&include=Drone Weapon',
+      path: '../items?category=weapon&include=Drone Weapon',
     },
     {
       label: 'Reusables',
-      path: 'items?category=reusable',
+      path: '../items?category=reusable',
     },
     {
       label: 'Consumables',
-      path: 'items?category=consumable',
+      path: '../items?category=consumable',
     },
   ];
 
   const characterLinks = [
     {
       label: 'Player Classes',
-      path: 'characters?characterType=playerCharacter',
+      path: '../characters?characterType=playerCharacter',
     },
     {
       label: 'Unique NPCs',
-      path: 'characters?characterType=nonPlayerCharacter',
+      path: '../characters?characterType=nonPlayerCharacter',
     },
     {
       label: 'Goons',
-      path: 'characters?characterType=nonPlayerCharacter&npcType=goon',
+      path: '../characters?characterType=nonPlayerCharacter&npcType=goon',
     },
     {
       label: 'Merchants',
-      path: 'characters?characterType=nonPlayerCharacter&npcType=shop',
+      path: '../characters?characterType=nonPlayerCharacter&npcType=shop',
     },
     {
       label: 'Monsters',
-      path: 'characters?characterType=nonPlayerCharacter&npcType=monster',
+      path: '../characters?characterType=nonPlayerCharacter&npcType=monster',
     },
   ];
 
