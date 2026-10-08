@@ -1,33 +1,55 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+type PathData = { path: string; key: string };
+
 type RouteHistoryState = {
-  history: string[];
-  push: (path: string) => void;
-  getLastRoute: () => string | null;
+  history: PathData[];
+  backgroundData: PathData | null;
+  push: (data: PathData) => void;
+  setBackgroundData: () => void;
+  resetBackgroundData: () => void;
+  getRouteDelta: (data: PathData) => number;
 };
 
 const useRouteHistoryStore = create<RouteHistoryState>()(
   persist(
     (set, get) => ({
       history: [],
-
-      push: (path) =>
+      backgroundData: null,
+      push: (data) =>
         set((state) => ({
-          history: [path, ...state.history.filter((p) => p !== path)].slice(
-            0,
-            10,
-          ),
+          history: [...state.history.slice(0, 50), data],
         })),
-
-      getLastRoute: () => {
+      setBackgroundData: () => {
         const history = get().history;
-        return history.length > 1 ? history[1] : null;
+
+        set({
+          backgroundData: history[history.length - 2],
+        });
+      },
+      resetBackgroundData: () => set({ backgroundData: null }),
+      getRouteDelta: (data) => {
+        const history = get().history;
+        const backgroundData = get().backgroundData;
+
+        const currentIndex = history.findIndex((d) => d.key === data.key);
+
+        const backgroundIndex = backgroundData
+          ? history.findIndex((d) => d.key === backgroundData.key)
+          : null;
+
+        const delta = backgroundIndex ? backgroundIndex - currentIndex : 0;
+
+        return delta || -1;
       },
     }),
     {
       name: 'routeHistory',
-      partialize: (state) => ({ history: state.history }),
+      partialize: (state) => ({
+        history: state.history,
+        backgroundData: state.backgroundData,
+      }),
     },
   ),
 );

@@ -1,7 +1,7 @@
 import { useContext, useRef, useState } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import Loading from './Loading';
-import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import { ItemType } from 'src/types/item';
 import Divider from './Divider';
 import useCharacter from 'src/hooks/useCharacter';
@@ -22,16 +22,17 @@ import InventoryIcon from './icons/InventoryIcon';
 import PotionIcon from './icons/PotionIcon';
 import VehicleIcon from './icons/VehicleIcon';
 import InventoryGrid from './InventoryGrid';
+import useParts from 'src/hooks/useParts';
 
 const Equipment = () => {
   const { user } = useContext(AuthContext);
   const { mobile } = useContext(LayoutContext);
   const { characterId } = useParams();
-  const location = useLocation();
   const navigate = useNavigate();
-  const parts = location.pathname.split('/');
   const [tab, setTab] = useState('equipment');
   const [types, setTypes] = useState<ItemType[]>([]);
+
+  const { parts } = useParts();
 
   const size = mobile ? 'small' : 'large';
 
@@ -82,7 +83,13 @@ const Equipment = () => {
           </BtnAuth>
           {character?.userId === user?.id && (
             <>
-              <BtnAuth onClick={() => navigate('modal/inventory')}>
+              <BtnAuth
+                onClick={() =>
+                  navigate(
+                    parts.includes('modal') ? 'inventory' : 'modal/inventory',
+                  )
+                }
+              >
                 Inventory
               </BtnAuth>
               {parts.includes('inventory') && <Outlet />}
@@ -145,7 +152,13 @@ const Equipment = () => {
                 <InventoryCard
                   key={item.id}
                   item={item}
-                  onClick={() => navigate(`modal/inventory/items/${item.id}`)}
+                  onClick={() =>
+                    navigate(
+                      parts.includes('modal')
+                        ? `inventory/items/${item.id}`
+                        : `modal/inventory/items/${item.id}`,
+                    )
+                  }
                 />
               ))}
             </InventoryGrid>

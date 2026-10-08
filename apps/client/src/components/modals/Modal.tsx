@@ -1,5 +1,5 @@
 import RootPortal from '../../layouts/RootPortal';
-import { useContext, useEffect, useRef } from 'react';
+import { useContext, useEffect } from 'react';
 import { mdiClose } from '@mdi/js';
 import {
   Outlet,
@@ -11,46 +11,32 @@ import useRouteHistoryStore from 'src/stores/routeHistoryStore';
 import IconBtnSmall from '../buttons/IconBtnSmall';
 import Icon from '@mdi/react';
 import { LayoutContext } from 'src/contexts/LayoutContext';
-import useModalNavigationStore from 'src/stores/modalNavigationStore';
 
 const Modal = ({ className }: { className?: string }) => {
   const { mobile } = useContext(LayoutContext);
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { backgroundPath, history, start, push, reset } =
-    useModalNavigationStore();
-
-  const initialized = useRef(false);
+  const setBackgroundData = useRouteHistoryStore(
+    (state) => state.setBackgroundData,
+  );
+  const resetBackgroundData = useRouteHistoryStore(
+    (state) => state.resetBackgroundData,
+  );
+  const getRouteDelta = useRouteHistoryStore((state) => state.getRouteDelta);
 
   useEffect(() => {
-    if (!initialized.current) {
-      initialized.current = true;
-
-      start(
-        location.state?.backgroundPath ??
-          useRouteHistoryStore.getState().getLastRoute() ??
-          location.pathname,
-      );
-
-      return;
-    }
-
-    push(location.pathname);
-  }, [location.pathname, start, push]);
+    setBackgroundData();
+  }, []);
 
   const close = () => {
-    if (!backgroundPath) {
-      navigate(-1);
-      return;
-    }
+    const delta = getRouteDelta({
+      path: location.pathname + location.search,
+      key: location.key,
+    });
 
-    const backgroundIndex = history.indexOf(backgroundPath);
-    const currentIndex = history.length - 1;
+    resetBackgroundData();
 
-    const delta = backgroundIndex - currentIndex;
-
-    reset();
     navigate(delta);
   };
 
