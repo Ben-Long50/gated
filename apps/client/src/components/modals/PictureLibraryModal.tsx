@@ -1,6 +1,4 @@
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import BtnRect from '../buttons/BtnRect';
-import Modal from './Modal';
 import useModalStore from 'src/stores/modalStore';
 import { useContext, useState } from 'react';
 import { AuthContext } from 'src/contexts/AuthContext';

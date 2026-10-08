@@ -5,7 +5,6 @@ import { capitalCase } from 'change-case';
 import ArrowHeader3 from '../ArrowHeader3';
 import InputFieldCheckbox from './InputFieldCheckbox';
 import TextAreaField from './TextAreaField';
-import InputField from './InputField';
 
 const NpcPreferenceField = ({ form }: { form: FormApi }) => {
   const navigate = useNavigate();
@@ -78,7 +77,7 @@ const NpcPreferenceField = ({ form }: { form: FormApi }) => {
               type="button"
               ariaLabel="NPC preferences"
               onClick={() => {
-                navigate('npcPreferences');
+                navigate('modal/npcPreferences');
               }}
             >
               NPC Preferences

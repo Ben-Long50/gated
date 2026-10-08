@@ -1,5 +1,3 @@
-import Modal from './Modal';
-import BtnRect from '../buttons/BtnRect';
 import { useNavigate, useParams } from 'react-router-dom';
 import Loading from '../Loading';
 import useEncounterHistoryQuery from 'src/hooks/encounter hooks/useEncounterHistoryQuery/useEncounterHistoryQuery';
@@ -19,7 +17,7 @@ const HistoryModal = () => {
   }
 
   return (
-    <Modal>
+    <>
       <h1>Action History</h1>
       {!history || history.length === 0 ? (
         <h2 className="italic">No Encounter History Available</h2>
@@ -31,17 +29,7 @@ const HistoryModal = () => {
         </div>
       )}
       <Divider />
-      <BtnRect
-        className="w-full"
-        ariaLabel="Close"
-        type="button"
-        onClick={() => {
-          navigate('..');
-        }}
-      >
-        Close
-      </BtnRect>
-    </Modal>
+    </>
   );
 };
 

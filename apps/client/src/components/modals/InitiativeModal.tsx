@@ -1,5 +1,4 @@
 import { Fragment } from 'react/jsx-runtime';
-import Modal from './Modal';
 import Divider from '../Divider';
 import BtnRect from '../buttons/BtnRect';
 import { useContext } from 'react';
@@ -125,7 +124,7 @@ const InitiativeModal = () => {
     initiativeRollIdArray.length > 0 ? initiativeRollIdArray : combat.turnOrder;
 
   return (
-    <Modal>
+    <>
       <h1>Initiative Rolls</h1>
       <div className="absolute left-4 top-4 mr-auto flex flex-col items-start justify-start">
         {joinedPlayers?.map((player) => (
@@ -212,7 +211,7 @@ const InitiativeModal = () => {
           </div>
         )
       )}
-    </Modal>
+    </>
   );
 };
 

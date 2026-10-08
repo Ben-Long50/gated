@@ -15,7 +15,6 @@ import Loading from '../Loading';
 import ConditionTag from '../ConditionTag';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useInView } from 'react-intersection-observer';
-import useRadialMenuStore from 'src/stores/radialMenuStore';
 import LocationIcon from '../icons/LocationIcon';
 import NpcTypeList from '../NpcTypeList';
 import StatBarContainer from '../StatBarContainer';
@@ -39,31 +38,12 @@ const CharacterCard = ({
 
   const { filteredCharacter: character, isLoading } = useCharacter(characterId);
 
-  const menuOpen = useRadialMenuStore((state) => state.menuOpen);
-  const setMenuOpen = useRadialMenuStore((state) => state.setMenuOpen);
-  const setMenu = useRadialMenuStore((state) => state.setMenu);
-  const setCoordinates = useRadialMenuStore((state) => state.setCoordinates);
-
   const { ref, inView } = useInView({
     triggerOnce: true,
     threshold: 0.1,
   });
 
   const containerRef = useRef(null);
-
-  const handleMenu = (e: MouseEvent) => {
-    if (!containerRef.current) return;
-    setMenu('character', 'large', characterId);
-
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    if (!menuOpen) {
-      setCoordinates(x, y);
-    }
-    setMenuOpen(!menuOpen);
-  };
 
   const awol =
     (typeof character?.stats.injuries === 'number' &&

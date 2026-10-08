@@ -62,7 +62,7 @@ const PerkLinkField = ({
       <BtnAuth
         className="w-full min-w-48"
         onClick={() => {
-          navigate('perks?mode=form');
+          navigate('modal/perks?mode=form');
         }}
       >
         Link Perks

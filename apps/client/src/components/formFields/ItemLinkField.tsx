@@ -58,7 +58,7 @@ const ItemLinkField = ({ form }: { form: FormApi }) => {
       <BtnAuth
         className="w-full min-w-48"
         onClick={() => {
-          navigate('links?linkCategory=weapon&mode=form');
+          navigate('modal/links?linkCategory=weapon&mode=form');
         }}
       >
         Link Items

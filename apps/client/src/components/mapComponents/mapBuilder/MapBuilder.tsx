@@ -169,7 +169,7 @@ const MapBuilder = () => {
             <MapScaler mapScale={mapScale} setMapScale={setMapScale} />
             <IconBtnMedium
               tooltip="Tile Picker"
-              onClick={() => navigate('tileList')}
+              onClick={() => navigate('modal/tileList')}
             >
               <Icon path={mdiViewGridOutline} />
             </IconBtnMedium>
@@ -203,7 +203,7 @@ const MapBuilder = () => {
               onClick={() => {
                 setActiveLayerId(null);
                 setTempComponent(null);
-                navigate('save');
+                navigate('modal/save');
               }}
               tooltip="Save Map"
             >

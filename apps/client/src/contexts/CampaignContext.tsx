@@ -56,6 +56,12 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   const activeCampaigns =
     campaigns?.filter((campaign) => campaign?.active) || [];
 
+  const activeCharacters = activeCampaigns
+    .find((campaign) => campaign.id === Number(campaignId))
+    ?.characters.filter(
+      (character) => character.playerCharacter && character.userId === user.id,
+    );
+
   const encounterIds = activeCampaigns
     ?.filter((campaign) => campaign != null)
     .flatMap((campaign) => campaign.encounters.map((encounter) => encounter.id))
@@ -231,6 +237,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         pendingCampaignIds,
         campaigns,
         activeCampaigns,
+        activeCharacters,
         activeEncounters,
         rolls,
         setRolls,

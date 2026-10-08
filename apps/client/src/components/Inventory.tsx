@@ -9,81 +9,107 @@ import WeaponIcon from './icons/WeaponIcon';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import useCharacter from 'src/hooks/useCharacter';
 import Loading from './Loading';
-import { ItemType } from 'src/types/item';
-import { useState } from 'react';
+import { Item } from 'src/types/item';
 import NavTabs from './NavTabs';
 import InventoryCard from './InventoryCard';
 import InventoryGrid from './InventoryGrid';
+import useItems from 'src/hooks/useItems';
+import IconBtnMedium from './buttons/IconBtnMedium';
+import InputField from './formFields/InputField';
+import { mdiSync } from '@mdi/js';
+import Icon from '@mdi/react';
+import useParts from 'src/hooks/useParts';
+import CartButton from './CartButton';
 
-const Inventory = () => {
+const Inventory = ({
+  itemList,
+  shopCharacterId,
+}: {
+  itemList?: Item[];
+  shopCharacterId?: number;
+}) => {
   const { characterId } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
-  const parts = location.pathname.split('/');
-  const [types, setTypes] = useState<ItemType[]>([]);
 
-  const { filteredCharacter: character, isLoading } = useCharacter(
-    Number(characterId),
-  );
+  const { parts } = useParts();
 
-  const items = character?.inventory
-    ? character?.inventory.filter((item) =>
-        item?.itemTypes.some(
-          (type: ItemType) => types.includes(type) || types.length === 0,
-        ),
-      )
-    : [];
+  const { filteredCharacter: character } = useCharacter(Number(characterId));
+
+  const list = itemList ?? character?.inventory ?? [];
+
+  const {
+    items,
+    query,
+    filterByQuery,
+    types,
+    filterByTypes,
+    resetList,
+    isLoading: itemsLoading,
+  } = useItems(list.map((item) => item.id));
 
   return (
     <>
       <NavTabs>
-        <BtnAuth active={types.length === 0} onClick={() => setTypes([])}>
+        <BtnAuth active={types.length === 0} onClick={() => filterByTypes([])}>
           All
         </BtnAuth>
         <BtnAuth
           active={types.includes('weapon')}
-          onClick={() => setTypes(['weapon'])}
+          onClick={() => filterByTypes(['weapon'])}
         >
           <WeaponIcon className="size-8" />
         </BtnAuth>
         <BtnAuth
           active={types.includes('armor')}
-          onClick={() => setTypes(['armor'])}
+          onClick={() => filterByTypes(['armor'])}
         >
           <ArmorIcon className="size-8" />
         </BtnAuth>
         <BtnAuth
           active={types.includes('cybernetic') || types.includes('mutation')}
-          onClick={() => setTypes(['cybernetic', 'mutation'])}
+          onClick={() => filterByTypes(['cybernetic', 'mutation'])}
         >
           <CyberIcon className="size-8" />
         </BtnAuth>
         <BtnAuth
           active={types.includes('reusable')}
-          onClick={() => setTypes(['reusable'])}
+          onClick={() => filterByTypes(['reusable'])}
         >
           <InventoryIcon className="size-8" />
         </BtnAuth>
         <BtnAuth
           active={types.includes('consumable')}
-          onClick={() => setTypes(['consumable'])}
+          onClick={() => filterByTypes(['consumable'])}
         >
           <PotionIcon className="size-8" />
         </BtnAuth>
         <BtnAuth
           active={types.includes('vehicle')}
-          onClick={() => setTypes(['vehicle'])}
+          onClick={() => filterByTypes(['vehicle'])}
         >
           <VehicleIcon className="size-8" />
         </BtnAuth>
         <BtnAuth
           active={types.includes('drone')}
-          onClick={() => setTypes(['drone'])}
+          onClick={() => filterByTypes(['drone'])}
         >
           <DroneIcon className="size-8" />
         </BtnAuth>
       </NavTabs>
-      {isLoading ? (
+      <div className="flex items-center gap-4">
+        <InputField
+          label="Search Items"
+          value={query}
+          onChange={(value) => {
+            filterByQuery(value);
+          }}
+        />
+
+        <IconBtnMedium onClick={resetList} tooltip="Reset Search">
+          <Icon path={mdiSync} />
+        </IconBtnMedium>
+      </div>
+      {itemsLoading ? (
         <Loading />
       ) : (
         <InventoryGrid minWidth={175}>
@@ -92,10 +118,21 @@ const Inventory = () => {
               <InventoryCard
                 key={item.id}
                 item={item}
+                button={
+                  parts.includes('shop') ? (
+                    <CartButton
+                      className="absolute right-1 top-1"
+                      characterId={shopCharacterId ?? Number(characterId)}
+                      itemId={item.id}
+                    />
+                  ) : undefined
+                }
                 onClick={() =>
                   navigate(
                     parts.includes('inventory')
-                      ? `items/${item.id}`
+                      ? parts.includes('modal')
+                        ? `items/${item.id}`
+                        : `modal/items/${item.id}`
                       : `inventory/items/${item.id}`,
                   )
                 }
@@ -106,7 +143,7 @@ const Inventory = () => {
           )}
         </InventoryGrid>
       )}
-      <Outlet context={{ parts }} />
+      {!parts.includes('shop') && <Outlet />}
     </>
   );
 };

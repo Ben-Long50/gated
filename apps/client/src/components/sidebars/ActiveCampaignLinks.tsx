@@ -9,13 +9,10 @@ import LinkSidebar from './LinkSidebar';
 import EntityAvater from '../EntityAvatar';
 import LinkSublistSidebar from './LinkSublistSidebar';
 import CharacterPictureRound from '../characterComponents/CharacterPictureRound';
-import { mdiCartOutline } from '@mdi/js';
-import { ThemeContext } from 'src/contexts/ThemeContext';
 import Divider from '../Divider';
 
 const ActiveCampaignLinks = () => {
   const { user } = useContext(AuthContext);
-  const { accentPrimary } = useContext(ThemeContext);
   const { activeCampaigns, activeEncounters } = useContext(CampaignContext);
 
   const { playerCharacters, isLoading: charactersLoading } =
@@ -63,51 +60,14 @@ const ActiveCampaignLinks = () => {
                   <Loading size={1.5} />
                 ) : (
                   <LinkSublistSidebar title="Your Characters">
-                    {campaignCharacters.map((character, index) => {
-                      const cartLength = Object.values(
-                        character?.characterCart || {},
-                      )
-                        .filter(Array.isArray)
-                        .flat()
-                        .reduce((sum, item) => sum + item.quantity, 0);
-
-                      return (
-                        <div
-                          key={index}
-                          className="ml-4 flex w-full flex-col items-start justify-between gap-4"
-                        >
-                          <LinkSidebar
-                            icon={
-                              <CharacterPictureRound character={character} />
-                            }
-                            title={character?.name}
-                            path={`/glam/characters/${character?.id}`}
-                          />
-                          {cartLength > 0 && (
-                            <LinkSidebar
-                              icon={
-                                <div className="relative">
-                                  <Icon
-                                    className="bg-secondary group-hover:text-accent timing size-12 shrink-0 p-2"
-                                    path={mdiCartOutline}
-                                  />
-                                  <p
-                                    className="shadow-color absolute right-0 top-0 flex h-6 min-w-6 items-center justify-center rounded-full pt-0.5 text-center text-base font-semibold shadow-md dark:text-gray-950"
-                                    style={{
-                                      backgroundColor: accentPrimary,
-                                    }}
-                                  >
-                                    {cartLength}
-                                  </p>
-                                </div>
-                              }
-                              title={`${character?.name}'s Cart`}
-                              path={`/glam/campaigns/${campaign?.id}/characters/${character?.id}/cart`}
-                            />
-                          )}
-                        </div>
-                      );
-                    })}
+                    {campaignCharacters.map((character) => (
+                      <LinkSidebar
+                        key={character.id}
+                        icon={<CharacterPictureRound character={character} />}
+                        title={character?.name}
+                        path={`/glam/characters/${character?.id}`}
+                      />
+                    ))}
                   </LinkSublistSidebar>
                 ))}
               {campaignEncounters.length > 0 && (

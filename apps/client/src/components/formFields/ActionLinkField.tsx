@@ -51,7 +51,7 @@ const ActionLinkField = ({ form, path }: { form: FormApi; path?: string }) => {
       <BtnAuth
         className="w-full min-w-48"
         onClick={() => {
-          navigate(path || 'actions?mode=form');
+          navigate(path || 'modal/actions?mode=form');
         }}
       >
         Link Actions

@@ -1,7 +1,6 @@
 import { CSSProperties, Fragment, useContext, useRef } from 'react';
 import ThemeContainer from './ThemeContainer';
 import ItemRarity from './ItemRarity';
-import CartButton from './CartButton';
 import { KeywordReference } from 'src/types/keyword';
 import ItemPicture from './ItemPicture';
 import ArrowHeader2 from './ArrowHeader2';
@@ -15,20 +14,12 @@ import {
   WeaponControls,
 } from './ItemCardControls';
 import { AuthContext } from 'src/contexts/AuthContext';
-import ItemRadialMenu from './radialMenus/itemRadialMenu/ItemRadialMenu';
-import {
-  Link,
-  Outlet,
-  useLocation,
-  useNavigate,
-  useParams,
-} from 'react-router-dom';
+import { Link, Outlet, useNavigate, useParams } from 'react-router-dom';
 import Icon from '@mdi/react';
 import { mdiLinkBoxVariantOutline } from '@mdi/js';
 import { useInView } from 'react-intersection-observer';
 import KeywordTag from './KeywordTag';
 import ConditionTag from './ConditionTag';
-import useRadialMenuStore from 'src/stores/radialMenuStore';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import StatBarContainer from './StatBarContainer';
 import ActionCard from './ActionCard';
@@ -38,13 +29,14 @@ import { LayoutContext } from 'src/contexts/LayoutContext';
 import rarityColorMap from 'src/utils/rarityColorMap';
 import useItem from 'src/hooks/useItem';
 import Loading from './Loading';
+import useParts from 'src/hooks/useParts';
 
 const ItemCard = ({
   itemId,
   className,
   style,
-  menu = true,
   size = 'large',
+  onClick,
   ownerId,
 }: {
   itemId: number;
@@ -52,6 +44,7 @@ const ItemCard = ({
   style?: CSSProperties;
   menu?: boolean;
   size?: 'small' | 'large';
+  onClick?: (value: number) => void;
   ownerId?: number;
 }) => {
   const { gameMaster } = useContext(CampaignContext);
@@ -63,8 +56,7 @@ const ItemCard = ({
   const { item, isLoading } = useItem(itemId);
 
   const navigate = useNavigate();
-  const location = useLocation();
-  const parts = location.pathname.split('/');
+  const { parts } = useParts();
 
   const { ref, inView } = useInView({
     triggerOnce: true,
@@ -72,25 +64,6 @@ const ItemCard = ({
   });
 
   const containerRef = useRef(null);
-
-  const menuOpen = useRadialMenuStore((state) => state.menuOpen);
-  const setMenuOpen = useRadialMenuStore((state) => state.setMenuOpen);
-  const setMenu = useRadialMenuStore((state) => state.setMenu);
-  const setCoordinates = useRadialMenuStore((state) => state.setCoordinates);
-
-  const handleMenu = (e: MouseEvent) => {
-    if (!containerRef.current) return;
-    setMenu('item', 'large', item.id);
-
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    if (!menuOpen) {
-      setCoordinates(x, y);
-    }
-    setMenuOpen(!menuOpen);
-  };
 
   if (isLoading) {
     return <Loading />;
@@ -109,14 +82,27 @@ const ItemCard = ({
             className={`${mobile ? 'p-2' : 'p-4'} timing relative flex cursor-pointer flex-col`}
             onClick={(e) => {
               e.stopPropagation();
-              if (menu) {
-                handleMenu(e);
+              if (onClick) {
+                onClick(item.id);
               } else {
-                navigate(`${item.id}`);
+                if (parts.includes('shop')) {
+                  if (parts.includes('modal')) {
+                    parts.includes('items')
+                      ? navigate(`${item.id}`)
+                      : navigate(`items/${item.id}`);
+                  } else {
+                    parts.includes('items')
+                      ? navigate(`${item.id}`)
+                      : navigate(`modal/items/${item.id}`);
+                  }
+                } else {
+                  parts.includes('items')
+                    ? navigate(`${item.id}`)
+                    : navigate(`items/${item.id}`);
+                }
               }
             }}
           >
-            {menu && <ItemRadialMenu item={item} containerRef={containerRef} />}
             <div
               className={`${size === 'small' ? 'flex-col' : 'max-h-[300px] flex-row'} flex w-full gap-8`}
             >
@@ -157,10 +143,6 @@ const ItemCard = ({
                         </Fragment>
                       ))}
                     </div>
-                  </div>
-                  <div className="flex grow items-start justify-end gap-4">
-                    <p>{item.price ? item.price + 'p' : 'N/A'}</p>
-                    {parts.includes('shop') && <CartButton itemId={item.id} />}
                   </div>
                 </div>
                 <div

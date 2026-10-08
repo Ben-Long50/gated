@@ -3,7 +3,7 @@ import BtnRect from './buttons/BtnRect';
 import CartCard from './CartCard';
 import useClearCartMutation from '../hooks/useClearCartMutation/useClearCartMutation';
 import useCompletePurchaseMutation from '../hooks/useCompletePurchaseMutation/useCompletePurchaseMutation';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { Character } from 'src/types/character';
 import ArrowHeader3 from './ArrowHeader3';
 import useCharacter from 'src/hooks/useCharacter';
@@ -12,8 +12,13 @@ import BtnAuth from './buttons/BtnAuth';
 
 const Cart = ({ character }: { character?: Character }) => {
   const { characterId } = useParams();
+  const location = useLocation();
 
-  const { filteredCharacter } = useCharacter(Number(characterId));
+  const shopCharacterId = location.state.shopCharacterId;
+
+  const { filteredCharacter } = useCharacter(
+    shopCharacterId ?? Number(characterId),
+  );
 
   const characterObj = character || filteredCharacter;
 
@@ -39,6 +44,7 @@ const Cart = ({ character }: { character?: Character }) => {
 
   return (
     <>
+      <h1>Cart</h1>
       {characterObj?.characterCart.items.map((itemReference) => {
         return (
           <CartCard

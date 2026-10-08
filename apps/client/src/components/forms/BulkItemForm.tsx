@@ -19,7 +19,13 @@ const BulkItemForm = () => {
   const bulkItemForm = useBulkItemForm(addBulkItems);
 
   return (
-    <FormLayout label="Cart" form={bulkItemForm} createMutation={addBulkItems}>
+    <FormLayout
+      title="Add Bulk Cart Items"
+      label="Cart Items"
+      form={bulkItemForm}
+      createMutation={addBulkItems}
+    >
+      <h1>Add Bulk Cart Items</h1>
       <bulkItemForm.Field name="quantity">
         {(field) => (
           <div className="flex items-center justify-between gap-8">

@@ -2,7 +2,6 @@ import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import { Character } from 'src/types/character';
 import { useState } from 'react';
-import Modal from './Modal';
 import BtnRect from '../buttons/BtnRect';
 import BtnAuth from '../buttons/BtnAuth';
 import Divider from '../Divider';
@@ -40,46 +39,7 @@ const AffiliationEntitySelectModal = () => {
   if (factionsLoading || gangsLoading || charactersLoading) return <Loading />;
 
   return (
-    <Modal
-      button={
-        <div className="flex flex-col gap-8">
-          <form.Subscribe
-            selector={(state) => [
-              state.values.factionIds,
-              state.values.gangIds,
-              state.values.characterIds,
-            ]}
-          >
-            {([factionIds, gangIds, characterIds]) => (
-              <div className="flex flex-col gap-4">
-                {factionIds.map((factionId: number) => {
-                  const faction = factions.find(
-                    (faction: Faction) => faction.id === factionId,
-                  );
-                  return <EntityCard entity={faction} />;
-                })}
-                {gangIds.map((gangId: number) => {
-                  const gang = gangs.find((gang: Gang) => gang.id === gangId);
-                  return <EntityCard entity={gang} />;
-                })}
-                {characterIds.map((characterId: number) => {
-                  const character = characters.find(
-                    (character: Character) => character.id === characterId,
-                  );
-                  return <EntityCard entity={character} />;
-                })}
-              </div>
-            )}
-          </form.Subscribe>
-          <BtnRect
-            ariaLabel="Select entities"
-            onClick={gangId ? () => form.handleSubmit() : () => navigate('..')}
-          >
-            Confirm Selection
-          </BtnRect>
-        </div>
-      }
-    >
+    <>
       <h1>Select {capitalCase(tab)}s</h1>
       <Divider />
       <div className="grid w-full grid-cols-3 items-center gap-4">
@@ -200,7 +160,43 @@ const AffiliationEntitySelectModal = () => {
               </div>
             ))}
       </div>
-    </Modal>
+      <div className="flex flex-col gap-8">
+        <form.Subscribe
+          selector={(state) => [
+            state.values.factionIds,
+            state.values.gangIds,
+            state.values.characterIds,
+          ]}
+        >
+          {([factionIds, gangIds, characterIds]) => (
+            <div className="flex flex-col gap-4">
+              {factionIds.map((factionId: number) => {
+                const faction = factions.find(
+                  (faction: Faction) => faction.id === factionId,
+                );
+                return <EntityCard entity={faction} />;
+              })}
+              {gangIds.map((gangId: number) => {
+                const gang = gangs.find((gang: Gang) => gang.id === gangId);
+                return <EntityCard entity={gang} />;
+              })}
+              {characterIds.map((characterId: number) => {
+                const character = characters.find(
+                  (character: Character) => character.id === characterId,
+                );
+                return <EntityCard entity={character} />;
+              })}
+            </div>
+          )}
+        </form.Subscribe>
+        <BtnRect
+          ariaLabel="Select entities"
+          onClick={gangId ? () => form.handleSubmit() : () => navigate('..')}
+        >
+          Confirm Selection
+        </BtnRect>
+      </div>
+    </>
   );
 };
 

@@ -1,13 +1,10 @@
 import { useState } from 'react';
-import { useNavigate, useOutletContext } from 'react-router-dom';
-import useModalStore from 'src/stores/modalStore';
-import Modal from './Modal';
+import { useOutletContext } from 'react-router-dom';
 import BtnAuth from '../buttons/BtnAuth';
 import { capitalCase } from 'change-case';
 import InputField from '../formFields/InputField';
 import { mdiSync } from '@mdi/js';
 import InputSelectField from '../formFields/InputSelectField';
-import BtnRect from '../buttons/BtnRect';
 import InputFieldCheckbox from '../formFields/InputFieldCheckbox';
 import NavTabs from '../NavTabs';
 import IconBtnSmall from '../buttons/IconBtnSmall';
@@ -16,9 +13,6 @@ import Icon from '@mdi/react';
 const ModifierModal = () => {
   const [tab, setTab] = useState<'character' | 'item'>('character');
   const [inputType, setInputType] = useState<'number' | 'skill'>('number');
-  const navigate = useNavigate();
-
-  const backgroundPath = useModalStore((state) => state.backgroundPath);
 
   const { form } = useOutletContext() || {};
 
@@ -88,20 +82,7 @@ const ModifierModal = () => {
   const stats = tab === 'character' ? characterStats : itemStats;
 
   return (
-    <Modal
-      button={
-        <BtnRect
-          ariaLabel="Close"
-          onClick={() => {
-            if (backgroundPath) {
-              navigate(backgroundPath, { replace: true });
-            }
-          }}
-        >
-          Close
-        </BtnRect>
-      }
-    >
+    <>
       <h1>Stat Modifiers</h1>
       <NavTabs className="grid-cols-2">
         <BtnAuth
@@ -221,7 +202,7 @@ const ModifierModal = () => {
           )}
         </form.Field>
       </div>
-    </Modal>
+    </>
   );
 };
 

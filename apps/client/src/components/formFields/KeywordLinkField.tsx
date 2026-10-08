@@ -89,7 +89,7 @@ const KeywordLinkField = ({ form, mode }: { form: FormApi; mode?: string }) => {
       <BtnAuth
         className="w-full min-w-48"
         onClick={() => {
-          navigate('traits?mode=form');
+          navigate('modal/traits?mode=form');
         }}
       >
         Link Traits

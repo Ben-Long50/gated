@@ -40,7 +40,7 @@ const ModifierField = ({ form }: { form: FormApi }) => {
       <BtnAuth
         className="w-full min-w-48"
         onClick={() => {
-          navigate('modifiers');
+          navigate('modal/modifiers');
         }}
       >
         Add Stat Modifiers

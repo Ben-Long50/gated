@@ -45,7 +45,7 @@ const useEditCartMutation = (characterId: number, cartId: number) => {
         data.itemId,
       ]);
 
-      const cartItem = prevCharacterData?.characterCart.items.find(
+      const cartItem = prevCharacterData?.characterCart?.items.find(
         (item) =>
           Object.values(item).find((value) => typeof value === 'object').id ===
           data.itemId,
@@ -59,7 +59,7 @@ const useEditCartMutation = (characterId: number, cartId: number) => {
               ...prev,
               characterCart: {
                 ...prev.characterCart,
-                items: prev.characterCart.items.filter(
+                items: prev.characterCart?.items?.filter(
                   (i) => i.itemId !== cartItem.item.id,
                 ),
               },
@@ -74,7 +74,7 @@ const useEditCartMutation = (characterId: number, cartId: number) => {
               ...prev,
               characterCart: {
                 ...prev.characterCart,
-                items: prev.characterCart.items.map((i) =>
+                items: prev.characterCart?.items?.map((i) =>
                   i.itemId === cartItem.item.id
                     ? {
                         ...i,
@@ -96,7 +96,7 @@ const useEditCartMutation = (characterId: number, cartId: number) => {
             characterCart: {
               ...prev.characterCart,
               items: [
-                ...prev.characterCart.items,
+                ...prev.characterCart?.items,
                 {
                   characterCartId: prev.characterCartId,
                   quantity: data.value,

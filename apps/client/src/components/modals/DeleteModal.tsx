@@ -1,11 +1,9 @@
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import BtnAuth from '../buttons/BtnAuth';
-import Modal from './Modal';
 import { mdiAlertCircleOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import useDeleteMapMutation from 'src/hooks/useDeleteMapMutation/useDeleteMapMutation';
-import { useContext, useState } from 'react';
-import { AuthContext } from 'src/contexts/AuthContext';
+import { useState } from 'react';
 import Loading from '../Loading';
 
 const DeleteModal = () => {
@@ -23,7 +21,7 @@ const DeleteModal = () => {
   );
 
   return (
-    <Modal>
+    <>
       <div className="flex w-full flex-col gap-8">
         <div className="flex items-center justify-center gap-4">
           <Icon
@@ -60,7 +58,7 @@ const DeleteModal = () => {
           </p>
         )}
       </div>
-    </Modal>
+    </>
   );
 };
 

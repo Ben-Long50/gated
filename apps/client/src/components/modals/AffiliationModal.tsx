@@ -1,4 +1,3 @@
-import Modal from './Modal';
 import BtnRect from '../buttons/BtnRect';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import useModalStore from 'src/stores/modalStore';
@@ -11,7 +10,7 @@ const AffiliationModal = () => {
   const backgroundPath = useModalStore((state) => state.backgroundPath);
 
   return (
-    <Modal className="h-full">
+    <>
       {parts.includes('affiliations') && <Outlet context={{ parts }} />}
       <BtnRect
         className="w-full"
@@ -25,7 +24,7 @@ const AffiliationModal = () => {
       >
         Close
       </BtnRect>
-    </Modal>
+    </>
   );
 };
 

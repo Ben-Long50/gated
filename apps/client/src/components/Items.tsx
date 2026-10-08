@@ -6,13 +6,14 @@ import useBaseItems from '../hooks/useBaseItems';
 import { Item, ItemType } from 'src/types/item';
 import { LayoutContext } from '../contexts/LayoutContext';
 import Icon from '@mdi/react';
-import { mdiCropSquare, mdiGrid, mdiLinkVariant, mdiSync } from '@mdi/js';
+import { mdiCropSquare, mdiGrid, mdiSync } from '@mdi/js';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
 import InputSelectField from './formFields/InputSelectField';
 import { capitalCase } from 'change-case';
 import ItemCard from './ItemCard';
 import BtnAuth from './buttons/BtnAuth';
 import IconBtnMedium from './buttons/IconBtnMedium';
+import { toast } from 'react-toastify';
 
 const Items = ({
   itemTypes,
@@ -63,9 +64,6 @@ const Items = ({
     <div
       className={`${mobile ? 'gap-4' : 'gap-8'} flex w-full flex-col items-start`}
     >
-      <h2 className="font-zen text-4xl">
-        {itemCategory ? `${capitalCase(itemCategory)}s` : ''}
-      </h2>
       {mode && mode === 'form' && (
         <div
           className={`${mobile ? 'flex-col' : 'flex-row'} flex w-full gap-4`}
@@ -171,35 +169,17 @@ const Items = ({
                 <Loading />
               ) : (
                 items?.map((item: Item) => {
-                  const linkCount = field.state.value.reduce(
-                    (sum: number, id: number) => {
-                      if (id === item.id) {
-                        return sum + 1;
-                      } else {
-                        return sum;
-                      }
-                    },
-                    0,
-                  );
-
                   return (
-                    <div
+                    <ItemCard
                       key={item.id}
-                      className="flex w-full items-center gap-4"
-                    >
-                      <ItemCard itemId={item.id} size={cardSize} menu={false} />
-                      <div className="flex flex-col items-center justify-center gap-2">
-                        {linkCount > 0 && <p>{linkCount}</p>}
-                        <IconBtnMedium
-                          onClick={() => {
-                            field.handleChange((prev) => [...prev, item.id]);
-                          }}
-                          tooltip="Link Item"
-                        >
-                          <Icon path={mdiLinkVariant} />
-                        </IconBtnMedium>
-                      </div>
-                    </div>
+                      itemId={item.id}
+                      size={cardSize}
+                      menu={false}
+                      onClick={() => {
+                        field.handleChange((prev) => [...prev, item.id]);
+                        toast(`Linked ${item.name}`);
+                      }}
+                    />
                   );
                 })
               )}

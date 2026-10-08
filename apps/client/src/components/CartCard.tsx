@@ -26,7 +26,7 @@ const CartCard = ({
   return (
     <div className="flex h-full w-full items-center justify-between gap-8">
       <PictureCard
-        className="max-w-40"
+        className="size-40"
         color={rarityColorMap[item.rarity]}
         publicId={item.generatedPicture?.publicId}
       />

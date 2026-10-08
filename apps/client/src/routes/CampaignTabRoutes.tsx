@@ -79,11 +79,11 @@ const CampaignTabRoutes = () => {
             <Route path="date" element={<CalendarModal />} />
             <Route path="event" element={<EventForm />} />
           </Route>
+          <Route path="characters">{CharacterMenuRoutes()}</Route>
           <Route
             path="conditions/:conditionId"
             element={<DescriptionModal />}
           />
-          <Route path="characters">{CharacterMenuRoutes()}</Route>
         </Route>
         <Route
           path="update"

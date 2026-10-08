@@ -4,12 +4,15 @@ import rarityColorMap from 'src/utils/rarityColorMap';
 import Icon from '@mdi/react';
 import { mdiCheckCircle } from '@mdi/js';
 import InventoryCardMenu from './InventoryCardMenu';
+import { ReactNode } from 'react';
 
 const InventoryCard = ({
   item,
+  button,
   onClick,
 }: {
   item: Item;
+  button?: ReactNode;
   onClick: () => void;
 }) => {
   return (
@@ -28,7 +31,7 @@ const InventoryCard = ({
           size={1}
         />
       )}
-      <InventoryCardMenu item={item} />
+      {button ? button : <InventoryCardMenu item={item} />}
     </div>
   );
 };

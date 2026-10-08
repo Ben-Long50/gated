@@ -27,51 +27,49 @@ const PromptModal = () => {
   }
   return (
     <>
-      <div className="flex w-full flex-col items-center gap-8">
-        <h1>{capitalCase(type)} Prompt Info</h1>
-        <FormLayout
-          label={`${capitalCase(type)} Picture`}
-          form={promptForm}
-          createMutation={generatePicture}
-        >
-          <div className="flex w-full flex-col gap-8">
-            <promptForm.Field name="time">
-              {(field) => (
-                <div className="flex w-full flex-col gap-2 border-x-2 border-gray-400 border-opacity-50 px-4">
-                  {['daytime', 'nighttime', 'sunrise', 'sunset'].map((time) => (
-                    <InputFieldRadio
-                      label={capitalCase(time)}
-                      checked={field.state.value === time}
-                      value={time}
-                      onChange={(value) => field.handleChange(value)}
-                    />
-                  ))}
-                </div>
-              )}
-            </promptForm.Field>
-            <promptForm.Field name="setting">
-              {(field) => (
-                <TextAreaField
-                  label="Setting Description"
-                  value={field.state.value}
-                  placeholder="e.g. a dimly lit city street with glowing neon lights in the background"
-                  onChange={(value) => field.handleChange(value)}
-                />
-              )}
-            </promptForm.Field>
-            <promptForm.Field name="description">
-              {(field) => (
-                <TextAreaField
-                  label={`${capitalCase(type)} Description`}
-                  value={field.state.value}
-                  placeholder={placeholder}
-                  onChange={(value) => field.handleChange(value)}
-                />
-              )}
-            </promptForm.Field>
-          </div>
-        </FormLayout>
-      </div>
+      <h1>{capitalCase(type)} Prompt Info</h1>
+      <FormLayout
+        label={`${capitalCase(type)} Picture`}
+        form={promptForm}
+        createMutation={generatePicture}
+      >
+        <div className="flex w-full flex-col gap-8">
+          <promptForm.Field name="time">
+            {(field) => (
+              <div className="flex w-full flex-col gap-2 border-x-2 border-gray-400 border-opacity-50 px-4">
+                {['daytime', 'nighttime', 'sunrise', 'sunset'].map((time) => (
+                  <InputFieldRadio
+                    label={capitalCase(time)}
+                    checked={field.state.value === time}
+                    value={time}
+                    onChange={(value) => field.handleChange(value)}
+                  />
+                ))}
+              </div>
+            )}
+          </promptForm.Field>
+          <promptForm.Field name="setting">
+            {(field) => (
+              <TextAreaField
+                label="Setting Description"
+                value={field.state.value}
+                placeholder="e.g. a dimly lit city street with glowing neon lights in the background"
+                onChange={(value) => field.handleChange(value)}
+              />
+            )}
+          </promptForm.Field>
+          <promptForm.Field name="description">
+            {(field) => (
+              <TextAreaField
+                label={`${capitalCase(type)} Description`}
+                value={field.state.value}
+                placeholder={placeholder}
+                onChange={(value) => field.handleChange(value)}
+              />
+            )}
+          </promptForm.Field>
+        </div>
+      </FormLayout>
     </>
   );
 };

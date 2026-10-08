@@ -1,15 +1,10 @@
-import { useNavigate, useOutletContext } from 'react-router-dom';
-import BtnRect from '../buttons/BtnRect';
-import useModalStore from 'src/stores/modalStore';
+import { useOutletContext } from 'react-router-dom';
 import Perks from '../Perks';
 import ArrowHeader4 from '../ArrowHeader4';
 import PerkCard from '../PerkCard';
 
 const PerkLinkModal = () => {
   const { form, level, attributeTree } = useOutletContext() || {};
-  const navigate = useNavigate();
-
-  const backgroundPath = useModalStore((state) => state.backgroundPath);
 
   return (
     <>
@@ -26,18 +21,6 @@ const PerkLinkModal = () => {
           </div>
         )}
       </form.Subscribe>
-      <BtnRect
-        type="button"
-        ariaLabel="Close"
-        className="w-full"
-        onClick={() => {
-          if (backgroundPath) {
-            navigate(backgroundPath, { replace: true });
-          }
-        }}
-      >
-        Close
-      </BtnRect>
     </>
   );
 };

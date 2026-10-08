@@ -1,20 +1,28 @@
 import { useState } from 'react';
 import calculateItemStats from 'src/utils/calculateItemStats';
 import useItemQueries from './useItemQueries/useItemQueries';
+import { ItemType } from 'src/types/item';
 
 const useItems = (itemIds: number[], category?: string | null) => {
   const { items: data, isLoading, isPending } = useItemQueries(itemIds);
 
   const items = data?.map((item) => calculateItemStats(item));
 
-  const [query, setQuery] = useState<string | null>(null);
+  const [query, setQuery] = useState<string>('');
+  const [types, setTypes] = useState<ItemType[]>([]);
   const [priceFilter, setPriceFilter] = useState<
     'highToLow' | 'lowToHigh' | null
   >(null);
   const [rarity, setRarity] = useState<string | null>(null);
 
   const filterItems = () => {
-    let filteredItems = items.sort((a, b) => a.name.localeCompare(b.name));
+    let filteredItems = items
+      .filter((item) =>
+        item.itemTypes.some(
+          (type: ItemType) => types.length === 0 || types.includes(type),
+        ),
+      )
+      .sort((a, b) => a.name.localeCompare(b.name));
 
     if (category) {
       filteredItems = filteredItems.filter((item) =>
@@ -68,6 +76,10 @@ const useItems = (itemIds: number[], category?: string | null) => {
     setQuery(newQuery);
   };
 
+  const filterByTypes = (types: ItemType[]) => {
+    setTypes(types);
+  };
+
   const filterByPrice = (direction: 'highToLow' | 'lowToHigh' | null) => {
     setPriceFilter(direction);
   };
@@ -77,14 +89,18 @@ const useItems = (itemIds: number[], category?: string | null) => {
   };
 
   const resetList = () => {
-    setQuery(null);
+    setQuery('');
+    setTypes([]);
     setPriceFilter(null);
     setRarity(null);
   };
 
   return {
     items: filterItems(),
+    query,
+    types,
     filterByQuery,
+    filterByTypes,
     filterByPrice,
     filterByRarity,
     resetList,

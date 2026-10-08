@@ -1,6 +1,5 @@
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { Fragment } from 'react/jsx-runtime';
-import Modal from './Modal';
 import BtnRect from '../buttons/BtnRect';
 import InputField from '../formFields/InputField';
 import Divider from '../Divider';

@@ -73,17 +73,7 @@ const TileListModal = () => {
   const { folders, files } = getContents(manifest, path);
 
   return (
-    <Modal
-      button={
-        <BtnRect
-          type="button"
-          ariaLabel="Select category"
-          onClick={() => navigate(-1)}
-        >
-          Select
-        </BtnRect>
-      }
-    >
+    <>
       <h1>Tile Explorer</h1>
       <div className="grid w-full grid-cols-3 gap-4">
         <BtnAuth
@@ -388,7 +378,7 @@ const TileListModal = () => {
           </div>
         </>
       )}
-    </Modal>
+    </>
   );
 };
 

@@ -46,30 +46,16 @@ const RollModal = () => {
         </div>
       ))}
       <Divider />
-      {rollForm ? (
+      {rollForm && (
         <BtnRect
           type="button"
           className="w-full"
           ariaLabel="Reroll"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
+          onClick={() => {
             rollForm.handleSubmit();
           }}
         >
           Reroll
-        </BtnRect>
-      ) : (
-        <BtnRect
-          type="button"
-          className="w-full"
-          ariaLabel="Close"
-          onClick={(e) => {
-            e.preventDefault();
-            navigate('..');
-          }}
-        >
-          Close
         </BtnRect>
       )}
     </>
