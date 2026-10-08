@@ -133,7 +133,9 @@ const Inventory = ({
                       ? parts.includes('modal')
                         ? `items/${item.id}`
                         : `modal/items/${item.id}`
-                      : `inventory/items/${item.id}`,
+                      : parts.includes('modal')
+                        ? `inventory/items/${item.id}`
+                        : `modal/inventory/items/${item.id}`,
                   )
                 }
               />

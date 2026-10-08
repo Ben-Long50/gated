@@ -20,6 +20,7 @@ import PictureRoutes from './PictureRoutes';
 import InventoryModalRoutes from './InventoryModalRoutes';
 import InventoryRoutes from './InventoryRoutes';
 import BulkItemForm from 'src/components/forms/BulkItemForm';
+import ShopPage from 'src/components/ShopPage';
 
 const CharacterRoutes = () => {
   return (
@@ -50,18 +51,12 @@ const CharacterRoutes = () => {
       <Route path="affiliations" element={<CharacterAffiliations />} />
       <Route path="cart" element={<Cart />} />
       <Route path="shop">
-        <Route
-          path="global"
-          element={
-            <Page title="Shop">
-              <Shop />
-            </Page>
-          }
-        >
+        <Route path="global" element={<ShopPage />}>
           <Route path="modal" element={<Modal />}>
             <Route path="cart" element={<Cart />} />
             <Route path="bulk" element={<BulkItemForm />} />
             <Route path="items/:itemId" element={<ItemPage />} />
+            {InventoryModalRoutes()}
           </Route>
         </Route>
       </Route>
