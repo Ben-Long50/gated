@@ -20,6 +20,10 @@ import useStandardLibraryQuery from 'src/hooks/useStandardLibraryQuery/useStanda
 import useGenerateStandardPictureMutation from 'src/hooks/useGenerateStandardPictureMutation/useGenerateStandardPictureMutation';
 import { useNavigateWithQuery } from 'src/hooks/useNavigateWithQuery';
 import useParts from 'src/hooks/useParts';
+import InputFieldRadio from './InputFieldRadio';
+import { capitalCase } from 'change-case';
+import FormLayout from 'src/layouts/FormLayout';
+import TextAreaField from './TextAreaField';
 
 const PictureField = ({
   form,
@@ -56,38 +60,104 @@ const PictureField = ({
     : user.generatedPictures;
   const picture = pictureList.find((picture) => picture.id === generationId);
 
-  useEffect(() => {
-    if (generatePicture.data) {
-      form.setFieldValue(
-        'generatedPictureId',
-        generatePicture.data?.newPictures[0].id,
-      );
-    }
-  }, [generatePicture.data]);
+  let placeholder = '';
+
+  switch (type) {
+    case 'character':
+      placeholder =
+        'e.g. a tall and muscular adult man; clean shaven with long black hair. He is dressed in torn up gangster clothing and weilds a two handed cyber sword which glows green. He is standing with the sword resting on their shoulder.';
+      break;
+    case 'item':
+      placeholder =
+        'e.g. a long, slender sword with glowing blue circuitry running along the length of the blade. The sword is modeled after a katana and is sitting on an ornate, decorative stand.';
+      break;
+    case 'scene':
+      placeholder =
+        'e.g. a mob of cybernetically enhanced gangsters running down the street while a large ghastly entity chases them from behind.';
+      break;
+  }
 
   return (
     <div
       className={`${mobile || type === 'scene' ? 'flex flex-col gap-4' : 'grid grid-cols-2 gap-6'} h-full`}
     >
+      <ThemeContainer
+        className="mx-auto my-auto w-full"
+        chamfer="medium"
+        borderColor={accentPrimary}
+        overflowHidden={true}
+      >
+        <CloudinaryPicture
+          className="bg-secondary h-full overflow-hidden bg-black"
+          style={
+            type === 'scene'
+              ? { aspectRatio: '16/9' }
+              : { aspectRatio: 'square' }
+          }
+          publicId={picture?.publicId}
+        />
+      </ThemeContainer>
       <div className="flex flex-col gap-8">
-        <ThemeContainer
-          className="mx-auto my-auto w-full"
-          chamfer="medium"
-          borderColor={accentPrimary}
-          overflowHidden={true}
-        >
-          <CloudinaryPicture
-            className="bg-secondary h-full overflow-hidden bg-black"
-            style={
-              type === 'scene'
-                ? { aspectRatio: '16/9' }
-                : { aspectRatio: 'square' }
-            }
-            publicId={picture?.publicId}
-          />
-        </ThemeContainer>
+        <promptForm.Field name="time">
+          {(field) => (
+            <div className="flex w-full flex-col gap-2 border-x-2 border-gray-400 border-opacity-50 px-4">
+              {['daytime', 'nighttime', 'sunrise', 'sunset'].map((time) => (
+                <InputFieldRadio
+                  label={capitalCase(time)}
+                  checked={field.state.value === time}
+                  value={time}
+                  onChange={(value) => field.handleChange(value)}
+                />
+              ))}
+            </div>
+          )}
+        </promptForm.Field>
+        <promptForm.Field name="setting">
+          {(field) => (
+            <TextAreaField
+              label="Setting Description"
+              value={field.state.value}
+              placeholder="e.g. a dimly lit city street with glowing neon lights in the background"
+              onChange={(value) => field.handleChange(value)}
+            />
+          )}
+        </promptForm.Field>
+        <promptForm.Field name="description">
+          {(field) => (
+            <TextAreaField
+              label={`${capitalCase(type)} Description`}
+              value={field.state.value}
+              placeholder={placeholder}
+              onChange={(value) => field.handleChange(value)}
+            />
+          )}
+        </promptForm.Field>
+        <div className="flex w-full flex-col gap-4">
+          <BtnRect
+            className="group"
+            ariaLabel="Generate picture"
+            active={!generatePicture.isPending}
+            onClick={() => {
+              if (!generatePicture.isPending) {
+                promptForm.handleSubmit();
+              }
+            }}
+          >
+            {generatePicture.isPending ? (
+              <Loading
+                className="group-hover:text-accent text-zinc-950"
+                size={1.15}
+              />
+            ) : (
+              'Generate'
+            )}
+          </BtnRect>
+          <BtnAuth className="group" onClick={() => navigate('modal/library')}>
+            Picture Library
+          </BtnAuth>
+        </div>
       </div>
-      <div className="flex flex-col gap-8">
+      <div className="col-span-2 flex flex-col gap-8">
         <promptForm.Field name="pictureCount">
           {(field) => (
             <div className="flex items-center justify-between gap-4">
@@ -113,10 +183,12 @@ const PictureField = ({
           {(pictureCount) => (
             <div className="grid grid-cols-4 gap-4">
               <form.Field name="generatedPictureId">
-                {(field) =>
-                  Array.from({ length: pictureCount }).map((_, index) => {
-                    const picture = generatePicture.data?.newPictures[index];
+                {(field) => {
+                  const pictures =
+                    generatePicture.data ??
+                    Array.from({ length: pictureCount });
 
+                  return pictures.map((picture, index) => {
                     return picture ? (
                       <PictureCard
                         key={index}
@@ -131,88 +203,13 @@ const PictureField = ({
                     ) : (
                       <PictureCard label="" color={accentPrimary} key={index} />
                     );
-                  })
-                }
+                  });
+                }}
               </form.Field>
             </div>
           )}
         </promptForm.Subscribe>
-        <div className="mt-auto flex flex-col gap-3 border-x-2 border-x-gray-400 border-opacity-50 px-4">
-          <promptForm.Subscribe
-            selector={(state) => [
-              state.values.time,
-              state.values.setting,
-              state.values.description,
-            ]}
-          >
-            {([time, setting, description]) => (
-              <>
-                <TrueFalseIndicator label="Time" active={Boolean(time)} />
-                <TrueFalseIndicator label="Setting" active={Boolean(setting)} />
-                <TrueFalseIndicator
-                  label="Description"
-                  active={Boolean(description)}
-                />
-              </>
-            )}
-          </promptForm.Subscribe>
-        </div>
-        <div className="flex flex-col gap-4">
-          <BtnAuth className="group" onClick={() => navigate('modal/library')}>
-            Picture Library
-          </BtnAuth>
-          <promptForm.Subscribe selector={(state) => state.values}>
-            {(values) => {
-              const complete = Object.values(values)
-                .map((value) => !!value)
-                .every(Boolean);
-
-              return complete ? (
-                <>
-                  <BtnAuth
-                    className="group"
-                    onClick={() => {
-                      navigate('modal/prompt');
-                    }}
-                  >
-                    Set Prompt Info
-                  </BtnAuth>
-                  <BtnRect
-                    className="group"
-                    ariaLabel="Generate picture"
-                    onClick={() => {
-                      promptForm.handleSubmit();
-                    }}
-                  >
-                    {generatePicture.isPending ? (
-                      <Loading
-                        className="group-hover:text-accent text-zinc-950"
-                        size={1.15}
-                      />
-                    ) : (
-                      'Generate'
-                    )}
-                  </BtnRect>
-                </>
-              ) : (
-                <BtnRect
-                  className="group"
-                  ariaLabel="Generate picture"
-                  onClick={() => {
-                    navigate('modal/prompt');
-                  }}
-                >
-                  Set Prompt Info
-                </BtnRect>
-              );
-            }}
-          </promptForm.Subscribe>
-        </div>
       </div>
-      {parts.includes('prompt') && (
-        <Outlet context={{ type, promptForm, generatePicture }} />
-      )}
-      {parts.includes('library') && <Outlet context={{ type, form }} />}
     </div>
   );
 };

@@ -1,14 +1,16 @@
 import FormLayout from '../../layouts/FormLayout';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import Loading from '../Loading';
 import LexicalEditor from '../lexical/LexicalEditor';
 import useCharacterQuery from '../../hooks/useCharacterQuery/useCharacterQuery';
 import useUpdateCharacterMutation from '../../hooks/useCharacterUpdateMutation/useCharacterUpdateMutation';
-import ArrowHeader2 from '../ArrowHeader2';
 import useResumeForm from 'src/hooks/form hooks/useResumeForm';
+import { camelCase, capitalCase } from 'change-case';
 
 const ResumeForm = () => {
   const { characterId } = useParams();
+  const [searchParams] = useSearchParams();
+  const resumeName = searchParams.get('state') || '';
 
   const { data: character, isLoading } = useCharacterQuery(Number(characterId));
 
@@ -33,83 +35,9 @@ const ResumeForm = () => {
       itemId={characterId}
       createMutation={updateCharacter}
     >
-      <ArrowHeader2 title="Backstory" />
-      <resumeForm.Field
-        name="backstory"
-        validators={{
-          onChange: ({ value }) =>
-            value.html.length < 50
-              ? 'Section content has not met the minimum length requirement'
-              : undefined,
-        }}
-      >
-        {(field) => (
-          <>
-            <LexicalEditor field={field} />
-            {field.state.meta.errors &&
-              field.state.meta.errors.map((error, index) => (
-                <p
-                  key={index}
-                  className="timing text-error text-base italic leading-5"
-                  role="alert"
-                >
-                  {error}
-                </p>
-              ))}
-          </>
-        )}
-      </resumeForm.Field>
-      <ArrowHeader2 title="First Taste" />
-      <resumeForm.Field
-        name="firstTaste"
-        validators={{
-          onChange: ({ value }) =>
-            value.html.length < 50
-              ? 'Section content has not met the minimum length requirement'
-              : undefined,
-        }}
-      >
-        {(field) => (
-          <>
-            <LexicalEditor field={field} />
-            {field.state.meta.errors &&
-              field.state.meta.errors.map((error, index) => (
-                <p
-                  key={index}
-                  className="timing text-error text-base italic leading-5"
-                  role="alert"
-                >
-                  {error}
-                </p>
-              ))}
-          </>
-        )}
-      </resumeForm.Field>
-      <ArrowHeader2 title="Bad Medicine" />
-      <resumeForm.Field
-        name="badMedicine"
-        validators={{
-          onChange: ({ value }) =>
-            value.html.length < 50
-              ? 'Section content has not met the minimum length requirement'
-              : undefined,
-        }}
-      >
-        {(field) => (
-          <>
-            <LexicalEditor field={field} />
-            {field.state.meta.errors &&
-              field.state.meta.errors.map((error, index) => (
-                <p
-                  key={index}
-                  className="timing text-error text-base italic leading-5"
-                  role="alert"
-                >
-                  {error}
-                </p>
-              ))}
-          </>
-        )}
+      <h1>Update {capitalCase(resumeName)}</h1>
+      <resumeForm.Field name={camelCase(resumeName)}>
+        {(field) => <LexicalEditor field={field} />}
       </resumeForm.Field>
     </FormLayout>
   );

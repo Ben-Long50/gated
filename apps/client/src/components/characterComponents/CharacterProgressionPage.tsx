@@ -24,6 +24,7 @@ import { ThemeContext } from 'src/contexts/ThemeContext';
 import ArrowHeader2 from '../ArrowHeader2';
 import IconBtnMedium from '../buttons/IconBtnMedium';
 import ProgressionIcon from '../icons/ProgressionIcon';
+import Page from '../Page';
 
 const CharacterProgressionPage = () => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -47,7 +48,7 @@ const CharacterProgressionPage = () => {
   }
 
   return (
-    <>
+    <Page title="Character Progression">
       <CharacterHeader character={character} />
       <div className="grid items-center gap-8 max-sm:grid-flow-row sm:grid-cols-[2fr,3fr]">
         {character?.generatedPicture?.publicId && (
@@ -363,8 +364,7 @@ const CharacterProgressionPage = () => {
           })}
         </div>
       )}
-      {parts.includes('levelBonus') && <Outlet />}
-    </>
+    </Page>
   );
 };
 

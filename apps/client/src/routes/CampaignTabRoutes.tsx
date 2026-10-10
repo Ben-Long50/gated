@@ -43,11 +43,11 @@ import AffiliationEntitySelectModal from 'src/components/modals/AffiliationEntit
 import CampaignDashboard from 'src/components/CampaignDashboard';
 import Page from 'src/components/Page';
 import CampaignMapList from 'src/components/mapComponents/map/CampaignMapList';
-import PictureRoutes from './PictureRoutes';
 import CharacterAddModal from 'src/components/characterComponents/CharacterAddModal';
 import CampaignCharacters from 'src/components/characterComponents/CampaignCharacters';
 import Modal from 'src/components/modals/Modal';
 import CampaignCharacterSelectModal from 'src/components/characterComponents/CampaignCharacterSelectModal';
+import PictureLibraryModal from 'src/components/modals/PictureLibraryModal';
 
 const CampaignTabRoutes = () => {
   return (
@@ -95,8 +95,8 @@ const CampaignTabRoutes = () => {
         >
           <Route path="modal" element={<Modal />}>
             <Route path="managePlayers" element={<PlayerSelectModal />} />
+            <Route path="library" element={<PictureLibraryModal />} />
           </Route>
-          {PictureRoutes()}
         </Route>
         <Route path="factions/:factionId">
           <Route
@@ -165,8 +165,8 @@ const CampaignTabRoutes = () => {
             <Route path="modal" element={<Modal />}>
               <Route path="save" element={<MapSaveModal />} />
               <Route path="tileList" element={<TileListModal />} />
+              <Route path="library" element={<PictureLibraryModal />} />
             </Route>
-            {PictureRoutes()}
           </Route>
           <Route
             path=":mapId/update"
@@ -179,8 +179,8 @@ const CampaignTabRoutes = () => {
             <Route path="modal" element={<Modal />}>
               <Route path="save" element={<MapSaveModal />} />
               <Route path="tileList" element={<TileListModal />} />
+              <Route path="library" element={<PictureLibraryModal />} />
             </Route>
-            {PictureRoutes()}
           </Route>
           <Route
             path=":mapId/encounters/:encounterId"
@@ -313,8 +313,8 @@ const CampaignTabRoutes = () => {
                 path="characterSelect"
                 element={<GangCharacterSelectModal />}
               />
+              <Route path="library" element={<PictureLibraryModal />} />
             </Route>
-            {PictureRoutes()}
           </Route>
           <Route
             path=":gangId/update"
@@ -343,8 +343,8 @@ const CampaignTabRoutes = () => {
       >
         <Route path="modal" element={<Modal />}>
           <Route path="managePlayers" element={<PlayerSelectModal />} />
+          <Route path="library" element={<PictureLibraryModal />} />
         </Route>
-        {PictureRoutes()}
       </Route>
       <Route
         path="rollSimulator"

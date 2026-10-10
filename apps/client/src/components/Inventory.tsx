@@ -6,7 +6,7 @@ import InventoryIcon from './icons/InventoryIcon';
 import PotionIcon from './icons/PotionIcon';
 import VehicleIcon from './icons/VehicleIcon';
 import WeaponIcon from './icons/WeaponIcon';
-import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import useCharacter from 'src/hooks/useCharacter';
 import Loading from './Loading';
 import { Item } from 'src/types/item';

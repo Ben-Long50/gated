@@ -20,7 +20,6 @@ import Properties from 'src/components/Properties';
 import PropertyForm from 'src/components/forms/PropertyForm';
 import CodexDashboard from 'src/components/CodexDashboard';
 import Page from 'src/components/Page';
-import PictureRoutes from './PictureRoutes';
 import CharacterForm from 'src/components/forms/CharacterForm';
 import PerkLinkModal from 'src/components/modals/PerkLinkModal';
 import NpcPreferenceModal from 'src/components/modals/NpcPreferenceModal';
@@ -34,6 +33,7 @@ import Map from 'src/components/mapComponents/map/Map';
 import CodexMapList from 'src/components/mapComponents/map/CodexMapList';
 import CharacterMenuRoutes from './CharacterMenuRoutes';
 import Modal from 'src/components/modals/Modal';
+import PictureLibraryModal from 'src/components/modals/PictureLibraryModal';
 
 const CodexTabRoutes = () => {
   return (
@@ -78,11 +78,11 @@ const CodexTabRoutes = () => {
             </Page>
           }
         >
-          {PictureRoutes()}
           <Route path="modal" element={<Modal />}>
             <Route path="perks" element={<PerkLinkModal />} />
             <Route path="npcPreferences" element={<NpcPreferenceModal />} />
             <Route path="actions" element={<ActionLinkModal />} />
+            <Route path="library" element={<PictureLibraryModal />} />
           </Route>
         </Route>
       </Route>
@@ -113,11 +113,11 @@ const CodexTabRoutes = () => {
             </Page>
           }
         >
-          {PictureRoutes()}
           <Route path="modal" element={<Modal />}>
             <Route path="traits" element={<KeywordLinkModal />} />
             <Route path="links" element={<ItemLinkModal />} />
             <Route path="actions" element={<ActionLinkModal />} />
+            <Route path="library" element={<PictureLibraryModal />} />
           </Route>
         </Route>
         <Route
@@ -128,11 +128,11 @@ const CodexTabRoutes = () => {
             </Page>
           }
         >
-          {PictureRoutes()}
           <Route path="modal" element={<Modal />}>
             <Route path="traits" element={<KeywordLinkModal />} />
             <Route path="links" element={<ItemLinkModal />} />
             <Route path="actions" element={<ActionLinkModal />} />
+            <Route path="library" element={<PictureLibraryModal />} />
           </Route>
         </Route>
       </Route>
@@ -153,7 +153,9 @@ const CodexTabRoutes = () => {
             </Page>
           }
         >
-          {PictureRoutes()}
+          <Route path="modal" element={<Modal />}>
+            <Route path="library" element={<PictureLibraryModal />} />
+          </Route>
         </Route>
         <Route
           path=":propertyId/update"
@@ -163,7 +165,9 @@ const CodexTabRoutes = () => {
             </Page>
           }
         >
-          {PictureRoutes()}
+          <Route path="modal" element={<Modal />}>
+            <Route path="library" element={<PictureLibraryModal />} />
+          </Route>
         </Route>
       </Route>
       <Route path="perks">
@@ -313,7 +317,7 @@ const CodexTabRoutes = () => {
             <Route path="modal" element={<Modal />}>
               <Route path="save" element={<MapSaveModal />} />
               <Route path="tileList" element={<TileListModal />} />
-              {PictureRoutes()}
+              <Route path="library" element={<PictureLibraryModal />} />
             </Route>
           </Route>
         </Route>
@@ -321,7 +325,7 @@ const CodexTabRoutes = () => {
           <Route path="modal" element={<Modal />}>
             <Route path="save" element={<MapSaveModal />} />
             <Route path="tileList" element={<TileListModal />} />
-            {PictureRoutes()}
+            <Route path="library" element={<PictureLibraryModal />} />
           </Route>
         </Route>
       </Route>

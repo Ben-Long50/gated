@@ -18,6 +18,7 @@ import { useContext } from 'react';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import useCharacter from 'src/hooks/useCharacter';
 import combineObjects from 'src/utils/combineObjects';
+import Page from '../Page';
 
 const CharacterUpdateForm = () => {
   const { characterId } = useParams();
@@ -48,118 +49,126 @@ const CharacterUpdateForm = () => {
   }
 
   return (
-    <FormLayout
-      label={character ? character?.name : 'Character'}
-      form={characterUpdateForm}
-      itemId={characterId}
-      createMutation={updateCharacter}
-      deleteMutation={deleteCharacter}
+    <Page
+      title="Update Character"
+      context={{ form: characterUpdateForm, type: 'character' }}
     >
-      <ArrowHeader2 title="General Information" />
-      <characterUpdateForm.Field name="campaignId">
-        {(field) => (
-          <InputSelectField
-            label="Campaign"
-            options={campaigns || []}
-            value={field.state.value}
-            onChange={(value) => field.handleChange(value.id)}
-          />
-        )}
-      </characterUpdateForm.Field>
-      <NpcPreferenceField form={characterUpdateForm} />
-      <Divider />
-      <ArrowHeader2 title="Character Information" />
-      <div className="grid w-full grid-cols-2 gap-4">
-        <characterUpdateForm.Field name="name">
-          {(field) => (
-            <InputField
-              label="Name"
-              value={field.state.value}
-              onChange={(value) => field.handleChange(value)}
-            />
-          )}
-        </characterUpdateForm.Field>
-        <characterUpdateForm.Field name="title">
-          {(field) => (
-            <InputField
-              label="Title"
-              value={field.state.value}
-              onChange={(value) => field.handleChange(value)}
-            />
-          )}
-        </characterUpdateForm.Field>
-        <characterUpdateForm.Field name="height">
-          {(field) => (
-            <InputField
-              type="number"
-              label="Height (in)"
-              value={field.state.value}
-              onChange={(value) => field.handleChange(value)}
-            />
-          )}
-        </characterUpdateForm.Field>
-        <characterUpdateForm.Field name="weight">
-          {(field) => (
-            <InputField
-              type="number"
-              label="Weight (lbs)"
-              value={field.state.value}
-              onChange={(value) => field.handleChange(value)}
-            />
-          )}
-        </characterUpdateForm.Field>
-        <characterUpdateForm.Field name="age">
-          {(field) => (
-            <InputField
-              type="number"
-              label="Age (yrs)"
-              value={field.state.value}
-              onChange={(value) => field.handleChange(value)}
-            />
-          )}
-        </characterUpdateForm.Field>
-        <characterUpdateForm.Field name="sex">
+      <FormLayout
+        label={character ? character?.name : 'Character'}
+        form={characterUpdateForm}
+        itemId={characterId}
+        createMutation={updateCharacter}
+        deleteMutation={deleteCharacter}
+      >
+        <ArrowHeader2 title="General Information" />
+        <characterUpdateForm.Field name="campaignId">
           {(field) => (
             <InputSelectField
-              label="Sex"
-              options={['male', 'female', 'unknown']}
+              label="Campaign"
+              options={campaigns || []}
               value={field.state.value}
-              onChange={(value) => field.handleChange(value)}
+              onChange={(value) => field.handleChange(value.id)}
             />
           )}
         </characterUpdateForm.Field>
-      </div>
-      <Divider />
-      <ArrowHeader2 title="Character Picture" />
-      <PictureField form={characterUpdateForm} type="character" />
-      <Divider />
-      <ArrowHeader2 title="Stats" />
-      <characterUpdateForm.Field name="stats">
-        {(field) => {
-          const { permanentInjuries, permanentInsanities, ...stats } =
-            filteredCharacter?.stats;
-
-          return (
-            <StatBarContainer size={size}>
-              <CharacterStatBars
-                stats={combineObjects(field.state.value, stats)}
-                size="large"
-                handleChange={
-                  !character?.playerCharacter
-                    ? (stat, value) =>
-                        characterUpdateForm.setFieldValue('stats', (prev) => ({
-                          ...prev,
-                          [stat]:
-                            prev[stat] != null ? prev[stat] + value : value,
-                        }))
-                    : undefined
-                }
+        <NpcPreferenceField form={characterUpdateForm} />
+        <Divider />
+        <ArrowHeader2 title="Character Information" />
+        <div className="grid w-full grid-cols-2 gap-4">
+          <characterUpdateForm.Field name="name">
+            {(field) => (
+              <InputField
+                label="Name"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
               />
-            </StatBarContainer>
-          );
-        }}
-      </characterUpdateForm.Field>
-    </FormLayout>
+            )}
+          </characterUpdateForm.Field>
+          <characterUpdateForm.Field name="title">
+            {(field) => (
+              <InputField
+                label="Title"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
+            )}
+          </characterUpdateForm.Field>
+          <characterUpdateForm.Field name="height">
+            {(field) => (
+              <InputField
+                type="number"
+                label="Height (in)"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
+            )}
+          </characterUpdateForm.Field>
+          <characterUpdateForm.Field name="weight">
+            {(field) => (
+              <InputField
+                type="number"
+                label="Weight (lbs)"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
+            )}
+          </characterUpdateForm.Field>
+          <characterUpdateForm.Field name="age">
+            {(field) => (
+              <InputField
+                type="number"
+                label="Age (yrs)"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
+            )}
+          </characterUpdateForm.Field>
+          <characterUpdateForm.Field name="sex">
+            {(field) => (
+              <InputSelectField
+                label="Sex"
+                options={['male', 'female', 'unknown']}
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
+            )}
+          </characterUpdateForm.Field>
+        </div>
+        <Divider />
+        <ArrowHeader2 title="Character Picture" />
+        <PictureField form={characterUpdateForm} type="character" />
+        <Divider />
+        <ArrowHeader2 title="Stats" />
+        <characterUpdateForm.Field name="stats">
+          {(field) => {
+            const { permanentInjuries, permanentInsanities, ...stats } =
+              filteredCharacter?.stats;
+
+            return (
+              <StatBarContainer size={size}>
+                <CharacterStatBars
+                  stats={combineObjects(field.state.value, stats)}
+                  size="large"
+                  handleChange={
+                    !character?.playerCharacter
+                      ? (stat, value) =>
+                          characterUpdateForm.setFieldValue(
+                            'stats',
+                            (prev) => ({
+                              ...prev,
+                              [stat]:
+                                prev[stat] != null ? prev[stat] + value : value,
+                            }),
+                          )
+                      : undefined
+                  }
+                />
+              </StatBarContainer>
+            );
+          }}
+        </characterUpdateForm.Field>
+      </FormLayout>
+    </Page>
   );
 };
 

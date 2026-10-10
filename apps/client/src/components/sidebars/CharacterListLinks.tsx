@@ -78,7 +78,7 @@ const CharacterListLinks = () => {
         />
         <SubLinkSidebar
           title="Create Template Character"
-          path="characters/add"
+          path="characters/addCharacter"
         />
       </LinkListSidebar>
 

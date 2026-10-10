@@ -37,7 +37,7 @@ const CharacterList = ({
   isLoading?: boolean;
 }) => {
   const { mobile } = useContext(LayoutContext);
-  const { campaignId, characterId } = useParams();
+  const { campaignId } = useParams();
   const [size, setSize] = useState<'small' | 'large'>('small');
 
   const { parts } = useParts();
@@ -121,7 +121,6 @@ const CharacterList = ({
           </div>
         )}
       </div>
-      {characterId && <Outlet />}
     </>
   );
 };

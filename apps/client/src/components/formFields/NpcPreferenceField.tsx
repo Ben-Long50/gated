@@ -1,6 +1,6 @@
 import { FormApi } from '@tanstack/react-form';
 import BtnRect from '../buttons/BtnRect';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { capitalCase } from 'change-case';
 import ArrowHeader3 from '../ArrowHeader3';
 import InputFieldCheckbox from './InputFieldCheckbox';
@@ -8,8 +8,6 @@ import TextAreaField from './TextAreaField';
 
 const NpcPreferenceField = ({ form }: { form: FormApi }) => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const parts = location.pathname.split('/');
 
   const npcTypes = ['shop', 'template', 'goon', 'monster'];
 
@@ -18,9 +16,6 @@ const NpcPreferenceField = ({ form }: { form: FormApi }) => {
       {(playerCharacter: boolean) =>
         playerCharacter === false && (
           <>
-            {parts[parts.length - 1] === 'npcPreferences' && (
-              <Outlet context={{ form, parts }} />
-            )}
             <form.Field name="npcTypes" mode="array">
               {(field) => (
                 <div className="flex w-full flex-col gap-4">

@@ -7,7 +7,7 @@ import Icon from '@mdi/react';
 import PerkCard from '../PerkCard';
 import AttributeCard from '../AttributeCard';
 import { LayoutContext } from '../../contexts/LayoutContext';
-import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import BtnRect from '../buttons/BtnRect';
 import Loading from '../Loading';
 import ArrowHeader3 from '../ArrowHeader3';
@@ -27,12 +27,10 @@ import Inventory from '../Inventory';
 
 const CharacterSheet = () => {
   const { accentPrimary } = useContext(ThemeContext);
-  const { conditionId, characterId } = useParams();
+  const { characterId } = useParams();
   const { user } = useContext(AuthContext);
   const { mobile } = useContext(LayoutContext);
   const navigate = useNavigate();
-  const location = useLocation();
-  const parts = location.pathname.split('/');
 
   const size = mobile ? 'small' : 'large';
 
@@ -101,9 +99,6 @@ const CharacterSheet = () => {
                 {character?.conditions?.map((condition) => (
                   <Fragment key={condition.id}>
                     <ConditionTag key={condition.id} condition={condition} />
-                    {characterId && Number(conditionId) === condition.id && (
-                      <Outlet context={{ condition, parts }} />
-                    )}
                   </Fragment>
                 ))}
               </div>
@@ -187,16 +182,20 @@ const CharacterSheet = () => {
                 <Divider />
                 {character?.playerCharacter ? (
                   <>
-                    <BtnAuth onClick={() => navigate('resume?state=Backstory')}>
+                    <BtnAuth
+                      onClick={() => navigate('modal/resume?state=Backstory')}
+                    >
                       Backstory
                     </BtnAuth>
                     <BtnAuth
-                      onClick={() => navigate('resume?state=First Taste')}
+                      onClick={() => navigate('modal/resume?state=First Taste')}
                     >
                       First Taste
                     </BtnAuth>
                     <BtnAuth
-                      onClick={() => navigate('resume?state=Bad Medicine')}
+                      onClick={() =>
+                        navigate('modal/resume?state=Bad Medicine')
+                      }
                     >
                       Bad Medicine
                     </BtnAuth>

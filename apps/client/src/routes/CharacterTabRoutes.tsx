@@ -5,11 +5,9 @@ import PerkLinkModal from 'src/components/modals/PerkLinkModal';
 import CharacterRoutes from './CharacterRoutes';
 import CharacterMenuRoutes from './CharacterMenuRoutes';
 import CharacterDashboard from 'src/components/characterComponents/CharacterDashboard';
-import Page from 'src/components/Page';
-import PictureRoutes from './PictureRoutes';
-import ActionLinkModal from 'src/components/modals/ActionLinkModal';
-import CharacterAddModal from 'src/components/characterComponents/CharacterAddModal';
 import Modal from 'src/components/modals/Modal';
+import PictureLibraryModal from 'src/components/modals/PictureLibraryModal';
+import CharacterAddPage from 'src/components/characterComponents/CharacterAddPage';
 
 const CharacterTabRoutes = () => {
   return (
@@ -17,24 +15,14 @@ const CharacterTabRoutes = () => {
       <Route path="dashboard" element={<CharacterDashboard />}>
         {CharacterMenuRoutes()}
       </Route>
-      <Route
-        path="create"
-        element={
-          <Page title="Create Character">
-            <CharacterForm />
-          </Page>
-        }
-      >
-        {PictureRoutes()}
+      <Route path="create" element={<CharacterForm />}>
         <Route path="modal" element={<Modal />}>
           <Route path="perks" element={<PerkLinkModal />} />
           <Route path="npcPreferences" element={<NpcPreferenceModal />} />
-          <Route path="actions" element={<ActionLinkModal />} />
+          <Route path="library" element={<PictureLibraryModal />} />
         </Route>
       </Route>
-      <Route path="modal" element={<Modal />}>
-        <Route path="add" element={<CharacterAddModal />} />
-      </Route>
+      <Route path="addCharacter" element={<CharacterAddPage />} />
       {CharacterRoutes()}
     </Route>
   );
