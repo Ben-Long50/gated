@@ -5,8 +5,9 @@ import useGangQueries from 'src/hooks/gang hooks/useGangQueries/useGangQueries';
 import GangCard from './GangCard';
 import { Gang } from 'src/types/gang';
 import Loading from './Loading';
+import Page from './Page';
 
-const Gangs = () => {
+const CampaignGangList = () => {
   const { campaignId } = useParams();
 
   const { data: campaign } = useCampaignQuery(Number(campaignId));
@@ -34,15 +35,14 @@ const Gangs = () => {
   }
 
   return (
-    <div className="flex w-full max-w-6xl flex-col items-center gap-6 sm:gap-8">
-      <h1>Gangs</h1>
+    <Page title="Gangs">
       <div className="flex w-full flex-col gap-8">
-        {gangs?.map((gang: Gang) => (
+        {gangs?.map((gang) => (
           <GangCard key={gang.id} gang={gang} />
         ))}
       </div>
-    </div>
+    </Page>
   );
 };
 
-export default Gangs;
+export default CampaignGangList;

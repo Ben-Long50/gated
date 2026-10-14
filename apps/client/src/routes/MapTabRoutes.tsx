@@ -1,5 +1,4 @@
 import { Route } from 'react-router-dom';
-import Page from 'src/components/Page';
 import MapBuilder from 'src/components/mapComponents/mapBuilder/MapBuilder';
 import MapSaveModal from 'src/components/mapComponents/mapBuilder/MapSaveModal';
 import TileListModal from 'src/components/mapComponents/mapBuilder/TileListModal';
@@ -11,14 +10,7 @@ import MapPage from 'src/components/mapComponents/map/MapPage';
 const MapTabRoutes = () => {
   return (
     <Route path="maps">
-      <Route
-        path=""
-        element={
-          <Page title="Maps">
-            <UserMapList />
-          </Page>
-        }
-      />
+      <Route path="" element={<UserMapList />} />
       <Route path=":mapId" element={<MapPage />} />
       <Route path=":mapId/update" element={<MapBuilder />}>
         <Route path="modal" element={<Modal />}>

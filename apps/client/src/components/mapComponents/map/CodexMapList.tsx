@@ -1,7 +1,7 @@
 import MapList from './MapList';
 import useCodexMapsQuery from 'src/hooks/useCodexMapsQuery/useCodexMapsQuery';
 import Loading from 'src/components/Loading';
-import InputField from 'src/components/formFields/InputField';
+import Page from 'src/components/Page';
 
 const CodexMapList = () => {
   const { data: maps, isLoading } = useCodexMapsQuery();
@@ -16,7 +16,11 @@ const CodexMapList = () => {
     return <p>No maps found</p>;
   }
 
-  return <MapList mapIds={mapIds} />;
+  return (
+    <Page title="Maps">
+      <MapList mapIds={mapIds} />
+    </Page>
+  );
 };
 
 export default CodexMapList;

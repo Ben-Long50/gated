@@ -9,11 +9,12 @@ import usePropertyQuery from 'src/hooks/property hooks/usePropertyQuery/usePrope
 import InputSelectField from '../formFields/InputSelectField';
 import usePropertyForm from 'src/hooks/form hooks/usePropertyForm';
 import FormLayout from 'src/layouts/FormLayout';
+import Page from '../Page';
 
 const PropertyForm = () => {
   const { propertyId } = useParams();
 
-  const createProperty = useCreatePropertyMutation(Number(propertyId));
+  const createProperty = useCreatePropertyMutation();
 
   const { data: property, isLoading: propertyLoading } = usePropertyQuery(
     Number(propertyId),
@@ -24,56 +25,61 @@ const PropertyForm = () => {
   if (propertyLoading) return <Loading />;
 
   return (
-    <FormLayout
-      label="Property"
-      form={propertyForm}
-      itemId={propertyId}
-      createMutation={createProperty}
+    <Page
+      title={propertyId ? 'Update Property' : 'Create Property'}
+      context={{ form: propertyForm }}
     >
-      <ArrowHeader2 title="Property Information" />
-      <div className="flex w-full gap-4">
-        <propertyForm.Field name="name">
+      <FormLayout
+        label="Property"
+        form={propertyForm}
+        itemId={propertyId}
+        createMutation={createProperty}
+      >
+        <ArrowHeader2 title="Property Information" />
+        <div className="flex w-full gap-4">
+          <propertyForm.Field name="name">
+            {(field) => (
+              <InputField
+                label="Property Name"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
+            )}
+          </propertyForm.Field>
+          <propertyForm.Field name="gpPrice">
+            {(field) => (
+              <InputField
+                className="max-w-28"
+                type="number"
+                label="GP Price"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
+            )}
+          </propertyForm.Field>
+        </div>
+        <propertyForm.Field name="type">
           {(field) => (
-            <InputField
-              label="Property Name"
+            <InputSelectField
+              label="Property Type"
+              options={['property', 'districtUpgrade']}
               value={field.state.value}
               onChange={(value) => field.handleChange(value)}
             />
           )}
         </propertyForm.Field>
-        <propertyForm.Field name="gpPrice">
+        <propertyForm.Field name="description">
           {(field) => (
-            <InputField
-              className="max-w-28"
-              type="number"
-              label="GP Price"
+            <TextAreaField
+              label="Property Description"
               value={field.state.value}
               onChange={(value) => field.handleChange(value)}
             />
           )}
         </propertyForm.Field>
-      </div>
-      <propertyForm.Field name="type">
-        {(field) => (
-          <InputSelectField
-            label="Property Type"
-            options={['property', 'districtUpgrade']}
-            value={field.state.value}
-            onChange={(value) => field.handleChange(value)}
-          />
-        )}
-      </propertyForm.Field>
-      <propertyForm.Field name="description">
-        {(field) => (
-          <TextAreaField
-            label="Property Description"
-            value={field.state.value}
-            onChange={(value) => field.handleChange(value)}
-          />
-        )}
-      </propertyForm.Field>
-      <PictureField form={propertyForm} type="scene" />
-    </FormLayout>
+        <PictureField form={propertyForm} type="scene" />
+      </FormLayout>
+    </Page>
   );
 };
 

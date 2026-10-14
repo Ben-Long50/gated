@@ -6,7 +6,6 @@ import RollSimulator from 'src/components/RollSimulator';
 import SessionRoutes from './SessionRoutes';
 import CampaignAffiliations from 'src/components/CampaignAffiliations';
 import RollModal from 'src/components/modals/RollModal';
-import Notes from 'src/components/NotesPage';
 import CalendarModal from 'src/components/modals/CalendarModal';
 import EventForm from 'src/components/forms/EventForm';
 import TimeModal from 'src/components/modals/TimeModal';
@@ -14,7 +13,6 @@ import MapBuilder from 'src/components/mapComponents/mapBuilder/MapBuilder';
 import MapSaveModal from 'src/components/mapComponents/mapBuilder/MapSaveModal';
 import DeleteModal from 'src/components/modals/DeleteModal';
 import TileListModal from 'src/components/mapComponents/mapBuilder/TileListModal';
-import Map from 'src/components/mapComponents/map/MapPage';
 import InitiativeModal from 'src/components/modals/InitiativeModal';
 import CharacterMenuRoutes from './CharacterMenuRoutes';
 import Encounter from 'src/components/encounterComponents/Encounter';
@@ -28,7 +26,6 @@ import EncounterFormMap from 'src/components/encounterComponents/EncounterFormMa
 import EncounterFormInfo from 'src/components/encounterComponents/EncounterFormInfo';
 import ResetModal from 'src/components/encounterComponents/ResetModal';
 import GangForm from 'src/components/forms/GangForm';
-import Gangs from 'src/components/Gangs';
 import GangPage from 'src/components/GangPage';
 import ReputationPointModal from 'src/components/ReputationPointModal';
 import LevelNodeModal from 'src/components/LevelNodeModal';
@@ -39,8 +36,6 @@ import GangCharacterSelectModal from 'src/components/GangCharacterSelectModal';
 import AffiliationForm from 'src/components/forms/AffiliationForm';
 import AffiliationEntitySelectModal from 'src/components/modals/AffiliationEntitySelectModal';
 import CampaignDashboard from 'src/components/CampaignDashboard';
-import Page from 'src/components/Page';
-import CampaignMapList from 'src/components/mapComponents/map/CampaignMapsPage';
 import CharacterAddModal from 'src/components/characterComponents/CharacterAddModal';
 import Modal from 'src/components/modals/Modal';
 import CampaignCharacterSelectModal from 'src/components/characterComponents/CampaignCharacterSelectModal';
@@ -52,6 +47,7 @@ import NotesForm from 'src/components/forms/NotesForm';
 import CharacterAddPage from 'src/components/characterComponents/CharacterAddPage';
 import CampaignMapsPage from 'src/components/mapComponents/map/CampaignMapsPage';
 import MapPage from 'src/components/mapComponents/map/MapPage';
+import CampaignGangList from 'src/components/CampaignGangList';
 
 const CampaignTabRoutes = () => {
   return (
@@ -159,14 +155,7 @@ const CampaignTabRoutes = () => {
       </Route>
       <Route path=":campaignId">
         <Route path="gangs">
-          <Route
-            path=""
-            element={
-              <Page title="Campaign Gangs">
-                <Gangs />
-              </Page>
-            }
-          />
+          <Route path="" element={<CampaignGangList />} />
           <Route path=":gangId" element={<GangPage />}>
             <Route path="modal" element={<Modal />}>
               <Route

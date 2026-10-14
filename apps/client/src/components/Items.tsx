@@ -14,6 +14,7 @@ import ItemCard from './ItemCard';
 import BtnAuth from './buttons/BtnAuth';
 import IconBtnMedium from './buttons/IconBtnMedium';
 import { toast } from 'react-toastify';
+import Page from './Page';
 
 const Items = ({
   itemTypes,
@@ -61,9 +62,7 @@ const Items = ({
   });
 
   return (
-    <div
-      className={`${mobile ? 'gap-4' : 'gap-8'} flex w-full flex-col items-start`}
-    >
+    <Page title="Items">
       {mode && mode === 'form' && (
         <div
           className={`${mobile ? 'flex-col' : 'flex-row'} flex w-full gap-4`}
@@ -204,7 +203,7 @@ const Items = ({
           )}
         </div>
       )}
-    </div>
+    </Page>
   );
 };
 

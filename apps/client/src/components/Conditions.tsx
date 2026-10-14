@@ -3,12 +3,10 @@ import { FormApi } from '@tanstack/react-form';
 import Loading from './Loading';
 import useConditions from '../hooks/useConditions';
 import ConditionCard from './ConditionCard';
-import ArrowHeader2 from './ArrowHeader2';
 import InputSelectField from './formFields/InputSelectField';
 import Icon from '@mdi/react';
 import { mdiSync } from '@mdi/js';
 import { Condition } from 'src/types/condition';
-import Divider from './Divider';
 import IconBtnMedium from './buttons/IconBtnMedium';
 
 const Conditions = ({

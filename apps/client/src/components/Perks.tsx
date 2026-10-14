@@ -6,8 +6,6 @@ import Loading from './Loading';
 import { AttributeTree } from 'src/types/attributeTree';
 import Icon from '@mdi/react';
 import { mdiSync } from '@mdi/js';
-import NavTabs from './NavTabs';
-import BtnAuth from './buttons/BtnAuth';
 import { capitalCase } from 'change-case';
 import InputFieldRadio from './formFields/InputFieldRadio';
 import Divider from './Divider';

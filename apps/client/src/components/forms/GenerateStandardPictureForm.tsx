@@ -11,6 +11,7 @@ import Icon from '@mdi/react';
 import { PictureCard } from '../PictureCard';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import useGenerateStandardPictureMutation from 'src/hooks/useGenerateStandardPictureMutation/useGenerateStandardPictureMutation';
+import Page from '../Page';
 
 const GenerateStandardPictureForm = () => {
   const { accentPrimary } = useContext(ThemeContext);
@@ -36,93 +37,95 @@ const GenerateStandardPictureForm = () => {
       break;
   }
   return (
-    <FormLayout
-      label="Generate Standard Picture"
-      form={promptForm}
-      createMutation={generatePicture}
-    >
-      <div className="flex w-full flex-col gap-8">
-        <InputSelectField
-          label="Picture Type"
-          value={type}
-          options={['character', 'item', 'scene']}
-          onChange={(value) => setType(value)}
-        />
-        <promptForm.Field name="pictureCount">
-          {(field) => (
-            <div className="flex items-center justify-between gap-4">
-              <IconBtnSmall
-                active={field.state.value > 1}
-                onClick={() => field.handleChange((prev) => prev - 1)}
-                tooltip="Decrease"
-              >
-                <Icon path={mdiMinus} />
-              </IconBtnSmall>
-              <p>Picture Count {field.state.value}</p>
-              <IconBtnSmall
-                active={field.state.value < 4}
-                onClick={() => field.handleChange((prev) => prev + 1)}
-                tooltip="Increase"
-              >
-                <Icon path={mdiPlus} />
-              </IconBtnSmall>
-            </div>
-          )}
-        </promptForm.Field>
-        <promptForm.Field name="time">
-          {(field) => (
-            <div className="flex w-full flex-col gap-2 border-x-2 border-gray-400 border-opacity-50 px-4">
-              {['daytime', 'nighttime', 'sunrise', 'sunset'].map((time) => (
-                <InputFieldRadio
-                  label={capitalCase(time)}
-                  checked={field.state.value === time}
-                  value={time}
-                  onChange={(value) => field.handleChange(value)}
-                />
-              ))}
-            </div>
-          )}
-        </promptForm.Field>
-        <promptForm.Field name="setting">
-          {(field) => (
-            <TextAreaField
-              label="Setting Description"
-              value={field.state.value}
-              placeholder="e.g. a dimly lit city street with glowing neon lights in the background"
-              onChange={(value) => field.handleChange(value)}
-            />
-          )}
-        </promptForm.Field>
-        <promptForm.Field name="description">
-          {(field) => (
-            <TextAreaField
-              label={`${capitalCase(type)} Description`}
-              value={field.state.value}
-              placeholder={placeholder}
-              onChange={(value) => field.handleChange(value)}
-            />
-          )}
-        </promptForm.Field>
-        <promptForm.Subscribe selector={(state) => state.values.pictureCount}>
-          {(pictureCount) => (
-            <div className="grid grid-cols-4 gap-4">
-              {Array.from({ length: pictureCount }).map((_, index) => {
-                const picture = generatePicture.data?.newPictures[index];
-
-                return (
-                  <PictureCard
-                    label=""
-                    color={accentPrimary}
-                    publicId={picture?.publicId}
-                    key={index}
+    <Page title="Generate Standard Picture">
+      <FormLayout
+        label="Generate Standard Picture"
+        form={promptForm}
+        createMutation={generatePicture}
+      >
+        <div className="flex w-full flex-col gap-8">
+          <InputSelectField
+            label="Picture Type"
+            value={type}
+            options={['character', 'item', 'scene']}
+            onChange={(value) => setType(value)}
+          />
+          <promptForm.Field name="pictureCount">
+            {(field) => (
+              <div className="flex items-center justify-between gap-4">
+                <IconBtnSmall
+                  active={field.state.value > 1}
+                  onClick={() => field.handleChange((prev) => prev - 1)}
+                  tooltip="Decrease"
+                >
+                  <Icon path={mdiMinus} />
+                </IconBtnSmall>
+                <p>Picture Count {field.state.value}</p>
+                <IconBtnSmall
+                  active={field.state.value < 4}
+                  onClick={() => field.handleChange((prev) => prev + 1)}
+                  tooltip="Increase"
+                >
+                  <Icon path={mdiPlus} />
+                </IconBtnSmall>
+              </div>
+            )}
+          </promptForm.Field>
+          <promptForm.Field name="time">
+            {(field) => (
+              <div className="flex w-full flex-col gap-2 border-x-2 border-gray-400 border-opacity-50 px-4">
+                {['daytime', 'nighttime', 'sunrise', 'sunset'].map((time) => (
+                  <InputFieldRadio
+                    label={capitalCase(time)}
+                    checked={field.state.value === time}
+                    value={time}
+                    onChange={(value) => field.handleChange(value)}
                   />
-                );
-              })}
-            </div>
-          )}
-        </promptForm.Subscribe>
-      </div>
-    </FormLayout>
+                ))}
+              </div>
+            )}
+          </promptForm.Field>
+          <promptForm.Field name="setting">
+            {(field) => (
+              <TextAreaField
+                label="Setting Description"
+                value={field.state.value}
+                placeholder="e.g. a dimly lit city street with glowing neon lights in the background"
+                onChange={(value) => field.handleChange(value)}
+              />
+            )}
+          </promptForm.Field>
+          <promptForm.Field name="description">
+            {(field) => (
+              <TextAreaField
+                label={`${capitalCase(type)} Description`}
+                value={field.state.value}
+                placeholder={placeholder}
+                onChange={(value) => field.handleChange(value)}
+              />
+            )}
+          </promptForm.Field>
+          <promptForm.Subscribe selector={(state) => state.values.pictureCount}>
+            {(pictureCount) => (
+              <div className="grid grid-cols-4 gap-4">
+                {Array.from({ length: pictureCount }).map((_, index) => {
+                  const picture = generatePicture.data?.newPictures[index];
+
+                  return (
+                    <PictureCard
+                      label=""
+                      color={accentPrimary}
+                      publicId={picture?.publicId}
+                      key={index}
+                    />
+                  );
+                })}
+              </div>
+            )}
+          </promptForm.Subscribe>
+        </div>
+      </FormLayout>
+    </Page>
   );
 };
 

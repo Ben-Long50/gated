@@ -1,6 +1,7 @@
 import useCodexCharactersQuery from 'src/hooks/useCodexCharactersQuery/useCodexCharactersQuery';
 import CharacterList from './CharacterList';
 import useCharacters from 'src/hooks/useCharacters';
+import Page from '../Page';
 
 const CodexCharacters = () => {
   const { data: codexCharacters } = useCodexCharactersQuery();
@@ -10,12 +11,14 @@ const CodexCharacters = () => {
   );
 
   return (
-    <CharacterList
-      characters={characters}
-      filters={filters}
-      setFilters={setFilters}
-      isLoading={isLoading}
-    />
+    <Page title="Characters">
+      <CharacterList
+        characters={characters}
+        filters={filters}
+        setFilters={setFilters}
+        isLoading={isLoading}
+      />
+    </Page>
   );
 };
 

@@ -10,7 +10,6 @@ import AuthLayout from '../layouts/AuthLayout';
 import SigninForm from '../components/forms/SigninForm';
 import SignupForm from '../components/forms/SignupForm';
 import MainLayout from '../layouts/MainLayout';
-import ErrorReport from '../components/ErrorReport';
 import ErrorReports from '../components/ErrorReports';
 import AccountTabRoutes from './AccountTabRoutes';
 import CampaignTabRoutes from './CampaignTabRoutes';

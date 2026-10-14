@@ -8,6 +8,7 @@ import ArrowHeader2 from '../ArrowHeader2';
 import InputSelectField from '../formFields/InputSelectField';
 import useKeywordForm from 'src/hooks/form hooks/useKeywordForm';
 import useKeywordQuery from 'src/hooks/useKeywordQuery/useKeywordQuery';
+import Page from '../Page';
 
 const KeywordForm = () => {
   const { keywordId } = useParams();
@@ -21,62 +22,64 @@ const KeywordForm = () => {
   const keywordForm = useKeywordForm(createKeyword, keyword);
 
   return (
-    <FormLayout
-      label="Keyword"
-      form={keywordForm}
-      itemId={keywordId}
-      createMutation={createKeyword}
-      deleteMutation={deleteKeyword}
-    >
-      <ArrowHeader2 title="Trait Information" />
-      <keywordForm.Field name="name">
-        {(field) => (
-          <InputField
-            label="Trait Name"
-            value={field.state.value}
-            onChange={(value) => field.handleChange(value)}
-          />
-        )}
-      </keywordForm.Field>
-      <keywordForm.Field name="description">
-        {(field) => (
-          <TextAreaField
-            label="Trait Description"
-            value={field.state.value}
-            onChange={(value) => field.handleChange(value)}
-          />
-        )}
-      </keywordForm.Field>
-      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
-        <keywordForm.Field name="keywordType">
-          {(field) => (
-            <InputSelectField
-              options={[
-                'weapon',
-                'armor',
-                'vehicle',
-                'chromebits',
-                'hardwired',
-                'networked',
-              ]}
-              label="Trait Type"
-              value={field.state.value}
-              onChange={(value) => field.handleChange(value)}
-            />
-          )}
-        </keywordForm.Field>
-        <keywordForm.Field name="gpCost">
+    <Page title={keywordId ? 'Update Trait' : 'Create Trait'}>
+      <FormLayout
+        label="Keyword"
+        form={keywordForm}
+        itemId={keywordId}
+        createMutation={createKeyword}
+        deleteMutation={deleteKeyword}
+      >
+        <ArrowHeader2 title="Trait Information" />
+        <keywordForm.Field name="name">
           {(field) => (
             <InputField
-              type="number"
-              label="GP Cost"
+              label="Trait Name"
               value={field.state.value}
               onChange={(value) => field.handleChange(value)}
             />
           )}
         </keywordForm.Field>
-      </div>
-    </FormLayout>
+        <keywordForm.Field name="description">
+          {(field) => (
+            <TextAreaField
+              label="Trait Description"
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
+            />
+          )}
+        </keywordForm.Field>
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
+          <keywordForm.Field name="keywordType">
+            {(field) => (
+              <InputSelectField
+                options={[
+                  'weapon',
+                  'armor',
+                  'vehicle',
+                  'chromebits',
+                  'hardwired',
+                  'networked',
+                ]}
+                label="Trait Type"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
+            )}
+          </keywordForm.Field>
+          <keywordForm.Field name="gpCost">
+            {(field) => (
+              <InputField
+                type="number"
+                label="GP Cost"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
+            )}
+          </keywordForm.Field>
+        </div>
+      </FormLayout>
+    </Page>
   );
 };
 

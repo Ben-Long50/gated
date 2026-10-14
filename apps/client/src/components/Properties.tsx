@@ -1,15 +1,16 @@
 import useBasePropertiesQuery from 'src/hooks/property hooks/useBasePropertiesQuery/useBasePropertiesQuery';
 import PropertyCard from './PropertyCard';
+import Page from './Page';
 
 const Properties = () => {
   const { data: properties } = useBasePropertiesQuery();
 
   return (
-    <div className="flex w-full flex-col items-center gap-8">
+    <Page title="Properties">
       {properties?.map((property) => (
         <PropertyCard key={property.id} property={property} />
       ))}
-    </div>
+    </Page>
   );
 };
 

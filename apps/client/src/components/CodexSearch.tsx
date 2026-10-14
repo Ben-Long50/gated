@@ -23,6 +23,7 @@ import { Condition } from 'src/types/condition';
 import { camelCase } from 'change-case';
 import useItemTypeQueries from 'src/hooks/useItemQueries/useItemTypeQueries';
 import { itemTypes } from 'src/utils/constants/itemConstants';
+import Page from './Page';
 
 const CodexSearch = () => {
   const { mobile } = useContext(LayoutContext);
@@ -155,7 +156,7 @@ const CodexSearch = () => {
   };
 
   return (
-    <div className="flex w-full flex-col items-center gap-6 sm:gap-8">
+    <Page title="Search Codex">
       <div className="flex w-full flex-col gap-4">
         <div className="grid w-full grid-cols-2 gap-4 sm:gap-8">
           <ArrowHeader2 title="Filter Options" />
@@ -312,7 +313,7 @@ const CodexSearch = () => {
           )}
         </>
       )}
-    </div>
+    </Page>
   );
 };
 

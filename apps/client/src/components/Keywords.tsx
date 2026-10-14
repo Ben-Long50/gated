@@ -9,17 +9,12 @@ import { mdiSync } from '@mdi/js';
 import { KeywordReference } from 'src/types/keyword';
 import { capitalCase } from 'change-case';
 import ExpandingList from './ExpandingList';
-import { useSearchParams } from 'react-router-dom';
 import IconBtnMedium from './buttons/IconBtnMedium';
 import InputFieldCheckbox from './formFields/InputFieldCheckbox';
 
 const Keywords = ({ form }: { form?: FormApi }) => {
   const { keywords, query, category, setQuery, setCategory, isLoading } =
     useKeywords();
-
-  const [searchParams] = useSearchParams();
-
-  const mode = searchParams.get('mode');
 
   if (isLoading) {
     return <Loading />;
