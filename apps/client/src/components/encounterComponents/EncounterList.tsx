@@ -14,6 +14,7 @@ import { socket } from 'src/socket';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import useActivateEncounterMutation from 'src/hooks/encounter hooks/useActivateEncounterMutation/useActivateEncounterMutation';
 import ArrowHeader2 from '../ArrowHeader2';
+import Page from '../Page';
 
 const EncounterList = () => {
   const { mapId, campaignId } = useParams();
@@ -58,7 +59,7 @@ const EncounterList = () => {
   if (campaignLoading || isLoading) return <Loading />;
 
   return (
-    <>
+    <Page title="Query Encounters">
       {encounters.length === 0 ? (
         <>
           <p className="text-center">No encounters found</p>
@@ -134,7 +135,7 @@ const EncounterList = () => {
           })}
         </div>
       )}
-    </>
+    </Page>
   );
 };
 

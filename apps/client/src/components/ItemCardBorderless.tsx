@@ -1,11 +1,4 @@
-import {
-  CSSProperties,
-  Fragment,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { CSSProperties, useContext, useEffect, useRef, useState } from 'react';
 import ItemRarity from './ItemRarity';
 import { KeywordReference } from 'src/types/keyword';
 import { Item } from 'src/types/item';
@@ -21,12 +14,7 @@ import {
   WeaponControls,
 } from './ItemCardControls';
 import { AuthContext } from 'src/contexts/AuthContext';
-import {
-  Outlet,
-  useLocation,
-  useOutletContext,
-  useParams,
-} from 'react-router-dom';
+import { useLocation, useOutletContext, useParams } from 'react-router-dom';
 import { useInView } from 'react-intersection-observer';
 import KeywordTag from './KeywordTag';
 import ConditionTag from './ConditionTag';
@@ -38,7 +26,6 @@ const ItemCardBorderless = ({
   className,
   style,
   mode,
-  menu,
   cardType,
   toggleFormLink,
   ownerId,
@@ -47,7 +34,6 @@ const ItemCardBorderless = ({
   className?: string;
   style?: CSSProperties;
   mode?: string;
-  menu?: boolean;
   cardType?: 'small' | 'large';
   toggleFormLink?: (item: Item) => void;
   ownerId?: number;
@@ -147,15 +133,7 @@ const ItemCardBorderless = ({
                   </div>
                   <div className="flex grow flex-wrap items-center justify-start gap-1">
                     {item.conditions?.map((condition) => (
-                      <Fragment key={condition.id}>
-                        <ConditionTag
-                          key={condition.id}
-                          condition={condition}
-                        />
-                        {Number(conditionId) === condition.id && (
-                          <Outlet context={{ condition, parts }} />
-                        )}
-                      </Fragment>
+                      <ConditionTag key={condition.id} condition={condition} />
                     ))}
                   </div>
                 </div>
@@ -173,14 +151,7 @@ const ItemCardBorderless = ({
                 {keywordList.length > 0 && (
                   <div className={`flex flex-wrap items-center gap-1`}>
                     {keywordList.map((keyword: KeywordReference) => {
-                      return (
-                        <Fragment key={keyword.id}>
-                          <KeywordTag key={keyword.id} keyword={keyword} />
-                          {Number(traitId) === keyword.id && (
-                            <Outlet context={{ keyword, parts }} />
-                          )}
-                        </Fragment>
-                      );
+                      return <KeywordTag key={keyword.id} keyword={keyword} />;
                     })}
                   </div>
                 )}

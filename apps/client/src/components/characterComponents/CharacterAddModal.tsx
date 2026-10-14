@@ -5,7 +5,6 @@ import { useParams } from 'react-router-dom';
 import useAddCharacterMutation from 'src/hooks/useCharacterAddMutation/useCharacterAddMutation';
 import useCharacters from 'src/hooks/useCharacters';
 import useTemplateCharactersQuery from 'src/hooks/character hooks/useUpdateCharacterLevelMutation/useCharactersQuery/useTemplateCharactersQuery';
-import Divider from '../Divider';
 import CharacterList from './CharacterList';
 
 const CharacterAddModal = () => {
@@ -29,8 +28,6 @@ const CharacterAddModal = () => {
 
   return (
     <>
-      <h1>Add Characters</h1>
-      <Divider />
       <NavTabs className="grid-cols-3 grid-rows-2">
         <BtnAuth
           active={filters.playerCharacter === true}

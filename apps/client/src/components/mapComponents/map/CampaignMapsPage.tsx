@@ -1,15 +1,20 @@
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import MapList from './MapList';
 import { useParams } from 'react-router-dom';
+import Page from 'src/components/Page';
 
-const CampaignMapList = () => {
+const CampaignMapsPage = () => {
   const { campaignId } = useParams();
 
   const { data: campaign } = useCampaignQuery(Number(campaignId));
 
   const mapIds = campaign?.maps.map((map) => map.id);
 
-  return <MapList mapIds={mapIds} />;
+  return (
+    <Page title="Campaign Maps">
+      <MapList mapIds={mapIds} />
+    </Page>
+  );
 };
 
-export default CampaignMapList;
+export default CampaignMapsPage;

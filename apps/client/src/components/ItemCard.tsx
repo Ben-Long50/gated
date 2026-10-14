@@ -14,7 +14,7 @@ import {
   WeaponControls,
 } from './ItemCardControls';
 import { AuthContext } from 'src/contexts/AuthContext';
-import { Link, Outlet, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import Icon from '@mdi/react';
 import { mdiLinkBoxVariantOutline } from '@mdi/js';
 import { useInView } from 'react-intersection-observer';
@@ -132,15 +132,10 @@ const ItemCard = ({
                     </div>
                     <div className="flex grow flex-wrap items-center justify-start gap-1">
                       {item.conditions?.map((condition) => (
-                        <Fragment key={condition.id}>
-                          <ConditionTag
-                            key={condition.id}
-                            condition={condition}
-                          />
-                          {Number(conditionId) === condition.id && (
-                            <Outlet context={{ condition, parts }} />
-                          )}
-                        </Fragment>
+                        <ConditionTag
+                          key={condition.id}
+                          condition={condition}
+                        />
                       ))}
                     </div>
                   </div>
@@ -152,12 +147,7 @@ const ItemCard = ({
                     <div className={`flex flex-wrap items-center gap-1`}>
                       {item.keywords.map((keyword: KeywordReference) => {
                         return (
-                          <Fragment key={keyword.id}>
-                            <KeywordTag key={keyword.id} keyword={keyword} />
-                            {Number(traitId) === keyword.id && (
-                              <Outlet context={{ keyword, parts }} />
-                            )}
-                          </Fragment>
+                          <KeywordTag key={keyword.id} keyword={keyword} />
                         );
                       })}
                     </div>

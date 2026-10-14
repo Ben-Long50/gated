@@ -7,21 +7,27 @@ const Page = ({
   title,
   children,
   context,
+  container = true,
 }: {
   title?: string;
   children: ReactNode;
   context?: any;
+  container?: boolean;
 }) => {
   const { mobile } = useContext(LayoutContext);
 
   return (
     <>
-      <div
-        className={`${mobile ? 'gap-4' : 'gap-8'} flex w-full max-w-8xl flex-col items-center`}
-      >
-        <h1>{title}</h1>
-        <Container>{children}</Container>
-      </div>
+      {container ? (
+        <div
+          className={`${mobile ? 'gap-4' : 'gap-8'} flex w-full max-w-8xl flex-col items-center`}
+        >
+          <h1>{title}</h1>
+          <Container>{children}</Container>
+        </div>
+      ) : (
+        { children }
+      )}
       <Outlet context={context} />
     </>
   );

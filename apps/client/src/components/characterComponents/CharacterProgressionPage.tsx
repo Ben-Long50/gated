@@ -1,6 +1,6 @@
 import { mdiCheckCircleOutline, mdiCircleOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import BtnRect from '../buttons/BtnRect';
 import Loading from '../Loading';
 import ArrowHeader3 from '../ArrowHeader3';

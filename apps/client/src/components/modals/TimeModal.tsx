@@ -9,7 +9,7 @@ import TimeField from '../formFields/TimeField';
 const TimeModal = () => {
   const { campaignId } = useParams();
 
-  const currentTime = useOutletContext() || {};
+  const { currentTime } = useOutletContext() || {};
 
   const timeForm = useForm({
     defaultValues: {

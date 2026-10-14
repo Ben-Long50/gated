@@ -13,7 +13,7 @@ import CharacterStatBars from './CharacterStatBars';
 import useCharacter from 'src/hooks/useCharacter';
 import Loading from '../Loading';
 import ConditionTag from '../ConditionTag';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useInView } from 'react-intersection-observer';
 import LocationIcon from '../icons/LocationIcon';
 import NpcTypeList from '../NpcTypeList';
@@ -33,8 +33,6 @@ const CharacterCard = ({
 }) => {
   const { accentPrimary } = useContext(ThemeContext);
   const navigate = useNavigate();
-  const location = useLocation();
-  const parts = location.pathname.split('/');
 
   const { filteredCharacter: character, isLoading } = useCharacter(characterId);
 
@@ -276,9 +274,6 @@ const CharacterCard = ({
             <CharacterCardMenu character={character} />
           </div>
         </ThemeContainer>
-      )}
-      {parts.includes('menu') && parts.includes(String(characterId)) && (
-        <Outlet />
       )}
     </div>
   );

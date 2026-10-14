@@ -5,7 +5,11 @@ import { Character } from 'src/types/character';
 import { toast } from 'react-toastify';
 import { Item } from 'src/types/item';
 
-const useEditCartMutation = (characterId: number, cartId: number) => {
+const useEditCartMutation = (
+  characterId: number,
+  cartId: number,
+  item: Item,
+) => {
   const queryClient = useQueryClient();
   const updateBuffer = useRef(0);
   const timeoutRef = useRef(0);
@@ -40,15 +44,8 @@ const useEditCartMutation = (characterId: number, cartId: number) => {
         ['character', characterId],
       );
 
-      const item: Item | undefined = queryClient.getQueryData([
-        'item',
-        data.itemId,
-      ]);
-
       const cartItem = prevCharacterData?.characterCart?.items.find(
-        (item) =>
-          Object.values(item).find((value) => typeof value === 'object').id ===
-          data.itemId,
+        (i) => i.item.id === data.itemId,
       );
 
       if (cartItem) {
@@ -60,13 +57,13 @@ const useEditCartMutation = (characterId: number, cartId: number) => {
               characterCart: {
                 ...prev.characterCart,
                 items: prev.characterCart?.items?.filter(
-                  (i) => i.itemId !== cartItem.item.id,
+                  (i) => i.item.id !== data.itemId,
                 ),
               },
             }),
           );
 
-          toast.success(`Removed ${cartItem.item.name} from cart`);
+          toast.success(`Removed ${item.name} from cart`);
         } else {
           queryClient.setQueryData(
             ['character', characterId],
@@ -75,7 +72,7 @@ const useEditCartMutation = (characterId: number, cartId: number) => {
               characterCart: {
                 ...prev.characterCart,
                 items: prev.characterCart?.items?.map((i) =>
-                  i.itemId === cartItem.item.id
+                  i.item.id === data.itemId
                     ? {
                         ...i,
                         quantity: cartItem.quantity + data.value,
@@ -86,7 +83,7 @@ const useEditCartMutation = (characterId: number, cartId: number) => {
             }),
           );
 
-          toast.success(`Added ${cartItem.item.name} to cart`);
+          toast.success(`Added ${item.name} to cart`);
         }
       } else {
         queryClient.setQueryData(
@@ -100,15 +97,15 @@ const useEditCartMutation = (characterId: number, cartId: number) => {
                 {
                   characterCartId: prev.characterCartId,
                   quantity: data.value,
+                  itemId: data.itemId,
                   item,
-                  itemId: item.id,
                 },
               ],
             },
           }),
         );
 
-        toast.success(`Added ${item?.name} to cart`);
+        toast.success(`Added item to cart`);
       }
 
       return { prevCharacterData };

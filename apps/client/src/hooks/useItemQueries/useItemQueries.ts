@@ -2,12 +2,12 @@ import { useQueries } from '@tanstack/react-query';
 import getItemById from '../useItemQuery/getItemById';
 import { Item } from 'src/types/item';
 
-const useItemQueries = (itemsIds: number[]) => {
+const useItemQueries = (itemsIds: number[], enabled = true) => {
   return useQueries({
     queries: itemsIds?.map((itemId) => ({
       queryKey: ['item', itemId],
       queryFn: () => getItemById.fetch(itemId),
-      enabled: !!itemId,
+      enabled: enabled,
     })),
     combine: (results) => {
       return {

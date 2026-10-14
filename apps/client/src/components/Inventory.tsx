@@ -6,7 +6,7 @@ import InventoryIcon from './icons/InventoryIcon';
 import PotionIcon from './icons/PotionIcon';
 import VehicleIcon from './icons/VehicleIcon';
 import WeaponIcon from './icons/WeaponIcon';
-import { Outlet, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import useCharacter from 'src/hooks/useCharacter';
 import Loading from './Loading';
 import { Item } from 'src/types/item';
@@ -21,31 +21,20 @@ import Icon from '@mdi/react';
 import useParts from 'src/hooks/useParts';
 import CartButton from './CartButton';
 
-const Inventory = ({
-  itemList,
-  shopCharacterId,
-}: {
-  itemList?: Item[];
-  shopCharacterId?: number;
-}) => {
+const Inventory = ({ itemList }: { itemList?: Item[] }) => {
   const { characterId } = useParams();
   const navigate = useNavigate();
 
   const { parts } = useParts();
 
-  const { filteredCharacter: character } = useCharacter(Number(characterId));
+  const { filteredCharacter: character, isLoading } = useCharacter(
+    Number(characterId),
+  );
 
   const list = itemList ?? character?.inventory ?? [];
 
-  const {
-    items,
-    query,
-    filterByQuery,
-    types,
-    filterByTypes,
-    resetList,
-    isLoading: itemsLoading,
-  } = useItems(list.map((item) => item.id));
+  const { items, query, filterByQuery, types, filterByTypes, resetList } =
+    useItems(list);
 
   return (
     <>
@@ -109,7 +98,7 @@ const Inventory = ({
           <Icon path={mdiSync} />
         </IconBtnMedium>
       </div>
-      {itemsLoading ? (
+      {isLoading ? (
         <Loading />
       ) : (
         <InventoryGrid minWidth={175}>
@@ -118,12 +107,20 @@ const Inventory = ({
               <InventoryCard
                 key={item.id}
                 item={item}
+                label={
+                  <span className="flex items-center justify-between gap-4">
+                    <span className="text-left">{item.name}</span>
+                    <span className="whitespace-nowrap text-right">
+                      {item.price} p
+                    </span>
+                  </span>
+                }
                 button={
                   parts.includes('shop') ? (
                     <CartButton
                       className="absolute right-1 top-1"
-                      characterId={shopCharacterId ?? Number(characterId)}
-                      itemId={item.id}
+                      characterId={Number(characterId)}
+                      item={item}
                     />
                   ) : undefined
                 }
@@ -145,7 +142,6 @@ const Inventory = ({
           )}
         </InventoryGrid>
       )}
-      {!parts.includes('shop') && <Outlet />}
     </>
   );
 };

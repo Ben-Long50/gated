@@ -4,17 +4,15 @@ import useErrorReportsQuery from '../hooks/useErrorReportsQuery/useErrorReportsQ
 import Loading from './Loading';
 import { ErrorReport } from 'src/types/errorReport';
 import { format } from 'date-fns';
-import { ThemeContext } from '../contexts/ThemeContext';
-import ThemeContainer from './ThemeContainer';
 import useDeleteErrorReportMutation from '../hooks/useDeleteErrorReportMutation/useDeleteErrorReportMutation';
 import Divider from './Divider';
 import ArrowHeader3 from './ArrowHeader3';
 import IconBtnSmall from './buttons/IconBtnSmall';
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import Page from './Page';
 
 const ErrorReports = () => {
-  const { accentPrimary } = useContext(ThemeContext);
   const { data: errorReports, isLoading, isPending } = useErrorReportsQuery();
 
   const deleteErrorReport = useDeleteErrorReportMutation();
@@ -22,7 +20,7 @@ const ErrorReports = () => {
   if (isLoading || isPending) return <Loading />;
 
   return (
-    <>
+    <Page title="Error Reports">
       {errorReports?.map((report: ErrorReport, index: number) => (
         <>
           <div key={index} className="flex flex-col gap-4">
@@ -45,7 +43,7 @@ const ErrorReports = () => {
           {index + 1 < errorReports.length && <Divider />}
         </>
       ))}
-    </>
+    </Page>
   );
 };
 

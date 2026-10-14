@@ -14,6 +14,7 @@ import CharacterPictureRound from './characterComponents/CharacterPictureRound';
 import NoteIcon from './icons/NoteIcon';
 import BtnAuth from './buttons/BtnAuth';
 import IconBtnMedium from './buttons/IconBtnMedium';
+import Page from './Page';
 
 const Session = () => {
   const { user } = useContext(AuthContext);
@@ -48,7 +49,7 @@ const Session = () => {
   }
 
   return (
-    <>
+    <Page title="Session">
       <CoverPicture publicId={session.generatedPicture?.publicId} />
       <div className="absolute left-8 right-8 top-8 flex items-start justify-between gap-8">
         <h2 className="text-shadow-color text-shadow text-center font-zen text-4xl text-shadow-x-2 text-shadow-y-2">
@@ -97,7 +98,7 @@ const Session = () => {
       {campaign && campaign.ownerId === user.id && (
         <BtnAuth onClick={() => navigate('update')}>Edit Session</BtnAuth>
       )}
-    </>
+    </Page>
   );
 };
 

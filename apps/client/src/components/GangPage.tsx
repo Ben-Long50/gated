@@ -1,4 +1,4 @@
-import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import CoverPicture from './CoverPicture';
 import { capitalCase } from 'change-case';
 import Loading from './Loading';
@@ -18,12 +18,11 @@ import NavTabs from './NavTabs';
 import CharacterList from './characterComponents/CharacterList';
 import Affiliations from './Affiliations';
 import useCharacters from 'src/hooks/useCharacters';
+import Page from './Page';
 
 const GangPage = () => {
   const { campaignId, gangId } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
-  const parts = location.pathname.split('/');
   const [tab, setTab] = useState('information');
   const [subTab, setSubTab] = useState('characters');
 
@@ -81,7 +80,7 @@ const GangPage = () => {
   }
 
   return (
-    <>
+    <Page title="Gang" context={{ form: gangCharactersForm }}>
       <CoverPicture publicId={gang?.generatedPicture?.publicId} />
       <div className="absolute left-8 right-8 top-8 flex items-start justify-between gap-8">
         <h2 className="w-full font-zen text-4xl">{capitalCase(gang?.name)}</h2>
@@ -261,15 +260,7 @@ const GangPage = () => {
       <BtnRect ariaLabel="Update gang" onClick={() => navigate('update')}>
         Update Gang
       </BtnRect>
-      {parts.includes('allocateReputation') && <Outlet />}
-      {parts.includes('allocateNodes') && <Outlet />}
-      {parts.includes('manageLevels') && <Outlet />}
-      {parts.includes('distributeProfits') && <Outlet />}
-      {parts.includes('manageGangCharacters') && (
-        <Outlet context={{ form: gangCharactersForm }} />
-      )}
-      {parts.includes('add') && <Outlet />}
-    </>
+    </Page>
   );
 };
 

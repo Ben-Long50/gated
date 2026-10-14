@@ -7,6 +7,7 @@ import { PictureCard } from './PictureCard';
 import { useContext } from 'react';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import InventoryGrid from './InventoryGrid';
+import Page from './Page';
 
 const CodexDashboard = () => {
   const { mobile } = useContext(LayoutContext);
@@ -110,7 +111,7 @@ const CodexDashboard = () => {
   ];
 
   return (
-    <>
+    <Page title="Codex">
       <NavTabs>
         <BtnAuth
           active={tab === 'equipment'}
@@ -161,7 +162,7 @@ const CodexDashboard = () => {
             ))}
         </InventoryGrid>
       )}
-    </>
+    </Page>
   );
 };
 

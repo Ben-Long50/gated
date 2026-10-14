@@ -1,49 +1,31 @@
-import { useParams } from 'react-router-dom';
 import LexicalEditor from '../lexical/LexicalEditor';
 import useCreateNotesMutation from '../../hooks/useCreateNotesMutation/useCreateNotesMutation';
 import useNotesForm from 'src/hooks/form hooks/useNotesForm';
-import BtnRect from '../buttons/BtnRect';
-import { Notes } from 'src/types/campaign';
+import FormLayout from 'src/layouts/FormLayout';
+import { useOutletContext, useParams } from 'react-router-dom';
 
-const NotesForm = ({
-  sessionId,
-  notes,
-  setEditModeId,
-}: {
-  sessionId: number;
-  notes?: Notes;
-  setEditModeId: (value: number | null) => void;
-}) => {
-  const createNotes = useCreateNotesMutation(setEditModeId);
+const NotesForm = () => {
+  const { sessionId } = useParams();
+  const { notes } = useOutletContext();
 
-  const notesForm = useNotesForm(sessionId, createNotes, notes);
+  const createNotes = useCreateNotesMutation();
+
+  const note = notes?.find((n) => n.sessionId === Number(sessionId));
+
+  const notesForm = useNotesForm(Number(sessionId), createNotes, note);
 
   return (
-    <div className="flex w-full flex-col gap-8">
+    <FormLayout
+      itemId={note?.id ?? undefined}
+      label="Notes"
+      createMutation={createNotes}
+      form={notesForm}
+    >
+      <h1>Create Notes</h1>
       <notesForm.Field name="content">
-        {(field) => (
-          <>
-            <LexicalEditor field={field} />
-            {field.state.meta.errors &&
-              field.state.meta.errors.map((error, index) => (
-                <p
-                  key={index}
-                  className="timing text-error text-base italic leading-5"
-                  role="alert"
-                >
-                  {error}
-                </p>
-              ))}
-          </>
-        )}
+        {(field) => <LexicalEditor field={field} />}
       </notesForm.Field>
-      <BtnRect
-        ariaLabel="Update Notes"
-        onClick={() => notesForm.handleSubmit()}
-      >
-        Update Notes
-      </BtnRect>
-    </div>
+    </FormLayout>
   );
 };
 

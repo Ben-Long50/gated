@@ -12,6 +12,7 @@ import CharacterAffiliations from 'src/components/CharacterAffiliations';
 import AffiliationForm from 'src/components/forms/AffiliationForm';
 import Shop from 'src/components/Shop';
 import InventoryModalRoutes from './InventoryModalRoutes';
+import ShopPage from 'src/components/ShopPage';
 
 const CharacterMenuRoutes = () => {
   return (
@@ -32,7 +33,7 @@ const CharacterMenuRoutes = () => {
           <Route path="create" element={<AffiliationForm />} />
         </Route>
         <Route path="shop">
-          <Route index element={<Shop />} />
+          <Route index element={<ShopPage />} />
           <Route path="cart" element={<Cart />} />
           <Route path="items/:itemId" element={<ItemPage />} />
           {InventoryModalRoutes()}

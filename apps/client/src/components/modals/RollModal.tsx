@@ -11,7 +11,6 @@ import { CampaignContext } from 'src/contexts/CampaignContext';
 const RollModal = () => {
   const { rolls, rolling } = useContext(CampaignContext);
   const { rollForm } = useOutletContext() || {};
-  const navigate = useNavigate();
 
   const rollsArray = Array.from(rolls.entries());
 

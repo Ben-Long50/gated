@@ -17,7 +17,7 @@ const CartCard = ({
   characterId: number;
   cartId: number;
 }) => {
-  const editCart = useEditCartMutation(Number(characterId), cartId);
+  const editCart = useEditCartMutation(Number(characterId), cartId, item);
 
   const shopName = item?.characterInventory
     ? item?.characterInventory.character.name + "'s Shop"

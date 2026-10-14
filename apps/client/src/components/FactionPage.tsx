@@ -11,8 +11,9 @@ import useFactionQuery from 'src/hooks/faction hooks/useFactionQuery';
 import { capitalCase } from 'change-case';
 import NavTabs from './NavTabs';
 import Affiliations from './Affiliations';
+import Page from './Page';
 
-const Faction = () => {
+const FactionPage = () => {
   const { user } = useContext(AuthContext);
   const { factionId } = useParams();
   const [tab, setTab] = useState('information');
@@ -34,7 +35,7 @@ const Faction = () => {
   if (isLoading || isPending) return <Loading />;
 
   return (
-    <>
+    <Page title="Faction">
       <CoverPicture publicId={faction?.generatedPicture?.publicId} />
       <div className="timing absolute left-8 right-8 top-8 flex items-center justify-between">
         <h2 className="w-full font-zen text-4xl">{faction?.name}</h2>
@@ -84,8 +85,8 @@ const Faction = () => {
           </BtnRect>
         </Link>
       )}
-    </>
+    </Page>
   );
 };
 
-export default Faction;
+export default FactionPage;

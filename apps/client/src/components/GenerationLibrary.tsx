@@ -10,6 +10,7 @@ import Loading from './Loading';
 import InventoryGrid from './InventoryGrid';
 import userLimits from 'src/utils/constants/userLimits';
 import ArrowHeader2 from './ArrowHeader2';
+import Page from './Page';
 
 const GenerationLibrary = () => {
   const { user } = useContext(AuthContext);
@@ -27,7 +28,7 @@ const GenerationLibrary = () => {
   );
 
   return (
-    <>
+    <Page title="Generated Pictures">
       <div className="flex w-full items-center justify-between gap-8">
         <ArrowHeader2 title={`Picture Storage`} />
         <p>{`( ${user.generatedPictures.length} / ${pictureStorageLimit} )`}</p>
@@ -77,7 +78,7 @@ const GenerationLibrary = () => {
           ),
         )}
       </InventoryGrid>
-    </>
+    </Page>
   );
 };
 

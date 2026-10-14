@@ -9,6 +9,7 @@ import AccountPicture from './AccountPicture';
 import Divider from './Divider';
 import userLimits from 'src/utils/constants/userLimits';
 import ArrowHeader3 from './ArrowHeader3';
+import Page from './Page';
 
 const AccountInfo = () => {
   const { user } = useContext(AuthContext);
@@ -46,7 +47,7 @@ const AccountInfo = () => {
   if (isLoading) return <Loading />;
 
   return (
-    <>
+    <Page title="Account Info">
       <ArrowHeader3 title="Membership Info" />
 
       <div className="flex items-center justify-between gap-4">
@@ -111,7 +112,7 @@ const AccountInfo = () => {
           Update Account Info
         </BtnRect>
       )}
-    </>
+    </Page>
   );
 };
 

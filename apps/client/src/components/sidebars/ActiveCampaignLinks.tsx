@@ -53,7 +53,7 @@ const ActiveCampaignLinks = () => {
                     publicId={campaign?.generatedPicture?.publicId}
                   />
                 }
-                path={`/glam/campaigns/${campaign?.id}`}
+                path={`/glam/campaigns/${campaign?.id}/dashboard`}
               />
               {campaignCharacters.length > 0 &&
                 (charactersLoading ? (

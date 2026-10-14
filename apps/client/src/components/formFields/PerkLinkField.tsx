@@ -1,7 +1,6 @@
-import { FormApi, useStore } from '@tanstack/react-form';
+import { FormApi } from '@tanstack/react-form';
 import PerkCard from '../PerkCard';
 import { AttributeTree } from 'src/types/attributeTree';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import BtnAuth from '../buttons/BtnAuth';
 import InputFieldCheckbox from './InputFieldCheckbox';
 import { useContext } from 'react';
@@ -11,8 +10,6 @@ import { useNavigateWithQuery } from 'src/hooks/useNavigateWithQuery';
 
 const PerkLinkField = ({
   form,
-  level,
-  attributeTree,
 }: {
   form: FormApi;
   level: number;
@@ -20,14 +17,9 @@ const PerkLinkField = ({
 }) => {
   const { mobile } = useContext(LayoutContext);
   const navigate = useNavigateWithQuery();
-  const location = useLocation();
-  const parts = location.pathname.split('/');
 
   return (
     <>
-      {parts.includes('perks') && (
-        <Outlet context={{ form, level, attributeTree }} />
-      )}
       <ArrowHeader2 title="Perks" />
       <form.Field name="perkIds">
         {(field) =>

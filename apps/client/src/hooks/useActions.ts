@@ -2,59 +2,41 @@ import { useState } from 'react';
 import useActionsQuery from './useActionsQuery/useActionsQuery';
 import { Action } from '../types/action';
 
-const useActions = (
-  characterActions?: Action[],
-  initialCategory?: string,
-  initialSubcategory?: string,
-) => {
-  const { data: actions, isLoading, isPending } = useActionsQuery();
+const useActions = (characterActions?: Action[]) => {
+  const { data: actions, isLoading } = useActionsQuery();
 
   const generalActions =
     actions?.filter((action) => !action.parentItemId && !action.baseActionId) ||
     [];
 
-  const list = characterActions
+  let filteredActions = characterActions
     ? [...characterActions, ...generalActions]
-    : actions;
+    : generalActions;
 
   const [query, setQuery] = useState('');
-  const [category, setCategory] = useState(initialCategory || '');
-  const [subCategory, setSubCategory] = useState(initialSubcategory || '');
+  const [types, setTypes] = useState([]);
+  const [subTypes, setSubtypes] = useState([]);
 
-  const filteredActions =
-    category.length > 0
-      ? subCategory.length > 0
-        ? list?.filter(
-            (action: Action) =>
-              action.actionType === category &&
-              action.actionSubtypes.includes(subCategory) &&
-              action.name.toLowerCase().includes(query.toLowerCase()),
-          )
-        : list?.filter(
-            (action: Action) =>
-              action.actionType === category &&
-              action.name.toLowerCase().includes(query.toLowerCase()),
-          )
-      : subCategory.length > 0
-        ? list?.filter(
-            (action: Action) =>
-              action.actionSubtypes.includes(subCategory) &&
-              action.name.toLowerCase().includes(query.toLowerCase()),
-          )
-        : (list?.filter((action: Action) =>
-            action.name.toLowerCase().includes(query.toLowerCase()),
-          ) ?? []);
+  filteredActions = filteredActions?.filter((action) => {
+    const matchesType =
+      types.length === 0 || types.some((t) => t === action.actionType);
+    const matchesSubtype =
+      subTypes.length === 0 ||
+      subTypes.some((t) => action.actionSubtypes.includes(t));
+    const matchesQuery = action.name.includes(query);
+
+    return matchesType && matchesSubtype && matchesQuery;
+  });
 
   return {
     actions: filteredActions,
     query,
-    category,
-    subCategory,
+    types,
+    setTypes,
     setQuery,
-    setCategory,
-    setSubCategory,
+    subTypes,
+    setSubtypes,
     isLoading,
-    isPending,
   };
 };
 

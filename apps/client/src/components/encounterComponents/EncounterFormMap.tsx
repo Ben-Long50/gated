@@ -1,5 +1,5 @@
 import { useOutletContext, useParams } from 'react-router-dom';
-import Map from '../mapComponents/map/Map';
+import Map from '../mapComponents/map/MapPage';
 import BtnRect from '../buttons/BtnRect';
 import ThemeContainer from '../ThemeContainer';
 import Loading from '../Loading';

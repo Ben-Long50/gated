@@ -4,6 +4,7 @@ import useNotificationQuery from '../hooks/useNotificationQuery/useNotificationQ
 import Loading from './Loading';
 import { Notification } from 'src/types/notification';
 import useMarkNotificationsReadMutation from 'src/hooks/useMarkNotificationsReadMutation/useMarkNotificationsReadMutation';
+import Page from './Page';
 
 const Notifications = () => {
   const { data: notifications, isLoading } = useNotificationQuery();
@@ -21,11 +22,11 @@ const Notifications = () => {
       <p>You're all caught up</p>
     </>
   ) : (
-    <>
+    <Page title="Notifications">
       {notifications.map((notification: Notification) => (
         <NotificationCard key={notification.id} notification={notification} />
       ))}
-    </>
+    </Page>
   );
 };
 

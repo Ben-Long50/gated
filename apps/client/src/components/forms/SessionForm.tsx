@@ -1,7 +1,7 @@
 import InputField from '../formFields/InputField';
 import Loading from '../Loading';
 import FormLayout from '../../layouts/FormLayout';
-import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import LexicalEditor from '../lexical/LexicalEditor';
 import ArrowHeader2 from '../ArrowHeader2';
 import Divider from '../Divider';
@@ -13,12 +13,11 @@ import BtnAuth from '../buttons/BtnAuth';
 import CharacterCardXSmall from '../characterComponents/CharacterCardXSmall';
 import { useQueryClient } from '@tanstack/react-query';
 import { Character } from 'src/types/character';
+import Page from '../Page';
 
 const SessionForm = () => {
   const { campaignId, sessionId } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
-  const parts = location.pathname.split('/');
 
   const queryClient = useQueryClient();
 
@@ -37,82 +36,86 @@ const SessionForm = () => {
   if (isLoading) return <Loading />;
 
   return (
-    <FormLayout
-      label="Session"
-      form={sessionForm}
-      itemId={sessionId}
-      createMutation={createSession}
+    <Page
+      title={sessionId ? 'Update Session' : 'Create Session'}
+      context={{ form: sessionForm }}
     >
-      <ArrowHeader2 title="Session Information" />
-      <sessionForm.Field name="name">
-        {(field) => (
-          <InputField
-            label="Session Name"
-            value={field.state.value}
-            onChange={(value) => field.handleChange(value)}
-          />
-        )}
-      </sessionForm.Field>
-      <sessionForm.Field name="location">
-        {(field) => (
-          <InputField
-            label="Session Location"
-            value={field.state.value}
-            onChange={(value) => field.handleChange(value)}
-          />
-        )}
-      </sessionForm.Field>
-      <PictureField form={sessionForm} type="scene" />
-      <Divider />
-      <div className="flex flex-col gap-8">
-        <ArrowHeader2 title="Session Characters" />
-        <sessionForm.Subscribe selector={(state) => state.values.characterIds}>
-          {(characterIds) =>
-            characterIds.map((characterId) => {
-              const character: Character = queryClient.getQueryData([
-                'character',
-                characterId,
-              ]);
-
-              return (
-                <CharacterCardXSmall
-                  character={character}
-                  characterList={true}
-                  active={false}
-                />
-              );
-            })
-          }
-        </sessionForm.Subscribe>
-        <BtnAuth onClick={() => navigate('sessionCharacters')}>
-          Select Session Characters
-        </BtnAuth>
-        {parts.includes('sessionCharacters') && (
-          <Outlet context={{ form: sessionForm }} />
-        )}
-      </div>
-      <Divider />
-      <div className="flex flex-col gap-8">
-        <ArrowHeader2 title="Session Briefing" />
-        <sessionForm.Field name="briefing">
+      <FormLayout
+        label="Session"
+        form={sessionForm}
+        itemId={sessionId}
+        createMutation={createSession}
+      >
+        <ArrowHeader2 title="Session Information" />
+        <sessionForm.Field name="name">
           {(field) => (
-            <>
-              <LexicalEditor field={field} />
-              {field.state.meta.errors &&
-                field.state.meta.errors.map((error, index) => (
-                  <p
-                    key={index}
-                    className="timing text-error text-base italic leading-5"
-                    role="alert"
-                  >
-                    {error}
-                  </p>
-                ))}
-            </>
+            <InputField
+              label="Session Name"
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
+            />
           )}
         </sessionForm.Field>
-      </div>
-    </FormLayout>
+        <sessionForm.Field name="location">
+          {(field) => (
+            <InputField
+              label="Session Location"
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
+            />
+          )}
+        </sessionForm.Field>
+        <PictureField form={sessionForm} type="scene" />
+        <Divider />
+        <div className="flex flex-col gap-8">
+          <ArrowHeader2 title="Session Characters" />
+          <sessionForm.Subscribe
+            selector={(state) => state.values.characterIds}
+          >
+            {(characterIds) =>
+              characterIds.map((characterId) => {
+                const character: Character = queryClient.getQueryData([
+                  'character',
+                  characterId,
+                ]);
+
+                return (
+                  <CharacterCardXSmall
+                    character={character}
+                    characterList={true}
+                    active={false}
+                  />
+                );
+              })
+            }
+          </sessionForm.Subscribe>
+          <BtnAuth onClick={() => navigate('sessionCharacters')}>
+            Select Session Characters
+          </BtnAuth>
+        </div>
+        <Divider />
+        <div className="flex flex-col gap-8">
+          <ArrowHeader2 title="Session Briefing" />
+          <sessionForm.Field name="briefing">
+            {(field) => (
+              <>
+                <LexicalEditor field={field} />
+                {field.state.meta.errors &&
+                  field.state.meta.errors.map((error, index) => (
+                    <p
+                      key={index}
+                      className="timing text-error text-base italic leading-5"
+                      role="alert"
+                    >
+                      {error}
+                    </p>
+                  ))}
+              </>
+            )}
+          </sessionForm.Field>
+        </div>
+      </FormLayout>
+    </Page>
   );
 };
 

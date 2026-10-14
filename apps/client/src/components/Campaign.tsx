@@ -1,6 +1,5 @@
-import { useContext, useEffect, useRef, useState } from 'react';
-import { Link, Outlet, useNavigate, useParams } from 'react-router-dom';
-import { AuthContext } from '../contexts/AuthContext';
+import { useContext, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import Loading from './Loading';
 import useCampaignQuery from '../hooks/useCampaignQuery/useCampaignQuery';
 import Icon from '@mdi/react';
@@ -13,7 +12,6 @@ import Divider from './Divider';
 import BtnAuth from './buttons/BtnAuth';
 import AccountPicture from './AccountPicture';
 import BtnRect from './buttons/BtnRect';
-import useJoinCampaignMutation from '../hooks/useJoinCampaignMutation/useJoinCampaignMutation';
 import ArrowHeader3 from './ArrowHeader3';
 import CoverPicture from './CoverPicture';
 import { capitalCase } from 'change-case';
@@ -27,16 +25,13 @@ import FactionCard from './FactionCard';
 import CharacterCardSmall from './characterComponents/CharacterCardSmall';
 import useCharacters from 'src/hooks/useCharacters';
 import { CampaignContext } from 'src/contexts/CampaignContext';
-import useParts from 'src/hooks/useParts';
+import Page from './Page';
 
 const Campaign = () => {
-  const { user } = useContext(AuthContext);
   const { pendingCampaignIds } = useContext(CampaignContext);
   const { campaignId } = useParams();
   const navigate = useNavigate();
   const [tab, setTab] = useState('characters');
-
-  const { parts } = useParts();
 
   const { data: campaign, isLoading: campaignLoading } = useCampaignQuery(
     Number(campaignId),
@@ -66,7 +61,10 @@ const Campaign = () => {
   if (campaignLoading) return <Loading />;
 
   return (
-    <>
+    <Page
+      title="Campaign"
+      context={{ currentTime: campaign?.time, eventArray: campaign?.events }}
+    >
       <CoverPicture publicId={campaign?.generatedPicture?.publicId} />
       <div className="absolute left-8 right-8 top-8 flex flex-col">
         <div className="flex items-start justify-between gap-8">
@@ -301,8 +299,7 @@ const Campaign = () => {
           )}
         </>
       )}
-      {parts.includes('selectCharacter') && <Outlet />}
-    </>
+    </Page>
   );
 };
 

@@ -1,12 +1,6 @@
-import { Fragment, useContext } from 'react';
+import { useContext } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
-import {
-  Link,
-  Outlet,
-  useLocation,
-  useNavigate,
-  useParams,
-} from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import ItemRarity from './ItemRarity';
 import { Action } from 'src/types/action';
 import BtnRect from './buttons/BtnRect';
@@ -25,6 +19,7 @@ import { LayoutContext } from 'src/contexts/LayoutContext';
 import StatBarContainer from './StatBarContainer';
 import ActionCard from './ActionCard';
 import ItemCard from './ItemCard';
+import Page from './Page';
 
 const ItemPage = () => {
   const { user } = useContext(AuthContext);
@@ -45,20 +40,14 @@ const ItemPage = () => {
   if (!item) return <h1>No item found</h1>;
 
   return (
-    <>
-      <h1 className="col-start-2 text-center">{item.name}</h1>
+    <Page title={item.name}>
       <div className="relative grid h-full w-full grid-rows-[auto_auto] gap-8 sm:grid-cols-2 sm:grid-rows-1">
         <ItemPicture key={item.id} item={item} />
         <div className="flex w-full flex-col gap-8">
           {item.conditions.length > 0 && (
             <div className="flex flex-wrap items-center justify-start gap-1">
               {item.conditions?.map((condition) => (
-                <Fragment key={condition.id}>
-                  <ConditionTag key={condition.id} condition={condition} />
-                  {Number(conditionId) === condition.id && (
-                    <Outlet context={{ condition, parts }} />
-                  )}
-                </Fragment>
+                <ConditionTag key={condition.id} condition={condition} />
               ))}
             </div>
           )}
@@ -162,7 +151,7 @@ const ItemPage = () => {
             </BtnRect>
           )}
       </div>
-    </>
+    </Page>
   );
 };
 

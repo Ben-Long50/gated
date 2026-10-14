@@ -1,21 +1,21 @@
 import { format } from 'date-fns';
 import Divider from './Divider';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import Loading from './Loading';
 import useNotesQuery from '../hooks/useNotesQuery/useNotesQuery';
 import useCharacterQuery from '../hooks/useCharacterQuery/useCharacterQuery';
 import ArrowHeader3 from './ArrowHeader3';
-import NotesForm from './forms/NotesForm';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import CharacterPictureRound from './characterComponents/CharacterPictureRound';
 import BtnAuth from './buttons/BtnAuth';
+import Page from './Page';
 
-const Notes = () => {
+const NotesPage = () => {
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
   const { campaignId, characterId } = useParams();
-  const [editModeId, setEditModeId] = useState<number | null>(null);
 
   const { data: character, isLoading: characterLoading } = useCharacterQuery(
     Number(characterId),
@@ -36,7 +36,7 @@ const Notes = () => {
   }
 
   return (
-    <div className="flex w-full flex-col gap-8">
+    <Page title="Notes" context={{ notes: characterNotes }}>
       {character && (
         <div className="flex items-center justify-center gap-8">
           <CharacterPictureRound character={character} />
@@ -62,37 +62,34 @@ const Notes = () => {
                 </p>
               </div>
               <ArrowHeader3 title={session?.name} />
-              {editModeId !== session.id ? (
-                <div className="flex w-full flex-col gap-6">
-                  {notes ? (
-                    <div
-                      id="quill-display"
-                      className="ql-editor whitespace-pre-wrap"
-                      dangerouslySetInnerHTML={{ __html: notes.content?.html }}
-                    />
-                  ) : (
-                    <p>No notes created</p>
-                  )}
-                  {character?.userId === user?.id && (
-                    <BtnAuth onClick={() => setEditModeId(session.id)}>
-                      {notes ? 'Edit Session Notes' : 'Create Session Notes'}
-                    </BtnAuth>
-                  )}
-                </div>
-              ) : (
-                <NotesForm
-                  sessionId={session.id}
-                  notes={notes}
-                  setEditModeId={setEditModeId}
-                />
-              )}
+
+              <div className="flex w-full flex-col gap-6">
+                {notes ? (
+                  <div
+                    id="quill-display"
+                    className="ql-editor whitespace-pre-wrap"
+                    dangerouslySetInnerHTML={{ __html: notes.content?.html }}
+                  />
+                ) : (
+                  <p>No notes created</p>
+                )}
+                {character?.userId === user?.id && (
+                  <BtnAuth
+                    onClick={() =>
+                      navigate(`modal/session/${session.id}/update`)
+                    }
+                  >
+                    {notes ? 'Edit Session Notes' : 'Create Session Notes'}
+                  </BtnAuth>
+                )}
+              </div>
             </div>
             {index + 1 < campaign?.sessions.length && <Divider />}
           </>
         );
       })}
-    </div>
+    </Page>
   );
 };
 
-export default Notes;
+export default NotesPage;

@@ -1,6 +1,5 @@
 import { FormApi } from '@tanstack/react-form';
 import ItemCardSmall from '../ItemCardSmall';
-import { Outlet, useLocation } from 'react-router-dom';
 import useKeywords from 'src/hooks/useKeywords';
 import BtnAuth from '../buttons/BtnAuth';
 import InputFieldCheckbox from './InputFieldCheckbox';
@@ -12,14 +11,11 @@ import { useNavigateWithQuery } from 'src/hooks/useNavigateWithQuery';
 const KeywordLinkField = ({ form, mode }: { form: FormApi; mode?: string }) => {
   const { mobile } = useContext(LayoutContext);
   const navigate = useNavigateWithQuery();
-  const location = useLocation();
-  const parts = location.pathname.split('/');
 
   const { keywords: baseKeywords } = useKeywords();
 
   return (
     <>
-      {parts.includes('traits') && <Outlet context={{ form, parts }} />}
       <ArrowHeader2 title="Traits" />
       <form.Field name="keywords">
         {(field) =>

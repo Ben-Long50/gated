@@ -3,14 +3,15 @@ import useEditCartMutation from '../hooks/useEditCartMutation/useEditCartMutatio
 import useCharacterQuery from 'src/hooks/useCharacterQuery/useCharacterQuery';
 import IconBtnSmall from './buttons/IconBtnSmall';
 import Icon from '@mdi/react';
+import { Item } from 'src/types/item';
 
 const CartButton = ({
   characterId,
-  itemId,
+  item,
   className,
 }: {
   characterId: number;
-  itemId: number;
+  item: Item;
   className?: string;
 }) => {
   const { data: character } = useCharacterQuery(Number(characterId));
@@ -18,6 +19,7 @@ const CartButton = ({
   const editCart = useEditCartMutation(
     characterId,
     character?.characterCart?.id,
+    item,
   );
 
   return (
@@ -27,7 +29,7 @@ const CartButton = ({
         tooltip="Add To Cart"
         onClick={() => {
           editCart.mutate({
-            itemId,
+            itemId: item.id,
             value: 1,
           });
         }}

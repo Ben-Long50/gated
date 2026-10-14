@@ -8,7 +8,7 @@ import DieIcon from './icons/DieIcon';
 import InputFieldCheckbox from './formFields/InputFieldCheckbox';
 import InputField from './formFields/InputField';
 import InputSelectField from './formFields/InputSelectField';
-import { Outlet, useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import useCampaignQuery from '../hooks/useCampaignQuery/useCampaignQuery';
 import useCampaignRollMutation from '../hooks/campaign hooks/useCampaignRollMutation/useCampaignRollMutation';
 import { LayoutContext } from '../contexts/LayoutContext';
@@ -16,6 +16,7 @@ import { capitalCase } from 'change-case';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import calculateDiceCount from 'src/utils/calculateDiceCount';
 import useCharacterQueries from 'src/hooks/character hooks/useUpdateCharacterLevelMutation/useCharactersQuery/useCharacterQueries';
+import Page from './Page';
 
 const RollSimulator = () => {
   const { mobile } = useContext(LayoutContext);
@@ -35,7 +36,7 @@ const RollSimulator = () => {
     campaign?.characters.map((character) => character.id) || [],
   );
 
-  const { filteredActions: actions } = useActions();
+  const { actions, isLoading } = useActions();
 
   const rollForm = useForm({
     defaultValues: {
@@ -46,7 +47,7 @@ const RollSimulator = () => {
     },
     onSubmit: ({ value }) => {
       campaignRoll.mutate(value);
-      navigate('rollResults');
+      navigate('modal/rollResults');
     },
     validators: {
       onSubmit: ({ value }) => {
@@ -62,10 +63,10 @@ const RollSimulator = () => {
     },
   });
 
-  if (campaignLoading) return <Loading />;
+  if (campaignLoading || isLoading) return <Loading />;
 
   return (
-    <>
+    <Page title="Roll Simulator" context={{ rolls, rolling, rollForm, parts }}>
       <rollForm.Field name="characterId">
         {(field) => (
           <div className="flex w-full flex-col gap-8">
@@ -129,7 +130,6 @@ const RollSimulator = () => {
             }}
           </rollForm.Field>
         </div>
-
         <rollForm.Field name="extraDice">
           {(field) => (
             <InputField
@@ -203,10 +203,7 @@ const RollSimulator = () => {
           Roll
         </BtnRect>
       </div>
-      {parts.includes('rollSimulator') && (
-        <Outlet context={{ rolls, rolling, rollForm, parts }} />
-      )}
-    </>
+    </Page>
   );
 };
 

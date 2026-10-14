@@ -1,6 +1,5 @@
 import { FormApi } from '@tanstack/react-form';
 import ActionCard from '../ActionCard';
-import { Outlet, useLocation } from 'react-router-dom';
 import BtnAuth from '../buttons/BtnAuth';
 import InputFieldCheckbox from './InputFieldCheckbox';
 import { useContext } from 'react';
@@ -11,12 +10,9 @@ import { useNavigateWithQuery } from 'src/hooks/useNavigateWithQuery';
 const ActionLinkField = ({ form, path }: { form: FormApi; path?: string }) => {
   const { mobile } = useContext(LayoutContext);
   const navigate = useNavigateWithQuery();
-  const location = useLocation();
-  const parts = location.pathname.split('/');
 
   return (
     <>
-      {parts.includes('actions') && <Outlet context={{ form }} />}
       <ArrowHeader2 title="Actions" />
       <form.Field name="actionIds">
         {(field) =>

@@ -1,7 +1,6 @@
 import { FormApi, useStore } from '@tanstack/react-form';
 import { Item } from 'src/types/item';
 import ItemCard from '../ItemCard';
-import { Outlet, useLocation } from 'react-router-dom';
 import useItemQueries from 'src/hooks/useItemQueries/useItemQueries';
 import BtnAuth from '../buttons/BtnAuth';
 import Icon from '@mdi/react';
@@ -13,8 +12,6 @@ import { useNavigateWithQuery } from 'src/hooks/useNavigateWithQuery';
 
 const ItemLinkField = ({ form }: { form: FormApi }) => {
   const navigate = useNavigateWithQuery();
-  const location = useLocation();
-  const parts = location.pathname.split('/');
 
   const itemIds = useStore(form.store, (state) => state.values.itemIds);
 
@@ -22,7 +19,6 @@ const ItemLinkField = ({ form }: { form: FormApi }) => {
 
   return (
     <>
-      {parts.includes('links') && <Outlet context={{ form, parts }} />}
       <ArrowHeader2 title="Linked Items" />
       {isLoading ? (
         <Loading />

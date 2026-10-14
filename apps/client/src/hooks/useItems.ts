@@ -1,12 +1,8 @@
 import { useState } from 'react';
-import calculateItemStats from 'src/utils/calculateItemStats';
-import useItemQueries from './useItemQueries/useItemQueries';
-import { ItemType } from 'src/types/item';
+import { Item, ItemType } from 'src/types/item';
 
-const useItems = (itemIds: number[], category?: string | null) => {
-  const { items: data, isLoading, isPending } = useItemQueries(itemIds);
-
-  const items = data?.map((item) => calculateItemStats(item));
+const useItems = (itemList: Item[]) => {
+  const items = itemList;
 
   const [query, setQuery] = useState<string>('');
   const [types, setTypes] = useState<ItemType[]>([]);
@@ -23,12 +19,6 @@ const useItems = (itemIds: number[], category?: string | null) => {
         ),
       )
       .sort((a, b) => a.name.localeCompare(b.name));
-
-    if (category) {
-      filteredItems = filteredItems.filter((item) =>
-        item.itemTypes.includes(category),
-      );
-    }
 
     if (query) {
       filteredItems = filteredItems.filter((item) =>
@@ -104,8 +94,6 @@ const useItems = (itemIds: number[], category?: string | null) => {
     filterByPrice,
     filterByRarity,
     resetList,
-    isLoading,
-    isPending,
   };
 };
 

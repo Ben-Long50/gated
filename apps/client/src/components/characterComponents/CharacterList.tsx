@@ -1,6 +1,5 @@
 import { useContext, useState } from 'react';
 import CharacterCard from './CharacterCard';
-import { Outlet, useLocation } from 'react-router-dom';
 import Loading from '../Loading';
 import { Character } from 'src/types/character';
 import InputSelectField from '../formFields/InputSelectField';

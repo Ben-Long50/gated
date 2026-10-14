@@ -2,8 +2,9 @@ import CharacterList from './CharacterList';
 import useCharacters from 'src/hooks/useCharacters';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import { useParams } from 'react-router-dom';
+import Page from '../Page';
 
-const CampaignCharacters = () => {
+const CampaignCharactersPage = () => {
   const { campaignId } = useParams();
   const { data: campaign } = useCampaignQuery(Number(campaignId));
 
@@ -12,13 +13,15 @@ const CampaignCharacters = () => {
   );
 
   return (
-    <CharacterList
-      characters={characters}
-      filters={filters}
-      setFilters={setFilters}
-      isLoading={isLoading}
-    />
+    <Page title="Campaign Characters">
+      <CharacterList
+        characters={characters}
+        filters={filters}
+        setFilters={setFilters}
+        isLoading={isLoading}
+      />
+    </Page>
   );
 };
 
-export default CampaignCharacters;
+export default CampaignCharactersPage;

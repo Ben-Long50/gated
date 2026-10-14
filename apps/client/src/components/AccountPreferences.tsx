@@ -4,6 +4,7 @@ import { capitalCase } from 'change-case';
 import { mdiSync } from '@mdi/js';
 import IconBtnSmall from './buttons/IconBtnSmall';
 import Icon from '@mdi/react';
+import Page from './Page';
 
 const AccountPreferences = () => {
   const { accentPrimary, changeTheme, theme, changeAccent } =
@@ -12,7 +13,7 @@ const AccountPreferences = () => {
   const accentRef = useRef<HTMLInputElement | null>(null);
 
   return (
-    <>
+    <Page title="Account Preferences">
       <div className="flex w-full items-center justify-between">
         <p>Theme</p>
         <div className="flex items-center gap-4">
@@ -44,7 +45,7 @@ const AccountPreferences = () => {
           </label>
         </div>
       </div>
-    </>
+    </Page>
   );
 };
 

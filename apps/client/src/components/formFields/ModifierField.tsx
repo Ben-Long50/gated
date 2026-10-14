@@ -1,5 +1,4 @@
 import { FormApi } from '@tanstack/react-form';
-import { Outlet, useLocation } from 'react-router-dom';
 import BtnAuth from '../buttons/BtnAuth';
 import StatBarContainer from '../StatBarContainer';
 import ArrowHeader2 from '../ArrowHeader2';
@@ -11,8 +10,6 @@ import { LayoutContext } from 'src/contexts/LayoutContext';
 const ModifierField = ({ form }: { form: FormApi }) => {
   const { mobile } = useContext(LayoutContext);
   const navigate = useNavigateWithQuery();
-  const location = useLocation();
-  const parts = location.pathname.split('/');
 
   const size = mobile ? 'small' : 'large';
 
@@ -25,9 +22,6 @@ const ModifierField = ({ form }: { form: FormApi }) => {
 
           return (
             <>
-              {parts[parts.length - 1] === 'modifiers' && (
-                <Outlet context={{ form, parts }} />
-              )}
               {modifiedStats.length > 0 && (
                 <StatBarContainer size={size}>
                   <StatBars size={size} stats={field.state.value} />

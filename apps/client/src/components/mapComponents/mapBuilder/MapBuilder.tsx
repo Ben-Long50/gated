@@ -7,7 +7,7 @@ import {
   mdiViewGridOutline,
   mdiViewGridPlusOutline,
 } from '@mdi/js';
-import { Outlet, useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import useCreateMapMutation from 'src/hooks/useCreateMapMutation/useCreateMapMutation';
 import Loading from '../../Loading';
 import { Component } from 'src/types/map';
@@ -29,6 +29,7 @@ import { useNavigateWithQuery } from 'src/hooks/useNavigateWithQuery';
 import useMapBuilderStore from 'src/stores/mapBuilderStore';
 import { moveComponent } from './mapBuilderUtils/moveComponent';
 import { findConflict } from './mapBuilderUtils/findConflict';
+import Page from 'src/components/Page';
 
 const MapBuilder = () => {
   const { mapId } = useParams();
@@ -121,7 +122,13 @@ const MapBuilder = () => {
   if (isLoading) return <Loading />;
 
   return (
-    <>
+    <Page
+      container={false}
+      context={{
+        form: mapForm,
+        isPending: createMap.isPending,
+      }}
+    >
       <div
         className={`timing fixed inset-0 flex flex-col items-center justify-center bg-black`}
       >
@@ -212,13 +219,7 @@ const MapBuilder = () => {
           </div>
         </div>
       </div>
-      <Outlet
-        context={{
-          form: mapForm,
-          isPending: createMap.isPending,
-        }}
-      />
-    </>
+    </Page>
   );
 };
 export default MapBuilder;

@@ -29,23 +29,16 @@ import GenerateStandardPictureForm from 'src/components/forms/GenerateStandardPi
 import MapBuilder from 'src/components/mapComponents/mapBuilder/MapBuilder';
 import MapSaveModal from 'src/components/mapComponents/mapBuilder/MapSaveModal';
 import TileListModal from 'src/components/mapComponents/mapBuilder/TileListModal';
-import Map from 'src/components/mapComponents/map/Map';
 import CodexMapList from 'src/components/mapComponents/map/CodexMapList';
 import CharacterMenuRoutes from './CharacterMenuRoutes';
 import Modal from 'src/components/modals/Modal';
 import PictureLibraryModal from 'src/components/modals/PictureLibraryModal';
+import MapPage from 'src/components/mapComponents/map/MapPage';
 
 const CodexTabRoutes = () => {
   return (
     <Route path="codex">
-      <Route
-        path="dashboard"
-        element={
-          <Page title="Codex">
-            <CodexDashboard />
-          </Page>
-        }
-      />
+      <Route path="dashboard" element={<CodexDashboard />} />
       <Route
         path="search"
         element={
@@ -96,23 +89,9 @@ const CodexTabRoutes = () => {
           }
         />
 
-        <Route
-          path=":itemId"
-          element={
-            <Page>
-              <ItemPage />
-            </Page>
-          }
-        />
+        <Route path=":itemId" element={<ItemPage />} />
 
-        <Route
-          path="create"
-          element={
-            <Page title="Create Codex Item">
-              <ItemForm />
-            </Page>
-          }
-        >
+        <Route path="create" element={<ItemForm />}>
           <Route path="modal" element={<Modal />}>
             <Route path="traits" element={<KeywordLinkModal />} />
             <Route path="links" element={<ItemLinkModal />} />
@@ -120,14 +99,7 @@ const CodexTabRoutes = () => {
             <Route path="library" element={<PictureLibraryModal />} />
           </Route>
         </Route>
-        <Route
-          path=":itemId/update"
-          element={
-            <Page title="Update Item">
-              <ItemForm />
-            </Page>
-          }
-        >
+        <Route path=":itemId/update" element={<ItemForm />}>
           <Route path="modal" element={<Modal />}>
             <Route path="traits" element={<KeywordLinkModal />} />
             <Route path="links" element={<ItemLinkModal />} />
@@ -311,7 +283,7 @@ const CodexTabRoutes = () => {
             </Page>
           }
         />
-        <Route path=":mapId" element={<Map />} />
+        <Route path=":mapId" element={<MapPage />} />
         <Route path=":mapId/update" element={<MapBuilder />}>
           <Route path="create" element={<MapBuilder />}>
             <Route path="modal" element={<Modal />}>

@@ -208,7 +208,7 @@ const CampaignLinks = () => {
             >
               <SubLinkSidebar
                 title={`Add Template Character`}
-                path={`campaigns/${campaignId}/modal/characters/add?characterType=nonPlayerCharacter`}
+                path={`campaigns/${campaignId}/characters/add?characterType=nonPlayerCharacter`}
               />
               <SubLinkSidebar
                 title={`Add Template Map`}

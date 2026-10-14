@@ -3,10 +3,10 @@ import Page from 'src/components/Page';
 import MapBuilder from 'src/components/mapComponents/mapBuilder/MapBuilder';
 import MapSaveModal from 'src/components/mapComponents/mapBuilder/MapSaveModal';
 import TileListModal from 'src/components/mapComponents/mapBuilder/TileListModal';
-import Map from 'src/components/mapComponents/map/Map';
 import UserMapList from 'src/components/mapComponents/map/UserMapList';
 import Modal from 'src/components/modals/Modal';
 import PictureLibraryModal from 'src/components/modals/PictureLibraryModal';
+import MapPage from 'src/components/mapComponents/map/MapPage';
 
 const MapTabRoutes = () => {
   return (
@@ -19,7 +19,7 @@ const MapTabRoutes = () => {
           </Page>
         }
       />
-      <Route path=":mapId" element={<Map />} />
+      <Route path=":mapId" element={<MapPage />} />
       <Route path=":mapId/update" element={<MapBuilder />}>
         <Route path="modal" element={<Modal />}>
           <Route path="save" element={<MapSaveModal />} />

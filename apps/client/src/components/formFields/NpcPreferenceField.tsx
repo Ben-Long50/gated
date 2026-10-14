@@ -1,6 +1,6 @@
 import { FormApi } from '@tanstack/react-form';
 import BtnRect from '../buttons/BtnRect';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { capitalCase } from 'change-case';
 import ArrowHeader3 from '../ArrowHeader3';
 import InputFieldCheckbox from './InputFieldCheckbox';

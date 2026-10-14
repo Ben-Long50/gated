@@ -8,10 +8,12 @@ import { ReactNode } from 'react';
 
 const InventoryCard = ({
   item,
+  label,
   button,
   onClick,
 }: {
   item: Item;
+  label?: ReactNode;
   button?: ReactNode;
   onClick: () => void;
 }) => {
@@ -19,7 +21,7 @@ const InventoryCard = ({
     <div className="relative">
       <PictureCard
         className="w-full border-opacity-50 hover:border-opacity-100"
-        label={item.name}
+        label={label ?? item.name}
         publicId={item.generatedPicture?.publicId}
         color={rarityColorMap[item.rarity]}
         onClick={onClick}

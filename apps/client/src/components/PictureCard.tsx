@@ -1,5 +1,5 @@
 import CloudinaryPicture from './CloudinaryPicture';
-import { ReactNode, useState } from 'react';
+import { ReactHTMLElement, ReactNode, useState } from 'react';
 
 export const PictureCard = ({
   label,
@@ -10,7 +10,7 @@ export const PictureCard = ({
   className,
   children,
 }: {
-  label?: string;
+  label?: ReactNode;
   onClick?: () => void;
   onDoubleClick?: () => void;
   color?: string;
@@ -22,7 +22,7 @@ export const PictureCard = ({
 
   return (
     <button
-      className={`${className} ${label && 'pb-2'} ${hover ? 'border-accent border-opacity-100' : 'border-transparent border-opacity-50'} bg-primary timing shadow-color group flex max-w-[300px] flex-col items-center overflow-hidden rounded-md border-2 border-zinc-800`}
+      className={`${className} ${hover ? 'border-accent border-opacity-100' : 'border-transparent border-opacity-50'} bg-primary timing shadow-color group relative max-w-[300px] overflow-hidden rounded-md border-2 border-zinc-800`}
       style={{ borderColor: hover ? color : `${color}50` }}
       onClick={
         onClick
@@ -50,7 +50,7 @@ export const PictureCard = ({
       {label && (
         <p
           style={hover ? { color } : {}}
-          className="group-hover:text-accent timing px-2"
+          className="group-hover:text-accent timing absolute bottom-0 left-0 right-0 px-2 pb-1"
         >
           {label}
         </p>

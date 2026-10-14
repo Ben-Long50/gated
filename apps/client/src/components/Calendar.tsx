@@ -27,19 +27,25 @@ const Calendar = () => {
       <div className="flex w-full items-center justify-between gap-4">
         <ArrowHeader3 title="Calendar" />
         <div className="flex items-center justify-end gap-4">
-          <IconBtnSmall tooltip="Calendar" onClick={() => navigate('date')}>
+          <IconBtnSmall
+            tooltip="Calendar"
+            onClick={() => navigate('modal/date')}
+          >
             <Icon
               className="timing text-tertiary group-hover:text-accent"
               path={mdiCalendarOutline}
             />
           </IconBtnSmall>
-          <IconBtnSmall tooltip="Time" onClick={() => navigate('time')}>
+          <IconBtnSmall tooltip="Time" onClick={() => navigate('modal/time')}>
             <Icon
               className="timing text-tertiary group-hover:text-accent"
               path={mdiClockOutline}
             />
           </IconBtnSmall>
-          <IconBtnSmall tooltip="Run Time" onClick={() => navigate('time')}>
+          <IconBtnSmall
+            tooltip="Run Time"
+            onClick={() => navigate('modal/time')}
+          >
             <Icon
               className="timing text-tertiary group-hover:text-accent"
               path={mdiPlay}

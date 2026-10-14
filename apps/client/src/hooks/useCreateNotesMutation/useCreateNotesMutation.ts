@@ -3,9 +3,7 @@ import createNotes from './createNotes';
 import { toast } from 'react-toastify';
 import { Notes } from 'src/types/campaign';
 
-const useCreateNotesMutation = (
-  setEditModeId: (value: number | null) => void,
-) => {
+const useCreateNotesMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (formData: {
@@ -33,8 +31,6 @@ const useCreateNotesMutation = (
           queryKey: ['notes', data.notes.characterId],
         });
       }
-
-      setEditModeId(null);
     },
     onError: (data) => {
       toast.error(data.message);

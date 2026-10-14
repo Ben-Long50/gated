@@ -1,5 +1,5 @@
 import { useQueries } from '@tanstack/react-query';
-import { Item, ItemType } from 'src/types/item';
+import { ItemType } from 'src/types/item';
 import getItems from './getItems';
 import { itemTypes } from 'src/utils/constants/itemConstants';
 

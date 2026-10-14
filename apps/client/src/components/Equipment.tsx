@@ -1,7 +1,7 @@
 import { useContext, useRef, useState } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import Loading from './Loading';
-import { Outlet, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ItemType } from 'src/types/item';
 import Divider from './Divider';
 import useCharacter from 'src/hooks/useCharacter';
@@ -23,6 +23,7 @@ import PotionIcon from './icons/PotionIcon';
 import VehicleIcon from './icons/VehicleIcon';
 import InventoryGrid from './InventoryGrid';
 import useParts from 'src/hooks/useParts';
+import Page from './Page';
 
 const Equipment = () => {
   const { user } = useContext(AuthContext);
@@ -53,7 +54,7 @@ const Equipment = () => {
   if (isLoading) return <Loading />;
 
   return (
-    <>
+    <Page title="Equipment">
       <CharacterHeader character={character} />
       <div
         className={`${mobile ? 'flex flex-col gap-4' : 'grid grid-cols-[2fr,3fr] gap-8'} w-full items-center`}
@@ -82,18 +83,15 @@ const Equipment = () => {
             Unique Actions
           </BtnAuth>
           {character?.userId === user?.id && (
-            <>
-              <BtnAuth
-                onClick={() =>
-                  navigate(
-                    parts.includes('modal') ? 'inventory' : 'modal/inventory',
-                  )
-                }
-              >
-                Inventory
-              </BtnAuth>
-              {parts.includes('inventory') && <Outlet />}
-            </>
+            <BtnAuth
+              onClick={() =>
+                navigate(
+                  parts.includes('modal') ? 'inventory' : 'modal/inventory',
+                )
+              }
+            >
+              Inventory
+            </BtnAuth>
           )}
         </NavTabs>
         {tab === 'equipment' && (
@@ -172,7 +170,7 @@ const Equipment = () => {
           </div>
         )}
       </div>
-    </>
+    </Page>
   );
 };
 
