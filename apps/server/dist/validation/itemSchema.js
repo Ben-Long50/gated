@@ -21,16 +21,18 @@ export const ItemInput = z
     })),
 })
     .superRefine((data, ctx) => {
-    var _a;
-    const mergedShape = data.itemTypes.reduce((acc, type) => (Object.assign(Object.assign({}, acc), StatsSchemaByItemType[type].shape)), {});
+    const mergedShape = data.itemTypes.reduce((acc, type) => ({ ...acc, ...StatsSchemaByItemType[type].shape }), {});
     const mergedSchema = z.object(mergedShape).strict();
     const result = mergedSchema.safeParse(data.stats);
     if (!result.success) {
         for (const issue of result.error.issues) {
-            ctx.addIssue(Object.assign(Object.assign({}, issue), { path: ['stats', ...issue.path] }));
+            ctx.addIssue({
+                ...issue,
+                path: ['stats', ...issue.path],
+            });
         }
     }
-    if (data.itemIds && data.itemIds.length > 0 && !((_a = result.data) === null || _a === void 0 ? void 0 : _a.slots)) {
+    if (data.itemIds && data.itemIds.length > 0 && !result.data?.slots) {
         ctx.addIssue({
             code: 'custom',
             path: ['itemIds'],
@@ -67,12 +69,15 @@ export const ItemUpgradeInput = z
         });
         return;
     }
-    const mergedShape = item.itemTypes.reduce((acc, type) => (Object.assign(Object.assign({}, acc), StatsSchemaByItemType[type].shape)), {});
+    const mergedShape = item.itemTypes.reduce((acc, type) => ({ ...acc, ...StatsSchemaByItemType[type].shape }), {});
     const mergedSchema = z.object(mergedShape).strict();
     const result = await mergedSchema.safeParseAsync(data.modifiedStats);
     if (!result.success) {
         for (const issue of result.error.issues) {
-            ctx.addIssue(Object.assign(Object.assign({}, issue), { path: ['modifiedStats', ...issue.path] }));
+            ctx.addIssue({
+                ...issue,
+                path: ['modifiedStats', ...issue.path],
+            });
         }
     }
 });
@@ -91,12 +96,15 @@ export const ItemCopyInput = z
     baseItemId: z.number().int().nonnegative().nullable(),
 })
     .superRefine((data, ctx) => {
-    const mergedShape = data.itemTypes.reduce((acc, type) => (Object.assign(Object.assign({}, acc), StatsSchemaByItemType[type].shape)), {});
+    const mergedShape = data.itemTypes.reduce((acc, type) => ({ ...acc, ...StatsSchemaByItemType[type].shape }), {});
     const mergedSchema = z.object(mergedShape).strict();
     const result = mergedSchema.safeParse(data.stats);
     if (!result.success) {
         for (const issue of result.error.issues) {
-            ctx.addIssue(Object.assign(Object.assign({}, issue), { path: ['stats', ...issue.path] }));
+            ctx.addIssue({
+                ...issue,
+                path: ['stats', ...issue.path],
+            });
         }
     }
 });

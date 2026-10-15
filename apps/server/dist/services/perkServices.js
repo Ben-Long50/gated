@@ -1,14 +1,3 @@
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 import prisma from '../config/database.js';
 import actionServices, { actionSelectForCopy } from './actionServices.js';
 export const perkSelectForCopy = {
@@ -49,18 +38,20 @@ const perkServices = {
         return perk;
     },
     createPerk: async (formData) => {
-        const { id, actionIds } = formData, data = __rest(formData, ["id", "actionIds"]);
+        const { id, actionIds, ...data } = formData;
         const perk = await prisma.perk.upsert({
             where: { id: id || 0 },
-            update: Object.assign(Object.assign({}, data), { actions: { set: actionIds === null || actionIds === void 0 ? void 0 : actionIds.map((id) => ({ id })) } }),
-            create: Object.assign(Object.assign({}, data), { actions: { connect: actionIds === null || actionIds === void 0 ? void 0 : actionIds.map((id) => ({ id })) } }),
+            update: { ...data, actions: { set: actionIds?.map((id) => ({ id })) } },
+            create: {
+                ...data,
+                actions: { connect: actionIds?.map((id) => ({ id })) },
+            },
             include: perkInclude,
         });
         return perk;
     },
     createPerkCopy: async (perkId, tx) => {
-        var _a;
-        const client = tx !== null && tx !== void 0 ? tx : prisma;
+        const client = tx ?? prisma;
         const perk = await client.perk.findUnique({
             where: { id: perkId, basePerkId: null },
             select: perkSelectForCopy,
@@ -68,7 +59,7 @@ const perkServices = {
         if (!perk) {
             throw new Error('Failed to find base perk');
         }
-        const { id, actions } = perk, data = __rest(perk, ["id", "actions"]);
+        const { id, actions, ...data } = perk;
         const newActionIds = [];
         if (actions.length > 0) {
             for (const action of actions) {
@@ -77,9 +68,14 @@ const perkServices = {
             }
         }
         const newPerk = await client.perk.create({
-            data: Object.assign(Object.assign({}, data), { attributes: (_a = data.attributes) !== null && _a !== void 0 ? _a : undefined, basePerkId: id, actions: {
+            data: {
+                ...data,
+                attributes: data.attributes ?? undefined,
+                basePerkId: id,
+                actions: {
                     connect: newActionIds.map((id) => ({ id })),
-                } }),
+                },
+            },
             include: perkInclude,
         });
         return newPerk;

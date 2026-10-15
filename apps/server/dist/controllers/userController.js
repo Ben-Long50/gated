@@ -1,14 +1,3 @@
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 import bcrypt from 'bcryptjs';
 import userServices from '../services/userServices.js';
 import { SignUpInput, UserUpdateInput } from '../validation/authSchema.js';
@@ -76,9 +65,9 @@ const userController = {
     createUser: async (req, res) => {
         try {
             const validatedUser = SignUpInput.parse(req.body);
-            const { confirmPassword, password } = validatedUser, data = __rest(validatedUser, ["confirmPassword", "password"]);
+            const { confirmPassword, password, ...data } = validatedUser;
             const hashedPassword = await bcrypt.hash(password, 10);
-            await userServices.createUser(Object.assign(Object.assign({}, data), { password: hashedPassword }));
+            await userServices.createUser({ ...data, password: hashedPassword });
             res.status(200).json({ message: 'Account creation successful' });
         }
         catch (error) {
@@ -127,12 +116,11 @@ const userController = {
         }
     },
     deleteUnusedGeneratedPictures: async (req, res) => {
-        var _a;
         try {
             if (!req.user) {
                 throw new Error('Failed to find user');
             }
-            const count = await userServices.deleteUnusedGeneratedPictures(req.user.id, req.body.type, (_a = req.body.count) !== null && _a !== void 0 ? _a : 1);
+            const count = await userServices.deleteUnusedGeneratedPictures(req.user.id, req.body.type, req.body.count ?? 1);
             res.status(200).json({
                 message: `Successfully deleted ${count} oldest unused image(s)`,
             });

@@ -36,7 +36,7 @@ const campaignAuthentication = {
                 ...campaign.players.map((player) => player.id),
                 ...campaign.pendingPlayers.map((player) => player.id),
             ];
-            if (participantIds.some((id) => { var _a; return id === ((_a = req.user) === null || _a === void 0 ? void 0 : _a.id); })) {
+            if (participantIds.some((id) => id === req.user?.id)) {
                 participatingCampaigns.push(campaign.id);
             }
         }

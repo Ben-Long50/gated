@@ -25,7 +25,11 @@ export const uploadToCloudinary = async (req, res, next) => {
                     console.error('Error deleting temp file:', error);
             });
             const pictureData = JSON.parse(req.body.picture);
-            req.body.picture = JSON.stringify(Object.assign(Object.assign({}, pictureData), { imageUrl: result.secure_url, publicId: result.public_id }));
+            req.body.picture = JSON.stringify({
+                ...pictureData,
+                imageUrl: result.secure_url,
+                publicId: result.public_id,
+            });
         }
         catch (error) {
             console.error(error);

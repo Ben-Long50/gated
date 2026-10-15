@@ -72,9 +72,9 @@ const campaignController = {
             const validatedCampaign = CampaignInput.parse(req.body);
             const campaign = await campaignServices.createOrUpdateCampaign(validatedCampaign, req.user.id);
             const io = getIO();
-            const players = (campaign === null || campaign === void 0 ? void 0 : campaign.players.map((player) => player.id)) || [];
-            const pendingPlayers = (campaign === null || campaign === void 0 ? void 0 : campaign.pendingPlayers.map((player) => player.id)) || [];
-            const playerIds = [campaign === null || campaign === void 0 ? void 0 : campaign.ownerId, ...players, ...pendingPlayers];
+            const players = campaign?.players.map((player) => player.id) || [];
+            const pendingPlayers = campaign?.pendingPlayers.map((player) => player.id) || [];
+            const playerIds = [campaign?.ownerId, ...players, ...pendingPlayers];
             io.emit('globalCampaign', { campaignId: campaign.id, playerIds });
             res.status(200).json({
                 campaign,

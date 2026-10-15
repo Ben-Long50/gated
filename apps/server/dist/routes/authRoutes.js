@@ -11,7 +11,7 @@ router.post('/auth/signin', (req, res, next) => {
         if (err || !user) {
             return res
                 .status(400)
-                .json({ message: (info === null || info === void 0 ? void 0 : info.message) || 'Login failed' });
+                .json({ message: info?.message || 'Login failed' });
         }
         req.user = {
             id: user.id,
@@ -19,7 +19,6 @@ router.post('/auth/signin', (req, res, next) => {
         return next();
     })(req, res, next);
 }, authentication.issueJwt, (req, res) => {
-    var _a;
     res.cookie('token', req.token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
@@ -27,7 +26,7 @@ router.post('/auth/signin', (req, res, next) => {
         maxAge: 1000 * 60 * 60 * 24,
     });
     res.status(200).json({
-        message: `Signed in as user ${(_a = req.user) === null || _a === void 0 ? void 0 : _a.id}`,
+        message: `Signed in as user ${req.user?.id}`,
     });
 });
 router.post('/auth/signout', authentication.authenticate, (_req, res) => {

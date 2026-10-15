@@ -90,7 +90,6 @@ export const CharacterLevelBonus = z
     perkIds: z.array(z.number().int().nonnegative()).optional(),
 })
     .superRefine(async (data, ctx) => {
-    var _a, _b;
     const character = await prisma.character.findUnique({
         where: {
             id: data.characterId,
@@ -99,7 +98,7 @@ export const CharacterLevelBonus = z
             playerCharacter: true,
         },
     });
-    if (character === null || character === void 0 ? void 0 : character.playerCharacter) {
+    if (character?.playerCharacter) {
         if (data.level === 0) {
             ctx.addIssue({
                 code: 'custom',
@@ -110,8 +109,8 @@ export const CharacterLevelBonus = z
         try {
             await validateLevelUpBonus({
                 level: data.level,
-                attributes: (_a = data.attributes) !== null && _a !== void 0 ? _a : undefined,
-                perkIds: (_b = data.perkIds) !== null && _b !== void 0 ? _b : undefined,
+                attributes: data.attributes ?? undefined,
+                perkIds: data.perkIds ?? undefined,
             });
         }
         catch (error) {
@@ -121,7 +120,7 @@ export const CharacterLevelBonus = z
             });
         }
     }
-    if (!(character === null || character === void 0 ? void 0 : character.playerCharacter)) {
+    if (!character?.playerCharacter) {
         if (data.level > 0) {
             ctx.addIssue({
                 code: 'custom',

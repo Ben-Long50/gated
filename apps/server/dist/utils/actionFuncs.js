@@ -5,10 +5,10 @@ import { getIO } from '../sockets/socket.js';
 const actionFuncs = {
     basicMovement: async (character, item, successes, tile) => {
         const io = getIO();
-        await characterServices.createOrUpdateLocation(character === null || character === void 0 ? void 0 : character.id, {
-            mapId: character === null || character === void 0 ? void 0 : character.location.mapId,
-            row: tile === null || tile === void 0 ? void 0 : tile.end.row,
-            col: tile === null || tile === void 0 ? void 0 : tile.end.col,
+        await characterServices.createOrUpdateLocation(character?.id, {
+            mapId: character?.location.mapId,
+            row: tile?.end.row,
+            col: tile?.end.col,
         });
     },
     strike: async (character, item, successes, tile) => {

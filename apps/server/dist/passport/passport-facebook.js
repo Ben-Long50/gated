@@ -10,7 +10,6 @@ const facebookStrategy = (passport) => {
         profileFields: ['id', 'emails', 'name', 'picture'],
         scope: ['email'],
     }, async (_accessToken, _refreshToken, profile, done) => {
-        var _a;
         try {
             const email = profile.emails && profile.emails[0]
                 ? profile.emails[0].value
@@ -18,7 +17,7 @@ const facebookStrategy = (passport) => {
             if (!email) {
                 throw new Error('Could not find an email associated with this Facebook account');
             }
-            if (!((_a = profile === null || profile === void 0 ? void 0 : profile.name) === null || _a === void 0 ? void 0 : _a.givenName) || !profile.name.familyName) {
+            if (!profile?.name?.givenName || !profile.name.familyName) {
                 throw new Error('Could not find an email associated with this Facebook account');
             }
             const profilePicture = profile.photos && profile.photos[0]

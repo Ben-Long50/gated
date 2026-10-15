@@ -35,9 +35,9 @@ export function setupSocketIO(io) {
                     pendingPlayers: { select: { id: true } },
                 },
             });
-            const players = (campaign === null || campaign === void 0 ? void 0 : campaign.players.map((player) => player.id)) || [];
-            const pendingPlayers = (campaign === null || campaign === void 0 ? void 0 : campaign.pendingPlayers.map((player) => player.id)) || [];
-            const playerIds = [campaign === null || campaign === void 0 ? void 0 : campaign.ownerId, ...players, ...pendingPlayers];
+            const players = campaign?.players.map((player) => player.id) || [];
+            const pendingPlayers = campaign?.pendingPlayers.map((player) => player.id) || [];
+            const playerIds = [campaign?.ownerId, ...players, ...pendingPlayers];
             io.emit('globalCampaign', { campaignId, playerIds });
             console.log(`Broadcasted campaign ${campaignId} to all players`);
         });

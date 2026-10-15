@@ -1,14 +1,3 @@
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 import handleControllerError from '../controllers/handleControllerError.js';
 import { fal } from '@fal-ai/client';
 import { PromptInput } from '../validation/promptSchema.js';
@@ -40,7 +29,6 @@ export const generateCloudflarePicture = async (req, res) => {
     }
 };
 export const generateBFLPicture = async (req, res, next) => {
-    var _a, _b;
     try {
         const response = await fetch('https://api.bfl.ai/v1/flux-2-pro', {
             method: 'POST',
@@ -71,8 +59,8 @@ export const generateBFLPicture = async (req, res, next) => {
             const status = result.status;
             console.log(`Status: ${status}`);
             if (status === 'Ready') {
-                console.log('Result:', (_a = result.result) === null || _a === void 0 ? void 0 : _a.sample);
-                req.body.generatedPictureUrl = (_b = result.result) === null || _b === void 0 ? void 0 : _b.sample;
+                console.log('Result:', result.result?.sample);
+                req.body.generatedPictureUrl = result.result?.sample;
                 break;
             }
             if (status === 'Error' || status === 'Failed') {
@@ -140,7 +128,7 @@ export const generatFalPicture = async (req, res, next) => {
             handleControllerError(res, new Error('All image generation requests failed'));
             return;
         }
-        const { pictureCount, type } = validatedData, promptData = __rest(validatedData, ["pictureCount", "type"]);
+        const { pictureCount, type, ...promptData } = validatedData;
         req.body.generatedPictureUrls = urls;
         req.body.prompt = promptData;
         req.body.type = type;

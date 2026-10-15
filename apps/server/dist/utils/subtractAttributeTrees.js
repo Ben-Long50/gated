@@ -4,11 +4,14 @@ const subtractAttributeTrees = (treeA, treeB) => {
     for (const key in treeA) {
         const nodeA = treeA[key];
         const nodeB = treeB[key];
-        result[key] = Object.assign({ points: nodeA.points - nodeB.points }, (nodeA.skills && nodeB.skills
-            ? {
-                skills: subtractAttributeTrees(nodeA.skills, nodeB.skills),
-            }
-            : {}));
+        result[key] = {
+            points: nodeA.points - nodeB.points,
+            ...(nodeA.skills && nodeB.skills
+                ? {
+                    skills: subtractAttributeTrees(nodeA.skills, nodeB.skills),
+                }
+                : {}),
+        };
     }
     return result;
 };

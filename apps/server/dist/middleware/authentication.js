@@ -3,9 +3,8 @@ import passport from 'passport';
 import prisma from '../config/database.js';
 const authentication = {
     issueJwt: (req, res, next) => {
-        var _a;
         try {
-            jwt.sign({ id: (_a = req.user) === null || _a === void 0 ? void 0 : _a.id }, process.env.JWT_SECRET, {
+            jwt.sign({ id: req.user?.id }, process.env.JWT_SECRET, {
                 expiresIn: '24h',
             }, (err, token) => {
                 if (err) {
@@ -81,7 +80,6 @@ const authentication = {
         next();
     },
     authenticateItemModification: async (req, res, next) => {
-        var _a, _b;
         if (!req.user) {
             res.status(401).json({ error: 'No user found' });
             return;
@@ -99,7 +97,7 @@ const authentication = {
                 },
             },
         });
-        const userId = ((_b = (_a = item === null || item === void 0 ? void 0 : item.characterInventory) === null || _a === void 0 ? void 0 : _a.character) === null || _b === void 0 ? void 0 : _b.userId) || null;
+        const userId = item?.characterInventory?.character?.userId || null;
         if (req.user.id !== userId) {
             res.status(403).json({
                 error: 'You do not have the required permissions to modify this item',

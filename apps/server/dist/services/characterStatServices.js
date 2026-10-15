@@ -40,7 +40,7 @@ const characterStatServices = {
                 id: characterId,
             },
             data: {
-                stats: Object.assign(Object.assign({}, typedStats), { stats }),
+                stats: { ...typedStats, stats },
             },
             include: characterInclude,
         });

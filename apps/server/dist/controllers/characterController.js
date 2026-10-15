@@ -73,7 +73,7 @@ const characterController = {
             const item = await characterServices.toggleEquipment(Number(req.params.inventoryId), Number(req.params.itemId));
             res
                 .status(200)
-                .json({ item, message: `Successfully toggled ${item === null || item === void 0 ? void 0 : item.name}` });
+                .json({ item, message: `Successfully toggled ${item?.name}` });
         }
         catch (error) {
             handleControllerError(res, error);
@@ -259,7 +259,10 @@ const characterController = {
             if (!req.user) {
                 throw new Error('Could not find authenticated user');
             }
-            const validatedBonus = await CharacterLevelBonus.parseAsync(Object.assign({ characterId: Number(req.params.characterId) }, req.body));
+            const validatedBonus = await CharacterLevelBonus.parseAsync({
+                characterId: Number(req.params.characterId),
+                ...req.body,
+            });
             const character = await characterServices.selectLevelUpBonus(validatedBonus);
             const io = getIO();
             if (character.campaignId) {

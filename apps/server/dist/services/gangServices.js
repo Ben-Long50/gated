@@ -1,14 +1,3 @@
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 import prisma from '../config/database.js';
 import { characterInclude } from './characterServices.js';
 const gangInclude = {
@@ -63,23 +52,31 @@ const gangServices = {
         return gang;
     },
     createOrUpdateGang: async (formData) => {
-        const { leaderIds, characterIds } = formData, data = __rest(formData, ["leaderIds", "characterIds"]);
+        const { leaderIds, characterIds, ...data } = formData;
         const gang = await prisma.gang.upsert({
-            where: { id: (formData === null || formData === void 0 ? void 0 : formData.id) || 0 },
-            update: Object.assign(Object.assign({}, data), { leaders: {
+            where: { id: formData?.id || 0 },
+            update: {
+                ...data,
+                leaders: {
                     set: formData.leaderIds.map((leaderId) => ({ id: leaderId })),
-                }, characters: {
+                },
+                characters: {
                     set: formData.characterIds.map((characterId) => ({
                         id: characterId,
                     })),
-                } }),
-            create: Object.assign(Object.assign({}, data), { leaders: {
+                },
+            },
+            create: {
+                ...data,
+                leaders: {
                     connect: formData.leaderIds.map((leaderId) => ({ id: leaderId })),
-                }, characters: {
+                },
+                characters: {
                     connect: formData.characterIds.map((characterId) => ({
                         id: characterId,
                     })),
-                } }),
+                },
+            },
             include: gangInclude,
         });
         return gang;

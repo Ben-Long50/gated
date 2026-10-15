@@ -3,12 +3,12 @@ const calculateItemsStats = (items) => {
     return calculatedItems;
 };
 export const calculateItemStats = (item) => {
-    if (!(item === null || item === void 0 ? void 0 : item.stats) && !(item === null || item === void 0 ? void 0 : item.modifiedStats))
+    if (!item?.stats && !item?.modifiedStats)
         return item;
     const modifierObj = {};
     const modifierKeywords = [];
-    const activeActions = item === null || item === void 0 ? void 0 : item.linkedActions.filter((action) => action.active);
-    activeActions === null || activeActions === void 0 ? void 0 : activeActions.forEach((action) => {
+    const activeActions = item?.linkedActions.filter((action) => action.active);
+    activeActions?.forEach((action) => {
         if (action.modifiers) {
             Object.entries(action.modifiers).forEach(([stat, value]) => {
                 if (!modifierObj[stat]) {
@@ -27,7 +27,7 @@ export const calculateItemStats = (item) => {
         }
     });
     const combined = item.stats;
-    const modifiedStats = (item === null || item === void 0 ? void 0 : item.modifiedStats) || {};
+    const modifiedStats = item?.modifiedStats || {};
     for (const [key, value] of Object.entries(modifiedStats)) {
         if (combined[key]) {
             combined[key] = combined[key] + value;
@@ -44,6 +44,10 @@ export const calculateItemStats = (item) => {
             combined[key] = value;
         }
     }
-    return Object.assign(Object.assign({}, item), { stats: combined, keywords: [...item.keywords, ...modifierKeywords] });
+    return {
+        ...item,
+        stats: combined,
+        keywords: [...item.keywords, ...modifierKeywords],
+    };
 };
 export default calculateItemsStats;

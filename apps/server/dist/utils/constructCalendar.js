@@ -1,7 +1,7 @@
 import calendar from './calendar.js';
 const constructCalendar = (campaign) => {
     const eventCalendar = structuredClone(calendar);
-    if (eventCalendar && (campaign === null || campaign === void 0 ? void 0 : campaign.events.length) > 0) {
+    if (eventCalendar && campaign?.events.length > 0) {
         campaign.events.forEach((event) => {
             const monthEntry = eventCalendar[event.month];
             if (!monthEntry)

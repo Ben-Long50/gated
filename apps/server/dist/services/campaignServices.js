@@ -1,14 +1,3 @@
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 import prisma from '../config/database.js';
 import { getIO } from '../sockets/socket.js';
 import { calculateRoll } from '../utils/rollUtilities.js';
@@ -103,7 +92,10 @@ const campaignServices = {
         }
         const modifiedCampaigns = campaigns.map((campaign) => {
             const calendar = constructCalendar(campaign);
-            return Object.assign(Object.assign({}, campaign), { calendar });
+            return {
+                ...campaign,
+                calendar,
+            };
         });
         return modifiedCampaigns;
     },
@@ -116,7 +108,7 @@ const campaignServices = {
             throw new Error('Failed to find campaign');
         }
         const calendar = constructCalendar(campaign);
-        const modifiedCampaign = Object.assign(Object.assign({}, campaign), { calendar });
+        const modifiedCampaign = { ...campaign, calendar };
         return modifiedCampaign;
     },
     toggleCampaign: async (campaignId) => {
@@ -138,29 +130,43 @@ const campaignServices = {
             include: campaignInclude,
         });
         const calendar = constructCalendar(updatedCampaign);
-        const modifiedCampaign = Object.assign(Object.assign({}, campaign), { calendar });
+        const modifiedCampaign = { ...campaign, calendar };
         return modifiedCampaign;
     },
     createOrUpdateCampaign: async (formData, ownerId) => {
-        const { id, playerIds, pendingPlayerIds, generatedPictureId, factions, briefing, affiliation } = formData, data = __rest(formData, ["id", "playerIds", "pendingPlayerIds", "generatedPictureId", "factions", "briefing", "affiliation"]);
+        const { id, playerIds, pendingPlayerIds, generatedPictureId, factions, briefing, affiliation, ...data } = formData;
         const campaign = await prisma.$transaction(async (tx) => {
             const campaign = await tx.campaign.upsert({
                 where: { id: id || 0 },
-                update: Object.assign(Object.assign({}, data), { ownerId, players: {
+                update: {
+                    ...data,
+                    ownerId,
+                    players: {
                         set: playerIds.map((id) => ({ id })),
-                    }, pendingPlayers: {
+                    },
+                    pendingPlayers: {
                         set: pendingPlayerIds.map((id) => ({ id })),
-                    } }),
-                create: Object.assign(Object.assign({}, data), { ownerId, sessions: {
+                    },
+                },
+                create: {
+                    ...data,
+                    ownerId,
+                    sessions: {
                         create: {
                             name: 'Introduction',
                             sessionNumber: 0,
                             briefing,
                             generatedPictureId,
                         },
-                    }, date: { month: 'arctus', day: 1 }, time: { hour: 0, minute: 0, second: 0 }, factions: { createMany: { data: factions } }, pendingPlayers: {
+                    },
+                    date: { month: 'arctus', day: 1 },
+                    time: { hour: 0, minute: 0, second: 0 },
+                    factions: { createMany: { data: factions } },
+                    pendingPlayers: {
                         connect: pendingPlayerIds.map((id) => ({ id })),
-                    }, generatedPictureId }),
+                    },
+                    generatedPictureId,
+                },
                 include: campaignInclude,
             });
             await tx.affiliation.create({
@@ -236,12 +242,15 @@ const campaignServices = {
         return location;
     },
     createOrUpdateEvent: async (campaignId, formData) => {
-        const { id, characterId } = formData, data = __rest(formData, ["id", "characterId"]);
+        const { id, characterId, ...data } = formData;
         const event = await prisma.event.upsert({
             where: { id: id || 0 },
             update: data,
-            create: Object.assign(Object.assign({}, data), { campaignId,
-                characterId }),
+            create: {
+                ...data,
+                campaignId,
+                characterId,
+            },
         });
         return event;
     },
@@ -332,17 +341,17 @@ const campaignServices = {
                     },
                 },
             });
-            if (c === null || c === void 0 ? void 0 : c.characters.some((character) => character.userId === userId)) {
+            if (c?.characters.some((character) => character.userId === userId)) {
                 throw new Error('You already have a player character in this campaign');
             }
             const character = await tx.character.findUnique({
                 where: { id: characterId },
                 select: { userId: true, campaignId: true },
             });
-            if (character === null || character === void 0 ? void 0 : character.campaignId) {
+            if (character?.campaignId) {
                 throw new Error('This character already belongs to a campaign');
             }
-            const newCharacter = (character === null || character === void 0 ? void 0 : character.userId) === null
+            const newCharacter = character?.userId === null
                 ? await characterServices.createTemplateCharacter(userId, characterId, campaignId, undefined, tx)
                 : await tx.character.update({
                     where: { id: characterId },

@@ -1,14 +1,3 @@
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 import prisma from '../config/database.js';
 import { includeCharacterCart } from '../utils/linkQueryStructures.js';
 import itemServices, { itemInclude, itemSelectForCopy, } from './itemServices.js';
@@ -138,7 +127,7 @@ const characterServices = {
         return characters;
     },
     getCharacterById: async (characterId, tx) => {
-        const client = tx !== null && tx !== void 0 ? tx : prisma;
+        const client = tx ?? prisma;
         const character = await client.character.findUnique({
             where: {
                 id: characterId,
@@ -182,8 +171,8 @@ const characterServices = {
         if (!item) {
             throw new Error('Item not found');
         }
-        const itemIds = [...item === null || item === void 0 ? void 0 : item.linkedItems.map((item) => item.id), item.id];
-        const equipped = item === null || item === void 0 ? void 0 : item.equipped;
+        const itemIds = [...item?.linkedItems.map((item) => item.id), item.id];
+        const equipped = item?.equipped;
         await prisma.item.updateMany({
             where: { id: { in: itemIds } },
             data: { equipped: !equipped },
@@ -195,21 +184,30 @@ const characterServices = {
         return updatedItem;
     },
     createCharacter: async (formData, userId, template) => {
-        const stats = Object.assign(Object.assign({}, formData.stats), { currentHealth: formData.stats.maxHealth
+        const stats = {
+            ...formData.stats,
+            currentHealth: formData.stats.maxHealth
                 ? formData.stats.maxHealth +
                     10 +
                     formData.attributes.violence.skills.threshold.points * 2
-                : 10 + formData.attributes.violence.skills.threshold.points * 2, currentSanity: formData.stats.maxSanity
+                : 10 + formData.attributes.violence.skills.threshold.points * 2,
+            currentSanity: formData.stats.maxSanity
                 ? formData.stats.maxSanity +
                     5 +
                     formData.attributes.esoterica.skills.mysticism.points
-                : 5 + formData.attributes.esoterica.skills.mysticism.points, currentActions: formData.stats.actions ? formData.stats.actions + 3 : 3, currentReactions: formData.stats.reactions
+                : 5 + formData.attributes.esoterica.skills.mysticism.points,
+            currentActions: formData.stats.actions ? formData.stats.actions + 3 : 3,
+            currentReactions: formData.stats.reactions
                 ? formData.stats.reactions + 1
-                : 1, currentHands: formData.stats.hands ? formData.stats.hands + 2 : 2, currentFeet: formData.stats.feet ? formData.stats.feet + 2 : 2, injuries: 0, insanities: 0 });
-        const { perkIds, attributes } = formData, data = __rest(formData, ["perkIds", "attributes"]);
+                : 1,
+            currentHands: formData.stats.hands ? formData.stats.hands + 2 : 2,
+            currentFeet: formData.stats.feet ? formData.stats.feet + 2 : 2,
+            injuries: 0,
+            insanities: 0,
+        };
+        const { perkIds, attributes, ...data } = formData;
         await validateLevelUpBonus({ level: data.level, attributes, perkIds });
         const character = await prisma.$transaction(async (tx) => {
-            var _a;
             let newPerkIds = [];
             if (perkIds) {
                 for (const id of perkIds) {
@@ -218,16 +216,23 @@ const characterServices = {
                 }
             }
             const character = await tx.character.create({
-                data: Object.assign(Object.assign({}, data), { level: data.playerCharacter ? data.level : undefined, stats,
-                    userId, characterLevelBonuses: {
+                data: {
+                    ...data,
+                    level: data.playerCharacter ? data.level : undefined,
+                    stats,
+                    userId,
+                    characterLevelBonuses: {
                         create: {
-                            level: (_a = data.level) !== null && _a !== void 0 ? _a : 0,
+                            level: data.level ?? 0,
                             attributes,
                             perks: {
                                 connect: newPerkIds.map((perkId) => ({ id: perkId })),
                             },
                         },
-                    }, characterCart: { create: {} }, characterInventory: { create: {} } }),
+                    },
+                    characterCart: { create: {} },
+                    characterInventory: { create: {} },
+                },
                 include: { characterInventory: true },
             });
             if (!template && !character.npcTypes.includes('monster')) {
@@ -251,7 +256,6 @@ const characterServices = {
     },
     createTemplateCharacter: async (userId, characterId, campaignId, gangId, tx) => {
         const create = async (tx) => {
-            var _a, _b, _c;
             const templateCharacter = await tx.character.findUnique({
                 where: { id: characterId },
                 select: characterSelectForCopy,
@@ -259,34 +263,44 @@ const characterServices = {
             if (!templateCharacter) {
                 throw new Error('Failed to find template character');
             }
-            const _d = filterObject(templateCharacter), { id, characterLevelBonuses } = _d, filteredCharacter = __rest(_d, ["id", "characterLevelBonuses"]);
-            const characterItems = (_b = (_a = templateCharacter.characterInventory) === null || _a === void 0 ? void 0 : _a.items) !== null && _b !== void 0 ? _b : [];
+            const { id, characterLevelBonuses, ...filteredCharacter } = filterObject(templateCharacter);
+            const characterItems = templateCharacter.characterInventory?.items ?? [];
             const character = await tx.character.create({
-                data: Object.assign(Object.assign({}, filteredCharacter), { npcTypes: (_c = filteredCharacter.npcTypes) === null || _c === void 0 ? void 0 : _c.filter((type) => type !== 'template'), baseCharacterId: id, characterCart: {
+                data: {
+                    ...filteredCharacter,
+                    npcTypes: filteredCharacter.npcTypes?.filter((type) => type !== 'template'),
+                    baseCharacterId: id,
+                    characterCart: {
                         create: {},
-                    }, characterInventory: { create: {} }, characterLevelBonuses: {
-                        create: templateCharacter.characterLevelBonuses.map((_a) => {
-                            var { perks } = _a, bonus = __rest(_a, ["perks"]);
-                            return (Object.assign(Object.assign({}, bonus), { perks: {
-                                    create: perks.map((_a) => {
-                                        var { id, basePerkId, actions } = _a, perk = __rest(_a, ["id", "basePerkId", "actions"]);
-                                        return (Object.assign(Object.assign({}, perk), { basePerkId: basePerkId !== null && basePerkId !== void 0 ? basePerkId : id, actions: {
-                                                create: actions.map((_a) => {
-                                                    var { id, baseActionId, keywordModifiers } = _a, action = __rest(_a, ["id", "baseActionId", "keywordModifiers"]);
-                                                    return (Object.assign(Object.assign({}, action), { baseActionId: baseActionId !== null && baseActionId !== void 0 ? baseActionId : id, keywordModifiers: {
-                                                            create: keywordModifiers.map((keyword) => ({
-                                                                keywordId: keyword.keywordId,
-                                                                value: keyword.value,
-                                                            })),
-                                                        } }));
-                                                }),
-                                            } }));
-                                    }),
-                                } }));
-                        }),
-                    }, userId,
+                    },
+                    characterInventory: { create: {} },
+                    characterLevelBonuses: {
+                        create: templateCharacter.characterLevelBonuses.map(({ perks, ...bonus }) => ({
+                            ...bonus,
+                            perks: {
+                                create: perks.map(({ id, basePerkId, actions, ...perk }) => ({
+                                    ...perk,
+                                    basePerkId: basePerkId ?? id,
+                                    actions: {
+                                        create: actions.map(({ id, baseActionId, keywordModifiers, ...action }) => ({
+                                            ...action,
+                                            baseActionId: baseActionId ?? id,
+                                            keywordModifiers: {
+                                                create: keywordModifiers.map((keyword) => ({
+                                                    keywordId: keyword.keywordId,
+                                                    value: keyword.value,
+                                                })),
+                                            },
+                                        })),
+                                    },
+                                })),
+                            },
+                        })),
+                    },
+                    userId,
                     campaignId,
-                    gangId }),
+                    gangId,
+                },
                 select: {
                     id: true,
                     characterInventory: { select: { id: true } },
@@ -308,7 +322,7 @@ const characterServices = {
         return tx ? create(tx) : prisma.$transaction(create);
     },
     addToInventory: async (characterId, inventoryId, tx) => {
-        const client = tx !== null && tx !== void 0 ? tx : prisma;
+        const client = tx ?? prisma;
         const character = await client.character.findUnique({
             where: { id: characterId },
             select: {
@@ -324,18 +338,21 @@ const characterServices = {
                 },
             },
         });
-        const profits = (character === null || character === void 0 ? void 0 : character.profits) || 0;
-        const cart = character === null || character === void 0 ? void 0 : character.characterCart;
-        const items = (cart === null || cart === void 0 ? void 0 : cart.items.map((item) => ({
+        const profits = character?.profits || 0;
+        const cart = character?.characterCart;
+        const items = cart?.items.map((item) => ({
             itemId: item.item.id,
             quantity: item.quantity,
-        }))) || [];
-        const totalPrice = cart === null || cart === void 0 ? void 0 : cart.items.flat().map((reference) => {
+        })) || [];
+        const totalPrice = cart?.items
+            .flat()
+            .map((reference) => {
             const targetObject = Object.values(reference).find((item) => typeof item === 'object');
-            return (targetObject === null || targetObject === void 0 ? void 0 : targetObject.price)
+            return targetObject?.price
                 ? reference.quantity * targetObject.price
                 : 0;
-        }).reduce((sum, item) => sum + item, 0);
+        })
+            .reduce((sum, item) => sum + item, 0);
         if (typeof totalPrice !== 'number') {
             throw new Error('Failed to calculate total cart price');
         }
@@ -353,7 +370,7 @@ const characterServices = {
         return updatedCharacter;
     },
     clearCart: async (characterId, tx) => {
-        const client = tx !== null && tx !== void 0 ? tx : prisma;
+        const client = tx ?? prisma;
         await client.characterCart.update({
             where: { characterId: Number(characterId) },
             data: {
@@ -364,7 +381,7 @@ const characterServices = {
         });
     },
     updateCharacter: async (formData) => {
-        const { id, stats } = formData, data = __rest(formData, ["id", "stats"]);
+        const { id, stats, ...data } = formData;
         const oldCharacter = await prisma.character.findUnique({
             where: { id },
             select: {
@@ -376,13 +393,19 @@ const characterServices = {
                 stats: true,
             },
         });
-        const newStats = Object.assign(Object.assign({}, oldCharacter === null || oldCharacter === void 0 ? void 0 : oldCharacter.stats), stats);
+        const newStats = {
+            ...oldCharacter?.stats,
+            ...stats,
+        };
         const character = await prisma.$transaction(async (tx) => {
             const character = await tx.character.update({
                 where: {
                     id,
                 },
-                data: Object.assign(Object.assign({}, data), { stats: newStats }),
+                data: {
+                    ...data,
+                    stats: newStats,
+                },
                 include: characterInclude,
             });
             return character;
@@ -407,7 +430,6 @@ const characterServices = {
             throw new Error('Failed to find character');
         }
         const updatedCharacter = prisma.$transaction(async (tx) => {
-            var _a, _b;
             let newPerkIds = [];
             if (bonus.perkIds) {
                 for (const id of bonus.perkIds) {
@@ -429,7 +451,7 @@ const characterServices = {
                                 },
                             },
                             update: {
-                                attributes: (_a = bonus.attributes) !== null && _a !== void 0 ? _a : undefined,
+                                attributes: bonus.attributes ?? undefined,
                                 perks: {
                                     deleteMany: {},
                                     connect: newPerkIds.map((newPerkId) => ({ id: newPerkId })),
@@ -437,7 +459,7 @@ const characterServices = {
                             },
                             create: {
                                 level: bonus.level,
-                                attributes: (_b = bonus.attributes) !== null && _b !== void 0 ? _b : undefined,
+                                attributes: bonus.attributes ?? undefined,
                                 perks: {
                                     connect: newPerkIds.map((newPerkId) => ({ id: newPerkId })),
                                 },
@@ -468,7 +490,6 @@ const characterServices = {
         return character;
     },
     createOrUpdateLocation: async (characterId, formData) => {
-        var _a;
         const io = getIO();
         const location = await prisma.location.upsert({
             where: {
@@ -487,7 +508,7 @@ const characterServices = {
             },
             include: { character: { select: { campaignId: true } } },
         });
-        io.to(`campaign ${(_a = location.character) === null || _a === void 0 ? void 0 : _a.campaignId}`).emit('location', {
+        io.to(`campaign ${location.character?.campaignId}`).emit('location', {
             characterId,
             locationId: location.id,
             mapId: location.mapId,

@@ -36,7 +36,7 @@ const encounterMiddleware = {
         }
         const encounter = req.encounter;
         const reactiveCharacters = encounter.characters.filter((character) => encounter.reactions.includes(character.id));
-        const permissions = reactiveCharacters.some((character) => req.user && req.user.id === (character === null || character === void 0 ? void 0 : character.userId));
+        const permissions = reactiveCharacters.some((character) => req.user && req.user.id === character?.userId);
         if (req.user.id !== encounter.campaign.ownerId && !permissions) {
             res.status(500).json({
                 error: 'Only the Game Master or users with characters in a reaction state may roll a reaction',

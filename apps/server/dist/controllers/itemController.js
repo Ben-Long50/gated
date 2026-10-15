@@ -123,11 +123,10 @@ const itemController = {
         }
     },
     deleteItem: async (req, res) => {
-        var _a;
         try {
             const item = await itemServices.getItemById(Number(req.params.itemId));
             await itemServices.deleteItem(Number(req.params.itemId));
-            if ((_a = item.characterInventory) === null || _a === void 0 ? void 0 : _a.characterId) {
+            if (item.characterInventory?.characterId) {
                 const character = await characterServices.getCharacterById(item.characterInventory.characterId);
                 if (!character) {
                     throw new Error('No character found');

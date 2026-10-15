@@ -8,8 +8,7 @@ export const calculateRoll = (attributes, action, modifiers, extraDice) => {
         return;
     }
     const calculateDiceCount = (attributes, action, modifiers, extraDice) => {
-        var _a;
-        const calculatedRolls = ((_a = action.roll) === null || _a === void 0 ? void 0 : _a.map((roll) => {
+        const calculatedRolls = action.roll?.map((roll) => {
             const attributePoints = attributes[roll.attribute].points;
             const skillPoints = attributes[roll.attribute].skills[roll.skill].points;
             return {
@@ -18,7 +17,7 @@ export const calculateRoll = (attributes, action, modifiers, extraDice) => {
                     : 1,
                 roll,
             };
-        })) || [];
+        }) || [];
         const bestRoll = calculatedRolls.sort((a, b) => b.diceCount - a.diceCount)[0];
         if (modifiers.includes('push')) {
             bestRoll.diceCount += 2;
@@ -91,7 +90,11 @@ export const calculateDamage = (item, action, successes) => {
 export const calculateCosts = async (character, item, action) => {
     const costs = action
         ? action.name === 'Salvo Fire'
-            ? Object.assign(Object.assign({}, action.costs), { currentAmmoCount: item === null || item === void 0 ? void 0 : item.stats.salvo }) : action.costs
+            ? {
+                ...action.costs,
+                currentAmmoCount: item?.stats.salvo,
+            }
+            : action.costs
         : null;
     if (item) {
         if (item.keywords.some((keyword) => keyword.keyword.name === '2H')) {
@@ -135,18 +138,17 @@ export const calculateCosts = async (character, item, action) => {
     }
 };
 export const applyDamage = async (targetCharacter, damage, sanityDamage) => {
-    var _a, _b;
     if (!targetCharacter) {
         throw new Error('Target character not found');
     }
-    if (((_a = targetCharacter.stats) === null || _a === void 0 ? void 0 : _a.currentHealth) - damage <= 0) {
+    if (targetCharacter.stats?.currentHealth - damage <= 0) {
         const isWounded = targetCharacter.conditions.some((condition) => condition.condition.name === 'Wounded');
         if (isWounded) {
             if (targetCharacter.stats.injuries + 1 >=
                 targetCharacter.stats.permanentInjuries) {
                 const deadForGood = await conditionServices.getConditionByName('Dead for Good');
                 await characterServices.createCharacterConditions(targetCharacter.id, [
-                    { conditionId: deadForGood === null || deadForGood === void 0 ? void 0 : deadForGood.id },
+                    { conditionId: deadForGood?.id },
                 ]);
             }
             else {
@@ -162,7 +164,7 @@ export const applyDamage = async (targetCharacter, damage, sanityDamage) => {
                 currentHealth: targetCharacter.stats.maxHealth,
             });
             await characterServices.createCharacterConditions(targetCharacter.id, [
-                { conditionId: wounded === null || wounded === void 0 ? void 0 : wounded.id },
+                { conditionId: wounded?.id },
             ]);
         }
     }
@@ -171,14 +173,14 @@ export const applyDamage = async (targetCharacter, damage, sanityDamage) => {
             currentHealth: damage * -1,
         });
     }
-    if (((_b = targetCharacter.stats) === null || _b === void 0 ? void 0 : _b.currentSanity) - sanityDamage <= 0) {
+    if (targetCharacter.stats?.currentSanity - sanityDamage <= 0) {
         const isDeranged = targetCharacter.conditions.some((condition) => condition.condition.name === 'Deranged');
         if (isDeranged) {
             if (targetCharacter.stats.insanities + 1 >=
                 targetCharacter.stats.permanentInsanities) {
                 const insane = await conditionServices.getConditionByName('Insane');
                 await characterServices.createCharacterConditions(targetCharacter.id, [
-                    { conditionId: insane === null || insane === void 0 ? void 0 : insane.id },
+                    { conditionId: insane?.id },
                 ]);
             }
             else {
@@ -194,7 +196,7 @@ export const applyDamage = async (targetCharacter, damage, sanityDamage) => {
                 currentSanity: targetCharacter.stats.maxSanity,
             });
             await characterServices.createCharacterConditions(targetCharacter.id, [
-                { conditionId: deranged === null || deranged === void 0 ? void 0 : deranged.id },
+                { conditionId: deranged?.id },
             ]);
         }
     }

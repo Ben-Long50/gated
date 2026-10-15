@@ -71,12 +71,11 @@ const generationController = {
         }
     },
     deleteUnusedGeneratedPictures: async (req, res) => {
-        var _a;
         try {
             if (!req.user) {
                 throw new Error('Failed to find user');
             }
-            const count = await userServices.deleteUnusedGeneratedPictures(req.user.id, req.body.type, (_a = req.body.count) !== null && _a !== void 0 ? _a : 1);
+            const count = await userServices.deleteUnusedGeneratedPictures(req.user.id, req.body.type, req.body.count ?? 1);
             res.status(200).json({
                 message: `Successfully deleted ${count} oldest unused image(s)`,
             });

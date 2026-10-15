@@ -25,7 +25,7 @@ const parseBlockData = async (phaseActionId, blockData) => {
     const armors = [];
     for (const id of armorCosts.keys()) {
         const armor = await itemServices.getItemById(id);
-        armors.push(Object.assign(Object.assign({}, armor), { blocks: armorCosts.get(id) }));
+        armors.push({ ...armor, blocks: armorCosts.get(id) });
         await calculateCosts(undefined, armor, {
             costs: {
                 currentBlock: armorCosts.get(id),

@@ -1,15 +1,4 @@
 //@ts-nocheck
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 import prisma from '../config/database.js';
 import itemServices from './itemServices.js';
 import { applyDamage, calculateCosts, calculateRoll, } from '../utils/rollUtilities.js';
@@ -109,7 +98,7 @@ const encounterServices = {
         if (!encounter) {
             throw new Error('Failed to find encounter');
         }
-        const history = encounter === null || encounter === void 0 ? void 0 : encounter.phaseHistory;
+        const history = encounter?.phaseHistory;
         return history;
     },
     activateEncounter: async (encounterId) => {
@@ -128,7 +117,7 @@ const encounterServices = {
                 combatPhase: encounter.combatPhase === 'pending'
                     ? 'initiative'
                     : encounter.combatPhase,
-                active: encounter ? !(encounter === null || encounter === void 0 ? void 0 : encounter.active) : true,
+                active: encounter ? !encounter?.active : true,
             },
         });
         io.to(`campaign ${encounter.campaignId}`).emit('campaign', encounter.campaignId);
@@ -232,7 +221,7 @@ const encounterServices = {
                 where: {
                     id: encounterId,
                 },
-                data: Object.assign({ phaseHistory: { create: phaseHistoryData } }, data),
+                data: { phaseHistory: { create: phaseHistoryData }, ...data },
             });
             await tx.item.updateMany({
                 where: { id: { in: usedItemIds } },
@@ -264,11 +253,11 @@ const encounterServices = {
                 { attribute: 'violence', skill: 'threshold' },
             ];
             const rollInitiative = async () => {
-                const rollResults = calculateRoll(character === null || character === void 0 ? void 0 : character.attributes, { roll: violenceRolls }, []) || { result: [], successes: 0 };
-                rolls.set(character === null || character === void 0 ? void 0 : character.id, {
-                    characterId: character === null || character === void 0 ? void 0 : character.id,
-                    name: character === null || character === void 0 ? void 0 : character.name,
-                    playerCharacter: character === null || character === void 0 ? void 0 : character.playerCharacter,
+                const rollResults = calculateRoll(character?.attributes, { roll: violenceRolls }, []) || { result: [], successes: 0 };
+                rolls.set(character?.id, {
+                    characterId: character?.id,
+                    name: character?.name,
+                    playerCharacter: character?.playerCharacter,
                     diceArray: rollResults.result,
                     successes: rollResults.successes,
                 });
@@ -302,14 +291,14 @@ const encounterServices = {
             throw new Error('Failed to find action');
         }
         const rollResults = action.roll && action.roll.length > 0
-            ? calculateRoll(character === null || character === void 0 ? void 0 : character.attributes, { name: action.name, roll: action.roll }, actionData.modifiers, actionData.extraDice) || { result: [], successes: 0 }
+            ? calculateRoll(character?.attributes, { name: action.name, roll: action.roll }, actionData.modifiers, actionData.extraDice) || { result: [], successes: 0 }
             : null;
         const rolls = new Map();
         if (rollResults) {
-            rolls.set(character === null || character === void 0 ? void 0 : character.id, {
-                characterId: character === null || character === void 0 ? void 0 : character.id,
-                name: character === null || character === void 0 ? void 0 : character.name,
-                playerCharacter: character === null || character === void 0 ? void 0 : character.playerCharacter,
+            rolls.set(character?.id, {
+                characterId: character?.id,
+                name: character?.name,
+                playerCharacter: character?.playerCharacter,
                 diceArray: rollResults.result,
                 successes: rollResults.successes,
                 modifiers: actionData.modifiers,
@@ -414,7 +403,7 @@ const encounterServices = {
         if (!encounter) {
             throw new Error('Failed to find encounter');
         }
-        const reactiveIds = encounter === null || encounter === void 0 ? void 0 : encounter.turnOrder.filter((_, index) => index !== encounter.turnPosition);
+        const reactiveIds = encounter?.turnOrder.filter((_, index) => index !== encounter.turnPosition);
         await prisma.encounter.update({
             where: {
                 id: encounterId,
@@ -597,26 +586,37 @@ const encounterServices = {
             //@ts-ignore
             eventData.time = campaign.time;
         }
-        const oldEncounter = (formData === null || formData === void 0 ? void 0 : formData.id)
+        const oldEncounter = formData?.id
             ? await prisma.encounter.findUnique({
-                where: { id: formData === null || formData === void 0 ? void 0 : formData.id },
+                where: { id: formData?.id },
             })
             : {};
-        const _a = Object.assign(Object.assign({}, oldEncounter), formData), { id, 
+        const { id, 
         //@ts-ignore
         mapId: m, 
         //@ts-ignore
-        campaignId: c } = _a, data = __rest(_a, ["id", "mapId", "campaignId"]);
+        campaignId: c, ...data } = { ...oldEncounter, ...formData };
         const encounter = await prisma.encounter.upsert({
-            where: { id: (formData === null || formData === void 0 ? void 0 : formData.id) || 0 },
-            update: Object.assign(Object.assign({}, data), { campaign: { connect: { id: campaignId } }, map: { connect: { id: mapId } }, characters: {
+            where: { id: formData?.id || 0 },
+            update: {
+                ...data,
+                campaign: { connect: { id: campaignId } },
+                map: { connect: { id: mapId } },
+                characters: {
                     set: formData.turnOrder.map((id) => ({ id })),
-                } }),
-            create: Object.assign(Object.assign({}, data), { campaign: { connect: { id: campaignId } }, map: { connect: { id: mapId } }, characters: {
+                },
+            },
+            create: {
+                ...data,
+                campaign: { connect: { id: campaignId } },
+                map: { connect: { id: mapId } },
+                characters: {
                     connect: formData.turnOrder.map((id) => ({ id })),
-                }, event: {
-                    create: Object.assign({ campaign: { connect: { id: campaignId } } }, eventData),
-                } }),
+                },
+                event: {
+                    create: { campaign: { connect: { id: campaignId } }, ...eventData },
+                },
+            },
         });
         return encounter;
     },

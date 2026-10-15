@@ -1,8 +1,7 @@
 {
   "compilerOptions": {
     /* Basic Options */
-    "target": "ES2020" /* Set the target JavaScript version. */,
-    "module": "ESNext" /* Use modern ECMAScript modules. */,
+    "extends": "../../tsconfig.base.json",
     "lib": [
       "DOM",
       "DOM.Iterable",
@@ -43,10 +42,11 @@
     /* Additional Options */
     "incremental": true /* Enable incremental compilation for faster builds. */
   },
+  "dependencies": {
+  "@gated/shared": "*"
+  },
   "include": [
     "src",
-    "scripts",
-    "src/components/formFields/ItemLinkField.tsx"
   ] /* Include the source folder for compilation. */,
   "exclude": ["node_modules", "dist"] /* Exclude unnecessary folders. */
 }
