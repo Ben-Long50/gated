@@ -10,5 +10,8 @@
     "dev:server": "npm run devstart -w apps/server",
     "build": "npm run build --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.10"
   }
 }
