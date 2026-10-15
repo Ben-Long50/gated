@@ -1,0 +1,10 @@
+import express from 'express';
+import authentication from '../middleware/authentication.js';
+import affiliationController from '../controllers/affiliationController.js';
+const router = express.Router();
+router.get('/affiliations/batch', authentication.authenticate, affiliationController.getBatchAffiliations);
+router.get('/affiliations/:affiliationId', authentication.authenticate, affiliationController.getAffiliationById);
+router.post('/affiliations', authentication.authenticate, affiliationController.createAffiliation);
+router.patch('/affiliations/:affiliationId/value', authentication.authenticate, affiliationController.updateAffiliationValue);
+router.delete('/affiliations/:affiliationId', authentication.authenticate, affiliationController.deleteAffiliation);
+export default router;

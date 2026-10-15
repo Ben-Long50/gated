@@ -1,0 +1,733 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                    Int                @id @default(autoincrement())
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @default(now())
+  username              String             @unique
+  firstName             String
+  lastName              String
+  profilePicture        String?
+  googleId              String?            @unique
+  facebookId            String?            @unique
+  email                 String             @unique
+  password              String?
+  role                  UserRole           @default(USER)
+  generatedPictures     GeneratedPicture[]
+  generationCount       Int                @default(0)
+  characters            Character[]
+  item                  Item[]
+  errorReports          Error[]
+  ownerCampaigns        Campaign[]         @relation("owner")
+  pendingCampaigns      Campaign[]         @relation("pending")
+  playerCampaigns       Campaign[]         @relation("player")
+  receivedNotifications Notification[]     @relation("received")
+  sentNotifications     Notification[]     @relation("sent")
+  maps                  Map[]
+}
+
+model GeneratedPicture {
+  id         Int                  @id @default(autoincrement())
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @default(now())
+  imageUrl   String               @unique
+  publicId   String               @unique
+  prompt     Json?
+  type       GeneratedPictureType
+  user       User?                @relation(fields: [userId], references: [id])
+  userId     Int?
+  characters Character[]
+  items      Item[]
+  properties Property[]
+  gangs      Gang[]
+  sessions   Session[]
+  factions   Faction[]
+  maps       Map[]
+  campaigns  Campaign[]
+}
+
+enum GeneratedPictureType {
+  character
+  item
+  scene
+}
+
+model Campaign {
+  id                 Int               @id @default(autoincrement())
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @default(now())
+  active             Boolean           @default(false)
+  date               Json?
+  time               Json?
+  owner              User              @relation("owner", fields: [ownerId], references: [id])
+  ownerId            Int
+  pendingPlayers     User[]            @relation("pending")
+  players            User[]            @relation("player")
+  factions           Faction[]
+  name               String
+  location           String
+  generatedPicture   GeneratedPicture? @relation(fields: [generatedPictureId], references: [id])
+  generatedPictureId Int?
+  gangs              Gang[]
+  sessions           Session[]
+  characters         Character[]
+  affiliations       Affiliation[]
+  events             Event[]
+  maps               Map[]
+  encounters         Encounter[]
+  histories          History[]
+  notifications      Notification[]
+}
+
+enum Month {
+  arctus
+  pluvia
+  kavir
+  husk
+  nagai
+  zenzi
+  haqMilah
+  termina
+}
+
+model Event {
+  id          Int        @id @default(autoincrement())
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @default(now())
+  campaign    Campaign   @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId  Int
+  character   Character? @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  characterId Int?
+  encounter   Encounter? @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+  encounterId Int?       @unique
+  month       Month
+  day         Int
+  time        Json?
+  name        String
+  description String?
+}
+
+model Map {
+  id                 Int               @id @default(autoincrement())
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @default(now())
+  user               User?             @relation(fields: [userId], references: [id])
+  userId             Int?
+  campaign           Campaign?         @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId         Int?
+  generatedPicture   GeneratedPicture? @relation(fields: [generatedPictureId], references: [id])
+  generatedPictureId Int?
+  draft              Boolean
+  name               String
+  description        String?
+  type               MapType
+  width              Int
+  height             Int
+  baseColor          String
+  layerCount         Int?
+  layers             Json?
+  locations          Location[]
+  encounters         Encounter[]
+  gang               Gang?             @relation(fields: [gangId], references: [id])
+  gangId             Int?
+  baseMap            Map?              @relation("BaseRelation", fields: [mapId], references: [id])
+  baseMapId          Int?
+  maps               Map[]             @relation("BaseRelation")
+  mapId              Int?
+}
+
+enum MapType {
+  map
+  component
+}
+
+model Location {
+  id          Int        @id @default(autoincrement())
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @default(now())
+  row         Int?
+  col         Int?
+  map         Map        @relation(fields: [mapId], references: [id], onDelete: Cascade)
+  mapId       Int
+  character   Character? @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  characterId Int?       @unique
+  item        Item?      @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  itemId      Int?       @unique
+}
+
+model Encounter {
+  id           Int            @id @default(autoincrement())
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @default(now())
+  name         String
+  active       Boolean        @default(false)
+  campaign     Campaign       @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId   Int
+  map          Map            @relation(fields: [mapId], references: [id])
+  mapId        Int
+  event        Event?
+  turn         Int            @default(0)
+  round        Int            @default(0)
+  turnOrder    Int[]
+  turnPosition Int
+  reactions    Int[]
+  passes       Int[]
+  combatPhase  CombatPhase    @default(pending)
+  characters   Character[]
+  phaseHistory PhaseHistory[]
+  history      History[]      @relation(name: "history")
+}
+
+enum CombatPhase {
+  pending
+  initiative
+  action
+  reaction
+  completed
+}
+
+model PhaseHistory {
+  id          Int        @id @default(autoincrement())
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @default(now())
+  turn        Int        @default(0)
+  round       Int        @default(0)
+  encounter   Encounter? @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+  encounterId Int?
+  action      History?   @relation(name: "phaseAction")
+  reactions   History[]  @relation(name: "phaseReactions")
+}
+
+model History {
+  id                     Int           @id @default(autoincrement())
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @default(now())
+  campaign               Campaign      @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId             Int
+  encounter              Encounter?    @relation(name: "history", fields: [encounterId], references: [id], onDelete: Cascade)
+  encounterId            Int?
+  phaseHistoryAction     PhaseHistory? @relation(name: "phaseAction", fields: [phaseHistoryActionId], references: [id], onDelete: Cascade)
+  phaseHistoryActionId   Int?          @unique
+  phaseHistoryReaction   PhaseHistory? @relation(name: "phaseReactions", fields: [phaseHistoryReactionId], references: [id], onDelete: Cascade)
+  phaseHistoryReactionId Int?
+  characterSnapshot      Json
+  characterId            Int
+  targetSnapshot         Json?
+  targetId               Int?
+  actionSnapshot         Json
+  actionId               Int
+  itemSnapshot           Json?
+  itemId                 Int?
+  tile                   Json?
+  armorSnapshots         Json?
+  armorIds               Int[]
+  rollResult             Json?
+  blockData              Json?
+}
+
+model Faction {
+  id                 Int               @id @default(autoincrement())
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @default(now())
+  factionType        FactionType
+  name               String
+  generatedPicture   GeneratedPicture? @relation(fields: [generatedPictureId], references: [id])
+  generatedPictureId Int?
+  background         Json?
+  campaign           Campaign          @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId         Int
+  affiliations       Affiliation[]
+  gangs              Gang[]
+}
+
+model Affiliation {
+  id         Int         @id @default(autoincrement())
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @default(now())
+  campaign   Campaign    @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId Int
+  value      Int         @default(0)
+  factions   Faction[]
+  gangs      Gang[]
+  characters Character[]
+}
+
+enum FactionType {
+  churchOfElShaddai
+  corporateHoldouts
+  federalReservists
+  noblebloods
+}
+
+model Session {
+  id                 Int                @id @default(autoincrement())
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @default(now())
+  sessionNumber      Int
+  name               String
+  location           String?
+  campaign           Campaign           @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId         Int
+  briefing           Json
+  generatedPicture   GeneratedPicture?  @relation(fields: [generatedPictureId], references: [id])
+  generatedPictureId Int?
+  notes              Note[]
+  characters         Character[]
+  gangSessionBonuses GangSessionBonus[]
+
+  @@unique([sessionNumber, campaignId])
+  @@unique([name, campaignId])
+}
+
+model Notification {
+  id          Int              @id @default(autoincrement())
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @default(now())
+  type        NotificationType
+  recipient   User             @relation("received", fields: [recipientId], references: [id], onDelete: Cascade)
+  recipientId Int
+  sender      User             @relation("sent", fields: [senderId], references: [id], onDelete: Cascade)
+  senderId    Int
+  read        Boolean          @default(false)
+  readAt      DateTime?
+  campaign    Campaign?        @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId  Int?
+}
+
+enum NotificationType {
+  campaignInvite
+  liveCampaignInvite
+  sessionInvite
+}
+
+model Note {
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now())
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  characterId Int
+  content     Json
+  session     Session   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId   Int
+
+  @@unique([sessionId, characterId])
+}
+
+model Gang {
+  id                 Int                @id @default(autoincrement())
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @default(now())
+  name               String
+  generatedPicture   GeneratedPicture?  @relation(fields: [generatedPictureId], references: [id])
+  generatedPictureId Int?
+  background         Json?
+  level              Int                @default(1)
+  levelNodes         Int                @default(0)
+  profits            Int                @default(0)
+  campaign           Campaign           @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId         Int
+  faction            Faction?           @relation(fields: [factionId], references: [id])
+  factionId          Int?
+  leaders            Character[]        @relation("leader")
+  characters         Character[]        @relation("member")
+  turf               Map[]
+  properties         Property[]
+  affiliations       Affiliation[]
+  gangSessionBonuses GangSessionBonus[]
+}
+
+model GangSessionBonus {
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @default(now())
+  gang            Gang     @relation(fields: [gangId], references: [id], onDelete: Cascade)
+  gangId          Int
+  session         Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId       Int
+  reputationBonus Json?
+  levelNodeBonus  Json?
+
+  @@id([gangId, sessionId])
+}
+
+model Property {
+  id                 Int               @id @default(autoincrement())
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @default(now())
+  name               String
+  generatedPicture   GeneratedPicture? @relation(fields: [generatedPictureId], references: [id])
+  generatedPictureId Int?
+  description        String
+  gpPrice            Int
+  type               String            @default("property")
+  gang               Gang?             @relation(fields: [gangId], references: [id], onDelete: Cascade)
+  gangId             Int?
+  baseProperty       Property?         @relation("copyProperty", fields: [basePropertyId], references: [id])
+  basePropertyId     Int?
+  properties         Property[]        @relation("copyProperty")
+}
+
+model Character {
+  id                    Int                           @id @default(autoincrement())
+  createdAt             DateTime                      @default(now())
+  updatedAt             DateTime                      @default(now())
+  user                  User?                         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                Int?
+  level                 Int?
+  profits               Int                           @default(10)
+  stats                 Json                          @default("{}")
+  generatedPicture      GeneratedPicture?             @relation(fields: [generatedPictureId], references: [id])
+  generatedPictureId    Int?
+  height                Int
+  weight                Int
+  age                   Int
+  sex                   String
+  backstory             Json?
+  firstTaste            Json?
+  badMedicine           Json?
+  description           String?
+  name                  String
+  title                 String?
+  playerCharacter       Boolean                       @default(false)
+  npcTypes              NpcTypes[]
+  baseCharacter         Character?                    @relation("BaseRelation", fields: [baseCharacterId], references: [id])
+  baseCharacterId       Int?
+  preferences           Json?
+  location              Location?
+  locationId            Int?
+  pushCounter           Int                           @default(0)
+  campaign              Campaign?                     @relation(fields: [campaignId], references: [id])
+  campaignId            Int?
+  sessions              Session[]
+  gang                  Gang?                         @relation("member", fields: [gangId], references: [id])
+  gangId                Int?
+  controlledGang        Gang?                         @relation("leader", fields: [controlledGangId], references: [id])
+  controlledGangId      Int?
+  conditions            CharacterConditionReference[]
+  characterCart         CharacterCart?
+  characterInventory    CharacterInventory?
+  Note                  Note[]
+  affiliations          Affiliation[]
+  events                Event[]
+  encounters            Encounter[]
+  characterLevelBonuses CharacterLevelBonus[]
+  derivedCharacters     Character[]                   @relation("BaseRelation")
+
+  @@index([userId])
+}
+
+model CharacterLevelBonus {
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now())
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  characterId Int
+  level       Int
+  attributes  Json?
+  perks       Perk[]
+
+  @@unique([characterId, level])
+}
+
+model CharacterCart {
+  id          Int                @id @default(autoincrement())
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @default(now())
+  character   Character?         @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  characterId Int?               @unique
+  items       CartItemRelation[]
+}
+
+model CartItemRelation {
+  id              Int            @id @default(autoincrement())
+  item            Item           @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  itemId          Int
+  quantity        Int            @default(1)
+  characterCart   CharacterCart? @relation(fields: [characterCartId], references: [id], onDelete: Cascade)
+  characterCartId Int?
+
+  @@unique([characterCartId, itemId])
+}
+
+model CharacterInventory {
+  id          Int        @id @default(autoincrement())
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @default(now())
+  character   Character? @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  characterId Int?       @unique
+  items       Item[]
+}
+
+model KeywordReference {
+  id             Int     @id @default(autoincrement())
+  value          Int?
+  keyword        Keyword @relation(fields: [keywordId], references: [id], onDelete: Cascade)
+  keywordId      Int
+  item           Item?   @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  itemId         Int?
+  modifiedItem   Item?   @relation("ModifiedKeywords", fields: [modifiedItemId], references: [id], onDelete: Cascade)
+  modifiedItemId Int?
+  Action         Action? @relation(fields: [actionId], references: [id])
+  actionId       Int?
+
+  @@unique([keywordId, itemId])
+}
+
+model Condition {
+  id                           Int                           @id @default(autoincrement())
+  createdAt                    DateTime                      @default(now())
+  updatedAt                    DateTime                      @default(now())
+  name                         String                        @unique
+  conditionType                ConditionType
+  description                  String
+  keywords                     Keyword[]
+  characterConditionReferences CharacterConditionReference[]
+  itemConditionReferences      ItemConditionReference[]
+}
+
+model CharacterConditionReference {
+  id          Int       @id @default(autoincrement())
+  stacks      Int?
+  condition   Condition @relation(fields: [conditionId], references: [id], onDelete: Cascade)
+  conditionId Int
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  characterId Int
+
+  @@unique([conditionId, characterId])
+}
+
+model ItemConditionReference {
+  id          Int       @id @default(autoincrement())
+  stacks      Int?
+  condition   Condition @relation(fields: [conditionId], references: [id], onDelete: Cascade)
+  conditionId Int
+  item        Item?     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  itemId      Int?
+
+  @@unique([conditionId, itemId])
+}
+
+model Keyword {
+  id               Int                @id @default(autoincrement())
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @default(now())
+  keywordType      KeywordType
+  name             String
+  description      String
+  gpCost           Int                @default(10)
+  KeywordReference KeywordReference[]
+  Condition        Condition?         @relation(fields: [conditionId], references: [id])
+  conditionId      Int?
+
+  @@unique([name, keywordType])
+}
+
+model Action {
+  id               Int                @id @default(autoincrement())
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @default(now())
+  name             String
+  description      String
+  costs            Json?
+  roll             Json?
+  actionType       ActionType
+  actionSubtypes   ActionSubtype[]
+  duration         Json?
+  cooldown         Json?
+  active           Boolean            @default(false)
+  available        Boolean            @default(true)
+  modifiers        Json?
+  keywordModifiers KeywordReference[]
+  baseAction       Action?            @relation("BaseRelation", fields: [baseActionId], references: [id])
+  baseActionId     Int?
+  derivedActions   Action[]           @relation("BaseRelation")
+  perk             Perk?              @relation(fields: [perkId], references: [id])
+  perkId           Int?
+  parentItem       Item?              @relation("linkedActions", fields: [parentItemId], references: [id], onDelete: Cascade)
+  parentItemId     Int?
+}
+
+model Item {
+  id                   Int                      @id @default(autoincrement())
+  createdAt            DateTime                 @default(now())
+  updatedAt            DateTime                 @default(now())
+  name                 String
+  itemTypes            ItemType[]
+  rarity               ItemRarity               @default(common)
+  grade                Int                      @default(1)
+  generatedPicture     GeneratedPicture?        @relation(fields: [generatedPictureId], references: [id])
+  generatedPictureId   Int?
+  description          String
+  stats                Json
+  modifiedStats        Json?
+  price                Int?
+  equipped             Boolean?                 @default(false)
+  available            Boolean?                 @default(true)
+  characterInventory   CharacterInventory?      @relation(fields: [characterInventoryId], references: [id], onDelete: Cascade)
+  characterInventoryId Int?
+  baseItem             Item?                    @relation("BaseRelation", fields: [baseItemId], references: [id])
+  baseItemId           Int?
+  conditions           ItemConditionReference[]
+  keywords             KeywordReference[]
+  modifiedKeywords     KeywordReference[]       @relation("ModifiedKeywords")
+  cartRelation         CartItemRelation[]
+  derivedItems         Item[]                   @relation("BaseRelation")
+  location             Location?
+  locationId           Int?
+  user                 User?                    @relation(fields: [userId], references: [id])
+  userId               Int?
+  linkedItems          Item[]                   @relation("linkedItems")
+  linkedActions        Action[]                 @relation("linkedActions")
+  parentItem           Item?                    @relation("linkedItems", fields: [parentItemId], references: [id])
+  parentItemId         Int?
+
+  @@index([itemTypes])
+  @@index([characterInventoryId])
+  @@index([itemTypes, characterInventoryId])
+  @@index([characterInventoryId, available])
+}
+
+enum ItemType {
+  weapon
+  armor
+  cybernetic
+  mutation
+  vehicle
+  drone
+  modification
+  reusable
+  consumable
+}
+
+enum ValueType {
+  number
+  attribute
+  skill
+}
+
+enum ItemCategory {
+  reusable
+  consumable
+}
+
+enum DurationUnit {
+  second
+  minute
+  hour
+  day
+  week
+  month
+  year
+  turn
+  round
+  scene
+  session
+}
+
+model Perk {
+  id                    Int                  @id @default(autoincrement())
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @default(now())
+  name                  String
+  description           String
+  type                  PerkType             @default(character)
+  attributes            Json?
+  actions               Action[]
+  characterLevelBonus   CharacterLevelBonus? @relation(fields: [characterLevelBonusId], references: [id], onDelete: Cascade)
+  characterLevelBonusId Int?
+  basePerk              Perk?                @relation("BaseRelation", fields: [basePerkId], references: [id])
+  basePerkId            Int?
+  derivedPerks          Perk[]               @relation("BaseRelation")
+}
+
+model PatchNote {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  version   Float    @unique
+  title     String
+  content   Json
+}
+
+model Error {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  title     String
+  content   String
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+enum PerkType {
+  character
+  monster
+}
+
+enum NpcTypes {
+  shop
+  template
+  goon
+  monster
+}
+
+enum UserRole {
+  GUEST
+  USER
+  PROUSER
+  SUPERUSER
+  ADMIN
+  SUPERADMIN
+}
+
+enum KeywordType {
+  weapon
+  armor
+  vehicle
+  chromebits
+  hardwired
+  networked
+}
+
+enum CyberneticType {
+  roll
+  stat
+  offensive
+  defensive
+  function
+}
+
+enum ActionType {
+  action
+  extendedAction
+  reaction
+  passive
+}
+
+enum ActionSubtype {
+  movement
+  attack
+  upkeep
+  unique
+  monster
+}
+
+enum ItemRarity {
+  common
+  uncommon
+  rare
+  blackMarket
+  artifact
+}
+
+enum ConditionType {
+  character
+  item
+}

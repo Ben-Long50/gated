@@ -1,0 +1,15 @@
+import express from 'express';
+import authentication from '../middleware/authentication.js';
+import gangController from '../controllers/gangController.js';
+import campaignAuthentication from '../middleware/campaignAuthentication.js';
+const router = express.Router();
+router.get('/gangs/batch', authentication.authenticate, gangController.getBatchGangs);
+router.get('/gangs/:gangId', authentication.authenticate, gangController.getGangById);
+router.post('/campaigns/:campaignId/gangs', authentication.authenticate, campaignAuthentication.validateGameMaster, gangController.createGang);
+router.patch('/campaigns/:campaignId/gangs/:gangId/characters', authentication.authenticate, campaignAuthentication.validateGameMaster, gangController.updateGangCharacters);
+router.patch('/campaigns/:campaignId/gangs/:gangId/profits', authentication.authenticate, campaignAuthentication.validateGameMaster, gangController.distributeProfits);
+router.patch('/campaigns/:campaignId/gangs/:gangId/profits', authentication.authenticate, campaignAuthentication.validateGameMaster, gangController.editGangProfits);
+router.post('/campaigns/:campaignId/gangs/:gangId/reputation', authentication.authenticate, campaignAuthentication.validateGameMaster, gangController.allocateReputation);
+router.post('/campaigns/:campaignId/gangs/:gangId/levelNodes', authentication.authenticate, campaignAuthentication.validateGameMaster, gangController.allocateLevelNodes);
+router.delete('/campaigns/:campaignId/gangs/:gangId', authentication.authenticate, campaignAuthentication.validateGameMaster, gangController.deleteGang);
+export default router;
