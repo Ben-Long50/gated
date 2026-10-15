@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import handleControllerError from '../controllers/handleControllerError.js';
 import { fal } from '@fal-ai/client';
 import { PromptInput } from '../validation/promptSchema.js';
-import userLimits, { RoleKey } from '../utils/constants/userLimits.js';
+import userLimits, { RoleKey } from '../../../../packages/shared/src/constants/userLimits.js';
 
 export const generateCloudflarePicture = async (
   req: Request,

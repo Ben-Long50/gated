@@ -1,5 +1,5 @@
 import { PhaseHistory } from 'src/types/encounter';
-import actionFuncs from './actionFuncs';
+import actionFuncs from '../../../../apps/client/src/utils/actionFuncs';
 import { camelCase } from 'change-case';
 import reactionFuncs from './reactionFuncs';
 import calculateItemStats from './calculateItemStats';

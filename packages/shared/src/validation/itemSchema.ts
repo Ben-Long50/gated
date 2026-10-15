@@ -1,7 +1,7 @@
 import z from 'zod';
 import { Description, ItemStats, Name } from './fieldSchemas.js';
 import { ItemType, Rarity } from './enums.js';
-import prisma from '../config/database.js';
+import prisma from '../../../../apps/server/src/config/database.js';
 
 export const ItemInput = z
   .object({

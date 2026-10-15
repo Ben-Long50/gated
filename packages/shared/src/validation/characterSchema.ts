@@ -8,7 +8,7 @@ import {
   Name,
 } from './fieldSchemas.js';
 import { NpcType, Sex } from './enums.js';
-import prisma from '../config/database.js';
+import prisma from '../../../../apps/server/src/config/database.js';
 import validateLevelUpBonus from '../utils/validateLevelUpBonus.js';
 
 export const CharacterInput = z

@@ -4,9 +4,9 @@ import characterServices from '../services/characterServices.js';
 import characterStatServices from '../services/characterStatServices.js';
 import conditionServices from '../services/conditionServices.js';
 import itemStatServices from '../services/itemStatServices.js';
-import { Action } from '../types/action.js';
-import { Character } from '../types/character.js';
-import { Item } from '../types/item.js';
+import { Action } from '../../../../packages/shared/src/types/action.js';
+import { Character } from '../../../../packages/shared/src/types/character.js';
+import { Item } from '../../../../packages/shared/src/types/item.js';
 
 export const calculateRoll = (
   attributes: AttributeTree,

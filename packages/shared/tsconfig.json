@@ -1,4 +1,4 @@
 {
   "extends": "../../tsconfig.base.json",
-  "include": ["src"]
+  "include": ["src", "../../apps/server/src/utils/rollUtilities.ts", "../../apps/server/src/utils/parseBlockData.ts", "../../apps/client/src/utils/actionFuncs.ts"]
 }

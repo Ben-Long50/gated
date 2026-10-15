@@ -1,7 +1,7 @@
 import getUsedPoints from './getUsedPoints.js';
 import calculateLevelBonus from './calculateLevelBonus.js';
 import { Attributes } from '../validation/fieldSchemas.js';
-import prisma from '../config/database.js';
+import prisma from '../../../../apps/server/src/config/database.js';
 
 const validateLevelUpBonus = async ({
   level,

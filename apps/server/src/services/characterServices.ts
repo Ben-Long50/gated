@@ -5,7 +5,7 @@ import itemServices, {
   itemSelectForCopy,
 } from './itemServices.js';
 import { getIO } from '../sockets/socket.js';
-import validateLevelUpBonus from '../utils/validateLevelUpBonus.js';
+import validateLevelUpBonus from '../../../../packages/shared/src/utils/validateLevelUpBonus.js';
 import {
   CharacterInput,
   CharacterLevelBonus,

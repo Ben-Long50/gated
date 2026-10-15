@@ -1,7 +1,7 @@
 import { Character } from 'src/types/character';
 import { Item } from 'src/types/item';
 import statColorMap from './statColorMap';
-import getHandsAndFeetCosts from './getHandsAndFeetCosts';
+import getHandsAndFeetCosts from '../../../../packages/shared/src/utils/getHandsAndFeetCosts';
 
 const actionFuncs = {
   basicMovement: (

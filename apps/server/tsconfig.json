@@ -11,7 +11,7 @@
   "include": [
     "src/**/*.ts",
     "src/app.ts",
-    "types/**/*.d.ts",
+    "types/**/*.d.ts", "../../packages/shared/src/constants/userLimits.ts",
   ], // Include all TypeScript files in the src folder
   "exclude": ["node_modules", "dist", "src/utils/updaterScripts"] // Exclude these folders
 }

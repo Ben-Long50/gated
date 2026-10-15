@@ -1,7 +1,7 @@
 import { Character } from 'src/types/character';
 import { Item } from 'src/types/item';
-import statColorMap from './statColorMap';
-import getHandsAndFeetCosts from './getHandsAndFeetCosts';
+import statColorMap from '../../../../apps/client/src/utils/statColorMap';
+import getHandsAndFeetCosts from '../../../../apps/client/src/utils/getHandsAndFeetCosts';
 
 const reactionFuncs = {
   parry: (
