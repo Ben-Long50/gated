@@ -1,0 +1,385 @@
+import { Fragment, useContext, useEffect, useMemo, useState } from 'react';
+import useMap from 'src/hooks/useMap';
+import Loading from '../Loading';
+import { mdiChevronDown, mdiCrown, mdiQueueFirstInLastOut } from '@mdi/js';
+import Icon from '@mdi/react';
+import EncounterGrid from './EncounterGrid';
+import CharacterCardSmall from '../characterComponents/CharacterCardSmall';
+import CharacterOptions from './CharacterOptions';
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
+import ActionSidebar from './ActionSidebar';
+import ActionIcon from '../icons/ActionIcon';
+import Divider from '../Divider';
+import ReactionIcon from '../icons/ReactionIcon';
+import ReactionSidebar from './ReactionSidebar';
+import useEncounterHistoryQuery from 'src/hooks/encounter hooks/useEncounterHistoryQuery/useEncounterHistoryQuery';
+import ArrowHeader3 from '../ArrowHeader3';
+import HistoryCard from './HistoryCard';
+import HistoryIcon from '../icons/HistoryIcon';
+import ArrowHeader4 from '../ArrowHeader4';
+import CharacterName from './CharacterName';
+import PassTurnIcon from '../icons/PassTurnIcon';
+import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
+import ItemCardBorderless from '../ItemCardBorderless';
+import { EncounterContext } from 'src/contexts/EncounterContext';
+import MapHeader from '../mapComponents/map/MapHeader';
+import MapIcon from '../icons/MapIcon';
+import useCombatStore from 'src/stores/combatStore';
+import { useStore } from '@tanstack/react-form';
+
+const Encounter = () => {
+  const {
+    combat,
+    combatLoading,
+    joinedPlayers,
+    encounterPermissions,
+    activeCharacter,
+    controlledCharacterId,
+    actionForm,
+  } = useContext(EncounterContext);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const { campaignId, encounterId, mapId } = useParams();
+  const parts = location.pathname.split('/');
+  const [gridDisplay, setGridDisplay] = useState(false);
+  const [measureMode, setMeasureMode] = useState(false);
+  const [characterList, setCharacterList] = useState(false);
+  const [actionSidebar, setActionSidebar] = useState(false);
+  const [characterOptions, setCharacterOptions] = useState(true);
+  const [historyList, setHistoryList] = useState(false);
+  const [mapScale, setMapScale] = useState(1);
+  const [mapInfo, setMapInfo] = useState(false);
+
+  const { map, locations, mapLoading } = useMap(Number(mapId));
+
+  const { data: campaign } = useCampaignQuery(Number(campaignId));
+
+  const {
+    data: history,
+    isLoading: historyLoading,
+    isPending: historyPending,
+  } = useEncounterHistoryQuery(Number(encounterId));
+
+  const phaseActionCount = useMemo(
+    () =>
+      combat?.phaseHistory?.length > 0
+        ? [
+            combat.phaseHistory[0].action,
+            ...combat.phaseHistory[0].reactions,
+          ].filter((action) => action).length
+        : 0,
+    [combat?.phaseHistory],
+  );
+
+  useEffect(() => {
+    if (combat && combat.combatPhase === 'pending') {
+      navigate('..');
+    }
+
+    if (combat && combat.combatPhase === 'initiative') {
+      navigate('initiative');
+    }
+
+    if (combat && combat.passes.length === combat.characters.length - 1) {
+      navigate('actionQueue');
+    }
+  }, [combat]);
+
+  const tempItem = useCombatStore((state) => state.item);
+  const actionItem = useStore(actionForm.store, (state) => state.values.item);
+
+  const item = tempItem || actionItem;
+
+  if (mapLoading || historyLoading || combatLoading) return <Loading />;
+
+  if (!map) return <h1>No Map Found</h1>;
+
+  return (
+    <>
+      <div
+        className={`${mapInfo && 'pt-3'} flex h-full w-full flex-col items-center justify-start gap-4 overflow-hidden`}
+      >
+        <div className="absolute left-1 top-1 z-10 mx-auto ml-[72px] flex flex-col items-start justify-start gap-1">
+          <button
+            className="bg-secondary group flex w-full items-center gap-2 rounded p-1 shadow shadow-black"
+            onClick={() => setMapInfo((prev) => !prev)}
+          >
+            <MapIcon className="timing text-primary group-hover:text-accent size-5" />
+            <p className="group-hover:text-accent timing text-base">
+              Toggle Map Tools
+            </p>
+          </button>
+          <div className="bg-primary flex flex-col items-start p-1.5">
+            {joinedPlayers?.map((player: any) => (
+              <div className="flex items-center gap-2" key={player.username}>
+                <p className="text-base">{player.username}</p>
+                {campaign?.ownerId === player.playerId && (
+                  <Icon path={mdiCrown} color="gold" size={0.8} />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+        {mapInfo && (
+          <MapHeader
+            mapName={map.name}
+            gridDisplay={gridDisplay}
+            setGridDisplay={setGridDisplay}
+            measureMode={measureMode}
+            setMeasureMode={setMeasureMode}
+            mapScale={mapScale}
+            setMapScale={setMapScale}
+          />
+        )}
+        <div
+          className={`${mapInfo && 'pb-[60px]'} flex h-full w-full grow items-center`}
+        >
+          <EncounterGrid
+            width={map.width}
+            height={map.height}
+            baseColor={map.baseColor}
+            layers={map.layers}
+            mapScale={mapScale}
+            locations={locations}
+            gridDisplay={gridDisplay}
+            measureMode={measureMode}
+            setActionSidebar={setActionSidebar}
+          />
+        </div>
+        <div
+          className={`${characterList ? 'w-96' : 'w-[72px]'} bg-primary timing absolute left-0 top-0 z-10 flex h-full flex-col justify-start gap-3 p-3 shadow-md shadow-black`}
+          onMouseEnter={() => {
+            setCharacterList(true);
+            setHistoryList(true);
+          }}
+          onMouseLeave={() => {
+            setCharacterList(false);
+            setHistoryList(false);
+          }}
+        >
+          <div
+            className={`${characterList ? 'scrollbar-primary-2 overflow-y-auto' : 'overflow-y-hidden'} flex h-full flex-col overflow-x-hidden`}
+          >
+            {combat?.turnOrder?.map((characterId: number, index: number) => (
+              <Fragment key={characterId}>
+                <CharacterCardSmall
+                  expanding={true}
+                  characterList={characterList}
+                  characterId={characterId}
+                  active={
+                    combat.turnOrder.findIndex((id) => id === characterId) ===
+                    combat.turnPosition
+                  }
+                />
+                {index < combat.turnOrder.length - 1 && <Divider />}
+              </Fragment>
+            ))}
+          </div>
+          <div className="mt-auto">
+            <div
+              className={`${!historyList ? 'max-h-12' : 'max-h-0'} timing h-full w-12 p-2`}
+            >
+              {historyPending ? (
+                <Loading className="text-accent" size={2} />
+              ) : (
+                <HistoryIcon className={`text-secondary h-full shrink-0`} />
+              )}
+            </div>
+            <div
+              className={`${historyList ? 'max-h-48 border-t-2 pt-4' : 'max-h-0'} timing border-accent scrollbar-secondary-2 flex h-full w-full flex-col overflow-y-auto overflow-x-hidden`}
+            >
+              {history && history.length > 0 && (
+                <button
+                  className="timing hover:bg-tertiary w-full rounded p-2 hover:shadow hover:shadow-black"
+                  onClick={() => navigate('history')}
+                >
+                  <ArrowHeader4
+                    className="text-primary mb-2 whitespace-nowrap"
+                    title="
+                  Last Action"
+                  />
+
+                  <HistoryCard phaseHistory={history[0]} />
+                </button>
+              )}
+            </div>
+          </div>
+          <button
+            className="bg-tertiary group relative flex items-center justify-center rounded p-1.5 shadow shadow-black"
+            onClick={() => navigate('actionQueue')}
+          >
+            <Icon
+              path={mdiQueueFirstInLastOut}
+              className={`timing text-tertiary group-hover:text-accent size-8`}
+            />
+            {phaseActionCount > 0 && (
+              <div className="text-primary absolute -right-1 -top-1 size-6 rounded-full bg-red-600 font-semibold">
+                {phaseActionCount}
+              </div>
+            )}
+          </button>
+          <button
+            className="bg-tertiary group flex items-center justify-center rounded p-1.5 shadow shadow-black"
+            onClick={() => setCharacterOptions((prev) => !prev)}
+          >
+            <Icon
+              path={mdiChevronDown}
+              className={`${characterOptions ? 'rotate-0' : 'rotate-180'} timing text-tertiary group-hover:text-accent size-8`}
+            />
+          </button>
+        </div>
+        <div
+          className={`${actionSidebar ? 'w-96' : 'w-[72px]'} bg-primary scrollbar-primary-2 timing absolute right-0 top-0 z-10 flex h-full flex-col gap-2 overflow-x-hidden p-3 shadow-md shadow-black`}
+          onMouseEnter={() => setActionSidebar(true)}
+          onMouseLeave={() => {
+            setActionSidebar(false);
+          }}
+        >
+          {encounterPermissions &&
+          controlledCharacterId === activeCharacter?.id ? (
+            <>
+              {combat?.combatPhase === 'action' ? (
+                <ActionIcon className="text-primary ml-1 size-10 shrink-0" />
+              ) : (
+                <div className="flex items-center gap-4">
+                  <Loading size={2} className="text-accent mb-auto size-full" />
+                  <ArrowHeader4
+                    className="text-primary w-full"
+                    title="Waiting for Reactions"
+                  />
+                </div>
+              )}
+              {combat?.combatPhase === 'reaction' && (
+                <>
+                  <Divider />
+                  <div className="flex flex-col gap-4">
+                    {combat?.reactions.length > 0 && (
+                      <div className="flex flex-col items-start gap-4">
+                        <div className="flex items-center gap-4">
+                          <ReactionIcon className="text-secondary ml-1 size-10" />
+                          <ArrowHeader3 title="Reactions" />
+                        </div>
+
+                        {combat?.reactions.map((characterId: number) => (
+                          <CharacterName
+                            key={characterId}
+                            characterId={characterId}
+                          />
+                        ))}
+                      </div>
+                    )}
+                    {combat?.passes.length > 0 && (
+                      <div className="flex flex-col items-start gap-2">
+                        <div className="flex items-center gap-4">
+                          <PassTurnIcon className="text-secondary ml-1 size-10" />
+                          <ArrowHeader3 title="Passes" />
+                        </div>
+                        {combat?.passes.map((characterId: number) => (
+                          <CharacterName
+                            key={characterId}
+                            characterId={characterId}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+              {combat?.combatPhase === 'action' && (
+                <ActionSidebar actionSidebar={actionSidebar} />
+              )}
+            </>
+          ) : (
+            <>
+              {combat?.combatPhase === 'reaction' ? (
+                <ReactionIcon className="text-primary ml-1 size-10 shrink-0" />
+              ) : (
+                <div className="flex items-center gap-4">
+                  <Loading size={2} className="text-accent mb-auto" />
+                  <ArrowHeader4
+                    className="text-primary w-full"
+                    title="Waiting for Action"
+                  />
+                </div>
+              )}
+              {combat?.combatPhase === 'reaction' &&
+                !combat?.reactions.includes(controlledCharacterId) && (
+                  <>
+                    <Divider />
+                    <div className="flex flex-col gap-4">
+                      {combat?.reactions.length > 0 && (
+                        <div className="flex flex-col items-start gap-4">
+                          <div className="flex items-center gap-4">
+                            <ReactionIcon className="text-secondary ml-1 size-10" />
+                            <ArrowHeader3 title="Reactions" />
+                          </div>
+
+                          {combat?.reactions.map((characterId: number) => (
+                            <CharacterName
+                              key={characterId}
+                              characterId={characterId}
+                            />
+                          ))}
+                        </div>
+                      )}
+                      {combat?.passes.length > 0 && (
+                        <div className="flex flex-col items-start gap-2">
+                          <div className="flex items-center gap-4">
+                            <PassTurnIcon className="text-secondary ml-1 size-10" />
+                            <ArrowHeader3 title="Passes" />
+                          </div>
+                          {combat?.passes.map((characterId: number) => (
+                            <CharacterName
+                              key={characterId}
+                              characterId={characterId}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              {combat?.combatPhase === 'reaction' && (
+                <ReactionSidebar actionSidebar={actionSidebar} />
+              )}
+            </>
+          )}
+          {item && (
+            <ItemCardBorderless
+              className={`${actionSidebar ? 'visible translate-x-0 opacity-100' : 'invisible translate-x-full opacity-0'} timing w-full`}
+              cardType="small"
+              item={item}
+            />
+          )}
+        </div>
+        {controlledCharacterId && (
+          <div
+            className={`${!characterOptions && 'overflow-hidden'} timing absolute bottom-4 mt-auto w-full p-0.5`}
+            style={{
+              maxHeight: characterOptions ? '500px' : '0px',
+            }}
+          >
+            <CharacterOptions
+              setActionSidebar={setActionSidebar}
+              characterOptions={characterOptions}
+            />
+          </div>
+        )}
+      </div>
+      {(parts.includes('characters') ||
+        parts.includes('initiative') ||
+        parts.includes('actionQueue') ||
+        parts.includes('history')) && (
+        <Outlet
+          context={{
+            campaign,
+            parts,
+          }}
+        />
+      )}
+    </>
+  );
+};
+
+export default Encounter;

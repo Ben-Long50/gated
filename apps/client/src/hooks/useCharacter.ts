@@ -1,0 +1,140 @@
+import { useContext } from 'react';
+import { AuthContext } from 'src/contexts/AuthContext';
+import { Character } from 'src/types/character';
+import useCharacterQuery from './useCharacterQuery/useCharacterQuery';
+import { CampaignContext } from 'src/contexts/CampaignContext';
+import calculateCharacterStats from 'src/utils/characterStatUtils';
+import { combineAttributeTrees } from 'src/utils/combineAttributeTrees';
+import emptyAttributeTree from 'src/utils/constants/emptyAttributeTree';
+import useItemQueries from './useItemQueries/useItemQueries';
+
+const useCharacter = (characterId: number) => {
+  const { user } = useContext(AuthContext);
+  const { gameMaster } = useContext(CampaignContext);
+
+  const { data: character, isLoading: characterLoading } =
+    useCharacterQuery(characterId);
+
+  const itemIds = character
+    ? character.characterInventory.items.filter(Boolean).map((item) => item.id)
+    : [];
+
+  const { items, isLoading: itemsLoading } = useItemQueries(itemIds);
+
+  const levelBonusAttributeTrees = character
+    ? character?.characterLevelBonuses
+        .filter((bonus) => Boolean(bonus.attributes))
+        .map((bonus) => bonus.attributes)
+    : [];
+
+  const attributes = combineAttributeTrees(levelBonusAttributeTrees);
+
+  const perks = character
+    ? character?.characterLevelBonuses
+        .filter((bonus) => Boolean(bonus.perks))
+        .flatMap((bonus) => bonus.perks)
+    : [];
+
+  const equipment = !itemsLoading
+    ? items.filter(Boolean).filter((item) => item.equipped)
+    : [];
+
+  const actions = !itemsLoading
+    ? equipment
+        .flatMap((item) => item.linkedActions)
+        .filter(Boolean)
+        .sort((a, b) => a.name.localeCompare(b.name))
+    : [];
+
+  const stats =
+    character && equipment
+      ? calculateCharacterStats(
+          character,
+          attributes,
+          perks,
+          equipment,
+          actions,
+        )
+      : {};
+
+  const filterByPreferences = (character: Character) => {
+    const characterOwner = gameMaster || character?.userId === user?.id;
+
+    return {
+      ...character,
+      name:
+        characterOwner || character?.preferences?.name
+          ? character?.name
+          : '???',
+      title:
+        characterOwner || character?.preferences?.title
+          ? character?.title
+          : '???',
+      level:
+        characterOwner || character?.preferences?.level
+          ? character?.level
+          : '??',
+      profits:
+        characterOwner || character?.preferences?.profits
+          ? character?.profits
+          : '???',
+      height:
+        characterOwner || character?.preferences?.height
+          ? character?.height
+          : '???',
+      weight:
+        characterOwner || character?.preferences?.weight
+          ? character?.weight
+          : '???',
+      age:
+        characterOwner || character?.preferences?.age ? character?.age : '???',
+      sex:
+        characterOwner || character?.preferences?.sex ? character?.sex : '???',
+      picture:
+        characterOwner || character?.preferences?.picture
+          ? character?.generatedPicture
+          : false,
+      backstory:
+        characterOwner || character?.preferences?.backstory
+          ? character?.backstory
+          : { html: '<h1>?????</h1>' },
+      firstTaste:
+        characterOwner || character?.preferences?.backstory
+          ? character?.firstTaste
+          : { html: '<h1>?????</h1>' },
+      badMedicine:
+        characterOwner || character?.preferences?.backstory
+          ? character?.badMedicine
+          : { html: '<h1>?????</h1>' },
+      stats: Object.fromEntries(
+        Object.entries(stats).map(([stat, value]) => {
+          if (characterOwner || character?.preferences?.stats) {
+            return [stat, value];
+          } else {
+            return [stat, '??'];
+          }
+        }),
+      ),
+      attributes:
+        characterOwner || character?.preferences?.attributes
+          ? attributes
+          : emptyAttributeTree,
+      perks: characterOwner || character?.preferences?.perks ? perks : null,
+      equipment:
+        characterOwner || character?.preferences?.equipment ? equipment : null,
+      inventory:
+        characterOwner || character?.preferences?.equipment ? items : null,
+      actions:
+        characterOwner || character?.preferences?.equipment ? actions : null,
+    };
+  };
+
+  const filteredCharacter = filterByPreferences(character);
+
+  return {
+    filteredCharacter: character ? filteredCharacter : null,
+    isLoading: characterLoading || itemsLoading,
+  };
+};
+
+export default useCharacter;

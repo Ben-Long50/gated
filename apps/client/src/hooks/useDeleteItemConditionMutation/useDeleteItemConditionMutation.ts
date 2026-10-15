@@ -1,0 +1,48 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import deleteItemCondition from './deleteItemCondition';
+import { Item } from 'src/types/item';
+import { socket } from 'src/socket';
+
+const useDeleteItemConditionMutation = (
+  conditionId: number,
+  itemId: number,
+) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => {
+      return deleteItemCondition(conditionId, itemId);
+    },
+
+    onMutate: () => {
+      queryClient.cancelQueries({ queryKey: ['item', itemId] });
+
+      const prevItemData: Item | undefined = queryClient.getQueryData([
+        'item',
+        itemId,
+      ]);
+
+      queryClient.setQueryData(['item', itemId], (prev: Item) => ({
+        ...prev,
+        conditions: prevItemData?.conditions.filter(
+          (condition) => condition.id !== conditionId,
+        ),
+      }));
+
+      return { prevItemData };
+    },
+
+    onSuccess: (_, __, context) => {
+      socket.emit('item', {
+        itemId,
+        campaignId:
+          context.prevItemData?.characterInventory?.character.campaignId,
+      });
+      return queryClient.invalidateQueries({
+        queryKey: ['item', itemId],
+      });
+    },
+    throwOnError: false,
+  });
+};
+
+export default useDeleteItemConditionMutation;

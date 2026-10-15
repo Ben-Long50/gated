@@ -1,0 +1,61 @@
+import CharacterPictureRound from '../../characterComponents/CharacterPictureRound';
+import useCharacter from 'src/hooks/useCharacter';
+import Loading from '../../Loading';
+import { useDraggable } from '@dnd-kit/core';
+import { CSSProperties, useContext } from 'react';
+import { AuthContext } from 'src/contexts/AuthContext';
+import { CampaignContext } from 'src/contexts/CampaignContext';
+
+const CharacterToken = ({
+  characterId,
+  locationId,
+  className,
+  mapScale,
+}: {
+  characterId: number;
+  locationId?: number;
+  className?: string;
+  mapScale: number;
+}) => {
+  const { user } = useContext(AuthContext);
+  const { gameMaster } = useContext(CampaignContext);
+
+  const { filteredCharacter: character, isLoading } = useCharacter(characterId);
+
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: `${characterId} ${locationId}`,
+    data: { characterId, locationId },
+    disabled: !gameMaster && !character?.userId === user.id,
+  });
+
+  if (isLoading) return <Loading size={1.25} />;
+
+  return (
+    <div
+      ref={setNodeRef}
+      id={characterId.toString()}
+      className={`${className} group relative inset-0 cursor-grab touch-none rounded-full`}
+      style={
+        transform
+          ? {
+              transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+              height: `${48 * mapScale * 0.9}px`,
+              width: `${48 * mapScale * 0.9}px`,
+            }
+          : {
+              height: `${48 * mapScale * 0.9}px`,
+              width: `${48 * mapScale * 0.9}px`,
+            }
+      }
+      {...listeners}
+      {...attributes}
+    >
+      <CharacterPictureRound
+        className={`group-hover:border-accent timing size-full border-2 border-white`}
+        character={character}
+      />
+    </div>
+  );
+};
+
+export default CharacterToken;

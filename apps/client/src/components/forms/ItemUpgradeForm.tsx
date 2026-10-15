@@ -1,0 +1,250 @@
+import { useParams } from 'react-router-dom';
+import useItemQuery from 'src/hooks/useItemQuery/useItemQuery';
+import FormLayout from 'src/layouts/FormLayout';
+import { KeywordReference } from 'src/types/keyword';
+import TextAreaField from '../formFields/TextAreaField';
+import PictureField from '../formFields/PictureField';
+import Loading from '../Loading';
+import InputField from '../formFields/InputField';
+import Divider from '../Divider';
+import Icon from '@mdi/react';
+import { mdiMinus, mdiPlus, mdiStar, mdiStarOutline } from '@mdi/js';
+import ArrowHeader3 from '../ArrowHeader3';
+import useModifyItemMutation from 'src/hooks/useModifyItemMutation/useModifyItemMutation';
+import useDeleteItemMutation from 'src/hooks/useDeleteItemMutation/useDeleteItemMutation';
+import KeywordLinkField from '../formFields/KeywordLinkField';
+import useCharacterQuery from 'src/hooks/useCharacterQuery/useCharacterQuery';
+import { capitalCase } from 'change-case';
+import upgradePointMap from '../../hooks/upgradePointMap';
+import useUpgradePoints from 'src/hooks/useUpgradePoints';
+import ExpandingList from '../ExpandingList';
+import KeywordCard from '../KeywordCard';
+import useItemUpgradeForm from 'src/hooks/form hooks/useItemUpgradeForm';
+import IconBtnSmall from '../buttons/IconBtnSmall';
+
+const ItemUpgradeForm = () => {
+  const { characterId, itemId } = useParams();
+
+  const { data: character, isLoading: characterLoading } = useCharacterQuery(
+    Number(characterId),
+  );
+
+  const { data: item, isLoading: itemLoading } = useItemQuery(Number(itemId));
+
+  const deleteItem = useDeleteItemMutation(Number(itemId));
+
+  const modifyItem = useModifyItemMutation(Number(characterId), Number(itemId));
+
+  const itemUpgradeForm = useItemUpgradeForm(modifyItem, item);
+
+  const { availableUp, upgradePrice, powerLevel, upgradedPowerLevel } =
+    useUpgradePoints(itemUpgradeForm, item);
+
+  itemUpgradeForm.setFieldValue('upgradePrice', upgradePrice);
+
+  if (itemLoading || characterLoading) return <Loading />;
+
+  return (
+    <>
+      <FormLayout
+        label="Item"
+        form={itemUpgradeForm}
+        itemId={itemId}
+        createMutation={modifyItem}
+        deleteMutation={deleteItem}
+      >
+        <h1 className="text-center">Upgrade {item?.name}</h1>
+        <div className="flex flex-col gap-8">
+          <div className="grid grid-cols-[1fr_2fr] items-center justify-between gap-4">
+            <ArrowHeader3 title="Grade" />
+            <itemUpgradeForm.Field name="grade">
+              {(field) => (
+                <div className="flex w-full items-center justify-between gap-2">
+                  <IconBtnSmall
+                    active={item?.grade && field.state.value > item?.grade}
+                    onClick={() => field.handleChange(field.state.value - 1)}
+                    tooltip="Decrease"
+                  >
+                    <Icon path={mdiMinus} />
+                  </IconBtnSmall>
+                  <div className="flex grow flex-wrap items-center justify-center gap-1">
+                    {Array.from({ length: field.state.value }).map(
+                      (_, index) => (
+                        <Icon
+                          key={index}
+                          path={mdiStar}
+                          className="text-accent size-8"
+                        />
+                      ),
+                    )}
+                    {Array.from({ length: 10 - field.state.value }).map(
+                      (_, index) => (
+                        <Icon
+                          key={index}
+                          path={mdiStarOutline}
+                          className="text-tertiary size-8"
+                        />
+                      ),
+                    )}
+                  </div>
+                  <IconBtnSmall
+                    active={field.state.value < 10}
+                    onClick={() => field.handleChange(field.state.value + 1)}
+                    tooltip="Increase"
+                  >
+                    <Icon path={mdiPlus} />
+                  </IconBtnSmall>
+                </div>
+              )}
+            </itemUpgradeForm.Field>
+          </div>
+          <Divider />
+          <ArrowHeader3 title="Item Information" />
+          <itemUpgradeForm.Field
+            name="name"
+            validators={{
+              onChange: ({ value }) =>
+                value.length < 2
+                  ? 'Weapon name must be at least 2 characters long'
+                  : undefined,
+            }}
+          >
+            {(field) => (
+              <InputField
+                label="Item Name"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
+            )}
+          </itemUpgradeForm.Field>
+          <itemUpgradeForm.Field
+            name="description"
+            validators={{
+              onChange: ({ value }) =>
+                value.length < 2
+                  ? 'Weapon description must be at least 2 characters long'
+                  : undefined,
+            }}
+          >
+            {(field) => (
+              <TextAreaField
+                label={`Item Description`}
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+              />
+            )}
+          </itemUpgradeForm.Field>
+        </div>
+        <PictureField form={itemUpgradeForm} type="item" />
+        <Divider />
+        <div className="flex items-center justify-between gap-8">
+          <ArrowHeader3 title="Upgrade Point Distribution" />
+          <p>
+            Available UP -{' '}
+            <span className={`${availableUp < 0 && 'text-error'}`}>
+              ( {availableUp} )
+            </span>
+          </p>
+        </div>
+        <div className="grid w-full grid-cols-[1fr_auto_auto_auto_auto_auto] items-center gap-x-2 gap-y-4 border-x-2 border-gray-400 border-opacity-50 px-6">
+          <itemUpgradeForm.Field name="modifiedStats">
+            {(field) =>
+              Object.keys(field.state.value).map((stat) => {
+                return (
+                  <itemUpgradeForm.Field
+                    name={`modifiedStats[${stat}]`}
+                    key={stat}
+                  >
+                    {(subField) => {
+                      const currentLevel =
+                        subField.state.value + item?.stats[stat];
+
+                      const nextLevelUpgradePoints = upgradePointMap[stat]
+                        ? upgradePointMap[stat](currentLevel + 1)
+                        : 0;
+
+                      const currentLevelUpgradePoints = upgradePointMap[stat]
+                        ? upgradePointMap[stat](currentLevel)
+                        : 0;
+
+                      return (
+                        <>
+                          <p className="w-full">
+                            {capitalCase(stat)}{' '}
+                            <span className="text-tertiary ml-2 text-base font-normal">
+                              ({nextLevelUpgradePoints} GP)
+                            </span>
+                          </p>
+                          <p className="mr-3 font-semibold !text-green-400">
+                            {subField.state.value > 0
+                              ? `+${subField.state.value}`
+                              : ''}
+                          </p>
+                          <IconBtnSmall
+                            active={subField.state.value > 0}
+                            onClick={() =>
+                              subField.handleChange(subField.state.value - 1)
+                            }
+                            tooltip="Decrease"
+                          >
+                            <Icon path={mdiMinus} />
+                          </IconBtnSmall>
+                          <p className="min-w-8 text-center">
+                            {item?.stats[stat] + subField.state.value}
+                          </p>
+                          <IconBtnSmall
+                            active={availableUp >= currentLevelUpgradePoints}
+                            onClick={() =>
+                              subField.handleChange(subField.state.value + 1)
+                            }
+                            tooltip="Increase"
+                          >
+                            <Icon path={mdiPlus} />
+                          </IconBtnSmall>
+                          <p className="text-tertiary text-sm">
+                            {item?.modifiedStats &&
+                              item?.modifiedStats[stat] &&
+                              `( ${item?.modifiedStats[stat]} )`}
+                          </p>
+                        </>
+                      );
+                    }}
+                  </itemUpgradeForm.Field>
+                );
+              })
+            }
+          </itemUpgradeForm.Field>
+        </div>
+        <Divider />
+        <ExpandingList
+          title="Base Traits"
+          className="grid grid-cols-1 gap-4 sm:grid-cols-2"
+        >
+          {item?.keywords.map((keyword: KeywordReference) => (
+            <KeywordCard key={keyword.id} keyword={keyword.keyword} />
+          ))}
+        </ExpandingList>
+        <KeywordLinkField title="Upgraded Traits" form={itemUpgradeForm} />
+        <Divider />
+        <itemUpgradeForm.Field name="upgradePrice">
+          {(field) => (
+            <div className="flex flex-col gap-4">
+              <div className="flex w-full items-center justify-between">
+                <ArrowHeader3 title="Upgrade Price" />
+                <h3>{field.state.value}p</h3>
+              </div>
+              <div className="flex w-full items-center justify-between">
+                <p className="text-tertiary pl-7">Remaining Profits</p>
+                <p className="text-tertiary">
+                  {character?.profits - field.state.value}p
+                </p>
+              </div>
+            </div>
+          )}
+        </itemUpgradeForm.Field>
+      </FormLayout>
+    </>
+  );
+};
+
+export default ItemUpgradeForm;

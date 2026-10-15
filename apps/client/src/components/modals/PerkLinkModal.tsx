@@ -1,0 +1,28 @@
+import { useOutletContext } from 'react-router-dom';
+import Perks from '../Perks';
+import ArrowHeader4 from '../ArrowHeader4';
+import PerkCard from '../PerkCard';
+
+const PerkLinkModal = () => {
+  const { form, level, attributeTree } = useOutletContext() || {};
+
+  return (
+    <>
+      <Perks form={form} level={level} attributeTree={attributeTree} />
+      <form.Subscribe selector={(state) => state.values.perkIds}>
+        {(perkIds: number[]) => (
+          <div className="flex w-full flex-col items-start gap-4">
+            <ArrowHeader4 className="text-primary" title="Selected Perks" />
+            <div className="grid w-full grid-cols-2 gap-4">
+              {perkIds.map((perkId: number) => (
+                <PerkCard perkId={perkId} form={form} />
+              ))}
+            </div>
+          </div>
+        )}
+      </form.Subscribe>
+    </>
+  );
+};
+
+export default PerkLinkModal;

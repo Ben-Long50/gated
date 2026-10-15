@@ -1,0 +1,353 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'omnitrinx';
+  src: url('/omnitrinx.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'bonheur';
+  src: url('/bonheur.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'exo-regular';
+  src: url('/exo-regular.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'kings';
+  src: url('/kings.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'zen-dots';
+  src: url('/zen-dots.ttf') format('truetype');
+}
+
+@layer base {
+  html.dark::before,
+  html.light::before {
+    content: '';
+    position: fixed;
+    background-position: center;
+    background-size: cover;
+    top: 0;
+    left: 0;
+    width: 100lvw;
+    height: 100lvh;
+    background-image: url('/public/nova_viridian.jpeg');
+    z-index: -2;
+  }
+
+  html.light::after {
+    content: '';
+    position: fixed;
+    background-color: rgb(190, 190, 190);
+    opacity: 80%;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    top: 0;
+    left: 0;
+    width: 100lvw;
+    height: 100lvh;
+    z-index: -1;
+  }
+
+  html.dark::after {
+    content: '';
+    position: fixed;
+    background-color: rgb(5, 5, 5);
+    opacity: 80%;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    top: 0;
+    left: 0;
+    width: 100lvw;
+    height: 100lvh;
+    z-index: -1;
+  }
+}
+
+@layer components {
+  .text-accent {
+    color: var(--accent-primary);
+    fill: var(--accent-primary);
+  }
+  .border-accent {
+    border-color: var(--accent-primary);
+  }
+  .padding {
+    @apply p-4 sm:p-6;
+  }
+  .bg-base {
+    @apply bg-zinc-100 dark:bg-zinc-925;
+  }
+  .bg-primary {
+    @apply bg-zinc-150 dark:bg-zinc-900;
+  }
+  .bg-secondary {
+    @apply bg-zinc-200 dark:bg-zinc-850;
+  }
+  .bg-tertiary {
+    @apply bg-zinc-300 dark:bg-zinc-800;
+  }
+  .input-primary {
+    @apply bg-zinc-200 dark:bg-zinc-800;
+  }
+  .text-primary {
+    @apply text-black dark:fill-gray-50 dark:text-gray-50;
+  }
+  .text-secondary {
+    @apply text-gray-900 dark:fill-gray-200 dark:text-gray-200;
+  }
+  .text-tertiary {
+    @apply text-gray-600 dark:fill-gray-400 dark:text-gray-400;
+  }
+  .text-error {
+    @apply text-red-500 dark:text-red-500;
+  }
+  .shadow-color {
+    @apply shadow-md shadow-black dark:shadow-black;
+  }
+  .scrollbar-primary {
+    @apply scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-400 dark:scrollbar-track-transparent dark:scrollbar-thumb-zinc-900;
+  }
+  .scrollbar-secondary {
+    @apply scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-400 dark:scrollbar-track-transparent dark:scrollbar-thumb-zinc-900;
+  }
+  .scrollbar-primary-2 {
+    @apply scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-400 dark:scrollbar-track-transparent dark:scrollbar-thumb-zinc-800;
+  }
+  .scrollbar-secondary-2 {
+    @apply scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-400 dark:scrollbar-track-transparent dark:scrollbar-thumb-zinc-800;
+  }
+  .timing {
+    @apply transition-all duration-300 ease-in-out md:duration-300;
+  }
+  h1 {
+    @apply text-primary font-zen text-3xl font-semibold tracking-widest lg:text-5xl;
+  }
+  h2 {
+    @apply text-primary text-2xl font-semibold tracking-widest lg:text-3xl;
+  }
+  h3 {
+    @apply text-secondary text-xl font-semibold tracking-widest lg:text-2xl;
+  }
+  h4 {
+    @apply text-secondary text-lg font-semibold tracking-widest lg:text-xl;
+  }
+  p,
+  input,
+  select,
+  textarea,
+  li {
+    @apply text-secondary text-lg tracking-wide lg:text-xl;
+  }
+  ul {
+    @apply ml-8 list-disc;
+  }
+  ul > ul,
+  ol > ol {
+    @apply ml-12 list-none;
+  }
+  ol {
+    @apply ml-8 flex list-decimal flex-col gap-1;
+  }
+  .editor-underline {
+    @apply underline;
+  }
+  .editor-strikethrough {
+    @apply line-through;
+  }
+  .editor-table {
+    @apply w-full table-fixed;
+  }
+  .editor-table-cell {
+    @apply !border-2 !border-zinc-400 bg-transparent p-2;
+  }
+  .no-scroll {
+    @apply overflow-hidden;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes blur {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 0.5;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+}
+
+@keyframes activeToken {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes rollComplete {
+  from {
+    transform: scale(1.3);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes liveCampaign {
+  0% {
+    box-shadow: 0px 0px 0px 0px rgba(34, 197, 94, 1);
+  }
+  50% {
+    box-shadow: 0px 0px 0px 5px rgba(34, 197, 94, 1);
+  }
+  100% {
+    box-shadow: 0px 0px 0px 10px rgba(34, 197, 94, 0);
+  }
+}
+
+@keyframes liveToken {
+  0% {
+    box-shadow: 0px 0px 0px 0px rgb(252, 91, 50, 1);
+  }
+  50% {
+    box-shadow: 0px 0px 0px 5px rgb(252, 91, 50, 1);
+  }
+  100% {
+    box-shadow: 0px 0px 0px 10px rgb(252, 91, 50, 0);
+  }
+}
+
+@keyframes reactiveToken {
+  0% {
+    box-shadow: 0px 0px 0px 0px rgb(107, 255, 124, 1);
+  }
+  50% {
+    box-shadow: 0px 0px 0px 5px rgb(107, 255, 124, 1);
+  }
+  100% {
+    box-shadow: 0px 0px 0px 10px rgb(33, 194, 219, 0);
+  }
+}
+
+@keyframes tokenEnter {
+  0% {
+    transform: scale(1.375);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.tokenEnter {
+  animation: tokenEnter 0.3s ease-out forwards;
+}
+
+/* .liveCampaign {
+  animation: liveCampaign 1.5s ease-out infinite;
+} */
+
+.rollComplete {
+  animation: rollComplete 0.5s ease-out forwards;
+}
+
+/* .liveToken {
+  animation: liveToken 1.5s ease-in-out infinite;
+} */
+
+.activeToken {
+  animation:
+    activeToken 2s ease-in-out infinite,
+    liveToken 1.5s ease-in-out infinite;
+}
+
+.reactiveToken {
+  animation: reactiveToken 2s ease-in-out infinite;
+}
+
+.spin {
+  animation: spin 0.75s linear infinite;
+}
+
+.barBlur {
+  animation: blur 0.3s linear forwards;
+}
+
+@keyframes damageMovement {
+  0% {
+    transform: translate(-10px, -100%) scale(1.375);
+    opacity: 1;
+  }
+  10% {
+    transform: translate(10px, -110%) scale(1);
+  }
+  20% {
+    transform: translate(-10px, -120%) scale(1);
+  }
+  30% {
+    transform: translate(10px, -130%) scale(1);
+  }
+  40% {
+    transform: translate(-10px, -140%) scale(1);
+  }
+  50% {
+    transform: translate(10px, -150%) scale(1);
+  }
+  60% {
+    transform: translate(-10px, -160%) scale(1);
+  }
+  70% {
+    transform: translate(10px, -170%) scale(1);
+  }
+  80% {
+    transform: translate(-10px, -180%) scale(1);
+  }
+  90% {
+    transform: translate(10px, -190%) scale(1);
+  }
+  100% {
+    transform: translate(-10px, -200%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes damageColor {
+  0% {
+    color: white;
+  }
+  50% {
+    color: red;
+  }
+  100% {
+    color: white;
+  }
+}
+
+.damage {
+  animation: damageMovement 5s ease-in-out forwards;
+  color: white;
+}
