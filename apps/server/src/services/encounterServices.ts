@@ -1,6 +1,12 @@
 //@ts-nocheck
 
-import { $Enums, CombatPhase, Encounter, History } from '@prisma/client';
+import {
+  $Enums,
+  Character,
+  CombatPhase,
+  Encounter,
+  History,
+} from '@prisma/client';
 import prisma from '../config/database.js';
 import itemServices from './itemServices.js';
 import {
@@ -15,10 +21,7 @@ import actionFuncs from '../utils/actionFuncs.js';
 import { camelCase } from 'change-case';
 import reactionFuncs from '../utils/reactionFuncs.js';
 import parseBlockData from '../utils/parseBlockData.js';
-import { Character } from '../types/character.js';
-import { Action } from '../types/action.js';
-import { Item } from '../types/item.js';
-import { calculateItemStats } from '../utils/itemStatUtils.js';
+import { Action, calculateItemStats, Item } from '@gated/shared';
 
 const encounterServices = {
   getEncounters: async (campaignId: number) => {
@@ -849,19 +852,13 @@ const encounterServices = {
       time?: { hour: number; minute: number; second: number };
     };
 
-    //@ts-ignore
     if (campaign.date && 'month' in campaign.date) {
-      //@ts-ignore
       eventData.month = campaign.date.month;
     }
-    //@ts-ignore
     if (campaign.date && 'day' in campaign.date) {
-      //@ts-ignore
       eventData.day = campaign.date.day;
     }
-    //@ts-ignore
     if (campaign.time) {
-      //@ts-ignore
       eventData.time = campaign.time;
     }
 
@@ -873,9 +870,7 @@ const encounterServices = {
 
     const {
       id,
-      //@ts-ignore
       mapId: m,
-      //@ts-ignore
       campaignId: c,
       ...data
     } = { ...oldEncounter, ...formData };
