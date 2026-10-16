@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import InputField from '../formFields/InputField';
 import BtnRect from '../buttons/BtnRect';
 import Icon from '@mdi/react';
@@ -11,11 +11,10 @@ import Loading from '../Loading';
 import apiUrl from 'src/utils/configureUrl';
 import Divider from '../Divider';
 import AuthFormLayout from './AuthFormLayout';
+import { toast } from 'react-toastify';
 
 const SigninForm = () => {
-  const [errors, setErrors] = useState([]);
-
-  const signinMutation = useSigninMutation(setErrors);
+  const signinMutation = useSigninMutation();
 
   const signinForm = useForm({
     defaultValues: {
@@ -30,10 +29,8 @@ const SigninForm = () => {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const errorMessage = params.get('error');
-    const statusCode = params.get('status');
     if (errorMessage) {
-      setErrors([errorMessage]);
-      console.log(`Error Code: ${statusCode}`);
+      toast.error(errorMessage);
     }
   }, []);
 
@@ -135,16 +132,6 @@ const SigninForm = () => {
           <span className="pl-2 hover:underline">Sign up</span>
         </Link>
       </p>
-      {errors?.length > 0 && (
-        <div className="flex flex-col gap-3 self-start">
-          <span className="text-primary">Error creating account:</span>
-          {errors?.map((error, index) => (
-            <p key={index} className="text-error">
-              {error}
-            </p>
-          ))}
-        </div>
-      )}
     </AuthFormLayout>
   );
 };

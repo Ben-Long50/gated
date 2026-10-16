@@ -83,7 +83,7 @@ const CharacterCard = ({
             }}
           >
             <div
-              className={`${size === 'small' ? 'row-span-2 aspect-square w-full' : 'col-span-2 aspect-[4/3] w-[425px]'} relative col-start-1 row-start-1 flex h-full items-center overflow-hidden rounded-bl clip-6`}
+              className={`${size === 'small' ? 'row-span-2 aspect-square w-full' : 'col-span-2 aspect-[4/3] w-[425px]'} clip-6 relative col-start-1 row-start-1 flex h-full items-center overflow-hidden rounded-bl`}
             >
               <CloudinaryPicture
                 className={`${(awol || insane) && 'grayscale'} group-hover:bg-secondary`}
@@ -168,108 +168,26 @@ const CharacterCard = ({
               <StatBarContainer size={size}>
                 <CharacterStatBars
                   stats={{
-                    maxHealth: character?.stats.maxHealth,
-                    maxSanity: character?.stats.maxSanity,
                     currentHealth: character?.stats.currentHealth,
+                    maxHealth: character?.stats.maxHealth,
                     currentSanity: character?.stats.currentSanity,
+                    maxSanity: character?.stats.maxSanity,
+                    speed: character?.stats.speed,
+                    armor: character?.stats.armor,
+                    equippedArmor: character?.stats.equippedArmor,
+                    ward: character?.stats.ward,
+                    equippedWard: character?.stats.equippedWard,
+                    evasion: character.stats.evasion,
+                    // injuries: character?.stats.injuries,
+                    // permanentInjuries: character?.stats.permanentInjuries,
+                    // insanities: character?.stats.insanities,
+                    // permanentInsanities: character?.stats.permanentInsanities,
                   }}
                   cardWidth={containerRef.current?.offsetWidth}
                   characterId={character?.id}
                   size={size}
                 />
               </StatBarContainer>
-              <div
-                className={`${size === 'small' ? 'flex-col gap-4' : 'flex-row gap-8'} flex w-full items-center justify-between`}
-              >
-                <div
-                  className={`${size === 'small' ? 'justify-around gap-4' : 'justify-start gap-8'} flex w-full items-center justify-start`}
-                >
-                  <div className="flex flex-col items-center justify-between gap-2">
-                    {size === 'large' && (
-                      <h3 className="text-primary text-xl font-semibold tracking-widest">
-                        Speed
-                      </h3>
-                    )}
-                    <div className="flex items-center justify-center gap-2">
-                      <SpeedIcon className="text-secondary size-8" />
-                      <p className="text-secondary text-xl sm:pt-1 sm:text-2xl">
-                        {character?.stats.speed}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-center justify-between gap-2">
-                    {size === 'large' && (
-                      <h3 className="text-primary text-xl font-semibold tracking-widest">
-                        Evasion
-                      </h3>
-                    )}
-                    <div className="flex items-center justify-center gap-2">
-                      <EvasionIcon className="text-secondary size-8" />
-                      <p className="text-secondary text-xl sm:pt-1 sm:text-2xl">
-                        {character?.stats.evasion}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-center justify-between gap-2">
-                    {size === 'large' && (
-                      <h3 className="text-primary text-xl font-semibold tracking-widest">
-                        Armor
-                      </h3>
-                    )}
-                    <div className="flex items-center justify-center gap-2">
-                      <ArmorIcon className="text-secondary size-8" />
-                      <p className="text-secondary text-xl sm:pt-1 sm:text-2xl">
-                        {character?.stats.armor}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-center justify-between gap-2">
-                    {size === 'large' && (
-                      <h3 className="text-primary text-xl font-semibold tracking-widest">
-                        Ward
-                      </h3>
-                    )}
-                    <div className="flex items-center justify-center gap-2">
-                      <WardIcon className="text-secondary size-8" />
-                      <p className="text-secondary text-xl sm:pt-1 sm:text-2xl">
-                        {character?.stats.ward}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className={`${size === 'small' ? 'gap-4' : 'gap-8'} flex w-full items-end justify-end`}
-                >
-                  <div className="flex flex-col items-center justify-between gap-2">
-                    {size === 'large' && (
-                      <h3 className="text-primary text-xl font-semibold tracking-widest">
-                        Injuries
-                      </h3>
-                    )}
-                    <div className="flex items-center justify-center gap-2">
-                      <InjuryIcon className="text-secondary size-8" />
-                      <p className="text-secondary text-xl sm:pt-1 sm:text-2xl">
-                        {character?.stats.injuries || 0} /{' '}
-                        {character?.stats.permanentInjuries}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-center justify-between gap-2">
-                    {size === 'large' && (
-                      <h3 className="text-primary text-xl font-semibold tracking-widest">
-                        Insanities
-                      </h3>
-                    )}
-                    <div className="flex items-center justify-center gap-2">
-                      <InsanityIcon className="text-secondary size-8" />
-                      <p className="text-secondary text-xl sm:pt-1 sm:text-2xl">
-                        {character?.stats.insanities || 0} /{' '}
-                        {character?.stats.permanentInsanities}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
             <CharacterCardMenu character={character} />
           </div>

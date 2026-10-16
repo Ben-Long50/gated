@@ -8,9 +8,7 @@ import Loading from '../Loading';
 import AuthFormLayout from './AuthFormLayout';
 
 const SignupForm = () => {
-  const [errors, setErrors] = useState([]);
-
-  const signupMutation = useSignupMutation(setErrors);
+  const signupMutation = useSignupMutation();
 
   const signupForm = useForm({
     defaultValues: {
@@ -22,14 +20,13 @@ const SignupForm = () => {
       confirmPassword: '',
     },
     onSubmit: async ({ value }) => {
-      setErrors([]);
       signupMutation.mutate(value);
     },
   });
 
   return (
     <AuthFormLayout form={signupForm}>
-      <h1 className="mb-auto text-center font-zen">Sign Up</h1>
+      <h1 className="font-zen mb-auto text-center">Sign Up</h1>
       <signupForm.Field
         name="username"
         validators={{
@@ -155,16 +152,6 @@ const SignupForm = () => {
           <span className="pl-2 hover:underline">Sign in</span>
         </Link>
       </p>
-      {errors?.length > 0 && (
-        <div className="flex flex-col gap-3 self-start">
-          <span className="text-primary">Error creating account:</span>
-          {errors.map((error, index) => (
-            <p key={index} className="text-error">
-              {error}
-            </p>
-          ))}
-        </div>
-      )}
     </AuthFormLayout>
   );
 };

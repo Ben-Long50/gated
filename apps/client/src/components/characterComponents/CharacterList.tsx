@@ -7,10 +7,11 @@ import useCampaignsQuery from 'src/hooks/useCampaignsQuery/useCampaignsQuery';
 import InputField from '../formFields/InputField';
 import Icon from '@mdi/react';
 import { mdiCropSquare, mdiGrid, mdiSync } from '@mdi/js';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import IconBtnMedium from '../buttons/IconBtnMedium';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import useParts from 'src/hooks/useParts';
+import CharacterPictureCard from './CharacterPictureCard';
 
 const CharacterList = ({
   characters,
@@ -35,6 +36,7 @@ const CharacterList = ({
   }) => void;
   isLoading?: boolean;
 }) => {
+  const navigate = useNavigate();
   const { mobile } = useContext(LayoutContext);
   const { campaignId } = useParams();
   const [size, setSize] = useState<'small' | 'large'>('small');
@@ -107,14 +109,19 @@ const CharacterList = ({
           <p className="text-center">No Characters Found</p>
         ) : (
           <div
-            className={`${mobile ? 'gap-4' : 'gap-8'} ${cardSize === 'large' ? 'w-full grid-cols-1' : 'grid-cols-[repeat(auto-fill,minmax(350px,1fr))]'} grid`}
+            className={`${mobile ? 'gap-4' : 'gap-8'} ${cardSize === 'large' ? 'w-full grid-cols-1' : 'grid-cols-[repeat(auto-fit,minmax(350px,1fr))]'} grid`}
           >
             {characters.map((character, index: number) => (
+              // <CharacterPictureCard
+              //   key={index}
+              //   characterId={character?.id}
+              //   onClick={() => navigate(`/glam/characters/${character.id}`)}
+              // />
               <CharacterCard
                 size={cardSize}
                 key={index}
                 characterId={character?.id}
-                onClick={onClick}
+                onClick={() => navigate(`/glam/characters/${character.id}`)}
               />
             ))}
           </div>

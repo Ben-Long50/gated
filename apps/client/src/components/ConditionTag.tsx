@@ -1,9 +1,10 @@
 import { ConditionReference } from '@gated/shared';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
-import ConditionRadialMenu from './radialMenus/ConditionRadialMenu';
+import Tooltip from './Tooltip';
 
 const ConditionTag = ({ condition }: { condition: ConditionReference }) => {
+  const [tooltip, setTooltip] = useState(false);
   const containerRef = useRef(null);
 
   const menuOpen = useRadialMenuStore((state) => state.menuOpen);
@@ -32,14 +33,12 @@ const ConditionTag = ({ condition }: { condition: ConditionReference }) => {
   return (
     <div
       ref={containerRef}
-      className={`bg-primary hover:bg-tertiary timing shadow-color relative cursor-pointer select-none rounded border border-red-400 border-opacity-50 px-2 text-base shadow-md hover:border-opacity-100`}
-      onClick={(e) => {
-        e.stopPropagation();
-        handleMenu(e);
-      }}
+      className={`bg-primary hover:bg-tertiary timing shadow-color group/button relative cursor-pointer select-none rounded border border-red-400 border-opacity-50 px-2 text-base shadow-md hover:border-opacity-100`}
+      onMouseEnter={() => setTooltip(true)}
+      onMouseLeave={() => setTooltip(false)}
     >
+      <Tooltip className="w-[200px]" label={condition.condition.description} />
       <p className="whitespace-nowrap text-base">{conditionName}</p>
-      <ConditionRadialMenu condition={condition} containerRef={containerRef} />
     </div>
   );
 };

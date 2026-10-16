@@ -1,8 +1,9 @@
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import signup from './signup';
+import { toast } from 'react-toastify';
 
-const useSignupMutation = (setErrors: (errors: string[]) => void) => {
+const useSignupMutation = () => {
   const navigate = useNavigate();
   return useMutation({
     mutationFn: async (formData: object) => {
@@ -10,7 +11,8 @@ const useSignupMutation = (setErrors: (errors: string[]) => void) => {
     },
     onSuccess: () => navigate('/signin'),
     onError: (error: string[]) => {
-      setErrors(error);
+      const errors = error.join(', ');
+      toast.error(errors);
     },
     throwOnError: false,
   });

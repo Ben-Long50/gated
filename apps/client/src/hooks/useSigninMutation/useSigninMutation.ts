@@ -1,8 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import signin from './signin';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
-const useSigninMutation = (setErrors: (errors: string[]) => void) => {
+const useSigninMutation = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   return useMutation({
@@ -11,10 +12,11 @@ const useSigninMutation = (setErrors: (errors: string[]) => void) => {
     },
     onSuccess: () => {
       queryClient.clear();
-      navigate('/glam/codex?tab=equipment');
+      navigate('/glam/codex/dashboard?tab=equipment');
     },
     onError: (error: string[]) => {
-      setErrors(error);
+      const errors = error.join(', ');
+      toast.error(errors);
     },
     throwOnError: false,
   });

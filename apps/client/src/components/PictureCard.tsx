@@ -22,7 +22,7 @@ export const PictureCard = ({
 
   return (
     <button
-      className={`${className} ${hover ? 'border-accent border-opacity-100' : 'border-transparent border-opacity-50'} bg-primary timing shadow-color group relative max-w-[300px] overflow-hidden rounded-md border-2 border-zinc-800`}
+      className={`${className} ${hover ? 'border-accent border-opacity-100' : 'border-transparent border-opacity-50'} bg-primary timing shadow-color group relative min-w-[200px] max-w-[300px] overflow-hidden rounded-md border-2 border-zinc-800`}
       style={{ borderColor: hover ? color : `${color}50` }}
       onClick={
         onClick
@@ -39,7 +39,7 @@ export const PictureCard = ({
       onMouseLeave={() => setHover(false)}
     >
       <CloudinaryPicture
-        className="timing aspect-square w-full origin-bottom group-hover:scale-105"
+        className="timing aspect-square origin-bottom group-hover:scale-105"
         publicId={publicId}
         style={{
           maskImage:
@@ -48,10 +48,7 @@ export const PictureCard = ({
       />
       {children}
       {label && (
-        <p
-          style={hover ? { color } : {}}
-          className="group-hover:text-accent timing absolute bottom-0 left-0 right-0 px-2 pb-1"
-        >
+        <p className="group-hover:text-accent timing absolute bottom-0 left-0 right-0 px-2 pb-1">
           {label}
         </p>
       )}
