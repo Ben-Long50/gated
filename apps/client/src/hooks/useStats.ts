@@ -1,8 +1,8 @@
-import { AttributeTree } from 'src/types/attributeTree';
-import { Perk } from 'src/types/perk';
-import { CharacterStats, SortedInventory } from 'src/types/character';
-import { Item } from 'src/types/item';
-import { Action } from 'src/types/action';
+import { AttributeTree } from '@gated/shared';
+import { Perk } from '@gated/shared';
+import { CharacterStats, SortedInventory } from '@gated/shared';
+import { Item } from '@gated/shared';
+import { Action } from '@gated/shared';
 
 const calculateStats = (
   equipment: SortedInventory | null,

@@ -1,4 +1,4 @@
-import { Component } from 'src/types/map';
+import { Component } from '@gated/shared';
 import { spriteSheetCache } from './spriteSheetCache';
 
 const getComponentStyle = (component: Component, mapScale: number) => {

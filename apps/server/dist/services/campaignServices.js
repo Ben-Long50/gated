@@ -2,9 +2,9 @@ import prisma from '../config/database.js';
 import { getIO } from '../sockets/socket.js';
 import { calculateRoll } from '../utils/rollUtilities.js';
 import constructCalendar from '../utils/constructCalendar.js';
-import { Attributes } from '../validation/fieldSchemas.js';
 import characterServices, { characterInclude } from './characterServices.js';
-import { combineAttributeTrees } from '../utils/combineAttributeTrees.js';
+import { Attributes, } from '@gated/shared/validation';
+import { combineAttributeTrees } from '@gated/shared';
 const campaignInclude = {
     sessions: { orderBy: { sessionNumber: 'desc' } },
     players: { orderBy: { username: 'asc' } },
@@ -292,7 +292,9 @@ const campaignServices = {
             .filter((bonus) => Boolean(bonus.attributes))
             .map((bonus) => Attributes.parse(bonus.attributes));
         const attributes = combineAttributeTrees(levelAttributes);
-        const rollResults = calculateRoll(attributes, { name: action.name, roll: action.roll }, rollData.modifiers, rollData.extraDice) || { result: [], successes: 0, roll: null };
+        const rollResults = calculateRoll(attributes, 
+        //@ts-ignore
+        { name: action.name, roll: action.roll }, rollData.modifiers, rollData.extraDice) || { result: [], successes: 0, roll: null };
         const rolls = new Map();
         if (rollResults) {
             rolls.set(userId, {

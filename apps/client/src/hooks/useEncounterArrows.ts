@@ -2,7 +2,7 @@ import { useContext, useRef } from 'react';
 import { AuthContext } from 'src/contexts/AuthContext';
 import { EncounterContext } from 'src/contexts/EncounterContext';
 import { socket } from 'src/socket';
-import { Target } from 'src/types/target';
+import { Target } from '@gated/shared';
 
 const useEncounterArrows = () => {
   const { user } = useContext(AuthContext);

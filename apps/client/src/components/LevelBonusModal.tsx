@@ -9,9 +9,9 @@ import useSelectLevelUpBonusMutation from 'src/hooks/character hooks/useUpdateCh
 import { useState } from 'react';
 import BtnAuth from './buttons/BtnAuth';
 import useLevelBonusForm from 'src/hooks/form hooks/useLevelBonusForm';
-import calculateLevelBonus from 'src/utils/calculateLevelBonus';
-import { getUsedPoints } from 'src/utils/getUsedPoints';
-import { combineAttributeTrees } from 'src/utils/combineAttributeTrees';
+import { calculateLevelBonus } from '@gated/shared';
+import { getUsedPoints } from '@gated/shared';
+import { combineAttributeTrees } from '@gated/shared';
 
 const LevelBonusModal = () => {
   const { characterId } = useParams();

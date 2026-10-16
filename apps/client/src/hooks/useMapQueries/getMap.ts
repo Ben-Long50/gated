@@ -1,6 +1,6 @@
 import { create, keyResolver, windowScheduler } from '@yornaath/batshit';
 import handleResponse from '../handleResponse';
-import { Map } from 'src/types/map';
+import { Map } from '@gated/shared';
 import apiUrl from 'src/utils/configureUrl';
 
 const getMap = create({

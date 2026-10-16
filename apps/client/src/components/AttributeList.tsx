@@ -1,6 +1,6 @@
 import { mdiSquare } from '@mdi/js';
 import Icon from '@mdi/react';
-import { AttributeTree } from 'src/types/attributeTree';
+import { AttributeTree } from '@gated/shared';
 import ArrowHeader4 from './ArrowHeader4';
 import { capitalCase } from 'change-case';
 import { useContext } from 'react';

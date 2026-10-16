@@ -13,10 +13,12 @@
     "host": "vite --host",
     "test": "vitest",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
   },
   "proxy": "http://localhost:3000",
   "dependencies": {
+    "@gated/shared": "*",
     "@cloudinary/react": "^1.14.3",
     "@cloudinary/url-gen": "^1.21.0",
     "@designbycode/tailwindcss-text-shadow": "^2.2.1",

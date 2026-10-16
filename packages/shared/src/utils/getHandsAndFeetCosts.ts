@@ -1,6 +1,6 @@
-import { Item } from 'src/types/item';
+import { Item } from '../types/item.js';
 
-const getHandsAndFeetCosts = (item: Item) => {
+export const getHandsAndFeetCosts = (item: Item) => {
   let hands = 0;
   let feet = 0;
 
@@ -18,5 +18,3 @@ const getHandsAndFeetCosts = (item: Item) => {
 
   return { hands, feet };
 };
-
-export default getHandsAndFeetCosts;

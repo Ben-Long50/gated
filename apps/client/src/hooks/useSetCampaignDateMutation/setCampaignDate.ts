@@ -1,4 +1,4 @@
-import { Month } from 'src/types/campaign';
+import { Month } from '@gated/shared';
 import handleResponse from '../handleResponse';
 import apiUrl from 'src/utils/configureUrl';
 

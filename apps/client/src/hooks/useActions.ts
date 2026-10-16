@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import useActionsQuery from './useActionsQuery/useActionsQuery';
-import { Action } from '../types/action';
+import { Action } from '@gated/shared';
 
 const useActions = (characterActions?: Action[]) => {
   const { data: actions, isLoading } = useActionsQuery();

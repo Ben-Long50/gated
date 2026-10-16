@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import gangServices from '../services/gangServices.js';
-import { GangInput, GangSessionBonusInput } from '../validation/gangSchema.js';
+import { validation } from '@gated/shared';
 import z from 'zod';
 import handleControllerError from './handleControllerError.js';
 import { getIO } from '../sockets/socket.js';
@@ -39,7 +39,7 @@ const gangController = {
         return;
       }
 
-      const validatedGang = GangInput.parse(req.body);
+      const validatedGang = validation.GangInput.parse(req.body);
 
       const gang = await gangServices.createOrUpdateGang(validatedGang);
 
@@ -88,7 +88,7 @@ const gangController = {
 
   allocateReputation: async (req: Request, res: Response) => {
     try {
-      const validatedGangSessionBonus = GangSessionBonusInput.parse(
+      const validatedGangSessionBonus = validation.GangSessionBonusInput.parse(
         req.body.bonus,
       );
 
@@ -112,7 +112,7 @@ const gangController = {
 
   allocateLevelNodes: async (req: Request, res: Response) => {
     try {
-      const validatedLevelNodeBonus = GangSessionBonusInput.parse(
+      const validatedLevelNodeBonus = validation.GangSessionBonusInput.parse(
         req.body.bonus,
       );
 

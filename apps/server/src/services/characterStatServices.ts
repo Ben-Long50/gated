@@ -1,7 +1,7 @@
+import { CharacterStats } from '@gated/shared/validation';
 import prisma from '../config/database.js';
-import combineObjects from '../utils/combineObjects.js';
-import { CharacterStats } from '../validation/fieldSchemas.js';
 import { characterInclude } from './characterServices.js';
+import { combineObjects } from '@gated/shared';
 
 const characterStatServices = {
   editCharacterStat: async (characterId: number, stats: CharacterStats) => {

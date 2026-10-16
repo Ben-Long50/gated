@@ -1,6 +1,6 @@
 import { useQueries } from '@tanstack/react-query';
 import getItemById from '../useItemQuery/getItemById';
-import { Item } from 'src/types/item';
+import { Item } from '@gated/shared';
 
 const useItemQueries = (itemsIds: number[], enabled = true) => {
   return useQueries({

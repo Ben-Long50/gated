@@ -1,6 +1,5 @@
+import { NotesInput, SessionInput } from '@gated/shared/validation';
 import prisma from '../config/database.js';
-import { NotesInput } from '../validation/notesSchema.js';
-import { SessionInput } from '../validation/sessionSchema.js';
 
 const sessionInclude = {
   characters: true,

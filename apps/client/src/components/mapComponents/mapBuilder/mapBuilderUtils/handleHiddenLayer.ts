@@ -1,4 +1,4 @@
-import { Layer } from 'src/types/map';
+import { Layer } from '@gated/shared';
 
 export const handleHiddenLayer = (form: FormApi, id: number) => {
   const currentLayers = form.getFieldValue('layers');

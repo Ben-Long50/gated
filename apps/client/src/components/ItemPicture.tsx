@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import ThemeContainer from './ThemeContainer';
 import { ThemeContext } from '../contexts/ThemeContext';
 import CloudinaryPicture from './CloudinaryPicture';
-import { Item } from 'src/types/item';
+import { Item } from '@gated/shared';
 
 const ItemPicture = ({
   item,

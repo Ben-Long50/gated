@@ -1,4 +1,4 @@
-import { Affiliation } from 'src/types/faction';
+import { Affiliation } from '@gated/shared';
 import { Fragment, useContext } from 'react';
 import AffiliationBar from './AffiliationBar';
 import AffiliationIcon from './icons/AffiliationIcon';

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import createNotes from './createNotes';
 import { toast } from 'react-toastify';
-import { Notes } from 'src/types/campaign';
+import { Notes } from '@gated/shared';
 
 const useCreateNotesMutation = () => {
   const queryClient = useQueryClient();

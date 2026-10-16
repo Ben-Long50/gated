@@ -1,10 +1,10 @@
 import { useContext } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import CampaignCard from './CampaignCard';
-import { Campaign } from 'src/types/campaign';
+import { Campaign } from '@gated/shared';
 import BtnRect from './buttons/BtnRect';
 import { Link, useSearchParams } from 'react-router-dom';
-import { User } from 'src/types/user';
+import { User } from '@gated/shared';
 import { capitalCase } from 'change-case';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import BtnAuth from './buttons/BtnAuth';

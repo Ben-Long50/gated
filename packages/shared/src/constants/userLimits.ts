@@ -1,4 +1,4 @@
-const userLimits = {
+export const userLimits = {
   USER: {
     roleName: 'Free User',
     playerCharacters: 1,
@@ -91,6 +91,5 @@ const userLimits = {
   },
 };
 
-export default userLimits;
 
 export type RoleKey = keyof typeof userLimits;

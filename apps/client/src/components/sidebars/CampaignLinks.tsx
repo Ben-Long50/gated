@@ -7,7 +7,7 @@ import DieIcon from '../icons/DieIcon';
 import { useParams } from 'react-router-dom';
 import CharacterIcon from '../icons/CharacterIcon';
 import useCampaignQuery from '../../hooks/useCampaignQuery/useCampaignQuery';
-import { Session } from 'src/types/campaign';
+import { Session } from '@gated/shared';
 import SessionIcon from '../icons/SessionIcon';
 import AffiliationIcon from '../icons/AffiliationIcon';
 import NoteIcon from '../icons/NoteIcon';
@@ -20,7 +20,7 @@ import Loading from '../Loading';
 import CombatIcon from '../icons/CombatIcon';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import PassIcon from '../icons/PassIcon';
-import { Gang } from 'src/types/gang';
+import { Gang } from '@gated/shared';
 import CharacterPictureRound from '../characterComponents/CharacterPictureRound';
 import useCharacterQueries from 'src/hooks/character hooks/useUpdateCharacterLevelMutation/useCharactersQuery/useCharacterQueries';
 

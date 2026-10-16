@@ -3,7 +3,7 @@ import usePerks from '../hooks/usePerks';
 import { FormApi } from '@tanstack/react-form';
 import InputField from './formFields/InputField';
 import Loading from './Loading';
-import { AttributeTree } from 'src/types/attributeTree';
+import { AttributeTree } from '@gated/shared';
 import Icon from '@mdi/react';
 import { mdiSync } from '@mdi/js';
 import { capitalCase } from 'change-case';

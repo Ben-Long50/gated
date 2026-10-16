@@ -13,19 +13,17 @@ import ActionIcon from '../icons/ActionIcon';
 import Icon from '@mdi/react';
 import { mdiAutorenew } from '@mdi/js';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { Action } from 'src/types/action';
 import DieIcon from '../icons/DieIcon';
 import { useQueryClient } from '@tanstack/react-query';
-import { Item } from 'src/types/item';
 import useCombatStore from 'src/stores/combatStore';
-import calculateDiceCount from 'src/utils/calculateDiceCount';
 import InputField from '../formFields/InputField';
 import { useContext } from 'react';
 import { EncounterContext } from 'src/contexts/EncounterContext';
 import actionFuncs from 'src/utils/actionFuncs';
 import Divider from '../Divider';
-import calculateCosts from 'src/utils/calculateCosts';
 import isInRange from './encounterUtils/isInRange';
+import { calculateCosts, calculateDiceCount, Item } from '@gated/shared';
+import { Action } from '@cloudinary/url-gen/internal/Action';
 
 const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
   const { activeCharacter, actionForm, removeTarget, getTarget } =

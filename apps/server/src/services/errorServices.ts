@@ -1,5 +1,5 @@
+import { ErrorReportInput } from '@gated/shared/validation';
 import prisma from '../config/database.js';
-import { ErrorReportInput } from '../validation/errorReportSchema.js';
 
 const errorServices = {
   getErrorReports: async () => {

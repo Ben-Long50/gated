@@ -10,7 +10,6 @@ import useSigninMutation from '../../hooks/useSigninMutation/useSigninMutation';
 import Loading from '../Loading';
 import apiUrl from 'src/utils/configureUrl';
 import Divider from '../Divider';
-import ArrowHeader1 from '../ArrowHeader1';
 import AuthFormLayout from './AuthFormLayout';
 
 const SigninForm = () => {
@@ -48,7 +47,7 @@ const SigninForm = () => {
 
   return (
     <AuthFormLayout form={signinForm}>
-      <h1 className="mb-auto text-center font-zen">Sign In</h1>
+      <h1 className="font-zen mb-auto text-center">Sign In</h1>
       <signinForm.Field
         name="email"
         validators={{

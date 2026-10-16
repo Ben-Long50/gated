@@ -1,5 +1,5 @@
-import { Action } from 'src/types/action';
-import { Item } from 'src/types/item';
+import { Action } from '../types/action.js';
+import { Item } from '../types/item.js';
 
 export const calculateDamage = (
   item: Item,

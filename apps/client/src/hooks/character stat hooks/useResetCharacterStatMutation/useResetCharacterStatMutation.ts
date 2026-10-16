@@ -1,9 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Character } from 'src/types/character';
 import resetCharacterStat from './resetCharacterStat';
 import { useRef } from 'react';
-import combineObjects from 'src/utils/combineObjects';
 import { toast } from 'react-toastify';
+import { Character, combineObjects } from '@gated/shared';
 
 const useResetCharacterStatMutation = () => {
   const queryClient = useQueryClient();

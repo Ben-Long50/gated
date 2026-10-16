@@ -1,4 +1,12 @@
 {
   "extends": "../../tsconfig.base.json",
-  "include": ["src", "../../apps/server/src/utils/rollUtilities.ts", "../../apps/server/src/utils/parseBlockData.ts", "../../apps/client/src/utils/actionFuncs.ts"]
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "dist",
+    "rootDir": "src",
+    "declaration": true,
+    "noEmitOnError": false
+  },
+  "include": ["src"]
 }

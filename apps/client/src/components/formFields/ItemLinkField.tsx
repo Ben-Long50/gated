@@ -1,5 +1,4 @@
 import { FormApi, useStore } from '@tanstack/react-form';
-import { Item } from 'src/types/item';
 import ItemCard from '../ItemCard';
 import useItemQueries from 'src/hooks/useItemQueries/useItemQueries';
 import BtnAuth from '../buttons/BtnAuth';
@@ -9,6 +8,7 @@ import IconBtnMedium from '../buttons/IconBtnMedium';
 import Loading from '../Loading';
 import ArrowHeader2 from '../ArrowHeader2';
 import { useNavigateWithQuery } from 'src/hooks/useNavigateWithQuery';
+import { Item } from '@gated/shared';
 
 const ItemLinkField = ({ form }: { form: FormApi }) => {
   const navigate = useNavigateWithQuery();

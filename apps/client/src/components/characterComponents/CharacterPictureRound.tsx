@@ -1,6 +1,6 @@
 import { CSSProperties, useContext } from 'react';
 import CloudinaryPicture from '../CloudinaryPicture';
-import { Character } from 'src/types/character';
+import { Character } from '@gated/shared';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import Icon from '@mdi/react';
 import {

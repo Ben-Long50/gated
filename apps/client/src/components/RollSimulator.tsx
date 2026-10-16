@@ -14,7 +14,7 @@ import useCampaignRollMutation from '../hooks/campaign hooks/useCampaignRollMuta
 import { LayoutContext } from '../contexts/LayoutContext';
 import { capitalCase } from 'change-case';
 import { CampaignContext } from 'src/contexts/CampaignContext';
-import calculateDiceCount from 'src/utils/calculateDiceCount';
+import { calculateDiceCount } from '@gated/shared';
 import useCharacterQueries from 'src/hooks/character hooks/useUpdateCharacterLevelMutation/useCharactersQuery/useCharacterQueries';
 import Page from './Page';
 

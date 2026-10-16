@@ -1,5 +1,5 @@
 import perkServices from '../services/perkServices.js';
-import { PerkSchema } from '../validation/perkSchema.js';
+import { validation } from '@gated/shared';
 import handleControllerError from './handleControllerError.js';
 const perkController = {
     getPerks: async (_req, res) => {
@@ -32,7 +32,7 @@ const perkController = {
     },
     createPerk: async (req, res) => {
         try {
-            const validatedPerk = PerkSchema.parse(req.body);
+            const validatedPerk = validation.PerkSchema.parse(req.body);
             const perk = await perkServices.createPerk(validatedPerk);
             res.status(200).json({ perk, message: 'Successfully created perk' });
         }

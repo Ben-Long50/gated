@@ -1,11 +1,11 @@
-import { Action } from 'src/types/action';
+import { Action } from '../types/action.js';
 import {
   AttributeName,
   AttributeTree,
   SkillName,
-} from 'src/types/attributeTree';
+} from '../types/attributeTree.js';
 
-const calculateDiceCount = (
+export const calculateDiceCount = (
   attributes: AttributeTree,
   action: Partial<Action>,
   modifiers: string[],
@@ -44,5 +44,3 @@ const calculateDiceCount = (
 
   return bestRoll;
 };
-
-export default calculateDiceCount;

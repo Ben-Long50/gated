@@ -1,6 +1,6 @@
 import { create, keyResolver, windowScheduler } from '@yornaath/batshit';
 import handleResponse from '../handleResponse';
-import { Perk } from 'src/types/perk';
+import { Perk } from '@gated/shared';
 import apiUrl from 'src/utils/configureUrl';
 
 const getPerk = create({

@@ -2,17 +2,17 @@ import prisma from '../config/database.js';
 import { enforceSingularLinking } from '../utils/enforceSingularLinking.js';
 import { $Enums, Prisma } from '@prisma/client';
 import actionServices, { actionSelectForCopy } from './actionServices.js';
+import addVariableStats from '../utils/addVariableStats.js';
+import { keywordSelectForCopy } from './keywordServices.js';
 import {
+  ActionCopyInput,
+  ConditionReferenceInput,
   ItemCopyInput,
   ItemInput,
+  ItemStats,
   ItemUpgradeInput,
-} from '../validation/itemSchema.js';
-import { ItemStats } from '../validation/fieldSchemas.js';
-import { ConditionReferenceInput } from '../validation/conditionSchema.js';
-import addVariableStats from '../utils/addVariableStats.js';
-import { ActionCopyInput } from '../validation/actionSchema.js';
-import { keywordSelectForCopy } from './keywordServices.js';
-import { KeywordReferenceCopyInput } from '../validation/keywordSchema.js';
+  KeywordReferenceCopyInput,
+} from '@gated/shared/validation';
 
 export const itemSelectForCopy = {
   id: true,

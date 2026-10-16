@@ -6,7 +6,7 @@ import Loading from './Loading';
 import InputSelectField from './formFields/InputSelectField';
 import Icon from '@mdi/react';
 import { mdiSync } from '@mdi/js';
-import { KeywordReference } from 'src/types/keyword';
+import { KeywordReference } from '@gated/shared';
 import { capitalCase } from 'change-case';
 import ExpandingList from './ExpandingList';
 import IconBtnMedium from './buttons/IconBtnMedium';

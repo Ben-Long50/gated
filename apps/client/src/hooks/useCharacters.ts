@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Character } from 'src/types/character';
+import { Character } from '@gated/shared';
 import { useSearchParams } from 'react-router-dom';
-import { checkArrayMatch } from 'src/utils/checkArrayMatch';
+import { checkArrayMatch } from '@gated/shared';
 import useCharacterQueries from './character hooks/useUpdateCharacterLevelMutation/useCharactersQuery/useCharacterQueries';
 
 const useCharacters = (characterIds: number[]) => {

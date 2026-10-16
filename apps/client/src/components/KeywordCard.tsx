@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
-import { Keyword } from 'src/types/keyword';
+import { Keyword } from '@gated/shared';
 import ItemCardSmall from './ItemCardSmall';
 
 const KeywordCard = ({

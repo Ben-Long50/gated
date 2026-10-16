@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import useConditionsQuery from './useConditionsQuery/useConditionsQuery';
-import { Condition } from 'src/types/condition';
+import { Condition } from '@gated/shared';
 
 const useConditions = (conditionList?: Condition[]) => {
   const { data: conditions, isLoading, isPending } = useConditionsQuery();

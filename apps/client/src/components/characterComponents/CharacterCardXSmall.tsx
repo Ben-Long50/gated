@@ -1,11 +1,8 @@
-import useCharacter from 'src/hooks/useCharacter';
 import CharacterPictureRound from './CharacterPictureRound';
-import Loading from '../Loading';
 import ArrowHeader4 from '../ArrowHeader4';
 import { useRef } from 'react';
-import CharacterRadialMenu from '../radialMenus/characterRadialMenu/CharacterRadialMenu';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
-import { Character } from 'src/types/character';
+import { Character } from '@gated/shared';
 
 const CharacterCardXSmall = ({
   characterList,

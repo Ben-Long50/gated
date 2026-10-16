@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import propertyServices from '../services/propertyServices.js';
-import { PropertyInput } from '../validation/propertySchema.js';
+import { validation } from '@gated/shared';
 import handleControllerError from './handleControllerError.js';
 
 const propertyController = {
@@ -58,7 +58,7 @@ const propertyController = {
         return;
       }
 
-      const validatedProperty = PropertyInput.parse(req.body);
+      const validatedProperty = validation.PropertyInput.parse(req.body);
 
       const property =
         await propertyServices.createOrUpdateBaseProperty(validatedProperty);

@@ -1,31 +1,23 @@
-import { useContext } from 'react';
 import Loading from '../Loading';
 import FormLayout from '../../layouts/FormLayout';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import AffiliationBar from '../AffiliationBar';
-import { Faction } from 'src/types/faction';
 import useCreateAffiliationMutation from '../../hooks/useCreateAffiliationMutation/useCreateAffiliationMutation';
-import { LayoutContext } from '../../contexts/LayoutContext';
 import useAffiliationQuery from '../../hooks/useAffiliationQuery/useAffiliationQuery';
 import useDeleteAffiliationMutation from '../../hooks/useDeleteAffiliationMutation/useDeleteAffiliationMutation';
 import useAffiliationForm from 'src/hooks/form hooks/useAffiliationForm';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import useGangQueries from 'src/hooks/gang hooks/useGangQueries/useGangQueries';
 import useFactionQueries from 'src/hooks/faction hooks/useFactionQueries';
-import { Gang } from 'src/types/gang';
-import { Character } from 'src/types/character';
 import BtnAuth from '../buttons/BtnAuth';
 import EntityCard from '../EntityCard';
 import useCharacterQueries from 'src/hooks/character hooks/useUpdateCharacterLevelMutation/useCharactersQuery/useCharacterQueries';
 import Page from '../Page';
+import { Character, Faction, Gang } from '@gated/shared';
 
 const AffiliationForm = () => {
-  const { mobile } = useContext(LayoutContext);
-  const { campaignId, factionId, gangId, characterId, affiliationId } =
-    useParams();
+  const { campaignId, affiliationId } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
-  const parts = location.pathname.split('/');
 
   const { data: campaign, isLoading: campaignLoading } = useCampaignQuery(
     Number(campaignId),

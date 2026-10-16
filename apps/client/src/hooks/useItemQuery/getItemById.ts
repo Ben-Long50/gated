@@ -1,6 +1,6 @@
 import { create, keyResolver, windowScheduler } from '@yornaath/batshit';
 import handleResponse from '../handleResponse';
-import { Item } from 'src/types/item';
+import { Item } from '@gated/shared';
 import apiUrl from 'src/utils/configureUrl';
 
 const getItemById = create({

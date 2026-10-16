@@ -9,7 +9,7 @@ import WeaponIcon from './icons/WeaponIcon';
 import { useNavigate, useParams } from 'react-router-dom';
 import useCharacter from 'src/hooks/useCharacter';
 import Loading from './Loading';
-import { Item } from 'src/types/item';
+import { Item } from '@gated/shared';
 import NavTabs from './NavTabs';
 import InventoryCard from './InventoryCard';
 import InventoryGrid from './InventoryGrid';

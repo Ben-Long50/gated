@@ -6,7 +6,7 @@ import ConditionCard from './ConditionCard';
 import InputSelectField from './formFields/InputSelectField';
 import Icon from '@mdi/react';
 import { mdiSync } from '@mdi/js';
-import { Condition } from 'src/types/condition';
+import { Condition } from '@gated/shared';
 import IconBtnMedium from './buttons/IconBtnMedium';
 
 const Conditions = ({

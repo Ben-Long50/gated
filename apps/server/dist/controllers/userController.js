@@ -1,9 +1,9 @@
 import bcrypt from 'bcryptjs';
 import userServices from '../services/userServices.js';
-import { SignUpInput, UserUpdateInput } from '../validation/authSchema.js';
-import { UserRole } from '../validation/enums.js';
 import handleControllerError from './handleControllerError.js';
 import z from 'zod';
+import { validation } from '@gated/shared';
+import { UserRole } from '@gated/shared/validation';
 const userController = {
     getAuthenticatedUser: async (req, res) => {
         try {
@@ -64,7 +64,7 @@ const userController = {
     },
     createUser: async (req, res) => {
         try {
-            const validatedUser = SignUpInput.parse(req.body);
+            const validatedUser = validation.SignUpInput.parse(req.body);
             const { confirmPassword, password, ...data } = validatedUser;
             const hashedPassword = await bcrypt.hash(password, 10);
             await userServices.createUser({ ...data, password: hashedPassword });
@@ -82,7 +82,7 @@ const userController = {
                     .json({ message: 'You must be signed in to complete this user' });
                 return;
             }
-            const validatedUser = UserUpdateInput.parse(req.body);
+            const validatedUser = validation.UserUpdateInput.parse(req.body);
             await userServices.updateUser(validatedUser, req.user.id);
             res
                 .status(200)

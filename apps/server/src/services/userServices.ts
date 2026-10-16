@@ -1,12 +1,12 @@
 import { $Enums, UserRole } from '@prisma/client';
 import prisma from '../config/database.js';
+import { deleteManyFromCloudinary } from '../utils/cloudinary.js';
 import {
   FacebookSignUpInput,
   GoogleSignUpInput,
   SignUpInput,
   UserUpdateInput,
-} from '../validation/authSchema.js';
-import { deleteManyFromCloudinary } from '../utils/cloudinary.js';
+} from '@gated/shared/validation';
 
 export const userInclude = {
   generatedPictures: {

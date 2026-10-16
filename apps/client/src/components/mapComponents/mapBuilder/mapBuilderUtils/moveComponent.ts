@@ -1,5 +1,5 @@
 import { FormApi } from '@tanstack/react-form';
-import { Component, Layer } from 'src/types/map';
+import { Component, Layer } from '@gated/shared';
 
 export const moveComponent = (
   form: FormApi,

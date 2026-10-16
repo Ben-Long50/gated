@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import sessionServices from '../services/sessionServices.js';
-import { NotesInput } from '../validation/notesSchema.js';
-import { SessionInput } from '../validation/sessionSchema.js';
+import { validation } from '@gated/shared';
 import handleControllerError from './handleControllerError.js';
 
 const sessionController = {
@@ -39,7 +38,7 @@ const sessionController = {
 
   createOrUpdateSessionNotes: async (req: Request, res: Response) => {
     try {
-      const validatedNotes = NotesInput.parse(req.body);
+      const validatedNotes = validation.NotesInput.parse(req.body);
 
       const notes =
         await sessionServices.createOrUpdateSessionNotes(validatedNotes);
@@ -57,7 +56,7 @@ const sessionController = {
 
   createOrUpdateSession: async (req: Request, res: Response) => {
     try {
-      const validatedSession = SessionInput.parse(req.body);
+      const validatedSession = validation.SessionInput.parse(req.body);
 
       const session =
         await sessionServices.createOrUpdateSession(validatedSession);

@@ -3,7 +3,7 @@ import InputField from './formFields/InputField';
 import { FormApi } from '@tanstack/react-form';
 import Loading from './Loading';
 import useBaseItems from '../hooks/useBaseItems';
-import { Item, ItemType } from 'src/types/item';
+import { Item, ItemType } from '@gated/shared';
 import { LayoutContext } from '../contexts/LayoutContext';
 import Icon from '@mdi/react';
 import { mdiCropSquare, mdiGrid, mdiSync } from '@mdi/js';

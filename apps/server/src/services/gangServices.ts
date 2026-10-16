@@ -1,5 +1,5 @@
+import { GangInput, GangSessionBonusInput } from '@gated/shared/validation';
 import prisma from '../config/database.js';
-import { GangInput, GangSessionBonusInput } from '../validation/gangSchema.js';
 import { characterInclude } from './characterServices.js';
 
 const gangInclude = {

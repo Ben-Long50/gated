@@ -1,7 +1,7 @@
 import { capitalCase } from 'change-case';
 import CharacterPictureRound from '../characterComponents/CharacterPictureRound';
 import Die from './Die';
-import { PhaseHistory } from 'src/types/encounter';
+import { PhaseHistory } from '@gated/shared';
 
 const HistoryCard = ({ phaseHistory }: { phaseHistory: PhaseHistory }) => {
   const history = phaseHistory.action;

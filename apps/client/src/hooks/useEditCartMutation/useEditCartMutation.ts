@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import editCart from './editCart';
 import { useRef } from 'react';
-import { Character } from 'src/types/character';
+import { Character } from '@gated/shared';
 import { toast } from 'react-toastify';
-import { Item } from 'src/types/item';
+import { Item } from '@gated/shared';
 
 const useEditCartMutation = (
   characterId: number,

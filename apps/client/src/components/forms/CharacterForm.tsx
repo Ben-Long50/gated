@@ -2,7 +2,6 @@ import InputField from '../formFields/InputField';
 import { useStore, ValidationError } from '@tanstack/react-form';
 import useCreateCharacterMutation from '../../hooks/useCreateCharacterMutation/useCreateCharacterMutation';
 import FormLayout from '../../layouts/FormLayout';
-import { SortedInventory } from 'src/types/character';
 import useCampaignsQuery from '../../hooks/useCampaignsQuery/useCampaignsQuery';
 import ArrowHeader2 from '../ArrowHeader2';
 import Divider from '../Divider';
@@ -18,13 +17,11 @@ import StatBarContainer from '../StatBarContainer';
 import CharacterStatBars from '../characterComponents/CharacterStatBars';
 import useCreateCodexCharacterMutation from 'src/hooks/useCreateCodexCharacterMutation/useCreateCodexCharacterMutation';
 import { useSearchParams } from 'react-router-dom';
-import calculateLevelBonus, {
-  calculateUsedPoints,
-} from 'src/utils/calculateLevelBonus';
 import { useContext } from 'react';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import usePerkQueries from 'src/hooks/usePerkQueries/usePerkQueries';
 import Page from '../Page';
+import { calculateLevelBonus, calculateUsedPoints } from '@gated/shared';
 
 const CharacterForm = () => {
   const { mobile } = useContext(LayoutContext);
@@ -63,7 +60,7 @@ const CharacterForm = () => {
   const stats = calculateStats(
     {
       items: [],
-    } as unknown as SortedInventory,
+    },
     [],
     attributes,
     perks,

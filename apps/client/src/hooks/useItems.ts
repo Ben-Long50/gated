@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Item, ItemType } from 'src/types/item';
+import { Item, ItemType } from '@gated/shared';
 
 const useItems = (itemList: Item[]) => {
   const items = itemList;

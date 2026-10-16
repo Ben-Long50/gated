@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import getCodexMaps from './getCodexMaps';
-import { Map } from 'src/types/map';
+import { Map } from '@gated/shared';
 
 const useCodexMapsQuery = () => {
   return useQuery<Map[]>({

@@ -1,6 +1,6 @@
 import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
-import { MapInput } from 'src/types/map';
+import { MapInput } from '@gated/shared';
 
 const createMap = async (formData: MapInput) => {
   try {

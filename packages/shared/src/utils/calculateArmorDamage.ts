@@ -1,5 +1,5 @@
-import { Character } from 'src/types/character';
-import { Item } from 'src/types/item';
+import { Character } from '../types/character.js';
+import { Item } from '../types/item.js';
 
 export const calculateArmorDamage = (
   item: Item,
@@ -33,7 +33,7 @@ export const calculateArmorDamage = (
     index++;
   }
 
-  const blockData = [];
+  const blockData = [] as any[];
 
   selectedArmor.forEach((armor) => {
     const data = {

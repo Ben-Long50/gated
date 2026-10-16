@@ -1,4 +1,4 @@
-import { User } from 'src/types/user';
+import { User } from '@gated/shared';
 import handleResponse from '../handleResponse';
 import apiUrl from 'src/utils/configureUrl';
 

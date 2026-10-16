@@ -1,7 +1,7 @@
 import { useForm } from '@tanstack/react-form';
 import { useContext, useEffect, useRef, useState } from 'react';
 import InputField from './formFields/InputField';
-import { Keyword } from 'src/types/keyword';
+import { Keyword } from '@gated/shared';
 import Loading from './Loading';
 import useKeywords from '../hooks/useKeywords';
 import KeywordCard from './KeywordCard';
@@ -17,12 +17,12 @@ import Icon from '@mdi/react';
 import { mdiCropSquare, mdiGrid, mdiSync } from '@mdi/js';
 import { LayoutContext } from '../contexts/LayoutContext';
 import ItemCard from './ItemCard';
-import { Item } from 'src/types/item';
-import { Action } from 'src/types/action';
-import { Condition } from 'src/types/condition';
+import { Item } from '@gated/shared';
+import { Action } from '@gated/shared';
+import { Condition } from '@gated/shared';
 import { camelCase } from 'change-case';
 import useItemTypeQueries from 'src/hooks/useItemQueries/useItemTypeQueries';
-import { itemTypes } from 'src/utils/constants/itemConstants';
+import { itemTypes } from '@gated/shared';
 import Page from './Page';
 
 const CodexSearch = () => {

@@ -1,7 +1,7 @@
 import { FormApi } from '@tanstack/react-form';
 import { useContext } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
-import { Layer } from 'src/types/map';
+import { Layer } from '@gated/shared';
 import DragScrollContainer from '../DragScrollContainer';
 import MapBuilderTile from './MapBuilderTile';
 import MapBuilderComponent from './MapBuilderComponent';

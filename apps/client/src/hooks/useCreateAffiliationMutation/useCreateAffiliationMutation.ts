@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import createAffiliation from './createAffiliation';
 import { toast } from 'react-toastify';
-import { Affiliation } from 'src/types/faction';
+import { Affiliation } from '@gated/shared';
 
 const useCreateAffiliationMutation = () => {
   const queryClient = useQueryClient();

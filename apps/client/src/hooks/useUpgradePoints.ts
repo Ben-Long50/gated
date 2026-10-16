@@ -1,5 +1,5 @@
 import { FormApi, useStore } from '@tanstack/react-form';
-import { Item } from 'src/types/item';
+import { Item } from '@gated/shared';
 import upgradePointMap from './upgradePointMap';
 
 const useUpgradePoints = (form: FormApi, item: Item) => {

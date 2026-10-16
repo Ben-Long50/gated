@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
 import characterStatServices from '../services/characterStatServices.js';
-import { CharacterStats } from '../validation/fieldSchemas.js';
+import { validation } from '@gated/shared';
 import { capitalCase } from 'change-case';
 import handleControllerError from './handleControllerError.js';
 
 const characterStatController = {
   editCharacterStat: async (req: Request, res: Response) => {
     try {
-      const validatedStats = CharacterStats.parse(req.body);
+      const validatedStats = validation.CharacterStats.parse(req.body);
 
       const character = await characterStatServices.editCharacterStat(
         Number(req.params.characterId),
@@ -31,7 +31,7 @@ const characterStatController = {
 
   resetCharacterStat: async (req: Request, res: Response) => {
     try {
-      const validatedStats = CharacterStats.parse(req.body);
+      const validatedStats = validation.CharacterStats.parse(req.body);
 
       const character = await characterStatServices.resetCharacterStat(
         Number(req.params.characterId),

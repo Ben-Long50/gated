@@ -1,6 +1,6 @@
 import prisma from '../config/database.js';
-import combineObjects from '../utils/combineObjects.js';
 import { characterInclude } from './characterServices.js';
+import { combineObjects } from '@gated/shared';
 const characterStatServices = {
     editCharacterStat: async (characterId, stats) => {
         const character = await prisma.character.findUnique({

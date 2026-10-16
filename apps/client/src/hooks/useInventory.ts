@@ -1,4 +1,4 @@
-import { CharacterInventory } from 'src/types/character';
+import { CharacterInventory } from '@gated/shared';
 import useItemQueries from './useItemQueries/useItemQueries';
 import { useMemo } from 'react';
 

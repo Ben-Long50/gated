@@ -4,7 +4,7 @@ import Loading from './Loading';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import useSessionQuery from '../hooks/useSessionQuery/useSessionQuery';
 import { format } from 'date-fns';
-import { Character } from 'src/types/character';
+import { Character } from '@gated/shared';
 import ArrowHeader3 from './ArrowHeader3';
 import Divider from './Divider';
 import useCampaignQuery from '../hooks/useCampaignQuery/useCampaignQuery';

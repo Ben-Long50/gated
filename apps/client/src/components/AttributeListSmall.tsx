@@ -1,6 +1,6 @@
 import { mdiCircle } from '@mdi/js';
 import Icon from '@mdi/react';
-import { AttributeTree } from 'src/types/attributeTree';
+import { AttributeTree } from '@gated/shared';
 
 const AttributeListSmall = ({
   attributeTree,

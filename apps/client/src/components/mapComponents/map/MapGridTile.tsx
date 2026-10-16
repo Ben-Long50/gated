@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
-import { Location } from 'src/types/map';
+import { Location } from '@gated/shared';
 import Icon from '@mdi/react';
 import { mdiCircleDouble } from '@mdi/js';
 import { useDroppable } from '@dnd-kit/core';

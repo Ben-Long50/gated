@@ -5,7 +5,7 @@ import Loading from './Loading';
 import ArrowHeader3 from './ArrowHeader3';
 import Divider from './Divider';
 import { useState } from 'react';
-import { Map } from 'src/types/map';
+import { Map } from '@gated/shared';
 import ReputationBar from './ReputationBar';
 import useGang from 'src/hooks/useGang';
 import BtnAuth from './buttons/BtnAuth';

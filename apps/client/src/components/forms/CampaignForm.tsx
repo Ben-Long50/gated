@@ -1,7 +1,6 @@
 import InputField from '../formFields/InputField';
 import Loading from '../Loading';
 import FormLayout from '../../layouts/FormLayout';
-import { User } from 'src/types/user';
 import { useNavigate, useParams } from 'react-router-dom';
 import LexicalEditor from '../lexical/LexicalEditor';
 import useCreateCampaignMutation from '../../hooks/useCreateCampaignMutation/useCreateCampaignMutation';
@@ -18,14 +17,12 @@ import useUserQueries from 'src/hooks/user hooks/useUserQueries';
 import { useStore } from '@tanstack/react-form';
 import BtnAuth from '../buttons/BtnAuth';
 import ArrowHeader4 from '../ArrowHeader4';
-import useParts from 'src/hooks/useParts';
 import Page from '../Page';
+import { User } from '@gated/shared';
 
 const CampaignForm = () => {
   const { campaignId } = useParams();
   const navigate = useNavigate();
-
-  const { parts } = useParts();
 
   const createCampaign = useCreateCampaignMutation();
 

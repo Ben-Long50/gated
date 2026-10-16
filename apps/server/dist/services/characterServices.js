@@ -2,10 +2,10 @@ import prisma from '../config/database.js';
 import { includeCharacterCart } from '../utils/linkQueryStructures.js';
 import itemServices, { itemInclude, itemSelectForCopy, } from './itemServices.js';
 import { getIO } from '../sockets/socket.js';
-import validateLevelUpBonus from '../utils/validateLevelUpBonus.js';
-import { ConditionReferenceInput } from '../validation/conditionSchema.js';
 import perkServices, { perkSelectForCopy } from './perkServices.js';
-import { filterObject } from '../utils/filterObject.js';
+import { ConditionReferenceInput, } from '@gated/shared/validation';
+import { validateLevelUpBonus } from '../utils/validateLevelUpBonus.js';
+import { filterObject } from '@gated/shared';
 export const characterSelectForCopy = {
     id: true,
     name: true,

@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import userServices from '../services/userServices.js';
-import { SignUpInput, UserUpdateInput } from '../validation/authSchema.js';
-import { UserRole } from '../validation/enums.js';
 import handleControllerError from './handleControllerError.js';
 import z from 'zod';
+import { validation } from '@gated/shared';
+import { UserRole } from '@gated/shared/validation';
 
 const userController = {
   getAuthenticatedUser: async (req: Request, res: Response) => {
@@ -73,7 +73,7 @@ const userController = {
 
   createUser: async (req: Request, res: Response) => {
     try {
-      const validatedUser = SignUpInput.parse(req.body);
+      const validatedUser = validation.SignUpInput.parse(req.body);
 
       const { confirmPassword, password, ...data } = validatedUser;
 
@@ -96,7 +96,7 @@ const userController = {
         return;
       }
 
-      const validatedUser = UserUpdateInput.parse(req.body);
+      const validatedUser = validation.UserUpdateInput.parse(req.body);
 
       await userServices.updateUser(validatedUser, req.user.id);
 

@@ -3,11 +3,15 @@ import prisma from '../config/database.js';
 import { getIO } from '../sockets/socket.js';
 import { calculateRoll } from '../utils/rollUtilities.js';
 import constructCalendar from '../utils/constructCalendar.js';
-import { CampaignInput } from '../validation/campaignSchema.js';
-import { EventInput } from '../validation/eventSchema.js';
-import { Attributes, Date, Time } from '../validation/fieldSchemas.js';
 import characterServices, { characterInclude } from './characterServices.js';
-import { combineAttributeTrees } from '../utils/combineAttributeTrees.js';
+import {
+  Attributes,
+  CampaignInput,
+  Date,
+  EventInput,
+  Time,
+} from '@gated/shared/validation';
+import { combineAttributeTrees } from '@gated/shared';
 
 const campaignInclude = {
   sessions: { orderBy: { sessionNumber: 'desc' as const } },
@@ -361,6 +365,7 @@ const campaignServices = {
 
     const rollResults = calculateRoll(
       attributes,
+      //@ts-ignore
       { name: action.name, roll: action.roll },
       rollData.modifiers,
       rollData.extraDice,

@@ -1,7 +1,7 @@
+import { ItemStats } from '@gated/shared/validation';
 import prisma from '../config/database.js';
-import combineObjects from '../utils/combineObjects.js';
-import { ItemStats } from '../validation/fieldSchemas.js';
 import { itemInclude } from './itemServices.js';
+import { combineObjects } from '@gated/shared';
 
 const itemStatServices = {
   resetItemStats: async (itemId: number, stats: ItemStats) => {

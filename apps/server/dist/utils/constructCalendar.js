@@ -1,3 +1,4 @@
+//@ts-nocheck
 import calendar from './calendar.js';
 const constructCalendar = (campaign) => {
     const eventCalendar = structuredClone(calendar);

@@ -1,7 +1,7 @@
 import { useQueries } from '@tanstack/react-query';
-import { ItemType } from 'src/types/item';
+import { ItemType } from '@gated/shared';
 import getItems from './getItems';
-import { itemTypes } from 'src/utils/constants/itemConstants';
+import { itemTypes } from '@gated/shared';
 
 const useItemTypeQueries = (types: ItemType[]) => {
   return useQueries({

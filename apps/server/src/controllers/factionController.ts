@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import factionServices from '../services/factionServices.js';
-import { FactionInput } from '../validation/factionSchema.js';
+import { validation } from '@gated/shared';
 import handleControllerError from './handleControllerError.js';
 
 const factionController = {
@@ -40,7 +40,7 @@ const factionController = {
         return;
       }
 
-      const validatedFaction = FactionInput.parse(req.body);
+      const validatedFaction = validation.FactionInput.parse(req.body);
 
       const faction = await factionServices.updateFaction(validatedFaction);
 

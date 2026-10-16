@@ -1,4 +1,4 @@
-import { Item } from 'src/types/item';
+import { Item } from '@gated/shared';
 import { PictureCard } from './PictureCard';
 import rarityColorMap from 'src/utils/rarityColorMap';
 import Icon from '@mdi/react';

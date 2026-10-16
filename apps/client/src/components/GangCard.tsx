@@ -3,7 +3,7 @@ import ThemeContainer from './ThemeContainer';
 import { ThemeContext } from '../contexts/ThemeContext';
 import BtnRect from './buttons/BtnRect';
 import { useNavigate } from 'react-router-dom';
-import { Character } from 'src/types/character';
+import { Character } from '@gated/shared';
 import ArrowHeader2 from './ArrowHeader2';
 import Divider from './Divider';
 import ArrowHeader3 from './ArrowHeader3';

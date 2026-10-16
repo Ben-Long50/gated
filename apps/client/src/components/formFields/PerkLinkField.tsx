@@ -1,12 +1,12 @@
 import { FormApi } from '@tanstack/react-form';
 import PerkCard from '../PerkCard';
-import { AttributeTree } from 'src/types/attributeTree';
 import BtnAuth from '../buttons/BtnAuth';
 import InputFieldCheckbox from './InputFieldCheckbox';
 import { useContext } from 'react';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import ArrowHeader2 from '../ArrowHeader2';
 import { useNavigateWithQuery } from 'src/hooks/useNavigateWithQuery';
+import { AttributeTree } from '@gated/shared';
 
 const PerkLinkField = ({
   form,

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import itemStatServices from '../services/itemStatServices.js';
-import { ItemStats } from '../validation/fieldSchemas.js';
+import { validation } from '@gated/shared';
 import { capitalCase } from 'change-case';
 import handleControllerError from './handleControllerError.js';
 
@@ -11,7 +11,7 @@ const itemStatController = {
         throw new Error('You must be logged in to perform this action');
       }
 
-      const validatedStats = ItemStats.parse(req.body);
+      const validatedStats = validation.ItemStats.parse(req.body);
 
       const item = await itemStatServices.editItemStat(
         Number(req.params.itemId),

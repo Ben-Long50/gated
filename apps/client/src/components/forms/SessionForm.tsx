@@ -1,7 +1,7 @@
 import InputField from '../formFields/InputField';
 import Loading from '../Loading';
 import FormLayout from '../../layouts/FormLayout';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import LexicalEditor from '../lexical/LexicalEditor';
 import ArrowHeader2 from '../ArrowHeader2';
 import Divider from '../Divider';
@@ -12,8 +12,8 @@ import useSessionForm from 'src/hooks/form hooks/useSessionForm';
 import BtnAuth from '../buttons/BtnAuth';
 import CharacterCardXSmall from '../characterComponents/CharacterCardXSmall';
 import { useQueryClient } from '@tanstack/react-query';
-import { Character } from 'src/types/character';
 import Page from '../Page';
+import { Character } from '@gated/shared';
 
 const SessionForm = () => {
   const { campaignId, sessionId } = useParams();
@@ -74,10 +74,8 @@ const SessionForm = () => {
           >
             {(characterIds) =>
               characterIds.map((characterId) => {
-                const character: Character = queryClient.getQueryData([
-                  'character',
-                  characterId,
-                ]);
+                const character: Character | undefined =
+                  queryClient.getQueryData(['character', characterId]);
 
                 return (
                   <CharacterCardXSmall

@@ -1,6 +1,6 @@
 import { create, keyResolver, windowScheduler } from '@yornaath/batshit';
 import handleResponse from '../handleResponse';
-import { Campaign } from 'src/types/campaign';
+import { Campaign } from '@gated/shared';
 import apiUrl from 'src/utils/configureUrl';
 
 const getCampaign = create({

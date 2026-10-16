@@ -1,4 +1,4 @@
-const combineObjects = (
+export const combineObjects = (
   a: Record<string, number>,
   b: Record<string, number>,
 ): Record<string, number> => {
@@ -12,4 +12,3 @@ const combineObjects = (
   return result;
 };
 
-export default combineObjects;

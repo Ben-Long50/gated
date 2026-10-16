@@ -1,4 +1,4 @@
-import { Component } from 'src/types/map';
+import { Component } from '@gated/shared';
 
 const getOccupiedTiles = (component: Component) => {
   const tiles = [];

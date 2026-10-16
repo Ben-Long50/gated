@@ -8,7 +8,7 @@ import Divider from './Divider';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import useParts from 'src/hooks/useParts';
 import Inventory from './Inventory';
-import { Item } from 'src/types/item';
+import { Item } from '@gated/shared';
 
 const Shop = ({ itemList }: { itemList: Item[] }) => {
   const { accentPrimary } = useContext(ThemeContext);

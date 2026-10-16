@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import getCharacter from './getCharacter';
-import { Character } from 'src/types/character';
+import { Character } from '@gated/shared';
 
 const useCharacterQuery = (characterId: number) => {
   return useQuery<Character>({

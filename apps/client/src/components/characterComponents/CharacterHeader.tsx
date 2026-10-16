@@ -1,4 +1,4 @@
-import { Character } from 'src/types/character';
+import { Character } from '@gated/shared';
 import NpcTypeList from '../NpcTypeList';
 
 const CharacterHeader = ({

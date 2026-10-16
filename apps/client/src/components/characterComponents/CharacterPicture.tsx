@@ -1,7 +1,7 @@
 import { ReactNode, useContext } from 'react';
 import ThemeContainer from '../ThemeContainer';
 import { ThemeContext } from '../../contexts/ThemeContext';
-import { Character } from 'src/types/character';
+import { Character } from '@gated/shared';
 import InjuryIcon from '../icons/InjuryIcon';
 import InsanityIcon from '../icons/InsanityIcon';
 import CloudinaryPicture from '../CloudinaryPicture';

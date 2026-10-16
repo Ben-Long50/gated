@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toggleEquipment from './toggleEquipment';
-import { Item } from 'src/types/item';
+import { Item } from '@gated/shared';
 import { socket } from 'src/socket';
 
 const useToggleEquipmentMutation = () => {

@@ -1,5 +1,5 @@
 import { FormApi } from '@tanstack/react-form';
-import { Layer } from 'src/types/map';
+import { Layer } from '@gated/shared';
 
 export const handleLayerReorder = (
   form: FormApi,

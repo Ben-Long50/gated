@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client';
 import prisma from '../config/database.js';
-import { PerkSchema } from '../validation/perkSchema.js';
 import actionServices, { actionSelectForCopy } from './actionServices.js';
+import { PerkSchema } from '@gated/shared/validation';
 
 export const perkSelectForCopy = {
   id: true,

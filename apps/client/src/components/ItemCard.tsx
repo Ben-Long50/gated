@@ -1,7 +1,7 @@
 import { CSSProperties, Fragment, useContext, useRef } from 'react';
 import ThemeContainer from './ThemeContainer';
 import ItemRarity from './ItemRarity';
-import { KeywordReference } from 'src/types/keyword';
+import { KeywordReference } from '@gated/shared';
 import ItemPicture from './ItemPicture';
 import ArrowHeader2 from './ArrowHeader2';
 import StatBars from './StatBars';

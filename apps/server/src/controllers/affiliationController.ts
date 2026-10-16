@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import affiliationServices from '../services/affiliationServices.js';
-import { AffiliationInput } from '../validation/affiliationSchema.js';
 import handleControllerError from './handleControllerError.js';
+import { validation } from '@gated/shared';
 
 const affiliationController = {
   getBatchAffiliations: async (req: Request, res: Response) => {
@@ -31,7 +31,7 @@ const affiliationController = {
 
   createAffiliation: async (req: Request, res: Response) => {
     try {
-      const validatedAffiliation = AffiliationInput.parse(req.body);
+      const validatedAffiliation = validation.AffiliationInput.parse(req.body);
 
       const affiliation =
         await affiliationServices.createAffiliation(validatedAffiliation);

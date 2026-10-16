@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import useCharacter from 'src/hooks/useCharacter';
 import Page from './Page';
 import useItemTypeQueries from 'src/hooks/useItemQueries/useItemTypeQueries';
-import { itemTypes } from 'src/utils/constants/itemConstants';
+import { itemTypes } from '@gated/shared';
 import Loading from './Loading';
 import Shop from './Shop';
 import BtnAuth from './buttons/BtnAuth';

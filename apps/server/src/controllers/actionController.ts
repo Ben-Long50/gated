@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import actionServices from '../services/actionServices.js';
-import { ActionInput } from '../validation/actionSchema.js';
 import handleControllerError from './handleControllerError.js';
+import { validation } from '@gated/shared';
 
 const actionController = {
   getActions: async (_req: Request, res: Response) => {
@@ -41,7 +41,7 @@ const actionController = {
 
   createOrUpdateAction: async (req: Request, res: Response) => {
     try {
-      const data = ActionInput.parse(req.body);
+      const data = validation.ActionInput.parse(req.body);
 
       const action = await actionServices.createOrUpdateAction(data);
 

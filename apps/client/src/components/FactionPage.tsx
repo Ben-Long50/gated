@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import Loading from './Loading';
 import BtnRect from './buttons/BtnRect';
-import { Affiliation } from 'src/types/faction';
+import { Affiliation } from '@gated/shared';
 import BtnAuth from './buttons/BtnAuth';
 import CoverPicture from './CoverPicture';
 import useAffiliationQueries from 'src/hooks/useAffiliationQueries/useAffiliationQueries';

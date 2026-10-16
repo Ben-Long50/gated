@@ -1,5 +1,5 @@
+import { AffiliationInput } from '@gated/shared/validation';
 import prisma from '../config/database.js';
-import { AffiliationInput } from '../validation/affiliationSchema.js';
 
 const affiliationInclude = {
   factions: true,

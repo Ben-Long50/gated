@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { User } from 'src/types/user';
+import { User } from '@gated/shared';
 import updateAccount from './updateAccount';
 import { toast } from 'react-toastify';
 

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import getKeywords from './getKeywords';
-import { Keyword } from 'src/types/keyword';
+import { Keyword } from '@gated/shared';
 
 const useKeywordsQuery = () => {
   return useQuery<Keyword[]>({

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { Item } from 'src/types/item';
+import { Item } from '@gated/shared';
 import getCodexPreviewItems from './getCodexPreviewItems';
-import { Character } from 'src/types/character';
+import { Character } from '@gated/shared';
 
 const useCodexPreviewItemsQuery = () => {
   return useQuery<{ items: Item[]; characters: Character[] }>({

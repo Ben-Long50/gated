@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import keywordServices from '../services/keywordServices.js';
-import { KeywordInput } from '../validation/keywordSchema.js';
+import { validation } from '@gated/shared';
 import handleControllerError from './handleControllerError.js';
 
 const keywordController = {
@@ -26,7 +26,7 @@ const keywordController = {
 
   createKeyword: async (req: Request, res: Response) => {
     try {
-      const validatedKeyword = KeywordInput.parse(req.body);
+      const validatedKeyword = validation.KeywordInput.parse(req.body);
 
       const keyword = await keywordServices.createKeyword(validatedKeyword);
 

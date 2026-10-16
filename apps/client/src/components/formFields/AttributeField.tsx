@@ -13,15 +13,17 @@ import { useContext } from 'react';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import { FormApi } from '@tanstack/react-form';
+
+import IconBtnSmall from '../buttons/IconBtnSmall';
+import ThemeContainer from '../ThemeContainer';
 import {
   AttributeName,
   AttributeTree,
+  combineAttributeTrees,
+  getAttributePoints,
+  getSkillPoints,
   SkillName,
-} from 'src/types/attributeTree';
-import IconBtnSmall from '../buttons/IconBtnSmall';
-import ThemeContainer from '../ThemeContainer';
-import { getAttributePoints, getSkillPoints } from 'src/utils/getUsedPoints';
-import { combineAttributeTrees } from 'src/utils/combineAttributeTrees';
+} from '@gated/shared';
 
 const AttributeField = ({
   form,

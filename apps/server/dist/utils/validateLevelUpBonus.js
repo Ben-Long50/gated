@@ -1,7 +1,6 @@
-import getUsedPoints from './getUsedPoints.js';
-import calculateLevelBonus from './calculateLevelBonus.js';
+import { calculateLevelBonus, getUsedPoints, } from '@gated/shared';
 import prisma from '../config/database.js';
-const validateLevelUpBonus = async ({ level, attributes, perkIds, }) => {
+export const validateLevelUpBonus = async ({ level, attributes, perkIds, }) => {
     if (!level) {
         return;
     }
@@ -53,4 +52,3 @@ const validateLevelUpBonus = async ({ level, attributes, perkIds, }) => {
         }
     }
 };
-export default validateLevelUpBonus;

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import getMap from './getMap';
-import { Map } from 'src/types/map';
+import { Map } from '@gated/shared';
 
 const useMapQuery = (mapId: number) => {
   return useQuery<Map>({

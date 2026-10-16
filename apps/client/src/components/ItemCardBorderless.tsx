@@ -1,7 +1,7 @@
 import { CSSProperties, useContext, useEffect, useRef, useState } from 'react';
 import ItemRarity from './ItemRarity';
-import { KeywordReference } from 'src/types/keyword';
-import { Item } from 'src/types/item';
+import { KeywordReference } from '@gated/shared';
+import { Item } from '@gated/shared';
 import ItemPicture from './ItemPicture';
 import ArrowHeader2 from './ArrowHeader2';
 import StatBars from './StatBars';

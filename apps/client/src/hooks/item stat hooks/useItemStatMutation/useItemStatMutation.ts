@@ -1,9 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRef } from 'react';
-import { Item } from 'src/types/item';
 import editItemStat from './editItemStat';
-import combineObjects from 'src/utils/combineObjects';
 import { toast } from 'react-toastify';
+import { combineObjects, Item } from '@gated/shared';
 
 const useItemStatMutation = () => {
   const queryClient = useQueryClient();

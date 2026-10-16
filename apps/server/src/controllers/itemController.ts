@@ -1,10 +1,11 @@
 import { Request, Response } from 'express';
 import itemServices from '../services/itemServices.js';
 import { ItemType } from '@prisma/client';
-import { ItemInput, ItemUpgradeInput } from '../validation/itemSchema.js';
 import handleControllerError from './handleControllerError.js';
 import { getIO } from '../sockets/socket.js';
 import characterServices from '../services/characterServices.js';
+import { validation } from '@gated/shared';
+import { ItemUpgradeInput } from '../validation/itemUpgradeSchema.js';
 
 const itemController = {
   getCodexPreviewItems: async (_: Request, res: Response) => {
@@ -60,7 +61,7 @@ const itemController = {
 
   createCodexItem: async (req: Request, res: Response) => {
     try {
-      const validatedItem = ItemInput.parse(req.body);
+      const validatedItem = validation.ItemInput.parse(req.body);
 
       const item = await itemServices.createOrUpdateItem(validatedItem);
 
@@ -77,7 +78,7 @@ const itemController = {
 
   createOrUpdateItem: async (req: Request, res: Response) => {
     try {
-      const validatedItem = ItemInput.parse(req.body);
+      const validatedItem = validation.ItemInput.parse(req.body);
 
       const item = await itemServices.createOrUpdateItem(validatedItem);
 

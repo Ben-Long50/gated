@@ -1,7 +1,7 @@
 import { create, keyResolver, windowScheduler } from '@yornaath/batshit';
 import handleResponse from '../handleResponse';
 import apiUrl from 'src/utils/configureUrl';
-import { Action } from 'src/types/action';
+import { Action } from '@gated/shared';
 
 const getAction = create({
   fetcher: async (actionIds: number[]) => {

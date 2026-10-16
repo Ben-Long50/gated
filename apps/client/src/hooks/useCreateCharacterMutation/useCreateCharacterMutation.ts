@@ -3,7 +3,7 @@ import createCharacter from './createCharacter';
 import { toast } from 'react-toastify';
 import { useContext } from 'react';
 import { AuthContext } from 'src/contexts/AuthContext';
-import { User } from 'src/types/user';
+import { User } from '@gated/shared';
 import { useNavigate } from 'react-router-dom';
 
 const useCreateCharacterMutation = () => {

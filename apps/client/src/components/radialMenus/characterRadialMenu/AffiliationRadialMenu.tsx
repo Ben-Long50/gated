@@ -3,7 +3,7 @@ import Icon from '@mdi/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useModalStore from 'src/stores/modalStore';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
-import { Character } from 'src/types/character';
+import { Character } from '@gated/shared';
 import RadialMenu from '../RadialMenu';
 import { ReactNode } from 'react';
 

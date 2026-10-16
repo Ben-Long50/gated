@@ -1,7 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs';
 import dotenv from 'dotenv';
-// import prisma from '../config/database';
 dotenv.config();
 cloudinary.config({
     cloud_name: process.env.CLOUD_NAME,
@@ -117,21 +116,3 @@ export const deleteManyFromCloudinary = async (publicIds) => {
     }
 };
 export default cloudinary;
-// const deleteUnusedFromCloudinary = async () => {
-//   const generatedPublicIds = await prisma.generatedPicture.findMany({
-//     select: { publicId: true },
-//   });
-//   const ids = generatedPublicIds.map((g) => g.publicId);
-//   const result = await cloudinary.api.resources({
-//     type: 'upload',
-//     prefix: 'gated/',
-//     max_results: 500,
-//   });
-//   const publicIds = result.resources.map((resource: any) => resource.public_id);
-//   const unusedPublicIds = publicIds
-//     .filter((id: string) => !ids.includes(id))
-//     .slice(0, 100);
-//   const deleted = await deleteManyFromCloudinary(unusedPublicIds);
-//   console.log(`Deleted ${Object.keys(deleted.deleted).length}`);
-// };
-// deleteUnusedFromCloudinary();

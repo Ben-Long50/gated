@@ -8,10 +8,9 @@ import RangeIcon from '../icons/RangeIcon';
 import { EncounterContext } from 'src/contexts/EncounterContext';
 import { socket } from 'src/socket';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Location } from 'src/types/map';
 import isInRange from './encounterUtils/isInRange';
-import { ActionData } from 'src/types/actionData';
 import { ThemeContext } from 'src/contexts/ThemeContext';
+import { ActionData } from '@gated/shared';
 
 const CharacterEncounterToken = ({
   location,

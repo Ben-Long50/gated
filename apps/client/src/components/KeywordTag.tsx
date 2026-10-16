@@ -1,4 +1,4 @@
-import { KeywordReference } from 'src/types/keyword';
+import { KeywordReference } from '@gated/shared';
 import { useContext, useState } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import { useNavigate } from 'react-router-dom';

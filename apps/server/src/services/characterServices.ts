@@ -5,16 +5,16 @@ import itemServices, {
   itemSelectForCopy,
 } from './itemServices.js';
 import { getIO } from '../sockets/socket.js';
-import validateLevelUpBonus from '../../../../packages/shared/src/utils/validateLevelUpBonus.js';
-import {
-  CharacterInput,
-  CharacterLevelBonus,
-  CharacterUpdateInput,
-} from '../validation/characterSchema.js';
-import { ConditionReferenceInput } from '../validation/conditionSchema.js';
+import { CharacterLevelBonus } from '../validation/characterLevelBonusSchema.js';
 import { NpcTypes, Prisma } from '@prisma/client';
 import perkServices, { perkSelectForCopy } from './perkServices.js';
-import { filterObject } from '../utils/filterObject.js';
+import {
+  CharacterInput,
+  CharacterUpdateInput,
+  ConditionReferenceInput,
+} from '@gated/shared/validation';
+import { validateLevelUpBonus } from '../utils/validateLevelUpBonus.js';
+import { filterObject } from '@gated/shared';
 
 export const characterSelectForCopy = {
   id: true,

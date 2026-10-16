@@ -1,8 +1,8 @@
 import ArrowHeader4 from './ArrowHeader4';
 import { useRef } from 'react';
-import { Faction } from 'src/types/faction';
-import { Gang } from 'src/types/gang';
-import { Character } from 'src/types/character';
+import { Faction } from '@gated/shared';
+import { Gang } from '@gated/shared';
+import { Character } from '@gated/shared';
 import EntityAvater from './EntityAvatar';
 
 const EntityCard = ({

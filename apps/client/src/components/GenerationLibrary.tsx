@@ -8,7 +8,7 @@ import { PictureCard } from './PictureCard';
 import useDeleteUnusedPicturesMutation from 'src/hooks/useDeleteUnusedPicturesMutation/useDeleteUnusedPicturesMutation';
 import Loading from './Loading';
 import InventoryGrid from './InventoryGrid';
-import userLimits from 'src/utils/constants/userLimits';
+import { userLimits } from '@gated/shared';
 import ArrowHeader2 from './ArrowHeader2';
 import Page from './Page';
 

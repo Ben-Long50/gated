@@ -4,7 +4,7 @@ import ThemeContainer from './ThemeContainer';
 import ItemPicture from './ItemPicture';
 import ArrowHeader2 from './ArrowHeader2';
 import { useInView } from 'react-intersection-observer';
-import { Property } from 'src/types/property';
+import { Property } from '@gated/shared';
 import { capitalCase } from 'change-case';
 import ArrowHeader3 from './ArrowHeader3';
 import Divider from './Divider';

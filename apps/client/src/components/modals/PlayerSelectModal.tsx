@@ -3,7 +3,7 @@ import { Fragment } from 'react/jsx-runtime';
 import BtnRect from '../buttons/BtnRect';
 import InputField from '../formFields/InputField';
 import Divider from '../Divider';
-import { User } from 'src/types/user';
+import { User } from '@gated/shared';
 import useUsersByUsernameQuery from 'src/hooks/user hooks/useUsersByUsernameQuery';
 import { useState } from 'react';
 import Loading from '../Loading';

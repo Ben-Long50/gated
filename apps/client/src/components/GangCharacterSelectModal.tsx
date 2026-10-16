@@ -4,7 +4,7 @@ import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import useCharacters from 'src/hooks/useCharacters';
 import Loading from './Loading';
 import InputField from './formFields/InputField';
-import { Character } from 'src/types/character';
+import { Character } from '@gated/shared';
 import { Fragment } from 'react/jsx-runtime';
 import CharacterCardXSmall from './characterComponents/CharacterCardXSmall';
 import InputFieldCheckbox from './formFields/InputFieldCheckbox';

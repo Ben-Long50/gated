@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import useItemQuery from 'src/hooks/useItemQuery/useItemQuery';
 import FormLayout from 'src/layouts/FormLayout';
-import { KeywordReference } from 'src/types/keyword';
+import { KeywordReference } from '@gated/shared';
 import TextAreaField from '../formFields/TextAreaField';
 import PictureField from '../formFields/PictureField';
 import Loading from '../Loading';

@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import createItemCondition from './createItemCondition';
-import { Item } from 'src/types/item';
+import { Item } from '@gated/shared';
 import { useNavigate } from 'react-router-dom';
 import useModalStore from 'src/stores/modalStore';
 import { toast } from 'react-toastify';

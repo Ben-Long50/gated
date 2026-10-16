@@ -1,16 +1,13 @@
 import { Request, Response } from 'express';
 import characterServices from '../services/characterServices.js';
 import cartServices from '../services/cartServices.js';
-import {
-  CharacterInput,
-  CharacterLevelBonus,
-  CharacterUpdateInput,
-} from '../validation/characterSchema.js';
+import { validation } from '@gated/shared';
 import { getIO } from '../sockets/socket.js';
 import handleControllerError from './handleControllerError.js';
 import prisma from '../config/database.js';
 import campaignServices from '../services/campaignServices.js';
 import gangServices from '../services/gangServices.js';
+import { CharacterLevelBonus } from '../validation/characterLevelBonusSchema.js';
 
 const characterController = {
   getSocialCharacters: async (_: Request, res: Response) => {
@@ -194,7 +191,7 @@ const characterController = {
         throw new Error('Could not find authenticated user');
       }
 
-      const validatedCharacter = CharacterInput.parse(req.body);
+      const validatedCharacter = validation.CharacterInput.parse(req.body);
 
       const character = await characterServices.createCharacter(
         validatedCharacter,
@@ -228,7 +225,7 @@ const characterController = {
         throw new Error('Could not find authenticated user');
       }
 
-      const validatedCharacter = CharacterInput.parse(req.body);
+      const validatedCharacter = validation.CharacterInput.parse(req.body);
 
       const character =
         await characterServices.createCharacter(validatedCharacter);
@@ -282,7 +279,9 @@ const characterController = {
         throw new Error('Could not find authenticated user');
       }
 
-      const validatedCharacter = CharacterUpdateInput.parse(req.body);
+      const validatedCharacter = validation.CharacterUpdateInput.parse(
+        req.body,
+      );
 
       const character =
         await characterServices.updateCharacter(validatedCharacter);

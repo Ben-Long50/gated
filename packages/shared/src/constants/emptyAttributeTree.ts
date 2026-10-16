@@ -1,6 +1,6 @@
-import { AttributeTree } from 'src/types/attributeTree';
+import { AttributeTree } from '../types/attributeTree.js';
 
-const emptyAttributeTree: AttributeTree = {
+export const emptyAttributeTree: AttributeTree = {
   cybernetica: {
     points: 0,
     skills: {
@@ -38,5 +38,3 @@ const emptyAttributeTree: AttributeTree = {
     },
   },
 };
-
-export default emptyAttributeTree;

@@ -19,7 +19,7 @@ import HullIcon from './icons/HullIcon';
 import CargoIcon from './icons/CargoIcon';
 import PassIcon from './icons/PassIcon';
 import VehicleWeaponIcon from './icons/VehicleWeaponIcon';
-import { Stats } from 'src/types/item';
+import { Stats } from '@gated/shared';
 import DroneIcon from './icons/DroneIcon';
 import WyrmShellIcon from './icons/WyrmShellIcon';
 import InsanityIcon from './icons/InsanityIcon';

@@ -9,7 +9,7 @@ import CharacterList from './CharacterList';
 import useJoinCampaignMutation from 'src/hooks/useJoinCampaignMutation/useJoinCampaignMutation';
 import { useContext, useState } from 'react';
 import { AuthContext } from 'src/contexts/AuthContext';
-import { Character } from 'src/types/character';
+import { Character } from '@gated/shared';
 
 const CampaignCharacterSelectModal = () => {
   const { user } = useContext(AuthContext);

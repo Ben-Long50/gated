@@ -1,6 +1,5 @@
 import FormLayout from '../../layouts/FormLayout';
 import { useParams } from 'react-router-dom';
-import { itemTypes, rarities } from 'src/utils/constants/itemConstants';
 import InputFieldCheckbox from '../formFields/InputFieldCheckbox';
 import { capitalCase } from 'change-case';
 import ArrowHeader3 from '../ArrowHeader3';
@@ -10,6 +9,7 @@ import Divider from '../Divider';
 import IconBtnSmall from '../buttons/IconBtnSmall';
 import Icon from '@mdi/react';
 import { mdiMinus, mdiPlus } from '@mdi/js';
+import { itemTypes, rarities } from '@gated/shared';
 
 const BulkItemForm = () => {
   const { characterId } = useParams();

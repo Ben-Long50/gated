@@ -1,4 +1,4 @@
-import { ConditionReference } from 'src/types/condition';
+import { ConditionReference } from '@gated/shared';
 import { useRef } from 'react';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
 import ConditionRadialMenu from './radialMenus/ConditionRadialMenu';

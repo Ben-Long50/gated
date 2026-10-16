@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import NotificationCard from './NotificationCard';
 import useNotificationQuery from '../hooks/useNotificationQuery/useNotificationQuery';
 import Loading from './Loading';
-import { Notification } from 'src/types/notification';
+import { Notification } from '@gated/shared';
 import useMarkNotificationsReadMutation from 'src/hooks/useMarkNotificationsReadMutation/useMarkNotificationsReadMutation';
 import Page from './Page';
 

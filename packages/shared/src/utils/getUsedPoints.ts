@@ -2,7 +2,7 @@ import {
   AttributeName,
   AttributeTree,
   SkillName,
-} from 'src/types/attributeTree';
+} from '../types/attributeTree.js';
 
 export const getAttributePoints = (
   tree: AttributeTree,

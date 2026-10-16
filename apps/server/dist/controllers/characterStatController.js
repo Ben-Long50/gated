@@ -1,11 +1,11 @@
 import characterStatServices from '../services/characterStatServices.js';
-import { CharacterStats } from '../validation/fieldSchemas.js';
+import { validation } from '@gated/shared';
 import { capitalCase } from 'change-case';
 import handleControllerError from './handleControllerError.js';
 const characterStatController = {
     editCharacterStat: async (req, res) => {
         try {
-            const validatedStats = CharacterStats.parse(req.body);
+            const validatedStats = validation.CharacterStats.parse(req.body);
             const character = await characterStatServices.editCharacterStat(Number(req.params.characterId), validatedStats);
             const statMessages = Object.entries(validatedStats).map(([stat, value]) => `${capitalCase(stat)} by ${value}`);
             const statsMessage = statMessages.join(', ');
@@ -20,7 +20,7 @@ const characterStatController = {
     },
     resetCharacterStat: async (req, res) => {
         try {
-            const validatedStats = CharacterStats.parse(req.body);
+            const validatedStats = validation.CharacterStats.parse(req.body);
             const character = await characterStatServices.resetCharacterStat(Number(req.params.characterId), validatedStats);
             const statMessages = Object.entries(validatedStats).map(([stat, _]) => `${capitalCase(stat)}`);
             const statsMessage = statMessages.join(', ');

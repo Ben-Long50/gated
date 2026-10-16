@@ -7,13 +7,11 @@ import ArrowHeader3 from '../ArrowHeader3';
 import ItemCardSmall from '../ItemCardSmall';
 import StatBars from '../StatBars';
 import BlockIcon from '../icons/BlockIcon';
-import { History } from 'src/types/encounter';
 import ArrowHeader4 from '../ArrowHeader4';
 import CharacterStatBars from '../characterComponents/CharacterStatBars';
-import { ActionData } from 'src/types/actionData';
 import BlockField from './BlockField';
 import Divider from '../Divider';
-import calculateItemStats from 'src/utils/calculateItemStats';
+import { ActionData } from '@gated/shared';
 
 const PhaseActionCard = ({
   phaseAction,

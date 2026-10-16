@@ -1,8 +1,7 @@
 import { useForm } from '@tanstack/react-form';
 import { UseMutationResult } from '@tanstack/react-query';
 import { filterFormData } from './filterFormData';
-import emptyAttributeTree from 'src/utils/constants/emptyAttributeTree';
-import { Character } from 'src/types/character';
+import { Character, emptyAttributeTree } from '@gated/shared';
 
 const useLevelBonusForm = (
   mutation: UseMutationResult<any, Error, any>,

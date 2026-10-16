@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Character } from 'src/types/character';
+import { Character } from '@gated/shared';
 import { useRef } from 'react';
 import { socket } from '../../socket';
 import editProfits from './editProfits';

@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
-import { Condition } from 'src/types/condition';
+import { Condition } from '@gated/shared';
 import ItemCardSmall from './ItemCardSmall';
 import { FormApi } from '@tanstack/react-form';
 import InputField from './formFields/InputField';

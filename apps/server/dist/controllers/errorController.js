@@ -1,5 +1,5 @@
 import errorServices from '../services/errorServices.js';
-import { ErrorReportInput } from '../validation/errorReportSchema.js';
+import { validation } from '@gated/shared';
 import handleControllerError from './handleControllerError.js';
 const errorController = {
     getErrorReports: async (_req, res) => {
@@ -16,7 +16,7 @@ const errorController = {
             if (!req.user) {
                 throw new Error('Could not find authenticated user');
             }
-            const validatedErrorReport = ErrorReportInput.parse(req.body);
+            const validatedErrorReport = validation.ErrorReportInput.parse(req.body);
             const errorReport = await errorServices.createErrorReport(validatedErrorReport, req.user.id);
             res
                 .status(200)

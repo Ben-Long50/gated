@@ -1,5 +1,5 @@
 import keywordServices from '../services/keywordServices.js';
-import { KeywordInput } from '../validation/keywordSchema.js';
+import { validation } from '@gated/shared';
 import handleControllerError from './handleControllerError.js';
 const keywordController = {
     getKeywords: async (_req, res) => {
@@ -22,7 +22,7 @@ const keywordController = {
     },
     createKeyword: async (req, res) => {
         try {
-            const validatedKeyword = KeywordInput.parse(req.body);
+            const validatedKeyword = validation.KeywordInput.parse(req.body);
             const keyword = await keywordServices.createKeyword(validatedKeyword);
             res
                 .status(200)

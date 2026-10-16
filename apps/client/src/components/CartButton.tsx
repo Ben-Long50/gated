@@ -3,7 +3,7 @@ import useEditCartMutation from '../hooks/useEditCartMutation/useEditCartMutatio
 import useCharacterQuery from 'src/hooks/useCharacterQuery/useCharacterQuery';
 import IconBtnSmall from './buttons/IconBtnSmall';
 import Icon from '@mdi/react';
-import { Item } from 'src/types/item';
+import { Item } from '@gated/shared';
 
 const CartButton = ({
   characterId,

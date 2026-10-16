@@ -1,7 +1,6 @@
-import { Character } from 'src/types/character';
-import { Item } from 'src/types/item';
+import { Character, getHandsAndFeetCosts } from '@gated/shared';
+import { Item } from '@gated/shared';
 import statColorMap from '../../../../apps/client/src/utils/statColorMap';
-import getHandsAndFeetCosts from '../../../../apps/client/src/utils/getHandsAndFeetCosts';
 
 const reactionFuncs = {
   parry: (

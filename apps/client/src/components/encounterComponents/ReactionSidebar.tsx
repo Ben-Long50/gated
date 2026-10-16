@@ -13,19 +13,21 @@ import { mdiAutorenew } from '@mdi/js';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import ReactionIcon from '../icons/ReactionIcon';
 import DieIcon from '../icons/DieIcon';
-import calculateDiceCount from 'src/utils/calculateDiceCount';
 import { useContext } from 'react';
 import { EncounterContext } from 'src/contexts/EncounterContext';
 import { useStore } from '@tanstack/react-form';
-import { Item } from 'src/types/item';
 import useCombatStore from 'src/stores/combatStore';
 import reactionFuncs from 'src/utils/reactionFuncs';
 import isInRange from './encounterUtils/isInRange';
-import calculateCosts from 'src/utils/calculateCosts';
 import Divider from '../Divider';
 import InputField from '../formFields/InputField';
 import { useQueryClient } from '@tanstack/react-query';
-import { Action } from 'src/types/action';
+import {
+  Action,
+  calculateCosts,
+  calculateDiceCount,
+  Item,
+} from '@gated/shared';
 
 const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
   const {

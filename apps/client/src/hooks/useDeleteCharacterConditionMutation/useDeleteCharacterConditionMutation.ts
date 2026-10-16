@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import deleteItemCondition from './deleteCharacterCondition';
 import { socket } from 'src/socket';
-import { Character } from 'src/types/character';
+import { Character } from '@gated/shared';
 
 const useDeleteCharacterConditionMutation = (
   conditionId: number,

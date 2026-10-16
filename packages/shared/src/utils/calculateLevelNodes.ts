@@ -1,6 +1,6 @@
-import { Gang } from 'src/types/gang';
+import { Gang } from '../types/gang.js';
 
-const calculateLevelNodes = (gang: Gang) => {
+export const calculateLevelNodes = (gang: Gang) => {
   let level = 0;
   let levelNodes = 0;
 
@@ -56,5 +56,3 @@ const calculateLevelNodes = (gang: Gang) => {
     levelNodes,
   };
 };
-
-export default calculateLevelNodes;

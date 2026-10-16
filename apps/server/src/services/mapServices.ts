@@ -1,5 +1,5 @@
+import { MapInput } from '@gated/shared/validation';
 import prisma from '../config/database.js';
-import { MapInput } from '../validation/mapSchema.js';
 
 const mapInclude = {
   user: {

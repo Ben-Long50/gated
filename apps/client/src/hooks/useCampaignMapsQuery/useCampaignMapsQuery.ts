@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import getCampaignMaps from './getCampaignMaps';
-import { Map } from 'src/types/map';
+import { Map } from '@gated/shared';
 
 const useCampaignMapsQuery = (campaignId: number) => {
   return useQuery<Map[]>({

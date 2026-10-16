@@ -1,12 +1,9 @@
 import prisma from '../config/database.js';
 import { enforceSingularLinking } from '../utils/enforceSingularLinking.js';
 import actionServices, { actionSelectForCopy } from './actionServices.js';
-import { ItemCopyInput, } from '../validation/itemSchema.js';
-import { ConditionReferenceInput } from '../validation/conditionSchema.js';
 import addVariableStats from '../utils/addVariableStats.js';
-import { ActionCopyInput } from '../validation/actionSchema.js';
 import { keywordSelectForCopy } from './keywordServices.js';
-import { KeywordReferenceCopyInput } from '../validation/keywordSchema.js';
+import { ActionCopyInput, ConditionReferenceInput, ItemCopyInput, KeywordReferenceCopyInput, } from '@gated/shared/validation';
 export const itemSelectForCopy = {
     id: true,
     name: true,

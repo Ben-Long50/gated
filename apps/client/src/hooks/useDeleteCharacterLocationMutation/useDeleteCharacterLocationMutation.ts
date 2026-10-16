@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Map } from 'src/types/map';
+import { Map } from '@gated/shared';
 import deleteCharacterLocation from './deleteCharacterLocation';
-import { Character } from 'src/types/character';
+import { Character } from '@gated/shared';
 
 const useDeleteCharacterLocationMutation = (mapId: number) => {
   const queryClient = useQueryClient();

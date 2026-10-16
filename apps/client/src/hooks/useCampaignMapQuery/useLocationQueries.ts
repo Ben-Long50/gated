@@ -1,6 +1,6 @@
 import { useQueries } from '@tanstack/react-query';
 import getLocation from './getLocation';
-import { Location } from 'src/types/map';
+import { Location } from '@gated/shared';
 
 const useLocationQueries = (locationIds: number[]) => {
   return useQueries({

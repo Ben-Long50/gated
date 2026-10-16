@@ -1,5 +1,5 @@
 import gangServices from '../services/gangServices.js';
-import { GangInput, GangSessionBonusInput } from '../validation/gangSchema.js';
+import { validation } from '@gated/shared';
 import z from 'zod';
 import handleControllerError from './handleControllerError.js';
 import { getIO } from '../sockets/socket.js';
@@ -34,7 +34,7 @@ const gangController = {
                 });
                 return;
             }
-            const validatedGang = GangInput.parse(req.body);
+            const validatedGang = validation.GangInput.parse(req.body);
             const gang = await gangServices.createOrUpdateGang(validatedGang);
             res
                 .status(200)
@@ -72,7 +72,7 @@ const gangController = {
     },
     allocateReputation: async (req, res) => {
         try {
-            const validatedGangSessionBonus = GangSessionBonusInput.parse(req.body.bonus);
+            const validatedGangSessionBonus = validation.GangSessionBonusInput.parse(req.body.bonus);
             const gang = await gangServices.allocateReputation(Number(req.params.gangId), req.body.sessionId, validatedGangSessionBonus);
             const io = getIO();
             io.to(`campaign ${gang.campaignId}`).emit('updateGang', { gang });
@@ -86,7 +86,7 @@ const gangController = {
     },
     allocateLevelNodes: async (req, res) => {
         try {
-            const validatedLevelNodeBonus = GangSessionBonusInput.parse(req.body.bonus);
+            const validatedLevelNodeBonus = validation.GangSessionBonusInput.parse(req.body.bonus);
             const gang = await gangServices.allocateLevelNodes(Number(req.params.gangId), req.body.sessionId, validatedLevelNodeBonus);
             const io = getIO();
             io.to(`campaign ${gang.campaignId}`).emit('updateGang', { gang });

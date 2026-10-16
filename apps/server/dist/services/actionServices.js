@@ -1,7 +1,7 @@
 import prisma from '../config/database.js';
 import addVariableStats from '../utils/addVariableStats.js';
-import { ActionInput } from '../validation/actionSchema.js';
 import { keywordSelectForCopy } from './keywordServices.js';
+import { ActionInput } from '@gated/shared/validation';
 export const actionSelectForCopy = {
     id: true,
     name: true,

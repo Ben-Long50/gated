@@ -1,6 +1,6 @@
 import prisma from '../config/database.js';
-import combineObjects from '../utils/combineObjects.js';
 import { itemInclude } from './itemServices.js';
+import { combineObjects } from '@gated/shared';
 const itemStatServices = {
     resetItemStats: async (itemId, stats) => {
         const item = await prisma.item.findUnique({

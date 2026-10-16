@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import useErrorReportsQuery from '../hooks/useErrorReportsQuery/useErrorReportsQuery';
 import Loading from './Loading';
-import { ErrorReport } from 'src/types/errorReport';
+import { ErrorReport } from '@gated/shared';
 import { format } from 'date-fns';
 import useDeleteErrorReportMutation from '../hooks/useDeleteErrorReportMutation/useDeleteErrorReportMutation';
 import Divider from './Divider';

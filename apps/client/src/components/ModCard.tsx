@@ -1,7 +1,6 @@
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
-import { Modification } from 'src/types/vehicle';
 import CartButton from './CartButton';
 import ItemRarity from './ItemRarity';
 
@@ -11,7 +10,7 @@ const ModCard = ({
   modification,
   mode,
 }: {
-  modification: Modification;
+  modification: any;
   mode?: string;
 }) => {
   const { user } = useContext(AuthContext);

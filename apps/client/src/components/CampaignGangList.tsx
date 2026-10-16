@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import useGangQueries from 'src/hooks/gang hooks/useGangQueries/useGangQueries';
 import GangCard from './GangCard';
-import { Gang } from 'src/types/gang';
+import { Gang } from '@gated/shared';
 import Loading from './Loading';
 import Page from './Page';
 

@@ -17,8 +17,8 @@ import useCharacterQuery from 'src/hooks/useCharacterQuery/useCharacterQuery';
 import { useContext } from 'react';
 import { LayoutContext } from 'src/contexts/LayoutContext';
 import useCharacter from 'src/hooks/useCharacter';
-import combineObjects from 'src/utils/combineObjects';
 import Page from '../Page';
+import { combineObjects } from '@gated/shared';
 
 const CharacterUpdateForm = () => {
   const { characterId } = useParams();

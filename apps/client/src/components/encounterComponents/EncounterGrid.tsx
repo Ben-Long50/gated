@@ -1,6 +1,5 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
-import { Layer, Location } from 'src/types/map';
 import useCombatStore from 'src/stores/combatStore';
 import { useStore } from '@tanstack/react-form';
 import Xarrow from 'react-xarrows';
@@ -14,10 +13,10 @@ import CharacterEncounterToken from './CharacterEncounterToken';
 import useEncounterArrows from 'src/hooks/useEncounterArrows';
 import actionFuncs from 'src/utils/actionFuncs';
 import reactionFuncs from 'src/utils/reactionFuncs';
-import { Action } from 'src/types/action';
 import { useQueryClient } from '@tanstack/react-query';
 import { socket } from 'src/socket';
 import { useParams } from 'react-router-dom';
+import { Action, Layer, Location } from '@gated/shared';
 
 const EncounterGrid = ({
   width,

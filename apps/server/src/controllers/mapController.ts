@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { MapInput } from '../validation/mapSchema.js';
+import { validation } from '@gated/shared';
 import mapServices from '../services/mapServices.js';
 import handleControllerError from './handleControllerError.js';
 
@@ -46,7 +46,7 @@ const mapController = {
         throw new Error('You must be logged in to create or update a map');
       }
 
-      const validatedMap = MapInput.parse(req.body);
+      const validatedMap = validation.MapInput.parse(req.body);
 
       const map = await mapServices.createOrUpdateCodexMap(validatedMap);
 
@@ -67,7 +67,7 @@ const mapController = {
         throw new Error('You must be logged in to create or update a map');
       }
 
-      const validatedMap = MapInput.parse(req.body);
+      const validatedMap = validation.MapInput.parse(req.body);
 
       const map = await mapServices.createOrUpdateMap(
         req.user.id,

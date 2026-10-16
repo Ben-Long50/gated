@@ -1,5 +1,5 @@
 import patchNoteServices from '../services/patchNoteServices.js';
-import { PatchNotesInput } from '../validation/patchNotesSchema.js';
+import { validation } from '@gated/shared';
 import handleControllerError from './handleControllerError.js';
 const patchNoteController = {
     getPatchNotes: async (_req, res) => {
@@ -22,7 +22,7 @@ const patchNoteController = {
     },
     createPatchNote: async (req, res) => {
         try {
-            const validatedPatchNote = PatchNotesInput.parse(req.body);
+            const validatedPatchNote = validation.PatchNotesInput.parse(req.body);
             const patchNote = await patchNoteServices.createPatchNote(validatedPatchNote);
             res
                 .status(200)

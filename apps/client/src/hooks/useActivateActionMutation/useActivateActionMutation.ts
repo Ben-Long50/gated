@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { socket } from '../../socket';
-import { Action } from 'src/types/action';
-import { Item } from 'src/types/item';
+import { Action } from '@gated/shared';
+import { Item } from '@gated/shared';
 import activateAction from './activateAction';
 
 const useActivateActionMutation = (itemId: number, actionId: number) => {

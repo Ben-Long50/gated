@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import getSession from './getSession';
-import { Session } from 'src/types/campaign';
+import { Session } from '@gated/shared';
 
 const useSessionQuery = (campaignId: number, sessionId: number) => {
   return useQuery<Session>({

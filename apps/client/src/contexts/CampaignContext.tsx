@@ -6,8 +6,8 @@ import useCampaignQueries from 'src/hooks/useCampaignsQuery/useCampaignQueries';
 import Loading from 'src/components/Loading';
 import { useNavigate, useParams } from 'react-router-dom';
 import useCombatQueries from 'src/hooks/encounter hooks/useCombatQueries/useCombatQueries';
-import { Location } from 'src/types/map';
-import { Character } from 'src/types/character';
+import { Location } from '@gated/shared';
+import { Character } from '@gated/shared';
 import useRoll from 'src/hooks/useRoll';
 
 export const CampaignContext = createContext({

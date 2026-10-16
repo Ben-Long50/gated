@@ -1,4 +1,4 @@
-import { PhaseHistory } from 'src/types/encounter';
+import { PhaseHistory } from '@gated/shared';
 import ArrowHeader3 from '../ArrowHeader3';
 import PhaseActionCard from './PhaseActionCard';
 import Divider from '../Divider';
@@ -8,8 +8,8 @@ import { mdiTriangleDown } from '@mdi/js';
 import ActionIcon from '../icons/ActionIcon';
 import CharacterPictureRound from '../characterComponents/CharacterPictureRound';
 import ReactionIcon from '../icons/ReactionIcon';
-import parsePhaseAction from 'src/utils/parsePhaseAction';
 import { Fragment } from 'react/jsx-runtime';
+import { parsePhaseAction } from 'src/utils/parsePhaseAction';
 
 const PhaseHistoryCard = ({ phaseHistory }: { phaseHistory: PhaseHistory }) => {
   const phaseAction = phaseHistory.action || null;

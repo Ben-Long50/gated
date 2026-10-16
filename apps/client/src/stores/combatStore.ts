@@ -1,4 +1,4 @@
-import { Item } from 'src/types/item';
+import { Item } from '@gated/shared';
 import { create } from 'zustand';
 
 const useCombatStore = create<{

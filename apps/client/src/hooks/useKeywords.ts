@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import useKeywordsQuery from './useKeywordsQuery/useKeywordsQuery';
-import { Keyword } from '../types/keyword';
+import { Keyword } from '@gated/shared';
 
 const useKeywords = (initialCategory?: string) => {
   const { data: keywords, isLoading } = useKeywordsQuery();

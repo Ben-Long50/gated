@@ -1,4 +1,4 @@
-import { Modifier } from 'src/types/modifier';
+import { Modifier } from '@gated/shared';
 import DieIcon from './icons/DieIcon';
 import Icon from '@mdi/react';
 import { mdiTriangleDown } from '@mdi/js';

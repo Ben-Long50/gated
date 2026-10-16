@@ -1,5 +1,4 @@
 import { useLocation } from 'react-router-dom';
-import { Character } from 'src/types/character';
 import CharacterIcon from '../icons/CharacterIcon';
 import EquipmentIcon from '../icons/EquipmentIcon';
 import Menu from './Menu';
@@ -7,6 +6,7 @@ import ConditionIcon from '../icons/ConditionIcon';
 import InventoryIcon from '../icons/InventoryIcon';
 import ShopIcon from '../icons/ShopIcon';
 import { useNavigateWithQuery } from 'src/hooks/useNavigateWithQuery';
+import { Character } from '@gated/shared';
 
 const CharacterCardMenu = ({ character }: { character: Character }) => {
   const navigate = useNavigateWithQuery();

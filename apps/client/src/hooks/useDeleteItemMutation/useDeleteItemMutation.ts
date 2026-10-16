@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import deleteItem from './deleteItem';
 import { toast } from 'react-toastify';
-import { Character } from 'src/types/character';
-import { Item } from 'src/types/item';
+import { Character } from '@gated/shared';
+import { Item } from '@gated/shared';
 
 const useDeleteItemMutation = (itemId: number) => {
   const queryClient = useQueryClient();

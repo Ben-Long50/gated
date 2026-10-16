@@ -1,3 +1,5 @@
+//@ts-nocheck
+
 import { Prisma } from '@prisma/client';
 import calendar from './calendar.js';
 

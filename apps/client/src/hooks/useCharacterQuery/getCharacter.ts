@@ -1,6 +1,6 @@
 import { create, keyResolver, windowScheduler } from '@yornaath/batshit';
 import handleResponse from '../handleResponse';
-import { Character } from 'src/types/character';
+import { Character } from '@gated/shared';
 import apiUrl from 'src/utils/configureUrl';
 
 const getCharacter = create({

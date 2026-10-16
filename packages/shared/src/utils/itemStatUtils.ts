@@ -1,39 +1,14 @@
-import { Action, Keyword, Prisma } from '@prisma/client';
+import { Item } from '../types/item.js';
+import { Keyword } from '../types/keyword.js';
 
-const calculateItemsStats = (
-  items: Prisma.ItemGetPayload<{
-    include: {
-      linkedActions: {
-        include: { keywordModifiers: { include: { keyword: true } } };
-      };
-      keywords: { include: { keyword: true } };
-    };
-  }>[],
-) => {
-  const calculatedItems = items.map((item) => calculateItemStats(item));
-
-  return calculatedItems;
-};
-
-export const calculateItemStats = (
-  item: Prisma.ItemGetPayload<{
-    include: {
-      linkedActions: {
-        include: { keywordModifiers: { include: { keyword: true } } };
-      };
-      keywords: { include: { keyword: true } };
-    };
-  }>,
-) => {
+export const calculateItemStats = (item: Item) => {
   if (!item?.stats && !item?.modifiedStats) return item;
 
   const modifierObj = {} as Record<string, number>;
 
   const modifierKeywords = [] as { keyword: Keyword; value: number | null }[];
 
-  const activeActions = item?.linkedActions.filter(
-    (action: Action) => action.active,
-  );
+  const activeActions = item?.linkedActions.filter((action) => action.active);
 
   activeActions?.forEach((action) => {
     if (action.modifiers) {
@@ -79,5 +54,3 @@ export const calculateItemStats = (
     keywords: [...item.keywords, ...modifierKeywords],
   };
 };
-
-export default calculateItemsStats;

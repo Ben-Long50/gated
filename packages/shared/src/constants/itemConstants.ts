@@ -1,4 +1,4 @@
-import { ItemType } from 'src/types/item';
+import { ItemType } from '../types/item.js';
 
 export const rarities = [
   'common',

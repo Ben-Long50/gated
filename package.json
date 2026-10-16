@@ -8,8 +8,8 @@
   "scripts": {
     "dev:client": "npm run dev -w apps/client",
     "dev:server": "npm run devstart -w apps/server",
-    "build": "npm run build --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present"
+    "build": "npm run build -w packages/shared && npm run build -w apps/server && npm run build -w apps/client",
+    "typecheck": "npm run typecheck -w packages/shared && npm run typecheck -w apps/server && npm run typecheck -w apps/client"
   },
   "devDependencies": {
     "prettier": "^3.9.10"

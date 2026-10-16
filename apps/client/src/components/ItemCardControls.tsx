@@ -10,7 +10,7 @@ import PowerIcon from './icons/PowerIcon';
 import CargoIcon from './icons/CargoIcon';
 import InventoryIcon from './icons/InventoryIcon';
 import PassIcon from './icons/PassIcon';
-import { Stats } from 'src/types/item';
+import { Stats } from '@gated/shared';
 import useItemStatMutation from 'src/hooks/item stat hooks/useItemStatMutation/useItemStatMutation';
 
 export const WeaponControls = ({

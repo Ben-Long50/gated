@@ -1,6 +1,6 @@
 import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
-import { Affiliation } from 'src/types/faction';
+import { Affiliation } from '@gated/shared';
 
 const createAffiliation = async (formData: Affiliation) => {
   try {

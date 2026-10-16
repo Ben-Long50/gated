@@ -1,7 +1,7 @@
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import userServices from '../services/userServices.js';
 import prisma from '../config/database.js';
-import { GoogleSignUpInput } from '../validation/authSchema.js';
+import { validation } from '@gated/shared';
 const googleStrategy = (passport) => {
     passport.use(new GoogleStrategy({
         clientID: process.env.GOOGLE_ID,
@@ -47,7 +47,7 @@ const googleStrategy = (passport) => {
                     email,
                     profilePicture,
                 };
-                const validatedData = GoogleSignUpInput.parse(userData);
+                const validatedData = validation.GoogleSignUpInput.parse(userData);
                 user = await userServices.createGoogleUser(validatedData);
             }
             return done(null, user);

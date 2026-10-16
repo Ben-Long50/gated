@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import getKeywordById from './getKeywordById';
-import { Keyword } from 'src/types/keyword';
+import { Keyword } from '@gated/shared';
 
 const useKeywordQuery = (keywordId: number) => {
   return useQuery<Keyword>({

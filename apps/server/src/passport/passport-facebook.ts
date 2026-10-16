@@ -2,7 +2,7 @@ import { Strategy as FacebookStrategy } from 'passport-facebook';
 import userServices from '../services/userServices.js';
 import prisma from '../config/database.js';
 import { PassportStatic } from 'passport';
-import { FacebookSignUpInput } from '../validation/authSchema.js';
+import { validation } from '@gated/shared';
 
 const facebookStrategy = (passport: PassportStatic) => {
   passport.use(
@@ -74,7 +74,8 @@ const facebookStrategy = (passport: PassportStatic) => {
               profilePicture,
             };
 
-            const validatedData = FacebookSignUpInput.parse(userData);
+            const validatedData =
+              validation.FacebookSignUpInput.parse(userData);
 
             user = await userServices.createFacebookUser(validatedData);
           }

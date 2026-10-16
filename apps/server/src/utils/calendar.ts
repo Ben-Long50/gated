@@ -1,4 +1,4 @@
-import { Calendar } from '../types/calendar';
+import { Calendar } from '@gated/shared';
 
 const calendar = {
   arctus: {

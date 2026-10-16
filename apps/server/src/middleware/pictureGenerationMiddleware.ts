@@ -1,8 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import handleControllerError from '../controllers/handleControllerError.js';
 import { fal } from '@fal-ai/client';
-import { PromptInput } from '../validation/promptSchema.js';
-import userLimits, { RoleKey } from '../../../../packages/shared/src/constants/userLimits.js';
+import { RoleKey, userLimits, validation } from '@gated/shared';
 
 export const generateCloudflarePicture = async (
   req: Request,
@@ -113,7 +112,7 @@ export const generatFalPicture = async (
   try {
     const url = 'fal-ai/z-image/turbo/lora';
 
-    const validatedData = PromptInput.parse(req.body.prompt);
+    const validatedData = validation.PromptInput.parse(req.body.prompt);
 
     let prompt = '';
 

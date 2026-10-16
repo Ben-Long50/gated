@@ -1,8 +1,9 @@
 import itemServices from '../services/itemServices.js';
-import { ItemInput, ItemUpgradeInput } from '../validation/itemSchema.js';
 import handleControllerError from './handleControllerError.js';
 import { getIO } from '../sockets/socket.js';
 import characterServices from '../services/characterServices.js';
+import { validation } from '@gated/shared';
+import { ItemUpgradeInput } from '../validation/itemUpgradeSchema.js';
 const itemController = {
     getCodexPreviewItems: async (_, res) => {
         try {
@@ -50,7 +51,7 @@ const itemController = {
     },
     createCodexItem: async (req, res) => {
         try {
-            const validatedItem = ItemInput.parse(req.body);
+            const validatedItem = validation.ItemInput.parse(req.body);
             const item = await itemServices.createOrUpdateItem(validatedItem);
             res.status(200).json({
                 item,
@@ -65,7 +66,7 @@ const itemController = {
     },
     createOrUpdateItem: async (req, res) => {
         try {
-            const validatedItem = ItemInput.parse(req.body);
+            const validatedItem = validation.ItemInput.parse(req.body);
             const item = await itemServices.createOrUpdateItem(validatedItem);
             res.status(200).json({
                 item,

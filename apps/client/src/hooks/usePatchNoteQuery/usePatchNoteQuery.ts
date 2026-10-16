@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import getPatchNote from './getPatchNote';
-import { PatchNote } from 'src/types/patchNote';
+import { PatchNote } from '@gated/shared';
 
 const usePatchNoteQuery = (patchNoteId: number) => {
   return useQuery<PatchNote>({

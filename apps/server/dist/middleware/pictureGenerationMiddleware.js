@@ -1,7 +1,6 @@
 import handleControllerError from '../controllers/handleControllerError.js';
 import { fal } from '@fal-ai/client';
-import { PromptInput } from '../validation/promptSchema.js';
-import userLimits from '../utils/constants/userLimits.js';
+import { userLimits, validation } from '@gated/shared';
 export const generateCloudflarePicture = async (req, res) => {
     const model = '@cf/black-forest-labs/flux-2-dev';
     try {
@@ -77,7 +76,7 @@ export const generateBFLPicture = async (req, res, next) => {
 export const generatFalPicture = async (req, res, next) => {
     try {
         const url = 'fal-ai/z-image/turbo/lora';
-        const validatedData = PromptInput.parse(req.body.prompt);
+        const validatedData = validation.PromptInput.parse(req.body.prompt);
         let prompt = '';
         switch (validatedData.type) {
             case 'character':

@@ -1,7 +1,6 @@
-import { Character } from 'src/types/character';
-import { Item } from 'src/types/item';
+import { Character, getHandsAndFeetCosts } from '@gated/shared';
+import { Item } from '@gated/shared';
 import statColorMap from './statColorMap';
-import getHandsAndFeetCosts from '../../../../packages/shared/src/utils/getHandsAndFeetCosts';
 
 const actionFuncs = {
   basicMovement: (

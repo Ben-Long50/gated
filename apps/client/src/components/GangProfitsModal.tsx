@@ -3,7 +3,7 @@ import useGang from 'src/hooks/useGang';
 import ArrowHeader2 from './ArrowHeader2';
 import Divider from './Divider';
 import ArrowHeader3 from './ArrowHeader3';
-import { Character } from 'src/types/character';
+import { Character } from '@gated/shared';
 import CharacterCardXSmall from './characterComponents/CharacterCardXSmall';
 import { mdiMinus, mdiPlus } from '@mdi/js';
 import useDistributeProfitsMutation from 'src/hooks/gang hooks/useDistributeProfitsMutation/useDistributeProfitsMutation';

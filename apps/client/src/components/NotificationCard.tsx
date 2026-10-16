@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import ThemeContainer from './ThemeContainer';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { format } from 'date-fns';
-import { Notification } from 'src/types/notification';
+import { Notification } from '@gated/shared';
 import BtnRect from './buttons/BtnRect';
 import { Link } from 'react-router-dom';
 import AccountPicture from './AccountPicture';

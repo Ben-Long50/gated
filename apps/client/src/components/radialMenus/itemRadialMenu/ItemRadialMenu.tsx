@@ -1,4 +1,4 @@
-import { Item } from 'src/types/item';
+import { Item } from '@gated/shared';
 import ConditionIcon from '../../icons/ConditionIcon';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useContext, useState } from 'react';

@@ -1,7 +1,7 @@
 import Icon from '@mdi/react';
 import DieIcon from './icons/DieIcon';
 import { mdiTriangleDown } from '@mdi/js';
-import { Action } from 'src/types/action';
+import { Action } from '@gated/shared';
 import StopwatchIcon from './icons/StopwatchIcon';
 import { useRef } from 'react';
 import ArrowHeader3 from './ArrowHeader3';

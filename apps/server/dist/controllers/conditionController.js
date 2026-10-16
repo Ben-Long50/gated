@@ -1,5 +1,5 @@
 import conditionServices from '../services/conditionServices.js';
-import { ConditionInput } from '../validation/conditionSchema.js';
+import { validation } from '@gated/shared';
 import handleControllerError from './handleControllerError.js';
 const conditionController = {
     getConditions: async (_req, res) => {
@@ -22,7 +22,7 @@ const conditionController = {
     },
     createCondition: async (req, res) => {
         try {
-            const validatedCondition = ConditionInput.parse(req.body);
+            const validatedCondition = validation.ConditionInput.parse(req.body);
             const condition = await conditionServices.createCondition(validatedCondition);
             res
                 .status(200)

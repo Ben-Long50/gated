@@ -4,9 +4,6 @@ import WardIcon from '../icons/WardIcon';
 import ItemCardExpanding from './ItemCardExpanding';
 import ExpandingList from '../ExpandingList';
 import ArrowHeader3 from '../ArrowHeader3';
-import { History } from 'src/types/encounter';
-import { Item } from 'src/types/item';
-import { ActionData } from 'src/types/actionData';
 import Icon from '@mdi/react';
 import { mdiChevronDown } from '@mdi/js';
 import BlockIcon from '../icons/BlockIcon';
@@ -14,7 +11,7 @@ import useCharacter from 'src/hooks/useCharacter';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import { socket } from 'src/socket';
 import { useParams } from 'react-router-dom';
-import calculateItemStats from 'src/utils/calculateItemStats';
+import { ActionData, calculateItemStats, Item } from '@gated/shared';
 
 const BlockField = ({
   phaseAction,

@@ -4,7 +4,7 @@ import { ReactNode, useContext } from 'react';
 import { AuthContext } from 'src/contexts/AuthContext';
 import useProfitsMutation from 'src/hooks/useProfitsMutation/useProfitsMutation';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
-import { Character } from 'src/types/character';
+import { Character } from '@gated/shared';
 import RadialMenu from '../RadialMenu';
 
 const ProfitRadialMenu = ({

@@ -1,5 +1,5 @@
+import { KeywordInput } from '@gated/shared/validation';
 import prisma from '../config/database.js';
-import { KeywordInput } from '../validation/keywordSchema.js';
 
 export const keywordSelectForCopy = { value: true, keywordId: true };
 

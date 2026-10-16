@@ -1,5 +1,5 @@
-import { Item } from 'src/types/item';
-import { Keyword } from 'src/types/keyword';
+import { Item } from '@gated/shared';
+import { Keyword } from '@gated/shared';
 import ItemCardSmall from './ItemCardSmall';
 import Icon from '@mdi/react';
 import { mdiCollapseAllOutline, mdiExpandAllOutline } from '@mdi/js';

@@ -1,6 +1,6 @@
 import { useOutletContext } from 'react-router-dom';
 import LinkedActionCard from '../LinkedActionCard';
-import { Action } from 'src/types/action';
+import { Action } from '@gated/shared';
 import { capitalCase } from 'change-case';
 
 const ActionListModal = () => {

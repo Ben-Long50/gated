@@ -1,7 +1,6 @@
 import z from 'zod';
 import { Description, ItemStats, Name } from './fieldSchemas.js';
 import { ItemType, Rarity } from './enums.js';
-import prisma from '../../../../apps/server/src/config/database.js';
 
 export const ItemInput = z
   .object({
@@ -52,58 +51,22 @@ export const ItemInput = z
     }
   });
 
-export const ItemUpgradeInput = z
-  .object({
-    id: z.number().int().nonnegative(),
-    name: Name,
-    grade: z.number().int().min(1).max(10),
-    description: Description,
-    generatedPictureId: z.number().int().nullish(),
-    upgradePrice: z.number().int().nonnegative(),
-    modifiedStats: ItemStats,
-    keywords: z.array(
-      z.object({
-        keywordId: z.number().int().nonnegative(),
-        value: z.number().int().nonnegative().optional(),
-      }),
-    ),
-    characterId: z.number().int().nonnegative(),
-  })
-  .superRefine(async (data, ctx) => {
-    const item = await prisma.item.findUnique({
-      where: {
-        id: data.id,
-      },
-    });
-
-    if (!item) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['modifiedStats'],
-        message: 'Previous item not found',
-      });
-
-      return;
-    }
-
-    const mergedShape = item.itemTypes.reduce<z.ZodRawShape>(
-      (acc, type) => ({ ...acc, ...StatsSchemaByItemType[type].shape }),
-      {},
-    );
-
-    const mergedSchema = z.object(mergedShape).strict();
-
-    const result = await mergedSchema.safeParseAsync(data.modifiedStats);
-
-    if (!result.success) {
-      for (const issue of result.error.issues) {
-        ctx.addIssue({
-          ...issue,
-          path: ['modifiedStats', ...issue.path],
-        });
-      }
-    }
-  });
+export const ItemUpgradeBaseInput = z.object({
+  id: z.number().int().nonnegative(),
+  name: Name,
+  grade: z.number().int().min(1).max(10),
+  description: Description,
+  generatedPictureId: z.number().int().nullish(),
+  upgradePrice: z.number().int().nonnegative(),
+  modifiedStats: ItemStats,
+  keywords: z.array(
+    z.object({
+      keywordId: z.number().int().nonnegative(),
+      value: z.number().int().nonnegative().optional(),
+    }),
+  ),
+  characterId: z.number().int().nonnegative(),
+});
 
 export const ItemCopyInput = z
   .object({
@@ -141,7 +104,7 @@ export const ItemCopyInput = z
 
 export type ItemInput = z.infer<typeof ItemInput>;
 
-export type ItemUpgradeInput = z.infer<typeof ItemUpgradeInput>;
+export type ItemUpgradeInput = z.infer<typeof ItemUpgradeBaseInput>;
 
 export type ItemCopyInput = z.infer<typeof ItemCopyInput>;
 

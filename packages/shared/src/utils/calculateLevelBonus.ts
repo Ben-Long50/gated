@@ -1,8 +1,8 @@
-import { Perk } from 'src/types/perk';
-import { AttributeTree } from '../types/attributeTree';
+import { AttributeTree } from '../types/attributeTree.js';
+import type { Perk } from '../types/perk.js';
 import { getUsedPoints } from './getUsedPoints.js';
 
-const calculateLevelBonus = (level: number) => {
+export const calculateLevelBonus = (level: number) => {
   let levelBonus = null;
 
   switch (level) {

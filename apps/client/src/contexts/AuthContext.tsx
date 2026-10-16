@@ -2,7 +2,7 @@ import { createContext, ReactNode, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Loading from '../components/Loading';
 import useAuthenticatedUserQuery from 'src/hooks/user hooks/useAuthenticatedUserQuery';
-import { User } from 'src/types/user';
+import { User } from '@gated/shared';
 
 const defaultUser: User = {
   id: null,

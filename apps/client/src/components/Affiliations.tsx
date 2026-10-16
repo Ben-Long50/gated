@@ -1,4 +1,4 @@
-import { Affiliation } from 'src/types/faction';
+import { Affiliation } from '@gated/shared';
 import AffiliationCard from './AffiliationCard';
 import Divider from './Divider';
 import { useState } from 'react';

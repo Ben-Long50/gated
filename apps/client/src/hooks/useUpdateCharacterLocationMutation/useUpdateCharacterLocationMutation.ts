@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import updateCharacterLocation from './updateCharacterLocation';
-import { Location, Map } from 'src/types/map';
+import { Location, Map } from '@gated/shared';
 import { socket } from 'src/socket';
 
 const useUpdateCharacterLocationMutation = (mapId: number) => {

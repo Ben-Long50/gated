@@ -1,12 +1,12 @@
-import { Equipment } from 'src/types/item';
-import { Character, CharacterStats } from '../types/character';
 import {
   calculateTotalLevelBonus,
   calculateUsedPoints,
-} from './calculateLevelBonus';
-import { Action } from 'src/types/action';
-import { AttributeTree } from 'src/types/attributeTree';
-import { Perk } from 'src/types/perk';
+  Equipment,
+} from '@gated/shared';
+import { Character, CharacterStats } from '@gated/shared';
+import { Action } from '@gated/shared';
+import { AttributeTree } from '@gated/shared';
+import { Perk } from '@gated/shared';
 
 const calculateCharacterStats = (
   character: Character,

@@ -1,4 +1,4 @@
-import { Location } from 'src/types/map';
+import { Location } from '@gated/shared';
 import { mdiMapMarkerOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { useContext, useState } from 'react';

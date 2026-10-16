@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import usePerksQuery from './usePerksQuery/usePerksQuery';
-import { Perk, PerkTree } from '../types/perk';
-import { AttributeTree } from '../types/attributeTree';
+import { Perk, PerkTree } from '@gated/shared';
+import { AttributeTree } from '@gated/shared';
 
 const usePerks = (attributeTree?: AttributeTree) => {
   const { data: perks, isLoading } = usePerksQuery();

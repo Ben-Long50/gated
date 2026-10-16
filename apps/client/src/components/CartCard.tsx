@@ -1,4 +1,4 @@
-import { Item } from 'src/types/item';
+import { Item } from '@gated/shared';
 import { mdiMinus, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import useEditCartMutation from 'src/hooks/useEditCartMutation/useEditCartMutation';
 import { PictureCard } from './PictureCard';

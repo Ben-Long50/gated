@@ -1,6 +1,6 @@
 import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
-import { Perk } from 'src/types/perk';
+import { Perk } from '@gated/shared';
 
 const createPerk = async (formData: Perk) => {
   try {

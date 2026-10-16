@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import getSocialCharacters from './getSocialCharacters';
-import { Character } from 'src/types/character';
+import { Character } from '@gated/shared';
 
 const useSocialCharactersQuery = () => {
   return useQuery<Character[]>({

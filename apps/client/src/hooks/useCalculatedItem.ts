@@ -1,4 +1,4 @@
-import calculateItemStats from 'src/utils/calculateItemStats';
+import { calculateItemStats } from '@gated/shared';
 import useItemQuery from './useItemQuery/useItemQuery';
 
 const useCalculatedItem = (itemId: number) => {

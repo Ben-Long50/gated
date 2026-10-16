@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react';
 import CharacterCard from './CharacterCard';
 import Loading from '../Loading';
-import { Character } from 'src/types/character';
+import { Character } from '@gated/shared';
 import InputSelectField from '../formFields/InputSelectField';
 import useCampaignsQuery from 'src/hooks/useCampaignsQuery/useCampaignsQuery';
 import InputField from '../formFields/InputField';

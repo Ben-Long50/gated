@@ -1,7 +1,7 @@
 import { create, keyResolver, windowScheduler } from '@yornaath/batshit';
 import handleResponse from '../handleResponse';
 import apiUrl from 'src/utils/configureUrl';
-import { Affiliation } from 'src/types/faction';
+import { Affiliation } from '@gated/shared';
 
 const getAffiliation = create({
   fetcher: async (affiliationIds: number[]) => {

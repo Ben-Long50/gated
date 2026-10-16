@@ -3,14 +3,14 @@ import ThemeContainer from './ThemeContainer';
 import { ThemeContext } from '../contexts/ThemeContext';
 import BtnRect from './buttons/BtnRect';
 import { Link } from 'react-router-dom';
-import { Campaign } from 'src/types/campaign';
+import { Campaign } from '@gated/shared';
 import LocationIcon from './icons/LocationIcon';
 import AccountPicture from './AccountPicture';
-import { User } from 'src/types/user';
+import { User } from '@gated/shared';
 import ArrowHeader2 from './ArrowHeader2';
 import ArrowHeader3 from './ArrowHeader3';
 import { AuthContext } from 'src/contexts/AuthContext';
-import userLimits from 'src/utils/constants/userLimits';
+import { userLimits } from '@gated/shared';
 import CloudinaryPicture from './CloudinaryPicture';
 import Divider from './Divider';
 

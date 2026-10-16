@@ -1,5 +1,5 @@
-import { AttributeTree } from 'src/types/attributeTree';
-import emptyAttributeTree from './constants/emptyAttributeTree';
+import { emptyAttributeTree } from '../constants/emptyAttributeTree.js';
+import { AttributeTree } from '../types/attributeTree.js';
 
 export const combineAttributeTrees = (trees: AttributeTree[]) => {
   if (trees.length === 0) {

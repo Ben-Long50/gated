@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import errorServices from '../services/errorServices.js';
-import { ErrorReportInput } from '../validation/errorReportSchema.js';
+import { validation } from '@gated/shared';
 import handleControllerError from './handleControllerError.js';
 
 const errorController = {
@@ -20,7 +20,7 @@ const errorController = {
         throw new Error('Could not find authenticated user');
       }
 
-      const validatedErrorReport = ErrorReportInput.parse(req.body);
+      const validatedErrorReport = validation.ErrorReportInput.parse(req.body);
 
       const errorReport = await errorServices.createErrorReport(
         validatedErrorReport,

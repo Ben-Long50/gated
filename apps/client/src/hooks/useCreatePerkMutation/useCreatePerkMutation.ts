@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import createPerk from './createPerk';
 import { toast } from 'react-toastify';
-import { Perk } from 'src/types/perk';
+import { Perk } from '@gated/shared';
 
 const useCreatePerkMutation = (perkId?: number) => {
   const queryClient = useQueryClient();

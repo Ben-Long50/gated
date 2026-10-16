@@ -2,16 +2,13 @@ import Modal from '../modals/Modal';
 import Divider from '../Divider';
 import BtnRect from '../buttons/BtnRect';
 import { useNavigate, useParams } from 'react-router-dom';
-import ArrowHeader3 from '../ArrowHeader3';
 import PhaseActionCard from '../encounterComponents/PhaseActionCard';
-import ArrowHeader4 from '../ArrowHeader4';
 import { useContext, useState } from 'react';
 import { EncounterContext } from 'src/contexts/EncounterContext';
 import useConfirmActionQueueMutation from 'src/hooks/encounter hooks/useConfirmActionQueueMutation/useConfirmActionQueueMutation';
 import Loading from '../Loading';
-import parsePhaseAction from 'src/utils/parsePhaseAction';
-import { History } from 'src/types/encounter';
 import BtnAuth from '../buttons/BtnAuth';
+import { parsePhaseAction } from 'src/utils/parsePhaseAction';
 
 const ActionQueueModal = () => {
   const {

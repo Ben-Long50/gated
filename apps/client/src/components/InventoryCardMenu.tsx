@@ -7,7 +7,7 @@ import {
   mdiTrashCanOutline,
 } from '@mdi/js';
 import { useState } from 'react';
-import { Item } from 'src/types/item';
+import { Item } from '@gated/shared';
 import useToggleEquipmentMutation from 'src/hooks/useEquipmentToggleMutation/useEquipmentToggleMutation';
 import useDeleteItemMutation from 'src/hooks/useDeleteItemMutation/useDeleteItemMutation';
 

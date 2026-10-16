@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Notes } from 'src/types/campaign';
+import { Notes } from '@gated/shared';
 import getNotes from './getNotes';
 
 const useNotesQuery = (characterId: number) => {

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import getAffiliation from './getAffiliation';
-import { Affiliation } from 'src/types/faction';
+import { Affiliation } from '@gated/shared';
 
 const useAffiliationQuery = (affiliationId: number) => {
   return useQuery<Affiliation>({

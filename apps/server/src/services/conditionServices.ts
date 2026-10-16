@@ -1,5 +1,5 @@
+import { ConditionInput } from '@gated/shared/validation';
 import prisma from '../config/database.js';
-import { ConditionInput } from '../validation/conditionSchema.js';
 
 const conditionServices = {
   getConditions: async () => {

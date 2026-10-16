@@ -1,4 +1,4 @@
-import { Character } from 'src/types/character';
+import { Character } from '@gated/shared';
 import ConditionIcon from '../../icons/ConditionIcon';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import EquipmentIcon from '../../icons/EquipmentIcon';

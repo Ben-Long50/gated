@@ -1,8 +1,8 @@
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import ArrowHeader2 from '../ArrowHeader2';
 import CloudinaryPicture from '../CloudinaryPicture';
-import { Map } from 'src/types/map';
 import ArrowHeader3 from '../ArrowHeader3';
+import { Map } from '@gated/shared';
 
 const EncounterFormInfo = () => {
   const { maps, form } = useOutletContext();

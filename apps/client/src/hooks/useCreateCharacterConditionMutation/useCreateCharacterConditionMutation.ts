@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import createCharacterCondition from './createCharacterCondition';
-import { Character } from 'src/types/character';
+import { Character } from '@gated/shared';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import useModalStore from 'src/stores/modalStore';

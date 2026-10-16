@@ -2,13 +2,13 @@ import useCharacter from 'src/hooks/useCharacter';
 import Loading from '../Loading';
 import { useContext, useRef } from 'react';
 import CloudinaryPicture from '../CloudinaryPicture';
-import { Item } from 'src/types/item';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import useCombatStore from 'src/stores/combatStore';
 import Icon from '@mdi/react';
 import { mdiCheckCircle, mdiCloseBoxOutline } from '@mdi/js';
 import { EncounterContext } from 'src/contexts/EncounterContext';
 import { useNavigate } from 'react-router-dom';
+import { Item } from '@gated/shared';
 
 const EquippedItems = ({
   className,

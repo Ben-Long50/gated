@@ -2,7 +2,7 @@ import { useContext, useRef, useState } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import Loading from './Loading';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ItemType } from 'src/types/item';
+import { ItemType } from '@gated/shared';
 import Divider from './Divider';
 import useCharacter from 'src/hooks/useCharacter';
 import CharacterStatBars from './characterComponents/CharacterStatBars';

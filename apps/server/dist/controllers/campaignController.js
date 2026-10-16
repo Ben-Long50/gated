@@ -1,10 +1,8 @@
 import campaignServices from '../services/campaignServices.js';
-import { CampaignInput } from '../validation/campaignSchema.js';
-import { EventInput } from '../validation/eventSchema.js';
-import { Date, Time } from '../validation/fieldSchemas.js';
-import { RollInput } from '../validation/rollSchema.js';
+import { validation } from '@gated/shared';
 import { getIO } from '../sockets/socket.js';
 import handleControllerError from './handleControllerError.js';
+import { Date } from '@gated/shared/validation';
 const campaignController = {
     getCampaigns: async (req, res) => {
         try {
@@ -69,7 +67,7 @@ const campaignController = {
                 });
                 return;
             }
-            const validatedCampaign = CampaignInput.parse(req.body);
+            const validatedCampaign = validation.CampaignInput.parse(req.body);
             const campaign = await campaignServices.createOrUpdateCampaign(validatedCampaign, req.user.id);
             const io = getIO();
             const players = campaign?.players.map((player) => player.id) || [];
@@ -111,7 +109,7 @@ const campaignController = {
     },
     createOrUpdateEvent: async (req, res) => {
         try {
-            const validatedEvent = EventInput.parse(req.body);
+            const validatedEvent = validation.EventInput.parse(req.body);
             const event = await campaignServices.createOrUpdateEvent(Number(req.params.campaignId), validatedEvent);
             res
                 .status(200)
@@ -133,7 +131,7 @@ const campaignController = {
     },
     setCampaignTime: async (req, res) => {
         try {
-            const validatedTime = Time.parse(req.body);
+            const validatedTime = validation.Time.parse(req.body);
             const campaign = await campaignServices.setCampaignTime(Number(req.params.campaignId), validatedTime);
             res.status(200).json(campaign);
         }
@@ -149,7 +147,7 @@ const campaignController = {
                     .json({ error: 'You must be signed in to use this function' });
                 return;
             }
-            const validatedRoll = RollInput.parse(req.body);
+            const validatedRoll = validation.RollInput.parse(req.body);
             await campaignServices.campaignRoll(req.user.id, Number(req.params.campaignId), validatedRoll);
             res.status(200).json({ message: 'Successfully rolled' });
         }

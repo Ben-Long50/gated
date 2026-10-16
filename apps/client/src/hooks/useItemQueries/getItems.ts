@@ -1,7 +1,7 @@
 import { create, windowScheduler } from '@yornaath/batshit';
 import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../handleResponse';
-import { Item, ItemType } from 'src/types/item';
+import { Item, ItemType } from '@gated/shared';
 
 const getItems = create({
   fetcher: async (types: ItemType[]) => {

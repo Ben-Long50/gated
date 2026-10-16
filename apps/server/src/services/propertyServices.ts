@@ -1,5 +1,5 @@
+import { PropertyInput } from '@gated/shared/validation';
 import prisma from '../config/database.js';
-import { PropertyInput } from '../validation/propertySchema.js';
 
 const propertyInclude = {
   gang: true,

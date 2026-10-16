@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Item, ItemType } from 'src/types/item';
+import { Item, ItemType } from '@gated/shared';
 import { camelCase } from 'change-case';
 import useItemTypeQueries from './useItemQueries/useItemTypeQueries';
 

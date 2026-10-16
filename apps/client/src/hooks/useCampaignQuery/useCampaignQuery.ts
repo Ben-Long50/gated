@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import getCampaign from './getCampaign';
-import { Campaign } from 'src/types/campaign';
+import { Campaign } from '@gated/shared';
 
 const useCampaignQuery = (campaignId: number) => {
   return useQuery<Campaign>({

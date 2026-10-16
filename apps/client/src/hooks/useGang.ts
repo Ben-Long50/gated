@@ -1,10 +1,9 @@
-import { Character } from 'src/types/character';
+import { Character } from '@gated/shared';
 import useGangQuery from './gang hooks/useGangQuery/useGangQuery';
-import calculateReputation from 'src/utils/calculateReputation';
-import calculateLevelNodes from 'src/utils/calculateLevelNodes';
+import { calculateReputation, calculateLevelNodes } from '@gated/shared';
 import useCharacters from './useCharacters';
 import useAffiliationQueries from './useAffiliationQueries/useAffiliationQueries';
-import { Affiliation } from 'src/types/faction';
+import { Affiliation } from '@gated/shared';
 
 const useGang = (gangId: number) => {
   const { data: gang, isLoading } = useGangQuery(Number(gangId));

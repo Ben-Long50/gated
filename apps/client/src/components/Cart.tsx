@@ -4,7 +4,7 @@ import CartCard from './CartCard';
 import useClearCartMutation from '../hooks/useClearCartMutation/useClearCartMutation';
 import useCompletePurchaseMutation from '../hooks/useCompletePurchaseMutation/useCompletePurchaseMutation';
 import { useParams } from 'react-router-dom';
-import { Character } from 'src/types/character';
+import { Character } from '@gated/shared';
 import ArrowHeader3 from './ArrowHeader3';
 import useCharacter from 'src/hooks/useCharacter';
 import Divider from './Divider';

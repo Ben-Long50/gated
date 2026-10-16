@@ -10,7 +10,7 @@ import {
 import { useParams, useSearchParams } from 'react-router-dom';
 import useCreateMapMutation from 'src/hooks/useCreateMapMutation/useCreateMapMutation';
 import Loading from '../../Loading';
-import { Component } from 'src/types/map';
+import { Component } from '@gated/shared';
 import MapBuilderSidebar from './MapBuilderSidebar';
 import {
   DndContext,

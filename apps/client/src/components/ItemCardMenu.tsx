@@ -1,6 +1,6 @@
 import Icon from '@mdi/react';
 import { mdiCheckCircle, mdiCircleOutline, mdiTrashCanOutline } from '@mdi/js';
-import { Item } from 'src/types/item';
+import { Item } from '@gated/shared';
 import useToggleEquipmentMutation from 'src/hooks/useEquipmentToggleMutation/useEquipmentToggleMutation';
 import useDeleteItemMutation from 'src/hooks/useDeleteItemMutation/useDeleteItemMutation';
 import Menu from './characterComponents/Menu';

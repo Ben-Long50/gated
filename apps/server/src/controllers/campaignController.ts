@@ -1,11 +1,9 @@
 import { Request, Response } from 'express';
 import campaignServices from '../services/campaignServices.js';
-import { CampaignInput } from '../validation/campaignSchema.js';
-import { EventInput } from '../validation/eventSchema.js';
-import { Date, Time } from '../validation/fieldSchemas.js';
-import { RollInput } from '../validation/rollSchema.js';
+import { validation } from '@gated/shared';
 import { getIO } from '../sockets/socket.js';
 import handleControllerError from './handleControllerError.js';
+import { Date } from '@gated/shared/validation';
 
 const campaignController = {
   getCampaigns: async (req: Request, res: Response) => {
@@ -85,7 +83,7 @@ const campaignController = {
         return;
       }
 
-      const validatedCampaign = CampaignInput.parse(req.body);
+      const validatedCampaign = validation.CampaignInput.parse(req.body);
 
       const campaign = await campaignServices.createOrUpdateCampaign(
         validatedCampaign,
@@ -142,7 +140,7 @@ const campaignController = {
 
   createOrUpdateEvent: async (req: Request, res: Response) => {
     try {
-      const validatedEvent = EventInput.parse(req.body);
+      const validatedEvent = validation.EventInput.parse(req.body);
 
       const event = await campaignServices.createOrUpdateEvent(
         Number(req.params.campaignId),
@@ -174,7 +172,7 @@ const campaignController = {
 
   setCampaignTime: async (req: Request, res: Response) => {
     try {
-      const validatedTime = Time.parse(req.body);
+      const validatedTime = validation.Time.parse(req.body);
 
       const campaign = await campaignServices.setCampaignTime(
         Number(req.params.campaignId),
@@ -195,7 +193,7 @@ const campaignController = {
         return;
       }
 
-      const validatedRoll = RollInput.parse(req.body);
+      const validatedRoll = validation.RollInput.parse(req.body);
 
       await campaignServices.campaignRoll(
         req.user.id,

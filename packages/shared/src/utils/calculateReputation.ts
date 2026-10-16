@@ -1,6 +1,6 @@
-import { Gang } from 'src/types/gang';
+import { Gang } from '../types/gang.js';
 
-const calculateReputation = (gang: Gang) => {
+export const calculateReputation = (gang: Gang) => {
   let reputation = 0;
   let reputationPoints = 0;
 
@@ -35,5 +35,3 @@ const calculateReputation = (gang: Gang) => {
     reputationPoints,
   };
 };
-
-export default calculateReputation;

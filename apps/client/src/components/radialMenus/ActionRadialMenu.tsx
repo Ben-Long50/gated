@@ -4,7 +4,7 @@ import Icon from '@mdi/react';
 import { mdiCardTextOutline } from '@mdi/js';
 import { AuthContext } from 'src/contexts/AuthContext';
 import useActivateActionMutation from 'src/hooks/useActivateActionMutation/useActivateActionMutation';
-import { Action } from 'src/types/action';
+import { Action } from '@gated/shared';
 import ActionIcon from '../icons/ActionIcon';
 import RadialMenu from './RadialMenu';
 import useRadialMenuStore from 'src/stores/radialMenuStore';

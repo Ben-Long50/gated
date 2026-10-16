@@ -1,4 +1,4 @@
-import { Component, Layer } from 'src/types/map';
+import { Component, Layer } from '@gated/shared';
 import { mdiLayersOutline, mdiPuzzleOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { useState } from 'react';

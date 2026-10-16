@@ -2,8 +2,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import createMap from './createMap';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { MapInput } from 'src/types/map';
-import { User } from 'src/types/user';
+import { MapInput } from '@gated/shared';
+import { User } from '@gated/shared';
 
 const useCreateMapMutation = (mapId?: number) => {
   const queryClient = useQueryClient();

@@ -10,7 +10,7 @@ import useCharacterConditionStacksMutation from 'src/hooks/item stat hooks/useCh
 import useItemConditionStacksMutation from 'src/hooks/item stat hooks/useItemConditionStacksMutation/useItemConditionStacksMutation';
 import useDeleteCharacterConditionMutation from 'src/hooks/useDeleteCharacterConditionMutation/useDeleteCharacterConditionMutation';
 import useDeleteItemConditionMutation from 'src/hooks/useDeleteItemConditionMutation/useDeleteItemConditionMutation';
-import { ConditionReference } from 'src/types/condition';
+import { ConditionReference } from '@gated/shared';
 import RadialMenu from './RadialMenu';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
 

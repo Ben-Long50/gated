@@ -1,13 +1,13 @@
 import PerkCard from './PerkCard';
-import { Perk, PerkTree } from 'src/types/perk';
+import { Perk, PerkTree } from '@gated/shared';
 import { FormApi, useStore } from '@tanstack/react-form';
 import { capitalCase } from 'change-case';
 import ExpandingList from './ExpandingList';
 import Divider from './Divider';
 import InputFieldCheckbox from './formFields/InputFieldCheckbox';
-import { AttributeTree } from 'src/types/attributeTree';
-import { getUsedPoints } from 'src/utils/getUsedPoints';
-import calculateLevelBonus from 'src/utils/calculateLevelBonus';
+import { AttributeTree } from '@gated/shared';
+import { getUsedPoints } from '@gated/shared';
+import { calculateLevelBonus } from '@gated/shared';
 
 const PerkList = ({
   form,

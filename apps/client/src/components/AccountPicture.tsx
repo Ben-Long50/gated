@@ -1,4 +1,4 @@
-import { User } from 'src/types/user';
+import { User } from '@gated/shared';
 import CharacterIcon from './icons/CharacterIcon';
 import { useContext } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';

@@ -22,7 +22,7 @@ import { AuthContext } from 'src/contexts/AuthContext';
 import IconBtnMedium from 'src/components/buttons/IconBtnMedium';
 import MapGrid from '../map/MapGrid';
 import useMapBuilderStore from 'src/stores/mapBuilderStore';
-import { Component } from 'src/types/map';
+import { Component } from '@gated/shared';
 
 const TileListModal = () => {
   const navigate = useNavigate();

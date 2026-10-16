@@ -1,5 +1,5 @@
+import { FactionInput } from '@gated/shared/validation';
 import prisma from '../config/database.js';
-import { FactionInput } from '../validation/factionSchema.js';
 
 const factionInclude = {
   affiliations: { select: { id: true } },

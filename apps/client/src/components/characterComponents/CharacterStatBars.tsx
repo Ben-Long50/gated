@@ -5,7 +5,6 @@ import { ThemeContext } from '../../contexts/ThemeContext';
 import HealthIcon from '../icons/HealthIcon';
 import SanityIcon from '../icons/SanityIcon';
 import CyberIcon from '../icons/CyberIcon';
-import { CharacterStats } from 'src/types/character';
 import useCharacterStatMutation from 'src/hooks/character stat hooks/useCharacterStatMutation/useCharacterStatMutation';
 import InjuryIcon from '../icons/InjuryIcon';
 import InsanityIcon from '../icons/InsanityIcon';
@@ -22,6 +21,7 @@ import FootIcon from '../icons/FootIcon';
 import SizeIcon from '../icons/SizeIcon';
 import ReactionIcon from '../icons/ReactionIcon';
 import ActionIcon from '../icons/ActionIcon';
+import { CharacterStats } from '@gated/shared/validation';
 
 const CharacterStatBars = ({
   stats,

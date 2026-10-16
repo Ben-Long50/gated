@@ -1,4 +1,4 @@
-import { Component } from 'src/types/map';
+import { Component } from '@gated/shared';
 import getOccupiedTiles from '../../mapUtils/getOccupiedTiles';
 
 export const findConflict = (

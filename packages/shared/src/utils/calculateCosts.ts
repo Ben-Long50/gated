@@ -1,14 +1,14 @@
 import { capitalCase } from 'change-case';
-import { Character } from 'src/types/character';
-import { Item } from 'src/types/item';
+import { Character } from '../types/character.js';
+import { Item } from '../types/item.js';
 
-const calculateCosts = (
+export const calculateCosts = (
   costs: Record<string, number>,
   character: Character,
   item?: Item,
 ) => {
-  const characterCosts = {};
-  const itemCosts = {};
+  const characterCosts = {} as Record<string, number>;
+  const itemCosts = {} as Record<string, number>;
   const errors = [] as string[];
 
   Object.entries(costs).forEach(([stat, value]) => {
@@ -28,5 +28,3 @@ const calculateCosts = (
 
   return { characterCosts, itemCosts, errors };
 };
-
-export default calculateCosts;

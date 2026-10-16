@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRef } from 'react';
 import { socket } from 'src/socket';
 import editAffiliationValue from './editAffiliationValue';
-import { Affiliation } from 'src/types/faction';
+import { Affiliation } from '@gated/shared';
 
 const useAffiliationValueMutation = (affiliationId: number) => {
   const queryClient = useQueryClient();

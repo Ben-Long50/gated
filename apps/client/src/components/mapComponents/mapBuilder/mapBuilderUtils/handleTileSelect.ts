@@ -1,4 +1,4 @@
-import { Component } from 'src/types/map';
+import { Component } from '@gated/shared';
 
 export const handleTileSelect = (
   row: number,

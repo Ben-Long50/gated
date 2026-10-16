@@ -1,4 +1,4 @@
-import { Component, Layer } from 'src/types/map';
+import { Component, Layer } from '@gated/shared';
 import { findConflict } from './findConflict';
 
 export const handleAddComponent = (

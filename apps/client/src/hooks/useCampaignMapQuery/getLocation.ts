@@ -1,6 +1,6 @@
 import { create, keyResolver, windowScheduler } from '@yornaath/batshit';
 import handleResponse from '../handleResponse';
-import { Location } from 'src/types/map';
+import { Location } from '@gated/shared';
 import apiUrl from 'src/utils/configureUrl';
 
 const getLocation = create({

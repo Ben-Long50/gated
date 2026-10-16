@@ -1,3 +1,7 @@
+import { Action } from '../types/action.js';
+import { Item } from '../types/item.js';
+import { Keyword } from '../types/keyword.js';
+
 export const calculateItemStats = (item: Item) => {
   if (!item?.stats && !item?.modifiedStats) return item;
 

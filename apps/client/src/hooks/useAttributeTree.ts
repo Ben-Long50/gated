@@ -1,5 +1,4 @@
-import { getUsedPoints } from 'src/utils/getUsedPoints';
-import { AttributeTree } from '../types/attributeTree';
+import { AttributeTree, getUsedPoints } from '@gated/shared';
 
 const useAttributeTree = (tree?: AttributeTree) => {
   const emptyAttributeTree: AttributeTree = {

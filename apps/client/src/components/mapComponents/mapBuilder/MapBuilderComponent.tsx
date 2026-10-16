@@ -1,6 +1,6 @@
 import { useDraggable } from '@dnd-kit/core';
 import { FieldApi } from '@tanstack/react-form';
-import { Component } from 'src/types/map';
+import { Component } from '@gated/shared';
 import getOccupiedTiles from '../mapUtils/getOccupiedTiles';
 import getComponentStyle from '../mapUtils/getComponentStyle';
 import useMapBuilderStore from 'src/stores/mapBuilderStore';

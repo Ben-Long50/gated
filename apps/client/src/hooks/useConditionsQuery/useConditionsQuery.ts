@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Condition } from 'src/types/condition';
+import { Condition } from '@gated/shared';
 import { useEffect } from 'react';
 import getConditions from './getConditions';
 

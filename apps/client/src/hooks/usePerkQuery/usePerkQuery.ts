@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Perk } from 'src/types/perk';
+import { Perk } from '@gated/shared';
 import getPerk from '../usePerkQueries/getPerk';
 
 const usePerkQuery = (perkId: number) => {

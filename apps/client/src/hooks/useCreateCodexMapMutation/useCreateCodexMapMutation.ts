@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import createCodexMap from './createCodexMap';
 import { useNavigate } from 'react-router-dom';
-import { Map, MapInput } from 'src/types/map';
+import { Map, MapInput } from '@gated/shared';
 
 const useCreateCodexMapMutation = () => {
   const queryClient = useQueryClient();

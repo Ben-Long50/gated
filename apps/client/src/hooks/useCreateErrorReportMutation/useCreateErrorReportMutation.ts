@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import createKeyword from './createErrorReport';
 import { useNavigate } from 'react-router-dom';
-import { ErrorReport } from 'src/types/errorReport';
+import { ErrorReport } from '@gated/shared';
 
 const useCreateErrorReportMutation = () => {
   const navigate = useNavigate();

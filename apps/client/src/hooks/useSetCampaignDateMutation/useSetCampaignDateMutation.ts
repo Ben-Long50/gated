@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import setCampaignDate from './setCampaignDate';
-import { Month } from 'src/types/campaign';
+import { Month } from '@gated/shared';
 import { socket } from 'src/socket';
 
 const useSetCampaignDateMutation = (campaignId: number) => {

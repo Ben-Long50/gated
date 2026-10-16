@@ -1,6 +1,6 @@
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
-import { Character } from 'src/types/character';
+import { Character } from '@gated/shared';
 import { useState } from 'react';
 import BtnRect from '../buttons/BtnRect';
 import BtnAuth from '../buttons/BtnAuth';
@@ -10,8 +10,8 @@ import EntityCard from '../EntityCard';
 import useFactionQueries from 'src/hooks/faction hooks/useFactionQueries';
 import useGangQueries from 'src/hooks/gang hooks/useGangQueries/useGangQueries';
 import Loading from '../Loading';
-import { Faction } from 'src/types/faction';
-import { Gang } from 'src/types/gang';
+import { Faction } from '@gated/shared';
+import { Gang } from '@gated/shared';
 import InputFieldCheckbox from '../formFields/InputFieldCheckbox';
 import useCharacterQueries from 'src/hooks/character hooks/useUpdateCharacterLevelMutation/useCharactersQuery/useCharacterQueries';
 

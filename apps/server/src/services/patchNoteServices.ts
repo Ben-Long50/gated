@@ -1,5 +1,5 @@
+import { PatchNotesInput } from '@gated/shared/validation';
 import prisma from '../config/database.js';
-import { PatchNotesInput } from '../validation/patchNotesSchema.js';
 
 const patchNoteServices = {
   getPatchNotes: async () => {

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import conditionServices from '../services/conditionServices.js';
-import { ConditionInput } from '../validation/conditionSchema.js';
+import { validation } from '@gated/shared';
 import handleControllerError from './handleControllerError.js';
 
 const conditionController = {
@@ -26,7 +26,7 @@ const conditionController = {
 
   createCondition: async (req: Request, res: Response) => {
     try {
-      const validatedCondition = ConditionInput.parse(req.body);
+      const validatedCondition = validation.ConditionInput.parse(req.body);
 
       const condition =
         await conditionServices.createCondition(validatedCondition);
