@@ -17,9 +17,7 @@ router.post(
       { session: false },
       (err: Error, user: any, info: any) => {
         if (err || !user) {
-          return res
-            .status(400)
-            .json({ message: info?.message || 'Login failed' });
+          return res.status(400).json({ error: err.message || 'Login failed' });
         }
         req.user = {
           id: user.id,
@@ -46,7 +44,7 @@ router.post(
   '/auth/signout',
   authentication.authenticate,
   (_req: Request, res: Response) => {
-    res.clearCookie('token', {
+    (res.clearCookie('token', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.SAME_SITE,
@@ -54,7 +52,7 @@ router.post(
     }),
       res.status(200).json({
         message: `You have been signed out`,
-      });
+      }));
   },
 );
 
@@ -78,7 +76,7 @@ router.get(
       sameSite: process.env.SAME_SITE,
       maxAge: 1000 * 60 * 60 * 24,
     });
-    const redirectUrl = `${process.env.CLIENT_URL}/glam/codex?tab=equipment`;
+    const redirectUrl = `${process.env.CLIENT_URL}/glam/codex/dashboard?tab=equipment`;
     res.redirect(redirectUrl);
   },
 );
@@ -99,7 +97,7 @@ router.get(
       sameSite: process.env.SAME_SITE,
       maxAge: 1000 * 60 * 60 * 24,
     });
-    const redirectUrl = `${process.env.CLIENT_URL}/glam/codex?tab=equipment`;
+    const redirectUrl = `${process.env.CLIENT_URL}/glam/codex/dashboard?tab=equipment`;
     res.redirect(redirectUrl);
   },
 );

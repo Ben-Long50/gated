@@ -8,9 +8,9 @@ const localStrategy = (passport: PassportStatic) => {
       {
         usernameField: 'email',
       },
-      async (email, _password, done) => {
+      async (email, password, done) => {
         try {
-          const user = await userServices.getUserByEmail(email);
+          const user = await userServices.getUserByEmail(email, password);
           return done(null, user as any);
         } catch (error: any) {
           return done(error);

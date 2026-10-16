@@ -7,6 +7,7 @@ import {
   SignUpInput,
   UserUpdateInput,
 } from '@gated/shared/validation';
+import bcrypt from 'bcryptjs';
 
 export const userInclude = {
   generatedPictures: {
@@ -132,7 +133,7 @@ const userServices = {
     return user;
   },
 
-  getUserByEmail: async (email: string) => {
+  getUserByEmail: async (email: string, password: string) => {
     const user = await prisma.user.findUnique({
       where: { email },
       select: {
@@ -142,9 +143,32 @@ const userServices = {
         lastName: true,
         role: true,
         profilePicture: true,
+        password: true,
       },
     });
-    return user;
+
+    if (!user) {
+      throw new Error('Unrecognized Email');
+    }
+
+    if (!user.password) {
+      throw new Error('Sign in with the Google of Facebook Sign In options');
+    }
+
+    const ok = await bcrypt.compare(password, user.password);
+
+    if (!ok) {
+      throw new Error('Incorrect Email or Password');
+    }
+
+    return {
+      username: user.username,
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role,
+      profilePicture: user.profilePicture,
+    };
   },
 
   createUser: async (userData: Omit<SignUpInput, 'confirmPassword'>) => {

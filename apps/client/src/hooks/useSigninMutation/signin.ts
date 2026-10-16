@@ -11,7 +11,9 @@ const signin = async (formData: object) => {
       credentials: 'include',
       body: JSON.stringify(formData),
     });
+
     const data = await handleResponse(response);
+
     return data;
   } catch (error) {
     if (error instanceof Error) {

@@ -23,8 +23,6 @@ const GlobalShopPage = () => {
     <Loading />;
   }
 
-  console.log(character);
-
   return (
     <Page title="Global Shop">
       <div className="flex w-full items-center justify-center gap-4 px-8">

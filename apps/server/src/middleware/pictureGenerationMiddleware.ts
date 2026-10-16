@@ -32,8 +32,6 @@ export const generateCloudflarePicture = async (
     if (!response.ok) {
       const errors = data.errors.map((error: any) => error.message).join(', ');
 
-      console.log(errors);
-
       throw new Error(errors);
     }
 
