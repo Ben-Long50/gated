@@ -14,7 +14,8 @@
     "allowSyntheticDefaultImports": true /* Enable default imports for modules without default exports. */,
     "useUnknownInCatchVariables": true /* Use 'unknown' for catch clause variables. */,
     "forceConsistentCasingInFileNames": true /* Ensure consistent casing in imports. */,
-    "outDir": "./dist" /* Specify output directory for compiled files. */,
+    "outDir": "dist",
+    "rootDir": "src",
     "incremental": true /* Enable incremental compilation for faster builds. */,
     "allowJs": true,
     "checkJs": false
