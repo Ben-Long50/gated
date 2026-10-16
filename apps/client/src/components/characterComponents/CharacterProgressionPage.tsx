@@ -189,7 +189,7 @@ const CharacterProgressionPage = () => {
           <BtnRect
             className="w-full"
             ariaLabel="Select level up bonus"
-            onClick={() => navigate(`levelBonus?level=0`)}
+            onClick={() => navigate(`modal/levelBonus?level=0`)}
           >
             Edit NPC Stat Bonuses
           </BtnRect>
@@ -293,7 +293,7 @@ const CharacterProgressionPage = () => {
                     {!characterLevelBonus && (
                       <IconBtnMedium
                         tooltip="Select Level Bonus"
-                        onClick={() => navigate(`levelBonus?level=${level}`)}
+                        onClick={() => navigate(`modal/levelBonus?level=${level}`)}
                       >
                         <ProgressionIcon />
                       </IconBtnMedium>
