@@ -1,5 +1,4 @@
 import { useParams, useSearchParams } from 'react-router-dom';
-import Modal from './modals/Modal';
 import useCharacter from 'src/hooks/useCharacter';
 import Loading from './Loading';
 import AttributeField from './formFields/AttributeField';
@@ -41,34 +40,7 @@ const LevelBonusModal = () => {
   }
 
   return (
-    <Modal
-      button={
-        <BtnRect
-          className="group w-full"
-          ariaLabel="Confirm level bonus"
-          onClick={() => {
-            if (!selectLevelUpBonus.isPending) {
-              levelBonusForm.handleSubmit();
-            }
-          }}
-        >
-          {selectLevelUpBonus.isPending ? (
-            <Loading className="group-hover:text-accent" size={1.15} />
-          ) : (
-            'Confirm Bonus'
-          )}
-        </BtnRect>
-      }
-      errors={
-        <levelBonusForm.Subscribe selector={(state) => state.errorMap}>
-          {(errorMap) =>
-            errorMap.onSubmit ? (
-              <em className="text-error text-lg">{errorMap.onSubmit}</em>
-            ) : null
-          }
-        </levelBonusForm.Subscribe>
-      }
-    >
+    <>
       <h1>{level ? `Select Level ${level} Bonus` : `Select Level Bonus`}</h1>
       <div className="flex w-full items-center gap-8">
         <BtnAuth
@@ -134,7 +106,22 @@ const LevelBonusModal = () => {
       {tab === 'perks' &&
         (perkPoints + masterPerkPoints > 0 ? (
           <>
-            <p>{`Select an additional ${perkPoints + masterPerkPoints} Perk(s) and confirm your level up bonus. This action cannot be undone`}</p>
+              {perkPoints > 0 && (
+                    <div className="flex w-full items-center justify-between gap-8">
+                      <p>Perks</p>
+                      <p>
+                        {perkPoints}
+                      </p>
+                    </div>
+                  )}
+                  {masterPerkPoints > 0 && (
+                    <div className="flex w-full items-center justify-between gap-8">
+                      <p>Master Perks</p>
+                      <p>
+                        {masterPerkPoints}
+                      </p>
+                    </div>
+                  )}
             <levelBonusForm.Subscribe
               selector={(state) => state.values.attributes}
             >
@@ -152,7 +139,22 @@ const LevelBonusModal = () => {
         ) : (
           <p>You may not select a Perk bonus for this level</p>
         ))}
-    </Modal>
+       <BtnRect
+          className="group w-full"
+          ariaLabel="Confirm level bonus"
+          onClick={() => {
+            if (!selectLevelUpBonus.isPending) {
+              levelBonusForm.handleSubmit();
+            }
+          }}
+        >
+          {selectLevelUpBonus.isPending ? (
+            <Loading className="group-hover:text-accent" size={1.15} />
+          ) : (
+            'Confirm Bonus'
+          )}
+        </BtnRect>
+    </>
   );
 };
 
