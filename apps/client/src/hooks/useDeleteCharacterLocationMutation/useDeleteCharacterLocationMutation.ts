@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Map } from '@gated/shared';
 import deleteCharacterLocation from './deleteCharacterLocation';
 import { Character } from '@gated/shared';
+import { toast } from 'react-toastify';
 
 const useDeleteCharacterLocationMutation = (mapId: number) => {
   const queryClient = useQueryClient();
@@ -28,24 +29,21 @@ const useDeleteCharacterLocationMutation = (mapId: number) => {
         }),
       );
 
-      const prevMap = queryClient.getQueriesData({ queryKey: ['map', mapId] });
-
       queryClient.setQueryData(['map', mapId], (prev: Map) => ({
         ...prev,
         locations: prev.locations.filter(
           (location) => location.id !== data.locationId,
         ),
       }));
-
-      return { prevMap };
     },
-    onSuccess: (_, value) => {
-      queryClient.invalidateQueries({
-        queryKey: ['character', value.characterId],
-      });
-      return queryClient.invalidateQueries({ queryKey: ['map', mapId] });
-    },
+    onSuccess: (data) => {
+      toast.success(data.message);
 
+      queryClient.setQueryData(['character', data.characterId], data.character);
+    },
+    onError: (data) => {
+      toast.error(data.message);
+    },
     throwOnError: false,
   });
 };

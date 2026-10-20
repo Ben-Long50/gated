@@ -138,14 +138,6 @@ const CampaignLinks = () => {
                   path={`campaigns/${campaignId}/maps/?mapType=map&draft=false`}
                 />
                 <SubLinkSidebar
-                  title="Components"
-                  path={`campaigns/${campaignId}/maps/?mapType=component&draft=false`}
-                />
-                <SubLinkSidebar
-                  title="Your Drafts"
-                  path={`campaigns/${campaignId}/maps/?draft=true`}
-                />
-                <SubLinkSidebar
                   title="Create a Map"
                   path={`campaigns/${campaignId}/maps/create`}
                 />
@@ -212,7 +204,7 @@ const CampaignLinks = () => {
               />
               <SubLinkSidebar
                 title={`Add Template Map`}
-                path={`campaigns/${campaignId}/maps/add?mapType=map`}
+                path={`campaigns/${campaignId}/maps/add?mapType=map&draft=false`}
               />
               <SubLinkSidebar
                 title={`Create a Session`}

@@ -3,10 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import Loading from '../../Loading';
 import useMaps from 'src/hooks/useMaps';
 import BtnRect from '../../buttons/BtnRect';
-import MapCard from './MapCard';
 import InputField from 'src/components/formFields/InputField';
+import MapPictureCard from './MapPictureCard';
 
-const MapList = ({ mapIds }: { mapIds: number[] }) => {
+const MapList = ({
+  mapIds,
+  onClick,
+}: {
+  mapIds: number[];
+  onClick: (id: number) => void;
+}) => {
   const navigate = useNavigate();
 
   const containerRef = useRef(null);
@@ -55,9 +61,21 @@ const MapList = ({ mapIds }: { mapIds: number[] }) => {
           </BtnRect>
         </>
       ) : (
-        <div className="grid w-full grid-cols-[repeat(auto-fit,minmax(360px,500px))] gap-8">
+        <div className="grid w-full grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-8">
           {maps.map((map) => (
-            <MapCard key={map?.id} mapId={map?.id} />
+            <MapPictureCard
+              key={map?.id}
+              map={map}
+              label={
+                <div className="flex w-full items-end justify-between">
+                  <p>{map?.name}</p>
+                  <p>
+                    {map?.width} x {map?.height}
+                  </p>
+                </div>
+              }
+              onClick={() => onClick(map.id)}
+            />
           ))}
         </div>
       )}

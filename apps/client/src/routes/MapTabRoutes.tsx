@@ -16,14 +16,14 @@ const MapTabRoutes = () => {
         <Route path="modal" element={<Modal />}>
           <Route path="save" element={<MapSaveModal />} />
           <Route path="tileList" element={<TileListModal />} />
-          <Route path="library" element={<PictureLibraryModal />} />
+          <Route path="save/library" element={<PictureLibraryModal />} />
         </Route>
       </Route>
       <Route path="create" element={<MapBuilder />}>
         <Route path="modal" element={<Modal />}>
           <Route path="save" element={<MapSaveModal />} />
           <Route path="tileList" element={<TileListModal />} />
-          <Route path="library" element={<PictureLibraryModal />} />
+          <Route path="save/library" element={<PictureLibraryModal />} />
         </Route>
       </Route>
     </Route>

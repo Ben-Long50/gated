@@ -1,6 +1,6 @@
 import { FormApi, useStore } from '@tanstack/react-form';
 import ThemeContainer from '../ThemeContainer';
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import Icon from '@mdi/react';
 import { mdiMinus, mdiPlus } from '@mdi/js';
@@ -13,7 +13,6 @@ import usePromptForm from 'src/hooks/form hooks/usePromptForm';
 import BtnAuth from '../buttons/BtnAuth';
 import { PictureCard } from '../PictureCard';
 import CloudinaryPicture from '../CloudinaryPicture';
-import { LayoutContext } from 'src/contexts/LayoutContext';
 import { AuthContext } from 'src/contexts/AuthContext';
 import useStandardLibraryQuery from 'src/hooks/useStandardLibraryQuery/useStandardLibraryQuery';
 import useGenerateStandardPictureMutation from 'src/hooks/useGenerateStandardPictureMutation/useGenerateStandardPictureMutation';
@@ -32,7 +31,6 @@ const PictureField = ({
 }) => {
   const { user } = useContext(AuthContext);
   const { accentPrimary } = useContext(ThemeContext);
-  const { mobile } = useContext(LayoutContext);
   const navigate = useNavigateWithQuery();
   const { parts } = useParts();
 
@@ -198,7 +196,12 @@ const PictureField = ({
             'Generate'
           )}
         </BtnRect>
-        <BtnAuth className="group" onClick={() => navigate('modal/library')}>
+        <BtnAuth
+          className="group"
+          onClick={() =>
+            navigate(parts.includes('modal') ? 'library' : 'modal/library')
+          }
+        >
           Picture Library
         </BtnAuth>
       </div>

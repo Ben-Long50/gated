@@ -1,7 +1,7 @@
 import { MapInput } from '@gated/shared/validation';
 import prisma from '../config/database.js';
 
-const mapInclude = {
+export const mapInclude = {
   user: {
     select: {
       username: true,
@@ -70,6 +70,47 @@ const mapServices = {
         userId,
       },
       include: mapInclude,
+    });
+
+    return map;
+  },
+
+  createMapCopy: async (userId: number, mapId: number, campaignId?: number) => {
+    const map = prisma.$transaction(async (tx) => {
+      const map = await tx.map.findUnique({
+        where: { id: mapId },
+        select: {
+          generatedPictureId: true,
+          draft: true,
+          name: true,
+          description: true,
+          type: true,
+          width: true,
+          height: true,
+          baseColor: true,
+          layerCount: true,
+          layers: true,
+          baseMapId: true,
+        },
+      });
+
+      if (!map) {
+        throw new Error('Failed to find map');
+      }
+
+      const validatedMap = MapInput.parse(map);
+
+      const mapCopy = await tx.map.create({
+        data: {
+          ...validatedMap,
+          campaignId,
+          userId,
+          baseMapId: map.baseMapId ?? mapId,
+        },
+        include: mapInclude,
+      });
+
+      return mapCopy;
     });
 
     return map;

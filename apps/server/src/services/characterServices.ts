@@ -15,6 +15,7 @@ import {
 } from '@gated/shared/validation';
 import { validateLevelUpBonus } from '../utils/validateLevelUpBonus.js';
 import { filterObject } from '@gated/shared';
+import mapServices, { mapInclude } from './mapServices.js';
 
 export const characterSelectForCopy = {
   id: true,
@@ -634,41 +635,59 @@ const characterServices = {
     characterId: number,
     formData: { mapId: number; row: number; col: number },
   ) => {
-    const io = getIO();
+    const { map, location, character } = await prisma.$transaction(
+      async (tx) => {
+        const location = await tx.location.upsert({
+          where: {
+            characterId: characterId || 0,
+          },
+          update: {
+            map: { connect: { id: formData.mapId } },
+            row: formData.row,
+            col: formData.col,
+          },
+          create: {
+            character: { connect: { id: characterId } },
+            map: { connect: { id: formData.mapId } },
+            row: formData.row,
+            col: formData.col,
+          },
+          include: { character: { select: { campaignId: true } } },
+        });
 
-    const location = await prisma.location.upsert({
-      where: {
-        characterId: characterId || 0,
-      },
-      update: {
-        map: { connect: { id: formData.mapId } },
-        row: formData.row,
-        col: formData.col,
-      },
-      create: {
-        character: { connect: { id: characterId } },
-        map: { connect: { id: formData.mapId } },
-        row: formData.row,
-        col: formData.col,
-      },
-      include: { character: { select: { campaignId: true } } },
-    });
+        const map = await tx.map.findUnique({
+          where: { id: formData.mapId },
+          include: mapInclude,
+        });
 
-    io.to(`campaign ${location.character?.campaignId}`).emit('location', {
-      characterId,
-      locationId: location.id,
-      mapId: location.mapId,
-      row: location.row,
-      col: location.col,
-    });
+        const character = await tx.character.findUnique({
+          where: { id: characterId },
+          include: characterInclude,
+        });
+
+        return { map, location, character };
+      },
+    );
+
+    return { map, location, character };
   },
 
   deleteLocation: async (characterId: number) => {
-    await prisma.location.delete({
-      where: {
-        characterId,
-      },
+    const character = await prisma.$transaction(async (tx) => {
+      await tx.location.delete({
+        where: {
+          characterId,
+        },
+      });
+
+      const character = await tx.character.findUnique({
+        where: { id: characterId },
+        include: characterInclude,
+      });
+      return character;
     });
+
+    return character;
   },
 
   deleteCharacter: async (userId: number, characterId: number) => {

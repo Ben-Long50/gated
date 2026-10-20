@@ -405,13 +405,25 @@ const characterController = {
         throw new Error('Could not find authenticated user');
       }
 
-      await characterServices.createOrUpdateLocation(
-        Number(req.params.characterId),
-        req.body,
-      );
+      const { map, location, character } =
+        await characterServices.createOrUpdateLocation(
+          Number(req.params.characterId),
+          req.body,
+        );
+
+      // io.to(`campaign ${location.character?.campaignId}`).emit('location', {
+      //   characterId,
+      //   locationId: location.id,
+      //   mapId: location.mapId,
+      //   row: location.row,
+      //   col: location.col,
+      // });
 
       res.status(200).json({
-        message: 'Successfully updapted character location',
+        map,
+        location,
+        character,
+        message: `Successfully updated ${character?.name}'s location`,
       });
     } catch (error: any) {
       handleControllerError(res, error);
@@ -424,11 +436,14 @@ const characterController = {
         throw new Error('Could not find authenticated user');
       }
 
-      await characterServices.deleteLocation(Number(req.params.characterId));
+      const character = await characterServices.deleteLocation(
+        Number(req.params.characterId),
+      );
 
-      res
-        .status(200)
-        .json({ message: 'Successfully deleted character location' });
+      res.status(200).json({
+        character,
+        message: 'Successfully deleted character location',
+      });
     } catch (error: any) {
       handleControllerError(res, error);
     }

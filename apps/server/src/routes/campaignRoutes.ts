@@ -45,7 +45,7 @@ router.get(
 );
 
 router.get(
-  '/campaign/:campaignId/locations/:locationId',
+  '/locations/:locationId',
   authentication.authenticate,
   campaignController.getBatchLocations,
 );

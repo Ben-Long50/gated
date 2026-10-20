@@ -20,13 +20,13 @@ const Page = ({
     <>
       {container ? (
         <div
-          className={`${mobile ? 'gap-4' : 'gap-8'} flex w-full max-w-8xl flex-col items-center`}
+          className={`${mobile ? 'gap-4' : 'gap-8'} max-w-8xl flex w-full flex-col items-center`}
         >
           <h1>{title}</h1>
           <Container>{children}</Container>
         </div>
       ) : (
-        { children }
+        children
       )}
       <Outlet context={context} />
     </>

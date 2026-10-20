@@ -16,7 +16,7 @@ const IconBtnMedium = ({
 }) => {
   return (
     <button
-      className={`${className} group relative ${active ? 'border-accent' : 'border-transparent'} bg-secondary hover:border-accent timing shadow-color group rounded border-2 p-1.5 shadow-md`}
+      className={`${className} group/button relative ${active ? 'border-accent' : 'border-transparent'} bg-secondary hover:border-accent timing shadow-color group rounded border-2 p-1.5 shadow-md`}
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -24,10 +24,11 @@ const IconBtnMedium = ({
       }}
     >
       {cloneElement(children, {
-        className:
-          'timing text-tertiary  group-hover:text-accent group-hover:bg-primary size-9',
+        className: `${active && '!text-accent'} timing text-tertiary group-hover:text-accent group-hover:bg-primary size-9`,
       })}
-      {tooltip && <Tooltip label={tooltip} />}
+      {tooltip && (
+        <Tooltip className="-translate-y-4 whitespace-nowrap" label={tooltip} />
+      )}
     </button>
   );
 };

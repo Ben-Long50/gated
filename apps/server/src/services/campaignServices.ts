@@ -269,6 +269,8 @@ const campaignServices = {
   },
 
   getBatchLocations: async (locationIds: number[]) => {
+    console.log(locationIds);
+
     const location = await prisma.location.findMany({
       where: { id: { in: locationIds } },
       include: {

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import updateCharacterLocation from './updateCharacterLocation';
 import { Location, Map } from '@gated/shared';
-import { socket } from 'src/socket';
+import { toast } from 'react-toastify';
 
 const useUpdateCharacterLocationMutation = (mapId: number) => {
   const queryClient = useQueryClient();
@@ -23,49 +23,63 @@ const useUpdateCharacterLocationMutation = (mapId: number) => {
         data.locationId,
       ]);
 
-      if (prevLocationData) {
-        if (mapId !== prevLocationData?.mapId) {
-          queryClient.setQueryData(
-            ['location', data.locationId],
-            (prev: Location) => ({
-              ...prev,
+      const prevMapData: Map | undefined = queryClient.getQueryData([
+        'map',
+        mapId,
+      ]);
+
+      const locationId = data.locationId ?? 0;
+
+      queryClient.setQueryData(
+        ['location', locationId],
+        prevLocationData
+          ? {
+              ...prevLocationData,
               mapId,
+              characterId: data.characterId,
               row: data.row,
               col: data.col,
-            }),
-          );
-        } else {
-          queryClient.setQueryData(
-            ['location', data.locationId],
-            (prev: Location) => ({ ...prev, row: data.row, col: data.col }),
-          );
-        }
-      } else {
-        queryClient.setQueryData(['location', 'temp'], {
-          mapId,
-          id: 0,
-          characterId: data.characterId,
-          row: data.row,
-          col: data.col,
+            }
+          : {
+              id: 0,
+              mapId,
+              characterId: data.characterId,
+              row: data.row,
+              col: data.col,
+            },
+      );
+
+      if (prevMapData) {
+        queryClient.setQueryData(['map', mapId], {
+          ...prevMapData,
+          locations: [
+            ...prevMapData.locations.filter(
+              (location) => location.id !== locationId,
+            ),
+            {
+              id: locationId,
+            },
+          ],
         });
-        queryClient.setQueryData(['map', mapId], (prev: Map) => ({
-          ...prev,
-          locations: [...prev.locations, { id: 'temp' }],
-        }));
       }
 
       return { prevLocationData };
     },
 
-    onSuccess: (_, value, context) => {
-      if (mapId !== context.prevLocationData?.mapId) {
-        queryClient.invalidateQueries({
-          queryKey: ['map', mapId],
-        });
-        queryClient.invalidateQueries({
-          queryKey: ['character', value.characterId],
-        });
-      }
+    onSuccess: (data) => {
+      queryClient.removeQueries({ queryKey: ['location', 0] });
+      toast.success(data.message);
+
+      queryClient.setQueryData(
+        ['character', data.character.id],
+        data.character,
+      );
+      queryClient.setQueryData(['location', data.location.id], data.location);
+      queryClient.setQueryData(['map', data.map.id], data.map);
+    },
+    onError: (data) => {
+      queryClient.removeQueries({ queryKey: ['location', 0] });
+      toast.error(data.message);
     },
     throwOnError: false,
   });

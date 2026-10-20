@@ -45,7 +45,9 @@ const IconBtnSmall = ({
         className:
           'timing text-tertiary group-hover/button:text-accent group-hover/button:bg-primary size-7',
       })}
-      {tooltip && <Tooltip label={tooltip} />}
+      {tooltip && (
+        <Tooltip className="-translate-y-1 whitespace-nowrap" label={tooltip} />
+      )}
     </button>
   );
 };

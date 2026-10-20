@@ -48,6 +48,7 @@ import CharacterAddPage from 'src/components/characterComponents/CharacterAddPag
 import CampaignMapsPage from 'src/components/mapComponents/map/CampaignMapsPage';
 import MapPage from 'src/components/mapComponents/map/MapPage';
 import CampaignGangList from 'src/components/CampaignGangList';
+import MapAdd from 'src/components/mapComponents/map/MapAdd';
 
 const CampaignTabRoutes = () => {
   return (
@@ -129,6 +130,7 @@ const CampaignTabRoutes = () => {
               <Route path="reset" element={<ResetModal />} />
             </Route>
           </Route>
+          <Route path="add" element={<MapAdd />} />
         </Route>
         <Route path="encounters">
           <Route path="create" element={<EncounterForm />}>

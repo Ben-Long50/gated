@@ -23,7 +23,7 @@ import ArrowHeader3 from 'src/components/ArrowHeader3';
 import Page from 'src/components/Page';
 
 const MapPage = () => {
-  const { mapId } = useParams();
+  const { mapId, campaignId } = useParams();
   const [dragging, setDragging] = useState(false);
   const [draggingId, setDraggingId] = useState<number | null>(null);
   const [gridDisplay, setGridDisplay] = useState(false);
@@ -68,65 +68,68 @@ const MapPage = () => {
 
   if (mapLoading) return <Loading />;
 
-  if (!map) return <h1>No Map Found</h1>;
+  if (!map) return <p>No Map Found</p>;
 
   return (
-    <Page container={false}>
-      <div className="fixed inset-0 flex h-full w-full flex-col items-center justify-center gap-4 sm:gap-8">
-        <DndContext
-          sensors={sensors}
-          onDragStart={onDragStart}
-          onDragEnd={onDragEnd}
-        >
-          <MapGrid
-            width={map.width}
-            height={map.height}
-            baseColor={map.baseColor}
-            layers={map.layers}
-            mapScale={mapScale}
-            locations={locations}
-            gridDisplay={gridDisplay}
-          />
-          <MapSidebar
-            locations={locations}
-            locationsLoading={locationsLoading}
-          />
-          <DragOverlay dropAnimation={null}>
-            {dragging && draggingId ? (
-              <CharacterToken
-                className="cursor-grabbing"
-                characterId={draggingId}
-                mapScale={mapScale}
+    <>
+      <Page container={false}>
+        <div className="fixed inset-0 flex h-full w-full flex-col items-center justify-center gap-4 sm:gap-8">
+          <DndContext
+            sensors={sensors}
+            onDragStart={onDragStart}
+            onDragEnd={onDragEnd}
+          >
+            <MapGrid
+              width={map.width}
+              height={map.height}
+              baseColor={map.baseColor}
+              layers={map.layers}
+              mapScale={mapScale}
+              locations={locations}
+              gridDisplay={gridDisplay}
+            />
+            <DragOverlay dropAnimation={null}>
+              {dragging && draggingId ? (
+                <CharacterToken
+                  className="cursor-grabbing"
+                  characterId={draggingId}
+                  mapScale={mapScale}
+                />
+              ) : null}
+            </DragOverlay>
+            {campaignId && (
+              <MapSidebar
+                locations={locations}
+                locationsLoading={locationsLoading}
               />
-            ) : null}
-          </DragOverlay>
-        </DndContext>
-        <div
-          className={`bg-base shadow-color timing absolute bottom-2 z-10 mx-auto flex items-center justify-between gap-8 rounded-md p-4`}
-        >
-          <ArrowHeader3 title={map.name} />
-          <div className={`flex w-full items-center justify-center gap-4`}>
-            <IconBtnMedium
-              tooltip={gridDisplay ? 'Hide Grid' : 'Show Grid'}
-              onClick={() => setGridDisplay((prev) => !prev)}
-              active={gridDisplay}
-            >
-              <Icon path={mdiGrid} />
-            </IconBtnMedium>
-            <MapScaler mapScale={mapScale} setMapScale={setMapScale} />
-
-            <IconBtnMedium
-              onClick={() => {
-                navigate(`update`);
-              }}
-              tooltip="Edit Map"
-            >
-              <Icon path={mdiSquareEditOutline} />
-            </IconBtnMedium>
+            )}
+          </DndContext>
+          <div
+            className={`bg-base shadow-color timing absolute bottom-2 z-10 mx-auto flex items-center justify-between gap-8 rounded-md p-4`}
+          >
+            <ArrowHeader3 title={map.name} />
+            <div className={`flex w-full items-center justify-center gap-4`}>
+              <IconBtnMedium
+                tooltip={gridDisplay ? 'Hide Grid' : 'Show Grid'}
+                onClick={() => setGridDisplay((prev) => !prev)}
+                active={gridDisplay}
+              >
+                <Icon path={mdiGrid} />
+              </IconBtnMedium>
+              <MapScaler mapScale={mapScale} setMapScale={setMapScale} />
+              <IconBtnMedium
+                onClick={() => {
+                  navigate(`update`);
+                }}
+                tooltip="Edit Map"
+              >
+                <Icon path={mdiSquareEditOutline} />
+              </IconBtnMedium>
+            </div>
           </div>
         </div>
-      </div>
-    </Page>
+      </Page>
+    </>
   );
 };
 

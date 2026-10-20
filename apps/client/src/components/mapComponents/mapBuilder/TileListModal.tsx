@@ -1,16 +1,13 @@
 import { useContext, useState } from 'react';
-import Modal from '../../modals/Modal';
-import { useNavigate } from 'react-router-dom';
-import BtnRect from '../../buttons/BtnRect';
 import { capitalCase, sentenceCase } from 'change-case';
 import Icon from '@mdi/react';
 import {
   mdiArrowULeftBottom,
   mdiCancel,
   mdiFolderOutline,
+  mdiGrid,
   mdiStar,
   mdiStarOutline,
-  mdiViewGridOutline,
 } from '@mdi/js';
 import Divider from '../../Divider';
 import ArrowHeader3 from '../../ArrowHeader3';
@@ -22,11 +19,11 @@ import { AuthContext } from 'src/contexts/AuthContext';
 import IconBtnMedium from 'src/components/buttons/IconBtnMedium';
 import MapGrid from '../map/MapGrid';
 import useMapBuilderStore from 'src/stores/mapBuilderStore';
-import { Component } from '@gated/shared';
+import { useNavigate } from 'react-router-dom';
 
 const TileListModal = () => {
-  const navigate = useNavigate();
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const [gridDisplay, setGridDisplay] = useState(true);
 
@@ -42,6 +39,7 @@ const TileListModal = () => {
   const path = useMapBuilderStore((state) => state.path);
   const pushPath = useMapBuilderStore((state) => state.pushPath);
   const popPath = useMapBuilderStore((state) => state.popPath);
+  const setPath = useMapBuilderStore((state) => state.setPath);
 
   const tempComponent = useMapBuilderStore((state) => state.tempComponent);
   const setTempComponent = useMapBuilderStore(
@@ -104,54 +102,34 @@ const TileListModal = () => {
       {tab === 'favorites' && (
         <>
           <div className="flex w-full flex-col items-center gap-4 sm:flex-row">
-            {path.slice(1).map((part: string, index: number) => (
-              <ArrowHeader3 key={index} title={capitalCase(part)} />
-            ))}
+            {isPng && (
+              <IconBtnMedium onClick={() => popPath()} tooltip="Back">
+                <Icon path={mdiArrowULeftBottom} />
+              </IconBtnMedium>
+            )}
+            <p>Favorites</p>
           </div>
           <Divider className="!my-0" />
           <div className="scrollbar-primary flex h-full w-full items-start justify-start">
             {isPng ? (
-              <>
-                <div className="flex flex-col gap-4">
-                  <IconBtnMedium
-                    onClick={() => {
-                      setTempComponent(null);
-                    }}
-                    tooltip={gridDisplay ? 'Hide Grid' : 'Show Grid'}
-                    active={gridDisplay}
-                  >
-                    <Icon path={mdiCancel} />
-                  </IconBtnMedium>
-                  {tempComponent && (
-                    <IconBtnMedium
-                      onClick={() => {
-                        setTempComponent(null);
-                      }}
-                      tooltip="Deselect Tiles"
-                    >
-                      <Icon path={mdiCancel} />
-                    </IconBtnMedium>
-                  )}
-                </div>
-                <TilePicker pngPath={pngPath} gridDisplay={gridDisplay} />
-              </>
+              <TilePicker pngPath={pngPath} gridDisplay={gridDisplay} />
             ) : (
               <div className="col-span-2 grid w-full grid-cols-3 gap-4">
                 {favorites.map((file: string, index: number) => {
-                  const splitFile = file.split('/');
-
                   return (
                     <div
                       key={index}
                       className="hover:border-accent relative aspect-square size-full rounded border-2 border-gray-500 shadow-md shadow-black"
                       style={{
-                        backgroundImage: `url(${file})`,
+                        backgroundImage: `url(/assets/tiles/${file})`,
                         backgroundSize: 'contain',
                         backgroundPosition: 'center',
                         imageRendering: 'pixelated',
                         backgroundRepeat: 'no-repeat',
                       }}
-                      onClick={() => pushPath(file)}
+                      onClick={() => {
+                        setPath(file.split('/'));
+                      }}
                     >
                       <button
                         className="group absolute right-0 top-0 p-2"
@@ -177,9 +155,11 @@ const TileListModal = () => {
       {tab === 'tiles' && (
         <>
           <div className="flex w-full flex-col items-center gap-4 sm:flex-row">
-            <IconBtnMedium onClick={() => popPath()} tooltip="Back">
-              <Icon path={mdiArrowULeftBottom} />
-            </IconBtnMedium>
+            {path.length > 0 && (
+              <IconBtnMedium onClick={() => popPath()} tooltip="Back">
+                <Icon path={mdiArrowULeftBottom} />
+              </IconBtnMedium>
+            )}
             <p>All tiles</p>
             {path.map((p) => (
               <>
@@ -187,16 +167,6 @@ const TileListModal = () => {
                 <p>{sentenceCase(p)}</p>
               </>
             ))}
-            {tempComponent && (
-              <IconBtnMedium
-                onClick={() => {
-                  setTempComponent(null);
-                }}
-                tooltip="Deselect Tiles"
-              >
-                <Icon path={mdiCancel} />
-              </IconBtnMedium>
-            )}
           </div>
           <Divider className="!my-0" />
         </>
@@ -204,30 +174,7 @@ const TileListModal = () => {
       {tab === 'tiles' && (
         <div className="scrollbar-primary flex h-full w-full items-start justify-start">
           {isPng ? (
-            <>
-              <div className="flex flex-col gap-4">
-                <IconBtnMedium
-                  onClick={() => {
-                    setGridDisplay((prev) => !prev);
-                  }}
-                  tooltip={gridDisplay ? 'Hide Grid' : 'Show Grid'}
-                  active={gridDisplay}
-                >
-                  <Icon path={mdiViewGridOutline} />
-                </IconBtnMedium>
-                {tempComponent && (
-                  <IconBtnMedium
-                    onClick={() => {
-                      setTempComponent(null);
-                    }}
-                    tooltip="Deselect Tiles"
-                  >
-                    <Icon path={mdiCancel} />
-                  </IconBtnMedium>
-                )}
-              </div>
-              <TilePicker pngPath={pngPath} gridDisplay={gridDisplay} />
-            </>
+            <TilePicker pngPath={pngPath} gridDisplay={gridDisplay} />
           ) : (
             <div className="scrollbar-primary mb-auto grid w-full grid-cols-1 gap-4 overflow-y-auto rounded pb-2 sm:grid-cols-2">
               {Object.entries(folders).map(([key, value], index) => (
@@ -250,14 +197,14 @@ const TileListModal = () => {
                   {files.map((file: string, index: number) => {
                     const fullPath = path.join('/');
 
-                    const filePath = `/assets/tiles/${fullPath}/${file}`;
+                    const filePath = `${fullPath}/${file}`;
 
                     return (
                       <div
                         key={index}
                         className={`hover:border-accent relative aspect-square size-full rounded border-2 border-gray-500 shadow-md shadow-black`}
                         style={{
-                          backgroundImage: `url(${filePath})`,
+                          backgroundImage: `url(/assets/tiles/${filePath})`,
                           backgroundSize: 'contain',
                           backgroundPosition: 'center',
                           imageRendering: 'pixelated',
@@ -345,6 +292,8 @@ const TileListModal = () => {
                       height: component.height,
                       subComponents: componentParts,
                     });
+
+                    navigate(-1);
                   }}
                 >
                   <div className="flex w-full flex-col items-start gap-2">
@@ -377,6 +326,38 @@ const TileListModal = () => {
             })}
           </div>
         </>
+      )}
+      {isPng && pngPath && (
+        <div
+          className={`bg-primary shadow-color mx-auto flex gap-4 rounded-md p-4`}
+        >
+          <IconBtnMedium
+            tooltip={gridDisplay ? 'Hide Grid' : 'Show Grid'}
+            onClick={() => setGridDisplay((prev) => !prev)}
+            active={gridDisplay}
+          >
+            <Icon path={mdiGrid} />
+          </IconBtnMedium>
+          <IconBtnMedium
+            tooltip={hasPath(pngPath) ? 'Remove Favorite' : 'Add Favorite'}
+            onClick={() => {
+              hasPath(pngPath) ? removeFavorite(pngPath) : addFavorite(pngPath);
+            }}
+            active={hasPath(pngPath)}
+          >
+            <Icon path={hasPath(pngPath) ? mdiStar : mdiStarOutline} />
+          </IconBtnMedium>
+          {tempComponent && (
+            <IconBtnMedium
+              onClick={() => {
+                setTempComponent(null);
+              }}
+              tooltip="Deselect Tiles"
+            >
+              <Icon path={mdiCancel} />
+            </IconBtnMedium>
+          )}
+        </div>
       )}
     </>
   );

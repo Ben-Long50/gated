@@ -1,6 +1,7 @@
 import express from 'express';
 import authentication from '../middleware/authentication.js';
 import mapController from '../controllers/mapController.js';
+import campaignAuthentication from '../middleware/campaignAuthentication.js';
 
 const router = express.Router();
 
@@ -22,6 +23,13 @@ router.post(
   '/maps/codex',
   authentication.authenticateAdmin,
   mapController.createOrUpdateCodexMap,
+);
+
+router.post(
+  '/maps/add',
+  authentication.authenticate,
+  campaignAuthentication.validateGameMaster,
+  mapController.createMapCopy,
 );
 
 router.post(

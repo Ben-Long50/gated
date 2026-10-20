@@ -126,6 +126,7 @@ const MapBuilder = () => {
       container={false}
       context={{
         form: mapForm,
+        type: 'scene',
         isPending: createMap.isPending,
       }}
     >

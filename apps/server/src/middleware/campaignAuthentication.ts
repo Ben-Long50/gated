@@ -13,9 +13,11 @@ const campaignAuthentication = {
       return;
     }
 
-    const campaign = await campaignServices.getCampaignById(
-      Number(req.params.campaignId),
-    );
+    const campaignId = req.params.campaignId
+      ? Number(req.params.campaignId)
+      : req.body.campaignId;
+
+    const campaign = await campaignServices.getCampaignById(campaignId);
 
     if (req.user.id !== campaign.ownerId) {
       res

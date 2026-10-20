@@ -11,6 +11,8 @@ import { CampaignContext } from 'src/contexts/CampaignContext';
 import CharacterLocationCard from '../../characterComponents/CharacterLocationCard';
 import useDeleteCharacterLocationMutation from 'src/hooks/useDeleteCharacterLocationMutation/useDeleteCharacterLocationMutation';
 import Loading from 'src/components/Loading';
+import Sidebar from 'src/components/sidebars/Sidebar';
+import IconBtnSmall from 'src/components/buttons/IconBtnSmall';
 
 const MapSidebar = ({
   locations,
@@ -21,7 +23,6 @@ const MapSidebar = ({
 }) => {
   const { campaignId, mapId } = useParams();
   const { gameMaster } = useContext(CampaignContext);
-  const [layerSidebar, setLayerSidebar] = useState(true);
 
   const locatedCharacterIds = locations.map((location) => location.characterId);
 
@@ -37,15 +38,10 @@ const MapSidebar = ({
     .map((character) => character.id);
 
   const navbarHeight = useNavigationStore((state) => state.navbarHeight);
+  const sidebar = useNavigationStore((state) => state.sidebar);
 
   return (
-    <div
-      className={`${layerSidebar ? 'w-96' : 'w-[72px]'} bg-base scrollbar-primary-2 timing fixed bottom-4 right-2 top-4 z-20 flex flex-col gap-2 overflow-x-hidden rounded-md p-3 shadow-md shadow-black`}
-      onMouseEnter={() => setLayerSidebar(true)}
-      onMouseLeave={() => {
-        setLayerSidebar(false);
-      }}
-    >
+    <Sidebar position="right">
       {locationsLoading ? (
         <Loading className="text-primary mb-auto" size={1.5} />
       ) : (
@@ -55,11 +51,14 @@ const MapSidebar = ({
             className="text-primary ml-1 size-10 shrink-0"
           />
           <div
-            className={`${layerSidebar ? 'visible translate-x-0 px-4 opacity-100' : 'invisible translate-x-full opacity-0'} scrollbar-secondary-2 timing z-10 flex w-full max-w-96 flex-col overflow-y-auto rounded py-4`}
+            className={`${sidebar ? 'visible pl-4 opacity-100' : 'invisible opacity-0'} scrollbar-secondary-2 timing z-10 flex w-full max-w-96 flex-col overflow-y-auto rounded py-4`}
             style={{ top: navbarHeight }}
           >
             <div className="flex w-full flex-col gap-4">
-              <ArrowHeader3 title="Map Characters" />
+              <ArrowHeader3
+                className="whitespace-nowrap"
+                title="Map Characters"
+              />
               {locations.length > 0 ? (
                 locations.map((location) => {
                   return (
@@ -69,8 +68,8 @@ const MapSidebar = ({
                         locationList={true}
                         characterId={location.characterId}
                       />
-                      <button
-                        className="group p-2"
+                      <IconBtnSmall
+                        tooltip="Delete Location"
                         onClick={() =>
                           deleteLocation.mutate({
                             characterId: location.characterId,
@@ -78,17 +77,13 @@ const MapSidebar = ({
                           })
                         }
                       >
-                        <Icon
-                          className="text-primary group-hover:text-accent timing"
-                          path={mdiTrashCanOutline}
-                          size={1.25}
-                        />
-                      </button>
+                        <Icon path={mdiTrashCanOutline} />
+                      </IconBtnSmall>
                     </div>
                   );
                 })
               ) : (
-                <p>No map characters</p>
+                <p className="whitespace-nowrap">No map characters</p>
               )}
             </div>
             {gameMaster && (
@@ -111,7 +106,7 @@ const MapSidebar = ({
           </div>
         </>
       )}
-    </div>
+    </Sidebar>
   );
 };
 

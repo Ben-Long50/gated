@@ -55,7 +55,7 @@ const Sidebar = ({
   return (
     <nav
       ref={sidebarRef}
-      className={`${mobile ? mobileSidebarStyle : sidebarStyle} ${positionStyle} timing shadow-color fixed bottom-0 top-0 z-20 overflow-x-hidden py-4`}
+      className={`${mobile ? mobileSidebarStyle : sidebarStyle} ${positionStyle} timing fixed bottom-0 top-0 z-20 overflow-x-hidden py-4`}
       style={{
         borderColor: accentPrimary,
       }}
@@ -69,7 +69,7 @@ const Sidebar = ({
         if (!mobile) timer();
       }}
     >
-      <div className="scrollbar-secondary bg-base shadow-color shadow-color flex h-full w-full flex-col gap-4 overflow-y-auto overflow-x-hidden rounded-md px-2 py-4">
+      <div className="scrollbar-secondary bg-base shadow-color flex h-full w-full flex-col gap-4 overflow-y-auto overflow-x-hidden rounded-md px-2 py-4">
         {children}
         <IconBtnSmall
           className={`${visible ? 'opacity-100' : 'opacity-0'} ${closeButtonPositionStype} !absolute bottom-6`}

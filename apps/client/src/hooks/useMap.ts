@@ -4,17 +4,15 @@ import useMapQuery from './useMapQueries/useMapQuery';
 const useMap = (mapId: number) => {
   const { data: map, isLoading: mapLoading } = useMapQuery(mapId);
 
-  const {
-    locations,
-    isLoading: locationsLoading,
-    isPending: locationsPending,
-  } = useLocationQueries(map?.locations.map((location) => location.id) || []);
+  const { locations, isLoading: locationsLoading } = useLocationQueries(
+    map?.locations.map((location) => location.id) || [],
+  );
 
   return {
     map,
-    locations: locations.filter((location) => location),
+    locations: locations.filter(Boolean),
     mapLoading,
-    locationsLoading: locationsLoading || locationsPending,
+    locationsLoading,
   };
 };
 

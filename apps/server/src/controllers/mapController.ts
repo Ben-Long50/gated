@@ -85,6 +85,29 @@ const mapController = {
     }
   },
 
+  createMapCopy: async (req: Request, res: Response) => {
+    try {
+      if (!req.user) {
+        throw new Error('You must be logged in to create or update a map');
+      }
+
+      const map = await mapServices.createMapCopy(
+        req.user.id,
+        req.body.mapId,
+        req.body.campaignId,
+      );
+
+      res.status(200).json({
+        map,
+        message: req.body.campaignId
+          ? `Successfully added ${map.name} to user campaign`
+          : `Successfully added ${map.name} to user maps`,
+      });
+    } catch (error: any) {
+      handleControllerError(res, error);
+    }
+  },
+
   deleteMap: async (req: Request, res: Response) => {
     try {
       if (!req.user) {
