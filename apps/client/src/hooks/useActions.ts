@@ -6,8 +6,10 @@ const useActions = (characterActions?: Action[]) => {
   const { data: actions, isLoading } = useActionsQuery();
 
   const generalActions =
-    actions?.filter((action) => !action.parentItemId && !action.baseActionId) ||
-    [];
+    actions?.filter(
+      (action) =>
+        !action.parentItemId && !action.baseActionId && !action.perkId,
+    ) || [];
 
   let filteredActions = characterActions
     ? [...characterActions, ...generalActions]

@@ -8,6 +8,7 @@ import InputSelectField from './formFields/InputSelectField';
 import Icon from '@mdi/react';
 import IconBtnMedium from './buttons/IconBtnMedium';
 import { mdiSync } from '@mdi/js';
+import Page from './Page';
 
 const Affiliations = ({ affiliations }: { affiliations: Affiliation[] }) => {
   const [tab, setTab] = useState('all');
@@ -68,7 +69,7 @@ const Affiliations = ({ affiliations }: { affiliations: Affiliation[] }) => {
   const characterAffiliations = sortedAffiliations?.characterAffiliations;
 
   return (
-    <div className="flex w-full flex-col items-start gap-8">
+    <Page title="Campaign Affiliations">
       <div className="flex w-full items-center gap-4">
         <InputSelectField
           label="Entity"
@@ -146,7 +147,7 @@ const Affiliations = ({ affiliations }: { affiliations: Affiliation[] }) => {
         ) : (
           <p className="w-full text-center">No Character affiliations found</p>
         ))}
-    </div>
+    </Page>
   );
 };
 

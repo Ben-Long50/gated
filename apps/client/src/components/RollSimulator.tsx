@@ -1,4 +1,4 @@
-import { useForm } from '@tanstack/react-form';
+import { useForm, useStore } from '@tanstack/react-form';
 import useActions from '../hooks/useActions';
 import ArrowHeader3 from './ArrowHeader3';
 import { useContext } from 'react';
@@ -17,6 +17,8 @@ import { CampaignContext } from 'src/contexts/CampaignContext';
 import { calculateDiceCount } from '@gated/shared';
 import useCharacterQueries from 'src/hooks/character hooks/useUpdateCharacterLevelMutation/useCharactersQuery/useCharacterQueries';
 import Page from './Page';
+import ActionCard from './ActionCard';
+import useCharacter from 'src/hooks/useCharacter';
 
 const RollSimulator = () => {
   const { mobile } = useContext(LayoutContext);
@@ -49,19 +51,17 @@ const RollSimulator = () => {
       campaignRoll.mutate(value);
       navigate('modal/rollResults');
     },
-    validators: {
-      onSubmit: ({ value }) => {
-        const errors = [];
-        if (!value.characterId) {
-          errors.push('Select a character');
-        }
-        if (!value.actionId) {
-          errors.push('Select an action');
-        }
-        return errors.length > 0 ? errors.join(',') : undefined;
-      },
-    },
   });
+
+  const actionId = useStore(rollForm.store, (state) => state.values.actionId);
+  const characterId = useStore(
+    rollForm.store,
+    (state) => state.values.characterId,
+  );
+
+  const { filteredCharacter: character } = useCharacter(characterId);
+
+  const action = actions.find((action) => action.id === actionId);
 
   if (campaignLoading || isLoading) return <Loading />;
 
@@ -84,12 +84,21 @@ const RollSimulator = () => {
       >
         <rollForm.Field name="actionId">
           {(field) => (
-            <InputSelectField
-              options={actions || []}
-              label="Action"
-              value={field.state.value}
-              onChange={(value) => field.handleChange(value.id)}
-            />
+            <>
+              <InputSelectField
+                options={actions || []}
+                label="Action"
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value.id)}
+              />
+              {field.state.value && (
+                <ActionCard
+                  size="large"
+                  expanded={true}
+                  actionId={field.state.value}
+                />
+              )}
+            </>
           )}
         </rollForm.Field>
         <ArrowHeader3 title="Roll Modifiers" />
@@ -144,13 +153,11 @@ const RollSimulator = () => {
         <div className="flex w-full items-center justify-between gap-4">
           <rollForm.Subscribe
             selector={(state) => [
-              state.values.character,
-              state.values.action,
               state.values.modifiers,
               state.values.extraDice,
             ]}
           >
-            {([character, action, modifiers, extraDice]) => {
+            {([modifiers, extraDice]) => {
               const { diceCount, roll } =
                 character && action
                   ? calculateDiceCount(
@@ -160,6 +167,7 @@ const RollSimulator = () => {
                       extraDice,
                     )
                   : { diceCount: null, roll: null };
+
               return (
                 <>
                   {roll && (

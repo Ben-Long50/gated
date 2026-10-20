@@ -44,15 +44,11 @@ const LinkListSidebar = ({
 
   return (
     <div
-      className={`timing relative flex flex-col`}
-      onMouseEnter={(e) => {
+      className={`${detailsOpen && 'bg-primary shadow-color'} ${sidebar && detailsOpen && 'pb-4'} hover:shadow-color hover:bg-primary timing relative flex cursor-pointer flex-col rounded`}
+      onClick={(e) => {
         e.stopPropagation();
         cancel();
-        setDetailsOpen(true);
-      }}
-      onMouseLeave={(e) => {
-        e.stopPropagation();
-        timer();
+        setDetailsOpen((prev) => !prev);
       }}
     >
       <div className="text-primary group z-10 flex items-center">

@@ -3,7 +3,7 @@ import campaignServices from '../services/campaignServices.js';
 import { validation } from '@gated/shared';
 import { getIO } from '../sockets/socket.js';
 import handleControllerError from './handleControllerError.js';
-import { Date } from '@gated/shared/validation';
+import { Date, RollInput } from '@gated/shared/validation';
 
 const campaignController = {
   getCampaigns: async (req: Request, res: Response) => {
@@ -193,7 +193,7 @@ const campaignController = {
         return;
       }
 
-      const validatedRoll = validation.RollInput.parse(req.body);
+      const validatedRoll = RollInput.parse(req.body);
 
       await campaignServices.campaignRoll(
         req.user.id,

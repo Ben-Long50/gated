@@ -337,7 +337,7 @@ const campaignServices = {
       characterId: number;
       actionId: number;
       modifiers: string[];
-      extraDice: number;
+      extraDice: number | null;
     },
   ) => {
     const io = getIO();

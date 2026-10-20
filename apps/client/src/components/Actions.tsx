@@ -10,16 +10,20 @@ import { mdiSync } from '@mdi/js';
 import { capitalCase } from 'change-case';
 import InputFieldCheckbox from './formFields/InputFieldCheckbox';
 import IconBtnMedium from './buttons/IconBtnMedium';
+import { useContext } from 'react';
+import { LayoutContext } from 'src/contexts/LayoutContext';
 
 const Actions = ({ form }: { form?: FormApi }) => {
+  const { mobile } = useContext(LayoutContext);
+
   const {
     actions,
     query,
-    category,
-    subCategory,
+    types,
+    setTypes,
     setQuery,
-    setCategory,
-    setSubCategory,
+    subTypes,
+    setSubtypes,
     isLoading,
   } = useActions();
 
@@ -34,17 +38,17 @@ const Actions = ({ form }: { form?: FormApi }) => {
           <InputSelectField
             label="Action Type"
             options={['action', 'extendedAction', 'reaction', 'passive']}
-            value={category}
+            value={types[0]}
             onChange={(value) => {
-              setCategory(value);
+              setTypes([value]);
             }}
           />
           <InputSelectField
             label="Action Subtype"
             options={['attack', 'movement', 'upkeep', 'unique']}
-            value={subCategory}
+            value={subTypes[0]}
             onChange={(value) => {
-              setSubCategory(value);
+              setSubtypes([value]);
             }}
           />
         </div>
@@ -60,8 +64,8 @@ const Actions = ({ form }: { form?: FormApi }) => {
           <IconBtnMedium
             onClick={() => {
               setQuery('');
-              setCategory('');
-              setSubCategory('');
+              setTypes([]);
+              setSubtypes([]);
             }}
             tooltip="Reset Search"
           >
@@ -70,14 +74,21 @@ const Actions = ({ form }: { form?: FormApi }) => {
         </div>
       </div>
       <div className="flex w-full flex-col gap-8">
-        <ArrowHeader2 title={capitalCase(category) || 'All Actions'} />
+        <ArrowHeader2
+          title={types[0] ? capitalCase(types[0]) : 'All Actions'}
+        />
         {form ? (
           <form.Field name="actionIds">
             {(field) => (
               <div className="flex flex-col gap-4 md:grid md:grid-cols-2">
                 {actions?.map((action) => (
                   <InputFieldCheckbox
-                    label={<ActionCard actionId={action.id} />}
+                    label={
+                      <ActionCard
+                        size={mobile ? 'small' : 'large'}
+                        actionId={action.id}
+                      />
+                    }
                     value={action.id}
                     checked={field.state.value.some(
                       (id: number) => action.id === id,
@@ -104,7 +115,10 @@ const Actions = ({ form }: { form?: FormApi }) => {
         ) : (
           <div className="flex flex-col gap-4 md:grid md:grid-cols-2">
             {actions?.map((action) => (
-              <ActionCard actionId={action.id} />
+              <ActionCard
+                size={mobile ? 'small' : 'large'}
+                actionId={action.id}
+              />
             ))}
           </div>
         )}

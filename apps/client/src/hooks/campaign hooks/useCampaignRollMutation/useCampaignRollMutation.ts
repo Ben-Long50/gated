@@ -1,7 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import campaignRoll from './campaignRoll';
-import { Character } from 'src/types/character';
-import { Action } from '@cloudinary/url-gen/internal/Action';
+import { toast } from 'react-toastify';
 
 const useRollActionMutation = (campaignId: number) => {
   return useMutation({
@@ -12,6 +11,12 @@ const useRollActionMutation = (campaignId: number) => {
       extraDice: number | null;
     }) => {
       return campaignRoll(campaignId, rollData);
+    },
+    onSuccess: (data) => {
+      toast.success(data.message);
+    },
+    onError: (data) => {
+      toast.success(data.message);
     },
     throwOnError: false,
   });
