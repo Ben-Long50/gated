@@ -43,7 +43,7 @@ const ItemForm = () => {
   );
 
   return (
-    <Page title={itemId ? 'Update Item' : 'Create Item'}>
+    <Page title={itemId ? 'Update Item' : 'Create Item'} type='item' form={itemForm}>
       <FormLayout
         label="Item"
         form={itemForm}
