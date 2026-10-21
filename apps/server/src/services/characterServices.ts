@@ -4,7 +4,6 @@ import itemServices, {
   itemInclude,
   itemSelectForCopy,
 } from './itemServices.js';
-import { getIO } from '../sockets/socket.js';
 import { CharacterLevelBonus } from '../validation/characterLevelBonusSchema.js';
 import { NpcTypes, Prisma } from '@prisma/client';
 import perkServices, { perkSelectForCopy } from './perkServices.js';
@@ -14,8 +13,8 @@ import {
   ConditionReferenceInput,
 } from '@gated/shared/validation';
 import { validateLevelUpBonus } from '../utils/validateLevelUpBonus.js';
-import { filterObject } from '@gated/shared';
-import mapServices, { mapInclude } from './mapServices.js';
+import { activeEncounterPhases, filterObject } from '@gated/shared';
+import { mapInclude } from './mapServices.js';
 
 export const characterSelectForCopy = {
   id: true,
@@ -659,6 +658,16 @@ const characterServices = {
           where: { id: formData.mapId },
           include: mapInclude,
         });
+
+        if (
+          map?.encounters.some((encounter) =>
+            activeEncounterPhases.includes(encounter.combatPhase),
+          )
+        ) {
+          throw new Error(
+            'Cannot update the location of a character on an active encounter map',
+          );
+        }
 
         const character = await tx.character.findUnique({
           where: { id: characterId },

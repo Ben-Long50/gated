@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import activateEncounter from './activateEncounter';
-import { Encounter } from 'src/types/encounter';
+import { toast } from 'react-toastify';
 
 const useActivateEncounterMutation = (campaignId: number) => {
   const navigate = useNavigate();
@@ -11,28 +11,22 @@ const useActivateEncounterMutation = (campaignId: number) => {
     mutationFn: (encounterId: number) => {
       return activateEncounter(campaignId, encounterId);
     },
-    onMutate: (encounterId) => {
-      const prevEncounter: Encounter | undefined = queryClient.getQueryData([
-        'encounter',
-        encounterId,
-      ]);
+    onSuccess: (data) => {
+      toast.success(data.message);
+
+      console.log(data);
 
       queryClient.setQueryData(
-        ['encounter', encounterId],
-        (prev: Encounter) => ({
-          ...prev,
-          active: true,
-        }),
+        ['encounter', data.encounter.id],
+        data.encounter,
       );
 
-      return prevEncounter;
+      navigate(
+        `/glam/campaigns/${campaignId}/maps/${data.encounter.mapId}/encounters/${data.encounter.id}/modal/initiative`,
+      );
     },
-    onSuccess: (_, __, encounter) => {
-      if (encounter && encounter.mapId) {
-        navigate(
-          `/glam/campaigns/${campaignId}/maps/${encounter.mapId}/encounters/${encounterId}`,
-        );
-      }
+    onError: (data) => {
+      toast.error(data.message);
     },
     throwOnError: false,
   });

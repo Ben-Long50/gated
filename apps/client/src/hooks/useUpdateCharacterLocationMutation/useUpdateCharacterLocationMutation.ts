@@ -63,7 +63,7 @@ const useUpdateCharacterLocationMutation = (mapId: number) => {
         });
       }
 
-      return { prevLocationData };
+      return { prevLocationData, prevMapData };
     },
 
     onSuccess: (data) => {
@@ -77,8 +77,14 @@ const useUpdateCharacterLocationMutation = (mapId: number) => {
       queryClient.setQueryData(['location', data.location.id], data.location);
       queryClient.setQueryData(['map', data.map.id], data.map);
     },
-    onError: (data) => {
+    onError: (data, variables, context) => {
       queryClient.removeQueries({ queryKey: ['location', 0] });
+      queryClient.setQueryData(['map', mapId], context?.prevMapData);
+      queryClient.setQueryData(
+        ['location', variables.locationId],
+        context?.prevLocationData,
+      );
+
       toast.error(data.message);
     },
     throwOnError: false,

@@ -26,6 +26,9 @@ import MapHeader from '../mapComponents/map/MapHeader';
 import MapIcon from '../icons/MapIcon';
 import useCombatStore from 'src/stores/combatStore';
 import { useStore } from '@tanstack/react-form';
+import Page from '../Page';
+import Sidebar from '../sidebars/Sidebar';
+import IconBtnMedium from '../buttons/IconBtnMedium';
 
 const Encounter = () => {
   const {
@@ -38,10 +41,8 @@ const Encounter = () => {
     actionForm,
   } = useContext(EncounterContext);
   const navigate = useNavigate();
-  const location = useLocation();
 
   const { campaignId, encounterId, mapId } = useParams();
-  const parts = location.pathname.split('/');
   const [gridDisplay, setGridDisplay] = useState(false);
   const [measureMode, setMeasureMode] = useState(false);
   const [characterList, setCharacterList] = useState(false);
@@ -61,31 +62,6 @@ const Encounter = () => {
     isPending: historyPending,
   } = useEncounterHistoryQuery(Number(encounterId));
 
-  const phaseActionCount = useMemo(
-    () =>
-      combat?.phaseHistory?.length > 0
-        ? [
-            combat.phaseHistory[0].action,
-            ...combat.phaseHistory[0].reactions,
-          ].filter((action) => action).length
-        : 0,
-    [combat?.phaseHistory],
-  );
-
-  useEffect(() => {
-    if (combat && combat.combatPhase === 'pending') {
-      navigate('..');
-    }
-
-    if (combat && combat.combatPhase === 'initiative') {
-      navigate('initiative');
-    }
-
-    if (combat && combat.passes.length === combat.characters.length - 1) {
-      navigate('actionQueue');
-    }
-  }, [combat]);
-
   const tempItem = useCombatStore((state) => state.item);
   const actionItem = useStore(actionForm.store, (state) => state.values.item);
 
@@ -96,7 +72,7 @@ const Encounter = () => {
   if (!map) return <h1>No Map Found</h1>;
 
   return (
-    <>
+    <Page container={false}>
       <div
         className={`${mapInfo && 'pt-3'} flex h-full w-full flex-col items-center justify-start gap-4 overflow-hidden`}
       >
@@ -147,20 +123,8 @@ const Encounter = () => {
             setActionSidebar={setActionSidebar}
           />
         </div>
-        <div
-          className={`${characterList ? 'w-96' : 'w-[72px]'} bg-primary timing absolute left-0 top-0 z-10 flex h-full flex-col justify-start gap-3 p-3 shadow-md shadow-black`}
-          onMouseEnter={() => {
-            setCharacterList(true);
-            setHistoryList(true);
-          }}
-          onMouseLeave={() => {
-            setCharacterList(false);
-            setHistoryList(false);
-          }}
-        >
-          <div
-            className={`${characterList ? 'scrollbar-primary-2 overflow-y-auto' : 'overflow-y-hidden'} flex h-full flex-col overflow-x-hidden`}
-          >
+        <Sidebar position="left">
+          <div className={`flex h-full flex-col overflow-x-hidden`}>
             {combat?.turnOrder?.map((characterId: number, index: number) => (
               <Fragment key={characterId}>
                 <CharacterCardSmall
@@ -205,30 +169,21 @@ const Encounter = () => {
               )}
             </div>
           </div>
-          <button
-            className="bg-tertiary group relative flex items-center justify-center rounded p-1.5 shadow shadow-black"
-            onClick={() => navigate('actionQueue')}
-          >
-            <Icon
-              path={mdiQueueFirstInLastOut}
-              className={`timing text-tertiary group-hover:text-accent size-8`}
-            />
-            {phaseActionCount > 0 && (
-              <div className="text-primary absolute -right-1 -top-1 size-6 rounded-full bg-red-600 font-semibold">
-                {phaseActionCount}
-              </div>
-            )}
-          </button>
-          <button
-            className="bg-tertiary group flex items-center justify-center rounded p-1.5 shadow shadow-black"
-            onClick={() => setCharacterOptions((prev) => !prev)}
-          >
-            <Icon
-              path={mdiChevronDown}
-              className={`${characterOptions ? 'rotate-0' : 'rotate-180'} timing text-tertiary group-hover:text-accent size-8`}
-            />
-          </button>
-        </div>
+          <div className="flex items-center justify-start gap-4">
+            <IconBtnMedium
+              tooltip="History"
+              onClick={() => navigate('actionQueue')}
+            >
+              <Icon path={mdiQueueFirstInLastOut} />
+            </IconBtnMedium>
+            <IconBtnMedium
+              tooltip="Hide Equipment"
+              onClick={() => setCharacterOptions((prev) => !prev)}
+            >
+              <Icon path={mdiChevronDown} />
+            </IconBtnMedium>
+          </div>
+        </Sidebar>
         <div
           className={`${actionSidebar ? 'w-96' : 'w-[72px]'} bg-primary scrollbar-primary-2 timing absolute right-0 top-0 z-10 flex h-full flex-col gap-2 overflow-x-hidden p-3 shadow-md shadow-black`}
           onMouseEnter={() => setActionSidebar(true)}
@@ -367,18 +322,7 @@ const Encounter = () => {
           </div>
         )}
       </div>
-      {(parts.includes('characters') ||
-        parts.includes('initiative') ||
-        parts.includes('actionQueue') ||
-        parts.includes('history')) && (
-        <Outlet
-          context={{
-            campaign,
-            parts,
-          }}
-        />
-      )}
-    </>
+    </Page>
   );
 };
 

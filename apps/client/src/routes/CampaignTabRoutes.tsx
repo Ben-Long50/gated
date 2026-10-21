@@ -133,12 +133,12 @@ const CampaignTabRoutes = () => {
           <Route path="add" element={<MapAdd />} />
         </Route>
         <Route path="encounters">
+          <Route path="" element={<EncounterList />} />
           <Route path="create" element={<EncounterForm />}>
-            <Route path="" element={<EncounterFormInfo />} />
-            <Route path="maps/:mapId" element={<EncounterFormMap />} />
+            <Route path="modal" element={<Modal />}>
+              <Route path="selectMap" element={<EncounterFormInfo />} />
+            </Route>
           </Route>
-          <Route path="pending" element={<EncounterList />} />
-          <Route path="completed" element={<EncounterList />} />
         </Route>
         <Route path="affiliations" element={<CampaignAffiliations />} />
         <Route path="affiliations/create" element={<AffiliationForm />}>

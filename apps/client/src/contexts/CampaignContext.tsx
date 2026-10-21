@@ -67,8 +67,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     .flatMap((campaign) => campaign.encounters.map((encounter) => encounter.id))
     .filter((encounterId) => encounterId != null);
 
-  const { activeEncounters, inactiveEncounters } =
-    useCombatQueries(encounterIds);
+  const { activeEncounters } = useCombatQueries(encounterIds);
 
   const activeCampaignRef = useRef<number[]>([]);
 

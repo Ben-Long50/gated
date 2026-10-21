@@ -50,8 +50,6 @@ const CharacterOptions = ({
 
   const { campaignId, encounterId } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
-  const parts = location.pathname.split('/');
 
   const timerRef = useRef<number | null>(null);
   const inputRef = useRef<HTMLDivElement | null>(null);
@@ -60,7 +58,7 @@ const CharacterOptions = ({
 
   const { filteredCharacter: character } = useCharacter(controlledCharacterId);
 
-  const { characters } = useCharacterQueries(combat.turnOrder);
+  const { characters, isLoading } = useCharacterQueries(combat.turnOrder);
 
   const passAllReactions = usePassAllReactionsMutation(
     Number(campaignId),
@@ -81,6 +79,10 @@ const CharacterOptions = ({
 
   const setItem = useCombatStore((state) => state.setItem);
   const setRangeData = useCombatStore((state) => state.setRangeData);
+
+  if (isLoading) {
+    return;
+  }
 
   return (
     <ThemeContainer
@@ -292,14 +294,13 @@ const CharacterOptions = ({
             <BtnRect
               ariaLabel="Open initiative modal"
               type="button"
-              onClick={() => navigate('initiative')}
+              onClick={() => navigate('modal/initiative')}
             >
               Start Combat
             </BtnRect>
           )}
         </div>
       </div>
-      {parts.includes('reset') && <Outlet context={{ character, parts }} />}
     </ThemeContainer>
   );
 };

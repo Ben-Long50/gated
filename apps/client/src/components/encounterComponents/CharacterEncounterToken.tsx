@@ -170,7 +170,7 @@ const CharacterEncounterToken = ({
           }}
         >
           <CharacterPictureRound
-            className={`${activeCharacter.id === character?.id && 'activeToken'} ${combat?.reactions.includes(location.characterId) && 'reactiveToken'} group-hover:border-accent timing size-full border-2 border-white`}
+            className={`${activeCharacter?.id === character?.id && 'activeToken'} ${combat?.reactions.includes(location.characterId) && 'reactiveToken'} group-hover:border-accent timing size-full border-2 border-white`}
             character={character}
           />
           {roll && combat.combatPhase !== 'initiative' && (

@@ -109,4 +109,11 @@ router.patch(
   encounterController.confirmActionQueueResults,
 );
 
+router.delete(
+  '/campaigns/:campaignId/encounters/:encounterId',
+  authentication.authenticate,
+  campaignAuthentication.validateGameMaster,
+  encounterController.deleteEncounter,
+);
+
 export default router;

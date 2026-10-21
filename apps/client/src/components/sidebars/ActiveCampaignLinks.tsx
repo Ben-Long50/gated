@@ -76,18 +76,9 @@ const ActiveCampaignLinks = () => {
                     <LinkSidebar
                       key={index}
                       title={encounter.name}
-                      icon={
-                        <div className="liveToken z-10 ml-4 size-12 shrink-0 rounded-full">
-                          <img
-                            className="bg-secondary size-full shrink-0 rounded-full object-cover"
-                            src={encounter?.map?.generatedPictureId.imageUrl}
-                            alt={encounter.map?.name + ' ' + "'s picture"}
-                          />
-                        </div>
-                      }
                       path={
-                        encounter.combatPhase === 'pending'
-                          ? `/glam/campaigns/${encounter.campaignId}/maps/${encounter.mapId}/encounters/${encounter.id}/initiative`
+                        encounter.combatPhase === 'initiative'
+                          ? `/glam/campaigns/${encounter.campaignId}/maps/${encounter.mapId}/encounters/${encounter.id}/modal/initiative`
                           : `/glam/campaigns/${encounter.campaignId}/maps/${encounter.mapId}/encounters/${encounter.id}`
                       }
                     />

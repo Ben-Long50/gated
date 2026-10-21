@@ -30,7 +30,7 @@ const MapGrid = ({
   return (
     <DragScrollContainer
       draggable={true}
-      className={`${className} scrollbar-primary timing relative max-h-full max-w-full overflow-y-auto rounded border-2`}
+      className={`${className} scrollbar-primary timing relative mx-auto max-h-full max-w-full overflow-y-auto rounded border-2`}
       style={{ borderColor: accentPrimary }}
     >
       <div

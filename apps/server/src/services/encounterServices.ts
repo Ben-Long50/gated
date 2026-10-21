@@ -22,6 +22,26 @@ import { camelCase } from 'change-case';
 import reactionFuncs from '../utils/reactionFuncs.js';
 import parseBlockData from '../utils/parseBlockData.js';
 import { Action, calculateItemStats, Item } from '@gated/shared';
+import { map } from 'zod';
+
+const encounterInclude = {
+  campaign: { select: { id: true, ownerId: true } },
+  characters: {
+    select: { id: true, userId: true, playerCharacter: true },
+  },
+  map: {
+    select: { id: true, name: true, generatedPicture: true },
+  },
+  history: {
+    take: 10,
+    orderBy: { createdAt: 'desc' as const },
+  },
+  phaseHistory: {
+    take: 1,
+    orderBy: { createdAt: 'desc' as const },
+    include: { action: true, reactions: true },
+  },
+};
 
 const encounterServices = {
   getEncounters: async (campaignId: number) => {
@@ -29,15 +49,7 @@ const encounterServices = {
       where: {
         campaignId,
       },
-      include: {
-        characters: {
-          select: { id: true, userId: true, playerCharacter: true },
-        },
-        history: {
-          take: 10,
-          orderBy: { createdAt: 'desc' },
-        },
-      },
+      include: encounterInclude,
       orderBy: { id: 'asc' },
     });
 
@@ -47,21 +59,7 @@ const encounterServices = {
   getEncounterById: async (encounterId: number) => {
     const encounter = await prisma.encounter.findUnique({
       where: { id: Number(encounterId) },
-      include: {
-        campaign: { select: { ownerId: true } },
-        characters: {
-          select: { id: true, userId: true, playerCharacter: true },
-        },
-        history: {
-          take: 10,
-          orderBy: { createdAt: 'desc' },
-        },
-        phaseHistory: {
-          take: 1,
-          orderBy: { createdAt: 'desc' },
-          include: { action: true, reactions: true },
-        },
-      },
+      include: encounterInclude,
     });
 
     if (!encounter) {
@@ -76,26 +74,7 @@ const encounterServices = {
       where: {
         id: { in: encounterIds },
       },
-      include: {
-        characters: {
-          select: { id: true, userId: true, playerCharacter: true },
-        },
-        history: {
-          take: 10,
-          orderBy: { createdAt: 'desc' },
-        },
-        map: {
-          select: {
-            generatedPicture: { select: { publicId: true } },
-            name: true,
-          },
-        },
-        phaseHistory: {
-          take: 1,
-          orderBy: { createdAt: 'desc' },
-          include: { action: true, reactions: true },
-        },
-      },
+      include: encounterInclude,
     });
 
     return encounters;
@@ -126,35 +105,17 @@ const encounterServices = {
   },
 
   activateEncounter: async (encounterId: number) => {
-    const io = getIO();
-
-    const encounter = await prisma.encounter.findUnique({
-      where: { id: encounterId },
-    });
-
-    if (!encounter) {
-      throw new Error('Failed to find encounter');
-    }
-
-    await prisma.encounter.update({
+    const encounter = await prisma.encounter.update({
       where: {
         id: encounterId,
       },
       data: {
-        combatPhase:
-          encounter.combatPhase === 'pending'
-            ? 'initiative'
-            : encounter.combatPhase,
-        active: encounter ? !encounter?.active : true,
+        combatPhase: 'initiative',
       },
+      include: encounterInclude,
     });
 
-    io.to(`campaign ${encounter.campaignId}`).emit(
-      'campaign',
-      encounter.campaignId,
-    );
-
-    io.to(`campaign ${encounter.campaignId}`).emit('encounter', encounterId);
+    return encounter;
   },
 
   advancePhase: async (encounterId: number) => {
@@ -821,12 +782,12 @@ const encounterServices = {
     },
   ) => {
     const existingEncounter = await prisma.encounter.findFirst({
-      where: { mapId },
+      where: { mapId, combatPhase: { not: 'completed' } },
     });
 
     if (existingEncounter && formData.id !== existingEncounter.id) {
       throw new Error(
-        'You cannot create an encounter on a map which already belongs to another active or pending encounter',
+        'You cannot create an encounter on a map which already belongs to another encounter',
       );
     }
 
@@ -896,6 +857,7 @@ const encounterServices = {
           create: { campaign: { connect: { id: campaignId } }, ...eventData },
         },
       },
+      include: encounterInclude,
     });
 
     return encounter;

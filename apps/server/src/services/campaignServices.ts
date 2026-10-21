@@ -261,7 +261,7 @@ const campaignServices = {
           },
           orderBy: { character: { name: 'asc' } },
         },
-        encounters: { select: { active: true } },
+        encounters: { select: { combatPhase: true } },
       },
     });
 

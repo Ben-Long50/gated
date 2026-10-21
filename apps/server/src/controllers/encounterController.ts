@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import encounterServices from '../services/encounterServices.js';
 import { getIO } from '../sockets/socket.js';
 import handleControllerError from './handleControllerError.js';
+import { EncounterInput } from '@gated/shared/validation';
 
 const encounterController = {
   getEncounters: async (req: Request, res: Response) => {
@@ -68,13 +69,22 @@ const encounterController = {
 
   activateEncounter: async (req: Request, res: Response) => {
     try {
+      const io = getIO();
+
       if (!req.user) {
         throw new Error('Could not find authenticated user');
       }
 
-      await encounterServices.activateEncounter(Number(req.params.encounterId));
+      const encounter = await encounterServices.activateEncounter(
+        Number(req.params.encounterId),
+      );
 
-      res.status(200).json({ message: 'Successfully activated encounter' });
+      io.to(`campaign ${encounter.campaignId}`).emit(
+        'encounterUpdate',
+        encounter,
+      );
+
+      res.status(200).json({ encounter, message: 'Activated encounter' });
     } catch (error: any) {
       handleControllerError(res, error);
     }
@@ -276,13 +286,17 @@ const encounterController = {
         return;
       }
 
-      await encounterServices.createOrUpdateEncounter(
+      const validatedEncounter = EncounterInput.parse(req.body);
+
+      const encounter = await encounterServices.createOrUpdateEncounter(
         Number(req.params.campaignId),
         Number(req.params.mapId),
-        req.body,
+        validatedEncounter,
       );
 
-      res.status(200).json({ message: 'Successfully created encounter' });
+      res
+        .status(200)
+        .json({ encounter, message: 'Successfully created encounter' });
     } catch (error: any) {
       handleControllerError(res, error);
     }

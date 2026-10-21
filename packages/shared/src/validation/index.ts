@@ -21,3 +21,4 @@ export * from './propertySchema.js';
 export * from './resumeSchema.js';
 export * from './rollSchema.js';
 export * from './sessionSchema.js';
+export * from './encounterSchema.js';

@@ -10,6 +10,8 @@ export const mapInclude = {
   locations: {
     select: {
       id: true,
+      characterId: true,
+      itemId: true,
     },
     orderBy: { character: { name: 'asc' as const } },
   },

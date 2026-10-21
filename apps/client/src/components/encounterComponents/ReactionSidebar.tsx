@@ -28,6 +28,7 @@ import {
   calculateDiceCount,
   Item,
 } from '@gated/shared';
+import Sidebar from '../sidebars/Sidebar';
 
 const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
   const {
@@ -113,19 +114,8 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
   }
 
   return (
-    <div
-      className={`${actionSidebar ? 'visible translate-x-0 opacity-100' : 'invisible translate-x-full opacity-0'} timing z-10 flex flex-col gap-4 p-2`}
-    >
-      {parts.includes('availableReactions') && (
-        <Outlet
-          context={{
-            actions: availableReactions,
-            category,
-            form: actionForm,
-            parts,
-          }}
-        />
-      )}
+    <Sidebar position="right">
+      <ReactionIcon className="text-primary ml-1 size-10 shrink-0" />
       {reactionPermissions && (
         <>
           <div className="flex items-center justify-between gap-2">
@@ -397,7 +387,7 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
           <Divider />
         </>
       )}
-    </div>
+    </Sidebar>
   );
 };
 

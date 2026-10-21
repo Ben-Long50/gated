@@ -1,18 +1,21 @@
 import useCreateCombatMutation from 'src/hooks/encounter hooks/useCreateCombatMutation/useCreateCombatMutation';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from '@tanstack/react-form';
 import Loading from '../Loading';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import FormLayout from 'src/layouts/FormLayout';
-import MapList from '../mapComponents/map/MapList';
-import ArrowHeader2 from '../ArrowHeader2';
 import Page from '../Page';
+import BtnRect from '../buttons/BtnRect';
+import Map from '../mapComponents/map/Map';
+import ArrowHeader2 from '../ArrowHeader2';
+import InputField from '../formFields/InputField';
 
 const EncounterForm = () => {
   const { campaignId } = useParams();
   const { data: campaign, isLoading } = useCampaignQuery(Number(campaignId));
+  const navigate = useNavigate();
 
-  const mapIds = campaign?.maps.map((map) => map.id);
+  const mapIds = campaign?.maps.map((map) => map.id) || [];
 
   const createEncounter = useCreateCombatMutation(Number(campaignId));
 
@@ -24,9 +27,7 @@ const EncounterForm = () => {
       turnPosition: 0,
     },
     onSubmit: ({ value }) => {
-      if (typeof value.mapId === 'number') {
-        createEncounter.mutate(value);
-      }
+      createEncounter.mutate(value);
     },
   });
 
@@ -35,10 +36,44 @@ const EncounterForm = () => {
   }
 
   return (
-    <Page title="Create Encounter">
-      <FormLayout label="Encounter" form={encounterForm}>
-        <ArrowHeader2 title="Select Encounter Map" />
-        <MapList mapIds={mapIds} />
+    <Page title="Create Encounter" context={{ mapIds, form: encounterForm }}>
+      <FormLayout
+        label="Encounter"
+        form={encounterForm}
+        createMutation={createEncounter}
+      >
+        <ArrowHeader2 title="Encounter Info" />
+        <encounterForm.Field name="name">
+          {(field) => (
+            <InputField
+              label="Encounter Name"
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
+            />
+          )}
+        </encounterForm.Field>
+        <encounterForm.Field name="mapId">
+          {(field) => {
+            return field.state.value ? (
+              <>
+                <ArrowHeader2 title="Place and Arrange Characters" />
+                <Map
+                  mapId={field.state.value}
+                  sidebar={true}
+                  gridDisplay={false}
+                  mapScale={1}
+                />
+              </>
+            ) : (
+              <BtnRect
+                ariaLabel="Select encounter map"
+                onClick={() => navigate('modal/selectMap')}
+              >
+                Select Encoutner Map
+              </BtnRect>
+            );
+          }}
+        </encounterForm.Field>
       </FormLayout>
     </Page>
   );

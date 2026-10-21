@@ -45,13 +45,7 @@ const EquippedItems = ({
     });
   };
 
-  let equipmentList = [] as Item[];
-
   if (isLoading || !character?.equipment) return <Loading size={1.5} />;
-
-  Object.values(character?.equipment).forEach((itemArray) => {
-    equipmentList = [...equipmentList, ...itemArray];
-  });
 
   return (
     character?.equipment && (
@@ -71,7 +65,7 @@ const EquippedItems = ({
             onWheel={handleWheel}
             style={{ overscrollBehavior: 'contain' }}
           >
-            {equipmentList.map((equipment) => (
+            {character.equipment.map((equipment) => (
               <button
                 key={equipment.id}
                 className={`${!equipment.available && 'pointer-events-none'} relative size-20 shrink-0 overflow-hidden rounded border-2 sm:size-28`}

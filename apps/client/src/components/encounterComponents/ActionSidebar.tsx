@@ -24,6 +24,7 @@ import Divider from '../Divider';
 import isInRange from './encounterUtils/isInRange';
 import { calculateCosts, calculateDiceCount, Item } from '@gated/shared';
 import { Action } from '@cloudinary/url-gen/internal/Action';
+import Sidebar from '../sidebars/Sidebar';
 
 const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
   const { activeCharacter, actionForm, removeTarget, getTarget } =
@@ -143,9 +144,7 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
   }
 
   return (
-    <div
-      className={`${actionSidebar ? 'visible translate-x-0 opacity-100' : 'invisible translate-x-full opacity-0'} timing z-10 flex flex-col gap-4 p-2`}
-    >
+    <Sidebar position="right">
       {parts.includes('availableActions') && (
         <Outlet
           context={{
@@ -430,7 +429,7 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
         </actionForm.Subscribe>
       )}
       <Divider />
-    </div>
+    </Sidebar>
   );
 };
 

@@ -10,7 +10,7 @@ const LinkSidebar = ({
   onClick,
 }: {
   title: string;
-  icon: ReactNode;
+  icon?: ReactNode;
   path: string;
   onClick?: () => void;
 }) => {

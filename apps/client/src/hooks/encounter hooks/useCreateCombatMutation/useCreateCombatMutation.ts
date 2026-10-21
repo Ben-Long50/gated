@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { socket } from 'src/socket';
 import createCombat from './createCombat';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const useCreateCombatMutation = (campaignId: number) => {
   const queryClient = useQueryClient();
@@ -13,25 +13,23 @@ const useCreateCombatMutation = (campaignId: number) => {
       mapId: number;
       turnOrder: number[];
       turnPosition: number;
-    }) => {
-      return createCombat(campaignId, formData);
+    }) => createCombat(campaignId, formData),
+    onSuccess: (data) => {
+      toast.success(data.message);
+
+      navigate('..?type=pending');
+
+      queryClient.setQueryData(
+        ['encounter', data.encounter.id],
+        data.encounter,
+      );
+      queryClient.setQueryData(['campaign', campaignId], (prev) => ({
+        ...prev,
+        encounters: [...prev.encounters, { id: data.encounter.id }],
+      }));
     },
-    onSuccess: (data, formData) => {
-      if (formData.id) {
-        socket.emit('encounter', { campaignId, encounterId: formData.id });
-        socket.emit('navigateToEncounter', {
-          encounterId: formData.id,
-          mapId: formData.mapId,
-          campaignId,
-        });
-        navigate('..');
-      } else {
-        socket.emit('campaign', campaignId);
-        navigate('../pending');
-      }
-      return queryClient.invalidateQueries({
-        queryKey: ['encounter', data.encounterId],
-      });
+    onError: (data) => {
+      toast.error(data.message);
     },
     throwOnError: false,
   });

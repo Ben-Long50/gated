@@ -1,7 +1,6 @@
 import { mdiChevronDown } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Children, isValidElement, ReactNode, useState } from 'react';
-import useTimeout from 'src/hooks/useTimeout';
 
 const LinkSublistSidebar = ({
   title,
@@ -13,10 +12,6 @@ const LinkSublistSidebar = ({
   children: ReactNode;
 }) => {
   const [detailsOpen, setDetailsOpen] = useState(false);
-
-  const { timer, cancel } = useTimeout(300, () => {
-    setDetailsOpen(false);
-  });
 
   function countChildren(children: ReactNode) {
     let count = 0;
@@ -38,15 +33,10 @@ const LinkSublistSidebar = ({
 
   return (
     <div
-      className={`timing relative flex flex-col pr-2 clip-4`}
-      onMouseEnter={(e) => {
+      className={`timing clip-4 relative flex flex-col pr-2`}
+      onClick={(e) => {
         e.stopPropagation();
-        cancel();
-        setDetailsOpen(true);
-      }}
-      onMouseLeave={(e) => {
-        e.stopPropagation();
-        timer();
+        setDetailsOpen((prev) => !prev);
       }}
     >
       <button

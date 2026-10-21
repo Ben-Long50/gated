@@ -1,5 +1,6 @@
 import { useQueries } from '@tanstack/react-query';
 import getCombat from './getCombat';
+import { activeEncounterPhases } from '@gated/shared';
 
 const useCombatQueries = (combatIds: number[]) => {
   return useQueries({
@@ -14,15 +15,14 @@ const useCombatQueries = (combatIds: number[]) => {
         .filter((data) => data);
 
       return {
-        activeEncounters: encounters.filter(
-          (data) => data?.active && data?.combatPhase !== 'completed',
+        activeEncounters: encounters.filter((data) =>
+          activeEncounterPhases.includes(data.combatPhase),
         ),
-        inactiveEncounters: encounters.filter((data) => !data?.active),
         completedEncounters: encounters.filter(
-          (data) => !data?.active && data?.combatPhase === 'completed',
+          (data) => data.combatPhase === 'completed',
         ),
         pendingEncounters: encounters.filter(
-          (data) => data?.combatPhase === 'pending',
+          (data) => data.combatPhase === 'pending',
         ),
         isLoading: results.some((result) => result.isLoading),
       };

@@ -55,9 +55,10 @@ const CampaignLinks = () => {
           {campaigns.map((campaign) => {
             return (
               <LinkSidebar
+                key={campaign.id}
                 title={campaign.name}
                 icon={<CharacterPictureRound character={campaign} />}
-                path={`campaigns/${campaign.id}`}
+                path={`campaigns/${campaign.id}/dashboard`}
               />
             );
           })}
@@ -122,6 +123,7 @@ const CampaignLinks = () => {
               >
                 {campaign?.gangs.map((gang: Gang) => (
                   <SubLinkSidebar
+                    key={gang.id}
                     title={gang.name}
                     path={`campaigns/${campaignId}/gangs/${gang.id}`}
                   />
@@ -149,8 +151,12 @@ const CampaignLinks = () => {
                 title="Encounters"
               >
                 <SubLinkSidebar
+                  title={`Active Encounters`}
+                  path={`campaigns/${campaignId}/encounters?type=active`}
+                />
+                <SubLinkSidebar
                   title={`Completed Encounters`}
-                  path={`campaigns/${campaignId}/encounters/completed`}
+                  path={`campaigns/${campaignId}/encounters?type=completed`}
                 />
               </LinkListSidebar>
               <LinkListSidebar
@@ -220,7 +226,7 @@ const CampaignLinks = () => {
               />
               <SubLinkSidebar
                 title={`Pending Encounters`}
-                path={`campaigns/${campaignId}/encounters/pending`}
+                path={`campaigns/${campaignId}/encounters?type=pending`}
               />
               <SubLinkSidebar
                 title="Update Campaign"
