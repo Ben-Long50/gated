@@ -97,7 +97,7 @@ const PictureField = ({
             <form.Field name="generatedPictureId">
               {(field) => {
                 const pictures =
-                  generatePicture.data ?? Array.from({ length: pictureCount });
+                  generatePicture.data?.newPictures ?? Array.from({ length: pictureCount });
 
                 return pictures.map((picture, index) => {
                   return picture ? (
