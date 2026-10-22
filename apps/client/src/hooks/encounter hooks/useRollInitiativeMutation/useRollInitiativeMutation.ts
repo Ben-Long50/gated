@@ -3,8 +3,10 @@ import rollInitiative from './rollInitiative';
 
 const useRollInitiativeMutation = (campaignId: number, encounterId: number) => {
   return useMutation({
-    mutationFn: () => {
-      return rollInitiative(campaignId, encounterId);
+    mutationFn: (
+      rollData: [number, { modifiers: string[]; extraDice: number }][],
+    ) => {
+      return rollInitiative(campaignId, encounterId, rollData);
     },
     throwOnError: false,
   });

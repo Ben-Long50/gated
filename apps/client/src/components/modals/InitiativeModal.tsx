@@ -1,7 +1,7 @@
 import { Fragment } from 'react/jsx-runtime';
 import Divider from '../Divider';
 import BtnRect from '../buttons/BtnRect';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Loading from '../Loading';
 import CharacterInitiativeRoll from '../encounterComponents/CharacterInitiativeRoll';
@@ -14,10 +14,11 @@ import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import useRollInitiativeMutation from 'src/hooks/encounter hooks/useRollInitiativeMutation/useRollInitiativeMutation';
 import { socket } from 'src/socket';
 import useAdvancePhaseMutation from 'src/hooks/encounter hooks/useAdvancePhaseMutation/useAdvancePhaseMutation';
+import { Character } from '@gated/shared';
 
 const InitiativeModal = () => {
   const { gameMaster } = useContext(CampaignContext);
-  const { combat, joinedPlayers, rolls, rolling, rollCounter, resetRolls } =
+  const { combat, joinedPlayers, rolls, rolling, rollCounter } =
     useContext(EncounterContext);
 
   const { campaignId, mapId, encounterId } = useParams();
@@ -39,84 +40,16 @@ const InitiativeModal = () => {
 
   combat?.characters.forEach((character) => playerIds.add(character.userId));
 
-  // const rollAllInitiative = async () => {
-  //   setRollingInitiative(true);
-  //   const rollAll = async (ids?: []) => {
-  //     const rolls = rollRefs.current
-  //       .map((ref) => {
-  //         if (ref?.rollInitiative && !ids) {
-  //           return ref.rollInitiative();
-  //         } else if (ids?.includes(ref.characterId)) {
-  //           return ref.rollInitiative();
-  //         }
-  //       })
-  //       .filter((roll) => roll != null);
-
-  //     const results = (await Promise.all(rolls)) as {
-  //       characterId: number;
-  //       playerCharacter: boolean;
-  //       successes: number;
-  //     }[];
-
-  //     const sortedResults = results.sort((a, b) => b.successes - a.successes);
-
-  //     const ties = new Map();
-
-  //     sortedResults.map((result) => {
-  //       if (!ties.get(result.successes)) {
-  //         ties.set(result.successes, [result]);
-  //       } else {
-  //         const old = ties.get(result.successes);
-  //         ties.set(result.successes, [...old, result]);
-  //       }
-  //     });
-
-  //     let newResults = [] as {
-  //       characterId: number;
-  //       name: string;
-  //       playerCharacter: boolean;
-  //       successes: number;
-  //     }[];
-
-  //     for (const tie of ties.values()) {
-  //       if (tie.length > 1) {
-  //         const result = await rollAll(tie.map((result) => result.characterId));
-  //         newResults = [...newResults, ...result];
-  //       } else {
-  //         newResults = [...newResults, tie[0]];
-  //       }
-  //     }
-
-  //     return newResults;
-  //   };
-
-  //   const results = await rollAll();
-
-  //   let resultsOrder = results.splice(0, 1);
-
-  //   const remainingPcs =
-  //     results.filter((result) => result.playerCharacter) || [];
-  //   const remainingNpcs =
-  //     results.filter((result) => !result.playerCharacter) || [];
-
-  //   for (let i = 0; i < results.length; i++) {
-  //     let previous = resultsOrder[i].playerCharacter;
-
-  //     if (previous && remainingNpcs.length > 0) {
-  //       resultsOrder = [...resultsOrder, ...remainingNpcs.splice(0, 1)];
-  //     } else if (!previous && remainingPcs.length > 0) {
-  //       resultsOrder = [...resultsOrder, ...remainingPcs.splice(0, 1)];
-  //     } else if (remainingNpcs.length > 0 && remainingPcs.length === 0) {
-  //       resultsOrder = [...resultsOrder, ...remainingNpcs.splice(0, 1)];
-  //     } else if (remainingNpcs.length === 0 && remainingPcs.length > 0) {
-  //       resultsOrder = [...resultsOrder, ...remainingNpcs.splice(0, 1)];
-  //     }
-  //   }
-
-  //   console.log(resultsOrder.map((result) => result.characterId));
-
-  //   setRollingInitiative(false);
-  // };
+  const [rollData, setRollData] = useState<
+    Map<number, { modifiers: string[]; extraDice: number }>
+  >(
+    new Map(
+      combat?.characters.map((character: Character) => [
+        character.id,
+        { modifiers: [], extraDice: 0 },
+      ]),
+    ),
+  );
 
   const initiativeRollIdArray = Array.from(rolls.keys());
 
@@ -125,7 +58,7 @@ const InitiativeModal = () => {
 
   return (
     <>
-      <h1>Initiative Rolls</h1>
+      <h1 className="text-center">Initiative Rolls</h1>
       <div className="absolute left-4 top-4 mr-auto flex flex-col items-start justify-start">
         {joinedPlayers?.map((player) => (
           <div className="flex items-center gap-2" key={player.username}>
@@ -144,15 +77,18 @@ const InitiativeModal = () => {
           </div>
         )}
       </div>
-      <div className="flex w-full flex-col gap-2">
-        {initiativeOrder?.map((characterId: number, index: number) => {
-          return (
-            <Fragment key={characterId}>
-              <CharacterInitiativeRoll characterId={characterId} />
-              {index < combat.turnOrder.length - 1 && <Divider />}
-            </Fragment>
-          );
-        })}
+      <div className="flex w-full flex-col gap-4">
+        {initiativeOrder?.map((characterId: number, index: number) => (
+          <div className="flex w-full items-center gap-4">
+            <h2 className="size-8 text-center">{index + 1}</h2>
+            <CharacterInitiativeRoll
+              key={index}
+              characterId={characterId}
+              rollData={rollData}
+              setRollData={setRollData}
+            />
+          </div>
+        ))}
       </div>
       {gameMaster ? (
         <div className="flex w-full items-center gap-8">
@@ -162,7 +98,7 @@ const InitiativeModal = () => {
             type="button"
             onClick={() => {
               if (!rolling) {
-                rollInitiative.mutate();
+                rollInitiative.mutate(Array.from(rollData));
               }
             }}
           >

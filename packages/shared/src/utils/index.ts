@@ -12,3 +12,4 @@ export * from './combineObjects.js';
 export * from './filterObject.js';
 export * from './getHandsAndFeetCosts.js';
 export * from './getUsedPoints.js';
+export * from './calculateBestRoll.js';

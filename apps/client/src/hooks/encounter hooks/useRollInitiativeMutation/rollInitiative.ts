@@ -1,7 +1,11 @@
 import apiUrl from 'src/utils/configureUrl';
 import handleResponse from '../../handleResponse';
 
-const rollInitiative = async (campaignId: number, encounterId: number) => {
+const rollInitiative = async (
+  campaignId: number,
+  encounterId: number,
+  rollData: [number, { modifiers: string[]; extraDice: number }][],
+) => {
   try {
     const response = await fetch(
       `${apiUrl}/campaigns/${campaignId}/encounters/${encounterId}/rollInitiative`,
@@ -11,6 +15,7 @@ const rollInitiative = async (campaignId: number, encounterId: number) => {
         headers: {
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ rollData }),
       },
     );
     const data = await handleResponse(response);
