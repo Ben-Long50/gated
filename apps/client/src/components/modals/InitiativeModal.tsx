@@ -1,29 +1,33 @@
 import BtnRect from '../buttons/BtnRect';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Loading from '../Loading';
 import CharacterInitiativeRoll from '../encounterComponents/CharacterInitiativeRoll';
 import { CampaignContext } from 'src/contexts/CampaignContext';
 import Icon from '@mdi/react';
 import { mdiCrown } from '@mdi/js';
-import useCreateCombatMutation from 'src/hooks/encounter hooks/useCreateCombatMutation/useCreateCombatMutation';
 import { EncounterContext } from 'src/contexts/EncounterContext';
 import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import useRollInitiativeMutation from 'src/hooks/encounter hooks/useRollInitiativeMutation/useRollInitiativeMutation';
-import { socket } from 'src/socket';
 import useAdvancePhaseMutation from 'src/hooks/encounter hooks/useAdvancePhaseMutation/useAdvancePhaseMutation';
-import { Character, RollResult } from '@gated/shared';
+import { Character } from '@gated/shared';
 
 const InitiativeModal = () => {
   const { gameMaster } = useContext(CampaignContext);
-  const { combat, joinedPlayers, rolls, rolling, rollCounter } =
-    useContext(EncounterContext);
+  const {
+    combat,
+    joinedPlayers,
+    rolls,
+    rollOptions,
+    setOption,
+    setRollOptions,
+    rolling,
+    rollCounter,
+  } = useContext(EncounterContext);
 
-  const { campaignId, mapId, encounterId } = useParams();
+  const { campaignId, encounterId } = useParams();
 
   const { data: campaign } = useCampaignQuery(Number(campaignId));
-
-  const startCombat = useCreateCombatMutation(Number(campaignId));
 
   const advancePhase = useAdvancePhaseMutation(
     Number(campaignId),
@@ -39,14 +43,19 @@ const InitiativeModal = () => {
 
   combat?.characters.forEach((character) => playerIds.add(character.userId));
 
-  const [rollData, setRollData] = useState<Map<number, RollResult>>(
-    new Map(
+  useEffect(() => {
+    const options = new Map(
       combat?.characters.map((character: Character) => [
         character.id,
-        { modifiers: [], extraDice: 0 },
-      ]),
-    ),
-  );
+        rollOptions.get(character.id) ?? {
+          modifiers: [],
+          extraDice: 0,
+        },
+      ]) ?? [],
+    );
+
+    setRollOptions(options);
+  }, []);
 
   return (
     <>
@@ -73,12 +82,7 @@ const InitiativeModal = () => {
         {combat.turnOrder?.map((characterId: number, index: number) => (
           <div className="flex w-full items-center gap-4">
             <h2 className="size-8 text-center">{index + 1}</h2>
-            <CharacterInitiativeRoll
-              key={index}
-              characterId={characterId}
-              rollData={rollData}
-              setRollData={setRollData}
-            />
+            <CharacterInitiativeRoll key={index} characterId={characterId} />
           </div>
         ))}
       </div>
@@ -90,7 +94,7 @@ const InitiativeModal = () => {
             type="button"
             onClick={() => {
               if (!rolling) {
-                rollInitiative.mutate(Array.from(rollData));
+                rollInitiative.mutate(Array.from(rollOptions));
               }
             }}
           >
@@ -111,14 +115,7 @@ const InitiativeModal = () => {
               ariaLabel="Start combat"
               type="button"
               onClick={() => {
-                startCombat.mutate({
-                  id: Number(encounterId),
-                  mapId: Number(mapId),
-                  turnOrder: Array.from(rolls.keys()),
-                  turnPosition: 0,
-                });
                 advancePhase.mutate();
-                socket.emit('resetBoard', { encounterId: Number(encounterId) });
               }}
             >
               Start Combat
@@ -127,14 +124,14 @@ const InitiativeModal = () => {
         </div>
       ) : (
         !rolling && (
-          <div className="flex items-center gap-4">
-            <Loading size={1.15} />
+          <div className="flex items-center justify-center gap-4">
+            <Loading size={1} />
             {rollCounter === 0 ? (
-              <h3>Waiting for the Game Master to roll initiative</h3>
+              <p>Waiting for the Game Master to roll initiative</p>
             ) : (
-              <h3>
+              <p>
                 Waiting for the Game Master to reroll initiative or start combat
-              </h3>
+              </p>
             )}
           </div>
         )

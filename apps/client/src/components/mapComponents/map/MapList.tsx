@@ -67,8 +67,6 @@ const MapList = ({
               .map((location) => location.characterId)
               .filter(Boolean);
 
-            console.log(characterIds, map);
-
             return (
               <MapPictureCard
                 key={map?.id}

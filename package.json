@@ -6,6 +6,7 @@
     "apps/*"
   ],
   "scripts": {
+    "host": "npm run host -w apps/client",
     "dev:client": "npm run dev -w apps/client",
     "dev:server": "npm run devstart -w apps/server",
     "build:shared": "npm run build -w packages/shared",

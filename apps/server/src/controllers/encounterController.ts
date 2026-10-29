@@ -152,7 +152,7 @@ const encounterController = {
           req.body.rollData,
         );
 
-      io.to(`encounter ${req.params.encounterId}`).emit('initiativeRoll', {
+      io.to(`encounter ${req.params.encounterId}`).emit('rollInitiative', {
         encounter,
         rollResultData,
       });

@@ -1,8 +1,19 @@
-import { RollResult, RollResultData, RollResultMap } from '@gated/shared';
+import {
+  RollData,
+  RollResult,
+  RollResultData,
+  RollResultMap,
+} from '@gated/shared';
 import { useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { socket } from 'src/socket';
 
 const useRoll = () => {
+  const { encounterId } = useParams();
   const [rolls, setRolls] = useState<RollResultMap>(new Map());
+  const [rollOptions, setRollOptions] = useState<Map<number, RollData>>(
+    new Map(),
+  );
   const [rolling, setRolling] = useState(false);
   const [rollCounter, setRollCounter] = useState(0);
   const [rollComplete, setRollComplete] = useState(false);
@@ -63,9 +74,24 @@ const useRoll = () => {
 
   const setRoll = (characterId: number, rollResultData: RollResult) => {
     setRolls((prev) => {
-      const next = new Map(prev);
-      next.set(characterId, rollResultData);
-      return next;
+      const newResults = new Map(prev);
+      newResults.set(characterId, rollResultData);
+
+      return newResults;
+    });
+  };
+
+  const setOption = (characterId: number, rollData: RollData) => {
+    setRollOptions((prev) => {
+      const newOptions = new Map(prev);
+      newOptions.set(characterId, rollData);
+
+      socket.emit('updateRollOptions', {
+        encounterId,
+        rollOptionData: Array.from(newOptions),
+      });
+
+      return newOptions;
     });
   };
 
@@ -74,19 +100,28 @@ const useRoll = () => {
     await animateRoll(newRollMap);
   };
 
+  const resetOptions = () => {
+    setRollOptions(new Map());
+  };
+
   const resetRolls = () => {
     setRolls(new Map());
   };
 
   return {
     rolls,
+    rollOptions,
     setRoll,
+    setOption,
     syncRolls,
     rolling,
     animateRoll,
     resetRolls,
+    resetOptions,
     rollComplete,
     rollCounter,
+    setRolls,
+    setRollOptions,
   };
 };
 

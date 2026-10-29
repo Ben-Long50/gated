@@ -14,8 +14,6 @@ const useActivateEncounterMutation = (campaignId: number) => {
     onSuccess: (data) => {
       toast.success(data.message);
 
-      console.log(data);
-
       queryClient.setQueryData(
         ['encounter', data.encounter.id],
         data.encounter,

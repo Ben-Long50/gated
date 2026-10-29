@@ -24,40 +24,30 @@ import {
 import { capitalCase } from 'change-case';
 import Loading from '../Loading';
 
-const CharacterInitiativeRoll = ({
-  characterId,
-  rollData,
-  setRollData,
-}: {
-  characterId: number;
-  rollData: Map<number, { modifiers: string[]; extraDice: number }>;
-  setRollData: React.Dispatch<
-    React.SetStateAction<
-      Map<number, { modifiers: string[]; extraDice: number }>
-    >
-  >;
-}) => {
+const CharacterInitiativeRoll = ({ characterId }: { characterId: number }) => {
   const { mobile } = useContext(LayoutContext);
-  const { rolls, rolling, setRoll, rollComplete } =
+  const { rolls, rollOptions, rolling, setRoll, setOption, rollComplete } =
     useContext(EncounterContext);
 
   const { filteredCharacter: character, isLoading } = useCharacter(characterId);
 
-  const characterRollData = rollData.get(characterId);
+  const roll = rolls.get(characterId) ?? { diceArray: [] };
+  const rollData = rollOptions.get(characterId) ?? {
+    modifiers: [],
+    extraDice: 0,
+  };
 
   const diceCount = character
     ? calculateDiceCount(
         character.attributes,
         'Initiative',
         violenceRolls,
-        characterRollData?.modifiers ?? [],
-        characterRollData?.extraDice ?? 0,
+        rollData?.modifiers ?? [],
+        rollData?.extraDice ?? 0,
       )
     : { roll: { attribute: '', skill: '' }, diceCount: 0, extraDiceCount: 0 };
 
   const totalDiceCount = diceCount.diceCount + diceCount.extraDiceCount;
-
-  const roll = rolls.get(characterId) ?? { diceArray: [] };
 
   useEffect(() => {
     const diceArray = roll
@@ -96,16 +86,11 @@ const CharacterInitiativeRoll = ({
             {capitalCase(diceCount.roll.attribute)}:{' '}
             {capitalCase(diceCount.roll.skill)}
           </p>
-          {characterRollData?.modifiers &&
-            characterRollData?.modifiers.length > 0 && (
-              <p className="text-tertiary text-base">
-                (
-                {characterRollData?.modifiers
-                  .map((m) => capitalCase(m))
-                  .join(', ')}
-                )
-              </p>
-            )}
+          {rollData?.modifiers && rollData?.modifiers.length > 0 && (
+            <p className="text-tertiary text-base">
+              ({rollData?.modifiers.map((m) => capitalCase(m)).join(', ')})
+            </p>
+          )}
         </div>
         <div className="flex w-full flex-wrap items-center justify-start gap-2">
           {roll?.diceArray.map((number: number, index: number) => (
@@ -115,7 +100,7 @@ const CharacterInitiativeRoll = ({
               number={number}
               rolling={roll?.rolling}
               rollComplete={rollComplete}
-              modifiers={characterRollData?.modifiers}
+              modifiers={rollData?.modifiers}
             />
           ))}
         </div>
@@ -126,17 +111,9 @@ const CharacterInitiativeRoll = ({
           active={totalDiceCount > 0}
           onClick={() => {
             if (totalDiceCount > 0) {
-              setRollData((prev) => {
-                const data = prev.get(characterId);
-                if (!data) return prev;
-
-                const next = new Map(prev);
-                next.set(characterId, {
-                  ...data,
-                  extraDice: data.extraDice - 1,
-                });
-
-                return next;
+              setOption(characterId, {
+                ...rollData,
+                extraDice: rollData.extraDice - 1,
               });
             }
           }}
@@ -154,17 +131,9 @@ const CharacterInitiativeRoll = ({
           active={totalDiceCount < 20}
           onClick={() => {
             if (totalDiceCount < 20) {
-              setRollData((prev) => {
-                const data = prev.get(characterId);
-                if (!data) return prev;
-
-                const next = new Map(prev);
-                next.set(characterId, {
-                  ...data,
-                  extraDice: data.extraDice + 1,
-                });
-
-                return next;
+              setOption(characterId, {
+                ...rollData,
+                extraDice: rollData.extraDice + 1,
               });
             }
           }}
@@ -175,19 +144,11 @@ const CharacterInitiativeRoll = ({
           tooltip="Push"
           onClick={() => {
             if (totalDiceCount < 20) {
-              setRollData((prev) => {
-                const data = prev.get(characterId);
-                if (!data) return prev;
-
-                const next = new Map(prev);
-                next.set(characterId, {
-                  ...data,
-                  modifiers: data.modifiers.includes('push')
-                    ? data.modifiers.filter((m) => m !== 'push')
-                    : [...data.modifiers, 'push'],
-                });
-
-                return next;
+              setOption(characterId, {
+                ...rollData,
+                modifiers: rollData.modifiers.includes('push')
+                  ? rollData.modifiers.filter((m: string) => m !== 'push')
+                  : [...rollData.modifiers, 'push'],
               });
             }
           }}
@@ -198,19 +159,11 @@ const CharacterInitiativeRoll = ({
           tooltip="Lucky"
           onClick={() => {
             if (totalDiceCount < 20) {
-              setRollData((prev) => {
-                const data = prev.get(characterId);
-                if (!data) return prev;
-
-                const next = new Map(prev);
-                next.set(characterId, {
-                  ...data,
-                  modifiers: data.modifiers.includes('lucky')
-                    ? data.modifiers.filter((m) => m !== 'lucky')
-                    : [...data.modifiers, 'lucky'],
-                });
-
-                return next;
+              setOption(characterId, {
+                ...rollData,
+                modifiers: rollData.modifiers.includes('lucky')
+                  ? rollData.modifiers.filter((m: string) => m !== 'lucky')
+                  : [...rollData.modifiers, 'lucky'],
               });
             }
           }}
@@ -221,19 +174,11 @@ const CharacterInitiativeRoll = ({
           tooltip="Unlucky"
           onClick={() => {
             if (totalDiceCount < 20) {
-              setRollData((prev) => {
-                const data = prev.get(characterId);
-                if (!data) return prev;
-
-                const next = new Map(prev);
-                next.set(characterId, {
-                  ...data,
-                  modifiers: data.modifiers.includes('unlucky')
-                    ? data.modifiers.filter((m) => m !== 'unlucky')
-                    : [...data.modifiers, 'unlucky'],
-                });
-
-                return next;
+              setOption(characterId, {
+                ...rollData,
+                modifiers: rollData.modifiers.includes('unlucky')
+                  ? rollData.modifiers.filter((m: string) => m !== 'unlucky')
+                  : [...rollData.modifiers, 'unlucky'],
               });
             }
           }}
@@ -244,19 +189,11 @@ const CharacterInitiativeRoll = ({
           tooltip="Booming"
           onClick={() => {
             if (totalDiceCount < 20) {
-              setRollData((prev) => {
-                const data = prev.get(characterId);
-                if (!data) return prev;
-
-                const next = new Map(prev);
-                next.set(characterId, {
-                  ...data,
-                  modifiers: data.modifiers.includes('booming')
-                    ? data.modifiers.filter((m) => m !== 'booming')
-                    : [...data.modifiers, 'booming'],
-                });
-
-                return next;
+              setOption(characterId, {
+                ...rollData,
+                modifiers: rollData.modifiers.includes('booming')
+                  ? rollData.modifiers.filter((m: string) => m !== 'booming')
+                  : [...rollData.modifiers, 'booming'],
               });
             }
           }}
@@ -267,19 +204,11 @@ const CharacterInitiativeRoll = ({
           tooltip="Dooming"
           onClick={() => {
             if (totalDiceCount < 20) {
-              setRollData((prev) => {
-                const data = prev.get(characterId);
-                if (!data) return prev;
-
-                const next = new Map(prev);
-                next.set(characterId, {
-                  ...data,
-                  modifiers: data.modifiers.includes('dooming')
-                    ? data.modifiers.filter((m) => m !== 'dooming')
-                    : [...data.modifiers, 'dooming'],
-                });
-
-                return next;
+              setOption(characterId, {
+                ...rollData,
+                modifiers: rollData.modifiers.includes('dooming')
+                  ? rollData.modifiers.filter((m: string) => m !== 'dooming')
+                  : [...rollData.modifiers, 'dooming'],
               });
             }
           }}

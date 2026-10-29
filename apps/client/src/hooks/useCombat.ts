@@ -80,12 +80,17 @@ const useCombat = () => {
 
   const {
     rolls,
+    rollOptions,
     setRoll,
+    setOption,
     syncRolls,
     rolling,
     resetRolls,
+    resetOptions,
     rollComplete,
     rollCounter,
+    setRolls,
+    setRollOptions,
   } = useRoll();
 
   const {
@@ -447,12 +452,17 @@ const useCombat = () => {
     setIsFetching,
     rollHookValues: {
       rolls,
+      rollOptions,
       rolling,
       setRoll,
+      setOption,
       syncRolls,
       resetRolls,
+      resetOptions,
       rollComplete,
       rollCounter,
+      setRolls,
+      setRollOptions,
     },
   };
 };

@@ -54,10 +54,15 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
 
   const {
     rolls,
+    rollOptions,
     rolling,
     setRoll,
+    setOption,
     syncRolls,
     resetRolls,
+    resetOptions,
+    setRolls,
+    setRollOptions,
     rollComplete,
     rollCounter,
   } = rollHookValues;
@@ -121,6 +126,17 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
       );
 
       setIsFetching(false);
+    });
+
+    socket.on('updateRollOptions', ({ rollOptionData }) => {
+      if (rollOptionData) {
+        setRollOptions(new Map(rollOptionData));
+      }
+    });
+
+    socket.on('rollInitiative', async ({ encounter, rollResultData }) => {
+      await syncRolls(rollResultData);
+      queryClient.setQueryData(['encounter', encounter.id], encounter);
     });
 
     socket.on('navigateToEncounter', ({ encounterId, mapId, campaignId }) => {
@@ -203,12 +219,17 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
         actionForm,
         resetForms,
         rolls,
+        rollOptions,
         rolling,
         rollComplete,
         resetRolls,
+        resetOptions,
         setRoll,
+        setOption,
         syncRolls,
         rollCounter,
+        setRolls,
+        setRollOptions,
       }}
     >
       {children}

@@ -117,6 +117,12 @@ export function setupSocketIO(io: Server) {
       console.log(`${playerId} left ${room}`);
     });
 
+    socket.on('updateRollOptions', ({ encounterId, rollOptionData }) => {
+      socket
+        .to(`encounter ${encounterId}`)
+        .emit('updateRollOptions', { rollOptionData });
+    });
+
     socket.on('navigateToEncounter', ({ encounterId, mapId, campaignId }) => {
       socket
         .to(`encounter ${encounterId}`)
