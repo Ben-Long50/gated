@@ -3,6 +3,7 @@ import { Campaign } from './campaign.js';
 import { Character } from './character.js';
 import { Item } from './item.js';
 import { Map } from './map.js';
+import { RollResult } from './rollTypes.js';
 
 export type Encounter = {
   id: number;
@@ -75,9 +76,4 @@ export type History = {
     blockedSanityDamage: number;
     armorIds: number[];
   }[];
-};
-
-export type RollResult = {
-  diceArray: number[];
-  successes: number;
 };

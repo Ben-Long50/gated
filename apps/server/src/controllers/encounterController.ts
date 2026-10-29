@@ -92,15 +92,28 @@ const encounterController = {
 
   advancePhase: async (req: Request, res: Response) => {
     try {
+      const io = getIO();
+
       if (!req.user) {
         throw new Error('Could not find authenticated user');
       }
 
-      await encounterServices.advancePhase(Number(req.params.encounterId));
+      const encounter = await encounterServices.advancePhase(
+        Number(req.params.encounterId),
+      );
+
+      io.to(`encounter ${req.params.encounterId}`).emit(
+        'updateEncounter',
+        encounter,
+      );
+
+      if (encounter.combatPhase === 'action') {
+        io.to(`encounter ${req.params.encounterId}`).emit('resetBoard');
+      }
 
       res
         .status(200)
-        .json({ message: 'Successfully advanced encounter phase' });
+        .json({ encounter, message: 'Successfully advanced encounter phase' });
     } catch (error: any) {
       handleControllerError(res, error);
     }
@@ -112,12 +125,14 @@ const encounterController = {
         throw new Error('Could not find authenticated user');
       }
 
-      await encounterServices.advanceTurn(
+      const encounter = await encounterServices.advanceTurn(
         req.encounter,
         Number(req.params.encounterId),
       );
 
-      res.status(200).json({ message: 'Successfully advanced encounter turn' });
+      res
+        .status(200)
+        .json({ encounter, message: 'Successfully advanced encounter turn' });
     } catch (error: any) {
       handleControllerError(res, error);
     }
@@ -125,13 +140,28 @@ const encounterController = {
 
   rollInitiative: async (req: Request, res: Response) => {
     try {
+      const io = getIO();
+
       if (!req.user) {
         throw new Error('Could not find authenticated user');
       }
 
-      await encounterServices.rollInitiative(Number(req.params.encounterId));
+      const { encounter, rollResultData } =
+        await encounterServices.rollInitiative(
+          Number(req.params.encounterId),
+          req.body.rollData,
+        );
 
-      res.status(200).json({ message: 'Successfully rolled initiative' });
+      io.to(`encounter ${req.params.encounterId}`).emit('initiativeRoll', {
+        encounter,
+        rollResultData,
+      });
+
+      res.status(200).json({
+        encounter,
+        rollResultData,
+        message: 'Successfully rolled initiative',
+      });
     } catch (error: any) {
       handleControllerError(res, error);
     }

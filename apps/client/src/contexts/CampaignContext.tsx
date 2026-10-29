@@ -22,15 +22,8 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  const {
-    rolls,
-    setRolls,
-    rolling,
-    animateRoll,
-    resetRolls,
-    rollComplete,
-    rollCounter,
-  } = useRoll();
+  const { rolls, syncRolls, rolling, resetRolls, rollComplete, rollCounter } =
+    useRoll();
 
   const gameMaster = user?.ownerCampaigns
     .map((campaign) => campaign.id)
@@ -151,10 +144,9 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       navigate('/glam/campaigns');
     });
 
-    socket.on('campaignRoll', async ({ rollsArray, character, action }) => {
-      if (rollsArray) {
-        const rolls = new Map(rollsArray) as Map<number, any>;
-        await animateRoll(rolls);
+    socket.on('campaignRoll', async ({ rollResultData, character, action }) => {
+      if (rollResultData) {
+        await syncRolls(rollResultData);
       }
     });
 
@@ -239,9 +231,8 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         activeCharacters,
         activeEncounters,
         rolls,
-        setRolls,
+        syncRolls,
         rolling,
-        animateRoll,
         resetRolls,
         rollComplete,
         rollCounter,

@@ -1,5 +1,3 @@
-import { Fragment } from 'react/jsx-runtime';
-import Divider from '../Divider';
 import BtnRect from '../buttons/BtnRect';
 import { useContext, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -14,7 +12,7 @@ import useCampaignQuery from 'src/hooks/useCampaignQuery/useCampaignQuery';
 import useRollInitiativeMutation from 'src/hooks/encounter hooks/useRollInitiativeMutation/useRollInitiativeMutation';
 import { socket } from 'src/socket';
 import useAdvancePhaseMutation from 'src/hooks/encounter hooks/useAdvancePhaseMutation/useAdvancePhaseMutation';
-import { Character } from '@gated/shared';
+import { Character, RollResult } from '@gated/shared';
 
 const InitiativeModal = () => {
   const { gameMaster } = useContext(CampaignContext);
@@ -26,6 +24,7 @@ const InitiativeModal = () => {
   const { data: campaign } = useCampaignQuery(Number(campaignId));
 
   const startCombat = useCreateCombatMutation(Number(campaignId));
+
   const advancePhase = useAdvancePhaseMutation(
     Number(campaignId),
     Number(encounterId),
@@ -40,9 +39,7 @@ const InitiativeModal = () => {
 
   combat?.characters.forEach((character) => playerIds.add(character.userId));
 
-  const [rollData, setRollData] = useState<
-    Map<number, { modifiers: string[]; extraDice: number }>
-  >(
+  const [rollData, setRollData] = useState<Map<number, RollResult>>(
     new Map(
       combat?.characters.map((character: Character) => [
         character.id,
@@ -50,11 +47,6 @@ const InitiativeModal = () => {
       ]),
     ),
   );
-
-  const initiativeRollIdArray = Array.from(rolls.keys());
-
-  const initiativeOrder =
-    initiativeRollIdArray.length > 0 ? initiativeRollIdArray : combat.turnOrder;
 
   return (
     <>
@@ -78,7 +70,7 @@ const InitiativeModal = () => {
         )}
       </div>
       <div className="flex w-full flex-col gap-4">
-        {initiativeOrder?.map((characterId: number, index: number) => (
+        {combat.turnOrder?.map((characterId: number, index: number) => (
           <div className="flex w-full items-center gap-4">
             <h2 className="size-8 text-center">{index + 1}</h2>
             <CharacterInitiativeRoll
@@ -102,7 +94,7 @@ const InitiativeModal = () => {
               }
             }}
           >
-            {rolling ? (
+            {rolling || rollInitiative.isPending ? (
               <Loading
                 className="group-hover:text-accent text-zinc-950"
                 size={1.15}

@@ -80,9 +80,9 @@ const useCombat = () => {
 
   const {
     rolls,
-    setRolls,
+    setRoll,
+    syncRolls,
     rolling,
-    animateRoll,
     resetRolls,
     rollComplete,
     rollCounter,
@@ -448,7 +448,8 @@ const useCombat = () => {
     rollHookValues: {
       rolls,
       rolling,
-      animateRoll,
+      setRoll,
+      syncRolls,
       resetRolls,
       rollComplete,
       rollCounter,

@@ -1,7 +1,6 @@
 export * from './calculateArmorDamage.js';
 export * from './calculateCosts.js';
 export * from './calculateDamage.js';
-export * from './calculateDiceCount.js';
 export * from './calculateItemStats.js';
 export * from './calculateLevelBonus.js';
 export * from './calculateLevelNodes.js';
@@ -12,4 +11,4 @@ export * from './combineObjects.js';
 export * from './filterObject.js';
 export * from './getHandsAndFeetCosts.js';
 export * from './getUsedPoints.js';
-export * from './calculateBestRoll.js';
+export * from './rollUtilities.js';

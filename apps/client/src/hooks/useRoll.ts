@@ -1,13 +1,14 @@
+import { RollResult, RollResultData, RollResultMap } from '@gated/shared';
 import { useRef, useState } from 'react';
 
 const useRoll = () => {
-  const [rolls, setRolls] = useState(new Map());
+  const [rolls, setRolls] = useState<RollResultMap>(new Map());
   const [rolling, setRolling] = useState(false);
   const [rollCounter, setRollCounter] = useState(0);
   const [rollComplete, setRollComplete] = useState(false);
   const timeoutRef = useRef<number | null>(null);
 
-  const animateRoll = (rollMap): Promise<number> => {
+  const animateRoll = (rollMap: RollResultMap): Promise<number> => {
     setRollComplete(false);
     setRolling(true);
 
@@ -60,13 +61,27 @@ const useRoll = () => {
     });
   };
 
+  const setRoll = (characterId: number, rollResultData: RollResult) => {
+    setRolls((prev) => {
+      const next = new Map(prev);
+      next.set(characterId, rollResultData);
+      return next;
+    });
+  };
+
+  const syncRolls = async (rollResultData: RollResultData) => {
+    const newRollMap = new Map(rollResultData);
+    await animateRoll(newRollMap);
+  };
+
   const resetRolls = () => {
     setRolls(new Map());
   };
 
   return {
     rolls,
-    setRolls,
+    setRoll,
+    syncRolls,
     rolling,
     animateRoll,
     resetRolls,

@@ -21,3 +21,4 @@ export * from './picture.js';
 export * from './property.js';
 export * from './target.js';
 export * from './user.js';
+export * from './rollTypes.js';

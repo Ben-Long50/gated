@@ -52,8 +52,15 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
     rollHookValues,
   } = useCombat();
 
-  const { rolls, rolling, animateRoll, resetRolls, rollComplete, rollCounter } =
-    rollHookValues;
+  const {
+    rolls,
+    rolling,
+    setRoll,
+    syncRolls,
+    resetRolls,
+    rollComplete,
+    rollCounter,
+  } = rollHookValues;
 
   const setEncounterLayout = useNavigationStore(
     (state) => state.setEncounterLayout,
@@ -77,10 +84,8 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
       setJoinedPlayers(playerIdList);
     });
 
-    socket.on('initiativeRoll', (rollsArray) => {
-      const rolls = new Map(rollsArray) as Map<number, any>;
-
-      animateRoll(rolls);
+    socket.on('initiativeRoll', (rollResultData) => {
+      syncRolls(rollResultData);
     });
 
     socket.on('resetBoard', () => {
@@ -89,10 +94,9 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
       resetBlockDataMap();
     });
 
-    socket.on('actionRoll', async ({ encounterId, rollsArray }) => {
-      if (rollsArray) {
-        const rolls = new Map(rollsArray) as Map<number, any>;
-        await animateRoll(rolls);
+    socket.on('actionRoll', async ({ encounterId, rollResultData }) => {
+      if (rollResultData) {
+        await syncRolls(rollResultData);
       }
 
       queryClient.invalidateQueries({
@@ -202,7 +206,8 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
         rolling,
         rollComplete,
         resetRolls,
-        animateRoll,
+        setRoll,
+        syncRolls,
         rollCounter,
       }}
     >

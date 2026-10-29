@@ -9,11 +9,13 @@ import Loading from '../Loading';
 const Die = ({
   number,
   rolling,
+  rollComplete,
   size,
   modifiers,
 }: {
   number: number;
   rolling: boolean;
+  rollComplete: boolean;
   size: number;
   modifiers: string[];
 }) => {
@@ -28,7 +30,7 @@ const Die = ({
     case 1:
       die = (
         <Die1Icon
-          className={`${loading && 'opacity-50'} ${modifiers?.includes('dooming') ? 'fill-red-500' : 'fill-zinc-600 dark:fill-gray-200'} h-full w-full`}
+          className={`${loading && 'opacity-50'} ${rollComplete && modifiers?.includes('dooming') ? 'fill-red-500' : 'fill-zinc-600 dark:fill-gray-200'} h-full w-full`}
         />
       );
       break;
@@ -49,21 +51,21 @@ const Die = ({
     case 4:
       die = (
         <Die4Icon
-          className={`${loading && 'opacity-50'} ${lucky ? 'fill-green-500' : 'fill-zinc-600 dark:fill-gray-200'} h-full w-full`}
+          className={`${loading && 'opacity-50'} ${rollComplete && lucky ? 'fill-green-500' : 'fill-zinc-600 dark:fill-gray-200'} h-full w-full`}
         />
       );
       break;
     case 5:
       die = (
         <Die5Icon
-          className={`${loading && 'opacity-50'} ${!unlucky ? 'fill-green-500' : 'fill-zinc-600 dark:fill-gray-200'} h-full w-full`}
+          className={`${loading && 'opacity-50'} ${rollComplete && !unlucky ? 'fill-green-500' : 'fill-zinc-600 dark:fill-gray-200'} h-full w-full`}
         />
       );
       break;
     case 6:
       die = (
         <Die6Icon
-          className={`${loading && 'opacity-50'} ${modifiers?.includes('booming') ? 'fill-yellow-400' : !modifiers?.includes('booming') ? 'fill-green-500' : 'fill-zinc-600 dark:fill-gray-200'} h-full w-full`}
+          className={`${loading && 'opacity-50'} ${rollComplete && modifiers?.includes('booming') ? 'fill-yellow-400' : rollComplete && !modifiers?.includes('booming') ? 'fill-green-500' : 'fill-zinc-600 dark:fill-gray-200'} h-full w-full`}
         />
       );
       break;

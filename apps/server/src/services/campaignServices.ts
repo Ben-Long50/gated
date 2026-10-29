@@ -1,7 +1,6 @@
 import { Action, Character } from '@prisma/client';
 import prisma from '../config/database.js';
 import { getIO } from '../sockets/socket.js';
-import { calculateRoll } from '../utils/rollUtilities.js';
 import constructCalendar from '../utils/constructCalendar.js';
 import characterServices, { characterInclude } from './characterServices.js';
 import {
@@ -11,7 +10,11 @@ import {
   EventInput,
   Time,
 } from '@gated/shared/validation';
-import { combineAttributeTrees } from '@gated/shared';
+import {
+  ActionRoll,
+  calculateRoll,
+  combineAttributeTrees,
+} from '@gated/shared';
 
 const campaignInclude = {
   sessions: { orderBy: { sessionNumber: 'desc' as const } },
@@ -367,11 +370,11 @@ const campaignServices = {
 
     const rollResults = calculateRoll(
       attributes,
-      //@ts-ignore
-      { name: action.name, roll: action.roll },
+      action.name,
+      action.roll as ActionRoll[],
       rollData.modifiers,
-      rollData.extraDice,
-    ) || { result: [], successes: 0, roll: null };
+      rollData.extraDice ?? 0,
+    ) || { result: [], successes: 0, roll: null, extraDice: 0 };
 
     const rolls = new Map();
 
@@ -380,7 +383,7 @@ const campaignServices = {
         character,
         action,
         roll: rollResults.roll,
-        diceArray: rollResults.result,
+        diceArray: rollResults.diceArray,
         successes: rollResults.successes,
         modifiers: rollData.modifiers,
       });
