@@ -115,10 +115,16 @@ const InitiativeModal = () => {
               ariaLabel="Start combat"
               type="button"
               onClick={() => {
-                advancePhase.mutate();
+                if (!advancePhase.isPending) {
+                  advancePhase.mutate();
+                }
               }}
             >
-              Start Combat
+              {advancePhase.isPending ? (
+                <Loading size={1.15} />
+              ) : (
+                'Start Combat'
+              )}
             </BtnRect>
           )}
         </div>

@@ -12,6 +12,8 @@ import Loading from 'src/components/Loading';
 import { useNavigate, useParams } from 'react-router-dom';
 import useCombat from 'src/hooks/useCombat';
 import useNavigationStore from 'src/stores/navbarStore';
+import { toast } from 'react-toastify';
+import { capitalCase } from 'change-case';
 
 export const EncounterContext = createContext({
   socket,
@@ -89,15 +91,30 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
       setJoinedPlayers(playerIdList);
     });
 
-    socket.on('resetBoard', ({ initiative }) => {
+    socket.on('advancePhase', ({ encounter, initiative }) => {
       resetRolls();
       resetOptions();
       resetTargetMap();
       resetBlockDataMap();
 
+      queryClient.setQueryData(['encounter', encounter.id], encounter);
+
       if (initiative) {
         navigate('..', { replace: true });
       }
+
+      toast(
+        initiative
+          ? 'Started Encounter'
+          : `Advanced to ${capitalCase(encounter.combatPhase)} phase`,
+      );
+    });
+
+    socket.on('resetBoard', () => {
+      resetRolls();
+      resetOptions();
+      resetTargetMap();
+      resetBlockDataMap();
     });
 
     socket.on('actionRoll', async ({ encounterId, rollResultData }) => {

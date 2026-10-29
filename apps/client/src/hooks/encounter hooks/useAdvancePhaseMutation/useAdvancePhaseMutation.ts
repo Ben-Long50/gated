@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Encounter } from 'src/types/encounter';
 import advancePhase from './advancePhase';
+import { toast } from 'react-toastify';
 
 const useAdvancePhaseMutation = (campaignId: number, encounterId: number) => {
   const queryClient = useQueryClient();
@@ -43,6 +44,12 @@ const useAdvancePhaseMutation = (campaignId: number, encounterId: number) => {
       );
 
       return prevEncounter;
+    },
+    onSuccess: (data) => {
+      toast(data.message);
+    },
+    onError: (data) => {
+      toast.error(data.message);
     },
     throwOnError: false,
   });

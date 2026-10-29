@@ -3,6 +3,7 @@ import encounterServices from '../services/encounterServices.js';
 import { getIO } from '../sockets/socket.js';
 import handleControllerError from './handleControllerError.js';
 import { EncounterInput } from '@gated/shared/validation';
+import { capitalCase } from 'change-case';
 
 const encounterController = {
   getEncounters: async (req: Request, res: Response) => {
@@ -102,19 +103,18 @@ const encounterController = {
         Number(req.params.encounterId),
       );
 
-      io.to(`encounter ${req.params.encounterId}`).emit('updateEncounter', {
+      io.to(`encounter ${req.params.encounterId}`).emit('advancePhase', {
         encounter,
+        initiative,
       });
 
-      if (encounter.combatPhase === 'action') {
-        io.to(`encounter ${req.params.encounterId}`).emit('resetBoard', {
-          initiative,
-        });
-      }
-
-      res
-        .status(200)
-        .json({ encounter, message: 'Successfully advanced encounter phase' });
+      res.status(200).json({
+        encounter,
+        initiative,
+        message: initiative
+          ? 'Started Encounter'
+          : `Advanced to ${capitalCase(encounter.combatPhase)} phase`,
+      });
     } catch (error: any) {
       handleControllerError(res, error);
     }
