@@ -98,17 +98,18 @@ const encounterController = {
         throw new Error('Could not find authenticated user');
       }
 
-      const encounter = await encounterServices.advancePhase(
+      const { encounter, initiative } = await encounterServices.advancePhase(
         Number(req.params.encounterId),
       );
 
-      io.to(`encounter ${req.params.encounterId}`).emit(
-        'updateEncounter',
+      io.to(`encounter ${req.params.encounterId}`).emit('updateEncounter', {
         encounter,
-      );
+      });
 
       if (encounter.combatPhase === 'action') {
-        io.to(`encounter ${req.params.encounterId}`).emit('resetBoard');
+        io.to(`encounter ${req.params.encounterId}`).emit('resetBoard', {
+          initiative,
+        });
       }
 
       res

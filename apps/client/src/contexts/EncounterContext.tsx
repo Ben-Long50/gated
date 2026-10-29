@@ -89,14 +89,15 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
       setJoinedPlayers(playerIdList);
     });
 
-    socket.on('initiativeRoll', (rollResultData) => {
-      syncRolls(rollResultData);
-    });
-
-    socket.on('resetBoard', () => {
+    socket.on('resetBoard', ({ initiative }) => {
       resetRolls();
+      resetOptions();
       resetTargetMap();
       resetBlockDataMap();
+
+      if (initiative) {
+        navigate('..', { replace: true });
+      }
     });
 
     socket.on('actionRoll', async ({ encounterId, rollResultData }) => {
@@ -119,11 +120,8 @@ export const EncounterProvider = ({ children }: { children: ReactNode }) => {
       });
     });
 
-    socket.on('updateEncounter', (updatedEncounter) => {
-      queryClient.setQueryData(
-        ['encounter', updatedEncounter.id],
-        updatedEncounter,
-      );
+    socket.on('updateEncounter', ({ encounter }) => {
+      queryClient.setQueryData(['encounter', encounter.id], encounter);
 
       setIsFetching(false);
     });

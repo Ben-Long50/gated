@@ -125,11 +125,13 @@ const encounterServices = {
   },
 
   advancePhase: async (encounterId: number) => {
-    const encounter = prisma.$transaction(async (tx) => {
+    const { encounter, initiative } = prisma.$transaction(async (tx) => {
       const encounter = await tx.encounter.findUnique({
         where: { id: encounterId },
         select: { combatPhase: true, turn: true, round: true },
       });
+
+      const iniative = encounter?.combatPhase === 'initiative';
 
       if (!encounter) {
         throw new Error('Failed to find encounter');
@@ -189,7 +191,7 @@ const encounterServices = {
       return newEncounter;
     });
 
-    return encounter;
+    return { encounter, initiative };
   },
 
   advanceTurn: async (encounter: Encounter, encounterId: number) => {
