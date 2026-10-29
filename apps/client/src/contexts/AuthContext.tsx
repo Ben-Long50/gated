@@ -37,7 +37,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
       (isSuccess && pathname === '/signup') ||
       (isSuccess && pathname === '/')
     ) {
-      navigate('/glam/codex?tab=equipment');
+      navigate('/glam/codex/dashboard?tab=equipment');
     } else if (isError) {
       navigate('/signin');
     }
