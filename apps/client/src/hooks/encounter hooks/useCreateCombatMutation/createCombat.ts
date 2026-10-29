@@ -3,7 +3,7 @@ import handleResponse from '../../handleResponse';
 
 const createCombat = async (
   campaignId: number,
-  formData: { mapId: number; turnOrder: number[]; turnPosition: number },
+  formData: { mapId: number },
 ) => {
   try {
     const response = await fetch(

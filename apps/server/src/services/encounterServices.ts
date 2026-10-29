@@ -125,17 +125,17 @@ const encounterServices = {
   },
 
   advancePhase: async (encounterId: number) => {
-    const { encounter, initiative } = prisma.$transaction(async (tx) => {
+    const { encounter, initiative } = await prisma.$transaction(async (tx) => {
       const encounter = await tx.encounter.findUnique({
         where: { id: encounterId },
         select: { combatPhase: true, turn: true, round: true },
       });
 
-      const iniative = encounter?.combatPhase === 'initiative';
-
       if (!encounter) {
         throw new Error('Failed to find encounter');
       }
+
+      const initiative = encounter.combatPhase === 'initiative';
 
       let nextPhase = null as CombatPhase | null;
 
@@ -188,7 +188,7 @@ const encounterServices = {
               include: encounterInclude,
             });
 
-      return newEncounter;
+      return { encounter: newEncounter, initiative };
     });
 
     return { encounter, initiative };
@@ -805,8 +805,6 @@ const encounterServices = {
     formData: {
       id?: number;
       name: string;
-      turnOrder: number[];
-      turnPosition: number;
     },
   ) => {
     const existingEncounter = await prisma.encounter.findFirst({
@@ -829,10 +827,26 @@ const encounterServices = {
 
     const map = await prisma.map.findUnique({
       where: { id: mapId },
-      select: { name: true },
+      select: {
+        name: true,
+        locations: {
+          select: { characterId: true },
+          orderBy: { character: { name: 'asc' } },
+        },
+      },
     });
 
     if (!campaign || !map) throw new Error('No campaign or map found');
+
+    const turnOrder = map.locations
+      .filter((location) => typeof location.characterId === 'number')
+      .map((location) => location.characterId);
+
+    if (turnOrder.length < 2) {
+      throw new Error(
+        'You cannot create an encounter with less than 2 participating characters',
+      );
+    }
 
     const eventData = { name: `Encounter at ${map.name}` } as {
       name: string;
@@ -851,36 +865,25 @@ const encounterServices = {
       eventData.time = campaign.time;
     }
 
-    const oldEncounter = formData?.id
-      ? await prisma.encounter.findUnique({
-          where: { id: formData?.id },
-        })
-      : {};
-
-    const {
-      id,
-      mapId: m,
-      campaignId: c,
-      ...data
-    } = { ...oldEncounter, ...formData };
-
     const encounter = await prisma.encounter.upsert({
       where: { id: formData?.id || 0 },
       update: {
-        ...data,
+        name: formData.name,
         campaign: { connect: { id: campaignId } },
         map: { connect: { id: mapId } },
         characters: {
-          set: formData.turnOrder.map((id) => ({ id })),
+          set: turnOrder.map((id) => ({ id })),
         },
+        turnOrder,
       },
       create: {
-        ...data,
+        name: formData.name,
         campaign: { connect: { id: campaignId } },
         map: { connect: { id: mapId } },
         characters: {
-          connect: formData.turnOrder.map((id) => ({ id })),
+          connect: turnOrder.map((id) => ({ id })),
         },
+        turnOrder,
         event: {
           create: { campaign: { connect: { id: campaignId } }, ...eventData },
         },

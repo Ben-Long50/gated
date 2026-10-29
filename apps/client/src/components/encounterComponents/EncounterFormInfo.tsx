@@ -13,9 +13,8 @@ const EncounterFormInfo = () => {
         {(field) => (
           <MapList
             mapIds={mapIds}
-            onClick={(id, characterIds) => {
+            onClick={(id) => {
               field.handleChange(id);
-              form.setFieldValue('turnOrder', characterIds);
               navigate(-1);
             }}
           />

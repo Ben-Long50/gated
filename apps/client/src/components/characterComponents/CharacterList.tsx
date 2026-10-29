@@ -121,7 +121,13 @@ const CharacterList = ({
                 size={cardSize}
                 key={index}
                 characterId={character?.id}
-                onClick={() => navigate(`/glam/characters/${character.id}`)}
+                onClick={() => {
+                  if (onClick) {
+                    onClick(character.id);
+                  } else {
+                    navigate(`/glam/characters/${character.id}`);
+                  }
+                }}
               />
             ))}
           </div>

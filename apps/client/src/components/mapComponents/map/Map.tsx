@@ -95,7 +95,11 @@ const Map = ({
         ) : null}
       </DragOverlay>
       {sidebar && (
-        <MapSidebar locations={locations} locationsLoading={locationsLoading} />
+        <MapSidebar
+          mapId={mapId}
+          locations={locations}
+          locationsLoading={locationsLoading}
+        />
       )}
     </DndContext>
   );

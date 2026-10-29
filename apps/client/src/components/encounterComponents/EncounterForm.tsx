@@ -23,8 +23,6 @@ const EncounterForm = () => {
     defaultValues: {
       name: '',
       mapId: null as number | null,
-      turnOrder: [] as number[],
-      turnPosition: 0,
     },
     onSubmit: ({ value }) => {
       createEncounter.mutate(value);

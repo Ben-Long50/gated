@@ -15,19 +15,21 @@ import Sidebar from 'src/components/sidebars/Sidebar';
 import IconBtnSmall from 'src/components/buttons/IconBtnSmall';
 
 const MapSidebar = ({
+  mapId,
   locations,
   locationsLoading,
 }: {
+  mapId: number;
   locations: Location[];
   locationsLoading: boolean;
 }) => {
-  const { campaignId, mapId } = useParams();
+  const { campaignId } = useParams();
   const { gameMaster } = useContext(CampaignContext);
 
   const locatedCharacterIds = locations.map((location) => location.characterId);
 
   const { data: campaign } = useCampaignQuery(Number(campaignId));
-  const deleteLocation = useDeleteCharacterLocationMutation(Number(mapId));
+  const deleteLocation = useDeleteCharacterLocationMutation(mapId);
 
   const campaignCharacterIds = campaign?.characters
     .filter(

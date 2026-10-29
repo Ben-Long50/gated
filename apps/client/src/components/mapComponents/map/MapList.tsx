@@ -11,7 +11,7 @@ const MapList = ({
   onClick,
 }: {
   mapIds: number[];
-  onClick: (id: number, characterIds?: number[]) => void;
+  onClick: (id: number) => void;
 }) => {
   const navigate = useNavigate();
 
@@ -62,27 +62,21 @@ const MapList = ({
         </>
       ) : (
         <div className="grid w-full grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-8">
-          {maps.map((map) => {
-            const characterIds = map.locations
-              .map((location) => location.characterId)
-              .filter(Boolean);
-
-            return (
-              <MapPictureCard
-                key={map?.id}
-                map={map}
-                label={
-                  <div className="flex w-full items-end justify-between">
-                    <p>{map?.name}</p>
-                    <p>
-                      {map?.width} x {map?.height}
-                    </p>
-                  </div>
-                }
-                onClick={() => onClick(map.id, characterIds)}
-              />
-            );
-          })}
+          {maps.map((map) => (
+            <MapPictureCard
+              key={map?.id}
+              map={map}
+              label={
+                <div className="flex w-full items-end justify-between">
+                  <p>{map?.name}</p>
+                  <p>
+                    {map?.width} x {map?.height}
+                  </p>
+                </div>
+              }
+              onClick={() => onClick(map.id)}
+            />
+          ))}
         </div>
       )}
     </div>

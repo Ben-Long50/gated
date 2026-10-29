@@ -176,7 +176,7 @@ model Encounter {
   turn         Int            @default(0)
   round        Int            @default(0)
   turnOrder    Int[]
-  turnPosition Int
+  turnPosition Int            @default(0)
   reactions    Int[]
   passes       Int[]
   combatPhase  CombatPhase    @default(pending)

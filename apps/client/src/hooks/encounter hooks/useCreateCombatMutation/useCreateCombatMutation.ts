@@ -11,8 +11,6 @@ const useCreateCombatMutation = (campaignId: number) => {
       id?: number;
       combatPhase?: string;
       mapId: number;
-      turnOrder: number[];
-      turnPosition: number;
     }) => createCombat(campaignId, formData),
     onSuccess: (data) => {
       toast.success(data.message);
