@@ -10,7 +10,7 @@ import { camelCase, capitalCase } from 'change-case';
 import ArrowHeader3 from '../ArrowHeader3';
 import Icon from '@mdi/react';
 import { mdiAutorenew } from '@mdi/js';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import ReactionIcon from '../icons/ReactionIcon';
 import DieIcon from '../icons/DieIcon';
 import { useContext } from 'react';
@@ -30,7 +30,7 @@ import {
 } from '@gated/shared';
 import Sidebar from '../sidebars/Sidebar';
 
-const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
+const ReactionSidebar = () => {
   const {
     reactionPermissions,
     controlledCharacterId,
@@ -41,8 +41,6 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
 
   const { filteredCharacter: character } = useCharacter(controlledCharacterId);
   const navigate = useNavigate();
-  const location = useLocation();
-  const parts = location.pathname.split('/');
   const queryClient = useQueryClient();
 
   const characterActions = character?.characterInventory?.actions;
@@ -54,10 +52,7 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
     (state) => state.values.action,
   ) as Action;
 
-  const { filteredActions: availableReactions, category } = useActions(
-    characterActions,
-    'reaction',
-  );
+  const { actions } = useActions(characterActions);
 
   const setItem = useCombatStore((state) => state.setItem);
 
@@ -124,7 +119,7 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
               className="bg-tertiary group my-auto ml-auto flex justify-self-start rounded p-1.5 shadow-md shadow-black"
               aria-label="Open available reactions"
               type="button"
-              onClick={() => navigate('availableReactions')}
+              onClick={() => navigate('actions')}
             >
               <ReactionIcon
                 className={`group-hover:text-accent text-tertiary timing size-8`}
@@ -157,7 +152,7 @@ const ReactionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
             {(field) => (
               <InputSelectField
                 label="Reactions"
-                options={availableReactions}
+                options={actions}
                 value={field.state.value}
                 onChange={(value) => field.handleChange(value.id)}
               />

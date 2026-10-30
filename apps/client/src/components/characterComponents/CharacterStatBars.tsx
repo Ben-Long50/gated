@@ -214,7 +214,7 @@ const CharacterStatBars = ({
       {stats.hands !== undefined && (
         <StatBar
           title="HND"
-          current={stats.hands}
+          current={stats.currentHands ?? stats.hands}
           color={statColorMap['Hands']}
           size={size}
           handleChange={
@@ -229,7 +229,7 @@ const CharacterStatBars = ({
       {stats.feet !== undefined && (
         <StatBar
           title="FT"
-          current={stats.feet}
+          current={stats.currentFeet ?? stats.feet}
           color={statColorMap['Feet']}
           size={size}
           handleChange={
@@ -244,7 +244,7 @@ const CharacterStatBars = ({
       {stats.actions !== undefined && (
         <StatBar
           title="ACT"
-          current={stats.actions}
+          current={stats.currentActions ?? stats.actions}
           color={statColorMap['Actions']}
           size={size}
           handleChange={
@@ -259,7 +259,7 @@ const CharacterStatBars = ({
       {stats.reactions !== undefined && (
         <StatBar
           title="RCT"
-          current={stats.reactions}
+          current={stats.currentReactions ?? stats.reactions}
           color={statColorMap['Reactions']}
           size={size}
           handleChange={

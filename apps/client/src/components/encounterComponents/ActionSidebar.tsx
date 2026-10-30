@@ -11,8 +11,8 @@ import { camelCase, capitalCase } from 'change-case';
 import ArrowHeader3 from '../ArrowHeader3';
 import ActionIcon from '../icons/ActionIcon';
 import Icon from '@mdi/react';
-import { mdiAutorenew } from '@mdi/js';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { mdiAutorenew, mdiSync } from '@mdi/js';
+import { useLocation, useNavigate } from 'react-router-dom';
 import DieIcon from '../icons/DieIcon';
 import { useQueryClient } from '@tanstack/react-query';
 import useCombatStore from 'src/stores/combatStore';
@@ -25,20 +25,20 @@ import isInRange from './encounterUtils/isInRange';
 import { calculateCosts, calculateDiceCount, Item } from '@gated/shared';
 import { Action } from '@cloudinary/url-gen/internal/Action';
 import Sidebar from '../sidebars/Sidebar';
+import IconBtnMedium from '../buttons/IconBtnMedium';
+import StatBarContainer from '../StatBarContainer';
 
-const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
+const ActionSidebar = () => {
   const { activeCharacter, actionForm, removeTarget, getTarget } =
     useContext(EncounterContext);
 
   const { filteredCharacter: character } = useCharacter(activeCharacter?.id);
   const navigate = useNavigate();
-  const location = useLocation();
-  const parts = location.pathname.split('/');
   const queryClient = useQueryClient();
 
   const characterActions = character?.characterInventory?.actions;
 
-  const subcategory = useStore(
+  const subtypes = useStore(
     actionForm.store,
     (state) => state.values.actionType,
   );
@@ -50,11 +50,7 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
     (state) => state.values.action,
   ) as Action;
 
-  const { filteredActions: availableActions, category } = useActions(
-    characterActions,
-    'action',
-    subcategory,
-  );
+  const { actions } = useActions(characterActions);
 
   const filterActions = (item: Item) => {
     const rangedActions = ['Single Shot', 'Salvo', 'Reload'];
@@ -64,18 +60,14 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
 
     if (item.keywords.some((data) => data.keyword.name === 'Ranged')) {
       return [
-        ...availableActions.filter((action) =>
-          rangedActions.includes(action.name),
-        ),
+        ...actions.filter((action) => rangedActions.includes(action.name)),
         ...itemActions,
       ].sort((a, b) =>
         a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
       );
     } else if (item.keywords.some((data) => data.keyword.name === 'Melee')) {
       return [
-        ...availableActions.filter((action) =>
-          meleeActions.includes(action.name),
-        ),
+        ...actions.filter((action) => meleeActions.includes(action.name)),
         ...itemActions,
       ].sort((a, b) =>
         a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
@@ -87,7 +79,7 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
     }
   };
 
-  const actionList = item ? filterActions(item) : availableActions;
+  const actionList = item ? filterActions(item) : actions;
 
   const setItem = useCombatStore((state) => state.setItem);
 
@@ -145,43 +137,24 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
 
   return (
     <Sidebar position="right">
-      {parts.includes('availableActions') && (
-        <Outlet
-          context={{
-            actions: actionList,
-            category,
-            form: actionForm,
-            handleChosenItem,
-          }}
-        />
-      )}
       <div className="flex items-center justify-between gap-2">
         <ArrowHeader3 className="whitespace-nowrap" title="Action" />
-        <button
-          className="bg-tertiary group my-auto ml-auto flex justify-self-start rounded p-1.5 shadow-md shadow-black"
-          aria-label="Open available actions"
-          type="button"
-          onClick={() => navigate('availableActions')}
+        <IconBtnMedium
+          tooltip="Actions"
+          onClick={() => navigate('modal/actions')}
         >
-          <ActionIcon
-            className={`group-hover:text-accent text-tertiary timing size-8`}
-          />
-        </button>
-        <button
-          className="bg-tertiary group my-auto flex justify-self-start rounded p-1.5 shadow-md shadow-black"
-          aria-label="Reset"
-          type="button"
+          <ActionIcon />
+        </IconBtnMedium>
+        <IconBtnMedium
+          tooltip="Reset Action"
           onClick={() => {
             actionForm.reset();
             setItem(null);
             removeTarget(`character ${activeCharacter?.id}`);
           }}
         >
-          <Icon
-            path={mdiAutorenew}
-            className={`group-hover:text-accent text-tertiary timing size-8`}
-          />
-        </button>
+          <Icon path={mdiSync} />
+        </IconBtnMedium>
       </div>
       <actionForm.Field
         name="actionType"
@@ -193,7 +166,7 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
       >
         {(field) => (
           <InputSelectField
-            label="Action Category"
+            label="Action Type"
             options={['attack', 'movement', 'unique']}
             value={field.state.value}
             onChange={(value) => field.handleChange(value)}
@@ -213,7 +186,7 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
             label="Actions"
             options={actionList}
             value={field.state.value}
-            onChange={(value) => field.handleChange(value.id)}
+            onChange={(value) => field.handleChange(value)}
           />
         )}
       </actionForm.Field>
@@ -231,11 +204,9 @@ const ActionSidebar = ({ actionSidebar }: { actionSidebar: boolean }) => {
               Object.keys(actionInfo.costs).length > 0 && (
                 <div className="flex w-full flex-col justify-start gap-2">
                   <ArrowHeader4 className="text-primary" title="Action Costs" />
-                  <div
-                    className={`grid h-full w-full grow grid-cols-[auto_auto_1fr_auto] place-items-center gap-2 gap-y-2 border-x-2 border-gray-400 border-opacity-50 px-2`}
-                  >
-                    <ActionStatBars stats={actionInfo.costs} cardWidth={499} />
-                  </div>
+                  <StatBarContainer size="small">
+                    <ActionStatBars size="small" stats={actionInfo.costs} />
+                  </StatBarContainer>
                 </div>
               )}
             {actionInfo && actionInfo.requirements.includes('item') && (

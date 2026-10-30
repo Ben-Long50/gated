@@ -5,6 +5,8 @@ export const PictureCard = ({
   label,
   onClick,
   onDoubleClick,
+  onMouseEnter,
+  onMouseLeave,
   color,
   publicId,
   className,
@@ -13,6 +15,8 @@ export const PictureCard = ({
   label?: ReactNode;
   onClick?: () => void;
   onDoubleClick?: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
   color?: string;
   publicId?: string;
   className?: string;
@@ -35,8 +39,18 @@ export const PictureCard = ({
             }
       }
       onDoubleClick={onDoubleClick}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
+      onMouseEnter={() => {
+        setHover(true);
+        if (onMouseEnter) {
+          onMouseEnter;
+        }
+      }}
+      onMouseLeave={() => {
+        setHover(false);
+        if (onMouseLeave) {
+          onMouseLeave();
+        }
+      }}
     >
       <CloudinaryPicture
         className="timing aspect-square origin-bottom group-hover:scale-105"

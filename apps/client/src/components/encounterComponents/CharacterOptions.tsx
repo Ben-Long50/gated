@@ -23,6 +23,10 @@ import usePassReactionMutation from 'src/hooks/encounter hooks/usePassReactionMu
 import useFinishReactionMutation from 'src/hooks/encounter hooks/useFinishReactionMutation/useFinishReactionMutation';
 import FootIcon from '../icons/FootIcon';
 import useCharacterQueries from 'src/hooks/character hooks/useUpdateCharacterLevelMutation/useCharactersQuery/useCharacterQueries';
+import IconBtnMedium from '../buttons/IconBtnMedium';
+import StatBarContainer from '../StatBarContainer';
+import Icon from '@mdi/react';
+import { mdiSync } from '@mdi/js';
 
 const CharacterOptions = ({
   setActionSidebar,
@@ -32,7 +36,6 @@ const CharacterOptions = ({
   characterOptions: boolean;
 }) => {
   const { mobile } = useContext(LayoutContext);
-  const { accentPrimary } = useContext(ThemeContext);
   const { gameMaster } = useContext(CampaignContext);
   const {
     combat,
@@ -85,223 +88,221 @@ const CharacterOptions = ({
   }
 
   return (
-    <ThemeContainer
-      className={`${characterOptions ? 'visible opacity-100' : 'invisible opacity-0'} timing mx-auto w-full max-w-5xl`}
-      borderColor={accentPrimary}
-      chamfer="medium"
+    <div
+      className={`${visible ? 'gap-4' : 'gap-0'} bg-base shadow-color timing relative mx-auto flex w-full max-w-5xl flex-col rounded-md p-4`}
+      onMouseEnter={() => {
+        if (timerRef.current) {
+          clearTimeout(timerRef.current);
+        }
+        setVisible(true);
+      }}
+      onMouseLeave={(e) => {
+        if (!inputRef.current?.contains(e.target)) {
+          timerRef.current = setTimeout(() => setVisible(false), 100);
+        }
+      }}
     >
-      <div
-        className={`${visible ? 'gap-4' : 'gap-0'} timing relative flex w-full flex-col p-4`}
-        onMouseEnter={() => {
-          if (timerRef.current) {
-            clearTimeout(timerRef.current);
-          }
-          setVisible(true);
-        }}
-        onMouseLeave={(e) => {
-          if (!inputRef.current?.contains(e.target)) {
-            timerRef.current = setTimeout(() => setVisible(false), 100);
-          }
-        }}
-      >
-        {gameMaster && (
-          <div
-            className={`${visible ? 'max-h-24' : 'max-h-0 overflow-hidden'} timing flex w-full items-center gap-4`}
-          >
-            <InputSelectField
-              label="Switch Character"
-              reverse={true}
-              options={characters}
-              value={controlledCharacterId}
-              onChange={(value) => {
-                setControlledCharacterId(value.id);
-                setItem(null);
-              }}
-            />
-            <button
-              className="bg-tertiary group my-auto flex justify-self-start rounded p-1 shadow-md shadow-black"
-              aria-label="Open save modal"
-              type="button"
-              onClick={() => {
-                setControlledCharacterId(activeCharacter.id);
-                setItem(null);
-              }}
-            >
-              <CharacterPictureRound
-                className="group-hover:border-accent group-hover:border-2"
-                key={activeCharacter.id}
-                character={activeCharacter}
-              />
-            </button>
-          </div>
-        )}
+      {gameMaster && (
         <div
-          className={`${visible ? 'gap-4' : 'gap-0'} timing flex flex-col items-center justify-start overflow-hidden`}
+          className={`${visible ? 'max-h-24' : 'max-h-0 overflow-hidden'} timing flex w-full items-center gap-4`}
         >
-          <div className="timing grid w-full grid-cols-[auto_.5fr_1fr_auto] items-center gap-4">
-            <CharacterPictureRound key={character?.id} character={character} />
-            {!mobile && <ArrowHeader3 title={character?.name} />}
-            <div className="grid w-full grow grid-cols-[auto_auto_1fr_auto] place-items-center gap-2 gap-y-0">
-              <CharacterStatBars
-                size="large"
-                characterId={controlledCharacterId}
-                stats={{
-                  currentHealth: character?.stats.currentHealth,
-                  maxHealth: character?.stats.maxHealth,
-                  currentSanity: character?.stats.currentSanity,
-                  maxSanity: character?.stats.maxSanity,
-                }}
-                cardWidth={300}
-              />
-            </div>
-            <button
-              className={`timing hover:bg-secondary hover:border-accent flex flex-row justify-end gap-2 rounded-md border-2 border-transparent p-3 hover:shadow-md hover:shadow-black`}
-              onClick={() => navigate('reset')}
-            >
-              <div className={`flex items-center gap-2`}>
-                <ActionIcon className={`text-primary size-8 shrink-0`} />
-                <h2 className={`size-6 text-center`}>
-                  {character?.stats.currentActions}
-                </h2>
-              </div>
-              <div className={`flex items-center gap-2`}>
-                <ReactionIcon className={`text-primary size-8 shrink-0`} />
-                <h2 className={`size-6 text-center`}>
-                  {character?.stats.currentReactions}
-                </h2>
-              </div>
-              <div className={`flex items-center gap-2`}>
-                <HandIcon className={`text-primary size-8 shrink-0`} />
-                <h2 className={`size-6 text-center`}>
-                  {character?.stats.currentHands}
-                </h2>
-              </div>
-              <div className={`flex items-center gap-2`}>
-                <FootIcon className={`text-primary size-8 shrink-0`} />
-                <h2 className={`size-6 text-center`}>
-                  {character?.stats.currentFeet}
-                </h2>
-              </div>
-            </button>
-          </div>
-          <EquippedItems
-            className={`${visible ? 'max-h-40' : 'max-h-0'} timing overflow-hidden`}
-            setActionSidebar={setActionSidebar}
+          <InputSelectField
+            label="Switch Character"
+            reverse={true}
+            options={characters}
+            value={controlledCharacterId}
+            onChange={(value) => {
+              setControlledCharacterId(value.id);
+              setItem(null);
+            }}
           />
+          <IconBtnMedium
+            tooltip="Switch to Active"
+            onClick={() => {
+              setControlledCharacterId(activeCharacter.id);
+              setItem(null);
+            }}
+          >
+            <CharacterPictureRound
+              className="group-hover:border-accent group-hover:border-2"
+              key={activeCharacter.id}
+              character={activeCharacter}
+            />
+          </IconBtnMedium>
         </div>
-        <div
-          className={`${visible ? 'max-h-24' : 'max-h-0 overflow-hidden'} timing flex w-full gap-4`}
-        >
-          {encounterPermissions &&
-            controlledCharacterId === activeCharacter?.id &&
-            combat.combatPhase === 'reaction' && (
-              <BtnRect
-                className="w-full"
-                ariaLabel="Close"
-                type="button"
-                onClick={() => navigate('actionQueue')}
-              >
-                Action Queue
-              </BtnRect>
-            )}
-          {controlledCharacterId === activeCharacter?.id &&
-            combat.combatPhase === 'action' && (
-              <BtnRect
-                className="w-full"
-                ariaLabel="Pass turn"
-                type="button"
-                active={!isFetching}
-                onClick={() => {
-                  setIsFetching(true);
-                  resetRolls();
-                  resetForms();
-                  resetTargetMap();
-                  setRangeData(null);
-                  setItem(null);
-                  handleAdvanceTurn();
-                  socket.emit('resetBoard', {
-                    encounterId: Number(encounterId),
-                  });
-                }}
-              >
-                Pass Turn
-              </BtnRect>
-            )}
-          {gameMaster &&
-            combat.combatPhase === 'reaction' &&
-            combat.passes.length < combat.turnOrder.length - 1 &&
-            controlledCharacterId === activeCharacter?.id && (
-              <BtnRect
-                className="w-full"
-                ariaLabel="Pass All Reactions"
-                type="button"
-                active={!isFetching}
-                onClick={() => {
-                  setIsFetching(true);
-                  passAllReactions.mutate();
-                }}
-              >
-                Pass All Reactions
-              </BtnRect>
-            )}
+      )}
+      <div
+        className={`${visible ? 'gap-4' : 'gap-0 overflow-hidden'} timing flex flex-col items-center justify-start`}
+      >
+        <div className="timing grid w-full grid-cols-[auto_1fr_auto_auto_auto] items-center gap-4">
+          <CharacterPictureRound key={character?.id} character={character} />
+          <StatBarContainer size="small">
+            <CharacterStatBars
+              size="small"
+              characterId={controlledCharacterId}
+              stats={{
+                currentHealth: character?.stats.currentHealth,
+                maxHealth: character?.stats.maxHealth,
+                currentSanity: character?.stats.currentSanity,
+                maxSanity: character?.stats.maxSanity,
+              }}
+              cardWidth={300}
+            />
+          </StatBarContainer>
+          <div className="flex flex-col items-center justify-center gap-2">
+            <div className={`flex items-center gap-2`}>
+              <ActionIcon className={`text-primary size-7 shrink-0`} />
+              <p className={`w-10 text-center`}>
+                {character?.stats.currentActions} / {character?.stats.actions}
+              </p>
+            </div>
+            <div className={`flex items-center gap-2`}>
+              <ReactionIcon className={`text-primary size-7 shrink-0`} />
+              <p className={`w-10 text-center`}>
+                {character?.stats.currentReactions} /{' '}
+                {character?.stats.reactions}
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-col items-center justify-center gap-2">
+            <div className={`flex items-center gap-2`}>
+              <HandIcon className={`text-primary size-7 shrink-0`} />
+              <p className={`w-10 text-center`}>
+                {character?.stats.currentHands} / {character?.stats.hands}
+              </p>
+            </div>
+            <div className={`flex items-center gap-2`}>
+              <FootIcon className={`text-primary size-7 shrink-0`} />
+              <p className={`w-10 text-center`}>
+                {character?.stats.currentFeet} / {character?.stats.feet}
+              </p>
+            </div>
+          </div>
 
-          {!combat.reactions.includes(controlledCharacterId) &&
-            !combat.passes.includes(controlledCharacterId) &&
-            activeCharacter?.id !== controlledCharacterId &&
-            combat.combatPhase === 'reaction' && (
-              <>
-                <BtnRect
-                  className="w-full"
-                  type="button"
-                  ariaLabel="Make reaction"
-                  active={!isFetching}
-                  onClick={() => {
-                    setIsFetching(true);
-                    scheduleReaction.mutate(controlledCharacterId);
-                  }}
-                >
-                  Make Reaction
-                </BtnRect>
-                <BtnRect
-                  className="w-full"
-                  type="button"
-                  ariaLabel="Pass"
-                  active={!isFetching}
-                  onClick={() => {
-                    setIsFetching(true);
-                    passReaction.mutate(controlledCharacterId);
-                  }}
-                >
-                  Pass
-                </BtnRect>
-              </>
-            )}
-          {combat.reactions.includes(controlledCharacterId) && (
+          <IconBtnMedium
+            tooltip="Status Reset"
+            onClick={() => navigate('modal/reset')}
+          >
+            <Icon path={mdiSync} />
+          </IconBtnMedium>
+        </div>
+        <EquippedItems
+          className={`${visible ? 'max-h-60' : 'max-h-0'} timing overflow-hidden`}
+          setActionSidebar={setActionSidebar}
+        />
+      </div>
+      <div
+        className={`${visible ? 'max-h-24' : 'max-h-0 overflow-hidden'} timing flex w-full gap-4`}
+      >
+        {encounterPermissions &&
+          controlledCharacterId === activeCharacter?.id &&
+          combat.combatPhase === 'reaction' && (
             <BtnRect
               className="w-full"
-              ariaLabel="Pass Reaction"
+              ariaLabel="Close"
+              type="button"
+              onClick={() => navigate('actionQueue')}
+            >
+              Action Queue
+            </BtnRect>
+          )}
+        {controlledCharacterId === activeCharacter?.id &&
+          combat.combatPhase === 'action' && (
+            <BtnRect
+              className="w-full"
+              ariaLabel="Pass turn"
               type="button"
               active={!isFetching}
               onClick={() => {
                 setIsFetching(true);
-                finishReaction.mutate(controlledCharacterId);
+                resetRolls();
+                resetForms();
+                resetTargetMap();
+                setRangeData(null);
+                setItem(null);
+                handleAdvanceTurn();
+                socket.emit('resetBoard', {
+                  encounterId: Number(encounterId),
+                });
               }}
             >
-              Pass Reaction
+              Pass Turn
             </BtnRect>
           )}
-          {gameMaster && !activeCharacter && (
+        {gameMaster &&
+          combat.combatPhase === 'reaction' &&
+          combat.passes.length < combat.turnOrder.length - 1 &&
+          controlledCharacterId === activeCharacter?.id && (
             <BtnRect
-              ariaLabel="Open initiative modal"
+              className="w-full"
+              ariaLabel="Pass All Reactions"
               type="button"
-              onClick={() => navigate('modal/initiative')}
+              active={!isFetching}
+              onClick={() => {
+                setIsFetching(true);
+                passAllReactions.mutate();
+              }}
             >
-              Start Combat
+              Pass All Reactions
             </BtnRect>
           )}
-        </div>
+
+        {!combat.reactions.includes(controlledCharacterId) &&
+          !combat.passes.includes(controlledCharacterId) &&
+          activeCharacter?.id !== controlledCharacterId &&
+          combat.combatPhase === 'reaction' && (
+            <>
+              <BtnRect
+                className="w-full"
+                type="button"
+                ariaLabel="Make reaction"
+                active={!isFetching}
+                onClick={() => {
+                  setIsFetching(true);
+                  scheduleReaction.mutate(controlledCharacterId);
+                }}
+              >
+                Make Reaction
+              </BtnRect>
+              <BtnRect
+                className="w-full"
+                type="button"
+                ariaLabel="Pass"
+                active={!isFetching}
+                onClick={() => {
+                  setIsFetching(true);
+                  passReaction.mutate(controlledCharacterId);
+                }}
+              >
+                Pass
+              </BtnRect>
+            </>
+          )}
+        {combat.reactions.includes(controlledCharacterId) && (
+          <BtnRect
+            className="w-full"
+            ariaLabel="Pass Reaction"
+            type="button"
+            active={!isFetching}
+            onClick={() => {
+              setIsFetching(true);
+              finishReaction.mutate(controlledCharacterId);
+            }}
+          >
+            Pass Reaction
+          </BtnRect>
+        )}
+        {gameMaster && !activeCharacter && (
+          <BtnRect
+            ariaLabel="Open initiative modal"
+            type="button"
+            onClick={() => navigate('modal/initiative')}
+          >
+            Start Combat
+          </BtnRect>
+        )}
       </div>
-    </ThemeContainer>
+    </div>
   );
 };
 

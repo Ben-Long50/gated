@@ -23,6 +23,7 @@ import PassIcon from '../icons/PassIcon';
 import { Gang } from '@gated/shared';
 import CharacterPictureRound from '../characterComponents/CharacterPictureRound';
 import useCharacterQueries from 'src/hooks/character hooks/useUpdateCharacterLevelMutation/useCharactersQuery/useCharacterQueries';
+import useCombatQueries from 'src/hooks/encounter hooks/useCombatQueries/useCombatQueries';
 
 const CampaignLinks = () => {
   const { campaigns, pendingCampaignIds } = useContext(CampaignContext);
@@ -32,6 +33,10 @@ const CampaignLinks = () => {
 
   const { data: campaign } = useCampaignQuery(Number(campaignId));
   const toggleCampaign = useToggleCampaignMutation(Number(campaignId));
+
+  const { activeEncounters, isLoading: encountersLoading } = useCombatQueries(
+    campaign?.encounters.map((encounter) => encounter.id),
+  );
 
   const setSidebar = useNavigationStore((state) => state.setSidebar);
 
@@ -150,10 +155,16 @@ const CampaignLinks = () => {
                 }
                 title="Encounters"
               >
-                <SubLinkSidebar
-                  title={`Active Encounters`}
-                  path={`campaigns/${campaignId}/encounters?type=active`}
-                />
+                {encountersLoading ? (
+                  <Loading size={1.5} />
+                ) : (
+                  activeEncounters.map((encounter) => (
+                    <SubLinkSidebar
+                      title={encounter?.name}
+                      path={`/glam/campaigns/${campaign.id}/maps/${encounter.map.id}/encounters/${encounter.id}`}
+                    />
+                  ))
+                )}
                 <SubLinkSidebar
                   title={`Completed Encounters`}
                   path={`campaigns/${campaignId}/encounters?type=completed`}

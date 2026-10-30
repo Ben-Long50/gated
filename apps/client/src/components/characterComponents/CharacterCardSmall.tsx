@@ -3,35 +3,28 @@ import CharacterPictureRound from './CharacterPictureRound';
 import CharacterStatBars from './CharacterStatBars';
 import Loading from '../Loading';
 import ArrowHeader4 from '../ArrowHeader4';
-import WardIcon from '../icons/WardIcon';
-import SpeedIcon from '../icons/SpeedIcon';
-import EvasionIcon from '../icons/EvasionIcon';
-import ArmorIcon from '../icons/ArmorIcon';
 import useMapStore from 'src/stores/mapStore';
-import ConditionTag from '../ConditionTag';
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import useRadialMenuStore from 'src/stores/radialMenuStore';
 import Icon from '@mdi/react';
 import { mdiCrown } from '@mdi/js';
 import StatBarContainer from '../StatBarContainer';
 
 const CharacterCardSmall = ({
-  characterList,
+  characterListOpen,
   characterId,
   className,
   expanding,
   active,
 }: {
-  characterList: boolean;
+  characterListOpen: boolean;
   characterId: number;
   className?: string;
   expanding: boolean;
   active: boolean;
 }) => {
   const { filteredCharacter: character, isLoading } = useCharacter(characterId);
-  const [detailHeight, setDetailHeight] = useState(1000);
 
-  const detailRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef(null);
 
   const menuOpen = useRadialMenuStore((state) => state.menuOpen);
@@ -54,12 +47,6 @@ const CharacterCardSmall = ({
     }
     setMenuOpen(!menuOpen);
   };
-
-  useLayoutEffect(() => {
-    if (detailRef.current) {
-      setDetailHeight(detailRef.current.offsetHeight);
-    }
-  }, [detailRef.current]);
 
   if (isLoading) return <Loading size={1.25} />;
 
@@ -84,7 +71,7 @@ const CharacterCardSmall = ({
     >
       <div className="mb-2 flex items-center justify-between gap-8">
         <ArrowHeader4
-          className={`${characterList ? 'visible h-8 translate-x-0 opacity-100' : 'invisible h-0 -translate-x-full opacity-0'} ${active ? 'text-accent' : 'text-primary'} timing w-full`}
+          className={`${characterListOpen ? 'visible h-8 translate-x-0 opacity-100' : 'invisible h-0 -translate-x-full opacity-0'} ${active ? 'text-accent' : 'text-primary'} timing w-full`}
           title={character?.name}
         />
         {character?.gang && (
@@ -126,51 +113,6 @@ const CharacterCardSmall = ({
           />
         </StatBarContainer>
       </div>
-      {expanding && (
-        <div
-          className={`${characterList ? 'visible max-h-40 opacity-100' : 'invisible max-h-0 opacity-0'} timing flex w-full flex-col items-center justify-around gap-2 overflow-hidden pt-2`}
-        >
-          {character?.conditions && character.conditions.length > 0 && (
-            <div className="flex w-full justify-start gap-1">
-              {character?.conditions.map((condition) => (
-                <ConditionTag key={condition.id} condition={condition} />
-              ))}
-            </div>
-          )}
-          <div className="flex w-full items-center justify-around gap-2">
-            <div className="flex flex-col items-center justify-between gap-2">
-              <div className="flex items-center justify-center gap-2">
-                <SpeedIcon className="text-secondary size-7" />
-                <p className="text-secondary text-xl sm:pt-1">
-                  {character?.stats.speed}
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-col items-center justify-between gap-2">
-              <div className="flex items-center justify-center gap-2">
-                <EvasionIcon className="text-secondary size-7" />
-                <p className="text-secondary text-xl sm:pt-1">
-                  {character?.stats.evasion}
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-col items-center justify-between gap-2">
-              <div className="flex items-center justify-center gap-2">
-                <ArmorIcon className="text-secondary size-7" />
-                <p className="text-secondary text-xl sm:pt-1">
-                  {character?.stats.armor}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center justify-center gap-2">
-              <WardIcon className="text-secondary size-7" />
-              <p className="text-secondary text-xl sm:pt-1">
-                {character?.stats.ward}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

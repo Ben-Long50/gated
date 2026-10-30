@@ -67,6 +67,8 @@ const EncounterGrid = ({
   const actionItem = useStore(actionForm.store, (state) => state.values.item);
   const action = useStore(actionForm.store, (state) => state.values.action);
 
+  console.log(action);
+
   const item = actionPermissions || reactionPermissions ? actionItem : null;
 
   let rangeData = { range: 0, color: 'transparent' };
@@ -207,7 +209,7 @@ const EncounterGrid = ({
     <DragScrollContainer
       draggable={!measureMode}
       className={`scrollbar-primary timing relative mx-auto my-auto max-h-full max-w-full overflow-auto rounded border-2`}
-      style={{ borderColor: accentPrimary }}
+      style={{ borderColor: 'transparent' }}
     >
       <div
         className={`timing pointer-events-auto relative grid overflow-hidden`}

@@ -1,6 +1,6 @@
 import BtnRect from '../buttons/BtnRect';
 import { useContext, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Loading from '../Loading';
 import CharacterInitiativeRoll from '../encounterComponents/CharacterInitiativeRoll';
 import { CampaignContext } from 'src/contexts/CampaignContext';
@@ -24,6 +24,7 @@ const InitiativeModal = () => {
     rolling,
     rollCounter,
   } = useContext(EncounterContext);
+  const navigate = useNavigate();
 
   const { campaignId, encounterId } = useParams();
 
@@ -57,6 +58,21 @@ const InitiativeModal = () => {
     setRollOptions(options);
   }, []);
 
+  if (combat?.combatPhase !== 'initiative') {
+    return (
+      <>
+        <h1 className="text-center">Initiative Rolls</h1>
+        <p className="text-center">It is not the Initiative Phase</p>
+        <BtnRect
+          ariaLabel="Back"
+          onClick={() => navigate('../..', { replace: true })}
+        >
+          Go Back
+        </BtnRect>
+      </>
+    );
+  }
+
   return (
     <>
       <h1 className="text-center">Initiative Rolls</h1>
@@ -79,7 +95,7 @@ const InitiativeModal = () => {
         )}
       </div>
       <div className="flex w-full flex-col gap-4">
-        {combat.turnOrder?.map((characterId: number, index: number) => (
+        {combat?.turnOrder.map((characterId: number, index: number) => (
           <div className="flex w-full items-center gap-4">
             <h2 className="size-8 text-center">{index + 1}</h2>
             <CharacterInitiativeRoll key={index} characterId={characterId} />

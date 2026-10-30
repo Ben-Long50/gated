@@ -1,14 +1,11 @@
 import useCharacter from 'src/hooks/useCharacter';
 import Loading from '../Loading';
 import { useContext, useRef } from 'react';
-import CloudinaryPicture from '../CloudinaryPicture';
 import { ThemeContext } from 'src/contexts/ThemeContext';
 import useCombatStore from 'src/stores/combatStore';
-import Icon from '@mdi/react';
-import { mdiCheckCircle, mdiCloseBoxOutline } from '@mdi/js';
 import { EncounterContext } from 'src/contexts/EncounterContext';
 import { useNavigate } from 'react-router-dom';
-import { Item } from '@gated/shared';
+import { PictureCard } from '../PictureCard';
 
 const EquippedItems = ({
   className,
@@ -61,20 +58,17 @@ const EquippedItems = ({
         {(field) => (
           <div
             ref={scrollRef}
-            className={`${className} scrollbar-primary-2 col-span-3 flex w-full gap-2 overflow-x-auto`}
+            className={`${className} scrollbar-primary-2 col-span-3 flex w-full justify-start gap-2 overflow-x-auto`}
             onWheel={handleWheel}
             style={{ overscrollBehavior: 'contain' }}
           >
             {character.equipment.map((equipment) => (
-              <button
+              <PictureCard
+                className={`${!equipment.available && 'pointer-events-none'} w-[200px]`}
+                label={equipment.name}
+                publicId={equipment.generatedPicture.publicId}
                 key={equipment.id}
-                className={`${!equipment.available && 'pointer-events-none'} relative size-20 shrink-0 overflow-hidden rounded border-2 sm:size-28`}
-                style={{
-                  borderColor:
-                    equipment.id === item?.id
-                      ? rarityColorMap[equipment.rarity]
-                      : `${rarityColorMap[equipment.rarity]}80`,
-                }}
+                color={rarityColorMap[equipment.rarity]}
                 onClick={() => {
                   if (actionPermissions || reactionPermissions) {
                     field.state.value && field.state.value.id === equipment.id
@@ -102,33 +96,7 @@ const EquippedItems = ({
                   setItem(null);
                   setRangeData(null);
                 }}
-              >
-                {!equipment.available && (
-                  <Icon
-                    path={mdiCloseBoxOutline}
-                    size={1.5}
-                    className="absolute right-0.5 top-0.5 z-10 text-red-600"
-                  />
-                )}
-                {field.state.value?.id === equipment.id && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                    <Icon
-                      className="text-tertiary"
-                      path={mdiCheckCircle}
-                      size={3}
-                    />
-                  </div>
-                )}
-                <div
-                  style={{
-                    backgroundImage: `radial-gradient(circle, transparent 65%, ${rarityColorMap[equipment.rarity]} 100%)`,
-                  }}
-                />
-                <CloudinaryPicture
-                  className={`${!equipment.available && 'opacity-50'} `}
-                  publicId={equipment.picture?.publicId}
-                />
-              </button>
+              />
             ))}
           </div>
         )}
