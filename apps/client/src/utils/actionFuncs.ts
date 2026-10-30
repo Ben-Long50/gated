@@ -3,7 +3,7 @@ import { Item } from '@gated/shared';
 import statColorMap from './statColorMap';
 
 const actionFuncs = {
-  basicMovement: (
+  move: (
     actionCosts: Record<string, number>,
     character?: Character,
     item?: Item,

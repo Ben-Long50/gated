@@ -185,11 +185,11 @@ const EncounterGrid = ({
 
   const tokenDragStart = (row: number, col: number, characterId: number) => {
     if (!action) {
-      const basicMovement: Action = queryClient
+      const move: Action = queryClient
         .getQueryData(['actions'])
-        .find((action: Action) => action.name === 'Basic Movement');
+        .find((action: Action) => action.name === 'Move');
 
-      actionForm.setFieldValue('action', basicMovement);
+      actionForm.setFieldValue('action', move);
       handleDragStart(row, col, rangeData.color, 'Basic Movement', characterId);
     } else {
       handleDragStart(row, col, rangeData.color, action.name, characterId);

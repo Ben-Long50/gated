@@ -6,7 +6,7 @@ import characterServices from '../services/characterServices.js';
 import { getIO } from '../sockets/socket.js';
 
 const actionFuncs = {
-  basicMovement: async (
+  move: async (
     character?: Character,
     item?: Item,
     successes?: number,
